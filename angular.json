@@ -13,6 +13,7 @@
         "build": {
           "builder": "@angular-devkit/build-angular:browser",
           "options": {
+            "allowedCommonJsDependencies": ["qrcode"],
             "outputPath": "dist/school-c",
             "index": "src/index.html",
             "main": "src/main.ts",
@@ -21,8 +22,8 @@
             ],
             "tsConfig": "tsconfig.app.json",
             "assets": [
-              "src/favicon.ico",
-              "src/assets"
+              "src/assets",
+              "src/app/config"
             ],
             "styles": [
               "src/styles.css"
@@ -60,10 +61,10 @@
           "builder": "@angular-devkit/build-angular:dev-server",
           "configurations": {
             "production": {
-              "browserTarget": "schoolC:build:production"
+              "buildTarget": "schoolC:build:production"
             },
             "development": {
-              "browserTarget": "schoolC:build:development"
+              "buildTarget": "schoolC:build:development"
             }
           },
           "defaultConfiguration": "development"
@@ -71,7 +72,7 @@
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
           "options": {
-            "browserTarget": "schoolC:build"
+            "buildTarget": "schoolC:build"
           }
         },
         "test": {
@@ -83,8 +84,8 @@
             ],
             "tsConfig": "tsconfig.spec.json",
             "assets": [
-              "src/favicon.ico",
-              "src/assets"
+              "src/assets",
+              "src/config.ts"
             ],
             "styles": [
               "src/styles.css"

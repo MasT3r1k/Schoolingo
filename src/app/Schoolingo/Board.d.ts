@@ -1,0 +1,1 @@
+export type Subject = [string, string]; // [shortcut, label]

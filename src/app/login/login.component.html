@@ -1,0 +1,55 @@
+<main>
+    <div class="row">
+        <h1>SCHOOLINGO</h1>
+    </div>
+    <div class="card">
+        <div class="card-top" *ngIf="socketService.getSocket().err == true">
+            <span><i class='fa-solid fa-xmark'></i> Nejste připojení k serveru.</span>
+            <div class="btn">Offline mode</div>
+        </div>
+        <div class="row">
+            <div class="form">
+                <div class="title">Přihlášení do školního systému</div>
+                <div class="school">{{ config.school }}</div>
+                <form method="post" (submit)="login()">
+                    <div class="form-group">
+                        <label for="username" [ngClass]="{error: errorFilter('username') != false}">Uživatelské jméno <span class="label-error" *ngIf="errorFilter('username') != false"> - {{ locale.getLocale(errorFilter('username').toString()) }}</span></label>
+                        <input type="text" name="username" [ngClass]="{ invalid: errorFilter('username') != false }" [formControl]="username" />
+                    </div>
+                    <div class="form-group">
+                        <label for="password" [ngClass]="{error: errorFilter('password') != false}">Heslo <span class="label-error" *ngIf="errorFilter('password') != false"> - {{ locale.getLocale(errorFilter('password').toString()) }}</span></label>
+                        <input type="password" name="password" [ngClass]="{ invalid: errorFilter('password') != false }" [formControl]="password">
+                        <p style="margin: 6px 8px 4px;color: var(--theme-color-dark);cursor: pointer;">Zapomenuté heslo?</p>
+                    </div>
+                    <input type="submit" value="" style="display: none;">
+                    <div [ngClass]="{submit: true, disabled: canLogin() == false}" role="button" (click)="login()">Přihlásit se</div>
+                </form>
+            </div>
+            <div class="bar">nebo</div>
+            <div class="qrcode">
+                <div class="title" style="margin-bottom: 1rem;">se přihlaš pomocí QR kódu</div>
+                <!-- Waiting to load QR code -->
+                <div *ngIf="qrStatus.whatIsVisible == 'loading'" class="loader"></div>
+                <!-- Error QR code -->
+                <div *ngIf="qrStatus.whatIsVisible == 'error'" (click)="refreshQRcode()">NASTALA NĚKDE CHYBA. Obnovit</div>
+
+                <!-- QR code -->
+                <qrcode *ngIf="
+                (qrStatus.whatIsVisible == 'scan' || qrStatus.whatIsVisible == 'trylogin') && qrStatus?.code && qrStatus.code != ''"
+                [ngStyle]="{ filter: (qrStatus.whatIsVisible == 'trylogin') ? 'blur(4px)' : 'none' }" [qrdata]="qrStatus.code ?? ''" [allowEmptyString]="false" [width]="160" [margin]="0" [elementType]="'svg'" [errorCorrectionLevel]="'M'"></qrcode>
+                <div style="margin-top: 1rem;text-align: center;" *ngIf="(qrStatus.whatIsVisible == 'scan' && qrStatus.code != '') || qrStatus.whatIsVisible == 'loading'">Naskejnute QR kód v <b>mobilní aplikaci</b> pro rychlé přihlášení</div>
+
+                <!-- <div *ngIf="qrcode == 'ERR' && !qrCodeResult" (click)="refreshQRCode()">NASTALA NĚKDE CHYBA. Obnovit</div>
+                <qrcode *ngIf="getSocketStatus().connected == true && qrcode != '' && qrcode !== 'ERR'" [qrdata]="qrcode" [ngStyle]="{ filter: (qrCodeResult) ? 'blur(4px)' : 'none'}" [allowEmptyString]="false" [width]="160" [margin]="0" [elementType]="'svg'" [errorCorrectionLevel]="'M'"></qrcode>
+                <div *ngIf="getSocketStatus().connected == false && qrcode == '' && !qrCodeResult" class="loader"></div>
+                <div style="margin-top: 1rem;text-align: center;" *ngIf="!qrCodeResult">Naskejnute QR kód v <b>mobilní aplikaci</b> pro rychlé přihlášení</div>
+                <div style="margin-top: 1rem;text-align: center;" *ngIf="qrCodeResult">Pokoušíte se příhlasit za <b>{{ qrCodeResult.firstName + " " + qrCodeResult.lastName }}</b>. Zkontrolujte vaše mobilní zařízení pro více informací.</div> -->
+            </div>
+        </div>
+    </div>
+    <!-- <p>Vyzkoušejte školním systém na svém chytrém zařízení</p>
+    <div class="row">
+        <img src="/assets/google-play-badge.webp" height="40" alt="Google Play">
+        <img src="/assets/app-store-badge.webp" height="40" alt="App Store">
+    </div> -->
+</main>

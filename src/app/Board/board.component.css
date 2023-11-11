@@ -1,0 +1,169 @@
+/* MAIN */
+
+:host {
+    --body: #0f0f15;
+    --dark: #191b25;
+    color: #000;
+}
+
+.wrapper {
+    display: flex;
+    flex-direction: column;
+    flex-shrink: 1;
+    width: 100vw;
+    height: 100vh;
+    background-color: #fff;
+}
+
+
+/* TOP ELEMENT */
+
+.wrapper .header {
+
+    height: 48px;
+    width: 100%;
+    box-shadow: rgba(6, 6, 7, 0.1) 0px 1px 0px 0px, rgba(2, 2, 2, 0.025) 0px 1.5px 0px 0px, rgba(6, 6, 7, 0.025) 0px 2px 0px 0px;
+    border-bottom: 1px solid var(--dark-border);
+    flex-shrink: 0;
+    z-index: 5;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    position: relative;
+    justify-content: space-between;
+
+}
+
+.wrapper .header > .left {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+
+.show-sidebar {
+    display: none;
+    width: 36px;
+    height: 36px;
+    font-size: 22px;
+    cursor: pointer;
+    justify-content: center;
+    align-items: center;
+    border-radius: 36px;
+}
+
+.show-sidebar:active {
+    background-color: hsl(228 6% 32.5%/0.08);
+}
+
+.wrapper .header .title {
+    width: 250px;
+    height: 100%;
+    text-align: center;
+}
+
+.wrapper .header .title .application {
+    font-size: 22px;
+    font-weight: 600;
+}
+
+.wrapper .header .title .school {
+    font-size: 14px;
+    color: rgba(0,0,0,.64)
+}
+
+.wrapper .header .user {
+    width: 250px;
+    height: 100%;
+    padding: 0 25px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    user-select: none;
+}
+
+.wrapper .header .user .role {
+    font-size: 14px;
+    color: #959da6;
+}
+
+/* CONTENT ELEMENT */
+
+.wrapper .content {
+    max-height: calc(100vh - 48px);
+    height: 100%;
+    display: flex;
+    flex-wrap:nowrap;
+    width: 100%;
+}
+
+
+/* Sidebar */
+.wrapper .content .sidebar {
+    width: 250px;
+    max-width: 250px;
+    transition: all .3s;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    z-index: 5;
+    height: 100%;
+    background-color: #fff;
+    overflow-y: auto;
+    overflow-x: hidden;
+    scrollbar-width: thin;
+    scrollbar-base-color: #fff;
+    flex-shrink: 0;
+    box-shadow: rgba(6, 6, 7, 0.1) 1px 0px 0px 0px, rgba(2, 2, 2, 0.025) 1.5px 0px 0px 0px, rgba(6, 6, 7, 0.025) 2px 0px 0px 0px;
+}
+
+.wrapper .content .sidebar .dropdown-child {
+    width: 100%;
+}
+
+.wrapper .content .main-content {
+    width: 100%;
+    flex-shrink: 1;
+    transition: all .3s;
+}
+
+@media (max-width: 1300px) {
+    .wrapper .content .sidebar {
+        transform: translateX(-100%);
+        flex-shrink: 1;
+    }
+
+    .wrapper .content .sidebar.active {
+        transform: translateX(0px);
+        flex-shrink: 0;
+    }
+
+    .wrapper .content .main-content {
+        flex-shrink: 0;
+    }
+
+    .show-sidebar {
+        display: flex!important;
+    }
+
+}
+
+@media (max-width: 560px) {
+    .wrapper .header .title, .wrapper .header .user {
+        width: 150px;
+    }
+
+    .wrapper .header .title .application {
+        font-size: 18px;
+        font-weight: 500;
+    }
+
+    .wrapper .header .title .school {
+        font-size: 12px;
+    }
+
+}
+
+@media print {
+    .wrapper .content .sidebar, .wrapper .header, .alert { display: none!important;}
+}

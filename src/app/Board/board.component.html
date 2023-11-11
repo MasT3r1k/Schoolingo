@@ -1,0 +1,79 @@
+<!-- Main website page -->
+
+<div class="wrapper" (click)="dropdown.closeAllDropdowns()">
+
+    <div class="header">
+
+        <div class="left">
+            <img src="/assets/logo.webp" draggable="false" width="36" height="36" alt="" style="position: absolute;left: 4px;user-select: none;" />
+            <div class="title">
+                <div class="application">
+                    SCHOOLINGO
+                </div>
+                <div class="school">{{ config.school }}</div>
+            </div>
+
+            <div class="item show-sidebar" (click)="schoolingo.sidebarToggled = !schoolingo.sidebarToggled">
+                <i class="fa-solid fa-bars-staggered"></i>
+            </div>
+
+        </div>
+
+
+        <div class="right">
+            <div class="user dropdown" (click)="dropdown.toggleDropdown('user')"> 
+                <p class="name">{{ schoolingo.formatPlaceholders(schoolingo.getUsernamePlaceholders()) }}</p>
+                <p class="role">{{ locale.getLocale('roles/' + schoolingo.formatPlaceholders('%role%')) }}</p>
+                <div [ngClass]="{'dropdown-content': true}" style="right: 2px;" *ngIf="dropdown.checkDropdown('user')" (click)="$event.stopPropagation()">
+                    <p class="label">{{ locale.getLocale('dropdowns/user/linkedUsers') }}</p>
+                    <p class="noData">{{ locale.getLocale('dropdowns/user/noLinked') }}</p>
+                    <ul>
+                        <li [routerLink]="['', 'user', 'settings']" (click)="dropdown.toggleDropdown('user');">
+                            <div class="item">{{ locale.getLocale('sidebar/user/settings') }}</div>
+                        </li>
+                        <li (click)="userService.logout();dropdown.closeAllDropdowns();">
+                            <div class="item">{{ locale.getLocale('logout') }}</div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <div class="content">
+        <div [ngClass]="{sidebar: true, active: schoolingo.sidebarToggled}">
+            <ul *ngFor="let section of this.schoolingo.boardSidebar">
+                <li *ngFor="let item of section.items" [routerLink]="item.url" [routerLinkActive]="'active'">
+                    <div class="item">
+                        {{ locale.getLocale(item.item) }}
+                    </div>
+                    <div class="dropdown-child" *ngIf="item.children && item.children.length > 0">
+                        <ul>
+                            <li *ngFor="let child of item.children" [routerLink]="child.url" [routerLinkActive]="'active'">
+                                <div class="item">
+                                    {{ locale.getLocale(child.item) }}
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                </li>
+            </ul>
+        </div>
+        <div class="main-content">
+            <div class="alert alert-error" *ngIf="socketService.getSocket().Socket?.connected !== true">
+                <span>Nacházíte se v <b>OFFLINE</b> módu. Veškeré informace jsou pouze z historie vaší poslední návštěvy.</span> 
+                <div class="btn" (click)="schoolingo.refreshConnection()"
+                [innerHTML]="schoolingo.getRefreshingText()"></div>
+            </div>
+            <router-outlet></router-outlet>
+        </div>
+    </div>
+
+</div>
+
+<!--  -->
+
+<div class="toast" *ngFor="let toast of toast.getToasts()">
+{{ toast.text }}
+</div>
