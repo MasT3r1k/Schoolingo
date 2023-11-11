@@ -14,12 +14,19 @@ import { BoardComponent } from './Board/board.component';
 import { Dropdowns } from './Components/Dropdown/Dropdown';
 import { Sidebar } from '@Schoolingo/Sidebar';
 import { ToastService } from '@Components/Toast/';
+import { Tabs } from '@Components/Tabs/Tabs';
+import { TabsComponent } from '@Components/Tabs/tabs.component';
+import { TimetableComponent } from './Board/teach/timetable/timetable.component';
+import { ToastComponent } from '@Components/Toast/toast.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     LoginComponent,
-    BoardComponent
+    BoardComponent,
+    TabsComponent,
+    ToastComponent,
+    TimetableComponent,
   ],
   imports: [
     BrowserModule,
@@ -28,7 +35,7 @@ import { ToastService } from '@Components/Toast/';
     ReactiveFormsModule,
     QRCodeModule
   ],
-  providers: [Locale, UserService, Schoolingo, SocketService, Dropdowns, Sidebar, ToastService],
+  providers: [Locale, UserService, Schoolingo, SocketService, Dropdowns, Sidebar, ToastService, Tabs],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

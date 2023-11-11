@@ -14,7 +14,7 @@ export type UserMain = {
     class: string;
 }
 
-export type Teacher = Omit<UserMain, "class">;
+export type Teacher = Omit<UserMain, "class" | "type" | "locale" | "username">;
 
 export type User = UserMain | Teacher | null;
 

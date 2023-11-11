@@ -1,0 +1,166 @@
+.schedule {
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+}
+
+.schedule .hours {
+    margin: 8px 0;
+}
+
+.schedule .hours, .schedule .days .day {
+    text-align: center;
+    display: flex;
+    flex-direction: row;
+}
+
+.schedule .days {
+    margin-bottom: 12px;
+}
+
+.schedule .item {
+    min-width: 72px;
+}
+
+.schedule .item .num, .schedule .item .subject {
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--primary-color);
+    line-height: 16px;
+    min-height: 16px;
+    text-align: center;
+}
+
+.schedule .item .time, .schedule .item .teacher {
+    font-size: 12px;
+    color: #79878D;
+    line-height: 12px;
+    min-height: 12px;
+    text-align: center;
+    font-weight: 300;
+}
+
+.schedule .item .teacher {
+    text-overflow: ellipsis;
+    overflow: hidden; 
+    white-space: nowrap;
+    max-width: 72px;
+}
+
+.schedule .day-lesson, .schedule .all-day {
+    border: 1px solid transparent;
+    position: relative;
+    --border-color: rgba(0,0,0,0.10);
+}
+
+.schedule .day-lesson {
+    cursor: pointer;
+}
+
+.schedule .all-day {
+    width: 100%;
+}
+
+.schedule .day-lesson:empty {
+    cursor: default;
+}
+
+.schedule .days .day:first-child > div { border-top-color: var(--border-color); }
+.schedule .days .day:last-child > div { border-bottom-color: var(--border-color); }
+.schedule .days .day .day-lesson:nth-child(2),
+.schedule .days .day .all-day { border-left-color: var(--border-color); }
+.schedule .days .day .day-lesson:last-child,
+.schedule .days .day .all-day { border-right-color: var(--border-color); }
+
+
+.schedule .days .day:nth-child(2n) {
+    background-color: #f5f7f7;
+}
+
+.schedule .days .day .day-lesson:not(:empty):hover {
+    background-color: hsl(228 6% 32.5%/0.08);
+}
+
+.schedule .days .day .item {
+    justify-content: center;
+    align-items: center;
+    display: flex;
+    flex-direction: column;
+    min-height: 72px;
+}
+
+.schedule .day-lesson::after {
+    content: '';
+    position: absolute;
+    bottom: 2px;
+    left: 2px;
+    right: 2px;
+    border-radius: 5px;
+    height: 3px;
+}
+
+.ab-absence::after { background-color: var(--primary-color); }
+.ab-excused::after { background-color: hsl(94, 54%, 38%); }
+.ab-unexcused::after { background-color: hsl(356, 87%, 41%); }
+.ab-late::after { background-color: hsl(25, 100%, 47%); }
+.ab-non-count::after { background-color: hsl(71, 69%, 45%); }
+.ab-early::after { background-color: hsl(36, 100%, 47%); }
+.ab-distance::after { background-color: hsl(56, 69%, 45%); }
+
+.item.absence {
+    border-radius: 4px;
+}
+
+.item.absence.active {
+    background-color: var(--secondary-color);
+}
+
+.dropdownabsence > div::after {
+    content: '';
+    position: absolute;
+    bottom: 2px;
+    left: 2px;
+    border-radius: 5px;
+    height: 100%;
+    width: 3px;
+}
+
+.dropdownabsence > div {
+    margin: 4px 0;
+    padding-left: 12px;
+    font-size: 14px;
+    line-height: 20px;
+    position: relative;
+}
+
+@media (max-width: 750px) {
+    .schedule .item .num, .schedule .item .subject {
+        font-size: 14px;
+    }
+
+    .schedule .item .teacher {
+        display: none;
+    }
+
+    .schedule .item {
+        min-width: 56px;
+        width: 56px;
+    }
+
+}
+
+@media (max-width: 560px) {
+    .schedule .item {
+        min-width: 36px;
+        width: 36px;
+    }
+}
+
+@media print {
+    * {
+        color: #000!important;
+    }
+    input, .alert, .alert span, .alert .btn, header, header h2 {
+        display: none;
+    }
+}

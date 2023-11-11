@@ -1,7 +1,7 @@
 import { Injectable } from "@angular/core";
 import { UserService } from "./User";
-import { UserMain, UserPermissions } from "./User.d";
-import { Subject } from "./Board.d";
+import { Teacher, UserMain, UserPermissions } from "./User.d";
+import { Lesson, ScheduleLessonHour, SchoolBreaks, SchoolSettings, Subject } from "./Board.d";
 import { Sidebar, SidebarGroup, SidebarItem } from "./Sidebar";
 import { SocketService } from "./Socket";
 
@@ -24,6 +24,29 @@ Date.prototype.getWeek = function() {
 export class Schoolingo {
 
     //?-- Main
+    ///.-- SCHOOL SETTINGS
+    // Days
+    public days: string[] = ['Po', 'Út', 'St', 'Čt', 'Pá', 'So', 'Ne'];
+    public full_days: string[] = ['Pondělí', 'Úterý', 'Středa', 'Čtvrtek', 'Pátek', 'Sobota', 'Neděle'];
+
+    // School options
+    public SchoolSettings: SchoolSettings = {
+        startTime: [8, 0],
+        lessonHour: 45,
+        breakTimeMinutes: 5
+    }
+
+    public SchoolBreaks: SchoolBreaks[] = [
+        {
+            beforeHour: 3,
+            minutes: 10
+        }, {
+            beforeHour: 4,
+            minutes: 20
+        }
+    ];
+    
+
     ///.-- INTERVALS
     private intervals: Record<string, any> = {};
     private tempData: Record<string, any> = {};
@@ -91,7 +114,7 @@ export class Schoolingo {
      * @returns username output with placeholders its used in user dropdown in board
      */
     public getUsernamePlaceholders(): string {
-        let user = this.userService.getUser()
+        let user = this.userService.getUser() as UserMain;
         let output = '';
         if (!user) {
             return 'Načítání';
@@ -115,13 +138,13 @@ export class Schoolingo {
         let user = this.userService?.getUser();
         if (!user) return text;
         let changedText = text
-        .replaceAll('%first-name%', user?.firstName)
-        .replaceAll('%last-name%', user?.lastName)
-        .replaceAll('%username%', user?.username)
-        .replaceAll('%locale%', user?.locale)
-        .replaceAll('%sex%', user?.sex)
+        .replaceAll('%first-name%', (user as UserMain)?.firstName)
+        .replaceAll('%last-name%', (user as UserMain)?.lastName)
+        .replaceAll('%username%', (user as UserMain)?.username)
+        .replaceAll('%locale%', (user as UserMain)?.locale)
+        .replaceAll('%sex%', (user as UserMain)?.sex)
         .replaceAll('%class%', (user as UserMain)?.class)
-        .replaceAll('%role%', user?.type)
+        .replaceAll('%role%', (user as UserMain)?.type)
         return changedText;
     }
 
@@ -154,7 +177,7 @@ export class Schoolingo {
      * @returns 
      */
     public checkPermissions(required: UserPermissions[]): boolean {
-        let user = this.userService.getUser();
+        let user = this.userService.getUser() as UserMain;
         if (!user && (required.includes('onlynonlogged') || required.includes('nonlogged'))) return true;
         if (!user) return false;
         if (user && required.includes('onlynonlogged')) return false;
@@ -208,6 +231,288 @@ export class Schoolingo {
 
 
     //?-- Timetable
-    private subjects: Subject[] = [];
+    private subjects: Subject[] = [
+        ['CJL', 'Český jazyk a Literatura'],                // 0
+        ['OSY', 'Operační systémy'],                        // 1
+        ['HW', 'Hardware'],                                 // 2
+        ['MAT', 'Matematika'],                              // 3
+        ['FYZI', 'Fyzika'],                                 // 4
+        ['APS', 'Aplikační software'],                      // 5
+        ['OBN', 'Občanská nauka'],                          // 6
+        ['PS', 'Počítačové sítě'],                          // 7
+        ['AJ1', 'Anglický jazyk'],                          // 8
+        ['NJ2', 'Německý jazyk'],                           // 9
+        ['CHI', 'Chemie a materiály'],                      // 10
+        ['PRAI', 'Praktická cvičení'],                      // 11
+        ['ICT', 'Informační a komunikační technologie'],    // 12
+        ['PVA', 'Programování a vývoj aplikací'],           // 13
+        ['TEV', 'Tělesná výchova']                          // 14
+    ]
+
+    private teachers: Teacher[] = [
+        {                           // 0
+            firstName: "Pavel",
+            lastName: "Englický",
+            sex: "muž",
+        }, {                        // 1
+            firstName: "Milan",
+            lastName: "Průdek",
+            sex: "muž",
+        }, {                        // 2
+            firstName: "Milan",
+            lastName: "Janoušek",
+            sex: "muž",
+
+        }, {                        // 3
+            firstName: "Olga",
+            lastName: "Procházková",
+            sex: "žena"
+        }, {                        // 4
+            firstName: "Luboš",
+            lastName: "Vejvoda",
+            sex: "muž",
+
+        }, {                        // 5
+            firstName: "Jakub",
+            lastName: "Pizinger",
+            sex: "muž",
+
+        }, {                        // 6
+            firstName: "Ludmila",
+            lastName: "Klavíková",
+            sex: "žena"
+        }, {                        // 7
+            firstName: "Radka",
+            lastName: "Pecková",
+            sex: "žena"
+        }, {                        // 8
+            firstName: "Milena",
+            lastName: "Koudová",
+            sex: "žena"
+        }, {                        // 9
+            firstName: "Kornelie",
+            lastName: "Třeštíková",
+            sex: "žena"
+        }, {                        // 10
+            firstName: "Václava",
+            lastName: "Novotná",
+            sex: "žena"
+        }, {                        // 11
+            firstName: "Břetislav",
+            lastName: "Bakala",
+            sex: "muž",
+
+        }, {                        // 12
+            firstName: "Luděk",
+            lastName: "Štěpán",
+            sex: "muž",
+
+        }
+    ];
+
+
+    public getScheduleHours(): ScheduleLessonHour[] {
+        let hours: number = 0;
+        let les: ScheduleLessonHour[] = [];
+
+        this.lessons.forEach(_ => {
+            if (_.length > hours) {
+                hours = _.length;
+            }
+        })
+
+        for(let i=0;i < hours;i++) {
+            let start;
+            let end;
+            if (les[i - 1]?.end) {
+                let sp = les[i - 1].end.split(':');
+                let hours = parseInt(sp[0]);
+                let breakTime = this.SchoolBreaks.find((_) => _.beforeHour == i + 1)?.minutes ?? this.SchoolSettings.breakTimeMinutes
+                let minutes = (parseInt(sp[1]) + breakTime);
+                while (minutes >= 60) {
+                    hours += 1;
+                    minutes -= 60;
+                }
+                start = hours + ':' + this.addZeros(minutes);
+            } else start = this.SchoolSettings.startTime[0] + ':' + this.addZeros(this.SchoolSettings.startTime[1], 2);
+
+            let ssp = start.split(':');
+            let hours = parseInt(ssp[0]);
+            let minutes = (parseInt(ssp[1]) + this.SchoolSettings.lessonHour);
+            while (minutes >= 60) {
+                hours += 1;
+                minutes -= 60;
+            }
+
+            end = hours + ':' + this.addZeros(minutes); 
+        
+            les.push({ start, end });
+        }
+        return les;
+    }    
+
+
+    private lessons: Lesson[][] = [
+        [               // Monday
+            {
+                subject: 1,
+                teacher: 1
+            },
+            {
+                subject: 2,
+                teacher: 2
+            },
+            {
+                subject: 3,
+                teacher: 3
+            },
+            {
+                subject: 4,
+                teacher: 4
+            },
+            {
+                subject: 5,
+                teacher: 5,
+                type: 1
+            },
+            {
+                subject: 5,
+                teacher: 5,
+                type: 1
+            },
+        ],
+        [               // Tuesday
+            {
+                subject: 6,
+                teacher: 6
+            },
+            {
+                subject: 7,
+                teacher: 7
+            },
+            {
+                subject: 0,
+                teacher: 0
+            },
+            {
+                subject: 8,
+                teacher: 8
+            },
+            {
+                subject: 3,
+                teacher: 3
+            },
+            {
+                subject: 9,
+                teacher: 9
+            },
+            {
+                subject: -1,
+                teacher: -1
+            },
+            {
+                subject: 10,
+                teacher: 10
+            },
+        ],
+        [               // Wednesday
+            {
+                subject: 3,
+                teacher: 3
+            },
+            {
+                subject: 0,
+                teacher: 0
+            },
+            {
+                subject: 1,
+                teacher: 1
+            },
+            {
+                subject: 13,
+                teacher: 7
+            },
+            {
+                subject: 2,
+                teacher: 2
+            },
+            {
+                subject: 4,
+                teacher: 4
+            },
+            {
+                subject: -1,
+                teacher: -1
+            },
+            {
+                subject: 9,
+                teacher: 9
+            }
+        ],
+        [               // Thursday
+            {
+                subject: 11,
+                teacher: 11
+            },
+            {
+                subject: 11,
+                teacher: 11
+            },
+            {
+                subject: 12,
+                teacher: 5
+            },
+            {
+                subject: 12,
+                teacher: 5
+            },
+            {
+                subject: 8,
+                teacher: 8
+            },
+            {
+                subject: 8,
+                teacher: 8
+            },
+            {
+                subject: -1,
+                teacher: -1
+            },
+            {
+                subject: 0,
+                teacher: 0
+            },
+        ],
+        [               // Friday
+            {
+                subject: 13,
+                teacher: 5
+            },
+            {
+                subject: 13,
+                teacher: 5
+            },
+            {
+                subject: 7,
+                teacher: 7
+            },
+            {
+                subject: 7,
+                teacher: 7
+            },
+            {
+                subject: 14,
+                teacher: 12
+            },
+            {
+                subject: 14,
+                teacher: 12
+            },
+        ]
+    ];
+
+    public getTimetableLessons(): Lesson[][] {
+        return this.lessons;
+    }
 
 }

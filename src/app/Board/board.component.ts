@@ -8,12 +8,12 @@ import { Router } from '@angular/router';
 import { Title } from '@angular/platform-browser';
 import { Sidebar } from '@Schoolingo/Sidebar';
 import { SocketService } from '@Schoolingo/Socket';
-import { ToastService } from '@Components/Toast/';
+import { UserMain } from '@Schoolingo/User';
+import { ToastService } from '@Components/Toast';
 
 @Component({
-  selector: 'app-board',
   templateUrl: './board.component.html',
-  styleUrls: ['./board.component.css', '../Components/Dropdown/dropdown.css', './board.css', '../Components/Toast/toast.css']
+  styleUrls: ['./board.component.css', '../Components/Dropdown/dropdown.css', './board.css']
 })
 export class BoardComponent implements OnInit {
 
@@ -30,7 +30,7 @@ export class BoardComponent implements OnInit {
     private router: Router,
     private title: Title,
     private sidebar: Sidebar,
-    public toast: ToastService
+    private toast: ToastService
   ) {
 
     // Register dropdowns
@@ -83,13 +83,13 @@ export class BoardComponent implements OnInit {
     })
 
     let _sidebarUpdateInt = setInterval(() => {
-      if (this.userService.getUser() && this.userService?.getUser()?.type != undefined) {
+      if (this.userService.getUser() && (this.userService?.getUser() as UserMain)?.type != undefined) {
         this.schoolingo.boardSidebar = this.schoolingo.getBoardSidebar();
         clearInterval(_sidebarUpdateInt);
       }
     }, 50)
 
-    this.toast.showToast('Loaded page');
+    this.toast.showToast(this.locale.getLocale('successfulLogin'));
 
   }
 

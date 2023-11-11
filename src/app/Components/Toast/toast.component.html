@@ -1,0 +1,13 @@
+<div [ngClass]="['toast', (toast.active) ? 'active' : '', toast.type]" *ngFor="let toast of toasts.getToasts()" [id]="toast.name">
+    <div class="toast-content">
+        <i class="fas fa-solid fa-check icon"></i>
+    
+        <div class="message">
+          <span class="text text-1">{{ locale.getLocale('toasts/' + toast.type) }}</span>
+          <span class="text text-2">{{ toast.text }}</span>
+        </div>
+      </div>
+      <i class="fa-solid fa-xmark close" (click)="toasts.close(toast.name)"></i>
+    
+      <div class="progress"></div>
+</div>

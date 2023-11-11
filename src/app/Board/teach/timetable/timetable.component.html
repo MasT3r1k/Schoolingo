@@ -1,1 +1,86 @@
-<p>timetable works!</p>
+<div class="box">
+    <header>
+        <h2>{{ locale.getLocale('sidebar/teach/timetable') }}</h2>
+        <div class="flex-items">
+            <div [ngClass]="{absence: true, item: true, tab: true, 'no-realy-small': true }" onclick="window.print();">
+                <span><i class="fa-solid fa-print"></i> {{ locale.getLocale('print') }}</span>
+            </div>
+
+            <div [ngClass]="{absence: true, item: true, tab: true, dropdown: true, active: dropdown.checkDropdown('absence'), 'no-realy-small': true }" (click)="dropdown.toggleDropdown('absence')">
+                <span>Docházka</span>
+                <div [ngClass]="{'dropdown-content': true, dropdownabsence: true}" style="width: 200px;" *ngIf="dropdown.checkDropdown('absence')" (click)="$event.stopPropagation()">
+                    <div class="absence ab-absence">Absence</div>
+                    <div class="absence ab-excused">Omluvená absence</div>
+                    <div class="absence ab-unexcused">Neomluvená absence</div>
+                    <div class="absence ab-late">Pozdní příchod</div>
+                    <div class="absence ab-non-count">Nezapočtená absence</div>
+                    <div class="absence ab-early">Dřívější odchod</div>
+                    <div class="absence ab-distance">Distanční výuka</div>
+                </div>
+            </div>
+            <schoolingo-tabs [name]="tabName" [options]="[locale.getLocale('timetable/thisWeek'), locale.getLocale('timetable/nextWeek'), locale.getLocale('timetable/permanent'), locale.getLocale('sidebar/calendar')]"></schoolingo-tabs>
+            <!-- <input type="date" id="calendar" class="no-small" [formControl]="calendar" name="calendar" value="{{ board.getToday() | date:'yyyy-MM-dd' }}" min="2023-09-01" max="2024-06-30"> -->
+        </div>
+    </header>
+    <div class="box-content">
+        <div class="schedule">
+            <div class="hours">
+                <div class="item"></div>
+                <div class="item" *ngFor="let time of schoolingo.getScheduleHours();index as index">
+                    <div class="num">{{ index + 1 }}</div>
+                    <div class="time">{{ time.start }} - {{ time.end }}</div>
+                </div>
+            </div>
+            <div class="days">
+                <!-- <div class="day" *ngFor="let day of [].constructor(5);index as index">
+                    <div class="item day-name">
+                        <div class="num">
+                            {{ board.days[index] }}
+                        </div>
+                        <div class="time" *ngIf="board.isTimetableWeek()">
+                            {{ board.addDayToDate(board.getFirstDayOfWeek(board.getTimetableWeek()), index).getDate() + '. ' + (board.addDayToDate(board.getFirstDayOfWeek(board.getTimetableWeek()), index).getMonth() + 1) + '.' }}
+                        </div>
+                    </div>
+                    <div class="item all-day"
+                    *ngIf="
+                    tabs.getTabValue(tabName) !== 2 &&
+                    board.filterHoliday(board.addDayToDate(board.getFirstDayOfWeek(board.getTimetableWeek()), index).getDate(), board.addDayToDate(board.getFirstDayOfWeek(board.getTimetableWeek()), index).getMonth()).length > 0">
+                        <div>{{ board.filterHoliday(board.addDayToDate(board.getFirstDayOfWeek(board.getTimetableWeek()), index).getDate(), board.addDayToDate(board.getFirstDayOfWeek(board.getTimetableWeek()), index).getMonth())[0].name }}</div>
+                    </div>
+
+
+                    <div [ngClass]="{item: (board.filterHoliday(board.addDayToDate(board.getFirstDayOfWeek(board.getTimetableWeek()), index).getDate(), board.addDayToDate(board.getFirstDayOfWeek(board.getTimetableWeek()), index).getMonth()).length == 0 || tabs.getTabValue(tabName) == 2), 'day-lesson': (board.filterHoliday(board.addDayToDate(board.getFirstDayOfWeek(board.getTimetableWeek()), index).getDate(), board.addDayToDate(board.getFirstDayOfWeek(board.getTimetableWeek()), index).getMonth()).length == 0 || tabs.getTabValue(tabName) == 2)}" *ngFor="let _ of [].constructor(board.getScheduleHours().length);index as i2">
+                        <div class="subject"
+                        *ngIf="
+                        (board.filterHoliday(board.addDayToDate(board.getFirstDayOfWeek(board.getTimetableWeek()), index).getDate(), board.addDayToDate(board.getFirstDayOfWeek(board.getTimetableWeek()), index).getMonth()).length == 0 || tabs.getTabValue(tabName) == 2) &&
+                        board.getTimetableLessons()?.[index] &&
+                        board.getTimetableLessons()?.[index]?.[i2] &&
+                        board.getTimetableLessons()?.[index]?.[i2]?.subject != -1 && 
+                        (
+                            (!board.getTimetableLessons()[index][i2]?.type || board.getTimetableLessons()[index][i2].type == 0) ||
+                            (board.getTimetableLessons()[index][i2]?.type && board.getTimetableLessons()[index][i2]?.type == 1 && board.getTimetableWeek() % 2 == 1) || 
+                            (board.getTimetableLessons()[index][i2]?.type && board.getTimetableLessons()[index][i2]?.type == 2 && board.getTimetableWeek() % 2 == 0) || 
+                            (tabs.getTabValue(tabName) == 2)
+                        )">
+                            {{ (tabs.getTabValue(tabName) == 2 && (board.getTimetableLessons()[index][i2].type == 1 || board.getTimetableLessons()[index][i2].type == 2)) ? (board.getTimetableLessons()[index][i2].type == 1) ? 'L: ' : 'S: ' : ''}}{{ board.getSubject(board.getTimetableLessons()[index][i2].subject)?.[0] }}
+                        </div>
+                        <div class="teacher"
+                        *ngIf="
+                        (board.filterHoliday(board.addDayToDate(board.getFirstDayOfWeek(board.getTimetableWeek()), index).getDate(), board.addDayToDate(board.getFirstDayOfWeek(board.getTimetableWeek()), index).getMonth()).length == 0 || tabs.getTabValue(tabName) == 2) &&
+                        board.getTimetableLessons()?.[index] &&
+                        board.getTimetableLessons()?.[index]?.[i2] &&
+                        board.getTimetableLessons()?.[index]?.[i2]?.teacher != -1 &&
+                        (
+                            (!board.getTimetableLessons()[index][i2]?.type || board.getTimetableLessons()[index][i2].type == 0) ||
+                            (board.getTimetableLessons()[index][i2]?.type && board.getTimetableLessons()[index][i2]?.type == 1 && board.getTimetableWeek() % 2 == 1) || 
+                            (board.getTimetableLessons()[index][i2]?.type && board.getTimetableLessons()[index][i2]?.type == 2 && board.getTimetableWeek() % 2 == 0) || 
+                            (tabs.getTabValue(tabName) == 2)
+                        )">
+                            {{ board.getTeacher(board.getTimetableLessons()[index][i2].teacher)?.lastName }}
+                        </div>
+                    </div>
+                </div> -->
+            </div>
+        </div>
+    </div>
+</div>

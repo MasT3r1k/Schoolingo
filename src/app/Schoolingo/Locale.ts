@@ -33,7 +33,7 @@ export class Locale {
                 calendar: "Kalendář",
                 user: {
                     main: "Uživatel",
-                    devices: "Přihlášené na zařízení",
+                    devices: "Přihlášené zařízení",
                     settings: "Nastavení"
                 },
                 person: {
@@ -72,6 +72,13 @@ export class Locale {
                 parent: "Rodič",
                 student: "Žák"
             },
+
+            toasts: {
+                success: "Úspěch!"
+            },
+
+            successfulLogin: "Úspěšně ses přihlásil do systému.",
+
             // Dashboard
             change_is_instant: "Změna je okamžitá",
             changepassword: "Změnit heslo",
