@@ -3,8 +3,9 @@ import { Injectable } from "@angular/core";
 @Injectable({providedIn: 'root'})
 export class Cache {
 
-    public userCacheName: string = 'cache/user';
-    public tokenCacheName: string = 'cache/token';
+    public userCacheName: string = 'user';
+    public tokenCacheName: string = 'token';
+    public settingsCacheName: string = 'settings';
 
     constructor() {}
     public save(key: string, value: Record<string, string | any>): boolean {

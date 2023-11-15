@@ -1,6 +1,6 @@
 <!-- Main website page -->
 
-<div class="wrapper" (click)="dropdown.closeAllDropdowns()">
+<div class="wrapper" (click)="dropdown.closeAllDropdowns();">
 
     <div class="header">
 
@@ -13,7 +13,7 @@
                 <div class="school">{{ config.school }}</div>
             </div>
 
-            <div class="item show-sidebar" (click)="schoolingo.sidebarToggled = !schoolingo.sidebarToggled">
+            <div class="item show-sidebar" (click)="$event.stopPropagation();schoolingo.sidebarToggled = !schoolingo.sidebarToggled">
                 <i class="fa-solid fa-bars-staggered"></i>
             </div>
 
@@ -60,7 +60,7 @@
                 </li>
             </ul>
         </div>
-        <div class="main-content">
+        <div class="main-content" (click)="schoolingo.sidebarToggled = false;">
             <div class="alert alert-error" *ngIf="socketService.getSocket().Socket?.connected !== true">
                 <span>Nacházíte se v <b>OFFLINE</b> módu. Veškeré informace jsou pouze z historie vaší poslední návštěvy.</span> 
                 <div class="btn" (click)="schoolingo.refreshConnection()"
@@ -73,5 +73,3 @@
 </div>
 
 <!--  -->
-
-<schoolingo-toasts></schoolingo-toasts>

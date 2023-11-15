@@ -1,1 +1,22 @@
-<p>subjects works!</p>
+<div class="box">
+    <header>
+        <h2>{{ locale.getLocale('sidebar/teach/subjects') }}</h2>
+        <div class="flex-items"></div>
+    </header>
+    <div class="box-content">
+        <table>
+            <thead>
+                <th>{{ locale.getLocale('sidebar/teach/subjects') }}</th>
+                <th>{{ locale.getLocale('roles/teacher') }}</th>
+            </thead>
+            <tbody>
+                <tr *ngFor="let subject of a">
+                    <td>{{ schoolingo.getSubject(subject[0])?.[1] }}</td>
+                    <td>
+                        <p *ngFor="let teacher of subject[1]">{{ schoolingo.getTeacher(teacher)?.lastName + ' ' + schoolingo.getTeacher(teacher)?.firstName }} </p>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>

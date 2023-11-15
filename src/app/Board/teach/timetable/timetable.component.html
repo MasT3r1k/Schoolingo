@@ -19,7 +19,7 @@
                 </div>
             </div>
             <schoolingo-tabs [name]="tabName" [options]="[locale.getLocale('timetable/thisWeek'), locale.getLocale('timetable/nextWeek'), locale.getLocale('timetable/permanent'), locale.getLocale('sidebar/calendar')]"></schoolingo-tabs>
-            <!-- <input type="date" id="calendar" class="no-small" [formControl]="calendar" name="calendar" value="{{ board.getToday() | date:'yyyy-MM-dd' }}" min="2023-09-01" max="2024-06-30"> -->
+            <input type="date" id="calendar" class="no-small" [formControl]="calendar" name="calendar" value="{{ schoolingo.getToday() | date:'yyyy-MM-dd' }}" min="2023-09-01" max="2024-06-30">
         </div>
     </header>
     <div class="box-content">
@@ -32,6 +32,24 @@
                 </div>
             </div>
             <div class="days">
+                <div class="day" *ngFor="let day of schoolingo.getTimetable()">
+                    <div class="item day-name">
+                        <div class="num">
+                            {{ day.day }}
+                        </div>
+                        <div class="time" *ngIf="tabs.getTabValue(tabName) !== 2">
+                            {{ day.date[0] + '. ' + day.date[1] + '.' }}
+                        </div>
+                    </div>
+                    <div class="item all-day" *ngIf="day.isFullDay === true">
+                        {{ day.holiday?.name }}
+                    </div>
+                    <div class="item day-lesson" *ngFor="let lesson of day.lessons">
+                        <div class="subject" *ngIf="lesson.subject">{{ lesson.subject[0] }}</div>
+                        <div class="teacher" *ngIf="lesson.teacher">{{ lesson.teacher.lastName }}</div>
+                    </div>
+                </div>
+
                 <!-- <div class="day" *ngFor="let day of [].constructor(5);index as index">
                     <div class="item day-name">
                         <div class="num">

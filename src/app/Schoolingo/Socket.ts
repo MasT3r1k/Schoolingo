@@ -2,11 +2,13 @@ import { Injectable } from "@angular/core";
 import * as config from '@config';
 import { io, Socket } from 'socket.io-client';
 import { Cache } from "./Cache";
+import { Logger } from "./Logger";
 
 @Injectable()
 export class SocketService {
     constructor(
-        private cache: Cache
+        private cache: Cache,
+        private logger: Logger
     ) {
     }
 
@@ -60,6 +62,8 @@ export class SocketService {
         this.socket.on('connect', () => {
             this.socket_err = false;
             this.socket_errMsg = '';
+            this.logger.send('Socket', 'Connected to socket.');
+
         });
 
         this.socket.on('connect_error', (data) => {

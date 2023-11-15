@@ -1,13 +1,17 @@
 import { Component } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { Schoolingo } from '@Schoolingo';
+import { Locale } from '@Schoolingo/Locale';
 
 @Component({
-  selector: 'app-interm',
-  standalone: true,
-  imports: [CommonModule],
   templateUrl: './interm.component.html',
-  styleUrl: './interm.component.css'
+  styleUrls: ['./interm.component.css', '../../board.css']
 })
 export class IntermComponent {
+  public tabName: string = 'Interm_Tab';
+
+  constructor(
+    public schoolingo: Schoolingo,
+    public locale: Locale
+  ) {}
 
 }

@@ -16,8 +16,15 @@ import { Sidebar } from '@Schoolingo/Sidebar';
 import { ToastService } from '@Components/Toast/';
 import { Tabs } from '@Components/Tabs/Tabs';
 import { TabsComponent } from '@Components/Tabs/tabs.component';
-import { TimetableComponent } from './Board/teach/timetable/timetable.component';
-import { ToastComponent } from '@Components/Toast/toast.component';
+import { MainComponent as BoardMain } from './Board/main/main.component';
+import { TimetableComponent as BoardTimetable } from './Board/teach/timetable/timetable.component';
+import { HttpClientModule } from '@angular/common/http';
+import { Theme } from '@Schoolingo/Theme';
+import { Logger } from '@Schoolingo/Logger';
+import { SubjectsComponent as BoardTeachSubjects } from './Board/teach/subjects/subjects.component';
+import { IntermComponent as BoardMarksInterm } from './Board/marks/interm/interm.component';
+import { DatePipe } from '@angular/common';
+import { TimetableComponent as TimeTableModule } from './Board/main/timetable/timetable.component';
 
 @NgModule({
   declarations: [
@@ -25,17 +32,21 @@ import { ToastComponent } from '@Components/Toast/toast.component';
     LoginComponent,
     BoardComponent,
     TabsComponent,
-    ToastComponent,
-    TimetableComponent,
+    BoardMain,
+    BoardTimetable,
+    BoardTeachSubjects,
+    BoardMarksInterm,
+    TimeTableModule 
   ],
   imports: [
     BrowserModule,
     AppRoutingModule,
     FormsModule,
     ReactiveFormsModule,
-    QRCodeModule
+    QRCodeModule,
+    HttpClientModule
   ],
-  providers: [Locale, UserService, Schoolingo, SocketService, Dropdowns, Sidebar, ToastService, Tabs],
+  providers: [Locale, UserService, Schoolingo, SocketService, Dropdowns, Sidebar, ToastService, Tabs, Theme, Logger, DatePipe],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

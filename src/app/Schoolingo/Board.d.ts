@@ -1,9 +1,25 @@
+import { Teacher } from "./User.d";
+
 export type Subject = [string, string]; // [shortcut, label]
 
 export type Lesson = {
     subject: number;
     teacher: number;
     type?: number;
+}
+
+export type TTableLesson = {
+    subject?: Subject;
+    teacher?: Teacher;
+    isEmpty?: boolean;
+}
+
+export type TTableDay = {
+    date: [number, number, number];
+    day: string;
+    lessons: TTableLesson[];
+    holiday?: Holiday;
+    isFullDay: boolean;
 }
 
 export type SchoolSettings = {
@@ -20,4 +36,21 @@ export type SchoolBreaks = {
 export type ScheduleLessonHour = {
     start: string;
     end: string;
+}
+
+export type grade = {
+    subjectId: number;
+    title: string;
+    weight: number;
+    date: Date;
+    grade: number;
+}
+
+export type Holiday = {
+    date?: {
+        day: number;
+        month: number;
+    }
+    calculateDate?: {}
+    name: string;
 }

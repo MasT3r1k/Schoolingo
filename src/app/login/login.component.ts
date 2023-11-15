@@ -1,8 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { Router } from '@angular/router';
+import { ToastService } from '@Components/Toast';
 import * as config from '@config';
 import { Locale } from '@Schoolingo/Locale';
+import { Logger } from '@Schoolingo/Logger';
 import { SocketService } from '@Schoolingo/Socket';
 import { UserService } from '@Schoolingo/User';
 import { LoginData, User } from '@Schoolingo/User.d';
@@ -30,12 +32,13 @@ export class LoginComponent implements OnInit {
     public locale: Locale,
     public socketService: SocketService,
     private router: Router,
-    private userService: UserService
+    private userService: UserService,
+    private logger: Logger,
+    private toast: ToastService
   ) {}
 
   ngOnInit(): void {
     this.routerSocket = this.router.events.subscribe((url: any) => {
-      console.log(url)
       if ((!url?.routerEvent?.urlAfterRedirects && !url?.url) || !(url?.routerEvent?.urlAfterRedirects == '/login' || url?.url == '/login')) {
         return;
       }
@@ -45,6 +48,8 @@ export class LoginComponent implements OnInit {
 
       this?.socketService.getSocket()?.Socket?.once('login', (data: LoginData) => {
         if (data.status == 1 && data?.token && data?.expires) {
+          this.logger.send('Login', 'Successful logged in.');
+          this.toast.showToast(this.locale.getLocale('successfulLogin'), 'success', 5000);
           this.userService.setToken(data.token, data.expires);
           this.router.navigate(['', 'main']);
         }else{
@@ -104,12 +109,14 @@ export class LoginComponent implements OnInit {
    * Set default values to QRCode variables and reset timeout of loading qrcode
    */
   public refreshQRcode(): void {
+    this.logger.send('QRCode', 'Loading QR code..');
     this.qrCode = '';
     this.qrCodeError = false;
     this.qrCodeResult = null;
     this.qrStatus = this.getQRcodeStatus();
 
     this.socketService.getSocket()?.Socket?.on('login-qrcode', (data: any) => {
+      this.logger.send('QRCode', 'QR code loaded.');
       this.qrCode = data;
       this.qrCodeError = false;
       this.qrStatus = this.getQRcodeStatus();
@@ -124,6 +131,7 @@ export class LoginComponent implements OnInit {
     clearTimeout(this.qrTimeout);
     this.qrTimeout = setTimeout(() => {
       if (this.qrCode != '') return;
+      this.logger.send('QRCode', 'QR code failed to load.');
       this.qrCodeError = true;
       this.qrCodeResult = null;
       this.qrStatus = this.getQRcodeStatus();

@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { ToastService } from '@Components/Toast';
 
 @Component({
   selector: 'app-absence',
@@ -9,5 +10,10 @@ import { CommonModule } from '@angular/common';
   styleUrl: './absence.component.css'
 })
 export class AbsenceComponent {
+  constructor(
+    public toast: ToastService
+  ) {}
+
+  
 
 }

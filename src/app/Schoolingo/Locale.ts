@@ -1,14 +1,23 @@
+import { HttpClient } from "@angular/common/http";
 import { Injectable } from "@angular/core";
+import { Cache } from "./Cache";
+import { SocketService } from "./Socket";
+import { Logger } from "./Logger";
 
-export type languages = 'cz' | 'en';
+export type languages = 'cs' | 'en';
 
 @Injectable()
 export class Locale {
     constructor(
         // Imports
+        private cache: Cache,
+        private socketService: SocketService,
+        private logger: Logger
         ) {}
+    private logName: string = 'Locale';
+
     private locales: Record<languages, any> = {
-        cz: {
+        cs: {
             // Language settings
             name: "čeština",
             flag: "data:image/webp;base64,UklGRuQBAABXRUJQVlA4TNcBAAAv/kAqAFegKJKk5tIzuwgowL8eNGDDTAAyFbRRQWoV1PBZgylqJEn57kpgOvRv7QTc/Mf///Xpu2RAQ8pNQ2RAgQ7N1QE3kWSF0r0LcfDSBQvPAhaQgISVgAQs4PXX5BH9n4D80Z9G5xt0fnhOvNPofIPOD8+Jdxqdb9D54TnxTqPzDTo/PCfeaXS+QeeH58Q7jc436PzwnHin0fkGnR+eE+80Ot+g88Nz4p1G5xt0fnhOvNPofIPOD8+Jdxqdb9D54TnxTqPzDTo/PCfeaXS+QeeH58Q7jc436PzwnHin0fkGnR+eE+80Ot+g88Nz4p1G5xt0fnhOvNPofIPOD8+Jdxqdb9D54TnxTqPzDTo/PCfeaXS+QeeH58Qrff3/tSm41eH2EFwJbgpudbg9BFeCm4JbHW4PwZXgpuBWh9tDcCW4KbjV4fYQXAluCm51uD0EV4Kbglsdbg/BleCm4FaH20NwJbgpuNXh9hBcCW4KbnW4PQRXgpuCWx1uD8GV4KbgVofbQ3AluCm41eH2EFwJbgpudbg9BFeCm4JbHW4PwZXgpuBWh9tDcCW4KbjV4fYQXAluCm51uD0EV4Kbglsdbg/BleCm4FaH20NwJbgpuNXh9hBciQ4A",    // DO NOT TOUCH THIS! ITS ENCODED BASE64!
@@ -106,8 +115,17 @@ export class Locale {
                 }
             },
 
+            or: "nebo",
+
             // Authentication
             login_title: "Přihlášení",
+            forgot_pass: "Zapomenuté heslo?",
+            login_btn: "Přihlásit se",
+            login_formTitle: "Přihlášení do školního systému",
+            login_qrcodeTitle: "se přihlaš pomocí QR kódu",
+            scan_qrcode: "Naskejnute QR kód v <b>mobilní aplikaci</b> pro rychlé přihlášení",
+            username: "Uživatelské jméno",
+            password: "Heslo",
             required: "Povinné",
             not_same: "Neshoduje se",
             is_same: "Nové heslo je stejné jako staré",
@@ -186,8 +204,17 @@ export class Locale {
                 }
             },
 
+            or: "or",
+
             // Authentication
             login_title: "Login",
+            forgot_pass: "Forgot password?",
+            login_btn: "Login",
+            login_formTitle: "Login to the school system",
+            login_qrcodeTitle: "log in with QR code",
+            scan_qrcode: "Scan QR code in the <b>mobile app</b> for quick login",
+            username: "Username",
+            password: "Password",
             required: "Required",
             not_same: "It doesn't match",
             is_same: "The new password is the same as the old one",
@@ -205,21 +232,23 @@ export class Locale {
     }
 
     public setUserLocale(lng: languages) {
-        if (true) {
-            // this.socket.socket.emit('updateUser', { user: 'me', language: lng });
-        } else {
-            console.log('This change is only on this device.')
-        }
-        // this.cache.save('settings', {locale: lng});
+        this.logger.send(this.logName, 'Language ' + lng + ' was loaded and saved.');
+        this.cache.save(this.cache.settingsCacheName, {locale: lng});
     }
 
     public getUserLocale(): languages {
-        return this.getLanguages()[0];
-        // return this.cache.get('settings', 'locale') as languages;
+        return this.cache.get(this.cache.settingsCacheName, 'locale') as languages;
     }
 
     public setDefaultLocale(): void {
-        // this.cache.save('settings', {locale: 'cz'});
+        this.logger.send(this.logName, 'Loading language..');
+        if (this.getLanguages().includes(window.navigator.language as languages)) {
+            this.logger.send(this.logName, 'Found supported language. (' + window.navigator.language + ')')
+            this.setUserLocale(window.navigator.language as languages);
+        }else{
+            this.logger.send(this.logName, 'Language: ' + window.navigator.language + ' is not found. Loading default language: en')
+            this.setUserLocale('en');
+        }
     }
 
     public getLocale(path: string, locale?: languages): string {
@@ -235,8 +264,8 @@ export class Locale {
                 _locale = _locale[p];
             }else{
                 _locale =
-                (locale == 'cz' || this.getUserLocale() == 'cz') ?
-                '[' + path + ']' : this.getLocale(path, 'cz');
+                (locale == 'cs' || this.getUserLocale() == 'cs') ?
+                '[' + path + ']' : this.getLocale(path, 'cs');
             }
         })
         return _locale;

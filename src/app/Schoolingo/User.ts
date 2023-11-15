@@ -3,6 +3,7 @@ import { User, UserMain } from './User.d';
 import { Cache } from "./Cache";
 import { Router } from "@angular/router";
 import { SocketService } from "./Socket";
+import Swal from "sweetalert2";
 
 @Injectable()
 export class UserService {
@@ -60,6 +61,7 @@ export class UserService {
         this.socketService.getSocket().Socket?.disconnect();
         this.setUser(null);
         this.setToken('', new Date());
+        Swal.close();
         this.router.navigate(['login']);
     }
 
