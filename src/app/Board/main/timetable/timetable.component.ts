@@ -12,12 +12,12 @@ export class TimetableComponent {
 
   constructor(
     public locale: Locale,
-    public board: Schoolingo,
+    public schoolingo: Schoolingo,
     public tabs: Tabs
   ) {}
 
   public tabName: string = 'Main_Module_Timetable';
-  public selectedDay = this.board.getToday();
+  public selectedDay = this.schoolingo.getToday();
 
   // public selectLastDay(): void {
   //   if (this.selectedDay.getHours() != 4) {

@@ -76,10 +76,12 @@ export class TimetableComponent implements OnInit {
 
     this.registerOnChangeFunc();
     this.routerSub = this.router.events.subscribe((url: any) => {
+      if ((!url?.routerEvent?.urlAfterRedirects && !url?.url) || (url?.routerEvent?.urlAfterRedirects == '/login' || url?.url == '/login')) { return; }
 
-      if (!url.url) { return ; }
 
-      this.registerOnChangeFunc();
+      setTimeout(() => {
+        this.registerOnChangeFunc();
+      })
 
     });
 
@@ -89,6 +91,7 @@ export class TimetableComponent implements OnInit {
 
   public registerOnChangeFunc(): void {
     setTimeout(() => {
+      if (this.router.url != '/teach/timetable') return;
       this.tabs.setOnChangeFunc(this.tabName, (id: number) => {
         switch(id) {
           case 0:
@@ -111,9 +114,9 @@ export class TimetableComponent implements OnInit {
   }
 
   ngOnDestroy(): void {
+    this.routerSub.unsubscribe();
     this.renderBeforePrint();
     this.renderAfterPrint();
-    this.routerSub.unsubscribe();
   }
 
 }

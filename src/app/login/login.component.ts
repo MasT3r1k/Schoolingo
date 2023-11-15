@@ -1,8 +1,11 @@
 import { Component, OnInit } from '@angular/core';
 import { FormControl } from '@angular/forms';
+import { Title } from '@angular/platform-browser';
 import { Router } from '@angular/router';
+import { Tabs } from '@Components/Tabs/Tabs';
 import { ToastService } from '@Components/Toast';
 import * as config from '@config';
+import { Schoolingo } from '@Schoolingo';
 import { Locale } from '@Schoolingo/Locale';
 import { Logger } from '@Schoolingo/Logger';
 import { SocketService } from '@Schoolingo/Socket';
@@ -34,14 +37,22 @@ export class LoginComponent implements OnInit {
     private router: Router,
     private userService: UserService,
     private logger: Logger,
-    private toast: ToastService
+    private toast: ToastService,
+    public schoolingo: Schoolingo,
+    public tabs: Tabs,
+    private title: Title
   ) {}
 
   ngOnInit(): void {
     this.routerSocket = this.router.events.subscribe((url: any) => {
+      this.tabs.clearTabs();
+
       if ((!url?.routerEvent?.urlAfterRedirects && !url?.url) || !(url?.routerEvent?.urlAfterRedirects == '/login' || url?.url == '/login')) {
         return;
       }
+
+      this.title.setTitle(this.locale.getLocale('login_title') + ' | SCHOOLINGO')
+      this.schoolingo.sidebarToggled = false;
 
       this.socketService.connectAnon();
       this.refreshQRcode();

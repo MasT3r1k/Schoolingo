@@ -337,48 +337,6 @@ export class Schoolingo {
         return null;
     }
 
-
-    public getScheduleHours(): ScheduleLessonHour[] {
-        let hours: number = 0;
-        let les: ScheduleLessonHour[] = [];
-
-        this.lessons.forEach(_ => {
-            if (_.length > hours) {
-                hours = _.length;
-            }
-        })
-
-        for(let i=0;i < hours;i++) {
-            let start;
-            let end;
-            if (les[i - 1]?.end) {
-                let sp = les[i - 1].end.split(':');
-                let hours = parseInt(sp[0]);
-                let breakTime = this.SchoolBreaks.find((_) => _.beforeHour == i + 1)?.minutes ?? this.SchoolSettings.breakTimeMinutes
-                let minutes = (parseInt(sp[1]) + breakTime);
-                while (minutes >= 60) {
-                    hours += 1;
-                    minutes -= 60;
-                }
-                start = hours + ':' + this.addZeros(minutes, 2);
-            } else start = this.SchoolSettings.startTime[0] + ':' + this.addZeros(this.SchoolSettings.startTime[1], 2);
-
-            let ssp = start.split(':');
-            let hours = parseInt(ssp[0]);
-            let minutes = (parseInt(ssp[1]) + this.SchoolSettings.lessonHour);
-            while (minutes >= 60) {
-                hours += 1;
-                minutes -= 60;
-            }
-
-            end = hours + ':' + this.addZeros(minutes, 2); 
-        
-            les.push({ start, end });
-        }
-        return les;
-    }    
-
-
     private lessons: Lesson[][] = [
         [               // Monday
             {
@@ -538,6 +496,50 @@ export class Schoolingo {
         ]
     ];
 
+    public getScheduleHours(): ScheduleLessonHour[] {
+        let hours: number = 0;
+        let les: ScheduleLessonHour[] = [];
+
+        this.lessons.forEach(_ => {
+            if (_.length > hours) {
+                hours = _.length;
+            }
+        })
+
+        for(let i=0;i < hours;i++) {
+            let start;
+            let end;
+            if (les[i - 1]?.end) {
+                let sp = les[i - 1].end.split(':');
+                let hours = parseInt(sp[0]);
+                let breakTime = this.SchoolBreaks.find((_) => _.beforeHour == i + 1)?.minutes ?? this.SchoolSettings.breakTimeMinutes
+                let minutes = (parseInt(sp[1]) + breakTime);
+                while (minutes >= 60) {
+                    hours += 1;
+                    minutes -= 60;
+                }
+                start = hours + ':' + this.addZeros(minutes, 2);
+            } else start = this.SchoolSettings.startTime[0] + ':' + this.addZeros(this.SchoolSettings.startTime[1], 2);
+
+            let ssp = start.split(':');
+            let hours = parseInt(ssp[0]);
+            let minutes = (parseInt(ssp[1]) + this.SchoolSettings.lessonHour);
+            while (minutes >= 60) {
+                hours += 1;
+                minutes -= 60;
+            }
+
+            end = hours + ':' + this.addZeros(minutes, 2); 
+        
+            les.push({ start, end });
+        }
+        return les;
+    }
+
+    private scheduleHours: ScheduleLessonHour[] = this.getScheduleHours();
+    public getSHours(): ScheduleLessonHour[] {
+        return this.scheduleHours;
+    }
 
     public getTimetableLessons(): Lesson[][] {
         return this.lessons;
@@ -572,8 +574,52 @@ export class Schoolingo {
         return this.timetable;
     }
 
-    public refreshTimetable(): void {
+    public getLastStudyDay(date: Date = new Date()): Date {
+        let day = date;
+        if (this.getTimetableLessons()?.[(day.getDay() == 0) ? 6 : day.getDay() - 1]) {
+            let checkhour = this.getScheduleHours()[this.getTimetableLessons()[(day.getDay() == 0) ? 6 : day.getDay() - 1].length - 1].end.split(':');
+            if ((day.getHours() == parseInt(checkhour[0]) && day.getMinutes() < parseInt(checkhour[1]) || day.getHours() < parseInt(checkhour[0]))) {
+                day = this.addDayToDate(day, -1);
+            }
+        }
+    
+        while(this.isStudyingDay(day) == false || this.isDayWeekend(day)) {
+            day = this.addDayToDate(day, -1);
+        }
+        return day;
+    }
 
+    public getNextStudyDay(date: Date = new Date()): Date {
+        let day = date;
+        if (this.getTimetableLessons()?.[(day.getDay() == 0) ? 6 : day.getDay() - 1]) {
+
+            let checkhour = this.getScheduleHours()?.[this.getTimetableLessons()?.[(day.getDay() == 0) ? 6 : day.getDay() - 1].length - 1]?.end.split(':');
+            if ((day.getHours() == parseInt(checkhour[0]) && day.getMinutes() >= parseInt(checkhour[1]) || day.getHours() > parseInt(checkhour[0]))) {
+                day = this.addDayToDate(day, 1);
+            }
+        }
+        
+        
+        while(this.isStudyingDay(day) == false || this.isDayWeekend(day)) {
+            day = this.addDayToDate(day, 1);
+        }
+        return day;
+    }
+
+
+    public isStudyingDay(day: Date): boolean {
+        if (
+            this.isDayWeekend(day) ||
+            this.filterHoliday(day.getDate(), day.getMonth()).length > 0
+        ) return false;
+        return true;
+    }
+
+    public refreshTimetable(): void {
+        // Hours
+        this.scheduleHours = this.getScheduleHours();
+
+        // Lessons
         let week = this.getTimetableWeek();
 
         let tTable: TTableDay[] = [];
@@ -597,14 +643,14 @@ export class Schoolingo {
 
             if (!day.holiday) {
                 _.forEach((lesson: Lesson, index) => {
-                    let { ...subject } = this.getSubject(lesson.subject) as Subject ?? {};
-                    let { ...teacher } = this.getTeacher(lesson.teacher) as Teacher ?? {};
+                    let { ...subject } = this.getSubject(lesson.subject) as Subject ?? false;
+                    let { ...teacher } = this.getTeacher(lesson.teacher) as Teacher ?? false;
     
                     if (this.selectedWeek == null && lesson.type && lesson.type !== 0 && subject) {
                         subject[0] = ((lesson.type === 1) ? 'L:' : 'S:') + subject[0];
                     }
     
-                    if (!subject || !teacher ||
+                    if (!subject || !subject[0] || !teacher || !teacher.lastName ||
                         (
                             lesson.type &&
                             this.selectedWeek !== null &&
@@ -766,6 +812,22 @@ export class Schoolingo {
         if (hol.length > 0) return hol;
         return [];
     }
+
+    public compareLessons(day1: Lesson[], day2: Lesson[]): Lesson[] {
+        let les: Lesson[] = [];
+        day1.forEach((_) => {
+            if (_.subject == -1) return;
+            if (
+            day2.filter(__ => __.subject == _.subject).length == 0 &&
+            les.filter(__ => __.subject == _.subject).length == 0
+            ) {
+                les.push(_);
+            }
+        });
+        
+        return les;
+    }
+
 
 
 }

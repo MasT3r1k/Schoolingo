@@ -25,6 +25,8 @@ import { SubjectsComponent as BoardTeachSubjects } from './Board/teach/subjects/
 import { IntermComponent as BoardMarksInterm } from './Board/marks/interm/interm.component';
 import { DatePipe } from '@angular/common';
 import { TimetableComponent as TimeTableModule } from './Board/main/timetable/timetable.component';
+import { MarksComponent as MarksModule } from './Board/main/marks/marks.component';
+import { ToastComponent } from '@Components/Toast/toast.component';
 
 @NgModule({
   declarations: [
@@ -36,7 +38,9 @@ import { TimetableComponent as TimeTableModule } from './Board/main/timetable/ti
     BoardTimetable,
     BoardTeachSubjects,
     BoardMarksInterm,
-    TimeTableModule 
+    TimeTableModule,
+    MarksModule,
+    ToastComponent
   ],
   imports: [
     BrowserModule,

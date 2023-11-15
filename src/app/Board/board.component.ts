@@ -42,9 +42,11 @@ export class BoardComponent implements OnInit {
 
     // Change title on page change
     this.routerSub = this.router.events.subscribe((url: any) => {
-      if (!url.url) { return ; }
+      if ((!url?.routerEvent?.urlAfterRedirects && !url?.url) || (url?.routerEvent?.urlAfterRedirects == '/login' || url?.url == '/login')) { return; }
+
       let item = this.sidebar.getItem(url.url?.slice(1));
       if (!item?.[item.length - 1]) return;
+
       this.tabs.clearTabs();
       this.schoolingo.sidebarToggled = false;
       this.title.setTitle(this.locale.getLocale(item[item.length - 1].item) + ' | SCHOOLINGO');

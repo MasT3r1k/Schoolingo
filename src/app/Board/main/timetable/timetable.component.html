@@ -6,47 +6,47 @@
             <schoolingo-tabs [name]="tabName" [options]="[locale.getLocale('sidebar/teach/timetable'), 'Batoh']"></schoolingo-tabs>
         </div>
     </header>
-    <div class="module-content" style="padding-bottom: 1rem;">
+    <div class="module-content">
         <div class="tab-content" *ngIf="tabs.getTabValue(tabName) == 0">
-            <div style="margin: 4px 16px;" *ngIf="board.isDayWeekend(board.getToday()) || !board.getTimetableLessons()?.[selectedDay.getDay() - 1]">
-                Dnes se neučí. Zobrazuji den: {{ board.full_days[selectedDay.getDay() - 1] }}
+            <div style="margin: 4px 16px;" *ngIf="schoolingo.isDayWeekend(schoolingo.getToday()) || !schoolingo.getTimetableLessons()?.[selectedDay.getDay() - 1]">
+                Dnes se neučí. Zobrazuji den: {{ schoolingo.full_days[selectedDay.getDay() - 1] }}
             </div>
-            <div class="subjects" *ngIf="board.getTimetableLessons()?.[selectedDay.getDay() - 1]">
-                <div class="subject timetable" *ngFor="let lesson of board.getTimetableLessons()[selectedDay.getDay() - 1];index as index">
+            <div class="subjects" *ngIf="schoolingo.getTimetable()?.[selectedDay.getDay() - 1]">
+                <div class="subject timetable" *ngFor="let lesson of schoolingo.getTimetableLessons()[selectedDay.getDay() - 1];index as index">
                     <span class="subjectIndex">{{ index + 1 }}</span>
                     <div class="subjectName">
-                        <span>{{ (lesson.subject == -1) ? 'Volná hodina' : (board.getSubject(lesson.subject)?.[1]) }}</span>
+                        <span>{{ (lesson.subject == -1) ? 'Volná hodina' : (schoolingo.getSubject(lesson.subject)?.[1]) }}</span>
                     </div>
-                    <span style="position: absolute;right: 8px;font-size: 12px;line-height: 18px;" *ngIf="board.getScheduleHours()[index]">
-                        {{ board.getScheduleHours()[index].start + ' - ' + board.getScheduleHours()[index].end }}
+                    <span style="position: absolute;right: 8px;font-size: 12px;line-height: 18px;" *ngIf="schoolingo.getSHours()[index]">
+                        {{ schoolingo.getSHours()[index].start + ' - ' + schoolingo.getSHours()[index].end }}
                     </span>
                 </div>
             </div>
         </div>
-        <!-- <div class="tab-content" *ngIf="tabs.getTabValue(tabName) == 1">
+        <div class="tab-content" *ngIf="tabs.getTabValue(tabName) == 1">
             <div class="title-day">
-                <div class="day">{{ board.full_days[(board.getLastStudyDay().getDay() == 0) ? 6 : board.getLastStudyDay().getDay() - 1] }}</div>
+                <div class="day">{{ schoolingo.full_days[(schoolingo.getLastStudyDay().getDay() == 0) ? 6 : schoolingo.getLastStudyDay().getDay() - 1] }}</div>
 
                 <div class="arrow">→</div>
 
-                <div class="day">{{ board.full_days[(board.getNextStudyDay().getDay() == 0) ? 6 : board.getNextStudyDay().getDay() - 1] }}</div>
+                <div class="day">{{ schoolingo.full_days[(schoolingo.getNextStudyDay().getDay() == 0) ? 6 : schoolingo.getNextStudyDay().getDay() - 1] }}</div>
             </div>
-        
+            
             <div class="module" style="width: calc(100% - 2rem);margin: 1rem!important;padding: 1rem;">
                 <header style="padding: 12px .75rem;">
                     <h2>Vyndej z batohu</h2>
                 </header>
                 <div>
                     <div class="subjects">
-                        <div *ngIf="board.compareLessons(
-                            board.getTimetableLessons()[board.getLastStudyDay().getDay() - 1],
-                            board.getTimetableLessons()[board.getNextStudyDay().getDay() - 1]
+                        <div *ngIf="schoolingo.compareLessons(
+                            schoolingo.getTimetableLessons()[schoolingo.getLastStudyDay().getDay() - 1],
+                            schoolingo.getTimetableLessons()[schoolingo.getNextStudyDay().getDay() - 1]
                             ).length == 0">Nic nevyndavej :(</div>
-                        <div class="subject" *ngFor="let lesson of board.compareLessons(
-                            board.getTimetableLessons()[board.getLastStudyDay().getDay() - 1],
-                            board.getTimetableLessons()[board.getNextStudyDay().getDay() - 1]
+                        <div class="subject" *ngFor="let lesson of schoolingo.compareLessons(
+                            schoolingo.getTimetableLessons()[schoolingo.getLastStudyDay().getDay() - 1],
+                            schoolingo.getTimetableLessons()[schoolingo.getNextStudyDay().getDay() - 1]
                             )">
-                            {{ board.getSubject(lesson.subject)?.[1] }}
+                            {{ schoolingo.getSubject(lesson.subject)?.[1] }}
                         </div>
                     </div>
                 </div>
@@ -58,20 +58,20 @@
                 </header>
                 <div>
                     <div class="subjects">
-                        <div *ngIf="board.compareLessons(
-                            board.getTimetableLessons()[board.getNextStudyDay().getDay() - 1],
-                            board.getTimetableLessons()[board.getLastStudyDay().getDay() - 1]
+                        <div *ngIf="schoolingo.compareLessons(
+                            schoolingo.getTimetableLessons()[schoolingo.getNextStudyDay().getDay() - 1],
+                            schoolingo.getTimetableLessons()[schoolingo.getLastStudyDay().getDay() - 1]
                             ).length == 0">Nic nepřidávej :)</div>
-                        <div class="subject" *ngFor="let lesson of board.compareLessons(
-                            board.getTimetableLessons()[board.getNextStudyDay().getDay() - 1],
-                            board.getTimetableLessons()[board.getLastStudyDay().getDay() - 1]
+                        <div class="subject" *ngFor="let lesson of schoolingo.compareLessons(
+                            schoolingo.getTimetableLessons()[schoolingo.getNextStudyDay().getDay() - 1],
+                            schoolingo.getTimetableLessons()[schoolingo.getLastStudyDay().getDay() - 1]
                             )">
-                            {{ board.getSubject(lesson.subject)?.[1] }}
+                            {{ schoolingo.getSubject(lesson.subject)?.[1] }}
                         </div>
                     </div>
                 </div>
             </div>
-        </div> -->
+        </div>
     </div>
     <!-- <div style="display: flex;align-items: center;justify-content: center;" *ngIf="tabs.getTabValue(tabName) == 0">
         <div class="btn" id="previous" (click)="selectLastDay()">

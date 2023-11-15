@@ -47,7 +47,7 @@ export class Tabs {
         return outString;
     }
 
-    createTab(name: string, options: string[], value: number = 0): void {
+    createTab(name: string = this.generateRandomTabName(), options: string[], value: number = 0): void {
 
         if (this.tabs.filter(_ => _.name == name).length > 0) return console.error('Duplicate tab (' + name + ') detected!');
         this.tabs.push(
@@ -55,7 +55,7 @@ export class Tabs {
                 name,
                 options,
                 selected: value,
-                glider: { width: 0, offset: 0}
+                glider: { width: 0, offset: 0 }
              }
         );
         this.setTabValue(name, value);
