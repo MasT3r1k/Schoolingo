@@ -5,6 +5,7 @@ import { Holiday, Lesson, ScheduleLessonHour, SchoolBreaks, SchoolSettings, Subj
 import { Sidebar, SidebarGroup, SidebarItem } from "./Sidebar";
 import { SocketService } from "./Socket";
 import { Tabs } from "@Components/Tabs/Tabs";
+import { Cache } from "./Cache";
 
 // Add getWeek function to Date
 declare global {
@@ -55,7 +56,8 @@ export class Schoolingo {
         private userService: UserService,
         private sidebar: Sidebar,
         private socketService: SocketService,
-        private tabs: Tabs
+        private tabs: Tabs,
+        private storage: Cache
     ) {
         // Listening for changes of connection to network
         window.addEventListener("offline", (e) => {
@@ -257,10 +259,11 @@ export class Schoolingo {
     /**
      * Set subjects to memory, save to storage and refresh timetable
      * @param subjects Subjects from server
-     * TODO: save to storage
+     * TODO: load from storage
      */
     public setSubjects(subjects: Subject[]): void {
         this.subjects = subjects;
+        this.storage.save('subjects', subjects);
         this.refreshTimetable();
     }
 
@@ -286,10 +289,11 @@ export class Schoolingo {
     /**
      * Set teachers to memory, save to storage and refresh timetable
      * @param teachers Teachers from server
-     * TODO: save to storage
+     * TODO: load from storage
      */
     public setTeachers(teachers: Teacher[]): void {
         this.teachers = teachers;
+        this.storage.save('teachers', teachers);
         this.refreshTimetable();
     }
     /**
@@ -306,11 +310,12 @@ export class Schoolingo {
     private lessons: Lesson[][] = [];
     /**
      * Set timetable lessons to memory, save to storage and refresh timetable
-     * @param lessons Timetable lessons from server
-     * TODO: save to storage
+     * TODO: load from storage
+
      */
     public setLessons(lessons: Lesson[][]): void {
         this.lessons = lessons;
+        this.storage.save('lessons', lessons);
         this.refreshTimetable();
     }
 
@@ -765,6 +770,7 @@ export class Schoolingo {
      * @returns List of lessons that day1 has and day2 don't
      */
     public compareLessons(day1: Lesson[], day2: Lesson[]): Lesson[] {
+        if (!day1 || !day2) return [];
         let les: Lesson[] = [];
         day1.forEach((_) => {
             if (_.subject == -1) return;
