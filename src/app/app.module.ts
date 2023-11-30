@@ -27,6 +27,8 @@ import { DatePipe } from '@angular/common';
 import { TimetableComponent as TimeTableModule } from './Board/main/timetable/timetable.component';
 import { MarksComponent as MarksModule } from './Board/main/marks/marks.component';
 import { ToastComponent } from '@Components/Toast/toast.component';
+import { DevicesComponent as BoardDevices } from './Board/user/devices/devices.component';
+import { SettingsComponent as BoardSettings } from './Board/user/settings/settings.component';
 
 @NgModule({
   declarations: [
@@ -40,7 +42,9 @@ import { ToastComponent } from '@Components/Toast/toast.component';
     BoardMarksInterm,
     TimeTableModule,
     MarksModule,
-    ToastComponent
+    ToastComponent,
+    BoardDevices,
+    BoardSettings
   ],
   imports: [
     BrowserModule,

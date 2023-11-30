@@ -37,6 +37,8 @@ export class SocketService {
             this.listenBasicEvents();
         } catch(e) {
             console.error(e);
+            this.socket?.disconnect();
+            this.socket?.removeAllListeners();
         }
     }
 
@@ -51,7 +53,10 @@ export class SocketService {
 
             this.socket = io(config.server, { extraHeaders: { Authorization: 'Bearer ' + token.token }});
             this.listenBasicEvents();
-        } catch(e) {}
+        } catch(e) {
+            this.socket?.disconnect();
+            this.socket?.removeAllListeners();
+        }
     }
 
     /**
@@ -69,9 +74,11 @@ export class SocketService {
         this.socket.on('connect_error', (data) => {
             this.socket_err = true;
             this.socket_errMsg = data.message;
+            this.socket?.removeAllListeners();
         })
 
         this.socket.on('disconnect', (data) => {
+            this.socket?.removeAllListeners();
             this.socket = null;
             this.socket_err = false;
             this.socket_errMsg = 'Disconnect';

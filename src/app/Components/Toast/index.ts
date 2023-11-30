@@ -1,6 +1,5 @@
 import { Locale } from "@Schoolingo/Locale";
 import { Injectable } from "@angular/core";
-import Swal, { SweetAlertIcon } from 'sweetalert2';
 
 export type ToastTypes = 'success' | 'info' | 'error';
 
@@ -30,7 +29,7 @@ export class ToastService {
      * @param text Text you want to display the toast
      * @param timer Time how long you want to display the toast, minimal 300ms :)
      */
-    public showToast(text: string, type: SweetAlertIcon = 'success', timer: number = 5000) {
+    public showToast(text: string, type: ToastTypes = 'success', timer: number = 5000) {
 
         if (timer < this.toast_animation) { return console.error('Toast timer is too low. Please use more than ' + this.toast_animation + 'ms'); }
         let name = text + new Date().getTime() + Object.keys(this.intervals).length;
@@ -67,6 +66,15 @@ export class ToastService {
         _toast.active = false;
         setTimeout(() => {
             this.toasts.splice(this.toasts.indexOf(_toast), 1);
+        }, this.toast_animation)
+    }
+
+    public closeAll(): void {
+        this.toasts.forEach((_: Toast) => {
+            _.active = false;
+        });
+        setTimeout(() => {
+            this.toasts = [];
         }, this.toast_animation)
     }
 

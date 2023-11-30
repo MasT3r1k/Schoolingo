@@ -3,4 +3,23 @@
         <h2 class="redirect" [routerLink]="'/marks/interm'">{{ locale.getLocale('sidebar/marks/interm') }}</h2>
         <div class="flex-items"></div>
     </header>
+
+    <div class="module-content">
+        <div class="tab-content active">
+            <div class="subjects">
+                <div class="subject timetable" *ngFor="let grade of grades;index as index">
+                    <div class="subjectName">
+                        <span>{{ (grade.subjectId == -1) ? 'Volná hodina' : (schoolingo.getSubject(grade.subjectId)?.[2]) }}</span>
+                    </div>
+                    <div class="subjectDate">
+                        <span>{{ grade.date.getDate() + '. ' + (grade.date.getMonth() + 1) + '. ' }}</span>
+                    </div>
+                    <span style="position: absolute;right: 8px;font-size: 16px;line-height: 18px;">
+                        {{ grade.grade }}
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+
 </div>

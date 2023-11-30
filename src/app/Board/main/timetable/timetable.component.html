@@ -1,4 +1,4 @@
-<div class="module" style="width: 400px;">
+<div class="module" style="width: 400px;" [attr.name]="tabName">
     <header class="module-header">
         <h2 class="redirect" [routerLink]="'/teach/timetable'" *ngIf="tabs.getTabValue(tabName) == 0">{{ locale.getLocale('sidebar/teach/timetable') }}</h2>
         <h2 *ngIf="tabs.getTabValue(tabName) == 1">Batoh</h2>
@@ -7,7 +7,7 @@
         </div>
     </header>
     <div class="module-content">
-        <div class="tab-content" *ngIf="tabs.getTabValue(tabName) == 0">
+        <div class="tab-content">
             <div style="margin: 4px 16px;" *ngIf="schoolingo.isDayWeekend(schoolingo.getToday()) || !schoolingo.getTimetableLessons()?.[selectedDay.getDay() - 1]">
                 Dnes se neučí. Zobrazuji den: {{ schoolingo.full_days[selectedDay.getDay() - 1] }}
             </div>
@@ -15,7 +15,7 @@
                 <div class="subject timetable" *ngFor="let lesson of schoolingo.getTimetableLessons()[selectedDay.getDay() - 1];index as index">
                     <span class="subjectIndex">{{ index + 1 }}</span>
                     <div class="subjectName">
-                        <span>{{ (lesson.subject == -1) ? 'Volná hodina' : (schoolingo.getSubject(lesson.subject)?.[1]) }}</span>
+                        <span>{{ (lesson.subject == -1) ? 'Volná hodina' : (schoolingo.getSubject(lesson.subject)?.[2]) }}</span>
                     </div>
                     <span style="position: absolute;right: 8px;font-size: 12px;line-height: 18px;" *ngIf="schoolingo.getSHours()[index]">
                         {{ schoolingo.getSHours()[index].start + ' - ' + schoolingo.getSHours()[index].end }}
@@ -23,7 +23,7 @@
                 </div>
             </div>
         </div>
-        <div class="tab-content" *ngIf="tabs.getTabValue(tabName) == 1">
+        <div class="tab-content">
             <div class="title-day">
                 <div class="day">{{ schoolingo.full_days[(schoolingo.getLastStudyDay().getDay() == 0) ? 6 : schoolingo.getLastStudyDay().getDay() - 1] }}</div>
 
@@ -46,7 +46,7 @@
                             schoolingo.getTimetableLessons()[schoolingo.getLastStudyDay().getDay() - 1],
                             schoolingo.getTimetableLessons()[schoolingo.getNextStudyDay().getDay() - 1]
                             )">
-                            {{ schoolingo.getSubject(lesson.subject)?.[1] }}
+                            {{ schoolingo.getSubject(lesson.subject)?.[2] }}
                         </div>
                     </div>
                 </div>
@@ -66,7 +66,7 @@
                             schoolingo.getTimetableLessons()[schoolingo.getNextStudyDay().getDay() - 1],
                             schoolingo.getTimetableLessons()[schoolingo.getLastStudyDay().getDay() - 1]
                             )">
-                            {{ schoolingo.getSubject(lesson.subject)?.[1] }}
+                            {{ schoolingo.getSubject(lesson.subject)?.[2] }}
                         </div>
                     </div>
                 </div>

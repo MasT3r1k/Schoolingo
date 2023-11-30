@@ -47,9 +47,7 @@ export class LoginComponent implements OnInit {
     this.routerSocket = this.router.events.subscribe((url: any) => {
       this.tabs.clearTabs();
 
-      if ((!url?.routerEvent?.urlAfterRedirects && !url?.url) || !(url?.routerEvent?.urlAfterRedirects == '/login' || url?.url == '/login')) {
-        return;
-      }
+      if ((!url?.routerEvent?.urlAfterRedirects && !url?.url) || !(url?.routerEvent?.urlAfterRedirects == '/login' || url?.url == '/login')) { return; }
 
       this.title.setTitle(this.locale.getLocale('login_title') + ' | SCHOOLINGO')
       this.schoolingo.sidebarToggled = false;

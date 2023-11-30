@@ -94,6 +94,7 @@ export class Locale {
             oldpassword: "Staré heslo",
             newpassword: "Nové heslo",
             againNewpassword: "Znova nové heslo",
+            settings_main: "Základ",
             language: "Jazyk",
             theme: "Témata",
             logout: "Odhlásit se",

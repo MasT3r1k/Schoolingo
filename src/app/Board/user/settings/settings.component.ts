@@ -1,13 +1,32 @@
+import { Tabs } from '@Components/Tabs/Tabs';
+import { Locale } from '@Schoolingo/Locale';
+import { UserMain, UserService } from '@Schoolingo/User';
 import { Component } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { FormControl } from '@angular/forms';
 
 @Component({
-  selector: 'app-settings',
-  standalone: true,
-  imports: [CommonModule],
   templateUrl: './settings.component.html',
-  styleUrl: './settings.component.css'
+  styleUrls: ['./settings.component.css', '../../board.css', '../../../login/login.component.css']
 })
 export class SettingsComponent {
+  public tabName: string = 'Settings';
+
+  old_password = new FormControl('');
+  password = new FormControl('');
+  password2 = new FormControl('');
+
+  public errorFilter(name: string): boolean {
+    return false;
+  }
+
+  constructor(
+    public locale: Locale,
+    private userService: UserService,
+    public tabs: Tabs
+  ) {}
+
+  public getUser(): UserMain {
+    return this.userService.getUser() as UserMain;
+  }
 
 }

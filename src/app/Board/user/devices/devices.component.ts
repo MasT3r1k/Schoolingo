@@ -1,13 +1,13 @@
+import { Locale } from '@Schoolingo/Locale';
 import { Component } from '@angular/core';
-import { CommonModule } from '@angular/common';
 
 @Component({
-  selector: 'app-devices',
-  standalone: true,
-  imports: [CommonModule],
   templateUrl: './devices.component.html',
-  styleUrl: './devices.component.css'
+  styleUrls: ['./devices.component.css', '../../board.css']
 })
 export class DevicesComponent {
 
+  constructor(
+    public locale: Locale
+  ) {}
 }

@@ -1,6 +1,6 @@
 import { Teacher } from "./User.d";
 
-export type Subject = [string, string]; // [shortcut, label]
+export type Subject = [number, string, string]; // [id, shortcut, label]
 
 export type Lesson = {
     subject: number;

@@ -12,10 +12,8 @@ export class SubjectsComponent implements OnInit {
     public locale: Locale
   ) {}
 
-  public a: [number, [number]][] = [];
 
   ngOnInit(): void {
-    this.a = this.getSubjectsWithTeachers();
   }
 
 

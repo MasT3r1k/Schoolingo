@@ -16,6 +16,8 @@ export class TabsComponent implements OnInit {
     private router: Router
   ) {
     this.routerSub = this.router.events.subscribe((url: any) => {
+      if (url?.routerEvent || (url?.code === 0 && url?.type == 16)) return;
+
       if ((!url?.routerEvent?.urlAfterRedirects && !url?.url) || (url?.routerEvent?.urlAfterRedirects == '/login' || url?.url == '/login')) { return; }
 
       this.tabs.createTab(this.name, this.options, this.getValue()); // Fix: Removing all tabs on router change to same page

@@ -130,7 +130,7 @@ export class Schoolingo {
         }
 
         if (user.type == 'student') {
-            output += "%class% ";
+            output += "%class%, ";
         }
         output += "%first-name% %last-name% ";
 
@@ -163,16 +163,12 @@ export class Schoolingo {
      * @param len length of number
      * @returns number 128 to length 5 is set to 00128
      */
-    public addZeros(number: number, len: number = 2): string {
-        if (number.toString().length >= len) return number.toString();
-        let num: string = '';
-        for(let i = 0;i <= len;i++) {
-            if (number.toString().length >= len - i) {
-                return num + number.toString();
-            }
-            num += '0';
+
+    public addZeros(num: number, len: number = 2): string {
+        if (num.toString().length >= len) {
+            return num.toString();
         }
-        return number.toString();
+        return new Array(len - num.toString().length).fill('0').join('') + num.toString();
     }
 
 
@@ -244,257 +240,37 @@ export class Schoolingo {
 
 
     //?-- Timetable
-    private subjects: Subject[] = [
-        ['CJL', 'Český jazyk a Literatura'],                // 0
-        ['OSY', 'Operační systémy'],                        // 1
-        ['HW', 'Hardware'],                                 // 2
-        ['MAT', 'Matematika'],                              // 3
-        ['FYZI', 'Fyzika'],                                 // 4
-        ['APS', 'Aplikační software'],                      // 5
-        ['OBN', 'Občanská nauka'],                          // 6
-        ['PS', 'Počítačové sítě'],                          // 7
-        ['AJ1', 'Anglický jazyk'],                          // 8
-        ['NJ2', 'Německý jazyk'],                           // 9
-        ['CHI', 'Chemie a materiály'],                      // 10
-        ['PRAI', 'Praktická cvičení'],                      // 11
-        ['ICT', 'Informační a komunikační technologie'],    // 12
-        ['PVA', 'Programování a vývoj aplikací'],           // 13
-        ['TEV', 'Tělesná výchova']                          // 14
-    ];
+    private subjects: Subject[] = [];
+    public setSubjects(subjects: Subject[]): void {
+        this.subjects = subjects;
+        this.refreshTimetable();
+    }
 
     public getSubjects(): Subject[] {
         return this.subjects;
     }
 
     public getSubject(id: number): Subject | null {
-        if (this.subjects[id]) return this.subjects[id];
-        return null;
+        let subject = this.subjects.filter(_ => _[0] == id)[0];
+        return subject ? subject : null;
     }
 
-    private teachers: Teacher[] = [
-        {                           // 0
-            firstName: "Pavel",
-            lastName: "Englický",
-            sex: "muž",
-        }, {                        // 1
-            firstName: "Milan",
-            lastName: "Průdek",
-            sex: "muž",
-        }, {                        // 2
-            firstName: "Milan",
-            lastName: "Janoušek",
-            sex: "muž",
-
-        }, {                        // 3
-            firstName: "Olga",
-            lastName: "Procházková",
-            sex: "žena"
-        }, {                        // 4
-            firstName: "Luboš",
-            lastName: "Vejvoda",
-            sex: "muž",
-
-        }, {                        // 5
-            firstName: "Jakub",
-            lastName: "Pizinger",
-            sex: "muž",
-
-        }, {                        // 6
-            firstName: "Ludmila",
-            lastName: "Klavíková",
-            sex: "žena"
-        }, {                        // 7
-            firstName: "Radka",
-            lastName: "Pecková",
-            sex: "žena"
-        }, {                        // 8
-            firstName: "Milena",
-            lastName: "Koudová",
-            sex: "žena"
-        }, {                        // 9
-            firstName: "Kornelie",
-            lastName: "Třeštíková",
-            sex: "žena"
-        }, {                        // 10
-            firstName: "Václava",
-            lastName: "Novotná",
-            sex: "žena"
-        }, {                        // 11
-            firstName: "Břetislav",
-            lastName: "Bakala",
-            sex: "muž",
-
-        }, {                        // 12
-            firstName: "Luděk",
-            lastName: "Štěpán",
-            sex: "muž",
-
-        }
-    ];
+    private teachers: Teacher[] = [];
+    public setTeachers(teachers: Teacher[]): void {
+        this.teachers = teachers;
+        this.refreshTimetable();
+    }
 
     public getTeacher(id: number): Teacher | null {
-        if (this.teachers[id]) return this.teachers[id];
-        return null;
+        let teacher = this.teachers.filter(_ => _.teacherId == id)[0];
+        return teacher ? teacher : null;
     }
 
-    private lessons: Lesson[][] = [
-        [               // Monday
-            {
-                subject: 1,
-                teacher: 1
-            },
-            {
-                subject: 2,
-                teacher: 2
-            },
-            {
-                subject: 3,
-                teacher: 3
-            },
-            {
-                subject: 4,
-                teacher: 4
-            },
-            {
-                subject: 5,
-                teacher: 5,
-                type: 1
-            },
-            {
-                subject: 5,
-                teacher: 5,
-                type: 1
-            },
-        ],
-        [               // Tuesday
-            {
-                subject: 6,
-                teacher: 6
-            },
-            {
-                subject: 7,
-                teacher: 7
-            },
-            {
-                subject: 0,
-                teacher: 0
-            },
-            {
-                subject: 8,
-                teacher: 8
-            },
-            {
-                subject: 3,
-                teacher: 3
-            },
-            {
-                subject: 9,
-                teacher: 9
-            },
-            {
-                subject: -1,
-                teacher: -1
-            },
-            {
-                subject: 10,
-                teacher: 10
-            },
-        ],
-        [               // Wednesday
-            {
-                subject: 3,
-                teacher: 3
-            },
-            {
-                subject: 0,
-                teacher: 0
-            },
-            {
-                subject: 1,
-                teacher: 1
-            },
-            {
-                subject: 13,
-                teacher: 7
-            },
-            {
-                subject: 2,
-                teacher: 2
-            },
-            {
-                subject: 4,
-                teacher: 4
-            },
-            {
-                subject: -1,
-                teacher: -1
-            },
-            {
-                subject: 9,
-                teacher: 9
-            }
-        ],
-        [               // Thursday
-            {
-                subject: 11,
-                teacher: 11
-            },
-            {
-                subject: 11,
-                teacher: 11
-            },
-            {
-                subject: 12,
-                teacher: 5
-            },
-            {
-                subject: 12,
-                teacher: 5
-            },
-            {
-                subject: 8,
-                teacher: 8
-            },
-            {
-                subject: 8,
-                teacher: 8
-            },
-            {
-                subject: -1,
-                teacher: -1
-            },
-            {
-                subject: 0,
-                teacher: 0
-            },
-        ],
-        [               // Friday
-            {
-                subject: 13,
-                teacher: 5
-            },
-            {
-                subject: 13,
-                teacher: 5
-            },
-            {
-                subject: 7,
-                teacher: 7
-            },
-            {
-                subject: 7,
-                teacher: 7
-            },
-            {
-                subject: 14,
-                teacher: 12
-            },
-            {
-                subject: 14,
-                teacher: 12
-            },
-        ]
-    ];
+    private lessons: Lesson[][] = [];
+    public setLessons(lessons: Lesson[][]): void {
+        this.lessons = lessons;
+        this.refreshTimetable();
+    }
 
     public getScheduleHours(): ScheduleLessonHour[] {
         let hours: number = 0;
@@ -647,10 +423,10 @@ export class Schoolingo {
                     let { ...teacher } = this.getTeacher(lesson.teacher) as Teacher ?? false;
     
                     if (this.selectedWeek == null && lesson.type && lesson.type !== 0 && subject) {
-                        subject[0] = ((lesson.type === 1) ? 'L:' : 'S:') + subject[0];
+                        subject[1] = ((lesson.type === 1) ? 'L:' : 'S:') + subject[1];
                     }
     
-                    if (!subject || !subject[0] || !teacher || !teacher.lastName ||
+                    if (!subject || !subject[1] || !teacher || !teacher.lastName ||
                         (
                             lesson.type &&
                             this.selectedWeek !== null &&
@@ -686,63 +462,111 @@ export class Schoolingo {
             subjectId: 11,
             title: 'T01 BA',
             weight: 10,
-            date: new Date(2023, 9, 14),
+            date: new Date(2023, 8, 14),
             grade: 1
         }, {
             subjectId: 3,
             title: 'Srovnávací test',
             weight: 10,
-            date: new Date(2023, 9, 18),
+            date: new Date(2023, 8, 18),
             grade: 2
         }, {
             subjectId: 8,
             title: 'Nepravidelná slovesa',
             weight: 10,
-            date: new Date(2023, 9, 19),
+            date: new Date(2023, 8, 19),
             grade: 1
         }, {
             subjectId: 4,
             title: 'T1',
             weight: 10,
-            date: new Date(2023, 9, 20),
+            date: new Date(2023, 8, 20),
             grade: 1
         }, {
             subjectId: 6,
             title: 'Seminární práce_1',
             weight: 10,
-            date: new Date(2023, 9, 26),
+            date: new Date(2023, 8, 26),
             grade: 1
         }, {
             subjectId: 8,
             title: 'Gramatické cvičení',
             weight: 10,
-            date: new Date(2023, 9, 27),
+            date: new Date(2023, 8, 27),
             grade: 1
         }, {
             subjectId: 8,
             title: 'Doplňování slov do vět',
             weight: 10,
-            date: new Date(2023, 9, 27),
+            date: new Date(2023, 8, 27),
             grade: 3
         }, {
             subjectId: 8,
             title: 'Poslech',
             weight: 10,
-            date: new Date(2023, 9, 27),
+            date: new Date(2023, 8, 27),
             grade: 1
         }, {
             subjectId: 10,
             title: 'test',
             weight: 3,
-            date: new Date(2023, 9, 27),
+            date: new Date(2023, 8, 27),
             grade: 1
         }, {
             subjectId: 4,
             title: 'T2',
             weight: 10,
-            date: new Date(2023, 10, 2),
+            date: new Date(2023, 9, 2),
             grade: 1
-        },
+        }, {
+            subjectId: 0,
+            title: 'test',
+            weight: 10,
+            date: new Date(2023, 9, 6),
+            grade: 3
+        }, {
+            subjectId: 9,
+            title: 'L6 - časy',
+            weight: 10,
+            date: new Date(2023, 9, 6),
+            grade: 3
+        }, {
+            subjectId: 3,
+            title: 'Kvadratická funkce',
+            weight: 5,
+            date: new Date(2023, 9, 9),
+            grade: 2
+        }, {
+            subjectId: 13,
+            title: 'test',
+            weight: 10,
+            date: new Date(2023, 9, 9),
+            grade: 1
+        }, {
+            subjectId: 6,
+            title: 'Aktuality',
+            weight: 10,
+            date: new Date(2023, 9, 11),
+            grade: 1
+        }, {
+            subjectId: 2,
+            title: 'T zákonyBA',
+            weight: 1,
+            date: new Date(2023, 9, 12),
+            grade: 5
+        }, {
+            subjectId: 2,
+            title: 'T AV+SCH',
+            weight: 1,
+            date: new Date(2023, 9, 12),
+            grade: 1
+        }, {
+            subjectId: 13,
+            title: 'ERD',
+            weight: 10,
+            date: new Date(2023, 9, 13),
+            grade: 1
+        }
     ];
 
     public getGrades(): grade[] {

@@ -3,16 +3,17 @@ import { User, UserMain } from './User.d';
 import { Cache } from "./Cache";
 import { Router } from "@angular/router";
 import { SocketService } from "./Socket";
-import Swal from "sweetalert2";
+import { ToastService } from "@Components/Toast";
 
 @Injectable()
 export class UserService {
     constructor(
         private cache: Cache,
         private router: Router,
-        private socketService: SocketService
+        private socketService: SocketService,
+        private toast: ToastService
     ) {
-        let user = this.cache.get(this.cache.userCacheName);
+        let user = this.cache.get(this.cache.userCacheName) as UserMain;
         if (user) { this.setUser(user) }
 
         let token = this.cache.get(this.cache.tokenCacheName);
@@ -21,17 +22,12 @@ export class UserService {
 
     // Main
     //* Users
-    private user: User = null;
-    public getUser(): User {
+    private user: UserMain | null = null;
+    public getUser(): UserMain | null {
         return this.user;
     }
-    public setUser(user: User) {
-        if (user) (user as UserMain).class = "B2.I";
-        if (user) {
-            this.cache.save(this.cache.userCacheName, user);
-        }else{
-            this.cache.remove(this.cache.userCacheName)
-        }
+    public setUser(user: UserMain | null) {
+        user ? this.cache.save(this.cache.userCacheName, user) : this.cache.remove(this.cache.userCacheName);
         this.user = user;
     }
 
@@ -61,11 +57,11 @@ export class UserService {
         this.socketService.getSocket().Socket?.disconnect();
         this.setUser(null);
         this.setToken('', new Date());
-        Swal.close();
+        this.toast.closeAll();
         this.router.navigate(['login']);
     }
 
 
 }
-export { UserMain };
+export { User, UserMain };
 

@@ -67,16 +67,17 @@ export class Tabs {
 
         if (value >= tTab.options.length) return;
 
-        tTab.selected = value;
-
         try {
-            if (tTab?.onChange) {
-                tTab.onChange(value);
-            }
+          if (tTab?.onChange) {
+              tTab.onChange(value);
+          }
         } catch(e) {
             console.error(e);
         }
-    
+  
+
+        tTab.selected = value;
+
         setTimeout(() => {
           try {
             let _ = document?.querySelector(".tabs#" + tab + " div.tab.active") as HTMLElement;

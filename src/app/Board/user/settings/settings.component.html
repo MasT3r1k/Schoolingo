@@ -1,1 +1,59 @@
-<p>settings works!</p>
+<div class="box">
+    <header>
+        <h2>{{ locale.getLocale('sidebar/user/settings') }}</h2>
+        <div class="flex-items">
+            <schoolingo-tabs [name]="tabName" [options]="[locale.getLocale('settings_main'), locale.getLocale('language'), locale.getLocale('theme')]"></schoolingo-tabs>
+        </div>
+    </header>
+    <div class="box-content" *ngIf="tabs.getTabValue(tabName) === 0">
+        <div class="list-items">
+            <div class="item" *ngIf="getUser()?.username">
+                <div class="left">Uživatelské jméno</div>
+                <div class="value">{{ getUser().username }}</div>
+            </div>
+        </div>
+
+        <div class="form">
+            <form>
+                <div class="form-group">
+                    <label for="password" [ngClass]="{error: errorFilter('old_password') != false}">
+                        {{ locale.getLocale('oldpassword') }}
+                        <span class="label-error" *ngIf="errorFilter('old_password') != false"> - {{ locale.getLocale(errorFilter('old_password').toString()) }}</span>
+                    </label>
+                    <input type="password" name="old_password" [ngClass]="{ invalid: errorFilter('old_password') != false }" [formControl]="old_password" [placeholder]="locale.getLocale('oldpassword')">
+                </div>
+
+                <div class="form-group">
+                    <label for="password" [ngClass]="{error: errorFilter('password') != false}">
+                        {{ locale.getLocale('newpassword') }}
+                        <span class="label-error" *ngIf="errorFilter('password') != false"> - {{ locale.getLocale(errorFilter('password').toString()) }}</span>
+                    </label>
+                    <input type="password" name="password" [ngClass]="{ invalid: errorFilter('password') != false }" [formControl]="password" [placeholder]="locale.getLocale('newpassword')">
+                </div>
+
+                <div class="form-group">
+                    <label for="password" [ngClass]="{error: errorFilter('password2') != false}">
+                        {{ locale.getLocale('againNewpassword') }}
+                        <span class="label-error" *ngIf="errorFilter('password2') != false"> - {{ locale.getLocale(errorFilter('password2').toString()) }}</span>
+                    </label>
+                    <input type="password" name="password2" [ngClass]="{ invalid: errorFilter('password2') != false }" [formControl]="password2" [placeholder]="locale.getLocale('againNewpassword')">
+                </div>
+
+                <input type="submit" value="" style="display: none;">
+                <div [ngClass]="{submit: true}" role="button">{{ locale.getLocale('changepassword') }}</div>
+            </form>
+        </div>
+    </div>
+
+    <div class="box-content" *ngIf="tabs.getTabValue(tabName) == 1">
+        <ul>
+            <li *ngFor="let lng of locale.getLanguages()">
+                <div [ngClass]="{main: true, active: locale.getUserLocale() == lng}" (click)="locale.setUserLocale(lng);tabs.setTabValue(tabName, tabs.getTabValue(tabName))">
+                    <img src="{{ locale.getLocale('flag', lng) }}" alt="{{ locale.getLocale('name', lng) }}" height="24" style="margin-right: 8px;">
+                    {{ locale.getLocale('name', lng) }}
+                </div>
+            </li>
+        </ul>
+    </div>
+
+</div>

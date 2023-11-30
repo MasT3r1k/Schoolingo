@@ -1,7 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { ToastService } from '@Components/Toast';
 import { Locale } from '@Schoolingo/Locale';
-import Swal from 'sweetalert2';
 
 @Component({
   selector: 'schoolingo-toasts',

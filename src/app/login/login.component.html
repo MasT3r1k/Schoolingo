@@ -31,13 +31,14 @@
                 <!-- Waiting to load QR code -->
                 <div *ngIf="qrStatus.whatIsVisible == 'loading'" class="loader"></div>
                 <!-- Error QR code -->
-                <div *ngIf="qrStatus.whatIsVisible == 'error'" (click)="refreshQRcode()">NASTALA NĚKDE CHYBA. Obnovit</div>
+                <div *ngIf="qrStatus.whatIsVisible == 'error'" (click)="refreshQRcode()">NASTALA NĚKDE CHYBA. Obnovení proběhne automaticky.</div>
 
                 <!-- QR code -->
                 <qrcode *ngIf="
                 (qrStatus.whatIsVisible == 'scan' || qrStatus.whatIsVisible == 'trylogin') && qrStatus?.code && qrStatus.code != ''"
                 [ngStyle]="{ filter: (qrStatus.whatIsVisible == 'trylogin') ? 'blur(4px)' : 'none' }" [qrdata]="qrStatus.code ?? ''" [allowEmptyString]="false" [width]="160" [margin]="0" [elementType]="'svg'" [errorCorrectionLevel]="'M'"></qrcode>
                 <div style="margin-top: 1rem;text-align: center;" *ngIf="(qrStatus.whatIsVisible == 'scan' && qrStatus.code != '') || qrStatus.whatIsVisible == 'loading'" [innerHTML]="locale.getLocale('scan_qrcode')"></div>
+                <div style="margin-top: 1rem;text-align: center;" *ngIf="qrStatus.user">Pokoušíte se příhlasit za <b>{{ qrStatus.user.firstName + " " + qrStatus.user.lastName }}</b>. Zkontrolujte vaše mobilní zařízení pro více informací.</div>
 
                 <!-- <div *ngIf="qrcode == 'ERR' && !qrCodeResult" (click)="refreshQRCode()">NASTALA NĚKDE CHYBA. Obnovit</div>
                 <qrcode *ngIf="getSocketStatus().connected == true && qrcode != '' && qrcode !== 'ERR'" [qrdata]="qrcode" [ngStyle]="{ filter: (qrCodeResult) ? 'blur(4px)' : 'none'}" [allowEmptyString]="false" [width]="160" [margin]="0" [elementType]="'svg'" [errorCorrectionLevel]="'M'"></qrcode>
