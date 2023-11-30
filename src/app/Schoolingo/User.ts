@@ -23,9 +23,18 @@ export class UserService {
     // Main
     //* Users
     private user: UserMain | null = null;
+    /**
+     * Get user's information if set or null
+     * @returns user information or null
+     */
     public getUser(): UserMain | null {
         return this.user;
     }
+
+    /**
+     * Set User's data from server and save to storage
+     * @param user user data from server
+     */
     public setUser(user: UserMain | null) {
         user ? this.cache.save(this.cache.userCacheName, user) : this.cache.remove(this.cache.userCacheName);
         this.user = user;
@@ -35,6 +44,10 @@ export class UserService {
     private token: string = '';
     private tokenExpiration: Date = new Date();
 
+    /**
+     * Get Token string to access server
+     * @returns token string
+     */
     public getToken(): string {
         return this.token;
     }
@@ -42,8 +55,8 @@ export class UserService {
     /**
      * Set token to User Service and save it to the storage
      * 
-     * @token Token received from server, to future access to the user content
-     * @expiration Expiration Date of token
+     * @param token Token received from server, to future access to the server
+     * @param expiration Date of token
      *  
      */
     public setToken(token: string, expiration: Date): void {
@@ -52,6 +65,9 @@ export class UserService {
         this.cache.save(this.cache.tokenCacheName, { token: token, expiration: expiration });
     }
 
+    /**
+     * Disconnect from socket, remove user from memory, remove token from memory and storage and redirect to login page
+     */
     public logout(): void {
         this.socketService.getSocket().Socket?.emit('removeToken');
         this.socketService.getSocket().Socket?.disconnect();

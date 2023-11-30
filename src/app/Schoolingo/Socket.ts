@@ -19,6 +19,10 @@ export class SocketService {
     private socket_err: boolean = false;
     private socket_errMsg: string = '';
 
+    /**
+     * Get Socket client, Socket status and Socket err msg
+     * @returns socket information
+     */
     public getSocket(): { Socket: Socket | null;err: boolean;errMsg: string; } {
         return {
             Socket: this.socket,

@@ -125,6 +125,11 @@ export class Sidebar {
 
     public visibleDropdown: number | null = null;
 
+    /**
+     * Get page information by page's url
+     * @param url url of page
+     * @returns information of page
+     */
     public getItem(url: string): SidebarItem[] {
         let gotItem: SidebarItem[] = [];
         this.data.forEach((group) => {

@@ -23,6 +23,10 @@ export class Theme {
         }
     }
 
+    /**
+     * Change theme
+     * @param theme theme for website
+     */
     public updateTheme(theme: themes): void {
         this.logger.send(this.logName, 'Theme set to ' + theme.toUpperCase() + '.')
         this.renderer.addClass(document.body.parentElement, theme);

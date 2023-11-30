@@ -83,6 +83,10 @@ export class Schoolingo {
     }
 
     ///.-- Refresh connection
+    /** 
+     *  Refresh connection to server, with updating output text
+     * @linkcode getRefreshingText() 
+     */
     public refreshConnection(): void {
         let firstIntervalName  = 'refreshConnectionFirstInterval';
         let secondIntervalName = 'refreshConnectionSeconInterval';
@@ -105,6 +109,10 @@ export class Schoolingo {
         }, 5000);
 
     }
+    /**
+     * Output of connecting to server
+     * @returns status of connection to server
+     */
 
     public getRefreshingText(): string {
         if (this.wifiConnection == false) {
@@ -234,6 +242,11 @@ export class Schoolingo {
         return this.thisWeek;
     }
 
+    /**
+     * Check if day is weekend
+     * @param date date of day
+     * @returns boolean if day is weekend
+     */
     public isDayWeekend(date: Date): boolean {
         return (date.getDay() === 0 || date.getDay() === 6);
     }
@@ -241,25 +254,49 @@ export class Schoolingo {
 
     //?-- Timetable
     private subjects: Subject[] = [];
+    /**
+     * Set subjects to memory, save to storage and refresh timetable
+     * @param subjects Subjects from server
+     * TODO: save to storage
+     */
     public setSubjects(subjects: Subject[]): void {
         this.subjects = subjects;
         this.refreshTimetable();
     }
 
+    /**
+     * Get list of all subjects
+     * @returns Subjects
+     */
     public getSubjects(): Subject[] {
         return this.subjects;
     }
 
+    /**
+     * Search subject and return data about it
+     * @param id Id of Subject
+     * @returns Subject information or null if subject not found
+     */
     public getSubject(id: number): Subject | null {
         let subject = this.subjects.filter(_ => _[0] == id)[0];
         return subject ? subject : null;
     }
 
     private teachers: Teacher[] = [];
+    /**
+     * Set teachers to memory, save to storage and refresh timetable
+     * @param teachers Teachers from server
+     * TODO: save to storage
+     */
     public setTeachers(teachers: Teacher[]): void {
         this.teachers = teachers;
         this.refreshTimetable();
     }
+    /**
+     * Look for teacher and return data
+     * @param id Id of Teacher
+     * @returns Teacher information or null if teacher not found
+     */
 
     public getTeacher(id: number): Teacher | null {
         let teacher = this.teachers.filter(_ => _.teacherId == id)[0];
@@ -267,11 +304,21 @@ export class Schoolingo {
     }
 
     private lessons: Lesson[][] = [];
+    /**
+     * Set timetable lessons to memory, save to storage and refresh timetable
+     * @param lessons Timetable lessons from server
+     * TODO: save to storage
+     */
     public setLessons(lessons: Lesson[][]): void {
         this.lessons = lessons;
         this.refreshTimetable();
     }
 
+    /**
+     * Calculate Schedule Hours from Timetable
+     * @returns Array with hours of lessons (updated)
+     * TODO: save to storage
+     */
     public getScheduleHours(): ScheduleLessonHour[] {
         let hours: number = 0;
         let les: ScheduleLessonHour[] = [];
@@ -313,25 +360,48 @@ export class Schoolingo {
     }
 
     private scheduleHours: ScheduleLessonHour[] = this.getScheduleHours();
+    /**
+     * Get schledule hours from memory
+     * @returns Array with hours of lessons (outdated)
+     */
     public getSHours(): ScheduleLessonHour[] {
         return this.scheduleHours;
     }
 
+    /**
+     * Get timetable lessons from memory
+     * @returns Timetable lessons
+     */
     public getTimetableLessons(): Lesson[][] {
         return this.lessons;
     }
 
     private selectedWeek: number | null = this.thisWeek;
+    /**
+     * Select week to display on timetable page
+     * @param week number of week in year
+     */
     public selectWeek(week: number | null) {
         this.selectedWeek = week;
     }
+    /**
+     * @returns boolean if week on timetable page is selected and is not showed permanent
+     */
     public isTimetableWeek(): boolean {
         return this.selectedWeek != null;
     }
+    /**
+     * @returns Number of selected week in year
+     */
     public getTimetableWeek(): number {
         return this.selectedWeek as number;
     }
 
+    /**
+     * Get Monday of week week
+     * @param week Number of week in year
+     * @returns Date of monday of the week
+     */
     public getFirstDayOfWeek(week: number): Date {
         let firstDayOfSchool = new Date(this.today.getFullYear(),8,1);
         let lastDayOfSchool = new Date(this.today.getFullYear()+1,5,30);
@@ -346,10 +416,19 @@ export class Schoolingo {
     }
 
     private timetable: TTableDay[] = [];
+    /**
+     * Get Timetable days from memory
+     * @returns Timetable days with all attributes like holidays, lessons, day information and more.
+     */
     public getTimetable(): TTableDay[] {
         return this.timetable;
     }
 
+    /**
+     * Look for previous studying day
+     * @param date Day from it will get calculated
+     * @returns Previous studying day
+     */
     public getLastStudyDay(date: Date = new Date()): Date {
         let day = date;
         if (this.getTimetableLessons()?.[(day.getDay() == 0) ? 6 : day.getDay() - 1]) {
@@ -365,6 +444,11 @@ export class Schoolingo {
         return day;
     }
 
+        /**
+     * Look for next studying day
+     * @param date Day from it will get calculated
+     * @returns Next studying day
+     */
     public getNextStudyDay(date: Date = new Date()): Date {
         let day = date;
         if (this.getTimetableLessons()?.[(day.getDay() == 0) ? 6 : day.getDay() - 1]) {
@@ -382,7 +466,11 @@ export class Schoolingo {
         return day;
     }
 
-
+    /**
+     * Check if day is not holiday or weekend
+     * @param day Date of day you want to check
+     * @returns if day is studying
+     */
     public isStudyingDay(day: Date): boolean {
         if (
             this.isDayWeekend(day) ||
@@ -391,6 +479,10 @@ export class Schoolingo {
         return true;
     }
 
+    /**
+     * Refresh timetable, refresh timetable days and save data to memory and storage
+     * TODO: save to storage
+     */
     public refreshTimetable(): void {
         // Hours
         this.scheduleHours = this.getScheduleHours();
@@ -569,11 +661,19 @@ export class Schoolingo {
         }
     ];
 
+    /**
+     * @returns Get all grades from memory
+     */
     public getGrades(): grade[] {
         return this.grades;
     }
 
-    public getPrumerBySubject(subject: number): string {
+    /**
+     * Calculate average of subject with data of grades from memory
+     * @param subject Subject ID of which subject you want to get average grades
+     * @returns Average number of subject
+     */
+    public getAverageBySubject(subject: number): string {
         let grades = this.getGradesBySubject(subject);
         let total = 0;
         let total_devide = 0;
@@ -584,10 +684,19 @@ export class Schoolingo {
         return Number(total / total_devide).toFixed(2).replace('.', ',');
     }
 
+    /**
+     * List all grades of selected subject
+     * @param subject Subject ID of which subject you want to get grades
+     * @returns Grades of subject
+     */
     public getGradesBySubject(subject: number): grade[] {
         return this.grades.filter(_ => _.subjectId == subject);
     }
 
+    /**
+     * Get all grades and order by subject to []
+     * @returns Grades ordered by subject
+     */
     public getListOfGradesBySubject(): any[] {
         let a: any[] = [];
         
@@ -628,22 +737,40 @@ export class Schoolingo {
         date: { day: 26, month: 12 },
         name: "2. svátek vánoční"
     }];
+    /**
+     * Get all holidays saved in memory
+     * @returns All holidays
+     */
     public getHolidays(): Holiday[] {
         return this.holidays;
     }
+
+    /**
+     * Look for holiday in specific date
+     * @param day day of month
+     * @param month month of year
+     * @param year year
+     * @returns Holidays in that date
+     */
     public filterHoliday(day: number, month: number, year: number = new Date().getFullYear()): Holiday[] {
         let hol = this.holidays.filter((holiday) => holiday.date?.day == day && holiday.date.month == month + 1);
         if (hol.length > 0) return hol;
         return [];
     }
 
+    /**
+     * Compare lessons of 2 days
+     * @param day1 List of lessons of first day
+     * @param day2 List of lessons of second day
+     * @returns List of lessons that day1 has and day2 don't
+     */
     public compareLessons(day1: Lesson[], day2: Lesson[]): Lesson[] {
         let les: Lesson[] = [];
         day1.forEach((_) => {
             if (_.subject == -1) return;
             if (
-            day2.filter(__ => __.subject == _.subject).length == 0 &&
-            les.filter(__ => __.subject == _.subject).length == 0
+              day2.filter(__ => __.subject == _.subject).length == 0 &&
+              les.filter(__ => __.subject == _.subject).length == 0
             ) {
                 les.push(_);
             }

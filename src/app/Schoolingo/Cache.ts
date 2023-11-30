@@ -8,6 +8,12 @@ export class Cache {
     public settingsCacheName: string = 'settings';
 
     constructor() {}
+    /**
+     * Save to storage
+     * @param key Name of storage item
+     * @param value Value of storage item
+     * @returns if save was successful
+     */
     public save(key: string, value: Record<string, string | any>): boolean {
         let saved = localStorage.getItem(key) as string;
         let json = JSON.parse(saved);
@@ -23,6 +29,12 @@ export class Cache {
         }
     }
 
+    /**
+     * Get value from storage
+     * @param key Name of storage item
+     * @param value Item of JSON (optional)
+     * @returns Value from storage or false if is not set
+     */
     public get(key: string, value?: string): any {
         let saved = localStorage.getItem(key) as string;
         let json = JSON.parse(saved);
@@ -34,6 +46,11 @@ export class Cache {
         return json[value];
     }
 
+    /**
+     * Remove storage item from storage
+     * @param key Name of storage item
+     * @returns if remove was successful
+     */
     public remove(key: string): boolean {
         try {
             localStorage.removeItem(key);
@@ -43,6 +60,11 @@ export class Cache {
         }
     }
 
+    /**
+     * Remove all items from storage
+     * @returns if removeAll was successful
+     * ! No saves !
+     */
     public removeAll(): boolean {
         try {
             localStorage.clear();

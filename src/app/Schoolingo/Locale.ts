@@ -226,21 +226,37 @@ export class Locale {
 
     }
 
+    /**
+     * List of all available languages
+     * @returns List of available languages
+     */
     public getLanguages(): languages[] {
         let list: languages[] = [];
         Object.keys(this.locales).forEach((value) => list.push(value as languages));
         return list;
     }
 
+    /**
+     * Select language for system and save to memory and storage
+     * @param lng user's new language
+     */
     public setUserLocale(lng: languages) {
         this.logger.send(this.logName, 'Language ' + lng + ' was loaded and saved.');
         this.cache.save(this.cache.settingsCacheName, {locale: lng});
     }
 
+    /**
+     * Get User's selected language
+     * @returns user's language
+     */
     public getUserLocale(): languages {
         return this.cache.get(this.cache.settingsCacheName, 'locale') as languages;
     }
 
+    /**
+     * Set language from browser if language is found or set default language English
+     * Is automatic when website is loaded and language is not in storage
+     */
     public setDefaultLocale(): void {
         this.logger.send(this.logName, 'Loading language..');
         if (this.getLanguages().includes(window.navigator.language as languages)) {
@@ -252,6 +268,12 @@ export class Locale {
         }
     }
 
+    /**
+     * Get translated text from locale
+     * @param path Path to locale
+     * @param locale language (optional)
+     * @returns Translate of path
+     */
     public getLocale(path: string, locale?: languages): string {
         if (!path) return '[unknown]';
         if (!this.getUserLocale()) {
