@@ -1,16 +1,23 @@
 import { Teacher } from "./User.d";
 
 export type Subject = [number, string, string]; // [id, shortcut, label]
+export type Room = {
+    roomId: number;
+    label: string;
+    type: string;
+}
 
 export type Lesson = {
     subject: number;
     teacher: number;
+    room?: number;
     type?: number;
 }
 
 export type TTableLesson = {
     subject?: Subject;
     teacher?: Teacher;
+    room?: Room;
     isEmpty?: boolean;
 }
 

@@ -14,10 +14,10 @@
             <div class="subjects" *ngIf="schoolingo.getTimetable()?.[selectedDay.getDay() - 1]">
                 <div class="subject timetable" *ngFor="let lesson of schoolingo.getTimetableLessons()[selectedDay.getDay() - 1];index as index">
                     <span class="subjectIndex">{{ index + 1 }}</span>
-                    <div class="subjectName">
+                    <div class="subjectName" [title]="(lesson.subject == -1) ? 'Volná hodina' : (schoolingo.getSubject(lesson.subject)?.[2])">
                         <span>{{ (lesson.subject == -1) ? 'Volná hodina' : (schoolingo.getSubject(lesson.subject)?.[2]) }}</span>
                     </div>
-                    <span style="position: absolute;right: 8px;font-size: 12px;line-height: 18px;" *ngIf="schoolingo.getSHours()[index]">
+                    <span style="position: absolute;right: 8px;font-size: 12px;line-height: 18px;width: 70px;text-align: right;" *ngIf="schoolingo.getSHours()[index]">
                         {{ schoolingo.getSHours()[index].start + ' - ' + schoolingo.getSHours()[index].end }}
                     </span>
                 </div>

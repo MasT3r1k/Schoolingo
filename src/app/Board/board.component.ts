@@ -11,7 +11,9 @@ import { SocketService } from '@Schoolingo/Socket';
 import { UserMain } from '@Schoolingo/User';
 import { ToastService } from '@Components/Toast';
 import { Tabs } from '@Components/Tabs/Tabs';
-import { Lesson, Subject } from '@Schoolingo/Board.d';
+import { Lesson, Room, Subject } from '@Schoolingo/Board.d';
+import { Cache } from '@Schoolingo/Cache';
+import { Teacher } from '@Schoolingo/User.d';
 
 @Component({
   templateUrl: './board.component.html',
@@ -33,7 +35,8 @@ export class BoardComponent implements OnInit {
     private title: Title,
     private sidebar: Sidebar,
     private toast: ToastService,
-    private tabs: Tabs
+    private tabs: Tabs,
+    private storage: Cache
   ) {
 
     // Register dropdowns
@@ -75,6 +78,31 @@ export class BoardComponent implements OnInit {
     // Close all dropdowns
     this.dropdown.closeAllDropdowns();
 
+    // Load data from storage
+    //* Teachers
+    let teachers = Object.values(this.storage.get('teachers')) as Teacher[];
+    if (teachers) {
+      this.schoolingo.setTeachers(teachers);
+    }
+
+    //* Rooms
+    let rooms = Object.values(this.storage.get('rooms')) as Room[];
+    if (rooms) {
+      this.schoolingo.setRooms(rooms);
+    }
+
+    //* Subjects
+    let subjects = Object.values(this.storage.get('subjects')) as Subject[];
+    if (subjects) {
+      this.schoolingo.setSubjects(subjects);
+    }
+
+    //* Lessons
+    let lesssons = Object.values(this.storage.get('lessons')) as Lesson[][];
+    if (lesssons) {
+      this.schoolingo.setLessons(lesssons);
+    }
+
     // Socket service
     this.socketService.connectUser();
 
@@ -102,6 +130,11 @@ export class BoardComponent implements OnInit {
       this.schoolingo.setSubjects(subjectList);
     });
 
+    this.socketService.getSocket().Socket?.on('rooms', (rooms: any[]) => {
+      this.schoolingo.setRooms(rooms);
+    });
+
+
     this.socketService.getSocket().Socket?.on('teachers', (teachers: any[]) => {
       this.schoolingo.setTeachers(teachers);
     });
@@ -123,6 +156,7 @@ export class BoardComponent implements OnInit {
         lessons[timetable[i].day][timetable[i].hour - 1] = {
           subject: timetable[i].subjectId,
           teacher: timetable[i].teacherId,
+          room: timetable[i].roomId,
           type: timetable[i].type
         }
       }

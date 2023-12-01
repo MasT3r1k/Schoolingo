@@ -1,7 +1,7 @@
 import { Injectable } from "@angular/core";
 import { UserService } from "./User";
 import { Teacher, UserMain, UserPermissions } from "./User.d";
-import { Holiday, Lesson, ScheduleLessonHour, SchoolBreaks, SchoolSettings, Subject, TTableDay, TTableLesson, grade } from "./Board.d";
+import { Holiday, Lesson, Room, ScheduleLessonHour, SchoolBreaks, SchoolSettings, Subject, TTableDay, TTableLesson, grade } from "./Board.d";
 import { Sidebar, SidebarGroup, SidebarItem } from "./Sidebar";
 import { SocketService } from "./Socket";
 import { Tabs } from "@Components/Tabs/Tabs";
@@ -59,6 +59,8 @@ export class Schoolingo {
         private tabs: Tabs,
         private storage: Cache
     ) {
+
+
         // Listening for changes of connection to network
         window.addEventListener("offline", (e) => {
             this.wifiConnection = false;
@@ -259,7 +261,6 @@ export class Schoolingo {
     /**
      * Set subjects to memory, save to storage and refresh timetable
      * @param subjects Subjects from server
-     * TODO: load from storage
      */
     public setSubjects(subjects: Subject[]): void {
         this.subjects = subjects;
@@ -289,7 +290,6 @@ export class Schoolingo {
     /**
      * Set teachers to memory, save to storage and refresh timetable
      * @param teachers Teachers from server
-     * TODO: load from storage
      */
     public setTeachers(teachers: Teacher[]): void {
         this.teachers = teachers;
@@ -307,11 +307,30 @@ export class Schoolingo {
         return teacher ? teacher : null;
     }
 
+    private rooms: Room[] = [];
+    /**
+     * Set rooms to memory, save to storage and refresh timetable
+     * @param rooms Rooms from server
+     */
+    public setRooms(rooms: Room[]): void {
+        this.rooms = rooms;
+        this.storage.save('rooms', rooms);
+        this.refreshTimetable();
+    }
+    
+    /**
+     * Get room information and return data
+     * @param id Id of Room
+     * @returns Room information or null if room not found
+     */
+    public getRoom(id: number): Room | null {
+        let room = this.rooms.filter(_ => _.roomId == id)[0];
+        return room ? room : null;
+    }
+
     private lessons: Lesson[][] = [];
     /**
      * Set timetable lessons to memory, save to storage and refresh timetable
-     * TODO: load from storage
-
      */
     public setLessons(lessons: Lesson[][]): void {
         this.lessons = lessons;
@@ -518,6 +537,7 @@ export class Schoolingo {
                 _.forEach((lesson: Lesson, index) => {
                     let { ...subject } = this.getSubject(lesson.subject) as Subject ?? false;
                     let { ...teacher } = this.getTeacher(lesson.teacher) as Teacher ?? false;
+                    let { ...room } = lesson.room ? this.getRoom(lesson.room) as Room ?? false : {};
     
                     if (this.selectedWeek == null && lesson.type && lesson.type !== 0 && subject) {
                         subject[1] = ((lesson.type === 1) ? 'L:' : 'S:') + subject[1];
@@ -535,7 +555,7 @@ export class Schoolingo {
                     ) {
                         day.lessons.push({ isEmpty: true });
                     } else {
-                        day.lessons.push({ subject: subject as Subject, teacher: teacher as Teacher })
+                        day.lessons.push({ subject: subject as Subject, teacher: teacher as Teacher, room: room as Room })
                     }
     
                     if (index == _.length - 1 && index <= this.getScheduleHours().length) {
