@@ -45,6 +45,10 @@
                         {{ day.holiday?.name }}
                     </div>
                     <div class="item day-lesson" *ngFor="let lesson of day.lessons">
+                        <div class="group" *ngIf="lesson.group">
+                            <span *ngIf="lesson.group.text">{{ lesson.group.text }}</span>
+                            <span *ngIf="lesson.group.num">{{ lesson.group.num }}</span>
+                        </div>
                         <div class="room" *ngIf="lesson.room">{{ lesson.room.label }}</div>
                         <div class="subject" *ngIf="lesson.subject">{{ lesson.subject[1] }}</div>
                         <div class="teacher" *ngIf="lesson.teacher">{{ lesson.teacher.lastName }}</div>

@@ -555,7 +555,7 @@ export class Schoolingo {
                     ) {
                         day.lessons.push({ isEmpty: true });
                     } else {
-                        day.lessons.push({ subject: subject as Subject, teacher: teacher as Teacher, room: room as Room })
+                        day.lessons.push({ subject: subject as Subject, teacher: teacher as Teacher, room: room as Room, group: lesson.group })
                     }
     
                     if (index == _.length - 1 && index <= this.getScheduleHours().length) {

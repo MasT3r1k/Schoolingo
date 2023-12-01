@@ -11,6 +11,7 @@ export type Lesson = {
     subject: number;
     teacher: number;
     room?: number;
+    group?: { text: string, num: number };
     type?: number;
 }
 
@@ -18,6 +19,7 @@ export type TTableLesson = {
     subject?: Subject;
     teacher?: Teacher;
     room?: Room;
+    group?: { text: string, num: number };
     isEmpty?: boolean;
 }
 

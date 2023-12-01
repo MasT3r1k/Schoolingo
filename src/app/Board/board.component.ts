@@ -157,10 +157,15 @@ export class BoardComponent implements OnInit {
           subject: timetable[i].subjectId,
           teacher: timetable[i].teacherId,
           room: timetable[i].roomId,
+          group: {
+            text: timetable[i].group,
+            num: timetable[i].groupNum
+          },
           type: timetable[i].type
         }
       }
       this.schoolingo.setLessons(lessons);
+      console.log(lessons);
     });
 
     let _sidebarUpdateInt = setInterval(() => {
