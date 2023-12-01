@@ -218,6 +218,15 @@ export class Schoolingo {
             let items: SidebarItem[] = [];
             section.items.forEach((item: SidebarItem) => {
                 if (item.permission && this.checkPermissions(item.permission as UserPermissions[]) == false) return;
+                let children = item.children as SidebarItem[];
+                let deletedCount = 0;
+                if (children) {
+                    children.forEach((child: SidebarItem, index: number) => {
+                        if (!child.permission || this.checkPermissions(child.permission as UserPermissions[]) == true) return;
+                        item.children?.splice(index - deletedCount, 1);
+                        deletedCount++;
+                    });
+                }
                 items.push(item);
             })
             newSidebar.push({ label: section.label, items: items });

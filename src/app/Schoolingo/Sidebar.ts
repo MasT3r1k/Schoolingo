@@ -34,19 +34,23 @@ export class Sidebar {
             }]
         }, {
             item: 'sidebar/teach/main',
-            permission: ['student', 'parent'],
+            permission: ['student', 'parent', 'teacher'],
             children: [{
                 item: 'sidebar/teach/timetable',
-                url: 'teach/timetable'
+                url: 'teach/timetable',
+                permission: ['student', 'parent', 'teacher']
             }, {
                 item: 'sidebar/teach/homeworks',
-                url: 'teach/homeworks'
+                url: 'teach/homeworks',
+                permission: ['student', 'parent']
             }, {
                 item: 'sidebar/teach/substitution',
-                url: 'teach/substitution'
+                url: 'teach/substitution',
+                permission: ['student', 'parent', 'teacher']
             }, {
                 item: 'sidebar/teach/subjects',
-                url: 'teach/subjects'
+                url: 'teach/subjects',
+                permission: ['student', 'parent']
             }]
         }, {
             item: 'sidebar/absence',
