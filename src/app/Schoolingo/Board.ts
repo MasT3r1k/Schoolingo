@@ -573,6 +573,13 @@ export class Schoolingo {
                         }
                     }
                 });
+
+                // To fill empty day
+                if (_.length == 0) {
+                    for(let i = 0;i < this.getScheduleHours().length;i++) {
+                        day.lessons.push({ isEmpty: true })
+                    }
+                }
             } else {
                 day.isFullDay = true;
             }

@@ -13,7 +13,7 @@ import { ToastService } from '@Components/Toast';
 import { Tabs } from '@Components/Tabs/Tabs';
 import { Lesson, Room, Subject } from '@Schoolingo/Board.d';
 import { Cache } from '@Schoolingo/Cache';
-import { Teacher } from '@Schoolingo/User.d';
+import { Teacher, UserPermissions } from '@Schoolingo/User.d';
 
 @Component({
   templateUrl: './board.component.html',
@@ -53,7 +53,15 @@ export class BoardComponent implements OnInit {
 
 
       let item = this.sidebar.getItem(url.url?.slice(1));
-      if (!item?.[item.length - 1]) return;
+      console.log(item);
+      if (!item?.[item.length - 1] ||
+        (item[item.length - 1] && (item[item.length - 1].permission && schoolingo.checkPermissions(item[item.length - 1].permission as UserPermissions[]) == false) ||
+        (item[0].permission && schoolingo.checkPermissions(item[0].permission as UserPermissions[]) == false))
+        ) {
+          this.router.navigateByUrl('main');
+          this.toast.showToast('Nepodařilo se zobrazit požadovanou stránku.', 'error')
+          return;
+        }
 
       this.schoolingo.sidebarToggled = false;
 
@@ -144,13 +152,18 @@ export class BoardComponent implements OnInit {
 
       for(let i = 0;i < timetable.length;i++) {
         if (!lessons[timetable[i].day]) lessons[timetable[i].day] = [];
-        let d: number = 1;
-        while(timetable[i].hour != 0 && lessons[timetable[i].day] && !lessons[timetable[i].day][timetable[i].hour - 1 - d] && d < timetable[i].hour) {
-          lessons[timetable[i].day][timetable[i].hour - 1 - d] = { 
+        let d0: number = 1;
+        let d1: number = 1;
+        while(timetable[i].day != 0 && !lessons[timetable[i].day - 1 - d0] && d0 < this.schoolingo.days.length) {
+          lessons[timetable[i].day - 1 - d1] = [];
+          d0++;
+        }
+        while(timetable[i].hour != 0 && lessons[timetable[i].day] && !lessons[timetable[i].day][timetable[i].hour - 1 - d1] && d1 < timetable[i].hour) {
+          lessons[timetable[i].day][timetable[i].hour - 1 - d1] = { 
             subject: -1,
             teacher: -1
           }
-          d += 1;
+          d1++;
         }
 
         lessons[timetable[i].day][timetable[i].hour - 1] = {

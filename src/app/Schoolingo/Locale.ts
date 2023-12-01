@@ -83,7 +83,8 @@ export class Locale {
             },
 
             toasts: {
-                success: "Úspěch!"
+                success: "Úspěch!",
+                error: "Chyba!"
             },
 
             successfulLogin: "Úspěšně ses přihlásil do systému.",

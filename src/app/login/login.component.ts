@@ -6,6 +6,7 @@ import { Tabs } from '@Components/Tabs/Tabs';
 import { ToastService } from '@Components/Toast';
 import * as config from '@config';
 import { Schoolingo } from '@Schoolingo';
+import { Cache } from '@Schoolingo/Cache';
 import { Locale } from '@Schoolingo/Locale';
 import { Logger } from '@Schoolingo/Logger';
 import { SocketService } from '@Schoolingo/Socket';
@@ -40,7 +41,8 @@ export class LoginComponent implements OnInit {
     private toast: ToastService,
     public schoolingo: Schoolingo,
     public tabs: Tabs,
-    private title: Title
+    private title: Title,
+    private storage: Cache
   ) {}
 
   ngOnInit(): void {
@@ -55,9 +57,10 @@ export class LoginComponent implements OnInit {
       this.socketService.connectAnon();
       this.refreshQRcode();
 
-      this?.socketService.getSocket()?.Socket?.once('login', (data: LoginData) => {
+      this?.socketService.getSocket()?.Socket?.on('login', (data: LoginData) => {
         if (data.status == 1 && data?.token && data?.expires) {
           this.logger.send('Login', 'Successful logged in.');
+          this.storage.removeAll();
           this.toast.showToast(this.locale.getLocale('successfulLogin'), 'success', 5000);
           this.userService.setToken(data.token, data.expires);
           this.router.navigate(['', 'main']);
