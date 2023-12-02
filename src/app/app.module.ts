@@ -29,6 +29,7 @@ import { MarksComponent as MarksModule } from './Board/main/marks/marks.componen
 import { ToastComponent } from '@Components/Toast/toast.component';
 import { DevicesComponent as BoardDevices } from './Board/user/devices/devices.component';
 import { SettingsComponent as BoardSettings } from './Board/user/settings/settings.component';
+import { ClassbookComponent } from './Board/teach/classbook/classbook.component';
 
 @NgModule({
   declarations: [
@@ -44,7 +45,8 @@ import { SettingsComponent as BoardSettings } from './Board/user/settings/settin
     MarksModule,
     ToastComponent,
     BoardDevices,
-    BoardSettings
+    BoardSettings,
+    ClassbookComponent
   ],
   imports: [
     BrowserModule,

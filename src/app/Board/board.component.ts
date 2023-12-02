@@ -149,7 +149,7 @@ export class BoardComponent implements OnInit {
 
     this.socketService.getSocket().Socket?.on('timetable', (timetable: any[]) => {
       let lessons: Lesson[][] = [];
-
+  
       for(let i = 0;i < timetable.length;i++) {
         if (!lessons[timetable[i].day]) lessons[timetable[i].day] = [];
         let d0: number = 1;
@@ -170,6 +170,7 @@ export class BoardComponent implements OnInit {
           subject: timetable[i].subjectId,
           teacher: timetable[i].teacherId,
           room: timetable[i].roomId,
+          class: timetable[i]?.class,
           group: {
             text: timetable[i].group,
             num: timetable[i].groupNum
@@ -178,7 +179,6 @@ export class BoardComponent implements OnInit {
         }
       }
       this.schoolingo.setLessons(lessons);
-      console.log(lessons);
     });
 
     let _sidebarUpdateInt = setInterval(() => {

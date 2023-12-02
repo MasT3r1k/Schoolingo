@@ -24,6 +24,7 @@ import { TimetableComponent } from './Board/teach/timetable/timetable.component'
 import { SubjectsComponent } from './Board/teach/subjects/subjects.component';
 import { HomeworksComponent } from './Board/teach/homeworks/homeworks.component';
 import { CalendarComponent } from './Board/calendar/calendar.component';
+import { ClassbookComponent as Classbook } from './Board/teach/classbook/classbook.component';
 
 const routes: Routes = [
 {
@@ -48,6 +49,8 @@ const routes: Routes = [
         path: 'homeworks', component: HomeworksComponent
       }, {
         path: 'substitution', component: SubstitutionComponent
+      }, {
+        path: 'classbook', component: Classbook
       }, {
         path: 'subjects', component: SubjectsComponent
       }]

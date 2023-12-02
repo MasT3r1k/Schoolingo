@@ -48,6 +48,10 @@ export class Sidebar {
                 url: 'teach/substitution',
                 permission: ['student', 'parent', 'teacher']
             }, {
+                item: 'sidebar/teach/classbook',
+                url: 'teach/classbook',
+                permission: ['teacher']
+            }, {
                 item: 'sidebar/teach/subjects',
                 url: 'teach/subjects',
                 permission: ['student', 'parent']

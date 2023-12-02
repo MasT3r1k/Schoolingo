@@ -6,6 +6,7 @@ import { Dropdowns } from '@Components/Dropdown/Dropdown';
 import { FormControl } from '@angular/forms';
 import { Tabs } from '@Components/Tabs/Tabs';
 import { Router } from '@angular/router';
+import { UserService } from '@Schoolingo/User';
 
 @Component({
   templateUrl: './timetable.component.html',
@@ -14,6 +15,7 @@ import { Router } from '@angular/router';
 export class TimetableComponent implements OnInit {
   constructor(
     public schoolingo: Schoolingo,
+    public userService: UserService,
     public locale: Locale,
     public dropdown: Dropdowns,
     public tabs: Tabs,
@@ -23,7 +25,6 @@ export class TimetableComponent implements OnInit {
   ) {
 
     this.dropdown.addDropdown('absence');
-
 
   }
 
@@ -51,19 +52,10 @@ export class TimetableComponent implements OnInit {
   ngOnInit(): void {
 
 
-    // Setup page 
-    this.schoolingo.selectWeek(this.schoolingo.getThisWeek());
+    // Setup page
+    this.calendar.setValue(this.DatePipe.transform(this.schoolingo.getToday(), 'yyyy-MM-dd'));
     this.schoolingo.refreshTimetable();
 
-
-    this.calendar.setValue(this.DatePipe.transform(this.schoolingo.getToday(), 'yyyy-MM-dd'));
-    if (this.schoolingo.isDayWeekend(this.schoolingo.getToday())) {
-      this.tabs.setTabValue(this.tabName, 1);
-      this.schoolingo.selectWeek(this.schoolingo.getThisWeek() + 1);
-    }else{
-      this.tabs.setTabValue(this.tabName, 0);
-      this.schoolingo.selectWeek(this.schoolingo.getThisWeek());
-    }
 
     // Register subscribe of calendar
     this.calendarEvent = this.calendar.valueChanges.subscribe((date: string | null) => {
@@ -78,15 +70,24 @@ export class TimetableComponent implements OnInit {
     this.routerSub = this.router.events.subscribe((url: any) => {
       if ((!url?.routerEvent?.urlAfterRedirects && !url?.url) || (url?.routerEvent?.urlAfterRedirects == '/login' || url?.url == '/login')) { return; }
 
-
       setTimeout(() => {
         this.registerOnChangeFunc();
+
+        if (this.schoolingo.isDayWeekend(this.schoolingo.getToday())) {
+          this.schoolingo.selectWeek(this.schoolingo.getThisWeek() + 1);
+          this.tabs.setTabValue(this.tabName, 1);
+        }else{
+          this.schoolingo.selectWeek(this.schoolingo.getThisWeek());
+          this.tabs.setTabValue(this.tabName, 0);
+        }
+  
       })
 
     });
 
     this.renderBeforePrint = this.renderer.listen(window, 'beforeprint', () => this.beforePrint());
     this.renderAfterPrint = this.renderer.listen(window, 'afterprint', () => this.afterPrint());
+
   }
 
   public registerOnChangeFunc(): void {

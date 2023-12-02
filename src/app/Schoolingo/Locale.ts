@@ -35,8 +35,10 @@ export class Locale {
                     timetable: "Rozvrh",
                     homeworks: "Domácí úkoly",
                     substitution: "Suplování",
+                    classbook: "Třídní kniha",
                     subjects: "Přehled předmětů"
                 },
+
 
                 absence: "Absence",
                 calendar: "Kalendář",
@@ -105,6 +107,11 @@ export class Locale {
                 thisWeek: "Tento týden",
                 nextWeek: "Příští týden",
                 permanent: "Stálý"
+            },
+            classbook: {
+                lessonNotation: "Zápis hodiny",
+                attendance: "Docházka",
+                notes: "Poznámky"
             },
             subjects: "Předměty",
             chronologically: "Chronologicky",

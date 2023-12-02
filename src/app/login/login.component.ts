@@ -23,7 +23,6 @@ type QRStatus = {
 }
 
 @Component({
-  selector: 'app-login',
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.css', '../../card.css']
 })

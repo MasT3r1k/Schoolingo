@@ -1,0 +1,27 @@
+<div class="box">
+    <header>
+        <h2>{{ locale.getLocale('sidebar/teach/classbook') }} - {{ calendarDate.getDate() + ". " + (calendarDate.getMonth() + 1) + ". " + calendarDate.getFullYear() }}</h2>
+        <div class="flex-items">
+            <input type="date" id="calendar" [formControl]="calendar" name="calendar" value="{{ schoolingo.getToday() | date:'yyyy-MM-dd' }}" min="2023-09-01" max="2024-06-30">
+        </div>
+    </header>
+    <div class="box-content">
+        <div class="row">
+            <div class="left" style="width: 40%;">
+                <div class="list-items">
+                    <div class="item" *ngFor="let lesson of schoolingo.getTimetableLessons()[calendarDate.getDay() - 1];index as index">
+                        <div>
+                            {{ (index + 1) + '. ' }} <span *ngIf="schoolingo.getSubject(lesson.subject)">{{ schoolingo.getSubject(lesson.subject)?.[2] }}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="right">
+                <div style="display: flex;flex-direction: row;justify-content: center;">
+                    <schoolingo-tabs [name]="tabName" [options]="[locale.getLocale('classbook/lessonNotation'), locale.getLocale('classbook/attendance'), locale.getLocale('sidebar/teach/homeworks'), locale.getLocale('classbook/notes')]"></schoolingo-tabs>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

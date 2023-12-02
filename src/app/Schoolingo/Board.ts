@@ -219,12 +219,10 @@ export class Schoolingo {
             section.items.forEach((item: SidebarItem) => {
                 if (item.permission && this.checkPermissions(item.permission as UserPermissions[]) == false) return;
                 let children = item.children as SidebarItem[];
-                let deletedCount = 0;
                 if (children) {
                     children.forEach((child: SidebarItem, index: number) => {
                         if (!child.permission || this.checkPermissions(child.permission as UserPermissions[]) == true) return;
-                        item.children?.splice(index - deletedCount, 1);
-                        deletedCount++;
+                        item.children?.splice(index, 1);
                     });
                 }
                 items.push(item);
@@ -266,6 +264,8 @@ export class Schoolingo {
 
 
     //?-- Timetable
+    private timetableLessonsLast: Lesson[][] = [];
+    private declare timetableSelectedWeekLast: number;
     private subjects: Subject[] = [];
     /**
      * Set subjects to memory, save to storage and refresh timetable
@@ -513,16 +513,24 @@ export class Schoolingo {
     }
 
     /**
-     * Refresh timetable, refresh timetable days and save data to memory and storage
-     * TODO: save to storage
+     * Refresh timetable, refresh timetable days and lessons
      */
     public refreshTimetable(): void {
         // Hours
         this.scheduleHours = this.getScheduleHours();
-
-        // Lessons
+        // Week
         let week = this.getTimetableWeek();
 
+        if (this.lessons == this.timetableLessonsLast && week == this.timetableSelectedWeekLast) {
+            return;
+        }
+
+        if (this.lessons.length == 0) {
+            this.timetable = [];
+            return;
+        }
+
+        // Lessons
         let tTable: TTableDay[] = [];
         let monday = this.getFirstDayOfWeek(week);
 
@@ -564,7 +572,7 @@ export class Schoolingo {
                     ) {
                         day.lessons.push({ isEmpty: true });
                     } else {
-                        day.lessons.push({ subject: subject as Subject, teacher: teacher as Teacher, room: room as Room, group: lesson.group })
+                        day.lessons.push({ subject: subject as Subject, teacher: teacher as Teacher, room: room as Room, group: lesson.group, class: lesson.class })
                     }
     
                     if (index == _.length - 1 && index <= this.getScheduleHours().length) {
@@ -586,6 +594,9 @@ export class Schoolingo {
 
             tTable.push(day);
         });
+
+        this.timetableSelectedWeekLast = week;
+        this.timetableLessonsLast = this.lessons;
         this.timetable = tTable;
     }
 

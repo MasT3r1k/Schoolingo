@@ -29,7 +29,7 @@ export class TabsComponent implements OnInit {
   @Input() options: string[] = [];
 
   ngOnInit(): void {
-    this.tabs.createTab(this.name, this.options, 0);
+    this.tabs.createTab(this.name, this.options);
     
   }
 
