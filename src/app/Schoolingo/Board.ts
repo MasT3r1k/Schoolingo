@@ -209,7 +209,7 @@ export class Schoolingo {
      * @returns visible sidebar to user
      */
     public getBoardSidebar(): SidebarGroup[] {
-        let boardSidebar = this.sidebar.data as SidebarGroup[];
+        let boardSidebar = JSON.parse(JSON.stringify(this.sidebar.data));
         let newSidebar: SidebarGroup[] = [];
 
         boardSidebar.forEach((section: SidebarGroup) => {
@@ -222,8 +222,10 @@ export class Schoolingo {
                 if (children) {
                     children.forEach((child: SidebarItem, index: number) => {
                         if (!child.permission || this.checkPermissions(child.permission as UserPermissions[]) == true) return;
-                        item.children?.splice(index, 1);
+                        children?.splice(index, 1);
                     });
+                    item.children = children;
+
                 }
                 items.push(item);
             })
@@ -264,7 +266,7 @@ export class Schoolingo {
 
 
     //?-- Timetable
-    private timetableLessonsLast: Lesson[][] = [];
+    private timetableLessonsLast: Lesson[][][] = [];
     private declare timetableSelectedWeekLast: number;
     private subjects: Subject[] = [];
     /**
@@ -337,11 +339,11 @@ export class Schoolingo {
         return room ? room : null;
     }
 
-    private lessons: Lesson[][] = [];
+    private lessons: Lesson[][][] = [];
     /**
      * Set timetable lessons to memory, save to storage and refresh timetable
      */
-    public setLessons(lessons: Lesson[][]): void {
+    public setLessons(lessons: Lesson[][][]): void {
         this.lessons = lessons;
         this.storage.save('lessons', lessons);
         this.refreshTimetable();
@@ -405,7 +407,7 @@ export class Schoolingo {
      * Get timetable lessons from memory
      * @returns Timetable lessons
      */
-    public getTimetableLessons(): Lesson[][] {
+    public getTimetableLessons(): Lesson[][][] {
         return this.lessons;
     }
 
@@ -455,6 +457,12 @@ export class Schoolingo {
      */
     public getTimetable(): TTableDay[] {
         return this.timetable;
+    }
+
+    public getTimetableDay(date: number, month: number, year: number): TTableLesson[] {
+        return (this.timetable.filter((tDay: TTableDay) => {
+            tDay.date[0] == date && tDay.date[1] == month && tDay.date[2] == year
+        })?.[0]?.lessons ?? []) as TTableLesson[];
     }
 
     /**
@@ -534,7 +542,7 @@ export class Schoolingo {
         let tTable: TTableDay[] = [];
         let monday = this.getFirstDayOfWeek(week);
 
-        this.lessons.forEach((_: Lesson[], index: number) => {
+        this.lessons.forEach((_: Lesson[][], index: number) => {
             let dda = this.addDayToDate(monday, (index < 1) ? index : 1);
 
             let day: TTableDay = {
@@ -551,41 +559,64 @@ export class Schoolingo {
             }
 
             if (!day.holiday) {
-                _.forEach((lesson: Lesson, index) => {
-                    let { ...subject } = this.getSubject(lesson.subject) as Subject ?? false;
-                    let { ...teacher } = this.getTeacher(lesson.teacher) as Teacher ?? false;
-                    let { ...room } = lesson.room ? this.getRoom(lesson.room) as Room ?? false : {};
-    
-                    if (this.selectedWeek == null && lesson.type && lesson.type !== 0 && subject) {
-                        subject[1] = ((lesson.type === 1) ? 'L:' : 'S:') + subject[1];
+                _.forEach((lesson: Lesson[], index) => {
+                    if (lesson.length == 0) {
+                        day.lessons.push([{ isEmpty: true }]);
                     }
-    
-                    if (!subject || !subject[1] || !teacher || !teacher.lastName ||
-                        (
-                            lesson.type &&
-                            this.selectedWeek !== null &&
+                    let l: TTableLesson[] = [];
+                    for(let i = 0;i < lesson.length;i++) {
+                        let { ...subject } = this.getSubject(lesson[i].subject) as Subject ?? false;
+                        let { ...teacher } = this.getTeacher(lesson[i].teacher) as Teacher ?? false;
+                        let { ...room } = lesson[i].room ? this.getRoom(lesson[i].room as number) as Room ?? false : {};
+        
+                        if (this.selectedWeek == null && lesson[i].type && lesson[i].type !== 0 && subject) {
+                            subject[1] = ((lesson[i].type === 1) ? 'L:' : 'S:') + subject[1];
+                        }
+        
+                        if (!subject || !subject[1] || !teacher || !teacher.lastName ||
                             (
-                                (week % 2 === 0 && lesson.type === 1) ||
-                                (week % 2 === 1 && lesson.type === 2)
+                                lesson.length == 1 &&
+                                lesson[i].type &&
+                                this.selectedWeek !== null &&
+                                (
+                                    (week % 2 === 0 && lesson[i].type === 1) ||
+                                    (week % 2 === 1 && lesson[i].type === 2) 
+                                )
                             )
-                        )
-                    ) {
-                        day.lessons.push({ isEmpty: true });
-                    } else {
-                        day.lessons.push({ subject: subject as Subject, teacher: teacher as Teacher, room: room as Room, group: lesson.group, class: lesson.class })
-                    }
-    
-                    if (index == _.length - 1 && index <= this.getScheduleHours().length) {
-                        for(let i = 0;i < (this.getScheduleHours().length - 1) - index;i++) {
-                            day.lessons.push({ isEmpty: true })
+                        ) {
+                            day.lessons.push([{ isEmpty: true }]);
+                        } else {
+                            if ((lesson.length > 1 &&
+                                (
+                                (
+                                    this.selectedWeek != null && (
+                                    (week % 2 === 0 && lesson[i].type === 2) ||
+                                    (week % 2 === 1 && lesson[i].type === 1) ||
+                                    (lesson[i].type === 0))
+                                ) || this.selectedWeek == null
+                                ) || lesson.length == 1)
+                            ) {
+                                l.push({ subject: subject as Subject, teacher: teacher as Teacher, room: room as Room, group: lesson[i].group, class: lesson[i].class });
+                            }
+                            if (i + 1 == lesson.length) {
+                                day.lessons.push(l);
+                                l = [];
+                            }
+                        }
+        
+                        if (index == _.length - 1 && index <= this.getScheduleHours().length) {
+                            for(let i = 0;i < (this.getScheduleHours().length - 1) - index;i++) {
+                                day.lessons.push([{ isEmpty: true }])
+                            }
                         }
                     }
+
                 });
 
                 // To fill empty day
                 if (_.length == 0) {
                     for(let i = 0;i < this.getScheduleHours().length;i++) {
-                        day.lessons.push({ isEmpty: true })
+                        day.lessons.push([{ isEmpty: true }])
                     }
                 }
             } else {

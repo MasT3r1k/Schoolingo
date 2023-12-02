@@ -11,11 +11,11 @@
             <div style="margin: 4px 16px;" *ngIf="schoolingo.isDayWeekend(schoolingo.getToday()) || !schoolingo.getTimetableLessons()?.[selectedDay.getDay() - 1]">
                 Dnes se neučí. Zobrazuji den: {{ schoolingo.full_days[selectedDay.getDay() - 1] }}
             </div>
-            <div class="subjects" *ngIf="schoolingo.getTimetable()?.[selectedDay.getDay() - 1]">
-                <div class="subject timetable" *ngFor="let lesson of schoolingo.getTimetableLessons()[selectedDay.getDay() - 1];index as index">
+            <div class="subjects" *ngIf="schoolingo.getTimetableDay(selectedDay.getDate(), selectedDay.getMonth(), selectedDay.getFullYear())">
+                <div class="subject timetable" *ngFor="let lesson of schoolingo.getTimetableDay(selectedDay.getDate(), selectedDay.getMonth(), selectedDay.getFullYear());index as index">
                     <span class="subjectIndex">{{ index + 1 }}</span>
-                    <div class="subjectName" [title]="(lesson.subject == -1) ? 'Volná hodina' : (schoolingo.getSubject(lesson.subject)?.[2])">
-                        <span>{{ (lesson.subject == -1) ? 'Volná hodina' : (schoolingo.getSubject(lesson.subject)?.[2]) }}</span>
+                    <div class="subjectName" [title]="(!lesson.subject) ? 'Volná hodina' : (lesson.subject[2])">
+                        <span>{{ (!lesson.subject) ? 'Volná hodina' : (lesson.subject[2]) }}</span>
                     </div>
                     <span style="position: absolute;right: 8px;font-size: 12px;line-height: 18px;width: 70px;text-align: right;" *ngIf="schoolingo.getSHours()[index]">
                         {{ schoolingo.getSHours()[index].start + ' - ' + schoolingo.getSHours()[index].end }}
@@ -38,7 +38,7 @@
                 </header>
                 <div>
                     <div class="subjects">
-                        <div *ngIf="schoolingo.compareLessons(
+                        <!-- <div *ngIf="schoolingo.compareLessons(
                             schoolingo.getTimetableLessons()[schoolingo.getLastStudyDay().getDay() - 1],
                             schoolingo.getTimetableLessons()[schoolingo.getNextStudyDay().getDay() - 1]
                             ).length == 0">Nic nevyndavej 😭</div>
@@ -47,7 +47,7 @@
                             schoolingo.getTimetableLessons()[schoolingo.getNextStudyDay().getDay() - 1]
                             )">
                             {{ schoolingo.getSubject(lesson.subject)?.[2] }}
-                        </div>
+                        </div> -->
                     </div>
                 </div>
             </div>
@@ -58,7 +58,7 @@
                 </header>
                 <div>
                     <div class="subjects">
-                        <div *ngIf="schoolingo.compareLessons(
+                        <!-- <div *ngIf="schoolingo.compareLessons(
                             schoolingo.getTimetableLessons()[schoolingo.getNextStudyDay().getDay() - 1],
                             schoolingo.getTimetableLessons()[schoolingo.getLastStudyDay().getDay() - 1]
                             ).length == 0">Nic nepřidávej 😃</div>
@@ -67,7 +67,7 @@
                             schoolingo.getTimetableLessons()[schoolingo.getLastStudyDay().getDay() - 1]
                             )">
                             {{ schoolingo.getSubject(lesson.subject)?.[2] }}
-                        </div>
+                        </div> -->
                     </div>
                 </div>
             </div>

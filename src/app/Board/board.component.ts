@@ -53,7 +53,6 @@ export class BoardComponent implements OnInit {
 
 
       let item = this.sidebar.getItem(url.url?.slice(1));
-      console.log(item);
       if (!item?.[item.length - 1] ||
         (item[item.length - 1] && (item[item.length - 1].permission && schoolingo.checkPermissions(item[item.length - 1].permission as UserPermissions[]) == false) ||
         (item[0].permission && schoolingo.checkPermissions(item[0].permission as UserPermissions[]) == false))
@@ -61,9 +60,11 @@ export class BoardComponent implements OnInit {
           this.router.navigateByUrl('main');
           this.toast.showToast('Nepodařilo se zobrazit požadovanou stránku.', 'error')
           return;
-        }
+      }
 
-      this.schoolingo.sidebarToggled = false;
+      setTimeout(() => {
+        this.schoolingo.sidebarToggled = false;
+      })
 
       // Setup page 
       this.schoolingo.selectWeek(this.schoolingo.getThisWeek());
@@ -106,7 +107,7 @@ export class BoardComponent implements OnInit {
     }
 
     //* Lessons
-    let lesssons = Object.values(this.storage.get('lessons')) as Lesson[][];
+    let lesssons = Object.values(this.storage.get('lessons')) as Lesson[][][];
     if (lesssons) {
       this.schoolingo.setLessons(lesssons);
     }
@@ -148,7 +149,7 @@ export class BoardComponent implements OnInit {
     });
 
     this.socketService.getSocket().Socket?.on('timetable', (timetable: any[]) => {
-      let lessons: Lesson[][] = [];
+      let lessons: Lesson[][][] = [];
   
       for(let i = 0;i < timetable.length;i++) {
         if (!lessons[timetable[i].day]) lessons[timetable[i].day] = [];
@@ -159,14 +160,18 @@ export class BoardComponent implements OnInit {
           d0++;
         }
         while(timetable[i].hour != 0 && lessons[timetable[i].day] && !lessons[timetable[i].day][timetable[i].hour - 1 - d1] && d1 < timetable[i].hour) {
-          lessons[timetable[i].day][timetable[i].hour - 1 - d1] = { 
+          lessons[timetable[i].day][timetable[i].hour - 1 - d1] = [{ 
             subject: -1,
             teacher: -1
-          }
+          }];
           d1++;
         }
 
-        lessons[timetable[i].day][timetable[i].hour - 1] = {
+        if (!lessons[timetable[i].day][timetable[i].hour - 1]) {
+          lessons[timetable[i].day][timetable[i].hour - 1] = [];
+        }
+
+        lessons[timetable[i].day][timetable[i].hour - 1].push({
           subject: timetable[i].subjectId,
           teacher: timetable[i].teacherId,
           room: timetable[i].roomId,
@@ -176,7 +181,7 @@ export class BoardComponent implements OnInit {
             num: timetable[i].groupNum
           },
           type: timetable[i].type
-        }
+        });
       }
       this.schoolingo.setLessons(lessons);
     });

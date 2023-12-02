@@ -28,7 +28,7 @@ export type TTableLesson = {
 export type TTableDay = {
     date: [number, number, number];
     day: string;
-    lessons: TTableLesson[];
+    lessons: TTableLesson[][];
     holiday?: Holiday;
     isFullDay: boolean;
 }
