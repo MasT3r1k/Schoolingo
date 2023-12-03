@@ -1,3 +1,4 @@
+import { UserService } from '@Schoolingo/User';
 import { Component, OnInit } from '@angular/core';
 
 @Component({
@@ -5,6 +6,10 @@ import { Component, OnInit } from '@angular/core';
   styleUrls: ['./main.component.css', './module.css']
 })
 export class MainComponent implements OnInit {
+  constructor(
+    public userService: UserService
+  ) {}
+
   ngOnInit(): void {
     setTimeout(() => {
       document.querySelectorAll(".module-content").forEach(_ => {

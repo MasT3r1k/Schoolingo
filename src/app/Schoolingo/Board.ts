@@ -629,6 +629,7 @@ export class Schoolingo {
         this.timetableSelectedWeekLast = week;
         this.timetableLessonsLast = this.lessons;
         this.timetable = tTable;
+
     }
 
     // Klasifikace

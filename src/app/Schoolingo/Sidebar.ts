@@ -23,6 +23,10 @@ export class Sidebar {
             url: 'main',
             permission: ['all']
         }, {
+            item: 'sidebar/pupilcard',
+            url: 'pupilcard',
+            permission: ['teacher']
+        }, {
             item: 'sidebar/marks/main',
             permission: ['student', 'parent'],
             children: [{

@@ -25,6 +25,7 @@ export class Locale {
             // Sidebar
             sidebar: {
                 home: "Můj přehled",
+                pupilcard: "Evidence žáků",
                 marks: {
                     main: "Klasifikace",
                     interm: "Průběžná klasifikace",

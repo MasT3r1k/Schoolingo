@@ -25,6 +25,7 @@ import { SubjectsComponent } from './Board/teach/subjects/subjects.component';
 import { HomeworksComponent } from './Board/teach/homeworks/homeworks.component';
 import { CalendarComponent } from './Board/calendar/calendar.component';
 import { ClassbookComponent as Classbook } from './Board/teach/classbook/classbook.component';
+import { PupilcardComponent as PupilCard } from './Board/pupilcard/pupilcard.component';
 
 const routes: Routes = [
 {
@@ -36,6 +37,8 @@ const routes: Routes = [
   path: '', component: BoardComponent, children: [
     {
       path: 'main', component: BoardMain
+    }, {
+      path: 'pupilcard', component: PupilCard
     }, {
       path: 'marks', children: [{
         path: 'interm', component: MarkInterm

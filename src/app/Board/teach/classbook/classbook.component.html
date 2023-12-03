@@ -7,19 +7,57 @@
     </header>
     <div class="box-content">
         <div class="row">
-            <div class="left" style="width: 40%;">
-                <div class="list-items">
-                    <div class="item" *ngFor="let lesson of schoolingo.getTimetableLessons()[calendarDate.getDay() - 1];index as index">
-                        <div>
-                            {{ (index + 1) + '. ' }} <span *ngIf="schoolingo.getSubject(lesson[0].subject)">{{ schoolingo.getSubject(lesson[0].subject)?.[2] }}</span>
+            <div class="left">
+                <ul class="list-items" *ngIf="schoolingo.getTimetable()?.[calendarDate.getDay() - 1]?.lessons">
+                    <li [ngClass]="{item: true, active: selectedLesson == index, disabled: !lesson[0].subject}" *ngFor="let lesson of schoolingo.getTimetable()[calendarDate.getDay() - 1].lessons;index as index" (click)="selectLesson(index)">
+                        <div class="row">
+                            <div class="left-item">
+                                <div class="lessonNumber">
+                                    {{ (index + 1) + '.' }}
+                                </div>
+                                <div class="time column" *ngIf="lesson[0].subject">
+                                    <span class="start">{{ schoolingo.getSHours()[index].start }}</span>
+                                    <span class="end">{{ schoolingo.getSHours()[index].end }}</span>
+                                </div>
+                            </div>
+                            <div class="class" *ngIf="lesson[0].class">{{ lesson[0].class }}</div>
+                            <span>{{ (!lesson[0].subject) ? 'Volná hodina' : lesson[0].subject[2] }}</span>
                         </div>
-                    </div>
-                </div>
+                    </li>
+                </ul>
             </div>
-            <div class="right">
+            <div class="right" [ngStyle]="{ visibility: selectedLesson != undefined ? 'visible' : 'hidden' }">
                 <div style="display: flex;flex-direction: row;justify-content: center;">
                     <schoolingo-tabs [name]="tabName" [options]="[locale.getLocale('classbook/lessonNotation'), locale.getLocale('classbook/attendance'), locale.getLocale('sidebar/teach/homeworks'), locale.getLocale('classbook/notes')]"></schoolingo-tabs>
+                </div>
+                <div class="classbook-title" *ngIf="selectedLesson != undefined && schoolingo.getTimetable()[calendarDate.getDay() - 1].lessons[selectedLesson][0]">
+                    <div class="subject">{{ schoolingo.getTimetable()[calendarDate.getDay() - 1].lessons[selectedLesson][0].subject?.[2] }}</div>
+                    <div>{{ calendarDate.getDate() + '. ' + (calendarDate.getMonth() + 1) + '. ' + calendarDate.getFullYear() + ' (' + schoolingo.full_days[calendarDate.getDay() - 1] + ')' + ' ' + (selectedLesson + 1) + '. hodina, ' + schoolingo.getSHours()[selectedLesson].start + ' - ' + schoolingo.getSHours()[selectedLesson].end }}</div>
+                    <div>{{ schoolingo.getTimetable()[calendarDate.getDay() - 1].lessons[selectedLesson][0].class }}</div>
+                    <hr>
+                    <div class="classbook-content" *ngIf="tabs.getTabValue(tabName) == 0">
+                        <div class="form-group">
+                            <label for="lessonNum">Číslo hodiny: </label>
+                            <input type="number" name="lessonNum" id="lessonNum" [formControl]="lessonNumber" min="1" step="1">
+                        </div>
 
+                        <div class="form-group">
+                            <label for="lessonTopic">Téma hodiny: </label>
+                            <input type="text" name="lessonTopic" id="lessonTopic" [formControl]="lessonTopic">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="lessonNote">Poznámka: </label>
+                            <textarea name="lessonNote" id="lessonNote" [formControl]="lessonNote"></textarea>
+                        </div>
+
+                        <div class="btn">Zapsat hodinu a uložit</div>
+
+                        <div *ngIf="false">
+                            <hr>
+                            <div class="classbook-last-lesson">MINULÁ HODINA</div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
