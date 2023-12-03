@@ -1,4 +1,4 @@
-import { NgModule } from '@angular/core';
+import { NgModule, Renderer2, RendererFactory2 } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 
 import { AppRoutingModule } from './app-routing.module';
@@ -46,7 +46,7 @@ import { ClassbookComponent } from './Board/teach/classbook/classbook.component'
     ToastComponent,
     BoardDevices,
     BoardSettings,
-    ClassbookComponent
+    ClassbookComponent,
   ],
   imports: [
     BrowserModule,
@@ -54,7 +54,7 @@ import { ClassbookComponent } from './Board/teach/classbook/classbook.component'
     FormsModule,
     ReactiveFormsModule,
     QRCodeModule,
-    HttpClientModule
+    HttpClientModule,
   ],
   providers: [Locale, UserService, Schoolingo, SocketService, Dropdowns, Sidebar, ToastService, Tabs, Theme, Logger, DatePipe],
   bootstrap: [AppComponent]

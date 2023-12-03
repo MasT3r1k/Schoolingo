@@ -44,11 +44,11 @@
     <div class="content">
         <div [ngClass]="{sidebar: true, active: schoolingo.sidebarToggled}">
             <ul *ngFor="let section of this.schoolingo.boardSidebar">
-                <li *ngFor="let item of section.items" [routerLink]="item.url" [routerLinkActive]="'active'">
+                <li *ngFor="let item of section.items" [routerLink]="(item.url) ? item.url : item.children?.[0]?.url" [routerLinkActive]="'active'">
                     <div class="item">
                         {{ locale.getLocale(item.item) }}
                     </div>
-                    <div class="dropdown-child" *ngIf="item.children && item.children.length > 0">
+                    <div class="dropdown-child" *ngIf="item.children && item.children.length > 0" (click)="$event.stopPropagation()">
                         <ul>
                             <li *ngFor="let child of item.children" [routerLink]="child.url" [routerLinkActive]="'active'">
                                 <div class="item">

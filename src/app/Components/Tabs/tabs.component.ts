@@ -37,7 +37,7 @@ export class TabsComponent implements OnInit {
     this.routerSub.unsubscribe();
   }
 
-  public getGlider(): { width: number, offset: number } {
+  public getGlider(): { width: number, height: number, offset: number } {
 
     return this.tabs.getTabGlider(this.name);
   }
