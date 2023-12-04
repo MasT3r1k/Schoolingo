@@ -36,6 +36,7 @@ export class Locale {
                     timetable: "Rozvrh",
                     homeworks: "Domácí úkoly",
                     substitution: "Suplování",
+                    tutoring: "Doučování",
                     classbook: "Třídní kniha",
                     subjects: "Přehled předmětů"
                 },

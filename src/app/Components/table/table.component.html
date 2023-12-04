@@ -1,0 +1,17 @@
+<table [ngClass]="{ interactive: options.tableType == 'interactive-list'}" [cellSpacing]="'0'">
+    <thead>
+        <tr>
+            <th class="headcheckbox" style="width: 42px;" *ngIf="options.tableType == 'interactive-list'"></th>
+            <th class="sorting" *ngFor="let column of columns">{{ column.name }}</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr *ngFor="let row of visibleRows">
+            <td class="headcheckbox" *ngIf="options.tableType == 'interactive-list'"><div class="checkbox"></div></td>
+            <td *ngFor="let _ of row;">{{ _ }}</td>
+        </tr>
+    </tbody>
+</table>
+<div class="table-information">
+    Zobrazuji {{ visibleRows.length }} žáků z {{ data.length }}
+</div>

@@ -52,6 +52,10 @@ export class Sidebar {
                 url: 'teach/substitution',
                 permission: ['student', 'parent', 'teacher']
             }, {
+                item: 'sidebar/teach/tutoring',
+                url: 'teach/tutoring',
+                permission: ['student', 'parent', 'teacher']
+            }, {
                 item: 'sidebar/teach/classbook',
                 url: 'teach/classbook',
                 permission: ['teacher']

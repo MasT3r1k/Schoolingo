@@ -30,6 +30,9 @@ import { ToastComponent } from '@Components/Toast/toast.component';
 import { DevicesComponent as BoardDevices } from './Board/user/devices/devices.component';
 import { SettingsComponent as BoardSettings } from './Board/user/settings/settings.component';
 import { ClassbookComponent } from './Board/teach/classbook/classbook.component';
+import { TableComponent as ComponentTable } from '@Components/table/table.component';
+import { PupilcardComponent } from './Board/pupilcard/pupilcard.component';
+import { Table } from '@Components/table/Table';
 
 @NgModule({
   declarations: [
@@ -37,6 +40,7 @@ import { ClassbookComponent } from './Board/teach/classbook/classbook.component'
     LoginComponent,
     BoardComponent,
     TabsComponent,
+    ComponentTable,
     BoardMain,
     BoardTimetable,
     BoardTeachSubjects,
@@ -47,6 +51,7 @@ import { ClassbookComponent } from './Board/teach/classbook/classbook.component'
     BoardDevices,
     BoardSettings,
     ClassbookComponent,
+    PupilcardComponent
   ],
   imports: [
     BrowserModule,
@@ -56,7 +61,7 @@ import { ClassbookComponent } from './Board/teach/classbook/classbook.component'
     QRCodeModule,
     HttpClientModule,
   ],
-  providers: [Locale, UserService, Schoolingo, SocketService, Dropdowns, Sidebar, ToastService, Tabs, Theme, Logger, DatePipe],
+  providers: [Locale, UserService, Schoolingo, SocketService, Dropdowns, Sidebar, ToastService, Tabs, Theme, Logger, DatePipe, Table],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

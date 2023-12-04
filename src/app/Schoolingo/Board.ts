@@ -358,6 +358,10 @@ export class Schoolingo {
         let hours: number = 0;
         let les: ScheduleLessonHour[] = [];
 
+        if (this.lessons.length == 0) {
+            return [];
+        }
+
         this.lessons.forEach(_ => {
             if (_.length > hours) {
                 hours = _.length;
@@ -473,8 +477,8 @@ export class Schoolingo {
     public getLastStudyDay(date: Date = new Date()): Date {
         let day = date;
         if (this.getTimetableLessons()?.[(day.getDay() == 0) ? 6 : day.getDay() - 1]) {
-            let checkhour = this.getScheduleHours()[this.getTimetableLessons()[(day.getDay() == 0) ? 6 : day.getDay() - 1].length - 1].end.split(':');
-            if ((day.getHours() == parseInt(checkhour[0]) && day.getMinutes() < parseInt(checkhour[1]) || day.getHours() < parseInt(checkhour[0]))) {
+            let checkhour = this.getScheduleHours()?.[this.getTimetableLessons()[(day.getDay() == 0) ? 6 : day.getDay() - 1].length - 1]?.end?.split(':');
+            if (!checkhour || (day.getHours() == parseInt(checkhour[0]) && day.getMinutes() < parseInt(checkhour[1]) || day.getHours() < parseInt(checkhour[0]))) {
                 day = this.addDayToDate(day, -1);
             }
         }
@@ -494,8 +498,8 @@ export class Schoolingo {
         let day = date;
         if (this.getTimetableLessons()?.[(day.getDay() == 0) ? 6 : day.getDay() - 1]) {
 
-            let checkhour = this.getScheduleHours()?.[this.getTimetableLessons()?.[(day.getDay() == 0) ? 6 : day.getDay() - 1].length - 1]?.end.split(':');
-            if ((day.getHours() == parseInt(checkhour[0]) && day.getMinutes() >= parseInt(checkhour[1]) || day.getHours() > parseInt(checkhour[0]))) {
+            let checkhour = this.getScheduleHours()?.[this.getTimetableLessons()?.[(day.getDay() == 0) ? 6 : day.getDay() - 1].length - 1]?.end?.split(':');
+            if (!checkhour || (day.getHours() == parseInt(checkhour[0]) && day.getMinutes() >= parseInt(checkhour[1]) || day.getHours() > parseInt(checkhour[0]))) {
                 day = this.addDayToDate(day, 1);
             }
         }
