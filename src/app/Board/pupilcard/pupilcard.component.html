@@ -4,7 +4,8 @@
         <div class="card-header">
             <div class="left">
                 <div class="form-group">
-                    <input type="search" name="studentSearch" placeholder="Vyhledávejte žáka dle jména">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                    <input type="search" name="studentSearch" [formControl]="searchStudent" placeholder="Vyhledávejte žáka podle jména" (input)="updateFilter($event)">
                 </div>
             </div>
             <div class="right">
@@ -14,7 +15,7 @@
 
         <div class="card-content">
             <!-- <table id="student-list" class="display" width="100%"></table> -->
-            <schoolingo-table [columns]="columns" [data]="data" [options]="options"></schoolingo-table>
+            <schoolingo-table [name]="tableName" [columns]="columns" [data]="data" [options]="options"></schoolingo-table>
         </div>
 
     </div>

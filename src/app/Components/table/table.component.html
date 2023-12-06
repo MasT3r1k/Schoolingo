@@ -1,17 +1,20 @@
-<table [ngClass]="{ interactive: options.tableType == 'interactive-list'}" [cellSpacing]="'0'">
+<table [ngClass]="{ interactive: table.options.tableType == 'interactive-list'}" [cellSpacing]="'0'">
     <thead>
         <tr>
-            <th class="headcheckbox" style="width: 42px;" *ngIf="options.tableType == 'interactive-list'"></th>
-            <th class="sorting" *ngFor="let column of columns">{{ column.name }}</th>
+            <th class="headcheckbox" *ngIf="table.options.tableType == 'interactive-list'"></th>
+            <th class="sorting" *ngFor="let column of table.columns">{{ column.name }}</th>
+            <th class="headcheckbox" *ngIf="table.options.tableType == 'interactive-list'"></th>
+        
         </tr>
     </thead>
     <tbody>
-        <tr *ngFor="let row of visibleRows">
-            <td class="headcheckbox" *ngIf="options.tableType == 'interactive-list'"><div class="checkbox"></div></td>
+        <tr *ngFor="let row of table.visibleRows">
+            <td class="headcheckbox" *ngIf="table.options.tableType == 'interactive-list'"><div class="checkbox"></div></td>
             <td *ngFor="let _ of row;">{{ _ }}</td>
+            <td class="headcheckbox" *ngIf="table.options.tableType == 'interactive-list'"><i class="fa-solid fa-ellipsis-vertical"></i></td>
         </tr>
     </tbody>
 </table>
 <div class="table-information">
-    Zobrazuji {{ visibleRows.length }} žáků z {{ data.length }}
+    Zobrazuji {{ table.visibleRows.length }} záznamů z {{ table.filteredData.length }} celkem
 </div>

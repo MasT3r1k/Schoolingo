@@ -1,16 +1,6 @@
 import { Component, Input } from '@angular/core';
-import { Table } from './Table';
-
-export type TableTypes = 'list' | 'interactive-list';
-
-export type TableColumn = {
-  name: string;
-};
-
-export type TableOptions = {
-  allowMultiSelect?: boolean;
-  tableType?: TableTypes;
-};
+import { Table, TableColumn, TableOptions } from './Table';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'schoolingo-table',
@@ -18,9 +8,21 @@ export type TableOptions = {
   styleUrl: './table.component.css'
 })
 export class TableComponent {
+  private routerSub;
+
   constructor(
-    public table: Table
-  ) {}
+    public tableService: Table,
+    private router: Router
+  ) {
+    this.routerSub = this.router.events.subscribe((url: any) => {
+      if (url?.routerEvent) return;
+
+      if ((!url?.routerEvent?.urlAfterRedirects && !url?.url) || (url?.routerEvent?.urlAfterRedirects == '/login' || url?.url == '/login') || url.type != 1) { return; }
+      this.table.updateFilter([]).updatePage();
+      
+
+    });
+  }
 
   @Input() name: string = '';
   @Input() options: TableOptions = {
@@ -29,12 +31,12 @@ export class TableComponent {
   };
   @Input() columns: TableColumn[] = [];
   @Input() data: (string|number|boolean)[][] = [];
-  private lastData: number = this.data.length;
+  public declare table: Table;
 
-  public page: number = 1;
   public visibleRows: (string | number | boolean)[][] = [];
   ngOnInit(): void {
-    this.table.createTable(this.name, this.columns, this.data);
+    this.table = this.tableService.createTable(this.name, this.columns, this.data).updateOptions(this.options);
+
   }
 
 }

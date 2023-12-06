@@ -1,5 +1,7 @@
 import { Component, OnInit } from '@angular/core';
-import { TableColumn, TableOptions } from '@Components/table/table.component';
+import { FormControl } from '@angular/forms';
+import { getTable, Table } from '@Components/table/Table';
+import { TableColumn, TableOptions } from '@Components/table/Table';
 import { Locale } from '@Schoolingo/Locale';
 
 type Student = {
@@ -15,6 +17,8 @@ type Student = {
 })
 export class PupilcardComponent implements OnInit {
   public tableName: string = 'student-list';
+
+  searchStudent = new FormControl('');
 
 
   columns: TableColumn[] = [
@@ -37,9 +41,9 @@ export class PupilcardComponent implements OnInit {
 
   _dat: any[] = [];
   data: any[] = [
+    ["Fylyp", "Bašek Strakonický", "B2I", "muž", "Strakonice"],
     ["Fylyp", "Bašek", "B2I", "muž", "Strakonice"],
-    ["Fylyp", "Bašek", "B2I", "muž", "Strakonice"],
-    ["Fylyp", "Bašek", "B2I", "muž", "Strakonice"],
+    ["Fylyp", "Fylyp", "B2I", "muž", "Strakonice"],
     ["Fylyp", "Bašek", "B2I", "muž", "Strakonice"],
     ["Fylyp", "Bašek", "B2I", "muž", "Strakonice"],
     ["Fylyp", "Bašek", "B2I", "muž", "Strakonice"],
@@ -61,23 +65,34 @@ export class PupilcardComponent implements OnInit {
     public locale: Locale
   ){}
 
-  public testPerformance(countOfLines: number): void {
-    this.data = [];
-    let start = performance.now();
-    for(let i = 0;i < countOfLines;i++) {
-      this.data.push(["Fylyp", "Bašek", "B2I", "muž", "Strakonice"]);
-    }
-    let end = performance.now();
-    console.log('Performance for ' + countOfLines + ' is ' + (end - start) + 'ms');
-  }
+  public declare table: Table;
 
   ngOnInit(): void {
     setTimeout(() => {
-      this.testPerformance(1000);
-      this.testPerformance(10000);
-      this.testPerformance(100000);
-      this.testPerformance(1000000);
-    }, 2000)
+      this.table = getTable(this.tableName);
+      // for(let i = 0;i < 1200;i++) {
+      //   this.data.push(["Fylyp", "Bašek", "B2I", "muž", "Strakonice"]);
+      // }
+      this.table.updateValue(this.data);
+    })
+  }
+
+  public updateFilter(event: Event): void {
+    if (this.searchStudent.value == '') {
+      this.table.updateFilter([]);
+      return;
+    }
+    this.table.updateFilter([
+      {
+        column: this.columns[0].name,
+        contains: this.searchStudent.value?.toString()
+      },
+      {
+        column: this.columns[1].name,
+        contains: this.searchStudent.value?.toString()
+      }
+    
+    ])
   }
 
 }
