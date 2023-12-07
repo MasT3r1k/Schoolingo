@@ -82,8 +82,7 @@ export class Table {
             let filteredData: TableValue[] = [];
 
             let columns: number[] = [];
-
-            let used: string[][] = [];
+            let text: string[] = [];
 
             this.filter.forEach((f: TableFilter, index: number) => {
                 let columnId = this.columns.findIndex((search: TableColumn) => search.name == f.column);
@@ -91,57 +90,59 @@ export class Table {
 
                 if (!columns.includes(columnId)) columns.push(columnId);
 
-
                 if (f?.startsWith) {
-                    let text = removeDiacritics(f.startsWith.toLowerCase()).split(' ');
-                    if (!used[0]) used[0] = [];
-                    for(let i = 0;i < text.length;i++) {
-                        if (!used[0].includes(text[i]) && text[i] != '') {
-                            used[0].push(text[i]);
-                        }
-                    }
+                    text = removeDiacritics(f.startsWith.toLowerCase()).split(' ');
                 }
+
                 if (f?.contains) {
-                    let text = removeDiacritics(f.contains.toLowerCase()).split(' ');
-                    if (!used[1]) used[1] = [];
-
-                    for(let i = 0;i < text.length;i++) {
-                        if (used[1].filter((___) => ___ == text[i]).length <= text.filter((___) => ___ == text[i]).length && text[i] != '') {
-                            used[1][index] = text[i];
-                        }
-                    }
-
+                    text = removeDiacritics(f.contains.toLowerCase()).split(' ');
                 }
-                if (f?.endsWith) {
-                    let text = removeDiacritics(f.endsWith.toLowerCase()).split(' ');
-                    if (!used[2]) used[2] = [];
 
-                    for(let i = 0;i < text.length;i++) {
-                        if (!used[2].includes(text[i]) && text[i] != '') {
-                            used[2].push(text[i]);
-                        }
-                    }
+                if (f?.endsWith) {
+                    text = removeDiacritics(f.endsWith.toLowerCase()).split(' ');
                 }
                 
-            })
+            });
 
-            console.log(used);
+            if (text[text.length -1] == '') { text.pop(); }
 
             this.data.forEach((value: TableValue) => {
-                let num: number = 0;
-                let usedText: number[] = [];
+                let used: string[] = JSON.parse(JSON.stringify(text));
+                let usedLength = used.length;
+
                 for(let i = 0;i < columns.length;i++) {
-                    for(let y = 0;y < used?.[1].length;y++) {
-                        if (removeDiacritics(value[i].toString().toLowerCase()).includes(used?.[1]?.[y]) && !usedText.includes(y)) {
-                            usedText.push(y);
-                            num++;
-                            break;
-                        }
+                    for(let y = 0;y < usedLength;y++) {
+                        let values: string[] = removeDiacritics(value[i].toString().toLowerCase()).split(' ');
+                        if (values.length == 0) return;
+
+                        values.forEach(str => {
+                            if (used.length == 0) { return; }
+                            let isContain = str.includes(used[y]);
+                            let isExist = filteredData.includes(value);
+                            if (isContain) {
+                                used.splice(y, 1);
+                                usedLength--;
+                            }
+    
+                            if (!isContain && isExist && text.length > 1) {
+                                let index = filteredData.indexOf(value);
+                                filteredData.splice(index, 1);
+                                return;
+                            }
+    
+                            if (isContain && !isExist) {
+                                filteredData.push(value);
+                                return;
+                            }
+                        })
                     }
                 }
 
-                if (num >= used[1].length) {
-                    filteredData.push(value);
+
+                if (used.length !== 0) {
+                    let index = filteredData.indexOf(value);
+                    if (index == -1) return;
+                    filteredData.splice(index, 1);
                 }
             });
 

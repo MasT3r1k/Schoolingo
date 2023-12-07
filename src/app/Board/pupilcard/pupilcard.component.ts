@@ -42,19 +42,19 @@ export class PupilcardComponent implements OnInit {
   _dat: any[] = [];
   data: any[] = [
     ["Fylyp", "Bašek Strakonický", "B2I", "muž", "Strakonice"],
-    ["Fylyp", "Bašek", "B2I", "muž", "Strakonice"],
+    ["Fylyp", "Bašek2", "B2I", "muž", "Strakonice"],
     ["Fylyp", "Fylyp", "B2I", "muž", "Strakonice"],
-    ["Fylyp", "Bašek", "B2I", "muž", "Strakonice"],
-    ["Fylyp", "Bašek", "B2I", "muž", "Strakonice"],
-    ["Fylyp", "Bašek", "B2I", "muž", "Strakonice"],
-    ["Fylyp", "Bašek", "B2I", "muž", "Strakonice"],
-    ["Fylyp", "Bašek", "B2I", "muž", "Strakonice"],
-    ["Fylyp", "Bašek", "B2I", "muž", "Strakonice"],
-    ["Fylyp", "Bašek", "B2I", "muž", "Strakonice"],
-    ["Fylyp", "Bašek", "B2I", "muž", "Strakonice"],
-    ["Fylyp", "Bašek", "B2I", "muž", "Strakonice"],
-    ["Fylyp", "Bašek", "B2I", "muž", "Strakonice"],
-    ["Fylyp", "Bašek", "B2I", "muž", "Strakonice"],
+    ["Fylyp", "Bašek3", "B2I", "muž", "Strakonice"],
+    ["Fylyp", "Bašek4", "B2I", "muž", "Strakonice"],
+    ["Fylyp", "Bašek5", "B2I", "muž", "Strakonice"],
+    ["Fylyp", "Bašek6", "B2I", "muž", "Strakonice"],
+    ["Fylyp", "Bašek7", "B2I", "muž", "Strakonice"],
+    ["Fylyp", "Bašek8", "B2I", "muž", "Strakonice"],
+    ["Fylyp", "Bašek9", "B2I", "muž", "Strakonice"],
+    ["Fylyp", "Bašek10", "B2I", "muž", "Strakonice"],
+    ["Fylyp", "Bašek11", "B2I", "muž", "Strakonice"],
+    ["Fylyp", "Bašek12", "B2I", "muž", "Strakonice"],
+    ["Fylyp", "Bašek13", "B2I", "muž", "Strakonice"],
   ]
 
   options: TableOptions = {

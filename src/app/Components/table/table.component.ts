@@ -20,7 +20,8 @@ export class TableComponent {
       if (url?.routerEvent) return;
 
       if ((!url?.routerEvent?.urlAfterRedirects && !url?.url) || (url?.routerEvent?.urlAfterRedirects == '/login' || url?.url == '/login') || url.type != 1) { return; }
-      this.table.updateFilter([]).updatePage();
+      
+      setTimeout(() => this.table.updateFilter([]).updatePage());
       
 
     });
