@@ -12,6 +12,7 @@ export class Locale {
     public declare translatedLanguages: Record<languages, number>;
 
     public highestTexts: number = 0;
+    public defaultLanguage: languages = 'en';
 
     public getLanguageTranslated(): void {
         this.getLanguages().forEach((lng: languages) => {
@@ -29,6 +30,7 @@ export class Locale {
             entryCountTest(objEntries);
             this.translatedLanguages[lng] = num;
             if (num > this.highestTexts) {
+                this.defaultLanguage = lng;
                 this.highestTexts = num;
             }
         });
@@ -75,8 +77,16 @@ export class Locale {
                     subjects: "Přehled předmětů"
                 },
 
+                messages: {
+                    main: "Zprávy",
+                    send: "Poslat zprávu",
+                    received: "Přijaté zprávy",
+                    sent: "Odeslané zprávy",
+                    noticeboard: "Nástěnka"
+                },
 
                 absence: "Absence",
+                actionPlan: "Plán akcí",
                 calendar: "Kalendář",
                 user: {
                     main: "Uživatel",
@@ -151,6 +161,12 @@ export class Locale {
             },
             subjects: "Předměty",
             chronologically: "Chronologicky",
+
+            firstName: "Jméno",
+            lastName: "Příjmení",
+            class: "Třída",
+            sex: "Pohlaví",
+            city: "Město",
 
             // Dropdowns
             dropdowns: {
@@ -310,7 +326,7 @@ export class Locale {
             this.setUserLocale(window.navigator.language as languages);
         }else{
             this.logger.send(this.logName, 'Language: ' + window.navigator.language + ' is not found. Loading default language: en')
-            this.setUserLocale('en');
+            this.setUserLocale(this.defaultLanguage);
         }
     }
 

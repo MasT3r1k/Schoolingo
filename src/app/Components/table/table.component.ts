@@ -1,6 +1,7 @@
 import { Component, Input } from '@angular/core';
 import { Table, TableColumn, TableOptions } from './Table';
 import { Router } from '@angular/router';
+import { Locale } from '@Schoolingo/Locale';
 
 @Component({
   selector: 'schoolingo-table',
@@ -12,7 +13,8 @@ export class TableComponent {
 
   constructor(
     public tableService: Table,
-    private router: Router
+    private router: Router,
+    public locale: Locale
   ) {
     this.routerSub = this.router.events.subscribe((url: any) => {
       if (url?.routerEvent) return;

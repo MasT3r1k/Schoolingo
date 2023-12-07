@@ -23,19 +23,19 @@ export class PupilcardComponent implements OnInit {
 
   columns: TableColumn[] = [
     {
-      name: "Jméno"
+      name: "firstName"
     },
     {
-      name: "Příjmení"
+      name: "lastName"
     },
     {
-      name: "Třída"
+      name: "class"
     },
     {
-      name: "Pohlaví"
+      name: "sex"
     },
     {
-      name: "Město"
+      name: "city"
     }
   ];
 

@@ -65,9 +65,28 @@ export class Sidebar {
                 permission: ['student', 'parent']
             }]
         }, {
+            item: 'sidebar/messages/main',
+            children: [{
+                item: 'sidebar/messages/send',
+                url: 'messages/send',
+            }, {
+                item: 'sidebar/messages/received',
+                url: 'messages/received',
+            }, {
+                item: 'sidebar/messages/sent',
+                url: 'messages/sent',
+            }, {
+                item: 'sidebar/messages/noticeboard',
+                url: 'messages/noticeboard',
+            }]
+        }, {
             item: 'sidebar/absence',
             permission: ['student', 'parent'],
             url: 'absence',
+        }, {
+            item: 'sidebar/actionPlan',
+            permission: ['student', 'parent', 'teacher'],
+            url: 'actionplan',
         }, {
             item: 'sidebar/calendar',
             permission: ['student', 'parent', 'teacher'],
