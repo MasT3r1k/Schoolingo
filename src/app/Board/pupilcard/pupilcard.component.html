@@ -1,21 +1,27 @@
 <main>
-    <h2>{{ locale.getLocale('sidebar/pupilcard') }}</h2>
     <div class="card">
         <div class="card-header">
             <div class="left">
+                <h2>{{ locale.getLocale('sidebar/pupilcard') }}</h2>
+            </div>
+            <div class="center">
                 <div class="form-group">
-                    <i class="fa-solid fa-magnifying-glass"></i>
-                    <input type="search" name="studentSearch" [formControl]="searchStudent" placeholder="Vyhledávejte žáka podle jména" (input)="updateFilter($event)">
+                    <i class="ti ti-search"></i>
+                    <input type="search" name="studentSearch" [formControl]="searchStudent" placeholder="Vyhledávejte žáka podle jména" (input)="updateFilter()" [readonly]="table && table.selectedItem != undefined">
                 </div>
             </div>
             <div class="right">
-                <div class="btn">Nový žák</div>
+                <div class="btn"><i class="ti ti-plus"></i> {{ locale.getLocale('pupilcard/new') }}</div>
             </div>
         </div>
 
         <div class="card-content">
             <!-- <table id="student-list" class="display" width="100%"></table> -->
             <schoolingo-table [name]="tableName" [columns]="columns" [data]="data" [options]="options"></schoolingo-table>
+            <div *ngIf="table" [ngClass]="{subcard: true, active: table.selectedItem != undefined}">
+                
+
+            </div>
         </div>
 
     </div>

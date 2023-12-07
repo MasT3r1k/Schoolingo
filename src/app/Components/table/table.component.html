@@ -2,16 +2,20 @@
     <thead>
         <tr>
             <th class="headcheckbox" *ngIf="table.options.tableType == 'interactive-list'"></th>
-            <th class="sorting" *ngFor="let column of table.columns">{{ locale.getLocale(column.name) }}</th>
-            <th class="headcheckbox" *ngIf="table.options.tableType == 'interactive-list'"></th>
+            <th [ngClass]="{sorting: true, asc: table.order[0] == index && table.order[1] == 'asc',  desc: table.order[0] == index && table.order[1] == 'desc'}" *ngFor="let column of table.columns;index as index" (click)="sortTable(index)">{{ locale.getLocale(column.name) }}</th>
+            <!-- <th class="headcheckbox" *ngIf="table.options.tableType == 'interactive-list'"></th> -->
         
         </tr>
     </thead>
     <tbody>
-        <tr *ngFor="let row of table.visibleRows">
-            <td class="headcheckbox" *ngIf="table.options.tableType == 'interactive-list'"><div class="checkbox"></div></td>
+        <tr *ngFor="let row of table.visibleRows" (click)="runRowClick(getId(row))">
+            <td class="headcheckbox" *ngIf="table.options.tableType == 'interactive-list'">
+                <div class="checkbox" *ngIf="getId(row) == table.selectedItem">
+                    <i class="ti ti-check"></i>
+                </div>
+            </td>
             <td *ngFor="let _ of row;">{{ _ }}</td>
-            <td class="headcheckbox" *ngIf="table.options.tableType == 'interactive-list'"><i class="fa-solid fa-ellipsis-vertical"></i></td>
+            <!-- <td class="headcheckbox" *ngIf="table.options.tableType == 'interactive-list'"><i class="fa-solid fa-ellipsis-vertical"></i></td> -->
         </tr>
     </tbody>
 </table>

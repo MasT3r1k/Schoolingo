@@ -1,5 +1,6 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Renderer2 } from '@angular/core';
 import { FormControl } from '@angular/forms';
+import { Router } from '@angular/router';
 import { getTable, Table } from '@Components/table/Table';
 import { TableColumn, TableOptions } from '@Components/table/Table';
 import { Locale } from '@Schoolingo/Locale';
@@ -60,10 +61,12 @@ export class PupilcardComponent implements OnInit {
   options: TableOptions = {
     tableType: 'interactive-list'
   };
+
   
   constructor(
-    public locale: Locale
-  ){}
+    public locale: Locale,
+    private renderer: Renderer2
+  ) {}
 
   public declare table: Table;
 
@@ -73,11 +76,27 @@ export class PupilcardComponent implements OnInit {
       // for(let i = 0;i < 1200;i++) {
       //   this.data.push(["Fylyp", "Bašek", "B2I", "muž", "Strakonice"]);
       // }
+      if (!this.table) return;
       this.table.updateValue(this.data);
-    })
+      this.table.rowClickFunction = (id: number) => {
+        console.log('You clicked student (' + this.data[id][0] + ' ' + this.data[id][1] + ') from ' + this.data[id][4])
+      };
+    });
+
+    this.renderer.listen(window, 'keydown', (event: KeyboardEvent) => {
+      if (event.key && (event?.target as HTMLElement).nodeName !== 'INPUT') {
+        switch(event.key) {
+          case "Escape":
+            if (this.table.selectedItem != undefined) this.table.selectedItem = undefined;
+            break;
+        }
+        //console.log(event);
+      }
+    });
   }
 
-  public updateFilter(event: Event): void {
+  public updateFilter(): void {
+    if (!this.table) return;
     if (this.searchStudent.value == '') {
       this.table.updateFilter([]);
       return;

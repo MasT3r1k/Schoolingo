@@ -14,7 +14,7 @@ export type TableOptions = {
   tableType?: TableTypes;
 };
 
-type TableValue = (string | number | boolean)[];
+export type TableValue = (string | number | boolean)[];
 
 type TableFilter = {
     column: string;
@@ -24,11 +24,19 @@ type TableFilter = {
 };
 
 type TableFilterType = 'and' | 'or';
+export type tableOrder = 'asc' | 'desc';
 
 let tables: Table[] = [];
 
 export function getTable(table: string): Table {
     return tables.filter((tab) => tab.name == table)?.[0];
+}
+
+const sortStringArray = (stringArray: string[], mode?: tableOrder) => {
+    if (!mode || mode === 'asc') {
+      return stringArray.sort((a, b) => a.localeCompare(b))
+    }
+    return stringArray.sort((a, b) => b.localeCompare(a))
 }
 
 
@@ -47,9 +55,12 @@ export class Table {
     public visibleRows: TableValue[] = [];
     public filter: TableFilter[] = [];
     public filterType: TableFilterType = 'or';
-    public ordered: string | null = null;
+    public order: [number, 'asc' | 'desc'] = [0, 'desc'];
+
+    public declare rowClickFunction: Function
 
     public page: number = 1;
+    public selectedItem: number | undefined = undefined;
 
     public createTable(name: string, columns: TableColumn[], values: TableValue[] = [], options: TableOptions = { allowMultiSelect: false, tableType: 'list' }): Table {
         this.name = name;
@@ -146,6 +157,7 @@ export class Table {
                 }
             });
 
+
             this.filteredData = filteredData;
 
 
@@ -207,6 +219,14 @@ export class Table {
         } else {
             this.filteredData = this.data;
         }
+
+        this.filteredData = this.filteredData.sort(
+            (a: TableValue, b: TableValue) => 
+            (this.order[1] === 'asc')
+                ? a[this.order[0]].toString().localeCompare(b[this.order[0]].toString())
+                : b[this.order[0]].toString().localeCompare(a[this.order[0]].toString())
+        );
+
         this.visibleRows = this.filteredData.slice((this.page - 1) * this.showPerPage, this.page * this.showPerPage);
     }
 

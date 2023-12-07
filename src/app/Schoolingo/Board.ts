@@ -120,13 +120,13 @@ export class Schoolingo {
 
     public getRefreshingText(): string {
         if (this.wifiConnection == false) {
-            return '<i class=\'fa-solid fa-xmark\'></i> Nepřipojeno k internetu';
+            return '<i class=\'ti ti-x\'></i> Nepřipojeno k internetu';
         }
         if (this.tempData['refreshingConnection'] == true) {
-            return '<i class=\'fa fa-circle-notch fa-spin\'></i> Aktualizuji..';
+            return '<i class=\'ti ti-loader-2 fa-spin\'></i> Aktualizuji..';
         }
         if (this.tempData['refreshingConnection'] == 'error') {
-            return '<i class=\'fa-solid fa-xmark\'></i> Selhalo';
+            return '<i class=\'ti ti-x\'></i> Selhalo';
         }
         return 'Aktualizovat';
     }

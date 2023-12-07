@@ -1,5 +1,5 @@
-import { Component, Input } from '@angular/core';
-import { Table, TableColumn, TableOptions } from './Table';
+import { Component, Input, OnInit } from '@angular/core';
+import { Table, TableColumn, TableOptions, TableValue } from './Table';
 import { Router } from '@angular/router';
 import { Locale } from '@Schoolingo/Locale';
 
@@ -8,7 +8,7 @@ import { Locale } from '@Schoolingo/Locale';
   templateUrl: './table.component.html',
   styleUrl: './table.component.css'
 })
-export class TableComponent {
+export class TableComponent implements OnInit {
   private routerSub;
 
   constructor(
@@ -21,7 +21,7 @@ export class TableComponent {
 
       if ((!url?.routerEvent?.urlAfterRedirects && !url?.url) || (url?.routerEvent?.urlAfterRedirects == '/login' || url?.url == '/login') || url.type != 1) { return; }
       
-      setTimeout(() => this.table.updateFilter([]).updatePage());
+      setTimeout(() => {if (this.table) this.table.updateFilter([]).updatePage()});
       
 
     });
@@ -33,13 +33,33 @@ export class TableComponent {
     tableType: 'list'
   };
   @Input() columns: TableColumn[] = [];
-  @Input() data: (string|number|boolean)[][] = [];
+  @Input() data: TableValue[] = [];
   public declare table: Table;
 
   public visibleRows: (string | number | boolean)[][] = [];
   ngOnInit(): void {
     this.table = this.tableService.createTable(this.name, this.columns, this.data).updateOptions(this.options);
+  }
 
+  ngOnDestroy(): void {
+    this.routerSub.unsubscribe();
+  }
+
+  public getId(row: TableValue): number {
+    return this.data.indexOf(row);
+  }
+
+  public sortTable(id: number): void {
+    let old = this.table.order;
+    this.table.order = [id, (old[0] == id && old[1] == 'asc') ? 'desc' : 'asc']
+    this.table.updatePage();
+  }
+
+  public runRowClick(id: number): void {
+    this.table.selectedItem = (this.table.selectedItem == id) ? undefined : id;
+    if (this.table.rowClickFunction && this.table.selectedItem != undefined) {
+      this.table.rowClickFunction(id);
+    }
   }
 
 }

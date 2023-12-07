@@ -123,11 +123,12 @@ export class Locale {
             // System roles
             roles: {
                 systemadmin: "Správce systému",
+                isPrincipal: "Ředitelství",
+                isClassTeacher: "třídní",
                 manager: "Správce",
-                principal: "Ředitelství",
                 teacher: "Učitel",
                 parent: "Rodič",
-                student: "Žák"
+                student: "Žák",
             },
 
             toasts: {
@@ -158,6 +159,9 @@ export class Locale {
                 lessonNotation: "Zápis hodiny",
                 attendance: "Docházka",
                 notes: "Poznámky"
+            },
+            pupilcard: {
+                new: "Nový žák"
             },
             subjects: "Předměty",
             chronologically: "Chronologicky",

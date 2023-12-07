@@ -27,6 +27,11 @@ import { CalendarComponent } from './Board/calendar/calendar.component';
 import { ClassbookComponent as Classbook } from './Board/teach/classbook/classbook.component';
 import { PupilcardComponent as PupilCard } from './Board/pupilcard/pupilcard.component';
 import { TutoringComponent } from './Board/teach/tutoring/tutoring.component';
+import { ActionplanComponent } from './Board/actionplan/actionplan.component';
+import { SendComponent as MessageSend } from './Board/messages/send/send.component';
+import { ReceivedComponent as MessageReceived } from './Board/messages/received/received.component';
+import { SentComponent as MessageSent } from './Board/messages/sent/sent.component';
+import { NoticeboardComponent as MessageNoticeboard } from './Board/messages/noticeboard/noticeboard.component';
 
 const routes: Routes = [
 {
@@ -61,7 +66,19 @@ const routes: Routes = [
         path: 'subjects', component: SubjectsComponent
       }]
     }, {
+      path: 'messages', children: [{
+        path: 'send', component: MessageSend
+      }, {
+        path: 'received', component: MessageReceived
+      }, {
+        path: 'sent', component: MessageSent
+      }, {
+        path: 'noticeboard', component: MessageNoticeboard
+      }]
+    }, {
       path: 'absence', component: AbsenceComponent
+    }, {
+      path: 'actionplan', component: ActionplanComponent
     }, {
       path: 'user', children: [{
         path: 'devices', component: UserDevices
