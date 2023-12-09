@@ -49,7 +49,7 @@ export class BoardComponent implements OnInit {
       if (url?.routerEvent) return;
       if (!(url?.code === 0 && url?.type == 16)) this.tabs.clearTabs();
 
-      if ((!url?.routerEvent?.urlAfterRedirects && !url?.url) || (url?.routerEvent?.urlAfterRedirects == '/login' || url?.url == '/login') || url.type != 1) { return; }
+      if ((!url?.routerEvent?.urlAfterRedirects && !url?.url) || (url?.routerEvent?.urlAfterRedirects == '/login' || url?.url == '/login')) { return; }
 
 
       let item = this.sidebar.getItem(url.url?.slice(1));
@@ -58,6 +58,7 @@ export class BoardComponent implements OnInit {
         (item[0].permission && schoolingo.checkPermissions(item[0].permission as UserPermissions[]) == false))
         ) {
           this.router.navigateByUrl('main');
+          this.title.setTitle(this.locale.getLocale(item[item.length - 1].item) + ' | SCHOOLINGO');
           // this.toast.showToast('Nepodařilo se zobrazit požadovanou stránku.', 'error')
           return;
       }
@@ -83,6 +84,7 @@ export class BoardComponent implements OnInit {
       this.router.navigate(['login']);
       return;
     }
+
 
     // Close all dropdowns
     this.dropdown.closeAllDropdowns();

@@ -346,6 +346,9 @@ export class Schoolingo {
      * Set timetable lessons to memory, save to storage and refresh timetable
      */
     public setLessons(lessons: Lesson[][][]): void {
+        for(let i = 0;i < 5;i++) {
+            if (!lessons[i]) lessons[i] = [];
+        }
         this.lessons = lessons;
         this.storage.save('lessons', lessons);
         this.refreshTimetable();
