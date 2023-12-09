@@ -159,63 +159,6 @@ export class Table {
 
 
             this.filteredData = filteredData;
-
-
-
-            // let filteredData: TableValue[] = [];
-            // let column: number[] = [];
-
-            // this.filter.forEach((_: TableFilter) => {
-
-            //     let columnId = this.columns.findIndex((search: TableColumn) => search.name == _.column);
-            //     if (columnId == -1) return this.logger.send('Table', 'Column not found.');
-
-
-            //     ((this.filterType == 'and' && filteredData.length > 0) ? filteredData : this.data).forEach((value: TableValue) => {
-
-            //         var text: string[];
-            //         let textL: string[] = [];
-
-            //         let vc = removeDiacritics(value[columnId].toString().toLowerCase()).split(' ');
-            //         let vcB: number = 0;
-
-            //         if (_.startsWith) {
-            //             text = removeDiacritics(_?.startsWith.toString().toLowerCase()).split(' ');
-            //             for(let i = 0;i < text.length;i++) {
-            //                 if (!textL.includes(text[i]) && text[i] != '') textL.push(text[i]);
-            //             }
-            //         }
-
-            //         if (_.contains) {
-            //             text = removeDiacritics(_?.contains.toString().toLowerCase()).split(' ');
-            //             for(let i = 0;i < text.length;i++) {
-            //                 if (!textL.includes(text[i]) && text[i] != '') textL.push(text[i]);
-            //             }
-            //         }
-
-            //         if (_.endsWith) {
-            //             text = removeDiacritics(_?.endsWith.toString().toLowerCase()).split(' ');
-            //             for(let i = 0;i < text.length;i++) {
-            //                 if (!textL.includes(text[i]) && text[i] != '') textL.push(text[i]);
-            //             }
-            //         }
-
-            //         for(let i = 0;i < textL.length;i++) {
-            //             // TODO: KDYŽ BUDE SLOUPEC OBSAHOVAT VÍC JAK JEDNO SLOVO
-            //             console.log(vc)
-            //             console.log(textL[i])
-            //             for(let y = 0;y < vc.length;y++) {
-            //                 if (vc[y].includes(textL[i])) {
-            //                     vcB++;
-            //                 }
-            //             }
-            //         }
-            //         if (vc.length == vcB) filteredData.push(value);
-
-            //     })
-                
-            // })
-            // this.filteredData = filteredData;
         } else {
             this.filteredData = this.data;
         }
