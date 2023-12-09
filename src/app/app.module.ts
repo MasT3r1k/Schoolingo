@@ -33,6 +33,8 @@ import { ClassbookComponent } from './Board/teach/classbook/classbook.component'
 import { TableComponent as ComponentTable } from '@Components/table/table.component';
 import { PupilcardComponent } from './Board/pupilcard/pupilcard.component';
 import { Table } from '@Components/table/Table';
+import { CalendarComponent } from '@Components/calendar/calendar.component';
+import { Calendar } from '@Components/calendar/calendar';
 
 @NgModule({
   declarations: [
@@ -51,8 +53,10 @@ import { Table } from '@Components/table/Table';
     BoardDevices,
     BoardSettings,
     ClassbookComponent,
-    PupilcardComponent
+    PupilcardComponent,
+    CalendarComponent
   ],
+  
   imports: [
     BrowserModule,
     AppRoutingModule,
@@ -61,7 +65,23 @@ import { Table } from '@Components/table/Table';
     QRCodeModule,
     HttpClientModule,
   ],
-  providers: [Locale, UserService, Schoolingo, SocketService, Dropdowns, Sidebar, ToastService, Tabs, Theme, Logger, DatePipe, Table],
+
+  providers: [
+    Locale,
+    UserService, 
+    Schoolingo,
+    SocketService,
+    Dropdowns,
+    Sidebar,
+    ToastService,
+    Tabs,
+    Theme,
+    Logger,
+    DatePipe,
+    Table,
+    Calendar
+  ],
+
   bootstrap: [AppComponent]
 })
 export class AppModule { }

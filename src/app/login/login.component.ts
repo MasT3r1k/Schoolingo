@@ -15,6 +15,11 @@ import { LoginData, User } from '@Schoolingo/User.d';
 
 type QRPages = 'loading' | 'error' | 'scan' | 'trylogin';
 
+export type formError = {
+  input: string;
+  locale: string;
+}
+
 type QRStatus = {
   whatIsVisible: QRPages;
   code?: string;
@@ -30,6 +35,7 @@ export class LoginComponent implements OnInit {
 
 
   private declare routerSocket;
+  formErrors: formError[] = [];
 
   constructor(
     public locale: Locale,
@@ -65,17 +71,17 @@ export class LoginComponent implements OnInit {
           this.router.navigate(['', 'main']);
         }else{
           if (!data.message) return;
-          // switch(data.message) {
-          //   case "user_not_found":
-          //     this.formErrors = [{ input: 'username', locale: data.message }];
-          //     break;
-          //   case "wrong_password":
-          //     this.formErrors = [{ input: 'password', locale: data.message }];
-          //     break;
-          //   default:
-          //     console.log('Error: ' + data.message);
-          //     break;
-          // } 
+          switch(data.message) {
+            case "user_not_found":
+              this.formErrors = [{ input: 'username', locale: data.message }];
+              break;
+            case "wrong_password":
+              this.formErrors = [{ input: 'password', locale: data.message }];
+              break;
+            default:
+              console.log('Error: ' + data.message);
+              break;
+          } 
         }
       })
     });
@@ -95,16 +101,26 @@ export class LoginComponent implements OnInit {
   password: FormControl<string | null> = new FormControl<string>('');
 
   public login(): void {
-    if (!this.canLogin()) return;
+    if (this.canLogin() == false) {
+      if (this.username.value == null || this.username.value == '') {
+        this.formErrors.push({ input: 'username', locale: 'required' });
+      }
+      if (this.password.value == null || this.password.value == '') {
+        this.formErrors.push({ input: 'password', locale: 'required' });
+
+      }
+      return;
+    } 
     this.socketService?.getSocket().Socket?.emit('login', { username: this.username.value, password: this.password.value });
   }
 
   public canLogin(): boolean {
-    return true;
+    return (this.username.value != '' && this.password.value != '');
   }
 
-  public errorFilter(name: string): boolean {
-    return false;
+  public errorFilter(name: string): boolean | string {
+    let filter = this.formErrors.filter((err) => err.input == name);
+    return (filter.length == 0) ? false : filter[0].locale;
   }
 
 

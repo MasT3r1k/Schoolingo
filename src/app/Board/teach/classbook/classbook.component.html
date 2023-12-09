@@ -12,16 +12,18 @@
                     <li [ngClass]="{item: true, active: selectedLesson == index, disabled: !lesson[0].subject}" *ngFor="let lesson of schoolingo.getTimetable()[calendarDate.getDay() - 1].lessons;index as index" (click)="selectLesson(index)">
                         <div class="row">
                             <div class="left-item">
-                                <div class="lessonNumber">
+                                <div class="lesson">
                                     {{ (index + 1) + '.' }}
                                 </div>
-                                <div class="time column" *ngIf="lesson[0].subject">
-                                    <span class="start">{{ schoolingo.getSHours()[index].start }}</span>
-                                    <span class="end">{{ schoolingo.getSHours()[index].end }}</span>
-                                </div>
                             </div>
-                            <div class="class" *ngIf="lesson[0].class">{{ lesson[0].class }}</div>
-                            <span>{{ (!lesson[0].subject) ? 'Volná hodina' : lesson[0].subject[2] }}</span>
+                            <div class="center">
+                                <div class="lesson">{{ (!lesson[0].subject) ? 'Volná hodina' : lesson[0].subject[2] }}</div>
+                                <div class="row">
+                                    <span class="class" *ngIf="lesson[0].class">{{ lesson[0].class }},</span>
+                                    <span class="time">{{ schoolingo.getSHours()[index].start }} - {{ schoolingo.getSHours()[index].end }}</span>
+                                </div>
+
+                            </div>
                         </div>
                     </li>
                 </ul>

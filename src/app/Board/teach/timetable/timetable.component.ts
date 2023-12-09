@@ -7,6 +7,7 @@ import { FormControl } from '@angular/forms';
 import { Tabs } from '@Components/Tabs/Tabs';
 import { Router } from '@angular/router';
 import { UserService } from '@Schoolingo/User';
+import { CalendarOptions } from '@Components/calendar/calendar.component';
 
 @Component({
   templateUrl: './timetable.component.html',
@@ -30,6 +31,11 @@ export class TimetableComponent implements OnInit {
 
   // Default values
   public tabName: string = 'timeTable';
+  public calendarName = this.tabName;
+  public calendarOptions: CalendarOptions = {
+    allowWeekends: false,
+    noWeekendError: 'errors/noClassOnWeekend',
+  };
   calendar = new FormControl('');
   private declare calendarEvent;
   private declare renderBeforePrint: Function;

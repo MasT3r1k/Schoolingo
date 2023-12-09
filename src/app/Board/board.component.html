@@ -17,13 +17,21 @@
                 <i class="ti ti-menu-2"></i>
             </div>
 
+            <div class="item" tooltip="Zápis hodiny" [routerLink]="['', 'teach', 'classbook']" *ngIf="userService.getUser()?.type == 'teacher'" (click)="$event.stopPropagation();">
+                <i class="ti ti-address-book"></i>
+            </div>
+
+            <div class="item" tooltip="Zápis klasifikace" *ngIf="userService.getUser()?.type == 'teacher'" (click)="$event.stopPropagation()">
+                <i class="ti ti-number"></i>
+            </div>
+
         </div>
 
 
         <div class="right">
             <div class="user dropdown" (click)="dropdown.toggleDropdown('user')"> 
                 <p class="name">{{ schoolingo.formatPlaceholders(schoolingo.getUsernamePlaceholders()) }}</p>
-                <p class="role">{{ locale.getLocale('roles/' + schoolingo.formatPlaceholders('%role%')) }}</p>
+                <p class="role">{{ locale.getLocale('roles/' + schoolingo.formatPlaceholders('%role%')) }} <span [attr.tooltip]="userService.getUser()?.class" *ngIf="userService.getUser()?.type == 'teacher' && userService.getUser()?.class">{{ ' - ' + locale.getLocale('roles/isClassTeacher') }}</span> <span *ngIf="userService.getUser()?.type == 'teacher' && userService.getUser()?.isPrincipal">{{ ' - ' + locale.getLocale('roles/isPrincipal') }}</span></p>
                 <div [ngClass]="{'dropdown-content': true}" style="right: 2px;" *ngIf="dropdown.checkDropdown('user')" (click)="$event.stopPropagation()">
                     <p class="label">{{ locale.getLocale('dropdowns/user/linkedUsers') }}</p>
                     <p class="noData">{{ locale.getLocale('dropdowns/user/noLinked') }}</p>

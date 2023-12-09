@@ -10,10 +10,32 @@
 
 :root {
     --primary: #3a6df0;
+    --error: #b22828;
+    --background-hover: hsl(223 5.8% 52.9%/0.08);
+    --background-active: hsl(223 5.8% 52.9%/0.12);/*rgba(240, 240, 240);*/
 }
 
 h1, h2, h3, h4, h5, h6, p {
     margin: 0;
+}
+
+/* Tooltip */
+[tooltip] {
+    position: relative;
+}
+[tooltip]:not([tooltip='']):hover::after {
+    position: absolute;
+    bottom: 0;
+    transform: translateX(-50%) translateY(calc(100% + 8px));
+    background-color: #fff;
+    color: #000;
+    width: max-content;
+    padding: 4px;
+    left: 50%;
+    z-index: 999999;
+    font-size: 14px;
+    box-shadow: 0px 0px 2px rgba(6, 6, 7, 0.1);
+    content: attr(tooltip);
 }
 
 body {
@@ -34,6 +56,24 @@ body {
     border-radius: 999rem;
     border: 8px solid #323232;
     border-top-color: #4998d1;
+    animation: rotate 1s infinite linear;
+}
+
+.btn-loader {
+    display: inline-block;
+    width: 14px;
+    height: 14px;
+    border: 2px solid currentColor;
+    border-top-color: transparent;
+    border-radius: 999rem;
+    animation: rotate 1s infinite linear;
+}
+
+.btn-loader.mr {
+    margin-right: 4px!important;
+}
+
+.spin {
     animation: rotate 1s infinite linear;
 }
 

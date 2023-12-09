@@ -6,6 +6,7 @@ import { Sidebar, SidebarGroup, SidebarItem } from "./Sidebar";
 import { SocketService } from "./Socket";
 import { Tabs } from "@Components/Tabs/Tabs";
 import { Cache } from "./Cache";
+import { Locale } from "./Locale";
 
 // Add getWeek function to Date
 declare global {
@@ -57,7 +58,8 @@ export class Schoolingo {
         private sidebar: Sidebar,
         private socketService: SocketService,
         private tabs: Tabs,
-        private storage: Cache
+        private storage: Cache,
+        private locale: Locale
     ) {
 
 
@@ -120,15 +122,15 @@ export class Schoolingo {
 
     public getRefreshingText(): string {
         if (this.wifiConnection == false) {
-            return '<i class=\'ti ti-x\'></i> Nepřipojeno k internetu';
+            return '<i class=\'ti ti-x\'></i> ' + this.locale.getLocale('buttons/noInternetConnection');
         }
         if (this.tempData['refreshingConnection'] == true) {
-            return '<i class=\'ti ti-loader-2 fa-spin\'></i> Aktualizuji..';
+            return '<div class=\'btn-loader mr\'></div>' + this.locale.getLocale('buttons/updating');
         }
         if (this.tempData['refreshingConnection'] == 'error') {
-            return '<i class=\'ti ti-x\'></i> Selhalo';
+            return '<i class=\'ti ti-x\'></i> ' + this.locale.getLocale('buttons/failed');
         }
-        return 'Aktualizovat';
+        return this.locale.getLocale('buttons/update');
     }
 
     /**
@@ -156,16 +158,16 @@ export class Schoolingo {
      * @returns 
      */
     public formatPlaceholders(text: string): string {
-        let user = this.userService?.getUser();
+        let user = this.userService?.getUser() as UserMain;
         if (!user) return text;
         let changedText = text
-        .replaceAll('%first-name%', (user as UserMain)?.firstName)
-        .replaceAll('%last-name%', (user as UserMain)?.lastName)
-        .replaceAll('%username%', (user as UserMain)?.username)
-        .replaceAll('%locale%', (user as UserMain)?.locale)
-        .replaceAll('%sex%', (user as UserMain)?.sex)
-        .replaceAll('%class%', (user as UserMain)?.class)
-        .replaceAll('%role%', (user as UserMain)?.type)
+        .replaceAll('%first-name%', user.firstName)
+        .replaceAll('%last-name%', user.lastName)
+        .replaceAll('%username%', user.username)
+        .replaceAll('%locale%', user.locale)
+        .replaceAll('%sex%', user.sex)
+        .replaceAll('%class%', (typeof user?.class == 'string') ? user?.class : user?.class?.join(', '))
+        .replaceAll('%role%', user.type)
         return changedText;
     }
 

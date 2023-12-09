@@ -3,6 +3,7 @@ import { UserPermissions } from "./User.d";
 export interface SidebarItem {
     item: string;
     url?: string;
+    icon?: string;
     permission?: UserPermissions[];
     children?: SidebarItem[];
 }
@@ -20,14 +21,17 @@ export class Sidebar {
         label: "sidebar/main",
         items: [{
             item: 'sidebar/home',
+            icon: 'dashboard',
             url: 'main',
             permission: ['all']
         }, {
             item: 'sidebar/pupilcard',
+            icon: 'user-pentagon',
             url: 'pupilcard',
             permission: ['teacher']
         }, {
             item: 'sidebar/marks/main',
+            icon: 'number-1',
             permission: ['student', 'parent'],
             children: [{
                 item: 'sidebar/marks/interm',
@@ -46,6 +50,7 @@ export class Sidebar {
             }, {
                 item: 'sidebar/teach/homeworks',
                 url: 'teach/homeworks',
+                icon: 'home-edit',
                 permission: ['student', 'parent']
             }, {
                 item: 'sidebar/teach/substitution',

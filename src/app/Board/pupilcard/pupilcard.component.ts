@@ -73,9 +73,9 @@ export class PupilcardComponent implements OnInit {
   ngOnInit(): void {
     setTimeout(() => {
       this.table = getTable(this.tableName);
-      // for(let i = 0;i < 1200;i++) {
-      //   this.data.push(["Fylyp", "Bašek", "B2I", "muž", "Strakonice"]);
-      // }
+      for(let i = 0;this.data.length < 1200;i++) {
+        this.data.push(["Fylyp", "Bašek" + this.data.length, "B2I", "muž", "Strakonice"]);
+      }
       if (!this.table) return;
       this.table.updateValue(this.data);
       this.table.rowClickFunction = (id: number) => {

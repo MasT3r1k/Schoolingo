@@ -58,7 +58,7 @@ export class BoardComponent implements OnInit {
         (item[0].permission && schoolingo.checkPermissions(item[0].permission as UserPermissions[]) == false))
         ) {
           this.router.navigateByUrl('main');
-          this.toast.showToast('Nepodařilo se zobrazit požadovanou stránku.', 'error')
+          // this.toast.showToast('Nepodařilo se zobrazit požadovanou stránku.', 'error')
           return;
       }
 
@@ -116,6 +116,7 @@ export class BoardComponent implements OnInit {
     this.socketService.connectUser();
 
     this.socketService.getSocket().Socket?.on('token', (data: any) => {
+      console.log(data);
       if (!data.status) {
         this.userService.logout();
         return;

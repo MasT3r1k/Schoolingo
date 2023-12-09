@@ -11,12 +11,14 @@ export type UserMain = {
     locale: string;
     sex: string;
     type: UserRoles;
-    class: string;
+    class: string | string[];
     userBirthNumber: string;
 
     classTeacherFirstName: string;
     classTeacherLastName: string;
     classTeacherSex: string;
+
+    isPrincipal?: boolean;
 }
 
 export type Teacher = Omit<UserMain, "class" | "type" | "locale" | "username" | "userBirthNumber" | "classTeacherFirstName" | "classTeacherLastName" | "classTeacherSex" > & {teacherId: number};

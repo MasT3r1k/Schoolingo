@@ -65,3 +65,8 @@ export type Holiday = {
     calculateDate?: {}
     name: string;
 }
+
+export type CalendarDay = {
+    day: number;
+    isMonth: boolean;
+}

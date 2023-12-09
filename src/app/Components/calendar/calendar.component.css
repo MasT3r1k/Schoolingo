@@ -1,0 +1,108 @@
+/* Calendar Button */
+.calendar {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    position: relative;
+    height: 28px;
+    font-size: 15px;
+    line-height: 18px;
+    border: 1px solid var(--border-color);
+    color: #fff;
+    background-color: var(--primary);
+
+    padding: 8px 16px;
+    border-radius: 20px;
+    cursor: pointer;
+    user-select: none;
+    box-shadow: 0px 8px 15px rgba(0, 0, 0, 0.1);
+    min-width: max-content;
+    width: 150px;
+}
+
+.calendar .calendar-item {
+    padding: 4px;
+}
+
+.calendar .calendar-item div:not(.year) {
+    width: 30px;
+}
+
+/* Calendar dropdown */
+.calendar .dropdown {
+    position: absolute;
+    cursor: default;
+    top: calc(100% + 8px);
+    left: 50%;
+    transform: translateX(-50%);
+    color: #000;
+    background-color: #fff;
+    z-index: 50;
+    border: 1px solid #dedede;
+    box-shadow: 0px 0px 2px rgba(0,0,0,.12);
+}
+
+.calendar .dropdown .header {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+    align-items: center;
+    padding: 8px;
+}
+
+.calendar .dropdown .header .month {
+    font-size: 18px;
+    font-weight: 600;
+    width: 50%;
+    text-align: center;
+}
+
+/* Calendar Calendar */
+.calendar-content {
+    display: flex;
+    flex-direction: column;
+}
+
+.calendar .days, 
+.calendar .calendar-content .calendar-row  {
+    display: flex;
+    color: #6b6e63;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    border-collapse: collapse;
+}
+
+.calendar .days,
+.calendar .calendar-content .calendar-row .calendar-day.active {
+    color: #000;
+    font-weight: bold;
+}
+
+.calendar .days > div,
+.calendar .calendar-content .calendar-row > div {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    width: 42px;
+    aspect-ratio: 1;
+}
+
+.calendar .calendar-content .calendar-row .calendar-day.today {
+    color: var(--primary)
+}
+
+.calendar .calendar-content .calendar-row .calendar-day.active {
+    color: #fff;
+    background-color: var(--primary);
+}
+
+.calendar .calendar-content .calendar-row .calendar-day.isGray, 
+.calendar .calendar-content .calendar-row .calendar-day:not(.isAllowed) {
+    color: rgba(117, 141, 150, .75);
+}
+
+.calendar .calendar-content .calendar-row .calendar-day.isAllowed:not(.active):hover {
+    background-color: var(--background-hover);
+}

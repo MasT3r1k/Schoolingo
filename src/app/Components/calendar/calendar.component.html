@@ -1,0 +1,46 @@
+<div class="calendar" (click)="this.dropdown.toggleDropdown('calendar_' + name);">
+    <i class="calendar-item ti ti-calendar-search"></i>
+    <div class="calendar-item day">{{ schoolingo.addZeros(date.getDate()) }}.</div>
+    <div class="calendar-item month">{{ schoolingo.addZeros(date.getMonth() + 1) }}.</div>
+    <div class="calendar-item year">{{ date.getFullYear() }}</div>
+    <div class="dropdown" *ngIf="this.dropdown.checkDropdown('calendar_' + name)" (click)="$event.stopPropagation()">
+        <div class="header">
+            <i class="ti ti-caret-left-filled" (click)="pickMonth(-1)"></i>
+            <div class="month">{{ locale.getLocale('months/' + date.getMonth()).charAt(0).toLocaleUpperCase() + locale.getLocale('months/' + date.getMonth()).slice(1) + ' ' + date.getFullYear() }}</div>
+            <i class="ti ti-caret-right-filled" (click)="pickMonth(1)"></i>
+        </div>
+        <div class="days">
+            <div class="day" *ngFor="let day of schoolingo.days">
+                {{ day }}
+            </div>
+        </div>
+        <div class="calendar-content">
+            <div
+            class="calendar-row"
+            *ngFor="let _ of [].constructor(ceilNum(calendarDays.length / 7));index as i"
+            >
+                <div
+                class="calendar-day"
+                *ngFor="let _ of [].constructor(schoolingo.days.length);index as i2"
+                
+                [attr.tooltip]="
+                (schoolingo.isDayWeekend(returnAsDate(calendarDays[i * 7 + i2].day, date.getMonth(), date.getFullYear())) &&
+                calendarDays[i * 7 + i2].isMonth &&
+                this.options.allowWeekends == false &&
+                 options.noWeekendError) ? locale.getLocale(options.noWeekendError) : ''"
+
+                [ngClass]="{
+                    today: (calendarDays[i * 7 + i2].day == schoolingo.getToday().getDate() &&
+                    date.getMonth() == schoolingo.getToday().getMonth() &&
+                    date.getFullYear() == schoolingo.getToday().getFullYear()),
+
+                    isGray: !calendarDays[i * 7 + i2].isMonth,
+                    isAllowed: !(schoolingo.isDayWeekend(returnAsDate(calendarDays[i * 7 + i2].day, date.getMonth(), date.getFullYear())) && this.options.allowWeekends == false) && calendarDays[i * 7 + i2].isMonth
+                    }"
+                    >
+                    <span>{{ calendarDays[i * 7 + i2].day }}</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
