@@ -37,7 +37,10 @@
                     isGray: !calendarDays[i * 7 + i2].isMonth,
                     isAllowed: !(schoolingo.isDayWeekend(returnAsDate(calendarDays[i * 7 + i2].day, date.getMonth(), date.getFullYear())) && this.options.allowWeekends == false) && calendarDays[i * 7 + i2].isMonth
                     }"
-                    >
+                (click)="
+                $event.stopPropagation();
+                pickDate(returnAsDate(calendarDays[i * 7 + i2].day, date.getMonth(), date.getFullYear()))
+                "   >
                     <span>{{ calendarDays[i * 7 + i2].day }}</span>
                 </div>
             </div>

@@ -166,7 +166,7 @@ export class Schoolingo {
         .replaceAll('%username%', user.username)
         .replaceAll('%locale%', user.locale)
         .replaceAll('%sex%', user.sex)
-        .replaceAll('%class%', (typeof user?.class == 'string') ? user?.class : user?.class?.join(', '))
+        .replaceAll('%class%', (user.class) ? user.class.join(', ') : '')
         .replaceAll('%role%', user.type)
         return changedText;
     }
@@ -200,7 +200,7 @@ export class Schoolingo {
         if (!user && (required.includes('onlynonlogged') || required.includes('nonlogged'))) return true;
         if (!user) return false;
         if (user && required.includes('onlynonlogged')) return false;
-        return (required.includes('all') || (required.includes(user.type)));
+        return (required.includes('all') || (required.includes('classteacher') && user.type == 'teacher' && user?.class != undefined) || required.includes(user.type));
     }
 
     //?-- Sidebar system
@@ -346,8 +346,10 @@ export class Schoolingo {
      * Set timetable lessons to memory, save to storage and refresh timetable
      */
     public setLessons(lessons: Lesson[][][]): void {
-        for(let i = 0;i < 5;i++) {
-            if (!lessons[i]) lessons[i] = [];
+        if (lessons.length < 5) {
+            for(let i = 0;i < 5;i++) {
+                if (!lessons[i]) lessons[i] = [];
+            }
         }
         this.lessons = lessons;
         this.storage.save('lessons', lessons);

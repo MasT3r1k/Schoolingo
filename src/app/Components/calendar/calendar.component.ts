@@ -4,6 +4,7 @@ import { Component, Input } from '@angular/core';
 import { Calendar } from './calendar';
 import { Locale } from '@Schoolingo/Locale';
 import { CalendarDay } from '@Schoolingo/Board.d';
+import { Tabs } from '@Components/Tabs/Tabs';
 
 export type CalendarOptions = {
   allowWeekends?: boolean;
@@ -20,10 +21,12 @@ export class CalendarComponent {
     public schoolingo: Schoolingo,
     public dropdown: Dropdowns,
     public calendar: Calendar,
-    public locale: Locale
+    public locale: Locale,
+    public tabs: Tabs
     ) {}
 
   public date: Date = this.schoolingo.getToday();
+  public declare customPickFunction: Function;
 
   @Input() name: string = '';
   @Input() options: CalendarOptions = {};
@@ -33,6 +36,10 @@ export class CalendarComponent {
     this.dropdown.addDropdown('calendar_' + this.name);
 
     this.refreshCalendar();
+  }
+
+  ngOnDestroy(): void {
+    this.calendar.removeCalendar(this);
   }
 
 
@@ -84,8 +91,18 @@ export class CalendarComponent {
     this.refreshCalendar();
   }
 
+  public pickDate(date: Date): void {
+    this.date = date;
+    this.dropdown.closeAllDropdowns();
+    if (this.customPickFunction) {
+      this.customPickFunction(date);
+    }
+  }
+
   public returnAsDate(day: number, month: number, year: number): Date {
     return new Date(year, month, day);
   }
+
+
   
 }

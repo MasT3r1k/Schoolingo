@@ -30,8 +30,9 @@
 
         <div class="right">
             <div class="user dropdown" (click)="dropdown.toggleDropdown('user')"> 
-                <p class="name">{{ schoolingo.formatPlaceholders(schoolingo.getUsernamePlaceholders()) }}</p>
-                <p class="role">{{ locale.getLocale('roles/' + schoolingo.formatPlaceholders('%role%')) }} <span [attr.tooltip]="userService.getUser()?.class" *ngIf="userService.getUser()?.type == 'teacher' && userService.getUser()?.class">{{ ' - ' + locale.getLocale('roles/isClassTeacher') }}</span> <span *ngIf="userService.getUser()?.type == 'teacher' && userService.getUser()?.isPrincipal">{{ ' - ' + locale.getLocale('roles/isPrincipal') }}</span></p>
+                <p class="name" *ngIf="userService.getUser()">{{ schoolingo.formatPlaceholders(schoolingo.getUsernamePlaceholders()) }}</p>
+                <p class="name" *ngIf="!userService.getUser()">{{ locale.getLocale('logining_btn') }}</p>
+                <p class="role" *ngIf="userService.getUser()">{{ locale.getLocale('roles/' + schoolingo.formatPlaceholders('%role%')) }} <span [attr.tooltip]="userService.getUser()?.class?.join(', ')" *ngIf="userService.getUser()?.type == 'teacher' && userService.getUser()?.class">{{ ' - ' + locale.getLocale('roles/isClassTeacher') }}</span> <span *ngIf="userService.getUser()?.type == 'teacher' && userService.getUser()?.isPrincipal">{{ ' - ' + locale.getLocale('roles/isPrincipal') }}</span></p>
                 <div [ngClass]="{'dropdown-content': true}" style="right: 2px;" *ngIf="dropdown.checkDropdown('user')" (click)="$event.stopPropagation()">
                     <p class="label">{{ locale.getLocale('dropdowns/user/linkedUsers') }}</p>
                     <p class="noData">{{ locale.getLocale('dropdowns/user/noLinked') }}</p>
@@ -49,7 +50,14 @@
 
     </div>
 
-    <div class="content">
+    <div class="content center" *ngIf="!userService.getUser()">
+        <div class="dot-flashing"></div>
+        <div class="loading-text">
+            <p>{{ locale.getLocale('loading_user') }}</p>
+        </div>
+    </div>
+
+    <div class="content" *ngIf="userService.getUser()">
         <div [ngClass]="{sidebar: true, active: schoolingo.sidebarToggled}">
             <ul *ngFor="let section of this.schoolingo.boardSidebar">
                 <li *ngFor="let item of section.items" [routerLink]="(item.url) ? item.url : item.children?.[0]?.url" [routerLinkActive]="'active'">

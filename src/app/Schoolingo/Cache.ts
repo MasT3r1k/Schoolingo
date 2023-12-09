@@ -42,7 +42,6 @@ export class Cache {
         if (json == null) return false;
         if (!value) return json;
         if (!json[value]) return false; 
-
         return json[value];
     }
 

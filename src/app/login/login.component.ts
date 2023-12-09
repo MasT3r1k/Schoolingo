@@ -51,18 +51,19 @@ export class LoginComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
+
     this.routerSocket = this.router.events.subscribe((url: any) => {
       this.tabs.clearTabs();
-
       if ((!url?.routerEvent?.urlAfterRedirects && !url?.url) || !(url?.routerEvent?.urlAfterRedirects == '/login' || url?.url == '/login')) { return; }
 
       this.title.setTitle(this.locale.getLocale('login_title') + ' | SCHOOLINGO')
       this.schoolingo.sidebarToggled = false;
-
+  
       this.socketService.connectAnon();
       this.refreshQRcode();
-
+  
       this?.socketService.getSocket()?.Socket?.on('login', (data: LoginData) => {
+        this.tryingToLogin = false;
         if (data.status == 1 && data?.token && data?.expires) {
           this.logger.send('Login', 'Successful logged in.');
           this.storage.removeAll();
@@ -85,6 +86,7 @@ export class LoginComponent implements OnInit {
         }
       })
     });
+
   }
 
   ngOnDestroy(): void {
@@ -99,8 +101,10 @@ export class LoginComponent implements OnInit {
   // Main login code
   username: FormControl<string | null> = new FormControl<string>('');
   password: FormControl<string | null> = new FormControl<string>('');
+  public tryingToLogin: boolean = false;
 
   public login(): void {
+    this.formErrors = [];
     if (this.canLogin() == false) {
       if (this.username.value == null || this.username.value == '') {
         this.formErrors.push({ input: 'username', locale: 'required' });
@@ -110,12 +114,13 @@ export class LoginComponent implements OnInit {
 
       }
       return;
-    } 
+    }
+    this.tryingToLogin = true;
     this.socketService?.getSocket().Socket?.emit('login', { username: this.username.value, password: this.password.value });
   }
 
   public canLogin(): boolean {
-    return (this.username.value != '' && this.password.value != '');
+    return !(this.username.value == null || this.username.value == '' || this.password.value == null || this.password.value == '');
   }
 
   public errorFilter(name: string): boolean | string {
@@ -163,8 +168,11 @@ export class LoginComponent implements OnInit {
       this.qrCodeResult = null;
       this.qrStatus = this.getQRcodeStatus();
     }, 5000);
+  }
 
-
+  public getLoginButtonText(): string {
+    if (this.tryingToLogin == true) return '<div class=\'btn-loader\'></div> ' + this.locale.getLocale('logining_btn');
+    return this.locale.getLocale('login_btn');
   }
 
   public getQRcodeStatus(): QRStatus {

@@ -1,7 +1,7 @@
 // User roles
 export type UserRoles = 'systemadmin' | 'manager' | 'principal' | 'teacher' | 'parent' | 'student';
 // User Permissions
-export type UserPermissions = UserRoles | 'nonlogged' | 'onlynonlogged' | 'all';
+export type UserPermissions = UserRoles | 'nonlogged' | 'onlynonlogged' | 'all' | 'classteacher';
 
 
 export type UserMain = {
@@ -11,7 +11,7 @@ export type UserMain = {
     locale: string;
     sex: string;
     type: UserRoles;
-    class: string | string[];
+    class: string[];
     userBirthNumber: string;
 
     classTeacherFirstName: string;

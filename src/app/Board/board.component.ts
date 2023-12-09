@@ -14,6 +14,7 @@ import { Tabs } from '@Components/Tabs/Tabs';
 import { Lesson, Room, Subject } from '@Schoolingo/Board.d';
 import { Cache } from '@Schoolingo/Cache';
 import { Teacher, UserPermissions } from '@Schoolingo/User.d';
+import { Logger } from '@Schoolingo/Logger';
 
 @Component({
   templateUrl: './board.component.html',
@@ -36,7 +37,8 @@ export class BoardComponent implements OnInit {
     private sidebar: Sidebar,
     private toast: ToastService,
     private tabs: Tabs,
-    private storage: Cache
+    private storage: Cache,
+    public logger: Logger
   ) {
 
     // Register dropdowns
@@ -47,86 +49,49 @@ export class BoardComponent implements OnInit {
     // Change title on page change
     this.routerSub = this.router.events.subscribe((url: any) => {
       if (url?.routerEvent) return;
-      if (!(url?.code === 0 && url?.type == 16)) this.tabs.clearTabs();
-
-      if ((!url?.routerEvent?.urlAfterRedirects && !url?.url) || (url?.routerEvent?.urlAfterRedirects == '/login' || url?.url == '/login')) { return; }
-
+      if (url?.type != 16) this.tabs.clearTabs();
+      if (url?.type != 1) {return;}
+      if (url?.url == '/login') return;
 
       let item = this.sidebar.getItem(url.url?.slice(1));
-      if (!item?.[item.length - 1] ||
-        (item[item.length - 1] && (item[item.length - 1].permission && schoolingo.checkPermissions(item[item.length - 1].permission as UserPermissions[]) == false) ||
-        (item[0].permission && schoolingo.checkPermissions(item[0].permission as UserPermissions[]) == false))
-        ) {
-          this.router.navigateByUrl('main');
-          this.title.setTitle(this.locale.getLocale(item[item.length - 1].item) + ' | SCHOOLINGO');
-          // this.toast.showToast('Nepodařilo se zobrazit požadovanou stránku.', 'error')
-          return;
-      }
-
-      setTimeout(() => {
-        this.schoolingo.sidebarToggled = false;
-      })
+      // if (!item?.[item.length - 1] ||
+      //   (item[item.length - 1] && (item[item.length - 1].permission && schoolingo.checkPermissions(item[item.length - 1].permission as UserPermissions[]) == false) ||
+      //   (item[0].permission && schoolingo.checkPermissions(item[0].permission as UserPermissions[]) == false))
+      //   ) {
+      //     this.router.navigateByUrl('main');
+      //     // this.toast.showToast('Nepodařilo se zobrazit požadovanou stránku.', 'error')
+      //     return;
+      // }
 
       // Setup page 
+      setTimeout(() => {
+        this.schoolingo.sidebarToggled = false;
+        this.title.setTitle(this.locale.getLocale(item[item.length - 1].item) + ' | SCHOOLINGO');
+      })
+
       this.schoolingo.selectWeek(this.schoolingo.getThisWeek());
       this.schoolingo.refreshTimetable();
-
-      this.title.setTitle(this.locale.getLocale(item[item.length - 1].item) + ' | SCHOOLINGO');
 
 
     });
 
   }
 
-  ngOnInit(): void {
-    let token = this.userService.getToken();
-    if (!token) {
-      this.router.navigate(['login']);
-      return;
-    }
-
-
-    // Close all dropdowns
-    this.dropdown.closeAllDropdowns();
-
-    // Load data from storage
-    //* Teachers
-    let teachers = Object.values(this.storage.get('teachers')) as Teacher[];
-    if (teachers) {
-      this.schoolingo.setTeachers(teachers);
-    }
-
-    //* Rooms
-    let rooms = Object.values(this.storage.get('rooms')) as Room[];
-    if (rooms) {
-      this.schoolingo.setRooms(rooms);
-    }
-
-    //* Subjects
-    let subjects = Object.values(this.storage.get('subjects')) as Subject[];
-    if (subjects) {
-      this.schoolingo.setSubjects(subjects);
-    }
-
-    //* Lessons
-    let lesssons = Object.values(this.storage.get('lessons')) as Lesson[][][];
-    if (lesssons) {
-      this.schoolingo.setLessons(lesssons);
-    }
-
-    // Socket service
-    this.socketService.connectUser();
-
+  public setupSocket(): void {
     this.socketService.getSocket().Socket?.on('token', (data: any) => {
-      console.log(data);
       if (!data.status) {
         this.userService.logout();
         return;
       }
       switch(data.status) {
         case 1:
-          if (data?.user == undefined) return;
+          if (data?.user == undefined) {
+            this.userService.logout();
+            return;
+          }
+          data.user.class = JSON.parse(data.user.class as string);
           this.userService.setUser(data.user as UserMain);
+          this.logger.send('Socket', 'Updated user data');
           break;
         case 401:
           this.userService.logout();
@@ -140,15 +105,18 @@ export class BoardComponent implements OnInit {
         subjectList.push([subjects[i].subjectId, subjects[i].shortcut, subjects[i].label])
       }
       this.schoolingo.setSubjects(subjectList);
+      this.logger.send('Socket', 'Updated list of subjects');
     });
 
     this.socketService.getSocket().Socket?.on('rooms', (rooms: any[]) => {
       this.schoolingo.setRooms(rooms);
+      this.logger.send('Socket', 'Updated list of rooms');
     });
 
 
     this.socketService.getSocket().Socket?.on('teachers', (teachers: any[]) => {
       this.schoolingo.setTeachers(teachers);
+      this.logger.send('Socket', 'Updated list of teachers');
     });
 
     this.socketService.getSocket().Socket?.on('timetable', (timetable: any[]) => {
@@ -187,7 +155,55 @@ export class BoardComponent implements OnInit {
         });
       }
       this.schoolingo.setLessons(lessons);
+      this.logger.send('Socket', 'Updated timetable');
     });
+
+    this.socketService.getSocket().Socket?.on('disconnect', (reason: any) => {
+      this.setupSocket();
+    });
+
+  }
+
+  ngOnInit(): void {
+    let token = this.userService.getToken();
+    if (!token) {
+      this.router.navigate(['login']);
+      return;
+    }
+    
+
+    // Close all dropdowns
+    this.dropdown.closeAllDropdowns();
+
+    // Load data from storage
+    //* Teachers
+    let teachers = Object.values(this.storage.get('teachers')) as Teacher[];
+    if (teachers) {
+      this.schoolingo.setTeachers(teachers);
+    }
+
+    //* Rooms
+    let rooms = Object.values(this.storage.get('rooms')) as Room[];
+    if (rooms) {
+      this.schoolingo.setRooms(rooms);
+    }
+
+    //* Subjects
+    let subjects = Object.values(this.storage.get('subjects')) as Subject[];
+    if (subjects) {
+      this.schoolingo.setSubjects(subjects);
+    }
+
+    //* Lessons
+    let lesssons = Object.values(this.storage.get('lessons')) as Lesson[][][];
+    if (lesssons) {
+      this.schoolingo.setLessons(lesssons);
+    }
+
+    // Socket service
+    this.socketService.connectUser();
+    this.setupSocket();
+
 
     let _sidebarUpdateInt = setInterval(() => {
       if (this.userService.getUser() && (this.userService?.getUser() as UserMain)?.type != undefined) {

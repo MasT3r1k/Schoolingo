@@ -16,6 +16,7 @@ export class SubjectsComponent implements OnInit {
   ngOnInit(): void {
   }
 
+  public subjects: [number, [number]][] = this.getSubjectsWithTeachers();
 
   public getSubjectsWithTeachers(): [number, [number]][] {
 

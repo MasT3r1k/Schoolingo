@@ -49,7 +49,7 @@ export class SocketService {
     /**
      * Connect to socket as user based on from @config.server and @Schoolingo/user.token
      */
-    public connectUser(): void {
+    public connectUser(): Socket | void {
         try {
             let token = this.cache.get(this.cache.tokenCacheName);
             if (token == false || !token?.token || !token?.expiration) return;
@@ -57,6 +57,7 @@ export class SocketService {
 
             this.socket = io(config.server, { extraHeaders: { Authorization: 'Bearer ' + token.token }});
             this.listenBasicEvents();
+            return this.socket;
         } catch(e) {
             this.socket?.disconnect();
             this.socket?.removeAllListeners();

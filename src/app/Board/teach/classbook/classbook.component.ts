@@ -1,6 +1,7 @@
 import { Tabs } from '@Components/Tabs/Tabs';
 import { Schoolingo } from '@Schoolingo';
 import { Locale } from '@Schoolingo/Locale';
+import { SocketService } from '@Schoolingo/Socket';
 import { DatePipe } from '@angular/common';
 import { Component, Renderer2 } from '@angular/core';
 import { FormControl } from '@angular/forms';
@@ -20,7 +21,8 @@ export class ClassbookComponent {
     public schoolingo: Schoolingo,
     private DatePipe: DatePipe,
     private renderer: Renderer2,
-    public tabs: Tabs
+    public tabs: Tabs,
+    public socketService: SocketService
   ) {}
 
   public selectedLesson: number | undefined = undefined;
@@ -56,6 +58,7 @@ export class ClassbookComponent {
         i++;
       } while (this.selectedLesson == undefined);
     })
+
   }
 
   ngOnDestroy(): void {

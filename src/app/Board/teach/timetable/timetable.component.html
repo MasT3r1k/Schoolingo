@@ -19,10 +19,7 @@
                 </div>
             </div>
             <schoolingo-tabs [name]="tabName" [options]="[locale.getLocale('timetable/thisWeek'), locale.getLocale('timetable/nextWeek'), locale.getLocale('timetable/permanent'), locale.getLocale('sidebar/calendar')]"></schoolingo-tabs>
-
-            <schoolingo-calendar [name]='calendarName' [options]="calendarOptions"></schoolingo-calendar>
-
-            <input type="date" id="calendar" class="no-small" [formControl]="calendar" name="calendar" value="{{ schoolingo.getToday() | date:'yyyy-MM-dd' }}" min="2023-09-01" max="2024-06-30">
+            <schoolingo-calendar [name]='calendarName' class="no-small" [options]="calendarOptions"></schoolingo-calendar>
         </div>
     </header>
     <div class="box-content">
@@ -35,7 +32,7 @@
                 </div>
             </div>
             <div class="days">
-                <div class="day" *ngFor="let day of schoolingo.getTimetable()">
+                <div [ngClass]="{day: true, glow: (day.date[0] == schoolingo.getToday().getDate() && day.date[1] == schoolingo.getToday().getMonth() + 1 && day.date[2] == schoolingo.getToday().getFullYear())}" *ngFor="let day of schoolingo.getTimetable()">
                     <div class="item day-name">
                         <div class="num">
                             {{ day.day }}
@@ -56,7 +53,7 @@
                             <div class="room" *ngIf="lesson.room">{{ lesson.room.label }}</div>
                             <div class="subject" *ngIf="lesson.subject">{{ lesson.subject[1] }}</div>
                             <div class="teacher" *ngIf="lesson.teacher && userService.getUser()?.type == 'student'">{{ lesson.teacher.lastName }}</div>
-                            <div class="teacher" *ngIf="lesson.class && userService.getUser()?.type == 'teacher'">{{ lesson.class }}</div>
+                            <div class="teacher" *ngIf="lesson.class && userService.getUser()?.type == 'teacher' && hour.length < 3">{{ lesson.class }}</div>
                         </div>
                     </div>
                 </div>

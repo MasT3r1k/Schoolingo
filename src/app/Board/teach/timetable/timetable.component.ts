@@ -7,7 +7,8 @@ import { FormControl } from '@angular/forms';
 import { Tabs } from '@Components/Tabs/Tabs';
 import { Router } from '@angular/router';
 import { UserService } from '@Schoolingo/User';
-import { CalendarOptions } from '@Components/calendar/calendar.component';
+import { CalendarComponent, CalendarOptions } from '@Components/calendar/calendar.component';
+import { Calendar } from '@Components/calendar/calendar';
 
 @Component({
   templateUrl: './timetable.component.html',
@@ -22,7 +23,8 @@ export class TimetableComponent implements OnInit {
     public tabs: Tabs,
     private DatePipe: DatePipe,
     private renderer: Renderer2,
-    private router: Router
+    private router: Router,
+    private calendarService: Calendar
   ) {
 
     this.dropdown.addDropdown('absence');
@@ -37,7 +39,7 @@ export class TimetableComponent implements OnInit {
     noWeekendError: 'errors/noClassOnWeekend',
   };
   calendar = new FormControl('');
-  private declare calendarEvent;
+  public declare calendarEl: CalendarComponent;
   private declare renderBeforePrint: Function;
   private declare renderAfterPrint: Function;
   private declare routerSub;
@@ -55,22 +57,12 @@ export class TimetableComponent implements OnInit {
     this.selectedTimeTableReasonPrint = 0;
   }
 
+
   ngOnInit(): void {
 
 
     // Setup page
-    this.calendar.setValue(this.DatePipe.transform(this.schoolingo.getToday(), 'yyyy-MM-dd'));
     this.schoolingo.refreshTimetable();
-
-
-    // Register subscribe of calendar
-    this.calendarEvent = this.calendar.valueChanges.subscribe((date: string | null) => {
-      if (date == null) return this.schoolingo.selectWeek(this.schoolingo.getThisWeek());
-      if (date == '') return this.tabs.setTabValue(this.tabName, 2);
-      this.tabs.setTabValue(this.tabName, 3);
-      return this.schoolingo.selectWeek(new Date(date).getWeek());
-    })
-
 
     this.registerOnChangeFunc();
     this.routerSub = this.router.events.subscribe((url: any) => {
@@ -86,7 +78,16 @@ export class TimetableComponent implements OnInit {
           this.schoolingo.selectWeek(this.schoolingo.getThisWeek());
           this.tabs.setTabValue(this.tabName, 0);
         }
-  
+
+
+        this.calendarEl = this.calendarService.getCalendar(this.calendarName);
+        if (this.calendarEl) {
+          this.calendarEl.customPickFunction = (date: Date) => {
+            if (date == null) return this.schoolingo.selectWeek(this.schoolingo.getThisWeek());
+            this.tabs.setTabValue(this.tabName, 3);
+            return this.schoolingo.selectWeek((date as Date).getWeek());
+          }
+        }
       })
 
     });
@@ -111,7 +112,7 @@ export class TimetableComponent implements OnInit {
             this.schoolingo.selectWeek(null);
             break;
           case 3:
-            this.schoolingo.selectWeek(new Date((this.calendar as FormControl)?.value).getWeek());
+            this.schoolingo.selectWeek(this.calendarEl?.date.getWeek());
             break;
         }
 

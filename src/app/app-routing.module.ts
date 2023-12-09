@@ -32,19 +32,23 @@ import { SendComponent as MessageSend } from './Board/messages/send/send.compone
 import { ReceivedComponent as MessageReceived } from './Board/messages/received/received.component';
 import { SentComponent as MessageSent } from './Board/messages/sent/sent.component';
 import { NoticeboardComponent as MessageNoticeboard } from './Board/messages/noticeboard/noticeboard.component';
+import { NotUserGuard, UserGuard } from './Guards/User.guard';
+import { ManageclassComponent as ManageClass } from './Board/manageclass/manageclass.component';
 
 const routes: Routes = [
 {
   path: '', redirectTo: 'login', pathMatch: 'full'
 },
 {
-  path: 'login', component: LoginComponent
+  path: 'login', canActivate: [NotUserGuard], component: LoginComponent
 }, {
-  path: '', component: BoardComponent, children: [
+  path: '', canActivate: [UserGuard], component: BoardComponent, children: [
     {
       path: 'main', component: BoardMain
     }, {
       path: 'pupilcard', component: PupilCard
+    }, {
+      path: 'manageclass', component: ManageClass
     }, {
       path: 'marks', children: [{
         path: 'interm', component: MarkInterm
@@ -119,8 +123,6 @@ const routes: Routes = [
       }]
     }, */{
       path: 'calendar', component: CalendarComponent
-    }, {
-      path: '**', redirectTo: ''
     }]
 }
 ];

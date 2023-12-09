@@ -64,6 +64,7 @@ export class Locale {
             sidebar: {
                 home: "Můj přehled",
                 pupilcard: "Evidence žáků",
+                manageclass: "Správa třídy",
                 marks: {
                     main: "Klasifikace",
                     interm: "Průběžná klasifikace",
@@ -200,6 +201,8 @@ export class Locale {
             login_title: "Přihlášení",
             forgot_pass: "Zapomenuté heslo?",
             login_btn: "Přihlásit se",
+            logining_btn: "Přihlašování..",
+            loading_user: "Probíhá načítání vašich dat ze systému..",
             login_formTitle: "Přihlášení do školního systému",
             login_qrcodeTitle: "se přihlaš pomocí QR kódu",
             scan_qrcode: "Naskejnute QR kód v <b>mobilní aplikaci</b> pro rychlé přihlášení",

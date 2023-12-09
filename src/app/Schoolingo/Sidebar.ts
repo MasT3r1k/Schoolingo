@@ -30,6 +30,11 @@ export class Sidebar {
             url: 'pupilcard',
             permission: ['teacher']
         }, {
+            item: 'sidebar/manageclass',
+            icon: 'user-pentagon',
+            url: 'manageclass',
+            permission: ['classteacher']
+        }, {
             item: 'sidebar/marks/main',
             icon: 'number-1',
             permission: ['student', 'parent'],
