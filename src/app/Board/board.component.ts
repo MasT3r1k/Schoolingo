@@ -127,10 +127,10 @@ export class BoardComponent implements OnInit {
         let d0: number = 1;
         let d1: number = 1;
         while(timetable[i].day != 0 && !lessons[timetable[i].day - 1 - d0] && d0 < this.schoolingo.days.length) {
-          lessons[timetable[i].day - 1 - d1] = [];
+          lessons[timetable[i].day - 1 - d0] = [];
           d0++;
         }
-        while(timetable[i].hour != 0 && lessons[timetable[i].day] && !lessons[timetable[i].day][timetable[i].hour - 1 - d1] && d1 < timetable[i].hour) {
+        while(timetable[i].hour != 0 && lessons[timetable[i].day] && !lessons[timetable[i].day]?.[timetable[i].hour - 1 - d1] && d1 < timetable[i].hour) {
           lessons[timetable[i].day][timetable[i].hour - 1 - d1] = [{ 
             subject: -1,
             teacher: -1
@@ -142,6 +142,9 @@ export class BoardComponent implements OnInit {
           lessons[timetable[i].day][timetable[i].hour - 1] = [];
         }
 
+        if (lessons?.[timetable[i].day]?.[timetable[i].hour -1]?.[0]?.subject == -1 && lessons?.[timetable[i].day]?.[timetable[i].hour -1]?.[0]?.teacher == -1) {
+          lessons[timetable[i].day][timetable[i].hour - 1] = [];
+        }
         lessons[timetable[i].day][timetable[i].hour - 1].push({
           subject: timetable[i].subjectId,
           teacher: timetable[i].teacherId,
@@ -154,6 +157,8 @@ export class BoardComponent implements OnInit {
           type: timetable[i].type
         });
       }
+      console.log(lessons);
+
       this.schoolingo.setLessons(lessons);
       this.logger.send('Socket', 'Updated timetable');
     });

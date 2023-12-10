@@ -571,6 +571,8 @@ export class Schoolingo {
 
             if (!day.holiday) {
                 _.forEach((lesson: Lesson[], index) => {
+                    if (!lesson) return;
+                    console.log(lesson)
                     if (lesson.length == 0) {
                         day.lessons.push([{ isEmpty: true }]);
                     }
@@ -580,6 +582,13 @@ export class Schoolingo {
                         let { ...teacher } = this.getTeacher(lesson[i].teacher) as Teacher ?? false;
                         let { ...room } = lesson[i].room ? this.getRoom(lesson[i].room as number) as Room ?? false : {};
         
+                        console.log(lesson[i]);
+
+                        if (lesson[i].subject == -1 && lesson[i].teacher == -1) {
+                            day.lessons.push([{ isEmpty: true }]);
+                            return;
+                        }
+
                         if (this.selectedWeek == null && lesson[i].type && lesson[i].type !== 0 && subject) {
                             subject[1] = ((lesson[i].type === 1) ? 'L:' : 'S:') + subject[1];
                         }
@@ -591,11 +600,11 @@ export class Schoolingo {
                                 this.selectedWeek !== null &&
                                 (
                                     (week % 2 === 0 && lesson[i].type === 1) ||
-                                    (week % 2 === 1 && lesson[i].type === 2) 
+                                    (week % 2 === 1 && lesson[i].type === 2)
                                 )
                             )
                         ) {
-                            day.lessons.push([{ isEmpty: true }]);
+                            // day.lessons.push([{ isEmpty: true }]);
                         } else {
                             if ((lesson.length > 1 &&
                                 (
@@ -621,7 +630,6 @@ export class Schoolingo {
                             }
                         }
                     }
-
                 });
 
                 // To fill empty day
@@ -633,7 +641,13 @@ export class Schoolingo {
             } else {
                 day.isFullDay = true;
             }
-
+            console.log(day);
+            let rozdil = this.getSHours().length - day.lessons.length;
+            if (rozdil > 0) {
+                for(let i = 0;i< rozdil;i++) {
+                    day.lessons.push([{ isEmpty: true }]);
+                }
+            }
             tTable.push(day);
         });
 
