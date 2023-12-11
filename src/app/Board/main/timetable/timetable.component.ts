@@ -57,6 +57,8 @@ export class TimetableComponent implements OnInit {
     let last = this.schoolingo.getLastStudyDay(this.selectedDay);
     last.setHours(4);
     this.selectedDay = last;
+    this.schoolingo.selectWeek(this.selectedDay.getWeek())
+    this.schoolingo.refreshTimetable();
   }
 
   public selectNextDay(): void {
@@ -66,6 +68,8 @@ export class TimetableComponent implements OnInit {
     let next = this.schoolingo.getNextStudyDay(this.selectedDay);
     next.setHours(20);
     this.selectedDay = next;
+    this.schoolingo.selectWeek(this.selectedDay.getWeek())
+    this.schoolingo.refreshTimetable();
   }
 
 }
