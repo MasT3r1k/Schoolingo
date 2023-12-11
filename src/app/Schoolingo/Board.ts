@@ -879,16 +879,16 @@ export class Schoolingo {
      * @param day2 List of lessons of second day
      * @returns List of lessons that day1 has and day2 don't
      */
-    public compareLessons(day1: Lesson[], day2: Lesson[]): Lesson[] {
+    public compareLessons(day1: TTableLesson[][], day2: TTableLesson[][]): TTableLesson[] {
         if (!day1 || !day2) return [];
-        let les: Lesson[] = [];
-        day1.forEach((_) => {
-            if (_.subject == -1) return;
+        let les: TTableLesson[] = [];
+        day1.forEach((_: TTableLesson[]) => {
+            if (!_[0]) return;
             if (
-              day2.filter(__ => __.subject == _.subject).length == 0 &&
-              les.filter(__ => __.subject == _.subject).length == 0
+              day2.filter(__ => __[0].subject?.[2] == _[0]?.subject?.[2]).length == 0 &&
+              les.filter(__ => __.subject?.[2] == _?.[0]?.subject?.[2]).length == 0
             ) {
-                les.push(_);
+                les.push(_[0]);
             }
         });
         
