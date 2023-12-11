@@ -36,7 +36,17 @@
                 <!-- QR code -->
                 <qrcode *ngIf="
                 (qrStatus.whatIsVisible == 'scan' || qrStatus.whatIsVisible == 'trylogin') && qrStatus?.code && qrStatus.code != ''"
-                [ngStyle]="{ filter: (qrStatus.whatIsVisible == 'trylogin') ? 'blur(4px)' : 'none' }" [qrdata]="qrStatus.code ?? ''" [allowEmptyString]="false" [width]="160" [margin]="0" [elementType]="'svg'" [errorCorrectionLevel]="'M'"></qrcode>
+                [ngStyle]="{ filter: (qrStatus.whatIsVisible == 'trylogin') ? 'blur(4px)' : 'none' }" [qrdata]="qrStatus.code ?? ''"
+                [allowEmptyString]="false"
+                [width]="160"
+                [margin]="0"
+                [elementType]="'canvas'"
+                [errorCorrectionLevel]="'M'"
+                [title]="'SCHOOLINGO'"
+                [imageSrc]="'./assets/logo.webp'"
+                [imageHeight]="56"
+                [imageWidth]="56"
+                ></qrcode>
                 <div style="margin-top: 1rem;text-align: center;" *ngIf="(qrStatus.whatIsVisible == 'scan' && qrStatus.code != '') || qrStatus.whatIsVisible == 'loading'" [innerHTML]="locale.getLocale('scan_qrcode')"></div>
                 <div style="margin-top: 1rem;text-align: center;" *ngIf="qrStatus.user">Pokoušíte se příhlasit za <b>{{ qrStatus.user.firstName + " " + qrStatus.user.lastName }}</b>. Zkontrolujte vaše mobilní zařízení pro více informací.</div>
 

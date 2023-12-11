@@ -20,4 +20,11 @@ export class SendComponent {
 
   }
 
+  public sendMessage(): void {
+    if (this.selectedReceivers.length == 0) {
+      console.log('NO RECEIVER FOUND!');
+      return;
+    }
+  }
+
 }

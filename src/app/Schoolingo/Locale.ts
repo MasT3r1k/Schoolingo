@@ -185,6 +185,7 @@ export class Locale {
                 updating: "Aktualizuji..",
                 failed: "Selhalo!",
                 noInternetConnection: "Nepřipojeno k internetu",
+                send: "Poslat",
             },
 
             timetable: {
@@ -204,6 +205,7 @@ export class Locale {
             },
             subjects: "Předměty",
             chronologically: "Chronologicky",
+            backpack: "Batoh",
 
             firstName: "Jméno",
             lastName: "Příjmení",
