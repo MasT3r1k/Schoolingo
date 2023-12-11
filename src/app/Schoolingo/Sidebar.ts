@@ -102,13 +102,73 @@ export class Sidebar {
             permission: ['student', 'parent', 'teacher'],
             url: 'calendar',
         }, {
+            item: 'sidebar/documents',
+            permission: ['all'],
+            url: 'documents',
+        }, {
+            item: 'sidebar/payments/main',
+            permission: ['all'],
+            children: [{
+                item: 'sidebar/payments/overview',
+                url: 'payments/overview'
+            }, {
+                item: 'sidebar/payments/classfund',
+                url: 'payments/classfund',
+                permission: ['classteacher'],
+            }, {
+                item: 'settings',
+                url: 'payments/settings'
+            }]
+        }, {
+            item: 'sidebar/library/main',
+            permission: ['all'],
+            children: [{
+                item: 'sidebar/library/overview',
+                url: 'library/overview'
+            },{
+                item: 'sidebar/library/listbooks',
+                url: 'library/listbooks'
+            }, {
+                item: 'sidebar/library/managebooks',
+                url: 'library/managebooks'
+            }, {
+                item: 'settings',
+                url: 'library/settings'
+            }]
+        }, {
+            item: 'sidebar/canteen/main',
+            permission: ['all'],
+            children: [{
+                item: 'sidebar/canteen/order',
+                url: 'canteen/order'
+            }, {
+                item: 'sidebar/canteen/dispensing',
+                url: 'canteen/dispensing'
+            }, {
+                item: 'sidebar/canteen/meals',
+                url: 'canteen/meals'
+            }, {
+                item: 'settings',
+                url: 'canteen/settings'
+            }]
+        }, {
+            item: 'sidebar/printers/main',
+            permission: ['all'],
+            children: [{
+                item: 'sidebar/printers/print',
+                url: 'printers/print'
+            }, {
+                item: 'settings',
+                url: 'printers/settings'
+            }]
+        }, {
             item: 'sidebar/user/main',
             permission: ['all'],
             children: [{
                 item: 'sidebar/user/devices',
                 url: 'user/devices'
             }, {
-                item: 'sidebar/user/settings',
+                item: 'settings',
                 url: 'user/settings'
             }]
         }, {

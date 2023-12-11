@@ -91,10 +91,31 @@ export class Locale {
                 absence: "Absence",
                 actionPlan: "Plán akcí",
                 calendar: "Kalendář",
+                documents: "Dokumenty",
+                payments: {
+                    main: "Platby",
+                    overview: "Přehled plateb",
+                    classfund: "Třídní fund",
+                },
+                library: {
+                    main: "Knihovna",
+                    overview: "Přehled výpůjček",
+                    listbooks: "Seznam knih",
+                    managebooks: "Správa knih",
+                },
+                canteen: {
+                    main: "Jídelna",
+                    order: "Objednávky",
+                    dispensing: "Výdeje",
+                    meals: "Jídla"
+                },
+                printers: {
+                    main: "Tiskárna",
+                    print: "Vytisknout",
+                },
                 user: {
                     main: "Uživatel",
                     devices: "Přihlášené zařízení",
-                    settings: "Nastavení"
                 },
                 person: {
                     main: "Osoby",
@@ -123,11 +144,13 @@ export class Locale {
                     create: "Vytvořit třídu"
                 }
             },
+            settings: "Nastavení",
             // System roles
             roles: {
                 systemadmin: "Správce systému",
                 isPrincipal: "Ředitelství",
                 isClassTeacher: "třídní",
+                classteacher: "Třídní učitel",
                 manager: "Správce",
                 teacher: "Učitel",
                 parent: "Rodič",
@@ -139,7 +162,8 @@ export class Locale {
                 error: "Chyba!"
             },
             errors: {
-                noClassOnWeekend: "O víkendu se neučí."
+                noClassOnWeekend: "O víkendu se neučí.",
+                noReceiversFound: "Nenalezeni žádní dostupní příjemci."
             },
 
             successfulLogin: "Úspěšně ses přihlásil do systému.",
@@ -174,7 +198,9 @@ export class Locale {
                 notes: "Poznámky"
             },
             pupilcard: {
-                new: "Nový žák"
+                new: "Nový žák",
+                personalDetails: "Osobní údaje",
+                relatives: "Příbuzní"
             },
             subjects: "Předměty",
             chronologically: "Chronologicky",

@@ -14,14 +14,12 @@ export type UserMain = {
     class: string[];
     userBirthNumber: string;
 
-    classTeacherFirstName: string;
-    classTeacherLastName: string;
-    classTeacherSex: string;
+    classTeacher: number;
 
     isPrincipal?: boolean;
 }
 
-export type Teacher = Omit<UserMain, "class" | "type" | "locale" | "username" | "userBirthNumber" | "classTeacherFirstName" | "classTeacherLastName" | "classTeacherSex" > & {teacherId: number};
+export type Teacher = Omit<UserMain, "class" | "type" | "locale" | "username" | "userBirthNumber" | "classTeacher" > & {teacherId: number};
 
 export type User = UserMain | Teacher | null;
 

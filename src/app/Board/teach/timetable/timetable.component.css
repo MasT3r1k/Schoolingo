@@ -12,6 +12,7 @@
     text-align: center;
     display: flex;
     flex-direction: row;
+    border-collapse: collapse;
 }
 
 .schedule .days {
@@ -70,15 +71,43 @@
 .schedule .days .day:first-child > div { border-top-color: var(--border-color); }
 .schedule .days .day:last-child > div { border-bottom-color: var(--border-color); }
 .schedule .days .day .day-lesson:nth-child(2),
-.schedule .days .day .all-day { border-left-color: var(--border-color); }
+.schedule .days .day .all-day { border-left: 1px solid var(--border-color); }
 .schedule .days .day .day-lesson:last-child,
 .schedule .days .day .all-day { border-right-color: var(--border-color); }
 
 
 .schedule .days .day:nth-child(2n) { background-color: #f5f7f7; }
-.schedule .days .day.glow { border: 1px solid var(--primary); }
+.schedule .days .day.glow .day-name {
+    border: 1px solid var(--primary);
+    border-right-color: transparent;
+}
 
-.schedule .days .day .day-lesson .day-lesson-lesson:not(:empty):hover { background-color: hsl(228 6% 32.5%/0.08); }
+.schedule .days .day.glow .day-lesson:not(:nth-child(2)):not(:last-child) {
+    border-left-width: 0px;
+    border-right-width: 0px;
+}
+
+.schedule .days .day .day-lesson.glow {
+    border-right-color: var(--primary);
+    border-bottom-color: var(--primary);
+}
+
+.schedule .days .day.glow .day-lesson {
+    border-top-color: var(--primary)!important;
+    border-bottom-color: var(--primary)!important;
+}
+
+.schedule .days .day.glow .day-lesson:first-child {
+    border-left: 1px solid var(--border-color)!important;
+    border-right-width: 0px;
+}
+
+.schedule .days .day.glow .day-lesson:last-child {
+    border-left-width: 0px;
+    border-right-color: var(--primary)!important;
+}
+
+.schedule .days .day .day-lesson .day-lesson-lesson:not(:empty):hover { background-color: var(--secondary-color-hover); }
 
 .schedule .days .day .item, .schedule .day-lesson .day-lesson-lesson {
     justify-content: center;

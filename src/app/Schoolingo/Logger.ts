@@ -10,7 +10,7 @@ export class Logger {
      * @param log Message of logger
      */
     public send(name: string, log: string): void {
-        console.log(`%c${name}%c ${log}`, "background: #2999ed;color: #fff;padding: 4px 8px;font-size:11px;font-weight:500;border-radius:16px 16px;", "color: #cdcdcd;");
+        console.log(`%c${name}%c ${log}`, "background: #3a6df0;color: #fff;padding: 4px 8px;font-size:11px;font-weight:500;border-radius:16px 16px;margin-right: 4px", "color: #cdcdcd;");
     }
 
     /**

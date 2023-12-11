@@ -11,11 +11,12 @@
             <div style="margin: 4px 16px;" *ngIf="schoolingo.isDayWeekend(schoolingo.getToday()) || !schoolingo.getTimetableLessons()?.[selectedDay.getDay() - 1]">
                 Dnes se neučí. Zobrazuji den: {{ schoolingo.full_days[selectedDay.getDay() - 1] }}
             </div>
-            <div class="subjects" *ngIf="schoolingo.getTimetableDay(selectedDay.getDate(), selectedDay.getMonth(), selectedDay.getFullYear())">
-                <div class="subject timetable" *ngFor="let lesson of schoolingo.getTimetableDay(selectedDay.getDate(), selectedDay.getMonth(), selectedDay.getFullYear());index as index">
+            <div class="subjects" *ngIf="schoolingo.getTimetable()?.[schoolingo.getToday().getDay() === 0 ? 6 : schoolingo.getToday().getDay() - 1]">
+                <div class="subject timetable" *ngFor="let lesson of schoolingo.getTimetable()?.[schoolingo.getToday().getDay() === 0 ? 6 : schoolingo.getToday().getDay() - 1]?.lessons;index as index">
                     <span class="subjectIndex">{{ index + 1 }}</span>
-                    <div class="subjectName" [title]="(!lesson.subject) ? 'Volná hodina' : (lesson.subject[2])">
-                        <span>{{ (!lesson.subject) ? 'Volná hodina' : (lesson.subject[2]) }}</span>
+                    
+                    <div class="subjectName" [title]="(!lesson[0].subject) ? 'Volná hodina' : (lesson[0].subject[2])">
+                        <span>{{ (!lesson[0].subject) ? 'Volná hodina' : (lesson[0].subject[2]) }}</span>
                     </div>
                     <span style="position: absolute;right: 8px;font-size: 12px;line-height: 18px;width: 70px;text-align: right;" *ngIf="schoolingo.getSHours()?.[index]">
                         {{ schoolingo.getSHours()[index].start + ' - ' + schoolingo.getSHours()[index].end }}
@@ -73,13 +74,13 @@
             </div>
         </div>
     </div>
-    <!-- <div style="display: flex;align-items: center;justify-content: center;" *ngIf="tabs.getTabValue(tabName) == 0">
+    <div style="display: flex;align-items: center;justify-content: center;" *ngIf="tabs.getTabValue(tabName) == 0">
         <div class="btn" id="previous" (click)="selectLastDay()">
-            <i class="fa-solid fa-angle-left"></i>
+            <i class="ti ti-caret-left-filled"></i>
         </div>
         <span style="margin: 0 8px;">{{ selectedDay.getDate() + '. ' + (selectedDay.getMonth() + 1) + '.' }}</span>
         <div class="btn" id="next" (click)="selectNextDay()">
-            <i class="fa-solid fa-angle-right"></i>
+            <i class="ti ti-caret-right-filled"></i>
         </div>
-    </div> -->
+    </div>
 </div>

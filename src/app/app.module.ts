@@ -35,6 +35,8 @@ import { PupilcardComponent } from './Board/pupilcard/pupilcard.component';
 import { Table } from '@Components/table/Table';
 import { CalendarComponent } from '@Components/calendar/calendar.component';
 import { Calendar } from '@Components/calendar/calendar';
+import { SendComponent as MessagesSend } from './Board/messages/send/send.component';
+import { NgSelectModule } from '@ng-select/ng-select';
 
 @NgModule({
   declarations: [
@@ -54,12 +56,14 @@ import { Calendar } from '@Components/calendar/calendar';
     BoardSettings,
     ClassbookComponent,
     PupilcardComponent,
-    CalendarComponent
+    CalendarComponent,
+    MessagesSend
   ],
   
   imports: [
     BrowserModule,
     AppRoutingModule,
+    NgSelectModule,
     FormsModule,
     ReactiveFormsModule,
     QRCodeModule,

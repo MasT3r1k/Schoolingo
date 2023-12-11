@@ -34,6 +34,14 @@ import { SentComponent as MessageSent } from './Board/messages/sent/sent.compone
 import { NoticeboardComponent as MessageNoticeboard } from './Board/messages/noticeboard/noticeboard.component';
 import { NotUserGuard, UserGuard } from './Guards/User.guard';
 import { ManageclassComponent as ManageClass } from './Board/manageclass/manageclass.component';
+import { DocumentsComponent as Documents } from './Board/documents/documents.component';
+import { OverviewComponent as PaymentOverview } from './Board/payments/overview/overview.component';
+import { OverviewComponent as LibraryOverview } from './Board/library/overview/overview.component';
+import { ListbooksComponent as LibraryListbooks } from './Board/library/listbooks/listbooks.component';
+import { ManagebooksComponent as LibraryManagebooks } from './Board/library/managebooks/managebooks.component';
+import { OrderComponent as CanteenOrder } from './Board/canteen/order/order.component';
+import { DispensingComponent as CanteenDispensing } from './Board/canteen/dispensing/dispensing.component';
+import { MealsComponent as CanteenMeals } from './Board/canteen/meals/meals.component';
 
 const routes: Routes = [
 {
@@ -83,6 +91,28 @@ const routes: Routes = [
       path: 'absence', component: AbsenceComponent
     }, {
       path: 'actionplan', component: ActionplanComponent
+    }, {
+      path: 'documents', component: Documents
+    }, {
+      path: 'payments', children: [{
+        path: 'overview', component: PaymentOverview
+      }]
+    }, {
+      path: 'library', children: [{
+        path: 'overview', component: LibraryOverview
+      }, {
+        path: 'listbooks', component: LibraryListbooks
+      }, {
+        path: 'managebooks', component: LibraryManagebooks
+      }]
+    }, {
+      path: 'canteen', children: [{
+        path: 'order', component: CanteenOrder
+      }, {
+        path: 'dispensing', component: CanteenDispensing
+      }, {
+        path: 'meals', component: CanteenMeals
+      }]
     }, {
       path: 'user', children: [{
         path: 'devices', component: UserDevices

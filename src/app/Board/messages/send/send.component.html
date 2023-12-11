@@ -1,1 +1,30 @@
-<p>Snažíte se poslat zprávu</p>
+<main>
+    <div class="card">
+        <div class="card-header">
+            <div class="left">
+                <h2>{{ locale.getLocale('sidebar/messages/send') }}</h2>
+            </div>
+        </div>
+
+        <div class="card-content">
+            <ng-select
+                [(ngModel)]="selectedReceivers"
+                [notFoundText]="locale.getLocale('errors/noReceiversFound')"
+                [multiple]="true"
+                [markFirst]="true"
+                [searchable]="false"
+            >
+                <ng-option *ngFor="let teacher of schoolingo.getTeachers()" [value]="{type: 'teacher', id: teacher.teacherId}">
+                    <div class="select">
+                        {{ teacher.firstName + ' ' + teacher.lastName }}
+                        <div class="badge" *ngIf="teacher.teacherId == userService.getUser()?.classTeacher">{{ locale.getLocale('roles/classteacher') }}</div>
+                    </div>
+                </ng-option>
+            </ng-select>
+
+            <div>Selected: {{ selectedReceivers | json }}</div>
+        </div>
+
+    </div>
+
+</main>

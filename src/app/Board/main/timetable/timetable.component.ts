@@ -1,4 +1,5 @@
 import { Tabs } from '@Components/Tabs/Tabs';
+import { TTableLesson, Lesson, TTableDay } from '@Schoolingo/Board.d';
 import { Schoolingo } from '@Schoolingo';
 import { Locale } from '@Schoolingo/Locale';
 import { Component, OnInit } from '@angular/core';
@@ -48,22 +49,23 @@ export class TimetableComponent implements OnInit {
     });
   }
 
-  // public selectLastDay(): void {
-  //   if (this.selectedDay.getHours() != 4) {
-  //     this.selectedDay.setHours(4);
-  //   }
-  //   let last = this.board.getLastStudyDay(this.selectedDay);
-  //   last.setHours(4);
-  //   this.selectedDay = last;
-  // }
 
-  // public selectNextDay(): void {
-  //   if (this.selectedDay.getHours() != 20) {
-  //     this.selectedDay.setHours(20);
-  //   }
-  //   let next = this.board.getNextStudyDay(this.selectedDay);
-  //   next.setHours(20);
-  //   this.selectedDay = next;
-  // }
+  public selectLastDay(): void {
+    if (this.selectedDay.getHours() != 4) {
+      this.selectedDay.setHours(4);
+    }
+    let last = this.schoolingo.getLastStudyDay(this.selectedDay);
+    last.setHours(4);
+    this.selectedDay = last;
+  }
+
+  public selectNextDay(): void {
+    if (this.selectedDay.getHours() != 20) {
+      this.selectedDay.setHours(20);
+    }
+    let next = this.schoolingo.getNextStudyDay(this.selectedDay);
+    next.setHours(20);
+    this.selectedDay = next;
+  }
 
 }

@@ -89,6 +89,7 @@ export class BoardComponent implements OnInit {
             this.userService.logout();
             return;
           }
+          console.log(data.user);
           data.user.class = JSON.parse(data.user.class as string);
           this.userService.setUser(data.user as UserMain);
           this.logger.send('Socket', 'Updated user data');
@@ -130,7 +131,7 @@ export class BoardComponent implements OnInit {
           lessons[timetable[i].day - 1 - d0] = [];
           d0++;
         }
-        while(timetable[i].hour != 0 && lessons[timetable[i].day] && !lessons[timetable[i].day]?.[timetable[i].hour - 1 - d1] && d1 < timetable[i].hour) {
+        while(timetable[i].hour != 0 && lessons[timetable[i].day] && (timetable[i].hour - 1 - d1 >= 0) && !lessons[timetable[i].day]?.[timetable[i].hour - 1 - d1] && d1 < timetable[i].hour) {
           lessons[timetable[i].day][timetable[i].hour - 1 - d1] = [{ 
             subject: -1,
             teacher: -1
@@ -157,7 +158,6 @@ export class BoardComponent implements OnInit {
           type: timetable[i].type
         });
       }
-      console.log(lessons);
 
       this.schoolingo.setLessons(lessons);
       this.logger.send('Socket', 'Updated timetable');

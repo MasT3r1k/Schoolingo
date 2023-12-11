@@ -309,6 +309,13 @@ export class Schoolingo {
         this.storage.save('teachers', teachers);
         this.refreshTimetable();
     }
+
+    /**
+     * @returns all saved teachers
+     */
+    public getTeachers(): Teacher[] {
+        return this.teachers;
+    }
     /**
      * Look for teacher and return data
      * @param id Id of Teacher
@@ -572,7 +579,6 @@ export class Schoolingo {
             if (!day.holiday) {
                 _.forEach((lesson: Lesson[], index) => {
                     if (!lesson) return;
-                    console.log(lesson)
                     if (lesson.length == 0) {
                         day.lessons.push([{ isEmpty: true }]);
                     }
@@ -582,7 +588,6 @@ export class Schoolingo {
                         let { ...teacher } = this.getTeacher(lesson[i].teacher) as Teacher ?? false;
                         let { ...room } = lesson[i].room ? this.getRoom(lesson[i].room as number) as Room ?? false : {};
         
-                        console.log(lesson[i]);
 
                         if (lesson[i].subject == -1 && lesson[i].teacher == -1) {
                             day.lessons.push([{ isEmpty: true }]);
@@ -630,26 +635,27 @@ export class Schoolingo {
                             }
                         }
                     }
-                });
-
-                // To fill empty day
-                if (_.length == 0) {
-                    for(let i = 0;i < this.getScheduleHours().length;i++) {
-                        day.lessons.push([{ isEmpty: true }])
+                    
+                    // To fill empty day
+                    if (_.length == 0) {
+                        for(let i = 0;i < this.getScheduleHours().length;i++) {
+                            day.lessons.push([{ isEmpty: true }])
+                        }
                     }
-                }
+                });
             } else {
                 day.isFullDay = true;
             }
-            console.log(day);
             let rozdil = this.getSHours().length - day.lessons.length;
-            if (rozdil > 0) {
+            if (rozdil > 0 && day.isFullDay != true) {
                 for(let i = 0;i< rozdil;i++) {
                     day.lessons.push([{ isEmpty: true }]);
                 }
             }
             tTable.push(day);
         });
+
+        tTable.slice(0, 4);
 
         this.timetableSelectedWeekLast = week;
         this.timetableLessonsLast = this.lessons;

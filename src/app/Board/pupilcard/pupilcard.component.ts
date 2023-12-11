@@ -14,12 +14,12 @@ type Student = {
 }
 
 @Component({
-  selector: 'app-pupilcard',
   templateUrl: './pupilcard.component.html',
-  styleUrl: './pupilcard.component.css'
+  styleUrls: ['./pupilcard.component.css', '../boardv2.css']
 })
 export class PupilcardComponent implements OnInit {
   public tableName: string = 'student-list';
+  public creatingNewOne: boolean = false;
 
   searchStudent = new FormControl('');
 
@@ -82,6 +82,7 @@ export class PupilcardComponent implements OnInit {
         switch(event.key) {
           case "Escape":
             if (this.table.selectedItem != undefined) this.table.selectedItem = undefined;
+            if (this.creatingNewOne) this.creatingNewOne = false;
             break;
         }
         //console.log(event);
