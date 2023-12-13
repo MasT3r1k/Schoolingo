@@ -37,17 +37,30 @@ export class Sidebar {
         }, {
             item: 'sidebar/marks/main',
             icon: 'number-1',
-            permission: ['student', 'parent'],
+            permission: ['teacher', 'student', 'parent'],
             children: [{
                 item: 'sidebar/marks/interm',
                 url: 'marks/interm',
+                permission: ['student', 'parent'],
             }, {
                 item: 'sidebar/marks/midterm',
                 url: 'marks/midterm',
-            }]
+                permission: [],
+            }, {
+                item: 'sidebar/marks/intermRecord',
+                url: 'marks/intermRecord',
+                permission: ['teacher'],
+            }, {
+                item: 'sidebar/marks/midtermRecordTimesheet',
+                url: 'marks/midtermRecordTimesheet',
+                permission: ['teacher'],
+            }, {
+                item: 'sidebar/marks/midtermRecordClass',
+                url: 'marks/midtermRecordClass',
+                permission: ['teacher'],
+            },]
         }, {
             item: 'sidebar/teach/main',
-            permission: ['student', 'parent', 'teacher'],
             children: [{
                 item: 'sidebar/teach/timetable',
                 url: 'teach/timetable',
@@ -239,9 +252,14 @@ export class Sidebar {
         let gotItem: SidebarItem[] = [];
         this.data.forEach((group) => {
             group.items.forEach((item: SidebarItem | any) => {
-                if (item?.url == url) {gotItem[0] = item}
+                if (item?.url == url) {
+                    gotItem[0] = item;
+                }
                 item.children?.forEach((nItem: SidebarItem | any) => {
-                    if (nItem?.url == url) {gotItem[0] = item;gotItem[1] = nItem};
+                    if (nItem?.url == url) {
+                        gotItem[0] = item;
+                        gotItem[1] = nItem;
+                    };
                 })
             });
         })

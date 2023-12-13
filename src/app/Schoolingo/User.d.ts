@@ -16,6 +16,8 @@ export type UserMain = {
 
     classTeacher: number;
 
+    teacherId?: number;
+    studentId?: number;
     isPrincipal?: boolean;
 }
 

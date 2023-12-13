@@ -27,8 +27,8 @@ export class BoardComponent implements OnInit {
 
 
   constructor(
-    public userService: UserService,
     public socketService: SocketService,
+    public userService: UserService,
     public locale: Locale,
     public schoolingo: Schoolingo,
     public dropdown: Dropdowns,
@@ -54,14 +54,15 @@ export class BoardComponent implements OnInit {
       if (url?.url == '/login') return;
 
       let item = this.sidebar.getItem(url.url?.slice(1));
-      // if (!item?.[item.length - 1] ||
-      //   (item[item.length - 1] && (item[item.length - 1].permission && schoolingo.checkPermissions(item[item.length - 1].permission as UserPermissions[]) == false) ||
-      //   (item[0].permission && schoolingo.checkPermissions(item[0].permission as UserPermissions[]) == false))
-      //   ) {
-      //     this.router.navigateByUrl('main');
-      //     // this.toast.showToast('Nepodařilo se zobrazit požadovanou stránku.', 'error')
-      //     return;
-      // }
+    
+      if (!item?.[item.length - 1] ||
+        (item[item.length - 1] && (item[item.length - 1].permission && schoolingo.checkPermissions(item[item.length - 1].permission as UserPermissions[]) == false) ||
+        (item[0].permission && schoolingo.checkPermissions(item[0].permission as UserPermissions[]) == false))
+        ) {
+          this.router.navigateByUrl('main');
+          this.toast.showToast('Nepodařilo se zobrazit požadovanou stránku.', 'error')
+          return;
+      }
 
       // Setup page 
       setTimeout(() => {
@@ -75,32 +76,32 @@ export class BoardComponent implements OnInit {
 
     });
 
+    
+
   }
 
+
   public setupSocket(): void {
-    this.socketService.getSocket().Socket?.on('token', (data: any) => {
-      if (!data.status) {
+
+    this.socketService.addFunction('token', (data: any) => {
+      if (!data.status || data?.user == undefined || data.status == 401) {
         this.userService.logout();
+        this.logger.send('User', 'Logging out due problem with token.');
         return;
       }
       switch(data.status) {
         case 1:
-          if (data?.user == undefined) {
-            this.userService.logout();
-            return;
-          }
-          console.log(data.user);
           data.user.class = JSON.parse(data.user.class as string);
+          data.user.teacherId = data.teacherId ?? null;
+          data.user.studentId = data.studentId ?? null;
           this.userService.setUser(data.user as UserMain);
           this.logger.send('Socket', 'Updated user data');
-          break;
-        case 401:
-          this.userService.logout();
           break;
       }
     });
 
-    this.socketService.getSocket().Socket?.on('subjects', (subjects: any[]) => {
+
+    this.socketService.addFunction('subjects', (subjects: any[]) => {
       let subjectList: Subject[] = [];
       for(let i = 0;i < subjects.length;i++) {
         subjectList.push([subjects[i].subjectId, subjects[i].shortcut, subjects[i].label])
@@ -109,18 +110,18 @@ export class BoardComponent implements OnInit {
       this.logger.send('Socket', 'Updated list of subjects');
     });
 
-    this.socketService.getSocket().Socket?.on('rooms', (rooms: any[]) => {
+    this.socketService.addFunction('rooms', (rooms: any[]) => {
       this.schoolingo.setRooms(rooms);
       this.logger.send('Socket', 'Updated list of rooms');
     });
 
 
-    this.socketService.getSocket().Socket?.on('teachers', (teachers: any[]) => {
+    this.socketService.addFunction('teachers', (teachers: any[]) => {
       this.schoolingo.setTeachers(teachers);
       this.logger.send('Socket', 'Updated list of teachers');
     });
 
-    this.socketService.getSocket().Socket?.on('timetable', (timetable: any[]) => {
+    this.socketService.addFunction('timetable', (timetable: any[]) => {
       let lessons: Lesson[][][] = [];
   
       for(let i = 0;i < timetable.length;i++) {
@@ -161,13 +162,9 @@ export class BoardComponent implements OnInit {
 
       this.schoolingo.setLessons(lessons);
       this.logger.send('Socket', 'Updated timetable');
-    });
-
-    this.socketService.getSocket().Socket?.on('disconnect', (reason: any) => {
-      this.setupSocket();
-    });
-
+    });    
   }
+
 
   ngOnInit(): void {
     let token = this.userService.getToken();
@@ -176,8 +173,7 @@ export class BoardComponent implements OnInit {
       return;
     }
     
-
-    // Close all dropdowns
+    // Close all dropdown
     this.dropdown.closeAllDropdowns();
 
     // Load data from storage
@@ -221,7 +217,7 @@ export class BoardComponent implements OnInit {
 
   ngOnDestroy(): void {
     this.routerSub.unsubscribe();
-    this.socketService.getSocket().Socket?.disconnect();
+    this.socketService?.getSocket()?.Socket?.disconnect();
   }
 
 }

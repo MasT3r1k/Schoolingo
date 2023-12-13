@@ -153,6 +153,8 @@ const routes: Routes = [
       }]
     }, */{
       path: 'calendar', component: CalendarComponent
+    }, {
+      path: '**', redirectTo: 'main'
     }]
 }
 ];

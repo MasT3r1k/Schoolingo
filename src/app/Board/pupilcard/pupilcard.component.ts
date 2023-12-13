@@ -68,7 +68,7 @@ export class PupilcardComponent implements OnInit {
       };
 
     this.socketService.getSocket().Socket?.emit('getStudents');
-    this.socketService.getSocket().Socket?.on('listStudents', (student: Student[]) => {
+    this.socketService.addFunction('listStudents', (student: Student[]) => {
       for(let i = 0;i < student.length;i++) {
         this.data.push([student[i].firstName, student[i].lastName, student[i].class, student[i].sex, student[i].city]);
       }

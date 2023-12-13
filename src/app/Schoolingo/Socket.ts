@@ -1,23 +1,44 @@
-import { Injectable } from "@angular/core";
+import { Injectable, NgModule } from "@angular/core";
 import * as config from '@config';
 import { io, Socket } from 'socket.io-client';
 import { Cache } from "./Cache";
 import { Logger } from "./Logger";
 
-@Injectable()
+@NgModule()
 export class SocketService {
     constructor(
         private cache: Cache,
-        private logger: Logger
+        private logger: Logger,
     ) {
     }
 
     /**
      * Main declaration of socket
      */
+    public connected: boolean = false
     private socket: Socket | null = null;
     private socket_err: boolean = false;
     private socket_errMsg: string = '';
+    public socketFunctions: Record<string, Function[]> = {};
+    public socketFunctionsNotConnected: Record<string, Function[]> = {};
+
+    public addFunction(event: string, fn: Function): void {
+        if (!this.socketFunctions[event]) {
+            this.logger.send('Socket', 'Listening new event ' + event);
+            this.socketFunctions[event] = [];
+        }
+
+        this.socketFunctions[event].push(fn);
+    }
+
+    public addFunctionNotConnected(event: string, fn: Function): void {
+        if (!this.socketFunctionsNotConnected[event]) {
+            this.logger.send('Socket', 'Listening new event ' + event);
+            this.socketFunctionsNotConnected[event] = [];
+        }
+
+        this.socketFunctionsNotConnected[event].push(fn);
+    }
 
     /**
      * Get Socket client, Socket status and Socket err msg
@@ -39,12 +60,22 @@ export class SocketService {
             if (this.socket) this.socket.disconnect();
             this.socket = io(config.server);
             this.listenBasicEvents();
+            this.socket.onAny((event, ...args) => {
+                this.connected = true;
+                if (this.socketFunctionsNotConnected[event]) {
+                    this.socketFunctionsNotConnected[event].forEach((fn: Function) => {
+                        fn(args?.[0]);
+                    })
+                }
+                console.log('Received Event: ' + event)
+            });
         } catch(e) {
             console.error(e);
             this.socket?.disconnect();
             this.socket?.removeAllListeners();
         }
     }
+
 
     /**
      * Connect to socket as user based on from @config.server and @Schoolingo/user.token
@@ -57,6 +88,15 @@ export class SocketService {
 
             this.socket = io(config.server, { extraHeaders: { Authorization: 'Bearer ' + token.token }});
             this.listenBasicEvents();
+            this.socket.onAny((event, ...args) => {
+                this.connected = true;
+                if (this.socketFunctions[event]) {
+                    this.socketFunctions[event].forEach((fn: Function) => {
+                        fn(args?.[0]);
+                    })
+                }
+                console.log('Received Event: ' + event)
+            });
             return this.socket;
         } catch(e) {
             this.socket?.disconnect();
@@ -70,6 +110,7 @@ export class SocketService {
     private listenBasicEvents(): void {
         if (this.socket == null) {console.log("No socket found");return;}
         this.socket.on('connect', () => {
+            this.connected = true;
             this.socket_err = false;
             this.socket_errMsg = '';
             this.logger.send('Socket', 'Connected to socket.');
@@ -77,6 +118,7 @@ export class SocketService {
         });
 
         this.socket.on('connect_error', (data) => {
+            this.connected = false;
             this.socket_err = true;
             this.socket_errMsg = data.message;
             this.socket?.removeAllListeners();
@@ -84,6 +126,7 @@ export class SocketService {
 
         this.socket.on('disconnect', (data) => {
             this.socket?.removeAllListeners();
+            this.connected = false;
             this.socket = null;
             this.socket_err = false;
             this.socket_errMsg = 'Disconnect';

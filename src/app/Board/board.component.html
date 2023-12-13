@@ -17,15 +17,15 @@
                 <i class="ti ti-menu-2"></i>
             </div>
 
-            <div class="item" tooltip="Zápis hodiny" [routerLink]="['', 'teach', 'classbook']" *ngIf="userService.getUser()?.type == 'teacher'" (click)="$event.stopPropagation();">
+            <div class="item" [attr.tooltip]="locale.getLocale('classbook/lessonNotation')" [routerLink]="['', 'teach', 'classbook']" *ngIf="userService.getUser()?.type == 'teacher'" (click)="$event.stopPropagation();">
                 <i class="ti ti-address-book"></i>
             </div>
 
-            <div class="item" tooltip="Zápis klasifikace" *ngIf="userService.getUser()?.type == 'teacher'" (click)="$event.stopPropagation()">
+            <div class="item" [attr.tooltip]="locale.getLocale('sidebar/marks/intermRecord')" [routerLink]="['', 'marks', 'intermRecord']" *ngIf="userService.getUser()?.type == 'teacher'" (click)="$event.stopPropagation()">
                 <i class="ti ti-number"></i>
             </div>
 
-            <div class="item" tooltip="Správa třídy" [routerLink]="['', 'manageclass']" *ngIf="schoolingo.checkPermissions(['classteacher'])" (click)="$event.stopPropagation()">
+            <div class="item" [attr.tooltip]="locale.getLocale('sidebar/manageclass')" [routerLink]="['', 'manageclass']" *ngIf="schoolingo.checkPermissions(['classteacher'])" (click)="$event.stopPropagation()">
                 <i class="ti ti-school"></i>
             </div>
 
@@ -81,7 +81,7 @@
             </ul>
         </div>
         <div class="main-content" (click)="schoolingo.sidebarToggled = false;">
-            <div class="alert alert-error" *ngIf="socketService.getSocket().Socket?.connected !== true">
+            <div class="alert alert-error" *ngIf="socketService.connected !== true">
                 <span>Nacházíte se v <b>OFFLINE</b> módu. Veškeré informace jsou pouze z historie vaší poslední návštěvy.</span> 
                 <div class="btn" (click)="schoolingo.refreshConnection()"
                 [innerHTML]="schoolingo.getRefreshingText()"></div>

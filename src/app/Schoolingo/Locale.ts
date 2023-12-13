@@ -1,7 +1,5 @@
-import { HttpClient } from "@angular/common/http";
 import { Injectable } from "@angular/core";
 import { Cache } from "./Cache";
-import { SocketService } from "./Socket";
 import { Logger } from "./Logger";
 
 export type languages = 'cs' | 'en';
@@ -43,7 +41,6 @@ export class Locale {
     constructor(
         // Imports
         private cache: Cache,
-        private socketService: SocketService,
         private logger: Logger
         ) {
 
@@ -68,7 +65,10 @@ export class Locale {
                 marks: {
                     main: "Klasifikace",
                     interm: "Průběžná klasifikace",
-                    midterm: "Pololetní klasifikace"
+                    midterm: "Pololetní klasifikace",
+                    intermRecord: "Zápis známek",
+                    midtermRecordTimesheet: "Zápis známek dle skupin",
+                    midtermRecordClass: "Zápis známek dle tříd",
                 },
                 teach: {
                     main: "Výuka",
@@ -193,17 +193,22 @@ export class Locale {
                 nextWeek: "Příští týden",
                 permanent: "Stálý"
             },
+
             classbook: {
                 lessonNotation: "Zápis hodiny",
                 attendance: "Docházka",
                 notes: "Poznámky"
             },
+
             pupilcard: {
                 new: "Nový žák",
                 personalDetails: "Osobní údaje",
                 relatives: "Příbuzní"
             },
+
             subjects: "Předměty",
+            subject: "Předmět",
+
             chronologically: "Chronologicky",
             backpack: "Batoh",
 

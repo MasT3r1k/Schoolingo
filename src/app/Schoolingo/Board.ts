@@ -4,7 +4,6 @@ import { Teacher, UserMain, UserPermissions } from "./User.d";
 import { Holiday, Lesson, Room, ScheduleLessonHour, SchoolBreaks, SchoolSettings, Subject, TTableDay, TTableLesson, grade } from "./Board.d";
 import { Sidebar, SidebarGroup, SidebarItem } from "./Sidebar";
 import { SocketService } from "./Socket";
-import { Tabs } from "@Components/Tabs/Tabs";
 import { Cache } from "./Cache";
 import { Locale } from "./Locale";
 
@@ -57,7 +56,6 @@ export class Schoolingo {
         private userService: UserService,
         private sidebar: Sidebar,
         private socketService: SocketService,
-        private tabs: Tabs,
         private storage: Cache,
         private locale: Locale
     ) {
@@ -215,19 +213,19 @@ export class Schoolingo {
         let newSidebar: SidebarGroup[] = [];
 
         boardSidebar.forEach((section: SidebarGroup) => {
-            if (section.permission && this.checkPermissions(section.permission as UserPermissions[]) == false) return;
+            if (section.permission && !this.checkPermissions(section.permission)) return;
             if (section.items.length == 0) return;
             let items: SidebarItem[] = [];
             section.items.forEach((item: SidebarItem) => {
-                if (item.permission && this.checkPermissions(item.permission as UserPermissions[]) == false) return;
-                let children = item.children as SidebarItem[];
-                if (children) {
+                if (item.permission && !this.checkPermissions(item.permission)) return;
+                if (item.children) {
+                    let delC: number = 0;
+                    let children = JSON.parse(JSON.stringify(item.children)) as SidebarItem[];
                     children.forEach((child: SidebarItem, index: number) => {
-                        if (!child.permission || this.checkPermissions(child.permission as UserPermissions[]) == true) return;
-                        children?.splice(index, 1);
-                    });
-                    item.children = children;
-
+                        if (!(child.permission && !this.checkPermissions(child.permission))) return;
+                        item.children?.splice(index - delC, 1);
+                        delC++;
+                    })
                 }
                 items.push(item);
             })

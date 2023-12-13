@@ -1,16 +1,14 @@
-import { Injectable } from "@angular/core";
+import { Injectable, NgModule } from "@angular/core";
 import { User, UserMain } from './User.d';
 import { Cache } from "./Cache";
 import { Router } from "@angular/router";
-import { SocketService } from "./Socket";
 import { ToastService } from "@Components/Toast";
 
-@Injectable()
+@NgModule()
 export class UserService {
     constructor(
         private cache: Cache,
         private router: Router,
-        private socketService: SocketService,
         private toast: ToastService
     ) {
         let user = this.cache.get(this.cache.userCacheName) as UserMain;
@@ -69,8 +67,6 @@ export class UserService {
      * Disconnect from socket, remove user from memory, remove token from memory and storage and redirect to login page
      */
     public logout(): void {
-        this.socketService.getSocket().Socket?.emit('removeToken');
-        this.socketService.getSocket().Socket?.disconnect();
         this.setUser(null);
         this.setToken('', new Date());
         this.toast.closeAll();

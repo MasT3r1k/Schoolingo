@@ -54,7 +54,8 @@ export class LoginComponent implements OnInit {
 
     this.routerSocket = this.router.events.subscribe((url: any) => {
       this.tabs.clearTabs();
-      if ((!url?.routerEvent?.urlAfterRedirects && !url?.url) || !(url?.routerEvent?.urlAfterRedirects == '/login' || url?.url == '/login')) { return; }
+      console.log(url);
+      if ((!url?.routerEvent?.urlAfterRedirects && !url?.url) || !(url?.routerEvent?.urlAfterRedirects?.startsWith('/login') || url?.url?.startsWith('/login'))) { return; }
 
       this.title.setTitle(this.locale.getLocale('login_title') + ' | SCHOOLINGO')
       this.schoolingo.sidebarToggled = false;
@@ -62,7 +63,7 @@ export class LoginComponent implements OnInit {
       this.socketService.connectAnon();
       this.refreshQRcode();
   
-      this?.socketService.getSocket()?.Socket?.on('login', (data: LoginData) => {
+      this?.socketService.addFunctionNotConnected('login', (data: LoginData) => {
         this.tryingToLogin = false;
         if (data.status == 1 && data?.token && data?.expires) {
           this.logger.send('Login', 'Successful logged in.');
@@ -147,14 +148,14 @@ export class LoginComponent implements OnInit {
     this.qrCodeResult = null;
     this.qrStatus = this.getQRcodeStatus();
 
-    this.socketService.getSocket()?.Socket?.on('login-qrcode', (data: any) => {
+    this.socketService.addFunctionNotConnected('login-qrcode', (data: any) => {
       this.logger.send('QRCode', 'QR code loaded.');
       this.qrCode = data;
       this.qrCodeError = false;
       this.qrStatus = this.getQRcodeStatus();
     });
 
-    this.socketService.getSocket()?.Socket?.on('qrScanCode', (data) => {
+    this.socketService.addFunctionNotConnected('qrScanCode', (data: any) => {
       this.qrCodeResult = data;
       console.log(data);
       this.qrStatus = this.getQRcodeStatus();
