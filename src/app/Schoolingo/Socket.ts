@@ -17,7 +17,7 @@ export class SocketService {
      */
     public connected: boolean = false
     private socket: Socket | null = null;
-    private socket_err: boolean = false;
+    public socket_err: boolean = false;
     private socket_errMsg: string = '';
     public socketFunctions: Record<string, Function[]> = {};
     public socketFunctionsNotConnected: Record<string, Function[]> = {};
@@ -27,8 +27,8 @@ export class SocketService {
             this.logger.send('Socket', 'Listening new event ' + event);
             this.socketFunctions[event] = [];
         }
-
-        this.socketFunctions[event].push(fn);
+        
+        if (!this.socketFunctions[event].includes(fn)) this.socketFunctions[event].push(fn);
     }
 
     public addFunctionNotConnected(event: string, fn: Function): void {
@@ -37,7 +37,7 @@ export class SocketService {
             this.socketFunctionsNotConnected[event] = [];
         }
 
-        this.socketFunctionsNotConnected[event].push(fn);
+        if (!this.socketFunctionsNotConnected[event].includes(fn)) this.socketFunctionsNotConnected[event].push(fn);
     }
 
     /**
@@ -62,6 +62,7 @@ export class SocketService {
             this.listenBasicEvents();
             this.socket.onAny((event, ...args) => {
                 this.connected = true;
+                this.socket_err = false;
                 if (this.socketFunctionsNotConnected[event]) {
                     this.socketFunctionsNotConnected[event].forEach((fn: Function) => {
                         fn(args?.[0]);
@@ -90,6 +91,7 @@ export class SocketService {
             this.listenBasicEvents();
             this.socket.onAny((event, ...args) => {
                 this.connected = true;
+                this.socket_err = false;
                 if (this.socketFunctions[event]) {
                     this.socketFunctions[event].forEach((fn: Function) => {
                         fn(args?.[0]);

@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { Title } from '@angular/platform-browser';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Params, Router } from '@angular/router';
 import { Tabs } from '@Components/Tabs/Tabs';
 import { ToastService } from '@Components/Toast';
 import * as config from '@config';
@@ -40,6 +40,7 @@ export class LoginComponent implements OnInit {
   constructor(
     public locale: Locale,
     public socketService: SocketService,
+    private route: ActivatedRoute,
     private router: Router,
     private userService: UserService,
     private logger: Logger,
@@ -54,7 +55,6 @@ export class LoginComponent implements OnInit {
 
     this.routerSocket = this.router.events.subscribe((url: any) => {
       this.tabs.clearTabs();
-      console.log(url);
       if ((!url?.routerEvent?.urlAfterRedirects && !url?.url) || !(url?.routerEvent?.urlAfterRedirects?.startsWith('/login') || url?.url?.startsWith('/login'))) { return; }
 
       this.title.setTitle(this.locale.getLocale('login_title') + ' | SCHOOLINGO')
@@ -62,6 +62,7 @@ export class LoginComponent implements OnInit {
   
       this.socketService.connectAnon();
       this.refreshQRcode();
+
   
       this?.socketService.addFunctionNotConnected('login', (data: LoginData) => {
         this.tryingToLogin = false;
@@ -70,7 +71,14 @@ export class LoginComponent implements OnInit {
           this.storage.removeAll();
           this.toast.showToast(this.locale.getLocale('successfulLogin'), 'success', 5000);
           this.userService.setToken(data.token, data.expires);
-          this.router.navigate(['', 'main']);
+
+          let nextURL: string = 'main';
+          this.route.queryParams.forEach((param: Params) => {
+            if (param['returnUrl']) {
+              nextURL = param['returnUrl'].slice(1);
+            }
+          })
+          this.router.navigate(['', nextURL]);
         }else{
           if (!data.message) return;
           switch(data.message) {
@@ -177,8 +185,8 @@ export class LoginComponent implements OnInit {
   }
 
   public getQRcodeStatus(): QRStatus {
-    let page: QRPages;
-    if (this.qrCode == '' && this.qrCodeError == false && this.qrCodeResult == null) {
+    let page: QRPages | null = null;
+    if (this.qrCode == '' && this.socketService.socket_err == false && this.qrCodeError == false && this.qrCodeResult == null) {
       page = 'loading';
     } else if (this.qrCode != '' && this.qrCodeError == false) {
       if (this.qrCodeResult == null) {
@@ -186,9 +194,8 @@ export class LoginComponent implements OnInit {
       } else {
         page = 'trylogin';
       }
-    } else {
-      page = 'error';
     }
+    if (page == null) page = 'error';
 
     return {
       whatIsVisible: page,

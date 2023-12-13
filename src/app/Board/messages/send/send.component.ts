@@ -20,7 +20,7 @@ export class SendComponent {
 
   ngOnInit(): void {
     let user = this.userService.getUser();
-    this.teachers = this.schoolingo.getTeachers();
+    this.teachers = JSON.parse(JSON.stringify(this.schoolingo.getTeachers()));
     if (user?.teacherId) {
       this.teachers.forEach((teacher: Teacher, index: number) => {
         if (teacher.teacherId == user?.teacherId) {
