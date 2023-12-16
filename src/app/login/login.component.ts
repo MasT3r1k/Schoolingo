@@ -165,7 +165,6 @@ export class LoginComponent implements OnInit {
 
     this.socketService.addFunctionNotConnected('qrScanCode', (data: any) => {
       this.qrCodeResult = data;
-      console.log(data);
       this.qrStatus = this.getQRcodeStatus();
     });
 

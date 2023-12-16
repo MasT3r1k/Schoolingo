@@ -47,11 +47,38 @@
                 <div class="form-group">
                     <schoolingo-calendar [name]='"pickBirthday"' class="no-small"></schoolingo-calendar>
                 </div>
+
                 <div class="form-group">
-                    <input type="text" name="sex" [placeholder]="locale.getLocale('sex')">
+                    <ng-select
+                    [(ngModel)]="gender"
+                    [notFoundText]="locale.getLocale('sex')"
+                    [multiple]="false"
+                    [markFirst]="false"
+                    [placeholder]="locale.getLocale('sex')"
+                    [searchable]="false"
+                    >
+                        <ng-option *ngFor="let gender of genders" [value]="gender">
+                            <div class="select">
+                                {{ gender }}
+                            </div>
+                        </ng-option>
+                    </ng-select>
                 </div>
                 <div class="form-group">
-                    <input type="text" name="class" [placeholder]="locale.getLocale('class')">
+                    <ng-select
+                    [(ngModel)]="class"
+                    [notFoundText]="locale.getLocale('class')"
+                    [multiple]="false"
+                    [markFirst]="false"
+                    [placeholder]="locale.getLocale('class')"
+                    [searchable]="false"
+                    >
+                        <ng-option *ngFor="let class of classes" [value]="class">
+                            <div class="select">
+                                {{ class }}
+                            </div>
+                        </ng-option>
+                    </ng-select>
                 </div>
             </div>
             <div class="section-title">

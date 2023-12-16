@@ -85,6 +85,7 @@ export class Locale {
                     send: "Poslat zprávu",
                     received: "Přijaté zprávy",
                     sent: "Odeslané zprávy",
+                    groups: "Skupiny",
                     noticeboard: "Nástěnka"
                 },
 

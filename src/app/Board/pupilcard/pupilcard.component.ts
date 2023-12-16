@@ -43,7 +43,13 @@ export class PupilcardComponent implements OnInit {
   ];
 
   _dat: any[] = [];
-  data: any[] = []
+  data: any[] = [];
+  
+  gender: any = null;
+  genders: any[] = ['muž', 'žena'];
+  class: any = null;
+  classes: any[] = ['B3.I', 'B2.I'];
+
 
   options: TableOptions = {
     tableType: 'interactive-list'
