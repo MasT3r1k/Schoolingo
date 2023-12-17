@@ -45,7 +45,7 @@
                         {{ day.holiday?.name }}
                     </div>
                     <div class="item day-lesson" *ngFor="let hour of day.lessons">
-                        <div class="day-lesson-lesson" *ngFor="let lesson of hour">
+                        <div class="day-lesson-lesson" *ngFor="let lesson of hour" (click)="showLesson($event, lesson)">
                             <div class="group" *ngIf="lesson.group">
                                 <span *ngIf="lesson.group.text">{{ lesson.group.text }}</span>
                                 <span *ngIf="lesson.group.num">{{ lesson.group.num }}</span>
@@ -60,4 +60,11 @@
             </div>
         </div>
     </div>
+</div>
+
+<div class="lessonInformation" [ngStyle]="{ left: detailedInformationPosition.x + 'px', top: detailedInformationPosition.y + 'px' }" *ngIf="selectedLesson && dropdown.checkDropdown('lessonInformation')" (click)="$event.stopPropagation()">
+    <p>Učitel: {{ selectedLesson.teacher?.firstName + ' ' + selectedLesson.teacher?.lastName }}</p>
+    <p>Předmět: {{ selectedLesson.subject?.[2] }}</p>
+    <p>Místnost: {{ selectedLesson.room?.label }}</p>
+
 </div>

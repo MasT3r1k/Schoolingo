@@ -51,7 +51,6 @@
 .schedule .day-lesson, .schedule .all-day {
     border: 1px solid transparent;
     position: relative;
-    --border-color: rgba(0,0,0,0.10);
 }
 
 .schedule .all-day {
@@ -76,7 +75,7 @@
 .schedule .days .day .all-day { border-right-color: var(--border-color); }
 
 
-.schedule .days .day:nth-child(2n) { background-color: #f5f7f7; }
+.schedule .days .day:nth-child(2n) { background-color: var(--background-hover); }
 .schedule .days .day.glow .day-name {
     border: 1px solid var(--primary);
     border-right-color: transparent;
@@ -127,7 +126,7 @@
     font-size: 11px;
     line-height: 12px;
     letter-spacing: -0.05em;
-    color: #656565;
+    color: var(--color-darker);
     width: 50%;
 }
 
@@ -213,6 +212,7 @@
     @page {size: landscape}
     * {
         color: #000!important;
+        --border-color: #000;
     }
     input, .alert, .alert span, .alert .btn, header, header h2 {
         display: none;
@@ -241,9 +241,25 @@
     }
 
     .schedule .days .day .item {
-        border-bottom: 1px solid var(--border-color);
-        border-right: 1px solid var(--border-color);
+        border-bottom: 1px solid #000;
+        border-right: 1px solid #000;
         border-collapse: collapse;
     }
 
+    .schedule .days .day .item:nth-child(2) {
+        border-left: none;
+    }
+
+    .schedule .days .day:last-child .item:first-child {
+        border-bottom: none;
+    }
+
+}
+
+
+.lessonInformation {
+    position: fixed;
+    background-color: var(--background-header);
+    color: var(--color);
+    padding: 2rem;
 }

@@ -1,13 +1,12 @@
+import { Locale } from '@Schoolingo/Locale';
 import { Component } from '@angular/core';
-import { CommonModule } from '@angular/common';
 
 @Component({
-  selector: 'app-substitution',
-  standalone: true,
-  imports: [CommonModule],
   templateUrl: './substitution.component.html',
-  styleUrl: './substitution.component.css'
+  styleUrls: ['./substitution.component.css', '../../board.css']
 })
 export class SubstitutionComponent {
-
+  constructor(
+    public locale: Locale
+  ) {}
 }

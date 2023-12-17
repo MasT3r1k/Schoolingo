@@ -1,33 +1,28 @@
-<main>
-    <div class="card">
-        <div class="card-header">
-            <div class="left">
-                <h2>{{ locale.getLocale('sidebar/messages/send') }}</h2>
-            </div>
-            <div class="right">
-                <div class="btn" (click)="sendMessage()"><i class="ti ti-send"></i> {{ locale.getLocale('buttons/send') }}</div>
-            </div>
-        </div>
+<div class="box">
+    <header>
+        <h2>{{ locale.getLocale('sidebar/messages/send') }}</h2>
+    </header>
 
-        <div class="card-content">
-            <ng-select
-                [(ngModel)]="selectedReceivers"
-                [notFoundText]="locale.getLocale('errors/noReceiversFound')"
-                [multiple]="true"
-                [markFirst]="true"
-                [searchable]="false"
-            >
-                <ng-option *ngFor="let teacher of teachers" [value]="{type: 'teacher', id: teacher.teacherId}">
-                    <div class="select">
-                        {{ teacher.firstName + ' ' + teacher.lastName }}
-                        <div class="badge" *ngIf="teacher.teacherId == userService.getUser()?.classTeacher">{{ locale.getLocale('roles/classteacher') }}</div>
-                    </div>
-                </ng-option>
-            </ng-select>
+    <div class="box-content">
+        <ng-select
+            [(ngModel)]="selectedReceivers"
+            [notFoundText]="locale.getLocale('errors/noReceiversFound')"
+            [multiple]="true"
+            [markFirst]="true"
+            [searchable]="false"
+        >
+            <ng-option *ngFor="let teacher of teachers" [value]="{type: 'teacher', id: teacher.teacherId}">
+                <div class="select">
+                    {{ teacher.firstName + ' ' + teacher.lastName }}
+                    <div class="badge" *ngIf="teacher.teacherId == userService.getUser()?.classTeacher">{{ locale.getLocale('roles/classteacher') }}</div>
+                </div>
+            </ng-option>
+        </ng-select>
 
-            <div>{{ selectedReceivers | json }}</div>
-        </div>
-
+        <div>{{ selectedReceivers | json }}</div>
+    </div>
+    <div class="right">
+        <div class="btn" (click)="sendMessage()"><i class="ti ti-send"></i> {{ locale.getLocale('buttons/send') }}</div>
     </div>
 
-</main>
+</div>

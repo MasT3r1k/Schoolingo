@@ -15,7 +15,7 @@ type Student = {
 
 @Component({
   templateUrl: './pupilcard.component.html',
-  styleUrls: ['./pupilcard.component.css', '../boardv2.css']
+  styleUrls: ['./pupilcard.component.css', '../board.css']
 })
 export class PupilcardComponent implements OnInit {
   public tableName: string = 'student-list';

@@ -1,13 +1,13 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { Locale } from '@Schoolingo/Locale';
 
 @Component({
-  selector: 'app-homeworks',
-  standalone: true,
-  imports: [CommonModule],
   templateUrl: './homeworks.component.html',
-  styleUrl: './homeworks.component.css'
+  styleUrls: ['./homeworks.component.css', '../../board.css']
 })
 export class HomeworksComponent {
-
+  constructor(
+    public locale: Locale
+  ) {}
 }

@@ -1,137 +1,138 @@
-<main>
-    <div class="card" *ngIf="creatingNewOne == false && table?.selectedItem == undefined">
-        <div class="card-header">
-            <div class="left">
-                <h2>{{ locale.getLocale('sidebar/pupilcard') }}</h2>
-            </div>
-            <div class="center">
-                <div class="form-group">
-                    <i class="ti ti-search"></i>
-                    <input type="search" name="studentSearch" [formControl]="searchStudent" placeholder="Vyhledávejte žáka podle jména" (input)="updateFilter()" [readonly]="table && table.selectedItem != undefined">
-                </div>
-            </div>
-            <div class="right">
-                <div class="btn" (click)="creatingNewOne = true;"><i class="ti ti-plus"></i> {{ locale.getLocale('pupilcard/new') }}</div>
+<div class="box" *ngIf="creatingNewOne == false && table?.selectedItem == undefined">
+    <header>
+        <h2>{{ locale.getLocale('sidebar/pupilcard') }}</h2>
+        <div class="center">
+            <div class="form-group">
+                <i class="ti ti-search"></i>
+                <input type="search" name="studentSearch" [formControl]="searchStudent" placeholder="Vyhledávejte žáka podle jména" (input)="updateFilter()" [readonly]="table && table.selectedItem != undefined">
             </div>
         </div>
-
-        <div class="card-content">
-            <schoolingo-table [name]="tableName" [columns]="columns" [data]="data" [options]="options"></schoolingo-table>
+        <div class="right">
+            <div class="btn green" (click)="creatingNewOne = true;">
+                <i class="ti ti-plus"></i>
+                {{ locale.getLocale('pupilcard/new') }}
+            </div>
         </div>
+    </header>
 
+    <div class="box-content">
+        <schoolingo-table [name]="tableName" [columns]="columns" [data]="data" [options]="options"></schoolingo-table>
     </div>
 
-    <div class="card" *ngIf="creatingNewOne == true && table?.selectedItem == undefined">
-        <div class="card-header">
-            <div class="left">
-                <h2><i class="ti ti-arrow-left" (click)="creatingNewOne = false"></i> {{ locale.getLocale('pupilcard/new') }}</h2>
+</div>
+
+<div class="box" *ngIf="creatingNewOne == true && table?.selectedItem == undefined">
+    <header>
+        <h2>
+            <i class="ti ti-arrow-left" (click)="creatingNewOne = false"></i>
+            {{ locale.getLocale('pupilcard/new') }}
+        </h2>
+        <div class="right">
+            <schoolingo-tabs [name]="'newPupil'" [options]="[locale.getLocale('pupilcard/personalDetails'), locale.getLocale('pupilcard/relatives')]"></schoolingo-tabs>
+        </div>
+    </header>
+    <div class="box-content">
+        <div class="section-title">
+            <div class="title-bar"></div>
+            <div class="title">{{ locale.getLocale('pupilcard/personalDetails') }}</div>
+        </div>
+        <div class="row">
+            <div class="form-group">
+                <input type="text" name="firstName" [placeholder]="locale.getLocale('firstName')">
             </div>
-            <div class="right">
-                <schoolingo-tabs [name]="'newPupil'" [options]="[locale.getLocale('pupilcard/personalDetails'), locale.getLocale('pupilcard/relatives')]"></schoolingo-tabs>
+            <div class="form-group">
+                <input type="text" name="lastName" [placeholder]="locale.getLocale('lastName')">
             </div>
         </div>
-        <div class="card-content">
-            <div class="section-title">
-                <div class="title-bar"></div>
-                <div class="title">{{ locale.getLocale('pupilcard/personalDetails') }}</div>
+        <div class="row">
+            <div class="form-group">
+                <schoolingo-calendar [name]='"pickBirthday"' class="no-small"></schoolingo-calendar>
             </div>
-            <div class="row">
-                <div class="form-group">
-                    <input type="text" name="firstName" [placeholder]="locale.getLocale('firstName')">
-                </div>
-                <div class="form-group">
-                    <input type="text" name="lastName" [placeholder]="locale.getLocale('lastName')">
-                </div>
-            </div>
-            <div class="row">
-                <div class="form-group">
-                    <schoolingo-calendar [name]='"pickBirthday"' class="no-small"></schoolingo-calendar>
-                </div>
 
-                <div class="form-group">
-                    <ng-select
-                    [(ngModel)]="gender"
-                    [notFoundText]="locale.getLocale('sex')"
-                    [multiple]="false"
-                    [markFirst]="false"
-                    [placeholder]="locale.getLocale('sex')"
-                    [searchable]="false"
-                    >
-                        <ng-option *ngFor="let gender of genders" [value]="gender">
-                            <div class="select">
-                                {{ gender }}
-                            </div>
-                        </ng-option>
-                    </ng-select>
-                </div>
-                <div class="form-group">
-                    <ng-select
-                    [(ngModel)]="class"
-                    [notFoundText]="locale.getLocale('class')"
-                    [multiple]="false"
-                    [markFirst]="false"
-                    [placeholder]="locale.getLocale('class')"
-                    [searchable]="false"
-                    >
-                        <ng-option *ngFor="let class of classes" [value]="class">
-                            <div class="select">
-                                {{ class }}
-                            </div>
-                        </ng-option>
-                    </ng-select>
-                </div>
+            <div class="form-group">
+                <ng-select
+                [(ngModel)]="gender"
+                [notFoundText]="locale.getLocale('sex')"
+                [multiple]="false"
+                [markFirst]="false"
+                [placeholder]="locale.getLocale('sex')"
+                [searchable]="false"
+                >
+                    <ng-option *ngFor="let gender of genders" [value]="gender">
+                        <div class="select">
+                            {{ gender }}
+                        </div>
+                    </ng-option>
+                </ng-select>
             </div>
-            <div class="section-title">
-                <div class="title-bar"></div>
-                <div class="title">Bydliště</div>
+            <div class="form-group">
+                <ng-select
+                [(ngModel)]="class"
+                [notFoundText]="locale.getLocale('class')"
+                [multiple]="false"
+                [markFirst]="false"
+                [placeholder]="locale.getLocale('class')"
+                [searchable]="false"
+                >
+                    <ng-option *ngFor="let class of classes" [value]="class">
+                        <div class="select">
+                            {{ class }}
+                        </div>
+                    </ng-option>
+                </ng-select>
             </div>
-            <!-- <hr>
-            <label>Bydliště</label> -->
-            <div class="row">
-                <div class="form-group">
-                    <input type="text" name="street" [placeholder]="'Ulice'">
-                </div>
-                <div class="form-group">
-                    <input type="text" name="number" [placeholder]="'Číslo popisné'">
-                </div>
-                <div class="form-group">
-                    <input type="text" name="city" [placeholder]="'Město'">
-                </div>
-                <div class="form-group">
-                    <input type="text" name="postcode" [placeholder]="'PSČ'">
-                </div>
+        </div>
+        <div class="section-title">
+            <div class="title-bar"></div>
+            <div class="title">Bydliště</div>
+        </div>
+        <!-- <hr>
+        <label>Bydliště</label> -->
+        <div class="row">
+            <div class="form-group">
+                <input type="text" name="street" [placeholder]="'Ulice'">
             </div>
-            <div class="row">
-                <div class="form-group">
-                    <input type="text" name="nationality" [placeholder]="'Stát'">
-                </div>
-                <div class="form-group">
-                    <input type="text" name="district" [placeholder]="'Okres'">
-                </div>
-                <div class="form-group">
-                    <input type="text" name="partCity" [placeholder]="'Část'">
-                </div>
-                <div class="form-group">
-                    <input type="submit" name="removeAddress" value="Uložit adresu">
-                </div>
+            <div class="form-group">
+                <input type="text" name="number" [placeholder]="'Číslo popisné'">
+            </div>
+            <div class="form-group">
+                <input type="text" name="city" [placeholder]="'Město'">
+            </div>
+            <div class="form-group">
+                <input type="text" name="postcode" [placeholder]="'PSČ'">
+            </div>
+        </div>
+        <div class="row">
+            <div class="form-group">
+                <input type="text" name="nationality" [placeholder]="'Stát'">
+            </div>
+            <div class="form-group">
+                <input type="text" name="district" [placeholder]="'Okres'">
+            </div>
+            <div class="form-group">
+                <input type="text" name="partCity" [placeholder]="'Část'">
+            </div>
+            <div class="form-group">
+                <input type="submit" name="removeAddress" value="Uložit adresu">
             </div>
         </div>
     </div>
+</div>
 
-    <div class="card" *ngIf="creatingNewOne == false && table?.selectedItem != undefined">
-        <div class="card-header">
-            <div class="left">
-                <h2><i class="ti ti-arrow-left" (click)="table.selectedItem = undefined"></i> {{ locale.getLocale('sidebar/pupilcard') }}</h2>
-            </div>
-            <div class="right">
-                <schoolingo-tabs [name]="'showPupil'" [options]="[locale.getLocale('pupilcard/personalDetails'), locale.getLocale('pupilcard/relatives')]"></schoolingo-tabs>
-            </div>
+<div class="box" *ngIf="creatingNewOne == false && table?.selectedItem != undefined">
+    <header>
+        <h2>
+            <i class="ti ti-arrow-left" (click)="table.selectedItem = undefined"></i>
+            {{ locale.getLocale('sidebar/pupilcard') }}
+        </h2>
+        <div class="right">
+            <schoolingo-tabs [name]="'showPupil'" [options]="[locale.getLocale('pupilcard/personalDetails'), locale.getLocale('pupilcard/relatives')]"></schoolingo-tabs>
         </div>
-        <div class="alert alert-error" *ngIf="true">
-            <span>Nemáte dostatečné oprávnění na úpravu osobních údajů žáka.</span> 
-        </div>
-        <div class="card-content">
-
-        </div>
+    </header>
+    <div class="alert alert-error" *ngIf="true">
+        <span>Nemáte dostatečné oprávnění na úpravu osobních údajů žáka.</span> 
     </div>
-</main>
+    <div class="box-content">
+
+    </div>
+</div>

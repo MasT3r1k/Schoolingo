@@ -3,11 +3,8 @@ import { CommonModule } from '@angular/common';
 import { Locale } from '@Schoolingo/Locale';
 
 @Component({
-  selector: 'app-tutoring',
-  standalone: true,
-  imports: [CommonModule],
   templateUrl: './tutoring.component.html',
-  styleUrl: './tutoring.component.css'
+  styleUrls: ['./tutoring.component.css', '../../board.css']
 })
 export class TutoringComponent {
   constructor(

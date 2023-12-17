@@ -9,6 +9,7 @@ import { Router } from '@angular/router';
 import { UserService } from '@Schoolingo/User';
 import { CalendarComponent, CalendarOptions } from '@Components/calendar/calendar.component';
 import { Calendar } from '@Components/calendar/calendar';
+import { TTableLesson } from '@Schoolingo/Board.d';
 
 @Component({
   templateUrl: './timetable.component.html',
@@ -21,18 +22,17 @@ export class TimetableComponent implements OnInit {
     public locale: Locale,
     public dropdown: Dropdowns,
     public tabs: Tabs,
-    private DatePipe: DatePipe,
     private renderer: Renderer2,
     private router: Router,
     private calendarService: Calendar
   ) {
-
     this.dropdown.addDropdown('absence');
-
+    this.dropdown.addDropdown('lessonInformation');
   }
 
   // Default values
   public tabName: string = 'timeTable';
+  public selectedLesson: TTableLesson | null = null;
   public calendarName = this.tabName;
   public calendarOptions: CalendarOptions = {
     allowWeekends: false,
@@ -43,6 +43,23 @@ export class TimetableComponent implements OnInit {
   private declare renderBeforePrint: Function;
   private declare renderAfterPrint: Function;
   private declare routerSub;
+
+  // Detailed information about lesson
+  public detailedInformationPosition: { x: number;y: number; } = { x: 0, y: 0 };
+  public showLesson(event: MouseEvent, lesson: TTableLesson): void {
+    if (lesson.isEmpty == true) {
+      this.selectedLesson = null;
+      return;
+    }
+    let mouseX = event.clientX;
+    let mouseY = event.clientY;
+    this.detailedInformationPosition = { x: mouseX, y: mouseY };
+    if (lesson !== this.selectedLesson) {
+      this.dropdown.closeAllDropdowns();    
+    }
+    this.dropdown.toggleDropdown('lessonInformation');
+    this.selectedLesson = lesson;
+  }
 
   // Timetable tabs
   private selectedTimeTableReasonPrint: number = 0;

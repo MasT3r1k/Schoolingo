@@ -274,7 +274,6 @@ export class Locale {
                 calendar: "Calendar",
                 user: {
                     main: "User",
-                    settings: "Settings"
                 },
                 class: {
                     main: "Classes",
@@ -301,7 +300,7 @@ export class Locale {
             theme: "Themes",
             logout: "Logout",
             print: "Print",
-
+            settings: "Settings",
 
             timetable: {
                 thisWeek: "This week",

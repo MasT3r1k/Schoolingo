@@ -125,6 +125,7 @@ export class LoginComponent implements OnInit {
       return;
     }
     this.tryingToLogin = true;
+    this.logger.send('Login', 'Trying to login.')
     this.socketService?.getSocket().Socket?.emit('login', { username: this.username.value, password: this.password.value });
   }
 

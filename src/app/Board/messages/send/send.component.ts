@@ -6,7 +6,7 @@ import { UserService } from '@Schoolingo/User';
 
 @Component({
   templateUrl: './send.component.html',
-  styleUrls: ['./send.component.css', '../../boardv2.css']
+  styleUrls: ['./send.component.css', '../../board.css']
 })
 export class SendComponent {
   constructor(

@@ -37,6 +37,7 @@ import { CalendarComponent } from '@Components/calendar/calendar.component';
 import { Calendar } from '@Components/calendar/calendar';
 import { SendComponent as MessagesSend } from './Board/messages/send/send.component';
 import { NgSelectModule } from '@ng-select/ng-select';
+import { MidtermComponent  as BoardMarksMidterm} from './Board/marks/midterm/midterm.component';
 
 @NgModule({
   declarations: [
@@ -49,6 +50,7 @@ import { NgSelectModule } from '@ng-select/ng-select';
     BoardTimetable,
     BoardTeachSubjects,
     BoardMarksInterm,
+    BoardMarksMidterm,
     TimeTableModule,
     MarksModule,
     ToastComponent,

@@ -17,18 +17,18 @@ form {
     border-radius: 24px;
     border: 1px solid #323232;
     width: 100%;
-    color: #000;
-    background-color: #fff;
+    color: var(--color);
+    background-color: var(--background-hover);
 }
 
 .form-group input::placeholder {
-    color:#000;
+    color: var(--color);
 }
 
 .form-group input:focus {
     outline: none;
-    border-color: var(--theme-color-dark);
-    box-shadow: 0px 0px 8px var(--theme-color-light);
+    border-color: var(--primary);
+    box-shadow: 0px 0px 8px var(--primary);
 }
 
 .form-group .select {
@@ -58,7 +58,7 @@ form {
 }
 
 .form-group .select .options .option:hover {
-    background-color: hsl(228 6% 32.5%/0.16);
+    background-color: var(--background-hover);
 }
 
 form .submit {
@@ -89,7 +89,7 @@ form .submit {
 }
 
 input[type='submit'] {
-    background-color: var(--theme-color-dark)!important;
+    background-color: var(--primary)!important;
     padding: 4px 8px;
     font-size: 18px;
     color: #fff;
@@ -105,7 +105,8 @@ input[type='submit'] {
 
 .box, .module {
     box-shadow: 0 0 1px 0 rgba(0, 0, 0, 0.15), 0 6px 12px 0 rgba(0, 0, 0, 0.15);
-    background-color: #fff;
+    background-color: var(--background-header);
+    color: var(--color);
 }
 
 .box {
@@ -170,16 +171,23 @@ input[type='submit'] {
 
 
 .box header h2, .module header h2 {
-    font-size: 18px;
+    position: relative;
+    font-size: 22px;
     font-weight: 500;
-    line-height: 18px;
-    letter-spacing: -0.27px;
-
-    /* font-size: 22px;
-    font-weight: 600;
     line-height: 28px;
-    letter-spacing: 0.1px;
-    margin: 0 1rem; */
+    letter-spacing: -0.27px;
+}
+
+.box header h2::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: -8px;
+    width: calc(100% + 28px);
+    height: 4px;
+    border-radius: 99rem;
+    background-image: var(--primary-gradient);
+    transform: translateY(8px);
 }
 
 .box header .flex-items, .module header .flex-items {
@@ -214,7 +222,7 @@ ul li .item {
 }
 
 ul li:hover  {
-    background-color: hsl(223 5.8% 52.9%/0.08);
+    background-color: var(--background-hover);
 }
 
 ul li.active {
@@ -222,10 +230,24 @@ ul li.active {
 }
 
 ul li .item.btn {
-    background-color: var(--theme-color-dark);
+    background-color: var(--primary);
     color: #fff;
     text-align: center;
     cursor: pointer;
+}
+
+.btn {
+    font-size: 15px;
+    margin-top: 0;
+    padding: 8px 16px;
+    background-color: var(--primary);
+    background-image: var(--primary-gradient);
+    color: #fff;
+    border-radius: 20px;
+    cursor: pointer;
+    user-select: none;
+    box-shadow: 0px 8px 15px rgba(0, 0, 0, 0.1);
+    min-width: max-content;
 }
 
 @media (max-width: 1050px) {

@@ -12,12 +12,35 @@
 
 :root {
     --primary: #3a6df0;
+    --primary-second: #2999ed;
+    --primary-gradient: linear-gradient(90deg, var(--primary), var(--primary-second));
     --error: #b22828;
+}
+
+html.light {
+    --background-body: #fff;
+    --background-header: #fff;
+    --color: #000;
+    --color-darker: #252525;
+    --sidebar-arrow: #eee;
     --background-hover: hsl(223 5.8% 52.9%/0.08);
     --background-active: hsl(223 5.8% 52.9%/0.12);/*rgba(240, 240, 240);*/
     --border-color: rgba(0,0,0,0.10);
     --secondary-color: #e6eef9;
     --secondary-color-hover: hsla(215, 61%, 94%, 0.48);
+}
+
+html.dark {
+    --background-body: #1a1a1a;
+    --background-header: #0d0d0d;
+    --sidebar-arrow: #333;
+    --color: #fff;
+    --color-darker: rgb(179, 179, 179);
+    --background-hover: hsl(228 6% 32.5%/0.16);
+    --background-active: hsl(228 6% 32.5%/0.24);
+    --border-color: rgba(255,255,255,0.10);
+    --secondary-color: hsl(216, 5%, 12%);
+    --secondary-color-hover: hsla(216, 5%, 12%, 0.48);
 }
 
 h1, h2, h3, h4, h5, h6, p {
@@ -32,8 +55,8 @@ h1, h2, h3, h4, h5, h6, p {
     position: absolute;
     bottom: 0;
     transform: translateX(-50%) translateY(calc(100% + 8px));
-    background-color: #fff;
-    color: #000;
+    background-color: var(--background-header);
+    color: var(--color);
     width: max-content;
     padding: 4px;
     left: 50%;
@@ -50,7 +73,7 @@ body {
     max-width: 100vw;
     margin: 0;
     font-family: 'Roboto', sans-serif;
-    color: rgb(0, 0, 0);
+    color: var(--color);
     overflow: hidden;
     display: flex;
     flex-direction: column;
@@ -80,7 +103,7 @@ body {
     height: 72px;
     border-radius: 999rem;
     border: 8px solid #323232;
-    border-top-color: #4998d1;
+    border-top-color: var(--primary);
     animation: rotate 1s infinite linear;
 }
 
@@ -100,6 +123,12 @@ body {
 
 .spin {
     animation: rotate 1s infinite linear;
+}
+
+.green {
+    background-image: linear-gradient(90deg, rgb(40,168,69), rgb(28,131,53));
+    background-color: hsl(139, 47.3%, 43.9%) !important;
+    color: #fff !important;
 }
 
 @keyframes rotate {

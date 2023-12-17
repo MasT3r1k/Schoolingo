@@ -57,7 +57,6 @@ export class SocketService {
      */
     public connectAnon(): void {
         try {
-            if (this.socket) this.socket.disconnect();
             this.socket = io(config.server);
             this.listenBasicEvents();
             this.socket.onAny((event, ...args) => {
@@ -85,7 +84,6 @@ export class SocketService {
         try {
             let token = this.cache.get(this.cache.tokenCacheName);
             if (token == false || !token?.token || !token?.expiration) return;
-            if (this.socket) this.socket.disconnect();
 
             this.socket = io(config.server, { extraHeaders: { Authorization: 'Bearer ' + token.token }});
             this.listenBasicEvents();
@@ -129,7 +127,6 @@ export class SocketService {
         this.socket.on('disconnect', (data) => {
             this.socket?.removeAllListeners();
             this.connected = false;
-            this.socket = null;
             this.socket_err = false;
             this.socket_errMsg = 'Disconnect';
         })
