@@ -106,6 +106,7 @@ export class BoardComponent implements OnInit {
       for(let i = 0;i < subjects.length;i++) {
         subjectList.push([subjects[i].subjectId, subjects[i].shortcut, subjects[i].label])
       }
+      console.log(subjectList)
       this.schoolingo.setSubjects(subjectList);
       this.logger.send('Socket', 'Updated list of subjects');
     });
@@ -122,13 +123,14 @@ export class BoardComponent implements OnInit {
     });
 
     this.socketService.addFunction('timetable', (timetable: any[]) => {
+      console.log(timetable);
       let lessons: Lesson[][][] = [];
   
       for(let i = 0;i < timetable.length;i++) {
         if (!lessons[timetable[i].day]) lessons[timetable[i].day] = [];
         let d0: number = 1;
         let d1: number = 1;
-        while(timetable[i].day != 0 && !lessons[timetable[i].day - 1 - d0] && d0 < this.schoolingo.days.length) {
+        while(timetable[i].day != 0 && !lessons[timetable[i].day - 1 - d0] && d0 < this.schoolingo.days.length && (timetable[i].day - 1 - d0) >= 0) {
           lessons[timetable[i].day - 1 - d0] = [];
           d0++;
         }
@@ -148,20 +150,21 @@ export class BoardComponent implements OnInit {
           lessons[timetable[i].day][timetable[i].hour - 1] = [];
         }
         lessons[timetable[i].day][timetable[i].hour - 1].push({
-          subject: timetable[i].subjectId,
+          subject: timetable[i].subject,
           teacher: timetable[i].teacherId,
-          room: timetable[i].roomId,
+          room: timetable[i].room,
           class: timetable[i]?.class,
           group: {
-            text: timetable[i].group,
+            text: timetable[i].groupName,
             num: timetable[i].groupNum
           },
           type: timetable[i].type
         });
       }
-
+      console.log(lessons)
       this.schoolingo.setLessons(lessons);
       this.logger.send('Socket', 'Updated timetable');
+      console.log(this.schoolingo.getTimetable());
     });    
   }
 

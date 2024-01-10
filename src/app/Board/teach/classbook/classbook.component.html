@@ -1,15 +1,15 @@
 <div class="box">
     <header>
-        <h2>{{ locale.getLocale('sidebar/teach/classbook') }} - {{ calendarDate.getDate() + ". " + (calendarDate.getMonth() + 1) + ". " + calendarDate.getFullYear() }}</h2>
+        <h2>{{ locale.getLocale('sidebar/teach/classbook') }}</h2>
         <div class="flex-items">
-            <input type="date" id="calendar" [formControl]="calendar" name="calendar" value="{{ schoolingo.getToday() | date:'yyyy-MM-dd' }}" min="2023-09-01" max="2024-06-30">
+            <schoolingo-calendar [name]='calendarName' class="no-small" [options]="calendarOptions"></schoolingo-calendar>
         </div>
     </header>
-    <div class="box-content">
+    <div class="box-content" *ngIf="calendarEl">
         <div class="row">
             <div class="left">
-                <ul class="list-items" *ngIf="schoolingo.getTimetable()?.[calendarDate.getDay() - 1]?.lessons">
-                    <li [ngClass]="{item: true, active: selectedLesson == index, disabled: !lesson[0].subject}" *ngFor="let lesson of schoolingo.getTimetable()[calendarDate.getDay() - 1].lessons;index as index" (click)="selectLesson(index)">
+                <ul class="list-items" *ngIf="schoolingo.getTimetable()?.[calendarEl.date.getDay() - 1]?.lessons">
+                    <li [ngClass]="{item: true, active: selectedLesson == index, disabled: !lesson[0].subject}" *ngFor="let lesson of schoolingo.getTimetable()[calendarEl.date.getDay() - 1].lessons;index as index" (click)="selectLesson(index)">
                         <div class="row">
                             <div class="left-item">
                                 <div class="lesson">
@@ -32,10 +32,10 @@
                 <div style="display: flex;flex-direction: row;justify-content: center;">
                     <schoolingo-tabs [name]="tabName" [options]="[locale.getLocale('classbook/lessonNotation'), locale.getLocale('classbook/attendance'), locale.getLocale('sidebar/teach/homeworks'), locale.getLocale('classbook/notes')]"></schoolingo-tabs>
                 </div>
-                <div class="classbook-title" *ngIf="selectedLesson != undefined && schoolingo.getTimetable()[calendarDate.getDay() - 1].lessons[selectedLesson][0]">
-                    <div class="subject">{{ schoolingo.getTimetable()[calendarDate.getDay() - 1].lessons[selectedLesson][0].subject?.[2] }}</div>
-                    <div>{{ calendarDate.getDate() + '. ' + (calendarDate.getMonth() + 1) + '. ' + calendarDate.getFullYear() + ' (' + schoolingo.full_days[calendarDate.getDay() - 1] + ')' + ' ' + (selectedLesson + 1) + '. hodina, ' + schoolingo.getSHours()[selectedLesson].start + ' - ' + schoolingo.getSHours()[selectedLesson].end }}</div>
-                    <div>{{ schoolingo.getTimetable()[calendarDate.getDay() - 1].lessons[selectedLesson][0].class }}</div>
+                <div class="classbook-title" *ngIf="selectedLesson != undefined && schoolingo.getTimetable()[calendarEl.date.getDay() - 1].lessons[selectedLesson][0]">
+                    <div class="subject">{{ schoolingo.getTimetable()[calendarEl.date.getDay() - 1].lessons[selectedLesson][0].subject?.[2] }}</div>
+                    <div>{{ calendarEl.date.getDate() + '. ' + (calendarEl.date.getMonth() + 1) + '. ' + calendarEl.date.getFullYear() + ' (' + schoolingo.full_days[calendarEl.date.getDay() - 1] + ')' + ' ' + (selectedLesson + 1) + '. hodina, ' + schoolingo.getSHours()[selectedLesson].start + ' - ' + schoolingo.getSHours()[selectedLesson].end }}</div>
+                    <div>{{ schoolingo.getTimetable()[calendarEl.date.getDay() - 1].lessons[selectedLesson][0].class }}</div>
                     <hr>
                     <div class="classbook-content" *ngIf="tabs.getTabValue(tabName) == 0">
                         <div class="form-group">

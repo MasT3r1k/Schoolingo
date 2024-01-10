@@ -11,11 +11,11 @@ export class Dropdowns {
         this.dropdowns.push({ name: name, active: false });
     }
 
-    public toggleDropdown(name: string): void {
+    public toggleDropdown(name: string, visible?: boolean): void {
         let dropdown = this.dropdowns.filter((dropdown: Dropdown) => dropdown.name == name)?.[0]
         let status = dropdown.active;
         setTimeout(() => {
-            dropdown.active = !status;
+            dropdown.active = (visible) ? visible : !status;
         })
     }
 

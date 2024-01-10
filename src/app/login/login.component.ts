@@ -10,6 +10,7 @@ import { Cache } from '@Schoolingo/Cache';
 import { Locale } from '@Schoolingo/Locale';
 import { Logger } from '@Schoolingo/Logger';
 import { SocketService } from '@Schoolingo/Socket';
+import { Theme } from '@Schoolingo/Theme';
 import { UserService } from '@Schoolingo/User';
 import { LoginData, User } from '@Schoolingo/User.d';
 
@@ -48,7 +49,8 @@ export class LoginComponent implements OnInit {
     public schoolingo: Schoolingo,
     public tabs: Tabs,
     private title: Title,
-    private storage: Cache
+    private storage: Cache,
+    public theme: Theme
   ) {}
 
   ngOnInit(): void {

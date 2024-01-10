@@ -38,7 +38,6 @@ export class TimetableComponent implements OnInit {
     allowWeekends: false,
     noWeekendError: 'errors/noClassOnWeekend',
   };
-  calendar = new FormControl('');
   public declare calendarEl: CalendarComponent;
   private declare renderBeforePrint: Function;
   private declare renderAfterPrint: Function;
@@ -111,6 +110,9 @@ export class TimetableComponent implements OnInit {
 
     this.renderBeforePrint = this.renderer.listen(window, 'beforeprint', () => this.beforePrint());
     this.renderAfterPrint = this.renderer.listen(window, 'afterprint', () => this.afterPrint());
+
+
+    console.log(this.schoolingo.getScheduleHours())
 
   }
 

@@ -14,33 +14,42 @@
     --primary: #3a6df0;
     --primary-second: #2999ed;
     --primary-gradient: linear-gradient(90deg, var(--primary), var(--primary-second));
-    --error: #b22828;
+    --red: #b22828;
+    --error: var(--red);
+    --green: #228047;
+    --green-darker: #186335;
 }
 
 html.light {
     --background-body: #fff;
     --background-header: #fff;
-    --color: #000;
-    --color-darker: #252525;
-    --sidebar-arrow: #eee;
     --background-hover: hsl(223 5.8% 52.9%/0.08);
     --background-active: hsl(223 5.8% 52.9%/0.12);/*rgba(240, 240, 240);*/
-    --border-color: rgba(0,0,0,0.10);
+
+    --dark-border: #22222222;
+    --color: #000;
+    --color-darker: #252525;
     --secondary-color: #e6eef9;
     --secondary-color-hover: hsla(215, 61%, 94%, 0.48);
+
+    --sidebar-arrow: #ddd;
+    --border-color: rgba(0,0,0,0.10);
 }
 
 html.dark {
     --background-body: #1a1a1a;
     --background-header: #0d0d0d;
-    --sidebar-arrow: #333;
-    --color: #fff;
-    --color-darker: rgb(179, 179, 179);
     --background-hover: hsl(228 6% 32.5%/0.16);
     --background-active: hsl(228 6% 32.5%/0.24);
-    --border-color: rgba(255,255,255,0.10);
+
+    --dark-border: #eeeeee22;
+    --color: #fff;
+    --color-darker: rgb(179, 179, 179);
     --secondary-color: hsl(216, 5%, 12%);
     --secondary-color-hover: hsla(216, 5%, 12%, 0.48);
+
+    --sidebar-arrow: #333;
+    --border-color: rgba(255,255,255,0.10);
 }
 
 h1, h2, h3, h4, h5, h6, p {
@@ -79,19 +88,42 @@ body {
     flex-direction: column;
 }
 
+.ng-select.ng-select-opened > .ng-select-container, .ng-select .ng-select-container {
+    background-color: var(--background-hover);
+    border-color: var(--border-color);
+    cursor: pointer!important;
+}
+
+
 .ng-dropdown-panel .ng-dropdown-panel-items .ng-option.ng-option-selected,
 .ng-dropdown-panel .ng-dropdown-panel-items .ng-option.ng-option-selected.ng-option-marked {
     color: var(--primary);
     background-color: var(--background-hover)!important;
 }
 
-.ng-dropdown-panel .ng-dropdown-panel-items .ng-option.ng-option-marked {
-    background-color: var(--background-hover)!important;
+.ng-dropdown-panel {
+    border: 1px solid var(--border-color)!important;
+    background-color: var(--background-header)!important;
+    color: var(--color);
 }
 
-.ng-select.ng-select-multiple .ng-select-container .ng-value-container .ng-value {
-    background-color: var(--secondary-color);
+.ng-dropdown-panel .ng-dropdown-panel-items .ng-option.ng-option-marked,
+.ng-dropdown-panel .ng-dropdown-panel-items .ng-option {
+    background-color: var(--background-hover)!important;
+    color: var(--color);
 }
+
+.ng-dropdown-panel .ng-dropdown-panel-items .ng-option:hover {
+    background-color: var(--background-active)!important;
+}
+
+.ng-select .ng-select-container .ng-value-container .ng-value {
+    color: var(--color);
+}
+
+.ng-select.ng-select-multiple .ng-select-container .ng-value-container .ng-value .ng-value-icon.left {
+    border-right: 1px solid var(--border-color);
+  }
 
 .ng-option-label .badge {
     padding: 4px 8px;
@@ -144,12 +176,10 @@ body {
     html {
         height: max-content;
         max-height: min-content;
-        page-break-after: avoid;
     }
 
     body {
-        min-height: unset;
-        height: unset;
+        max-height: 100vh;
         transform: translateY(-100px);
         visibility: hidden;
         overflow: hidden;

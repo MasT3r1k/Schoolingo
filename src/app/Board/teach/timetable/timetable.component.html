@@ -12,8 +12,8 @@
                     <div class="absence ab-absence">Absence</div>
                     <div class="absence ab-excused">Omluvená absence</div>
                     <div class="absence ab-unexcused">Neomluvená absence</div>
-                    <div class="absence ab-late">Pozdní příchod</div>
                     <div class="absence ab-non-count">Nezapočtená absence</div>
+                    <div class="absence ab-late">Pozdní příchod</div>
                     <div class="absence ab-early">Dřívější odchod</div>
                     <div class="absence ab-distance">Distanční výuka</div>
                 </div>
@@ -23,7 +23,7 @@
         </div>
     </header>
     <div class="box-content">
-        <div class="schedule">
+        <div class="schedule" *ngIf="schoolingo.getSHours().length > 0">
             <div class="hours">
                 <div class="item"></div>
                 <div class="item" *ngFor="let time of schoolingo.getSHours();index as index">
@@ -59,11 +59,15 @@
                 </div>
             </div>
         </div>
+        <div class="schedule center" *ngIf="schoolingo.getSHours().length == 0">
+            NEMÁTE ŽÁDNÉ HODINY
+        </div>
     </div>
 </div>
 
 <div class="lessonInformation" [ngStyle]="{ left: detailedInformationPosition.x + 'px', top: detailedInformationPosition.y + 'px' }" *ngIf="selectedLesson && dropdown.checkDropdown('lessonInformation')" (click)="$event.stopPropagation()">
-    <p>Učitel: {{ selectedLesson.teacher?.firstName + ' ' + selectedLesson.teacher?.lastName }}</p>
+    <p *ngIf="userService.getUser()?.studentId">Učitel: {{ selectedLesson.teacher?.firstName + ' ' + selectedLesson.teacher?.lastName }}</p>
+    <p *ngIf="userService.getUser()?.teacherId">Třída: {{ selectedLesson.class }}</p>
     <p>Předmět: {{ selectedLesson.subject?.[2] }}</p>
     <p>Místnost: {{ selectedLesson.room?.label }}</p>
 

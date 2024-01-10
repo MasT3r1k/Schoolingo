@@ -456,7 +456,11 @@ export class Schoolingo {
     public getFirstDayOfWeek(week: number): Date {
         let firstDayOfSchool = new Date(this.today.getFullYear(),8,1);
         let lastDayOfSchool = new Date(this.today.getFullYear()+1,5,30);
-
+        if (this.today.getMonth() <= 5) {
+            firstDayOfSchool = new Date(this.today.getFullYear()-1,8,1);
+            lastDayOfSchool = new Date(this.today.getFullYear(),5,30);
+        }
+        
         let monday = new Date(this.today.getFullYear(),0,1);
         monday.setDate(monday.getDate() + week * 7 + (monday.getDay() == 0 ? -6:0));
         if (monday.getTime() < firstDayOfSchool.getTime()) {
@@ -558,11 +562,13 @@ export class Schoolingo {
         let tTable: TTableDay[] = [];
         let monday = this.getFirstDayOfWeek(week);
 
+        console.log(monday)
+
         this.lessons.forEach((_: Lesson[][], index: number) => {
             let dda = this.addDayToDate(monday, (index < 1) ? index : 1);
 
             let day: TTableDay = {
-                date: [dda.getDate(),dda.getMonth() + 1,dda.getFullYear()],
+                date: [dda.getDate(), dda.getMonth() + 1, dda.getFullYear()],
                 day: this.days[index],
                 lessons: [],
                 isFullDay: false
@@ -581,13 +587,17 @@ export class Schoolingo {
                         day.lessons.push([{ isEmpty: true }]);
                     }
                     let l: TTableLesson[] = [];
+                    console.log(lesson);
                     for(let i = 0;i < lesson.length;i++) {
                         let { ...subject } = this.getSubject(lesson[i].subject) as Subject ?? false;
                         let { ...teacher } = this.getTeacher(lesson[i].teacher) as Teacher ?? false;
                         let { ...room } = lesson[i].room ? this.getRoom(lesson[i].room as number) as Room ?? false : {};
-        
+                
+                        console.log(subject)
+                        console.log(teacher)
+                        console.log(room)
 
-                        if (lesson[i].subject == -1 && lesson[i].teacher == -1) {
+                        if (lesson[i].subject == -1 || lesson[i].teacher == -1) {
                             day.lessons.push([{ isEmpty: true }]);
                             return;
                         }
@@ -609,7 +619,7 @@ export class Schoolingo {
                         ) {
                             // day.lessons.push([{ isEmpty: true }]);
                         } else {
-                            if ((lesson.length > 1 &&
+                            if ((lesson.length >= 1 &&
                                 (
                                 (
                                     this.selectedWeek != null && (

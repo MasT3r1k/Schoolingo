@@ -1,9 +1,13 @@
+import { HttpClient } from '@angular/common/http';
 import { Component, OnInit, Renderer2 } from '@angular/core';
 import { FormControl } from '@angular/forms';
+import { Dropdowns } from '@Components/Dropdown/Dropdown';
 import { getTable, Table } from '@Components/table/Table';
 import { TableColumn, TableOptions } from '@Components/table/Table';
+import { Tabs } from '@Components/Tabs/Tabs';
 import { Locale } from '@Schoolingo/Locale';
 import { SocketService } from '@Schoolingo/Socket';
+import { debounceTime } from 'rxjs';
 
 type Student = {
   firstName: string;
@@ -18,10 +22,20 @@ type Student = {
   styleUrls: ['./pupilcard.component.css', '../board.css']
 })
 export class PupilcardComponent implements OnInit {
+  constructor(
+    public locale: Locale,
+    private renderer: Renderer2,
+    private socketService: SocketService,
+    public tabs: Tabs,
+    private http: HttpClient,
+    public dropdown: Dropdowns
+  ) {}
+
   public tableName: string = 'student-list';
   public creatingNewOne: boolean = false;
 
   searchStudent = new FormControl('');
+  searchPlace = new FormControl('');
 
 
   columns: TableColumn[] = [
@@ -50,21 +64,18 @@ export class PupilcardComponent implements OnInit {
   class: any = null;
   classes: any[] = ['B3.I', 'B2.I'];
 
+  addresses: any[] = [];
+  addressesDropdown: string = 'searchAddresses';
 
   options: TableOptions = {
     tableType: 'interactive-list'
   };
 
-  
-  constructor(
-    public locale: Locale,
-    private renderer: Renderer2,
-    private socketService: SocketService
-  ) {}
 
   public declare table: Table;
 
   ngOnInit(): void {
+    this.dropdown.addDropdown(this.addressesDropdown)
     setTimeout(() => {
       this.table = getTable(this.tableName);
       if (!this.table) return;
@@ -94,6 +105,22 @@ export class PupilcardComponent implements OnInit {
         //console.log(event);
       }
     });
+
+    this.searchStudent.valueChanges.pipe(
+      debounceTime(300)
+    ).subscribe((): void => {
+      this.updateFilter();
+    });
+
+    this.searchPlace.valueChanges.pipe(
+      debounceTime(300)
+    ).subscribe((value: string | null): void => {
+      console.log(value);
+      if (!value || value == '') return;
+      this.http.get('https://api.locationiq.com/v1/autocomplete?key=pk.6e7bdb2789440ab001b900727b68e395&q=' + value + '&limit=5&dedupe=1').subscribe((response: any): void => {
+        this.addresses = response;
+      })
+    })
   }
 
   public updateFilter(): void {

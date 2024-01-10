@@ -4,7 +4,7 @@
         <div class="center">
             <div class="form-group">
                 <i class="ti ti-search"></i>
-                <input type="search" name="studentSearch" [formControl]="searchStudent" placeholder="Vyhledávejte žáka podle jména" (input)="updateFilter()" [readonly]="table && table.selectedItem != undefined">
+                <input type="search" name="studentSearch" [formControl]="searchStudent" placeholder="Vyhledávejte žáka podle jména" [readonly]="table && table.selectedItem != undefined">
             </div>
         </div>
         <div class="right">
@@ -28,27 +28,32 @@
             {{ locale.getLocale('pupilcard/new') }}
         </h2>
         <div class="right">
-            <schoolingo-tabs [name]="'newPupil'" [options]="[locale.getLocale('pupilcard/personalDetails'), locale.getLocale('pupilcard/relatives')]"></schoolingo-tabs>
+            <schoolingo-tabs [name]="'newPupil'" [options]="[locale.getLocale('pupilcard/personalDetails'), locale.getLocale('pupilcard/residence'), locale.getLocale('pupilcard/relatives')]"></schoolingo-tabs>
         </div>
     </header>
-    <div class="box-content">
+    <div class="box-content" *ngIf="tabs.getTabValue('newPupil') == 0">
         <div class="section-title">
             <div class="title-bar"></div>
             <div class="title">{{ locale.getLocale('pupilcard/personalDetails') }}</div>
         </div>
         <div class="row">
             <div class="form-group">
-                <input type="text" name="firstName" [placeholder]="locale.getLocale('firstName')">
+                <label for="firstName">{{ locale.getLocale('firstName') }}</label>
+                <input type="text" name="firstName" id="firstName" [placeholder]="locale.getLocale('firstName')">
             </div>
+        </div>
+        <div class="row">
             <div class="form-group">
-                <input type="text" name="lastName" [placeholder]="locale.getLocale('lastName')">
+                <label for="lastName">{{ locale.getLocale('lastName') }}</label>
+                <input type="text" name="lastName" id="lastName" [placeholder]="locale.getLocale('lastName')">
             </div>
         </div>
         <div class="row">
             <div class="form-group">
                 <schoolingo-calendar [name]='"pickBirthday"' class="no-small"></schoolingo-calendar>
             </div>
-
+        </div>
+        <div class="row">
             <div class="form-group">
                 <ng-select
                 [(ngModel)]="gender"
@@ -65,6 +70,8 @@
                     </ng-option>
                 </ng-select>
             </div>
+        </div>
+        <div class="row">
             <div class="form-group">
                 <ng-select
                 [(ngModel)]="class"
@@ -82,19 +89,56 @@
                 </ng-select>
             </div>
         </div>
+        <div class="row">
+            <div class="form-group">
+                <label for="email">{{ locale.getLocale('email') }}</label>
+                <input type="text" id="email" name="email" [placeholder]="locale.getLocale('email')">
+            </div>
+        </div>
+        <div class="row">
+            <div class="form-group">
+                <label for="phone">{{ locale.getLocale('phone') }}</label>
+                <input type="text" id="phone" name="phone" [placeholder]="locale.getLocale('phone')">
+            </div>
+        </div>
+        <div class="row">
+            <div class="btn full-width">{{ locale.getLocale('pupilcard/new') }}</div>
+        </div>
+    </div>
+
+    <div class="box-content" *ngIf="tabs.getTabValue('newPupil') == 1">
         <div class="section-title">
             <div class="title-bar"></div>
-            <div class="title">Bydliště</div>
+            <div class="title">{{ 'Vyhledat pomocí map' }}</div>
         </div>
-        <!-- <hr>
-        <label>Bydliště</label> -->
+        <h2>Vyhledejte adresu z map</h2>
+        <div class="row">
+            <div class="form-group">
+                <i class="ti ti-search"></i>
+                <input type="search" name="searchPlace" [formControl]="searchPlace" placeholder="Vyhledávejte adresu" (click)="$event.stopPropagation()" (focus)="dropdown.toggleDropdown(addressesDropdown, true)" (focusout)="dropdown.toggleDropdown(addressesDropdown, false)">
+                <div [ngClass]="{dropdown: true, active: dropdown.checkDropdown(addressesDropdown)}" (click)="$event.stopPropagation()">
+                    <ul>
+                        <li>Ahoj</li>
+                        <li>Ahoj</li>
+                        <li>Ahoj</li>
+                        <li>Ahoj</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="section-title">
+            <div class="title-bar"></div>
+            <div class="title">{{ 'Vyplnit adresu ručně' }}</div>
+        </div>
         <div class="row">
             <div class="form-group">
                 <input type="text" name="street" [placeholder]="'Ulice'">
             </div>
             <div class="form-group">
-                <input type="text" name="number" [placeholder]="'Číslo popisné'">
+                <input type="text" name="number" inputmode="numeric" [placeholder]="'Číslo popisné'">
             </div>
+        </div>
+        <div class="row">
             <div class="form-group">
                 <input type="text" name="city" [placeholder]="'Město'">
             </div>
@@ -112,9 +156,17 @@
             <div class="form-group">
                 <input type="text" name="partCity" [placeholder]="'Část'">
             </div>
-            <div class="form-group">
-                <input type="submit" name="removeAddress" value="Uložit adresu">
-            </div>
+        </div>
+        <div class="row">
+            <div class="btn full-width">Uložit adresu</div>
+        </div>
+        <p class="info">Address API is provided by <a href="https://locationiq.com">LocationIQ.com</a></p>
+    </div>
+
+    <div class="box-content" *ngIf="tabs.getTabValue('newPupil') == 2">
+        <div class="section-title">
+            <div class="title-bar"></div>
+            <div class="title">{{ locale.getLocale('pupilcard/relatives') }}</div>
         </div>
     </div>
 </div>
