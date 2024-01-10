@@ -91,7 +91,7 @@ export class LoginComponent implements OnInit {
               this.formErrors = [{ input: 'password', locale: data.message }];
               break;
             default:
-              console.log('Error: ' + data.message);
+              this.logger.send('Login', 'Error: ' + data.message);
               break;
           } 
         }

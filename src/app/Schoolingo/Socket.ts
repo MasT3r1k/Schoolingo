@@ -67,7 +67,6 @@ export class SocketService {
                         fn(args?.[0]);
                     })
                 }
-                console.log('Received Event: ' + event)
             });
         } catch(e) {
             console.error(e);
@@ -95,7 +94,6 @@ export class SocketService {
                         fn(args?.[0]);
                     })
                 }
-                console.log('Received Event: ' + event)
             });
             return this.socket;
         } catch(e) {
@@ -108,7 +106,7 @@ export class SocketService {
      * Register basic socket listeners
      */
     private listenBasicEvents(): void {
-        if (this.socket == null) {console.log("No socket found");return;}
+        if (this.socket == null) {this.logger.send("Socket", "No socket found");return;}
         this.socket.on('connect', () => {
             this.connected = true;
             this.socket_err = false;

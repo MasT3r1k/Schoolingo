@@ -106,7 +106,6 @@ export class BoardComponent implements OnInit {
       for(let i = 0;i < subjects.length;i++) {
         subjectList.push([subjects[i].subjectId, subjects[i].shortcut, subjects[i].label])
       }
-      console.log(subjectList)
       this.schoolingo.setSubjects(subjectList);
       this.logger.send('Socket', 'Updated list of subjects');
     });
@@ -123,7 +122,6 @@ export class BoardComponent implements OnInit {
     });
 
     this.socketService.addFunction('timetable', (timetable: any[]) => {
-      console.log(timetable);
       let lessons: Lesson[][][] = [];
   
       for(let i = 0;i < timetable.length;i++) {
@@ -161,10 +159,8 @@ export class BoardComponent implements OnInit {
           type: timetable[i].type
         });
       }
-      console.log(lessons)
       this.schoolingo.setLessons(lessons);
       this.logger.send('Socket', 'Updated timetable');
-      console.log(this.schoolingo.getTimetable());
     });    
   }
 

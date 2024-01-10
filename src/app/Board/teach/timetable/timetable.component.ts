@@ -111,9 +111,6 @@ export class TimetableComponent implements OnInit {
     this.renderBeforePrint = this.renderer.listen(window, 'beforeprint', () => this.beforePrint());
     this.renderAfterPrint = this.renderer.listen(window, 'afterprint', () => this.afterPrint());
 
-
-    console.log(this.schoolingo.getScheduleHours())
-
   }
 
   public registerOnChangeFunc(): void {

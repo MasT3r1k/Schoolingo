@@ -115,7 +115,6 @@ export class PupilcardComponent implements OnInit {
     this.searchPlace.valueChanges.pipe(
       debounceTime(300)
     ).subscribe((value: string | null): void => {
-      console.log(value);
       if (!value || value == '') return;
       this.http.get('https://api.locationiq.com/v1/autocomplete?key=pk.6e7bdb2789440ab001b900727b68e395&q=' + value + '&limit=5&dedupe=1').subscribe((response: any): void => {
         this.addresses = response;

@@ -20,9 +20,7 @@ export class Theme {
         logger.send(this.logName, 'Loading theme..')
         this.theme = this.cache.get(this.themeCache[0], this.themeCache[1]);
         if (!this.theme) {
-            console.log(window);
             const isDark: MediaQueryList = window.matchMedia("(prefers-color-scheme: dark)");
-            console.log(isDark)
             this.theme = isDark.matches ? 'dark' : 'light';
         }
         
