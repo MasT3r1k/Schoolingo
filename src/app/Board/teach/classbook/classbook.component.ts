@@ -33,6 +33,7 @@ export class ClassbookComponent {
   public calendarOptions: CalendarOptions = {  };
   public classInfo: any = {};
   public lesson: any = {};
+  public selectedAbsence: number = 0;
 
   public selectLesson(lesson: number): void {
     if (!this.calendarEl) return;
@@ -67,6 +68,22 @@ export class ClassbookComponent {
       date: this.calendarEl.date,
       lesson: this.selectedLesson
     })
+  }
+
+  public applyAbsence(student: number): void {
+    if (!this.selectedLesson) return;
+    this.socketService.getSocket().Socket?.emit('setAbsence', {
+      absence: [
+        {
+          student: student,
+          absence: this.selectedAbsence,
+        }
+      ],
+
+      group: this.schoolingo.getTimetable()[this.calendarEl.date.getDay() - 1].lessons[this.selectedLesson][0]?.group?.id,
+      date: this.calendarEl.date,
+      lesson: this.selectedLesson
+    });
   }
 
   public getService(): string[] {
@@ -114,12 +131,17 @@ export class ClassbookComponent {
         }});
     });
 
+
     this.socketService.addFunction("getLesson", (lesson: any) =>{
       this.lessonTopic.setValue(lesson[0].topic);
       this.lessonNote.setValue(lesson[0].note);
       this.internalNote.setValue(lesson[0].internalNote);
       this.lesson = lesson[0];
     })
+
+    this.socketService.addFunction("setAbsence", (data: any) => {
+      console.log(data);
+    });
 
   }
 

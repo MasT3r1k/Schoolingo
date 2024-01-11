@@ -19,8 +19,8 @@
                             <div class="center">
                                 <div class="lesson">{{ (!lesson[0].subject) ? 'Volná hodina' : lesson[0].subject[2] }}</div>
                                 <div class="row">
-                                    <span class="class" *ngIf="lesson[0].class">{{ lesson[0].class }},</span>
-                                    <span class="time">{{ schoolingo.getSHours()[index].start }} - {{ schoolingo.getSHours()[index].end }}</span>
+                                    <div class="class" *ngIf="lesson[0].class">{{ lesson[0].class }},</div> 
+                                    <div class="time">{{ schoolingo.getSHours()[index].start }} - {{ schoolingo.getSHours()[index].end }}</div>
                                 </div>
 
                             </div>
@@ -88,10 +88,10 @@
                                 <i class="ti ti-copy"></i>
                                 Kopírovat z předchozí hodiny
                             </div>
-                            <div [ngClass]="['item', 'absence', 'ab-' + absence]" *ngFor="let absence of schoolingo.absence">
+                            <div [ngClass]="['item', 'absence', 'ab-' + absence, (selectedAbsence == index) ? 'active' : '']" *ngFor="let absence of schoolingo.absence;index as index" [attr.tooltip]="locale.getLocale('absence/' + absence)" (click)="selectedAbsence = index">
                                 {{ locale.getLocale('absence/' + absence).charAt(0).toUpperCase() }}
                             </div>
-                            <div class="absence item">
+                            <div [ngClass]="['absence', 'item', (selectedAbsence == schoolingo.absence.length) ? 'active' : '']" (click)="selectedAbsence = schoolingo.absence.length">
                                 <i class="ti ti-trash-x"></i>
                             </div>
                         </div>
@@ -99,7 +99,7 @@
                             <div class="absence-student" *ngFor="let student of students">
                                 <div class="name">{{ student.lastName + ' ' + student.firstName }}</div>
                                 <div class="hours">
-                                    <div [ngClass]="{hour: true, active: selectedLesson == index}" *ngFor="let _ of [].constructor(classInfo.maxHours);index as index"></div>
+                                    <div [ngClass]="{hour: true, active: selectedLesson == index}" *ngFor="let _ of [].constructor(classInfo.maxHours);index as index" (click)="applyAbsence(student.student)"></div>
                                 </div>
                             </div>
                         </div>
