@@ -153,6 +153,7 @@ export class BoardComponent implements OnInit {
           room: timetable[i].room,
           class: timetable[i]?.class,
           group: {
+            id: timetable[i].groupId,
             text: timetable[i].groupName,
             num: timetable[i].groupNum
           },

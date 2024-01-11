@@ -12,7 +12,7 @@ export type Lesson = {
     teacher: number;
     room?: number;
     class?: string;
-    group?: { text: string, num: number };
+    group?: { id: number, text: string, num: number };
     type?: number;
 }
 
@@ -21,7 +21,7 @@ export type TTableLesson = {
     teacher?: Teacher;
     room?: Room;
     class?: string;
-    group?: { text: string, num: number };
+    group?: { id: number, text: string, num: number };
     isEmpty?: boolean;
 }
 
