@@ -900,5 +900,8 @@ export class Schoolingo {
     }
 
 
+    // Absence 
+    public absence: string[] = ['absence', 'excused', 'unexcused', 'non_count', 'late', 'early', 'distance'];
+    
 
 }

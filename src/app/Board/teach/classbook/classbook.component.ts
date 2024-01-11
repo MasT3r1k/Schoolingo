@@ -112,7 +112,6 @@ export class ClassbookComponent {
         if (a.lastName > b.lastName) {
           return 1;
         }});
-      console.log(students)
     });
 
     this.socketService.addFunction("getLesson", (lesson: any) =>{
@@ -120,7 +119,6 @@ export class ClassbookComponent {
       this.lessonNote.setValue(lesson[0].note);
       this.internalNote.setValue(lesson[0].internalNote);
       this.lesson = lesson[0];
-      console.log(lesson);
     })
 
   }

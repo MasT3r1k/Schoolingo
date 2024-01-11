@@ -9,13 +9,7 @@
             <div [ngClass]="{absence: true, item: true, tab: true, dropdown: true, active: dropdown.checkDropdown('absence'), 'no-realy-small': true }" (click)="dropdown.toggleDropdown('absence')">
                 <span>{{ locale.getLocale('sidebar/absence') }}</span>
                 <div [ngClass]="{'dropdown-content': true, dropdownabsence: true}" style="width: 200px;" *ngIf="dropdown.checkDropdown('absence')" (click)="$event.stopPropagation()">
-                    <div class="absence ab-absence">Absence</div>
-                    <div class="absence ab-excused">Omluvená absence</div>
-                    <div class="absence ab-unexcused">Neomluvená absence</div>
-                    <div class="absence ab-non-count">Nezapočtená absence</div>
-                    <div class="absence ab-late">Pozdní příchod</div>
-                    <div class="absence ab-early">Dřívější odchod</div>
-                    <div class="absence ab-distance">Distanční výuka</div>
+                    <div *ngFor="let absence of schoolingo.absence" [ngClass]="['absence', 'ab-' + absence]">{{ locale.getLocale('absence/' + absence) }}</div>
                 </div>
             </div>
             <schoolingo-tabs [name]="tabName" [options]="[locale.getLocale('timetable/thisWeek'), locale.getLocale('timetable/nextWeek'), locale.getLocale('timetable/permanent'), locale.getLocale('sidebar/calendar')]"></schoolingo-tabs>

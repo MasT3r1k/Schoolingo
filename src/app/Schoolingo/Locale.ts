@@ -201,6 +201,16 @@ export class Locale {
                 notes: "Poznámky"
             },
 
+            absence: {
+                absence: "Absence",
+                excused: "Omluvená absence",
+                unexcused: "Neomluvená absence",
+                non_count: "Nezapočítaná absence",
+                late: "Pozdní příchod",
+                early: "Dřívejší odchod",
+                distance: "Distanční výuka",
+            },
+
             pupilcard: {
                 new: "Nový žák",
                 personalDetails: "Osobní údaje",

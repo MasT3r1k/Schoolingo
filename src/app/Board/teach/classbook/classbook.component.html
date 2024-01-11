@@ -83,6 +83,18 @@
                             <div class="title-bar"></div>
                             <div class="title">{{ locale.getLocale('classbook/attendance') }}</div>
                         </div>
+                        <div class="absence-selector">
+                            <div class="item">
+                                <i class="ti ti-copy"></i>
+                                Kopírovat z předchozí hodiny
+                            </div>
+                            <div [ngClass]="['item', 'absence', 'ab-' + absence]" *ngFor="let absence of schoolingo.absence">
+                                {{ locale.getLocale('absence/' + absence).charAt(0).toUpperCase() }}
+                            </div>
+                            <div class="absence item">
+                                <i class="ti ti-trash-x"></i>
+                            </div>
+                        </div>
                         <div>
                             <div class="absence-student" *ngFor="let student of students">
                                 <div class="name">{{ student.lastName + ' ' + student.firstName }}</div>
