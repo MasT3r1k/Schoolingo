@@ -70,3 +70,8 @@ export type CalendarDay = {
     day: number;
     isMonth: boolean;
 }
+
+export type Absence = {
+    locale: string;
+    icon?: string;
+}

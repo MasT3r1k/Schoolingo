@@ -9,7 +9,7 @@
             <div [ngClass]="{absence: true, item: true, tab: true, dropdown: true, active: dropdown.checkDropdown('absence'), 'no-realy-small': true }" (click)="dropdown.toggleDropdown('absence')">
                 <span>{{ locale.getLocale('sidebar/absence') }}</span>
                 <div [ngClass]="{'dropdown-content': true, dropdownabsence: true}" style="width: 200px;" *ngIf="dropdown.checkDropdown('absence')" (click)="$event.stopPropagation()">
-                    <div *ngFor="let absence of schoolingo.absence" [ngClass]="['absence', 'ab-' + absence]">{{ locale.getLocale('absence/' + absence) }}</div>
+                    <div *ngFor="let absence of schoolingo.absence" [ngClass]="['absence', 'ab-' + absence.locale]">{{ locale.getLocale('absence/' + absence.locale) }}</div>
                 </div>
             </div>
             <schoolingo-tabs [name]="tabName" [options]="[locale.getLocale('timetable/thisWeek'), locale.getLocale('timetable/nextWeek'), locale.getLocale('timetable/permanent'), locale.getLocale('sidebar/calendar')]"></schoolingo-tabs>

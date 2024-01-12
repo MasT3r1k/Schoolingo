@@ -1,7 +1,7 @@
 import { Injectable } from "@angular/core";
 import { UserService } from "./User";
 import { Teacher, UserMain, UserPermissions } from "./User.d";
-import { Holiday, Lesson, Room, ScheduleLessonHour, SchoolBreaks, SchoolSettings, Subject, TTableDay, TTableLesson, grade } from "./Board.d";
+import { Absence, Holiday, Lesson, Room, ScheduleLessonHour, SchoolBreaks, SchoolSettings, Subject, TTableDay, TTableLesson, grade } from "./Board.d";
 import { Sidebar, SidebarGroup, SidebarItem } from "./Sidebar";
 import { SocketService } from "./Socket";
 import { Cache } from "./Cache";
@@ -901,7 +901,14 @@ export class Schoolingo {
 
 
     // Absence 
-    public absence: string[] = ['absence', 'excused', 'unexcused', 'non_count', 'late', 'early', 'distance'];
-    
+    public absence: Absence[] = [
+        {locale: 'absence', icon: 'slash'},
+        {locale: 'excused', icon: 'x'},
+        {locale: 'unexcused'},
+        {locale: 'non_count', icon: 'minus'},
+        {locale: 'late'},
+        {locale: 'early'}, 
+        {locale: 'distance'}];
+
 
 }

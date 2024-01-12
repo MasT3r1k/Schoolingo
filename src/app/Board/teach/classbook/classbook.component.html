@@ -19,7 +19,7 @@
                             <div class="center">
                                 <div class="lesson">{{ (!lesson[0].subject) ? 'Volná hodina' : lesson[0].subject[2] }}</div>
                                 <div class="row">
-                                    <div class="class" *ngIf="lesson[0].class">{{ lesson[0].class }},</div> 
+                                    <div class="class" *ngIf="lesson[0].class">{{ lesson[0].class }}, </div> 
                                     <div class="time">{{ schoolingo.getSHours()[index].start }} - {{ schoolingo.getSHours()[index].end }}</div>
                                 </div>
 
@@ -88,14 +88,32 @@
                                 <i class="ti ti-copy"></i>
                                 Kopírovat z předchozí hodiny
                             </div>
-                            <div [ngClass]="['item', 'absence', 'ab-' + absence, (selectedAbsence == index) ? 'active' : '']" *ngFor="let absence of schoolingo.absence;index as index" [attr.tooltip]="locale.getLocale('absence/' + absence)" (click)="selectedAbsence = index">
-                                {{ locale.getLocale('absence/' + absence).charAt(0).toUpperCase() }}
-                            </div>
-                            <div [ngClass]="['absence', 'item', (selectedAbsence == schoolingo.absence.length) ? 'active' : '']" (click)="selectedAbsence = schoolingo.absence.length">
+                            <div
+                            [ngClass]="['item', 'absence', 'ab-' + absence.locale, (selectedAbsence == index) ? 'active' : '']"
+                            *ngFor="let absence of schoolingo.absence;index as index"
+                            [attr.tooltip]="locale.getLocale('absence/' + absence.locale)"
+                            (click)="selectedAbsence = index"
+                            [innerHTML]="absence.icon ? '<i class=\'ti ti-' + absence.icon + '\'></i>' : locale.getLocale('absence/' + absence.locale).charAt(0).toUpperCase()"
+                            ></div>
+                            <div
+                            [ngClass]="['absence', 'item', (selectedAbsence == schoolingo.absence.length) ? 'active' : '']"
+                            (click)="selectedAbsence = schoolingo.absence.length"
+                            >
                                 <i class="ti ti-trash-x"></i>
                             </div>
                         </div>
                         <div>
+                            <div class="left">
+
+                            </div>
+                            <div class="center">
+
+                            </div>
+                            <div class="right">
+
+                            </div>
+
+
                             <div class="absence-student" *ngFor="let student of students">
                                 <div class="name">{{ student.lastName + ' ' + student.firstName }}</div>
                                 <div class="hours">
