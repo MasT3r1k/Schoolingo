@@ -32,7 +32,12 @@
                 <div style="display: flex;flex-direction: row;justify-content: center;">
                     <schoolingo-tabs [name]="tabName" [options]="[locale.getLocale('classbook/lessonNotation'), locale.getLocale('classbook/attendance'), locale.getLocale('sidebar/teach/homeworks'), locale.getLocale('classbook/notes')]"></schoolingo-tabs>
                 </div>
-                <div class="classbook-title" *ngIf="selectedLesson != undefined && schoolingo.getTimetable()[calendarEl.date.getDay() - 1].lessons[selectedLesson][0]">
+                <div
+                class="classbook-title"
+                *ngIf="selectedLesson != undefined &&
+                    schoolingo.getTimetable()[calendarEl.date.getDay() - 1] &&
+                    schoolingo.getTimetable()?.[calendarEl.date.getDay() - 1]?.lessons?.[selectedLesson] &&
+                    schoolingo.getTimetable()?.[calendarEl.date.getDay() - 1]?.lessons?.[selectedLesson]?.[0]">
                     <div class="subject">
                         {{ schoolingo.getTimetable()[calendarEl.date.getDay() - 1].lessons[selectedLesson][0].subject?.[2] }}
                     </div>
@@ -96,28 +101,31 @@
                             [innerHTML]="absence.icon ? '<i class=\'ti ti-' + absence.icon + '\'></i>' : locale.getLocale('absence/' + absence.locale).charAt(0).toUpperCase()"
                             ></div>
                             <div
-                            [ngClass]="['absence', 'item', (selectedAbsence == schoolingo.absence.length) ? 'active' : '']"
-                            (click)="selectedAbsence = schoolingo.absence.length"
+                            [ngClass]="['absence', 'item', (selectedAbsence == -1) ? 'active' : '', 'trash']"
+                            (click)="selectedAbsence = -1"
                             >
                                 <i class="ti ti-trash-x"></i>
                             </div>
                         </div>
-                        <div>
-                            <div class="left">
-
-                            </div>
-                            <div class="center">
-
-                            </div>
-                            <div class="right">
-
-                            </div>
-
-
-                            <div class="absence-student" *ngFor="let student of students">
-                                <div class="name">{{ student.lastName + ' ' + student.firstName }}</div>
+                        <div class="students">
+                            <div class="absence-student" *ngFor="let student of students;index as rank">
+                                <div class="name">
+                                    <b>{{ (rank + 1) + '. ' }}</b>
+                                    {{ student.lastName + ' ' + student.firstName }}
+                                </div>
                                 <div class="hours">
-                                    <div [ngClass]="{hour: true, active: selectedLesson == index}" *ngFor="let _ of [].constructor(classInfo.maxHours);index as index" (click)="applyAbsence(student.student)"></div>
+                                    <div
+                                    [ngClass]="{hour: true, active: selectedLesson == index}"
+                                    [attr.lessonCount]="index + 1"
+                                    *ngFor="let _ of [].constructor(classInfo.maxHours);index as index"
+                                    (click)="(selectedLesson == index) ? applyAbsence(student.student) : ''"
+                                    >
+                                        <div
+                                        [ngClass]="['item', 'absence', 'ab-' + schoolingo.absence[absence[student.student][index]].locale]"
+                                        *ngIf="absence?.[student.student] && absence[student.student]?.[index] != -1"
+                                        [innerHTML]="schoolingo.absence[absence[student.student][index]].icon ? '<i class=\'ti ti-' + schoolingo.absence[absence[student.student][index]].icon + '\'></i>' : locale.getLocale('absence/' + schoolingo.absence[absence[student.student][index]].locale).charAt(0).toUpperCase()"
+                                        ></div>
+                                    </div>
                                 </div>
                             </div>
                         </div>

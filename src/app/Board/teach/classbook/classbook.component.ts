@@ -7,6 +7,11 @@ import { SocketService } from '@Schoolingo/Socket';
 import { Component } from '@angular/core';
 import { FormControl } from '@angular/forms';
 
+type Absence = {
+  lesson: number;
+  type: number;
+};
+
 @Component({
   templateUrl: './classbook.component.html',
   styleUrls: ['./classbook.component.css', '../../board.css', '../../../Components/Tabs/tabs.component.css']
@@ -35,6 +40,33 @@ export class ClassbookComponent {
   public lesson: any = {};
   public selectedAbsence: number = 0;
 
+  public absence: number[][] = [];
+
+  public addAbsence(student: number, absence: Absence[]): void {
+    let findUser = this.absence[student];
+    if (!findUser) {
+      this.absence[student] = [];
+      findUser = this.absence[student];
+    }
+    if (findUser.length == 0) {
+      for(let i = 0;i < this.classInfo.maxHours;i++) {
+        this.absence[student][i] = -1;
+      }
+    }
+    for(let i = 0;i < absence.length;i++) {
+      if (findUser?.[absence[i].lesson] == absence[i].type) { return; }
+      let foundAbsence: boolean = false;
+      findUser.forEach((ab: number, index: number): void => {
+        if (index == absence[i].lesson) {
+          findUser[absence[i].lesson] = absence[i].type;
+          foundAbsence = true;
+        }
+      });
+      if (foundAbsence) return;
+      findUser.push(absence[i].type);
+    }
+  }
+
   public selectLesson(lesson: number): void {
     if (!this.calendarEl) return;
     if (
@@ -51,7 +83,6 @@ export class ClassbookComponent {
       date: this.calendarEl.date,
       lesson: this.selectedLesson
     });
-
   }
 
   public saveLesson(): void {
@@ -105,6 +136,7 @@ export class ClassbookComponent {
       this.calendarEl = this.calendarService.getCalendar(this.calendarName);
       if (this.calendarEl) {
         this.calendarEl.customPickFunction = (value: string | null): void => {
+          this.absence = [];
           this.schoolingo.refreshTimetable();
           let i = 0;
           this.selectedLesson = undefined;
@@ -128,21 +160,45 @@ export class ClassbookComponent {
         }
         if (a.lastName > b.lastName) {
           return 1;
-        }});
+        }}
+      );
+
+      let studentIds: number[] = [];
+      this.students.forEach((st: any) => {
+        studentIds.push(st.student);
+      });
+
+      this.socketService.getSocket().Socket?.emit('getAbsence', {students: studentIds, date: this.calendarEl.date})      
     });
 
 
     this.socketService.addFunction("getLesson", (lesson: any) =>{
-      this.lessonTopic.setValue(lesson[0].topic);
-      this.lessonNote.setValue(lesson[0].note);
+      this.lessonTopic.setValue (lesson[0].topic);
+      this.lessonNote.setValue  (lesson[0].note);
       this.internalNote.setValue(lesson[0].internalNote);
       this.lesson = lesson[0];
     })
 
     this.socketService.addFunction("setAbsence", (data: any) => {
-      console.log(data);
+      let dataDate = new Date(data[0].date);
+      if (
+        !(
+          dataDate.getDate    () == this.calendarEl.date.getDate    () &&
+          dataDate.getMonth   () == this.calendarEl.date.getMonth   () &&
+          dataDate.getFullYear() == this.calendarEl.date.getFullYear()
+        )
+      ) { return }
+
+      for(let i = 0;i < data[0].absence.length;i++) {
+        this.addAbsence(data[0].absence[i].student, [{ lesson: data[0].lesson, type: data[0].absence[i].absence }])
+      }
     });
 
+    this.socketService.addFunction("getAbsence", (data: any) => {
+      for(let i = 0;i < data.length;i++) {
+        this.addAbsence(data[i].student, [{ lesson: data[i].lesson as number, type: data[i].type as number }]);
+      }
+    });
   }
 
 }
