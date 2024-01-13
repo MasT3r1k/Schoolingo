@@ -55,7 +55,7 @@ export class Table {
     public visibleRows: TableValue[] = [];
     public filter: TableFilter[] = [];
     public filterType: TableFilterType = 'or';
-    public order: [number, 'asc' | 'desc'] = [0, 'desc'];
+    public order: [number, 'asc' | 'desc'] = [0, 'asc'];
 
     public declare rowClickFunction: Function
 

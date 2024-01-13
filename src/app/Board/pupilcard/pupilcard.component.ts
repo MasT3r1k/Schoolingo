@@ -80,6 +80,7 @@ export class PupilcardComponent implements OnInit {
       this.table = getTable(this.tableName);
       if (!this.table) return;
       this.table.updateValue(this.data);
+      this.table.order = [1, 'asc'];
       this.table.rowClickFunction = (id: number) => {
         console.log('You clicked student (' + this.data[id][0] + ' ' + this.data[id][1] + ') from ' + this.data[id][4])
       };
