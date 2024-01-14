@@ -5,9 +5,9 @@
     <div class="calendar-item year">{{ date.getFullYear() }}</div>
     <div class="dropdown" *ngIf="this.dropdown.checkDropdown('calendar_' + name)" (click)="$event.stopPropagation()">
         <div class="header">
-            <i class="ti ti-caret-left-filled" (click)="pickMonth(-1)"></i>
+            <i class="ti ti-chevron-left" (click)="pickMonth(-1)"></i>
             <div class="month">{{ locale.getLocale('months/' + date.getMonth()).charAt(0).toLocaleUpperCase() + locale.getLocale('months/' + date.getMonth()).slice(1) + ' ' + date.getFullYear() }}</div>
-            <i class="ti ti-caret-right-filled" (click)="pickMonth(1)"></i>
+            <i class="ti ti-chevron-right" (click)="pickMonth(1)"></i>
         </div>
         <div class="days">
             <div class="day" *ngFor="let day of schoolingo.days">
@@ -35,6 +35,9 @@
                     date.getFullYear() == schoolingo.getToday().getFullYear()),
 
                     isGray: !calendarDays[i * 7 + i2].isMonth,
+                    active: (calendarDays[i * 7 + i2].day == date.getDate() &&
+                    calendarDays[i * 7 + i2].isMonth &&
+                    date.getFullYear() == date.getFullYear()),
                     isAllowed: !(schoolingo.isDayWeekend(returnAsDate(calendarDays[i * 7 + i2].day, date.getMonth(), date.getFullYear())) && this.options.allowWeekends == false) && calendarDays[i * 7 + i2].isMonth
                     }"
                 (click)="

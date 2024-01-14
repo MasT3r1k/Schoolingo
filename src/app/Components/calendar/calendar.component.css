@@ -38,6 +38,8 @@
     color: var(--color);
     background-color: var(--background-header);
     z-index: 50;
+    padding: .75rem;
+    border-radius: 8px;
     border: 1px solid var(--border-color);
     box-shadow: 0px 0px 2px rgba(0,0,0,.12);
 }
@@ -48,13 +50,38 @@
     justify-content: space-around;
     align-items: center;
     padding: 8px;
+    position: relative;
 }
 
 .calendar .dropdown .header .month {
-    font-size: 18px;
-    font-weight: 600;
-    width: 50%;
-    text-align: center;
+    font-weight: 500;
+    font-size: .875rem;
+    line-height: 1.25rem;
+}
+
+.calendar .dropdown .header i {
+    font-size: .875rem;
+    line-height: 1.25rem;
+    font-weight: 500;
+    opacity: .5;
+    transition: all .15s;
+    border-radius: 8px;
+    width: 1.75rem;
+    height: 1.75rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    position: absolute;
+    cursor: pointer;
+}
+
+.calendar .dropdown .header i:first-child { left: .25rem }
+.calendar .dropdown .header i:last-child { right: .25rem }
+
+.calendar .dropdown .header i:hover {
+    background-color: rgb(39, 39, 42);
+    opacity: 1;
+    color: rgb(250, 250, 250);
 }
 
 /* Calendar Calendar */
@@ -71,6 +98,7 @@
     justify-content: space-between;
     align-items: center;
     border-collapse: collapse;
+    margin-top: .5rem;
 }
 
 .calendar .days,
@@ -85,29 +113,37 @@
     flex-direction: row;
     justify-content: center;
     align-items: center;
-    width: 42px;
+    width: 2rem;
     aspect-ratio: 1;
 }
 
-.calendar .calendar-content .calendar-row .calendar-day.today {
-    color: var(--primary)
+.calendar .days > div {
+    font-weight: 400;
+    font-size: .8rem;
+    color: rgb(161, 161, 170);
+}
+
+.calendar .calendar-content .calendar-row > div {
+    height: 2rem;
+    font-size: .875rem;
+    line-height: 1.25rem;
+    border-radius: 8px;
+}
+
+.calendar .calendar-content .calendar-row .calendar-day.today, .calendar .calendar-content .calendar-row .calendar-day:not(.active):hover {
+    background-color: rgb(39, 39, 42);
 }
 
 .calendar .calendar-content .calendar-row .calendar-day.active {
-    color: #fff;
-    background-color: var(--primary);
+    color: rgb(24, 24, 27);
+    background-color: rgb(250, 250, 250);
 }
 
-.calendar .calendar-content .calendar-row .calendar-day.isGray, 
-.calendar .calendar-content .calendar-row .calendar-day:not(.isAllowed) {
+.calendar .calendar-content .calendar-row .calendar-day.isGray {
     color: var(--color-darker);
     opacity: .7;
 }
 
-.calendar .calendar-content .calendar-row .calendar-day.isAllowed {
+.calendar .calendar-content .calendar-row .calendar-day {
     cursor: pointer;
-}
-
-.calendar .calendar-content .calendar-row .calendar-day.isAllowed:not(.active):hover {
-    background-color: var(--background-hover);
 }
