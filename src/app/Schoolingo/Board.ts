@@ -171,7 +171,7 @@ export class Schoolingo {
 
     /**
      * Adds zeros in front of number based on length
-     * @param number number where you want change length
+     * @param number number where you want change length 
      * @param len length of number
      * @returns number 128 to length 5 is set to 00128
      */

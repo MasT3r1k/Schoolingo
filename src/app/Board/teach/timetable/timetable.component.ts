@@ -119,16 +119,16 @@ export class TimetableComponent implements OnInit {
       this.tabs.setOnChangeFunc(this.tabName, (id: number) => {
         switch(id) {
           case 0:
-            this.schoolingo.selectWeek(this.schoolingo.getThisWeek());
+            this.schoolingo.selectWeek(this.schoolingo.getThisWeek() - 1);
             break;
           case 1:
-            this.schoolingo.selectWeek(this.schoolingo.getThisWeek() + 1);
+            this.schoolingo.selectWeek(this.schoolingo.getThisWeek());
             break;
           case 2:
             this.schoolingo.selectWeek(null);
             break;
           case 3:
-            this.schoolingo.selectWeek(this.calendarEl?.date.getWeek());
+            this.schoolingo.selectWeek(this.calendarEl?.date.getWeek() - 1);
             break;
         }
 

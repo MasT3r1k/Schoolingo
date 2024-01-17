@@ -1,12 +1,21 @@
-<div class="calendar" (click)="this.dropdown.toggleDropdown('calendar_' + name);">
-    <i class="calendar-item ti ti-calendar-search"></i>
+<div
+class="calendar"
+(click)="this.dropdown.toggleDropdown('calendar_' + name)"
+>
+    <i class="calendar-item ti ti-calendar-month"></i>
     <div class="calendar-item day">{{ schoolingo.addZeros(date.getDate()) }}.</div>
     <div class="calendar-item month">{{ schoolingo.addZeros(date.getMonth() + 1) }}.</div>
     <div class="calendar-item year">{{ date.getFullYear() }}</div>
-    <div class="dropdown" *ngIf="this.dropdown.checkDropdown('calendar_' + name)" (click)="$event.stopPropagation()">
+    <div
+    class="dropdown"
+    *ngIf="this.dropdown.checkDropdown('calendar_' + name)"
+    (click)="$event.stopPropagation()"
+    >
         <div class="header">
             <i class="ti ti-chevron-left" (click)="pickMonth(-1)"></i>
-            <div class="month">{{ locale.getLocale('months/' + date.getMonth()).charAt(0).toLocaleUpperCase() + locale.getLocale('months/' + date.getMonth()).slice(1) + ' ' + date.getFullYear() }}</div>
+            <div class="month">
+                {{ locale.getLocale('months/' + date.getMonth()).charAt(0).toLocaleUpperCase() + locale.getLocale('months/' + date.getMonth()).slice(1) + ' ' + date.getFullYear() }}
+            </div>
             <i class="ti ti-chevron-right" (click)="pickMonth(1)"></i>
         </div>
         <div class="days">

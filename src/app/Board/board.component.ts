@@ -15,16 +15,23 @@ import { Lesson, Room, Subject } from '@Schoolingo/Board.d';
 import { Cache } from '@Schoolingo/Cache';
 import { Teacher, UserPermissions } from '@Schoolingo/User.d';
 import { Logger } from '@Schoolingo/Logger';
+import { formError } from '../login/login.component';
+import { FormControl } from '@angular/forms';
 
 @Component({
   templateUrl: './board.component.html',
-  styleUrls: ['./board.component.css', '../Components/Dropdown/dropdown.css', './board.css']
+  styleUrls: ['./board.component.css', '../Components/Dropdown/dropdown.css', './board.css', '../login/login.component.css']
 })
 export class BoardComponent implements OnInit {
 
   private routerSub;
   config = config;
 
+  public modal: string = 'autologout';
+
+  public hideModal(): void {
+    this.modal = '';
+  }
 
   constructor(
     public socketService: SocketService,
@@ -43,6 +50,7 @@ export class BoardComponent implements OnInit {
 
     // Register dropdowns
     this.dropdown.addDropdown('user');
+
 
 
 
@@ -80,17 +88,33 @@ export class BoardComponent implements OnInit {
 
   }
 
+  username: FormControl<string | null> = new FormControl<string>('');
+  password: FormControl<string | null> = new FormControl<string>('');
+  formErrors: formError[] = [];
+  public tryingToLogin: boolean = false;
+  public errorFilter(name: string): boolean | string {
+    let filter = this.formErrors.filter((err) => err.input == name);
+    return (filter.length == 0) ? false : filter[0].locale;
+  }
+
+  public getLoginButtonText(): string {
+    if (this.tryingToLogin == true) return '<div class=\'btn-loader\'></div> ' + this.locale.getLocale('logining_btn');
+    return this.locale.getLocale('login_btn');
+  }
+
+
 
   public setupSocket(): void {
 
     this.socketService.addFunction('token', (data: any) => {
       if (!data.status || data?.user == undefined || data.status == 401) {
-        this.userService.logout();
         this.logger.send('User', 'Logging out due problem with token.');
         return;
       }
       switch(data.status) {
         case 1:
+          console.log(data.user.username);
+
           data.user.class = JSON.parse(data.user.class as string);
           data.user.teacherId = data.teacherId ?? null;
           data.user.studentId = data.studentId ?? null;
@@ -202,6 +226,10 @@ export class BoardComponent implements OnInit {
     }
 
     // Socket service
+    if (this.userService?.getUser()?.username) {
+      this.username.setValue(this.userService.getUser()?.username as string);
+    }
+
     this.socketService.connectUser();
     this.setupSocket();
 

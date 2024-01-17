@@ -85,7 +85,7 @@ import { MidtermComponent  as BoardMarksMidterm} from './Board/marks/midterm/mid
     Logger,
     DatePipe,
     Table,
-    Calendar
+    Calendar,
   ],
 
   bootstrap: [AppComponent]

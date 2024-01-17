@@ -1,6 +1,6 @@
 <!-- Main website page -->
 
-<div class="wrapper" (click)="dropdown.closeAllDropdowns();" (contextmenu)="$event.preventDefault()">
+<div class="wrapper" (click)="dropdown.closeAllDropdowns();">
 
     <div class="header">
 
@@ -101,6 +101,35 @@
 
 <!--  -->
 
+<div class="modals">
+    <div class="modal" *ngIf="modal == 'autologout'">
+        <div class="modal-header">
+            <h2>Byl jste odhlášen</h2>
+            <p>Dlouho jste zde nebyl, tak jsme Vás z bezpečnostních důvodů odhlásili.</p>
+        </div>
+        <div class="modal-form">
+            <div class="form-group">
+                <label for="username" [ngClass]="{error: errorFilter('username') != false}">{{ locale.getLocale('username') }} <span class="label-error" *ngIf="errorFilter('username') != false"> - {{ locale.getLocale(errorFilter('username').toString()) }}</span></label>
+                <input type="text" name="username" [ngClass]="{ invalid: errorFilter('username') != false }" [formControl]="username" [placeholder]="locale.getLocale('username')" [value]="userService.getUser()?.username" />
+            </div>
+            <div class="form-group">
+                <label for="password" [ngClass]="{error: errorFilter('password') != false}">{{ locale.getLocale('password') }} <span class="label-error" *ngIf="errorFilter('password') != false"> - {{ locale.getLocale(errorFilter('password').toString()) }}</span></label>
+                <input type="password" name="password" [ngClass]="{ invalid: errorFilter('password') != false }" [formControl]="password" [placeholder]="locale.getLocale('password')">
+            </div>
+            <div class="form-group">
+                <div [ngClass]="{submit: true}" role="button" [innerHTML]="getLoginButtonText()"></div>
+            </div>
+            <div class="form-group">
+                <div [ngClass]="{submit: true}" (click)="modal = ''" role="button" style="background-color: #fff;color: #000;">Pokračovat v offline módu</div>
+            </div>
+        </div>
+        <div class="close-btn" (click)="modal = ''">
+            <i class="ti ti-x"></i>
+        </div>
+    </div>
+</div>
+
+<!--  -->
 
 <div class="notify" *ngIf="false">
     <div class="left">
