@@ -27,7 +27,7 @@ export class BoardComponent implements OnInit {
   private routerSub;
   config = config;
 
-  public modal: string = 'autologout';
+  public modal: string = '';
 
   public hideModal(): void {
     this.modal = '';
