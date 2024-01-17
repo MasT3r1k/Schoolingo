@@ -1,55 +1,55 @@
 <h1 align="center">Schoolingo Angular</h1>
 
-## About project
-- It is a modern school system designed for communication between the school, students and parents of the students.
-- In the system you can already find the `timetable`, `classbook`, `absence` and `lessons overview`.
-- The whole system runs on socket.io. Further packages used are `angularx-qrcode` for displaying QR codes, `diacritics` (it is a simple code, so it was directly implemented in the code) for better and easier search.
+## O projektu
+- Jedná se o projekt zaměřený na komunikaci mezi školou, studenty a rodiči studentů.
+- V systému můžeme najít `rozvrh`, `třídní knihu`, `absenci` a `přehled předmětů`.
+- Celý web běží na socket.io. Dále využité balíčky jsou `angularx-qrcode` pro zobrazování QR kódu, `diacritics` (je to jednoduchý, proto bylo přímo implementováno do kódu) pro lepší a snadnější vyhledávání.
 
-## Features
-- The web automatically detects the selected theme in the system and sets the web to that theme
-- Fastlogin (Login with QRCode) by scanning qrcode in mobile app
+## Funkce
+- Web automaticky rozezná tému nastavenou v systému a nastaví ji v webu (aktuální podpora pro dark a light)
+- Rychlé přihlášení pomocí QR kódu. QR kód naskenujeme v mobilní aplikaci.
 
 ## Build
-### Requirements
-- [Node](https://nodejs.org/en/) - To install packages
-- [Git](https://git-scm.com/) - To download source code (optional), you can also download on github
+### Požadavky
+- [Node](https://nodejs.org/en/) - K nainstalování potřebných balíčků
+- [Git](https://git-scm.com/) - Ke stažení zdrojového kódu (nepotřebné),zdrojový kód lze přímo stáhnout z Githubu.
 
-1. Download Source code 
+1. Stažení zdrojového kódu 
 with GIT:
 ```sh
 git clone https://github.com/MasT3r1k/Todo.git
 ```
-or you can download it on github
+nebo můžeme přímo stáhnout z Githubu
 
-2. Install packages
+2. Nainstalujeme balíčky
 ```sh
 npm install
 ```
 
-3. Build application
+3. Buildneme projekt 
 ```sh
 npm run build
 ```
 
-## Login page
-- Login page supports 2 methods to login: Classic login with username and password or you can login by scan qrcode on mobile app
+## Přihlašovací stránka
+- Přihlašovací stránka podporuje 2 způsoby přihlášení: Klasické přihlášení pomocí uživatelského jména a hesla nebo se můžete přihlásit naskenováním qrcode v mobilní aplikaci.
 ![Loginpage](/readme/LoginPage.png)
 
-## Example of Timetable
-- You can print timetable
-- You can pick any week you want to see
-- Today's date is highlighted
-- Each lesson has his teacher, subject and room
+## Příklad rozvrhu
+- Rozvrh můžete vytisknout
+- Můžete si vybrat libovolný týden, který chcete zobrazit
+- Dnešní den je zvýrazněn
+- Každá hodina má svého učitele, předmět a místnost
 ![Timetable](/readme/Timetable.png)
 
-## Subject list
-- Here is basic table of subjects you as student have
+## Seznam předmětů
+- Zde je základní tabulka předmětů, které máte jako student k dispozici.
 ![Subjectlist](/readme/SubjectList.png)
 
-## Classbook
-- As teacher you have access to classbook
-- There is basic information about lesson
+## Třídní kniha
+- Jako učitel máte přístup k třídní knize
+- Jsou zde základní informace o hodině
 ![Classbook](/readme/writeLesson.png)
-- And also have absence
-- There is list of students and maximum lessons they have to be able to fill up all lessons
+- A také nepřítomnost
+- Je zde seznam studentů a maximální počet hodin, které student může mít, aby bylo možné zapsat všechny hodiny.
 ![Absence](/readme/setAbsence.png)
