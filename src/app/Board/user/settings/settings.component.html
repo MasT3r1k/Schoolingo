@@ -46,16 +46,17 @@
     </div>
 
     <div class="box-content" *ngIf="tabs.getTabValue(tabName) == 1">
-        <ul>
-            <li *ngFor="let lng of locale.getLanguages()">
-                <div [ngClass]="{main: true, active: locale.getUserLocale() == lng[0]}" (click)="locale.setUserLocale(lng);tabs.setTabValue(tabName, tabs.getTabValue(tabName))">
+        <div class="select select-column">
+            <div [ngClass]="{'select-option': true, active: locale.getUserLocale() == lng}" (click)="locale.setUserLocale(lng);tabs.setTabValue(tabName, tabs.getTabValue(tabName))" *ngFor="let lng of locale.getLanguages()">
+                <div class="left">
                     <img src="{{ locale.getLocale('flag', lng) }}" alt="{{ locale.getLocale('name', lng) }}" height="24" style="margin-right: 8px;">
-                    
-                    <p>{{ locale.getLocale('name', lng) }}</p>
-                    <p>Přeloženo {{ (locale.getTranslated(lng) * 100).toFixed(2) }}%</p>
+                    <div class="column">
+                        {{ locale.getLocale('name', lng) }}
+                        <span class="smallText">{{ (locale.getTranslated(lng) * 100).toFixed(2) }}%</span>
+                    </div>
                 </div>
-            </li>
-        </ul>
+            </div>
+        </div>
     </div>
 
 </div>

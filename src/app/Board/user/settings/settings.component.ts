@@ -6,7 +6,7 @@ import { FormControl } from '@angular/forms';
 
 @Component({
   templateUrl: './settings.component.html',
-  styleUrls: ['./settings.component.css', '../../board.css', '../../../login/login.component.css']
+  styleUrls: ['./settings.component.css', '../../board.css', '../../../input.css']
 })
 export class SettingsComponent {
   public tabName: string = 'Settings';

@@ -19,7 +19,7 @@ type Student = {
 
 @Component({
   templateUrl: './pupilcard.component.html',
-  styleUrls: ['./pupilcard.component.css', '../board.css']
+  styleUrls: ['./pupilcard.component.css', '../board.css', '../../input.css']
 })
 export class PupilcardComponent implements OnInit {
   constructor(

@@ -14,7 +14,7 @@ type Absence = {
 
 @Component({
   templateUrl: './classbook.component.html',
-  styleUrls: ['./classbook.component.css', '../../board.css', '../../../Components/Tabs/tabs.component.css']
+  styleUrls: ['./classbook.component.css', '../../board.css', '../../../Components/Tabs/tabs.component.css', '../../../input.css']
 })
 export class ClassbookComponent {
   public tabName: string = 'TridniKniha_TABS';

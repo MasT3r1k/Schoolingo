@@ -30,7 +30,7 @@ type QRStatus = {
 
 @Component({
   templateUrl: './login.component.html',
-  styleUrls: ['./login.component.css', '../../card.css']
+  styleUrls: ['./login.component.css', '../../card.css', '../input.css']
 })
 export class LoginComponent implements OnInit {
 
