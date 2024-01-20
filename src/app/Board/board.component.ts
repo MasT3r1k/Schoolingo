@@ -4,7 +4,7 @@ import { UserService } from '@Schoolingo/User';
 import { Component, OnInit } from '@angular/core';
 import * as config from '@config';
 import { Dropdowns } from '@Components/Dropdown/Dropdown';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Params, Router } from '@angular/router';
 import { Title } from '@angular/platform-browser';
 import { Sidebar } from '@Schoolingo/Sidebar';
 import { SocketService } from '@Schoolingo/Socket';
@@ -13,10 +13,12 @@ import { ToastService } from '@Components/Toast';
 import { Tabs } from '@Components/Tabs/Tabs';
 import { Lesson, Room, Subject } from '@Schoolingo/Board.d';
 import { Cache } from '@Schoolingo/Cache';
-import { Teacher, UserPermissions } from '@Schoolingo/User.d';
+import { LoginData, Teacher, UserPermissions } from '@Schoolingo/User.d';
 import { Logger } from '@Schoolingo/Logger';
 import { formError } from '../login/login.component';
 import { FormControl } from '@angular/forms';
+
+export type modals = 'autologout' | '';
 
 @Component({
   templateUrl: './board.component.html',
@@ -27,7 +29,7 @@ export class BoardComponent implements OnInit {
   private routerSub;
   config = config;
 
-  public modal: string = '';
+  public modal: modals = '';
 
   public hideModal(): void {
     this.modal = '';
@@ -39,6 +41,7 @@ export class BoardComponent implements OnInit {
     public locale: Locale,
     public schoolingo: Schoolingo,
     public dropdown: Dropdowns,
+    private route: ActivatedRoute,
     private router: Router,
     private title: Title,
     private sidebar: Sidebar,
@@ -88,15 +91,6 @@ export class BoardComponent implements OnInit {
 
   }
 
-  username: FormControl<string | null> = new FormControl<string>('');
-  password: FormControl<string | null> = new FormControl<string>('');
-  formErrors: formError[] = [];
-  public tryingToLogin: boolean = false;
-  public errorFilter(name: string): boolean | string {
-    let filter = this.formErrors.filter((err) => err.input == name);
-    return (filter.length == 0) ? false : filter[0].locale;
-  }
-
   public getLoginButtonText(): string {
     if (this.tryingToLogin == true) return '<div class=\'btn-loader\'></div> ' + this.locale.getLocale('logining_btn');
     return this.locale.getLocale('login_btn');
@@ -108,12 +102,15 @@ export class BoardComponent implements OnInit {
 
     this.socketService.addFunction('token', (data: any) => {
       if (!data.status || data?.user == undefined || data.status == 401) {
+        this.modal = 'autologout';
         this.logger.send('User', 'Logging out due problem with token.');
+        this.socketService.getSocket().Socket?.disconnect();
+        this.socketService.connectAnon();
         return;
       }
       switch(data.status) {
         case 1:
-          console.log(data.user.username);
+          console.log(data.user);
 
           data.user.class = JSON.parse(data.user.class as string);
           data.user.teacherId = data.teacherId ?? null;
@@ -241,11 +238,70 @@ export class BoardComponent implements OnInit {
       }
     }, 50);
 
+
+    this?.socketService.addFunctionNotConnected('login', (data: LoginData) => {
+      this.tryingToLogin = false;
+      if (data.status == 1 && data?.token && data?.expires) {
+        this.logger.send('Login', 'Successful logged in.');
+        this.storage.removeAll();
+        this.toast.showToast(this.locale.getLocale('successfulLogin'), 'success', 5000);
+        this.userService.setToken(data.token, data.expires);
+        this.modal = '';
+      }else{
+        if (!data.message) return;
+        switch(data.message) {
+          case "user_not_found":
+            this.formErrors = [{ input: 'username', locale: data.message }];
+            break;
+          case "wrong_password":
+            this.formErrors = [{ input: 'password', locale: data.message }];
+            break;
+          default:
+            this.logger.send('Login', 'Error: ' + data.message);
+            break;
+        } 
+      }
+    })
+
   }
 
   ngOnDestroy(): void {
     this.routerSub.unsubscribe();
     this.socketService?.getSocket()?.Socket?.disconnect();
+  }
+
+  // Main login code
+  username: FormControl<string | null> = new FormControl<string>('');
+  password: FormControl<string | null> = new FormControl<string>('');
+  public tryingToLogin: boolean = false;
+
+  formErrors: formError[] = [];
+  public errorFilter(name: string): boolean | string {
+    let filter = this.formErrors.filter((err) => err.input == name);
+    return (filter.length == 0) ? false : filter[0].locale;
+  }
+
+  public login(): void {
+    this.formErrors = [];
+    if (this.canLogin() == false) {
+      if (this.username.value == null || this.username.value == '') {
+        this.formErrors.push({ input: 'username', locale: 'required' });
+      }
+      if (this.password.value == null || this.password.value == '') {
+        this.formErrors.push({ input: 'password', locale: 'required' });
+
+      }
+      return;
+    }
+    this.tryingToLogin = true;
+    this.logger.send('Login', 'Trying to login.')
+    this.socketService?.getSocket().Socket?.emit('login', { username: this.username.value, password: this.password.value });
+  }
+
+  
+
+  public canLogin(): boolean {
+    return !(this.username.value == null || this.username.value == '' || this.password.value == null || this.password.value == '');
   }
 
 }
