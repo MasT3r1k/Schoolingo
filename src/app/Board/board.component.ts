@@ -246,6 +246,8 @@ export class BoardComponent implements OnInit {
         this.storage.removeAll();
         this.toast.showToast(this.locale.getLocale('successfulLogin'), 'success', 5000);
         this.userService.setToken(data.token, data.expires);
+        this.socketService.getSocket().Socket?.disconnect();
+        this.socketService.connectUser();
         this.modal = '';
       }else{
         if (!data.message) return;

@@ -50,6 +50,9 @@
                     </div>
                     <div>{{ schoolingo.getTimetable()[calendarEl.date.getDay() - 1].lessons[selectedLesson][0].class }}</div>
                     <div *ngIf="getService().length > 0">Služba: {{ getService().join(', ') }}</div>
+                    <div *ngIf="getService().length == 0">Nikdo dnes nemá službu</div>
+
+<!-- Write lesson -->
                     <div class="classbook-content" *ngIf="tabs.getTabValue(tabName) == 0">
                         <div class="section-title">
                             <div class="title-bar"></div>
@@ -83,6 +86,7 @@
                         </div>
                     </div>
 
+<!-- Absence -->
                     <div class="classbook-content" *ngIf="tabs.getTabValue(tabName) == 1">
                         <div class="section-title">
                             <div class="title-bar"></div>
@@ -130,6 +134,34 @@
                             </div>
                         </div>
                     </div>
+
+<!-- Homeworks -->
+                    <div class="classbook-content" *ngIf="tabs.getTabValue(tabName) == 2">
+                        <div class="section-title">
+                            <div class="title-bar"></div>
+                            <div class="title">{{ locale.getLocale('sidebar/teach/homeworks') }}</div>
+                        </div>
+                        <div class="select select-column">
+                            <div [ngClass]="{'select-option': true}">
+                                <div class="left">
+                                </div>
+                            </div>
+                        </div>
+                    </div> 
+
+<!-- Notes -->
+                    <div class="classbook-content" *ngIf="tabs.getTabValue(tabName) == 3">
+                        <div class="section-title">
+                            <div class="title-bar"></div>
+                            <div class="title">{{ locale.getLocale('classbook/notes') }}</div>
+                        </div>
+                        <div class="select select-column">
+                            <div [ngClass]="{'select-option': true}">
+                                <div class="left">
+                                </div>
+                            </div>
+                        </div>
+                    </div> 
                 </div>
             </div>
         </div>
