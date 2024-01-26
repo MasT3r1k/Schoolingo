@@ -105,13 +105,13 @@ export class ClassbookComponent {
     })
   }
 
-  public applyAbsence(student: number): void {
+  public applyAbsence(student: number, abType: number = this.selectedAbsence): void {
     if (this.selectedLesson === undefined) return;
     this.socketService.getSocket().Socket?.emit('setAbsence', {
       absence: [
         {
           student: student,
-          absence: this.selectedAbsence,
+          absence: abType,
         }
       ],
 
@@ -119,6 +119,14 @@ export class ClassbookComponent {
       date: this.calendarEl.date,
       lesson: this.selectedLesson
     });
+  }
+
+  public copyAbsenceFromPreviousLesson(): void {
+    if (this.selectedLesson === undefined || this.selectedLesson === 0) return;
+    this.absence.forEach((ab: number[], index: number) => {
+      if (ab[(this.selectedLesson as number) - 1] === -1) return;
+      this.applyAbsence(index, ab[(this.selectedLesson as number) - 1]);
+    })
   }
 
   public getService(): string[] {

@@ -93,7 +93,7 @@
                             <div class="title">{{ locale.getLocale('classbook/attendance') }}</div>
                         </div>
                         <div class="absence-selector">
-                            <div class="item">
+                            <div class="item" *ngIf="this.selectedLesson !== 0" (click)="copyAbsenceFromPreviousLesson()">
                                 <i class="ti ti-copy"></i>
                                 Kopírovat z předchozí hodiny
                             </div>
@@ -119,10 +119,10 @@
                                 </div>
                                 <div class="hours">
                                     <div
-                                    [ngClass]="{hour: true, active: selectedLesson == index}"
+                                    [ngClass]="{hour: true, active: selectedLesson === index}"
                                     [attr.lessonCount]="index + 1"
                                     *ngFor="let _ of [].constructor(classInfo.maxHours);index as index"
-                                    (click)="(selectedLesson == index) ? applyAbsence(student.student) : ''"
+                                    (click)="(selectedLesson === index) ? applyAbsence(student.student) : ''"
                                     >
                                         <div
                                         [ngClass]="['item', 'absence', 'ab-' + schoolingo.absence[absence[student.student][index]].locale]"
