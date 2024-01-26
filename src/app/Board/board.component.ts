@@ -22,7 +22,7 @@ export type modals = 'autologout' | '';
 
 @Component({
   templateUrl: './board.component.html',
-  styleUrls: ['./board.component.css', '../Components/Dropdown/dropdown.css', './board.css', '../input.css']
+  styleUrls: ['./board.component.css', '../Components/Dropdown/dropdown.css', './board.css', '../input.css', '../Components/modals/modals.component.css']
 })
 export class BoardComponent implements OnInit {
 

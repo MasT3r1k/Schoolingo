@@ -38,56 +38,59 @@ import { Calendar } from '@Components/calendar/calendar';
 import { SendComponent as MessagesSend } from './Board/messages/send/send.component';
 import { NgSelectModule } from '@ng-select/ng-select';
 import { MidtermComponent  as BoardMarksMidterm} from './Board/marks/midterm/midterm.component';
+import { ModalsComponent } from "./Components/modals/modals.component";
+import { Modals } from '@Components/modals/modals';
+import { HomeworksComponent as Homeworks } from './Board/teach/homeworks/homeworks.component';
 
 @NgModule({
-  declarations: [
-    AppComponent,
-    LoginComponent,
-    BoardComponent,
-    TabsComponent,
-    ComponentTable,
-    BoardMain,
-    BoardTimetable,
-    BoardTeachSubjects,
-    BoardMarksInterm,
-    BoardMarksMidterm,
-    TimeTableModule,
-    MarksModule,
-    ToastComponent,
-    BoardDevices,
-    BoardSettings,
-    ClassbookComponent,
-    PupilcardComponent,
-    CalendarComponent,
-    MessagesSend
-  ],
-  
-  imports: [
-    BrowserModule,
-    AppRoutingModule,
-    NgSelectModule,
-    FormsModule,
-    ReactiveFormsModule,
-    QRCodeModule,
-    HttpClientModule,
-  ],
-
-  providers: [
-    Locale,
-    UserService, 
-    Schoolingo,
-    SocketService,
-    Dropdowns,
-    Sidebar,
-    ToastService,
-    Tabs,
-    Theme,
-    Logger,
-    DatePipe,
-    Table,
-    Calendar,
-  ],
-
-  bootstrap: [AppComponent]
+    declarations: [
+        AppComponent,
+        LoginComponent,
+        BoardComponent,
+        TabsComponent,
+        ComponentTable,
+        BoardMain,
+        BoardTimetable,
+        BoardTeachSubjects,
+        BoardMarksInterm,
+        BoardMarksMidterm,
+        TimeTableModule,
+        MarksModule,
+        ToastComponent,
+        BoardDevices,
+        BoardSettings,
+        ClassbookComponent,
+        PupilcardComponent,
+        CalendarComponent,
+        MessagesSend,
+        ModalsComponent,
+        Homeworks
+    ],
+    providers: [
+        Locale,
+        UserService,
+        Schoolingo,
+        SocketService,
+        Dropdowns,
+        Sidebar,
+        ToastService,
+        Tabs,
+        Theme,
+        Logger,
+        DatePipe,
+        Table,
+        Calendar,
+        Modals,
+    ],
+    bootstrap: [AppComponent],
+    imports: [
+        BrowserModule,
+        AppRoutingModule,
+        NgSelectModule,
+        FormsModule,
+        ReactiveFormsModule,
+        QRCodeModule,
+        HttpClientModule,
+    ]
 })
 export class AppModule { }

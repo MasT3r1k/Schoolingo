@@ -2,6 +2,8 @@
 
 <div class="wrapper" (click)="dropdown.closeAllDropdowns();">
 
+<!-- HEADER -->
+
     <div class="header">
 
         <div class="left">
@@ -54,12 +56,16 @@
 
     </div>
 
+<!-- Loading Data -->
+
     <div class="content center" *ngIf="!userService.getUser()">
         <div class="dot-flashing"></div>
         <div class="loading-text">
             <p>{{ locale.getLocale('loading_user') }}</p>
         </div>
     </div>
+
+<!-- Content -->
 
     <div class="content" *ngIf="userService.getUser()">
         <div [ngClass]="{sidebar: true, active: schoolingo.sidebarToggled}">
@@ -99,7 +105,7 @@
 
 </div>
 
-<!--  -->
+<!--  Login Modals  -->
 
 <div class="modals">
     <div class="modal" *ngIf="modal == 'autologout'">
@@ -108,17 +114,20 @@
             <p>Dlouho jste zde nebyl, tak jsme Vás z bezpečnostních důvodů odhlásili.</p>
         </div>
         <div class="modal-form">
-            <div class="form-group">
-                <label for="username" [ngClass]="{error: errorFilter('username') != false}">{{ locale.getLocale('username') }} <span class="label-error" *ngIf="errorFilter('username') != false"> - {{ locale.getLocale(errorFilter('username').toString()) }}</span></label>
-                <input type="text" name="username" [ngClass]="{ invalid: errorFilter('username') != false }" [formControl]="username" [placeholder]="locale.getLocale('username')" [value]="userService.getUser()?.username" />
-            </div>
-            <div class="form-group">
-                <label for="password" [ngClass]="{error: errorFilter('password') != false}">{{ locale.getLocale('password') }} <span class="label-error" *ngIf="errorFilter('password') != false"> - {{ locale.getLocale(errorFilter('password').toString()) }}</span></label>
-                <input type="password" name="password" [ngClass]="{ invalid: errorFilter('password') != false }" [formControl]="password" [placeholder]="locale.getLocale('password')">
-            </div>
-            <div class="form-group">
-                <div [ngClass]="{submit: true, disabled: canLogin() == false}" role="button" (click)="login()" role="button" [innerHTML]="getLoginButtonText()"></div>
-            </div>
+            <form method="post" (submit)="login()">
+                <div class="form-group">
+                    <label for="username" [ngClass]="{error: errorFilter('username') != false}">{{ locale.getLocale('username') }} <span class="label-error" *ngIf="errorFilter('username') != false"> - {{ locale.getLocale(errorFilter('username').toString()) }}</span></label>
+                    <input type="text" name="username" [ngClass]="{ invalid: errorFilter('username') != false }" [formControl]="username" [placeholder]="locale.getLocale('username')" [value]="userService.getUser()?.username" />
+                </div>
+                <div class="form-group">
+                    <label for="password" [ngClass]="{error: errorFilter('password') != false}">{{ locale.getLocale('password') }} <span class="label-error" *ngIf="errorFilter('password') != false"> - {{ locale.getLocale(errorFilter('password').toString()) }}</span></label>
+                    <input type="password" name="password" [ngClass]="{ invalid: errorFilter('password') != false }" [formControl]="password" [placeholder]="locale.getLocale('password')">
+                </div>
+                <div class="form-group">
+                    <input type="submit" value="" style="display: none;">
+                    <div [ngClass]="{submit: true, disabled: canLogin() == false}" role="button" (click)="login()" role="button" [innerHTML]="getLoginButtonText()"></div>
+                </div>
+            </form>
             <div class="form-group">
                 <div [ngClass]="{submit: true}" (click)="modal = ''" role="button" style="background-color: #fff;color: #000;">Pokračovat v offline módu</div>
             </div>
@@ -129,7 +138,7 @@
     </div>
 </div>
 
-<!--  -->
+<!--  Notify  -->
 
 <div class="notify" *ngIf="false">
     <div class="left">
@@ -144,3 +153,4 @@
 <!--  -->
 
 <!-- <schoolingo-toasts></schoolingo-toasts> -->
+<schoolingo-modals></schoolingo-modals>

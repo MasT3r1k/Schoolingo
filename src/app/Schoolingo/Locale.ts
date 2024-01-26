@@ -77,7 +77,7 @@ export class Locale {
                     substitution: "Suplování",
                     tutoring: "Doučování",
                     classbook: "Třídní kniha",
-                    subjects: "Přehled předmětů"
+                    subjects: "Přehled předmětů",
                 },
 
                 messages: {
@@ -86,7 +86,7 @@ export class Locale {
                     received: "Přijaté zprávy",
                     sent: "Odeslané zprávy",
                     groups: "Skupiny",
-                    noticeboard: "Nástěnka"
+                    noticeboard: "Nástěnka",
                 },
 
                 absence: "Absence",
@@ -108,7 +108,7 @@ export class Locale {
                     main: "Jídelna",
                     order: "Objednávky",
                     dispensing: "Výdeje",
-                    meals: "Jídla"
+                    meals: "Jídla",
                 },
                 printers: {
                     main: "Tiskárna",
@@ -121,28 +121,28 @@ export class Locale {
                 person: {
                     main: "Osoby",
                     list: "Seznam osob",
-                    create: "Vytvořit osobu"
+                    create: "Vytvořit osobu",
                 },
                 teachers: {
                     main: "Učitelé",
                     list: "Seznam učitelů",
-                    create: "Vytvořit učitele"
+                    create: "Vytvořit učitele",
                 },
                 students: {
                     main: "Studenti",
                     list: "Seznam studentů",
-                    create: "Vytvořit studenta"
+                    create: "Vytvořit studenta",
                 },
                 rooms: {
                     main: "Místnosti",
                     list: "Seznam místností",
-                    create: "Vytvořit místnost"
+                    create: "Vytvořit místnost",
                 },
                 class: {
                     main: "Třídy",
                     scopes: "Obory",
                     list: "Seznam tříd",
-                    create: "Vytvořit třídu"
+                    create: "Vytvořit třídu",
                 }
             },
             settings: "Nastavení",
@@ -160,11 +160,11 @@ export class Locale {
 
             toasts: {
                 success: "Úspěch!",
-                error: "Chyba!"
+                error: "Chyba!",
             },
             errors: {
                 noClassOnWeekend: "O víkendu se neučí.",
-                noReceiversFound: "Nenalezeni žádní dostupní příjemci."
+                noReceiversFound: "Nenalezeni žádní dostupní příjemci.",
             },
 
             successfulLogin: "Úspěšně ses přihlásil do systému.",
@@ -180,6 +180,7 @@ export class Locale {
             theme: "Témata",
             logout: "Odhlásit se",
             print: "Tisk",
+            editList: "Upravit seznam",
 
             buttons: {
                 update: "Aktualizovat",
@@ -192,13 +193,24 @@ export class Locale {
             timetable: {
                 thisWeek: "Tento týden",
                 nextWeek: "Příští týden",
-                permanent: "Stálý"
+                permanent: "Stálý",
+            },
+            
+            homeworks: {
+                unsubmitted: "Neodevzdané",
+                noteForTeacher: "Poznámka pro učitele",
+                save: "Zadat úkol",
+                startDate: "Zadáno",
+                endDate: "Odevzdat",
             },
 
             classbook: {
                 lessonNotation: "Zápis hodiny",
                 attendance: "Docházka",
-                notes: "Poznámky"
+                assignment: "Zadání úkolu",
+                newHomework: "Zadat domácí úkol",
+                notes: "Poznámky",
+                newNote: "Nová poznámka",
             },
 
             absence: {
@@ -215,7 +227,7 @@ export class Locale {
                 new: "Nový žák",
                 personalDetails: "Osobní údaje",
                 residence: "Bydliště",
-                relatives: "Příbuzní"
+                relatives: "Příbuzní",
             },
 
             subjects: "Předměty",
@@ -234,15 +246,19 @@ export class Locale {
             
             months: ["leden", "únor", "březen", "duben", "květen", "červen", "červenec", "srpen", "září", "říjen", "listopad", "prosinec"],
 
+            active: "Ativní",
+            all: "Všechny",
+
             // Dropdowns
             dropdowns: {
                 user: {
                     linkedUsers: "Propojené účty",
-                    noLinked: "Nemáte propojené další účty"
+                    noLinked: "Nemáte propojené další účty",
                 }
             },
 
             or: "nebo",
+            close: "Zavřít",
 
             // Authentication
             login_title: "Přihlášení",

@@ -30,6 +30,7 @@ export class CalendarComponent {
 
   @Input() name: string = '';
   @Input() options: CalendarOptions = {};
+  @Input() disabled: boolean | undefined;
 
   ngOnInit(): void {
     this.calendar.addCalendar(this);
@@ -46,6 +47,11 @@ export class CalendarComponent {
   // Utils
   public ceilNum(num: number): number {
     return Math.ceil(num);
+  }
+
+  public openCalendar(): void {
+    if (this.disabled) return;
+    this.dropdown.toggleDropdown('calendar_' + this.name)
   }
 
 

@@ -1,5 +1,4 @@
 import { Component } from '@angular/core';
-import { CommonModule } from '@angular/common';
 import { Locale } from '@Schoolingo/Locale';
 
 @Component({
@@ -10,4 +9,5 @@ export class HomeworksComponent {
   constructor(
     public locale: Locale
   ) {}
+  public tabName: string = "Homeworks_TAB";
 }

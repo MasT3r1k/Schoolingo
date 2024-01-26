@@ -30,7 +30,7 @@
             </div>
             <div class="right" [ngStyle]="{ visibility: selectedLesson != undefined ? 'visible' : 'hidden' }">
                 <div style="display: flex;flex-direction: row;justify-content: center;">
-                    <schoolingo-tabs [name]="tabName" [options]="[locale.getLocale('classbook/lessonNotation'), locale.getLocale('classbook/attendance'), locale.getLocale('sidebar/teach/homeworks'), locale.getLocale('classbook/notes')]"></schoolingo-tabs>
+                    <schoolingo-tabs (click)="isCreatingNewHomework = false;" [name]="tabName" [options]="[locale.getLocale('classbook/lessonNotation'), locale.getLocale('classbook/attendance'), locale.getLocale('sidebar/teach/homeworks'), locale.getLocale('classbook/notes')]"></schoolingo-tabs>
                 </div>
                 <div
                 class="classbook-title"
@@ -136,7 +136,7 @@
                     </div>
 
 <!-- Homeworks -->
-                    <div class="classbook-content" *ngIf="tabs.getTabValue(tabName) == 2">
+                    <div class="classbook-content" *ngIf="tabs.getTabValue(tabName) == 2 && !isCreatingNewHomework">
                         <div class="section-title">
                             <div class="title-bar"></div>
                             <div class="title">{{ locale.getLocale('sidebar/teach/homeworks') }}</div>
@@ -147,8 +147,8 @@
                                 </div>
                             </div>
                         </div>
+                        <div class="btn" (click)="openHomework(undefined)">{{ locale.getLocale('classbook/newHomework') }}</div>
                     </div> 
-
 <!-- Notes -->
                     <div class="classbook-content" *ngIf="tabs.getTabValue(tabName) == 3">
                         <div class="section-title">
@@ -161,6 +161,7 @@
                                 </div>
                             </div>
                         </div>
+                        <div class="btn">{{ locale.getLocale('classbook/newNote') }}</div>
                     </div> 
                 </div>
             </div>

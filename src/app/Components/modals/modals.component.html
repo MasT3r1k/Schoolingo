@@ -1,0 +1,85 @@
+<div class="modals" (click)="modals.showModal(null);">
+
+<!-- Creating new homework (classbook) -->
+
+    <div class="modal" (click)="$event.stopPropagation();dropdowns.closeAllDropdowns();modals.data.isEditingList = false;" *ngIf="modals.getModal() == 'newHomework'">
+        <div class="modal-header">
+            <h2>{{ locale.getLocale('classbook/newHomework')}}</h2>
+        </div>
+
+        <div class="modal-row">
+            <div class="modal-left first-margin">
+                <div class="form-group">
+                    <label for="homework">{{ locale.getLocale('classbook/assignment') }}: </label>
+                    <textarea name="homework" id="homework" [formControl]="HOMEWORK_homework"></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="note">{{ locale.getLocale('homeworks/noteForTeacher') }}: </label>
+                    <input type="text" name="note" id="note" [formControl]="HOMEWORK_note" />
+                </div>
+
+                <div class="form-group date-pick">
+                    <div class="first-margin">
+                        <label for="startDate" style="margin-bottom: 8px;">{{ locale.getLocale('homeworks/startDate') }}</label>
+                        <schoolingo-calendar name="HOMEWORK_STARTDATE" [disabled]=true></schoolingo-calendar>
+                    </div>
+                    <div class="last-margin">
+                        <label for="endDate" style="margin-bottom: 8px;">{{ locale.getLocale('homeworks/endDate') }}</label>
+                        <schoolingo-calendar name="HOMEWORK_ENDDATE"></schoolingo-calendar>
+                    </div>
+                </div>
+
+            </div>
+            <div class="modal-right last-margin">
+                <label for="listStudents">Pro žáky ({{ modals.data.selectedStudents.length + '/' + modals.data.students.length }})</label>
+                <div class="studentBox">
+                    <div class="studentBox-btn" (click)="$event.stopPropagation();dropdowns.closeAllDropdowns();modals.data.isEditingList = true;">
+                        <i class="ti ti-edit"></i>
+                        {{ locale.getLocale('editList') }}
+                    </div>
+                    <div class="student-list">
+                        <div class="student" *ngFor="let student of modals.data.selectedStudents">{{ HOMEWORK_getStudent(student).lastName + ' ' + HOMEWORK_getStudent(student).firstName }}</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sub modals -->
+        <div class="modals">
+            <div class="modal" (click)="$event.stopPropagation();" *ngIf="modals.data.isEditingList">
+                <div class="fastactions-row">
+                    <div [ngClass]="{action: true, active: modals.data.selectedStudents.length == modals.data.students.length}" (click)="HOMEWORK_selectStudents('all')">Všichni</div>
+                    <div class="action">Služba</div>
+                    <div class="action">Přitomní</div>
+                    <div class="action">Nepřitomní</div>
+                </div>
+
+                <div class="studentBox">
+                    <div class="student-list">
+                        <div class="student" (click)="HOMEWORK_selectStudents(student.student)" *ngFor="let student of modals.data.students">
+                            <div>{{ student.lastName + ' ' + student.firstName }}</div>
+                            <i class="ti ti-check active" *ngIf="modals.data.selectedStudents.includes(student.student)"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <div class="submit" role="button" (click)="modals.data.isEditingList = false">{{ locale.getLocale('close') }}</div>
+                </div>
+
+                <div class="close-btn" style="top: .5rem;right: .5rem;" (click)="modals.data.isEditingList = false">
+                    <i class="ti ti-x"></i>
+                </div>
+            </div>
+        </div>
+
+
+        <div class="close-btn" (click)="modals.showModal(null)">
+            <i class="ti ti-x"></i>
+        </div>
+        <div class="form-group">
+            <div class="submit" role="button">{{ locale.getLocale('homeworks/save') }}</div>
+        </div>
+    </div>
+</div>

@@ -1,6 +1,7 @@
 import { Tabs } from '@Components/Tabs/Tabs';
 import { Calendar } from '@Components/calendar/calendar';
 import { CalendarComponent, CalendarOptions } from '@Components/calendar/calendar.component';
+import { Modals } from '@Components/modals/modals';
 import { Schoolingo } from '@Schoolingo';
 import { Locale } from '@Schoolingo/Locale';
 import { SocketService } from '@Schoolingo/Socket';
@@ -25,7 +26,8 @@ export class ClassbookComponent {
     public schoolingo: Schoolingo,
     public tabs: Tabs,
     public socketService: SocketService,
-    public calendarService: Calendar
+    public calendarService: Calendar,
+    public modals: Modals
   ) {}
 
   public selectedLesson: number | undefined = undefined;
@@ -39,6 +41,8 @@ export class ClassbookComponent {
   public classInfo: any = {};
   public lesson: any = {};
   public selectedAbsence: number = 0;
+
+  public isCreatingNewHomework: boolean = false;
 
   public absence: number[][] = [];
 
@@ -199,6 +203,14 @@ export class ClassbookComponent {
         this.addAbsence(data[i].student, [{ lesson: data[i].lesson as number, type: data[i].type as number }]);
       }
     });
+  }
+
+  public openHomework(id: number | undefined): void {
+    let studentList: number[] = [];
+    this.students.forEach((st: any) => {
+      studentList.push(st.student);
+    });
+    this.modals.showModal('newHomework', { id, students: this.students, selectedStudents: studentList,  isEditingList: false });
   }
 
 }

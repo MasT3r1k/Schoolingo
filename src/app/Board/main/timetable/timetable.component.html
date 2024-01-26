@@ -74,13 +74,11 @@
             </div>
         </div>
     </div>
-    <div style="display: flex;align-items: center;justify-content: center;" *ngIf="tabs.getTabValue(tabName) == 0">
-        <div class="btn" id="previous" (click)="selectLastDay()">
-            <i class="ti ti-caret-left-filled"></i>
+    <div class="bottom"  *ngIf="tabs.getTabValue(tabName) == 0">
+        <i class="ti ti-chevron-left" (click)="selectLastDay()"></i>
+        <div class="month">
+            {{ schoolingo.full_days[(selectedDay.getDay() == 0) ? 6 : selectedDay.getDay() - 1] + ', ' + selectedDay.getDate() + '. ' + locale.getLocale('months/' + selectedDay.getMonth()) }}
         </div>
-        <span style="margin: 0 8px;">{{ selectedDay.getDate() + '. ' + (selectedDay.getMonth() + 1) + '.' }}</span>
-        <div class="btn" id="next" (click)="selectNextDay()">
-            <i class="ti ti-caret-right-filled"></i>
-        </div>
+        <i class="ti ti-chevron-right" (click)="selectNextDay()"></i>
     </div>
 </div>
