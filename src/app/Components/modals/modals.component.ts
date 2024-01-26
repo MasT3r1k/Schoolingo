@@ -3,6 +3,7 @@ import { Modals } from './modals';
 import { Locale } from '@Schoolingo/Locale';
 import { FormControl } from '@angular/forms';
 import { Dropdowns } from '@Components/Dropdown/Dropdown';
+import { Calendar } from '@Components/calendar/calendar';
 
 @Component({
   selector: 'schoolingo-modals',
@@ -13,7 +14,8 @@ export class ModalsComponent {
   constructor(
     public modals: Modals,
     public locale: Locale,
-    public dropdowns: Dropdowns
+    public dropdowns: Dropdowns,
+    private calendar: Calendar
   ) {}
 
 /** INPUTS */
@@ -56,6 +58,18 @@ export class ModalsComponent {
       this.modals.data.selectedStudents.splice(this.modals.data.selectedStudents.indexOf(who), 1);
       return;
     }
+  }
+
+  public HOMEWORK_canCreate(): boolean {
+    let calStart = this.calendar.getCalendar('HOMEWORK_STARTDATE');
+    let calEnd = this.calendar.getCalendar('HOMEWORK_ENDDATE');
+  
+    if (this.HOMEWORK_homework.value == '' || this.modals.data.selectedStudents.length == 0 || calStart.date == calEnd.date) return false;
+    return true;
+  }
+
+  public HOMEWORK_save(): void {
+    
   }
 
 }

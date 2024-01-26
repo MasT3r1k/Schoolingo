@@ -106,7 +106,7 @@ export class ClassbookComponent {
   }
 
   public applyAbsence(student: number): void {
-    if (!this.selectedLesson) return;
+    if (this.selectedLesson === undefined) return;
     this.socketService.getSocket().Socket?.emit('setAbsence', {
       absence: [
         {
