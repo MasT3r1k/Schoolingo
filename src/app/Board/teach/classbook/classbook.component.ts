@@ -210,7 +210,7 @@ export class ClassbookComponent {
     this.students.forEach((st: any) => {
       studentList.push(st.student);
     });
-    this.modals.showModal('newHomework', { id, students: this.students, selectedStudents: studentList,  isEditingList: false });
+    this.modals.showModal('newHomework', { id, students: this.students, selectedStudents: studentList, isEditingList: false, type: 0 });
   }
 
 }
