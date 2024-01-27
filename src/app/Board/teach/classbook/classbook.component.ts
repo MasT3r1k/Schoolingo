@@ -80,6 +80,8 @@ export class ClassbookComponent {
 
     this.calendarEl.date.setHours(12);
     this.selectedLesson = lesson;
+    this.selectedAbsence = 0;
+    this.absence = [];
     this.tabs.setTabValue(this.tabName, 0);
 
     this.socketService.getSocket().Socket?.emit('getLesson', {
