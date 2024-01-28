@@ -140,6 +140,10 @@ export class ClassbookComponent {
   }
 
   ngOnInit(): void {
+    if (this.schoolingo.getTimetableLessons().length == 0) {
+
+    }
+
     let i = 0;
     do {
       this.selectLesson(i);
@@ -150,7 +154,6 @@ export class ClassbookComponent {
       this.calendarEl = this.calendarService.getCalendar(this.calendarName);
       if (this.calendarEl) {
         this.calendarEl.customPickFunction = (value: string | null): void => {
-          this.absence = [];
           this.schoolingo.refreshTimetable();
           let i = 0;
           this.selectedLesson = undefined;

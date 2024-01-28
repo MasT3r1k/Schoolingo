@@ -6,6 +6,7 @@ import { Sidebar, SidebarGroup, SidebarItem } from "./Sidebar";
 import { SocketService } from "./Socket";
 import { Cache } from "./Cache";
 import { Locale } from "./Locale";
+import { Logger } from "./Logger";
 
 // Add getWeek function to Date
 declare global {
@@ -20,6 +21,8 @@ Date.prototype.getWeek = function() {
     d.setDate(d.getDate() + 4 - (d.getDay() || 7));
     return Math.ceil((((d.getTime() - new Date(d.getFullYear(), 0, 1).getTime()) / 8.64e7) + 1) / 7);
 };
+
+export type SECURITY_modals = 'autologout' | '';
 
 
 @Injectable()
@@ -57,7 +60,8 @@ export class Schoolingo {
         private sidebar: Sidebar,
         private socketService: SocketService,
         private storage: Cache,
-        private locale: Locale
+        private locale: Locale,
+        private logger: Logger
     ) {
 
 
@@ -113,6 +117,102 @@ export class Schoolingo {
         }, 5000);
 
     }
+
+    public SECURITY_modal: SECURITY_modals = '';
+
+    public hideModal(): void {
+      this.SECURITY_modal = '';
+    }
+
+    public setupSocket(): void {
+
+        this.socketService.addFunction('token', (data: any) => {
+          if (!data.status || data?.user == undefined || data.status == 401) {
+            this.SECURITY_modal = 'autologout';
+            this.logger.send('User', 'Logging out due problem with token.');
+            this.socketService.getSocket().Socket?.disconnect();
+            this.socketService.connectAnon();
+            return;
+          }
+          switch(data.status) {
+            case 1:
+              console.log(data.user);
+    
+              data.user.class = JSON.parse(data.user.class as string);
+              data.user.teacherId = data.teacherId ?? null;
+              data.user.studentId = data.studentId ?? null;
+              this.userService.setUser(data.user as UserMain);
+              this.logger.send('Socket', 'Updated user data');
+              break;
+          }
+        });
+    
+    
+        this.socketService.addFunction('subjects', (subjects: any[]) => {
+          let subjectList: Subject[] = [];
+          for(let i = 0;i < subjects.length;i++) {
+            subjectList.push([subjects[i].subjectId, subjects[i].shortcut, subjects[i].label])
+          }
+          this.setSubjects(subjectList);
+          this.logger.send('Socket', 'Updated list of subjects');
+        });
+    
+        this.socketService.addFunction('rooms', (rooms: any[]) => {
+          this.setRooms(rooms);
+          this.logger.send('Socket', 'Updated list of rooms');
+        });
+    
+    
+        this.socketService.addFunction('teachers', (teachers: any[]) => {
+          this.setTeachers(teachers);
+          this.logger.send('Socket', 'Updated list of teachers');
+        });
+    
+        this.socketService.addFunction('timetable', (timetable: any[]) => {
+          let lessons: Lesson[][][] = [];
+      
+          for(let i = 0;i < timetable.length;i++) {
+            if (!lessons[timetable[i].day]) lessons[timetable[i].day] = [];
+            let d0: number = 1;
+            let d1: number = 1;
+            while(timetable[i].day != 0 && !lessons[timetable[i].day - 1 - d0] && d0 < this.days.length && (timetable[i].day - 1 - d0) >= 0) {
+              lessons[timetable[i].day - 1 - d0] = [];
+              d0++;
+            }
+            while(timetable[i].hour != 0 && lessons[timetable[i].day] && (timetable[i].hour - 1 - d1 >= 0) && !lessons[timetable[i].day]?.[timetable[i].hour - 1 - d1] && d1 < timetable[i].hour) {
+              lessons[timetable[i].day][timetable[i].hour - 1 - d1] = [{ 
+                subject: -1,
+                teacher: -1
+              }];
+              d1++;
+            }
+    
+            if (!lessons[timetable[i].day][timetable[i].hour - 1]) {
+              lessons[timetable[i].day][timetable[i].hour - 1] = [];
+            }
+    
+            if (lessons?.[timetable[i].day]?.[timetable[i].hour -1]?.[0]?.subject == -1 && lessons?.[timetable[i].day]?.[timetable[i].hour -1]?.[0]?.teacher == -1) {
+              lessons[timetable[i].day][timetable[i].hour - 1] = [];
+            }
+            lessons[timetable[i].day][timetable[i].hour - 1].push({
+              subject: timetable[i].subject,
+              teacher: timetable[i].teacherId,
+              room: timetable[i].room,
+              class: timetable[i]?.class,
+              group: {
+                id: timetable[i].groupId,
+                text: timetable[i].groupName,
+                num: timetable[i].groupNum
+              },
+              type: timetable[i].type
+            });
+          }
+          this.setLessons(lessons);
+          this.logger.send('Socket', 'Updated timetable');
+        });    
+      }
+
+
     /**
      * Output of connecting to server
      * @returns status of connection to server
@@ -362,6 +462,14 @@ export class Schoolingo {
     }
 
     /**
+     * Get timetable lessons from memory
+     * @returns Timetable lessons
+     */
+    public getTimetableLessons(): Lesson[][][] {
+        return this.lessons;
+    }
+
+    /**
      * Calculate Schedule Hours from Timetable
      * @returns Array with hours of lessons (updated)
      * TODO: save to storage
@@ -417,14 +525,6 @@ export class Schoolingo {
      */
     public getSHours(): ScheduleLessonHour[] {
         return this.scheduleHours;
-    }
-
-    /**
-     * Get timetable lessons from memory
-     * @returns Timetable lessons
-     */
-    public getTimetableLessons(): Lesson[][][] {
-        return this.lessons;
     }
 
     private selectedWeek: number | null = this.thisWeek;

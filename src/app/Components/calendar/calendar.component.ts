@@ -77,18 +77,30 @@ export class CalendarComponent {
     for(let i = 0;i < daysBefore;i++) {
       this.calendarDays.push({
         day: (lastMonth.getDate() - (daysBefore - i) + 1),
+        month: ((this.date.getMonth() == 0) ? 11 : this.date.getMonth() - 1),
+        year:  ((this.date.getMonth() == 0) ? this.date.getFullYear() - 1 : this.date.getFullYear()),
         isMonth: false
       });
     }
     // This month
     let thisMonth = new Date(this.date.getFullYear(), this.date.getMonth() + 1, 0);
     for(let i = 1;i <= thisMonth.getDate();i++) {
-      this.calendarDays.push({day: i, isMonth: true});
+      this.calendarDays.push({
+        day: i,
+        month: this.date.getMonth(),
+        year:  this.date.getFullYear(),
+        isMonth: true
+      });
     }
     // After
     let daysAfter = (thisMonth.getDay() === 1) ? 6 : (thisMonth.getDay() === 0) ? 0 : this.schoolingo.days.length - thisMonth.getDay();
     for(let i = 1;i <= daysAfter;i++) {
-      this.calendarDays.push({day: i, isMonth: false});
+      this.calendarDays.push({
+        day: i,
+        month: ((this.date.getMonth() == 11) ? 0 : this.date.getMonth() + 1),
+        year:  ((this.date.getMonth() == 11) ? this.date.getFullYear() + 1 : this.date.getFullYear()),
+        isMonth: false
+      });
     }
   }
 
@@ -99,6 +111,7 @@ export class CalendarComponent {
 
   public pickDate(date: Date): void {
     this.date = date;
+    this.refreshCalendar();
     this.dropdown.closeAllDropdowns();
     if (this.customPickFunction) {
       this.customPickFunction(date);

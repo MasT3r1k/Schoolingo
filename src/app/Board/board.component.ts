@@ -18,8 +18,6 @@ import { Logger } from '@Schoolingo/Logger';
 import { formError } from '../login/login.component';
 import { FormControl } from '@angular/forms';
 
-export type modals = 'autologout' | '';
-
 @Component({
   templateUrl: './board.component.html',
   styleUrls: ['./board.component.css', '../Components/Dropdown/dropdown.css', './board.css', '../input.css', '../Components/modals/modals.component.css']
@@ -28,12 +26,6 @@ export class BoardComponent implements OnInit {
 
   private routerSub;
   config = config;
-
-  public modal: modals = '';
-
-  public hideModal(): void {
-    this.modal = '';
-  }
 
   constructor(
     public socketService: SocketService,
@@ -98,95 +90,6 @@ export class BoardComponent implements OnInit {
 
 
 
-  public setupSocket(): void {
-
-    this.socketService.addFunction('token', (data: any) => {
-      if (!data.status || data?.user == undefined || data.status == 401) {
-        this.modal = 'autologout';
-        this.logger.send('User', 'Logging out due problem with token.');
-        this.socketService.getSocket().Socket?.disconnect();
-        this.socketService.connectAnon();
-        return;
-      }
-      switch(data.status) {
-        case 1:
-          console.log(data.user);
-
-          data.user.class = JSON.parse(data.user.class as string);
-          data.user.teacherId = data.teacherId ?? null;
-          data.user.studentId = data.studentId ?? null;
-          this.userService.setUser(data.user as UserMain);
-          this.logger.send('Socket', 'Updated user data');
-          break;
-      }
-    });
-
-
-    this.socketService.addFunction('subjects', (subjects: any[]) => {
-      let subjectList: Subject[] = [];
-      for(let i = 0;i < subjects.length;i++) {
-        subjectList.push([subjects[i].subjectId, subjects[i].shortcut, subjects[i].label])
-      }
-      this.schoolingo.setSubjects(subjectList);
-      this.logger.send('Socket', 'Updated list of subjects');
-    });
-
-    this.socketService.addFunction('rooms', (rooms: any[]) => {
-      this.schoolingo.setRooms(rooms);
-      this.logger.send('Socket', 'Updated list of rooms');
-    });
-
-
-    this.socketService.addFunction('teachers', (teachers: any[]) => {
-      this.schoolingo.setTeachers(teachers);
-      this.logger.send('Socket', 'Updated list of teachers');
-    });
-
-    this.socketService.addFunction('timetable', (timetable: any[]) => {
-      let lessons: Lesson[][][] = [];
-  
-      for(let i = 0;i < timetable.length;i++) {
-        if (!lessons[timetable[i].day]) lessons[timetable[i].day] = [];
-        let d0: number = 1;
-        let d1: number = 1;
-        while(timetable[i].day != 0 && !lessons[timetable[i].day - 1 - d0] && d0 < this.schoolingo.days.length && (timetable[i].day - 1 - d0) >= 0) {
-          lessons[timetable[i].day - 1 - d0] = [];
-          d0++;
-        }
-        while(timetable[i].hour != 0 && lessons[timetable[i].day] && (timetable[i].hour - 1 - d1 >= 0) && !lessons[timetable[i].day]?.[timetable[i].hour - 1 - d1] && d1 < timetable[i].hour) {
-          lessons[timetable[i].day][timetable[i].hour - 1 - d1] = [{ 
-            subject: -1,
-            teacher: -1
-          }];
-          d1++;
-        }
-
-        if (!lessons[timetable[i].day][timetable[i].hour - 1]) {
-          lessons[timetable[i].day][timetable[i].hour - 1] = [];
-        }
-
-        if (lessons?.[timetable[i].day]?.[timetable[i].hour -1]?.[0]?.subject == -1 && lessons?.[timetable[i].day]?.[timetable[i].hour -1]?.[0]?.teacher == -1) {
-          lessons[timetable[i].day][timetable[i].hour - 1] = [];
-        }
-        lessons[timetable[i].day][timetable[i].hour - 1].push({
-          subject: timetable[i].subject,
-          teacher: timetable[i].teacherId,
-          room: timetable[i].room,
-          class: timetable[i]?.class,
-          group: {
-            id: timetable[i].groupId,
-            text: timetable[i].groupName,
-            num: timetable[i].groupNum
-          },
-          type: timetable[i].type
-        });
-      }
-      this.schoolingo.setLessons(lessons);
-      this.logger.send('Socket', 'Updated timetable');
-    });    
-  }
-
-
   ngOnInit(): void {
     let token = this.userService.getToken();
     if (!token) {
@@ -228,7 +131,7 @@ export class BoardComponent implements OnInit {
     }
 
     this.socketService.connectUser();
-    this.setupSocket();
+    this.schoolingo.setupSocket();
 
 
     let _sidebarUpdateInt = setInterval(() => {
@@ -248,7 +151,8 @@ export class BoardComponent implements OnInit {
         this.userService.setToken(data.token, data.expires);
         this.socketService.getSocket().Socket?.disconnect();
         this.socketService.connectUser();
-        this.modal = '';
+        this.schoolingo.setupSocket();
+        this.schoolingo.SECURITY_modal = '';
       }else{
         if (!data.message) return;
         switch(data.message) {

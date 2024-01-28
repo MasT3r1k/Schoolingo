@@ -4,6 +4,7 @@ import { Locale } from '@Schoolingo/Locale';
 import { FormControl } from '@angular/forms';
 import { Dropdowns } from '@Components/Dropdown/Dropdown';
 import { Calendar } from '@Components/calendar/calendar';
+import { SocketService } from '@Schoolingo/Socket';
 
 @Component({
   selector: 'schoolingo-modals',
@@ -15,7 +16,8 @@ export class ModalsComponent {
     public modals: Modals,
     public locale: Locale,
     public dropdowns: Dropdowns,
-    private calendar: Calendar
+    private calendar: Calendar,
+    private socketService: SocketService
   ) {}
 
 /** INPUTS */
@@ -69,7 +71,8 @@ export class ModalsComponent {
   }
 
   public HOMEWORK_save(): void {
-    
+    if (!this.HOMEWORK_canCreate()) return;
+    this.socketService.getSocket().Socket?.emit('');
   }
 
 }

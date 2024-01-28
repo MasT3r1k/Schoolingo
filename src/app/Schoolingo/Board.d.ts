@@ -68,6 +68,8 @@ export type Holiday = {
 
 export type CalendarDay = {
     day: number;
+    month: number;
+    year: number;
     isMonth: boolean;
 }
 
