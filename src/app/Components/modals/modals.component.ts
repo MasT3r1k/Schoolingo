@@ -5,6 +5,7 @@ import { FormControl } from '@angular/forms';
 import { Dropdowns } from '@Components/Dropdown/Dropdown';
 import { Calendar } from '@Components/calendar/calendar';
 import { SocketService } from '@Schoolingo/Socket';
+import { Schoolingo } from '@Schoolingo';
 
 @Component({
   selector: 'schoolingo-modals',
@@ -15,6 +16,7 @@ export class ModalsComponent {
   constructor(
     public modals: Modals,
     public locale: Locale,
+    public schoolingo: Schoolingo,
     public dropdowns: Dropdowns,
     private calendar: Calendar,
     private socketService: SocketService,
@@ -27,9 +29,6 @@ export class ModalsComponent {
 
 
 /* HOMEWORKS */
-  public HOMEWORK_homework: FormControl<string | null> = new FormControl<string>('');
-  public HOMEWORK_note: FormControl<string | null> = new FormControl<string>('');
-
   public HOMEWORK_getStudent(student: number): any {
     return this.modals.data.students.filter((st: any) => st.student == student)[0] ?? undefined;
   }
@@ -86,7 +85,7 @@ export class ModalsComponent {
     let calStart = this.calendar.getCalendar('HOMEWORK_STARTDATE');
     let calEnd = this.calendar.getCalendar('HOMEWORK_ENDDATE');
   
-    if (this.HOMEWORK_homework.value == '' || this.modals.data.selectedStudents.length == 0 || calStart.date == calEnd.date) return false;
+    if (this.modals.data.homework.value == '' || this.modals.data.selectedStudents.length == 0 || calStart.date == calEnd.date) return false;
     return true;
   }
 
@@ -96,7 +95,7 @@ export class ModalsComponent {
     if (!this.HOMEWORK_canCreate()) {
       let calStart = this.calendar.getCalendar('HOMEWORK_STARTDATE');
 
-      if (this.HOMEWORK_homework.value == '') {
+      if (this.modals.data.homework.value == '') {
         this.modals.formErrors.push({ input: 'homework', locale: 'required' });
       }
       if (this.modals.data.selectedStudents.length == 0) {
@@ -110,8 +109,8 @@ export class ModalsComponent {
     this.modals.data.isSaving = true;
     this.socketService.getSocket().Socket?.emit('setHomework',
     {
-      text: this.HOMEWORK_homework.value,
-      note: this.HOMEWORK_note.value,
+      text: this.modals.data.homework.value,
+      note: this.modals.data.note.value,
       students: this.modals.data.selectedStudents,
       end: calEnd.date,
       type: this.modals.data.type,

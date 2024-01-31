@@ -1,4 +1,4 @@
-<div class="modals" (click)="modals.showModal(null);" (keydown.esc)="modals.showModal(null)">
+<div class="modals" (click)="modals.showModal(null);">
 
 <!-- Creating new homework (classbook) -->
 
@@ -11,22 +11,21 @@
             <div class="modal-left first-margin">
                 <div class="form-group">
                     <label for="homework" [ngClass]="{error: modals.errorFilter('homework') != false}">{{ locale.getLocale('classbook/assignment') }} <span class="label-error" *ngIf="modals.errorFilter('homework') != false"> - {{ locale.getLocale(modals.errorFilter('homework').toString()) }}</span></label>
-                    <textarea name="homework" id="homework" [formControl]="HOMEWORK_homework"></textarea>
+                    <textarea name="homework" id="homework" [formControl]="modals.data.homework">{{ modals.data.homework }}</textarea>
                 </div>
-
                 <div class="form-group">
                     <label for="note">{{ locale.getLocale('homeworks/noteForTeacher') }}: </label>
-                    <input type="text" name="note" id="note" [formControl]="HOMEWORK_note" />
+                    <input type="text" name="note" id="note" [formControl]="modals.data.note" />
                 </div>
 
                 <div class="form-group date-pick">
                     <div class="first-margin">
                         <label for="startDate" style="margin-bottom: 8px;">{{ locale.getLocale('homeworks/startDate') }}</label>
-                        <schoolingo-calendar name="HOMEWORK_STARTDATE" [disabled]=true></schoolingo-calendar>
+                        <schoolingo-calendar name="HOMEWORK_STARTDATE" [date]="(this.modals.data.start) ? this.modals.data.start : schoolingo.getToday()" [disabled]=true></schoolingo-calendar>
                     </div>
                     <div class="last-margin">
                         <label for="endDate" style="margin-bottom: 8px;" [ngClass]="{error: modals.errorFilter('endDate') != false}">{{ locale.getLocale('homeworks/endDate') }} <span class="label-error" *ngIf="modals.errorFilter('endDate') != false"> - {{ locale.getLocale(modals.errorFilter('endDate').toString()) }}</span></label>
-                        <schoolingo-calendar name="HOMEWORK_ENDDATE"></schoolingo-calendar>
+                        <schoolingo-calendar name="HOMEWORK_ENDDATE" [date]="this.modals.data.end"></schoolingo-calendar>
                     </div>
                 </div>
 
@@ -107,7 +106,7 @@
             <i class="ti ti-x"></i>
         </div>
         <div class="form-group">
-            <div class="submit" role="button" (click)="HOMEWORK_save()" [innerHTML]="(modals.data.isSaving) ? '<div class=\'btn-loader\'></div> ' + locale.getLocale('homeworks/saving') : locale.getLocale('homeworks/save')"></div>
+            <div class="submit" role="button" (click)="HOMEWORK_save()" [innerHTML]="(modals.data.id) ? (modals.data.isSaving) ? '<div class=\'btn-loader\'></div> ' + locale.getLocale('homeworks/updating') : locale.getLocale('homeworks/update') : (modals.data.isSaving) ? '<div class=\'btn-loader\'></div> ' + locale.getLocale('homeworks/saving') : locale.getLocale('homeworks/save')"></div>
         </div>
     </div>
 </div>

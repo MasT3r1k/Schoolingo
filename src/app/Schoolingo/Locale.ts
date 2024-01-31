@@ -201,6 +201,8 @@ export class Locale {
                 noteForTeacher: "Poznámka pro učitele",
                 save: "Zadat úkol",
                 saving: "Ukládání úkolu",
+                update: "Aktualizovat úkol",
+                updating: "Aktualizování úkolu",
                 startDate: "Zadáno",
                 endDate: "Odevzdat",
             },

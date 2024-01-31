@@ -32,6 +32,7 @@ export class ClassbookComponent {
 
   public selectedLesson: number | undefined = undefined;
   public students: any[] = [];
+  public homeworks: any[] = [];
   lessonNumber = new FormControl('');
   lessonTopic = new FormControl('');
   lessonNote = new FormControl('');
@@ -92,6 +93,12 @@ export class ClassbookComponent {
       date: this.calendarEl.date,
       lesson: this.selectedLesson
     });
+
+    this.socketService.getSocket().Socket?.emit('getHomeworks', {
+      group: this.schoolingo.getTimetable()[(this.calendarEl.date.getDay() == 0) ? 6 : (this.calendarEl.date.getDay() - 1)].lessons[this.selectedLesson][0]?.group?.id,
+      subject: this.schoolingo.getTimetable()[this.calendarEl.date.getDay() - 1].lessons[this.selectedLesson][0].subject?.[0]
+    })
+
   }
 
   public saveLesson(): void {
@@ -193,8 +200,8 @@ export class ClassbookComponent {
 
 
     this.socketService.addFunction("getLesson", (lesson: any) =>{
-      this.lessonTopic.setValue (lesson[0].topic);
-      this.lessonNote.setValue  (lesson[0].note);
+      this.lessonTopic. setValue(lesson[0].topic);
+      this.lessonNote . setValue(lesson[0].note);
       this.internalNote.setValue(lesson[0].internalNote);
       this.lesson = lesson[0];
     })
@@ -220,6 +227,10 @@ export class ClassbookComponent {
       }
     });
 
+    this.socketService.addFunction("getHomeworks", (homeworks: any[]) => {
+      this.homeworks = homeworks;
+    });
+
     this.socketService.addFunction("setHomework", () => {
       this.modals.showModal(null);
     });
@@ -229,11 +240,16 @@ export class ClassbookComponent {
     return this.students.filter((st: any) => st.student == student)[0] ?? undefined;
   }
 
+  public getHomework(id: number): any {
+    return this.homeworks.filter((homework: any) => homework.homeworkID == id)[0] ?? undefined;
+  }
+
   public openHomework(id: number | undefined): void {
     let studentList: number[] = [];
     let serviceList: number[] = [];
     let absenceList: number[] = [];
     let nonAbsenceList: number[] = [];
+    let homework = this.getHomework(id as number);
 
     this.absence.forEach((st: number[], index: number) => {
       if (this.selectedLesson == undefined || st[this.selectedLesson] == -1) return;
@@ -272,6 +288,9 @@ export class ClassbookComponent {
     })
     this.modals.showModal('newHomework', {
       id,
+      homework: (homework) ? new FormControl(homework.homework) : new FormControl(undefined),
+      note: (homework) ? new FormControl(homework.note) : new FormControl(undefined),
+      end: (homework) ? new Date(homework.end) : undefined,
       students: this.students,
       selectedStudents: studentList,
       serviceList,

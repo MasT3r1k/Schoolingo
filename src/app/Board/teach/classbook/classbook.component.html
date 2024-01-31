@@ -142,9 +142,11 @@
                             <div class="title">{{ locale.getLocale('sidebar/teach/homeworks') }}</div>
                         </div>
                         <div class="select select-column">
-                            <div [ngClass]="{'select-option': true}">
-                                <div class="left">
+                            <div [ngClass]="{'select-option': true}" *ngFor="let homework of homeworks" (click)="openHomework(homework.homeworkID)">
+                                <div class="top">
+                                    {{ homework.homework }}
                                 </div>
+                                <div class="bottom">Zadáno: {{ homework.start }}, odevzdat: {{ homework.end }}, celkem studentů: {{ homework.celkemstudentu }}</div>
                             </div>
                         </div>
                         <div class="btn" (click)="openHomework(undefined)">{{ locale.getLocale('classbook/newHomework') }}</div>

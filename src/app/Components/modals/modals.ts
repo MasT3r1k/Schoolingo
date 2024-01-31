@@ -6,6 +6,7 @@ export type modalList = 'newHomework' | null;
 @Injectable()
 export class Modals {
     constructor(
+        
     ) {}
 
     private modal: modalList = null;
@@ -18,11 +19,12 @@ export class Modals {
     }
 
     public showModal(modal: modalList, data?: any): void {
-        this.modal = modal;
         this.formErrors = [];
         if (data) {
             this.data = data;
+            console.log(data);
         }
+        this.modal = modal;
     }
 
     public getModal(): modalList {

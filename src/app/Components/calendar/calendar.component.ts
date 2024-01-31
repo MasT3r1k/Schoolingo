@@ -25,11 +25,11 @@ export class CalendarComponent {
     public tabs: Tabs
     ) {}
 
-  public date: Date = this.schoolingo.getToday();
   public declare customPickFunction: Function;
 
   @Input() name: string = '';
   @Input() options: CalendarOptions = {};
+  @Input() date: Date = new Date();
   @Input() disabled: boolean | undefined;
 
   ngOnInit(): void {
