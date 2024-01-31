@@ -73,9 +73,12 @@ export class ClassbookComponent {
 
   public selectLesson(lesson: number): void {
     if (!this.calendarEl) return;
+    if (this.schoolingo.getTimetable().length == 0) {
+      this.schoolingo.refreshTimetable();
+    }
     if (
       this.selectedLesson == lesson ||
-      this.schoolingo.getTimetable()[this.calendarEl.date.getDay() - 1].lessons[lesson][0].isEmpty == true
+      this.schoolingo.getTimetable()[(this.calendarEl.date.getDay() == 0) ? 6 : (this.calendarEl.date.getDay() - 1)].lessons[lesson][0].isEmpty == true
       ) return;
 
     this.calendarEl.date.setHours(12);
@@ -85,7 +88,7 @@ export class ClassbookComponent {
     this.tabs.setTabValue(this.tabName, 0);
 
     this.socketService.getSocket().Socket?.emit('getLesson', {
-      group: this.schoolingo.getTimetable()[this.calendarEl.date.getDay() - 1].lessons[this.selectedLesson][0]?.group?.id,
+      group: this.schoolingo.getTimetable()[(this.calendarEl.date.getDay() == 0) ? 6 : (this.calendarEl.date.getDay() - 1)].lessons[this.selectedLesson][0]?.group?.id,
       date: this.calendarEl.date,
       lesson: this.selectedLesson
     });
@@ -95,13 +98,13 @@ export class ClassbookComponent {
     if (this.selectedLesson == undefined) return;
     this.socketService.getSocket().Socket?.emit('saveLesson', {
       lessonHour: this.lessonNumber.value,
-      subject: this.schoolingo.getTimetable()[this.calendarEl.date.getDay() - 1].lessons[this.selectedLesson][0].subject?.[0],
-      room: this.schoolingo.getTimetable()[this.calendarEl.date.getDay() - 1].lessons[this.selectedLesson][0].room?.roomId,
+      subject: this.schoolingo.getTimetable()[(this.calendarEl.date.getDay() == 0) ? 6 : (this.calendarEl.date.getDay() - 1)].lessons[this.selectedLesson][0].subject?.[0],
+      room: this.schoolingo.getTimetable()[(this.calendarEl.date.getDay() == 0) ? 6 : (this.calendarEl.date.getDay() - 1)].lessons[this.selectedLesson][0].room?.roomId,
       topic: this.lessonTopic.value,
       note: this.lessonNote.value,
       internalNote: this.internalNote.value,
 
-      group: this.schoolingo.getTimetable()[this.calendarEl.date.getDay() - 1].lessons[this.selectedLesson][0]?.group?.id,
+      group: this.schoolingo.getTimetable()[(this.calendarEl.date.getDay() == 0) ? 6 : (this.calendarEl.date.getDay() - 1)].lessons[this.selectedLesson][0]?.group?.id,
       date: this.calendarEl.date,
       lesson: this.selectedLesson
     })
@@ -117,7 +120,7 @@ export class ClassbookComponent {
         }
       ],
 
-      group: this.schoolingo.getTimetable()[this.calendarEl.date.getDay() - 1].lessons[this.selectedLesson][0]?.group?.id,
+      group: this.schoolingo.getTimetable()[(this.calendarEl.date.getDay() == 0) ? 6 : (this.calendarEl.date.getDay() - 1)].lessons[this.selectedLesson][0]?.group?.id,
       date: this.calendarEl.date,
       lesson: this.selectedLesson
     });
@@ -216,14 +219,72 @@ export class ClassbookComponent {
         this.addAbsence(data[i].student, [{ lesson: data[i].lesson as number, type: data[i].type as number }]);
       }
     });
+
+    this.socketService.addFunction("setHomework", () => {
+      this.modals.showModal(null);
+    });
+  }
+
+  public getStudent(student: number): any {
+    return this.students.filter((st: any) => st.student == student)[0] ?? undefined;
   }
 
   public openHomework(id: number | undefined): void {
     let studentList: number[] = [];
+    let serviceList: number[] = [];
+    let absenceList: number[] = [];
+    let nonAbsenceList: number[] = [];
+
+    this.absence.forEach((st: number[], index: number) => {
+      if (this.selectedLesson == undefined || st[this.selectedLesson] == -1) return;
+      absenceList.push(index);
+    })
+    absenceList.sort((a: number, b: number): any => {
+      let stA: any = this.getStudent(a);
+      let stB: any = this.getStudent(b);
+      if (stA.lastName < stB.lastName) {
+        return -1;
+      }
+      if (stA.lastName > stB.lastName) {
+        return 1;
+      }
+    })
+
     this.students.forEach((st: any) => {
       studentList.push(st.student);
+      if (st.service == true) {
+        serviceList.push(st.student);
+      }
+      if (!absenceList.includes(st.student)) {
+        nonAbsenceList.push(st.student);
+      }
     });
-    this.modals.showModal('newHomework', { id, students: this.students, selectedStudents: studentList, isEditingList: false, type: 0 });
+
+    nonAbsenceList.sort((a: number, b: number): any => {
+      let stA: any = this.getStudent(a);
+      let stB: any = this.getStudent(b);
+      if (stA.lastName < stB.lastName) {
+        return -1;
+      }
+      if (stA.lastName > stB.lastName) {
+        return 1;
+      }
+    })
+    this.modals.showModal('newHomework', {
+      id,
+      students: this.students,
+      selectedStudents: studentList,
+      serviceList,
+      absenceList,
+      nonAbsenceList,
+      isEditingList: false,
+      type: 0,
+      isSaving: false,
+      lesson: {
+        group: this.schoolingo.getTimetable()[(this.calendarEl.date.getDay() == 0) ? 6 : (this.calendarEl.date.getDay() - 1)].lessons[this.selectedLesson as number][0]?.group?.id,
+        date: this.calendarEl.date,
+        lesson: this.selectedLesson
+    } });
   }
 
 }

@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, Renderer2 } from '@angular/core';
 import { Modals } from './modals';
 import { Locale } from '@Schoolingo/Locale';
 import { FormControl } from '@angular/forms';
@@ -17,16 +17,25 @@ export class ModalsComponent {
     public locale: Locale,
     public dropdowns: Dropdowns,
     private calendar: Calendar,
-    private socketService: SocketService
+    private socketService: SocketService,
+    private renderer: Renderer2
   ) {}
 
+
+
 /** INPUTS */
-  /* HOMEWORKS */
-  public HOMEWORK_homework = new FormControl('');
-  public HOMEWORK_note = new FormControl('');
+
+
+/* HOMEWORKS */
+  public HOMEWORK_homework: FormControl<string | null> = new FormControl<string>('');
+  public HOMEWORK_note: FormControl<string | null> = new FormControl<string>('');
 
   public HOMEWORK_getStudent(student: number): any {
     return this.modals.data.students.filter((st: any) => st.student == student)[0] ?? undefined;
+  }
+
+  public HOMEWORK_getStudentID(student: number): number {
+    return this.modals.data.students.findIndex((st: any) => st.student == student);
   }
 
   public HOMEWORK_selectStudents(who: string | number): void {
@@ -38,7 +47,18 @@ export class ModalsComponent {
             this.modals.data.selectedStudents.push(student.student);
           });
           break;
-        
+        case "service":
+          if (this.modals.data.serviceList.length == 0) return;
+          this.modals.data.selectedStudents = JSON.parse(JSON.stringify(this.modals.data.serviceList));
+          break;
+        case "absence":
+          if (this.modals.data.absenceList.length == 0) return;
+          this.modals.data.selectedStudents = JSON.parse(JSON.stringify(this.modals.data.absenceList));
+          break;
+        case "nonAbsence":
+          if (this.modals.data.nonAbsenceList.length == 0) return;
+          this.modals.data.selectedStudents = JSON.parse(JSON.stringify(this.modals.data.nonAbsenceList));
+          break;
       }
       return;
     }
@@ -71,8 +91,33 @@ export class ModalsComponent {
   }
 
   public HOMEWORK_save(): void {
-    if (!this.HOMEWORK_canCreate()) return;
-    this.socketService.getSocket().Socket?.emit('');
+    this.modals.formErrors = [];
+    let calEnd = this.calendar.getCalendar('HOMEWORK_ENDDATE');
+    if (!this.HOMEWORK_canCreate()) {
+      let calStart = this.calendar.getCalendar('HOMEWORK_STARTDATE');
+
+      if (this.HOMEWORK_homework.value == '') {
+        this.modals.formErrors.push({ input: 'homework', locale: 'required' });
+      }
+      if (this.modals.data.selectedStudents.length == 0) {
+        this.modals.formErrors.push({ input: 'students', locale: 'atleast1student' });
+      }
+      if (calStart.date == calEnd.date) {
+        this.modals.formErrors.push({ input: "endDate", locale: "cannotbesamedate" });
+      }
+      return;
+    }
+    this.modals.data.isSaving = true;
+    this.socketService.getSocket().Socket?.emit('setHomework',
+    {
+      text: this.HOMEWORK_homework.value,
+      note: this.HOMEWORK_note.value,
+      students: this.modals.data.selectedStudents,
+      end: calEnd.date,
+      type: this.modals.data.type,
+      lesson: this.modals.data.lesson
+    } 
+    );
   }
 
 }

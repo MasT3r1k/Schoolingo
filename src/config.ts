@@ -1,11 +1,11 @@
 // FRONTEND CONFIG
-export let minutesToShowSecurityModal: number = 20; // Minutes to show modal
-export let minutesToAutoLogout: number = 5; // Minutes to confirm modal
+export const minutesToShowSecurityModal: number = 20; // Minutes to show modal
+export const minutesToAutoLogout: number = 5; // Minutes to confirm modal
 
 
 
 //////////////////////////////////////////////////////////
 // DO NOT TOUCH THIS
-export let server: string = "http://192.168.1.130:8805/"
-export let school: string = "Baček's Virtual School";
-export let version: string = '2.1.2';
+export const server: string = "http://localhost:8805/"
+export const school: string = "Baček's Virtual School";
+export const version: string = '2.1.2';

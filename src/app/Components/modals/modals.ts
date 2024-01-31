@@ -1,4 +1,5 @@
 import { Injectable } from "@angular/core";
+import { formError } from 'src/app/login/login.component';
 
 export type modalList = 'newHomework' | null;
 
@@ -9,9 +10,16 @@ export class Modals {
 
     private modal: modalList = null;
     public data: any = {};
+    public formErrors: formError[] = [];
+    
+    public errorFilter(name: string): boolean | string {
+        let filter = this.formErrors.filter((err) => err.input == name);
+        return (filter.length == 0) ? false : filter[0].locale;
+    }
 
     public showModal(modal: modalList, data?: any): void {
         this.modal = modal;
+        this.formErrors = [];
         if (data) {
             this.data = data;
         }
