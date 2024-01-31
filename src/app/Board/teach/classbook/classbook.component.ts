@@ -2,6 +2,7 @@ import { Tabs } from '@Components/Tabs/Tabs';
 import { Calendar } from '@Components/calendar/calendar';
 import { CalendarComponent, CalendarOptions } from '@Components/calendar/calendar.component';
 import { Modals } from '@Components/modals/modals';
+import { Lesson } from '@Schoolingo/Board.d';
 import { Schoolingo } from '@Schoolingo';
 import { Locale } from '@Schoolingo/Locale';
 import { SocketService } from '@Schoolingo/Socket';
@@ -285,12 +286,32 @@ export class ClassbookComponent {
       if (stA.lastName > stB.lastName) {
         return 1;
       }
-    })
+    });
+
+    let date: Date = new Date();
+    if (id === undefined) {
+      date.setDate(this.calendarEl.date.getDate());
+      date.setMonth(this.calendarEl.date.getMonth());
+      date.setFullYear(this.calendarEl.date.getFullYear());
+      let i = 0;
+      while(i == 0) {
+        date = this.schoolingo.addDayToDate(date, 1);
+        let t = this.schoolingo.getTimetableDay(date.getDate(), date.getMonth(), date.getFullYear());
+        t.forEach((lesson: Lesson) => {
+          if (lesson.subject == this.schoolingo.getTimetable()[this.calendarEl.date.getDay() - 1].lessons[this.selectedLesson as number][0].subject?.[0]) {
+            i = 1;
+          }
+        });
+      }
+    }
+
+
     this.modals.showModal('newHomework', {
       id,
       homework: (homework) ? new FormControl(homework.homework) : new FormControl(undefined),
       note: (homework) ? new FormControl(homework.note) : new FormControl(undefined),
-      end: (homework) ? new Date(homework.end) : undefined,
+      start: (homework) ? new Date(homework.start) : undefined,
+      end: (homework) ? new Date(homework.end) : date,
       students: this.students,
       selectedStudents: studentList,
       serviceList,

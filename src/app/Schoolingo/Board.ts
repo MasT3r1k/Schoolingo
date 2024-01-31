@@ -579,10 +579,21 @@ export class Schoolingo {
         return this.timetable;
     }
 
-    public getTimetableDay(date: number, month: number, year: number): TTableLesson[] {
-        return (this.timetable.filter((tDay: TTableDay) => {
-            tDay.date[0] == date && tDay.date[1] == month && tDay.date[2] == year
-        })?.[0]?.lessons ?? []) as TTableLesson[];
+    public getTimetableDay(date: number, month: number, year: number): Lesson[] {
+        let dat = new Date();
+        dat.setDate(date);
+        dat.setMonth(month);
+        dat.setFullYear(year);
+        let lessons: Lesson[] = [];
+        this.lessons?.[((dat.getDay() == 0) ? 6 : dat.getDay() - 1)]?.forEach((les: Lesson[]) => {
+            for(let i = 0;i < les.length;i++) {
+                if (les[i].type == 0 || (les[i].subject == -1 && les[i].teacher == -1) || (les[i].type == 1 && (dat.getWeek() % 2)) || (les[i].type == 2 && !(dat.getWeek() % 2))) {
+                    lessons.push(les[i]);
+                }
+            }
+        });
+
+        return lessons as Lesson[];
     }
 
     /**
