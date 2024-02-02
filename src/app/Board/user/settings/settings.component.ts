@@ -1,5 +1,6 @@
 import { Tabs } from '@Components/Tabs/Tabs';
 import { Locale } from '@Schoolingo/Locale';
+import { Theme } from '@Schoolingo/Theme';
 import { UserMain, UserService } from '@Schoolingo/User';
 import { Component } from '@angular/core';
 import { FormControl } from '@angular/forms';
@@ -22,7 +23,8 @@ export class SettingsComponent {
   constructor(
     public locale: Locale,
     private userService: UserService,
-    public tabs: Tabs
+    public tabs: Tabs,
+    public theme: Theme
   ) {}
 
   public getUser(): UserMain {

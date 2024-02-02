@@ -12,7 +12,6 @@ export class AppComponent implements OnInit {
     private theme: Theme
   ) {}
 
-  ngOnInit(): void {
-  }
+  ngOnInit(): void {}
 
 }
