@@ -2,7 +2,7 @@
 
 <!-- Creating new homework (classbook) -->
 
-    <div class="modal" (click)="$event.stopPropagation();dropdowns.closeAllDropdowns();modals.data.isEditingList = false;" *ngIf="modals.getModal() == 'newHomework'">
+    <div class="modal" (click)="$event.stopPropagation();dropdowns.closeAllDropdowns();modals.data.isEditingList = false;" *ngIf="modals.getModal() == 'homework'">
         <div class="modal-header">
             <h2>{{ locale.getLocale('classbook/newHomework')}}</h2>
         </div>
@@ -109,4 +109,18 @@
             <div class="submit" role="button" (click)="HOMEWORK_save()" [innerHTML]="(modals.data.id) ? (modals.data.isSaving) ? '<div class=\'btn-loader\'></div> ' + locale.getLocale('homeworks/updating') : locale.getLocale('homeworks/update') : (modals.data.isSaving) ? '<div class=\'btn-loader\'></div> ' + locale.getLocale('homeworks/saving') : locale.getLocale('homeworks/save')"></div>
         </div>
     </div>
+
+    <div class="modal" (click)="$event.stopPropagation();dropdowns.closeAllDropdowns();" *ngIf="modals.getModal() == 'changeTheme'">
+        <div class="modal-header">
+            <h2>{{ locale.getLocale('settings') + ' > ' + locale.getLocale('theme') }}</h2>
+        </div>
+        <theme-selector></theme-selector>
+        <div class="form-group">
+            <div class="submit" role="button" (click)="modals.showModal(null)">{{ locale.getLocale('close') }}</div>
+        </div>
+        <div class="close-btn" (click)="modals.showModal(null)">
+            <i class="ti ti-x"></i>
+        </div>
+    </div>
+
 </div>

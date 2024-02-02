@@ -41,6 +41,7 @@ import { MidtermComponent  as BoardMarksMidterm} from './Board/marks/midterm/mid
 import { ModalsComponent } from "./Components/modals/modals.component";
 import { Modals } from '@Components/modals/modals';
 import { HomeworksComponent as Homeworks } from './Board/teach/homeworks/homeworks.component';
+import { ThemeComponent as ThemeSelector } from './Board/user/settings/theme/theme.component';
 
 @NgModule({
     declarations: [
@@ -64,7 +65,8 @@ import { HomeworksComponent as Homeworks } from './Board/teach/homeworks/homewor
         CalendarComponent,
         MessagesSend,
         ModalsComponent,
-        Homeworks
+        Homeworks,
+        ThemeSelector
     ],
     providers: [
         Locale,

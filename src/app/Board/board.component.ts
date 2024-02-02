@@ -1,7 +1,7 @@
 import { Schoolingo } from '@Schoolingo';
 import { Locale } from '@Schoolingo/Locale';
 import { UserService } from '@Schoolingo/User';
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Input } from '@angular/core';
 import * as config from '@config';
 import { Dropdowns } from '@Components/Dropdown/Dropdown';
 import { ActivatedRoute, Params, Router } from '@angular/router';
@@ -19,6 +19,7 @@ import { formError } from '../login/login.component';
 import { FormControl } from '@angular/forms';
 
 @Component({
+  selector: 'schoolingo-board',
   templateUrl: './board.component.html',
   styleUrls: ['./board.component.css', '../Components/Dropdown/dropdown.css', './board.css', '../input.css', '../Components/modals/modals.component.css']
 })
@@ -45,9 +46,6 @@ export class BoardComponent implements OnInit {
 
     // Register dropdowns
     this.dropdown.addDropdown('user');
-
-
-
 
     // Change title on page change
     this.routerSub = this.router.events.subscribe((url: any) => {

@@ -306,7 +306,7 @@ export class ClassbookComponent {
     }
 
 
-    this.modals.showModal('newHomework', {
+    this.modals.showModal('homework', {
       id,
       homework: (homework) ? new FormControl(homework.homework) : new FormControl(undefined),
       note: (homework) ? new FormControl(homework.note) : new FormControl(undefined),

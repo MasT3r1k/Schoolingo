@@ -11,7 +11,7 @@ export class Theme {
     private themeCache: string[] = [this.cache.settingsCacheName, this.cacheName];
     private renderer: Renderer2;
     private theme: themes = 'system';
-    private themes: themes[] = ['system', 'dark', 'light'];
+    private themes: themes[] = ['dark', 'light'];
 
     constructor(
         private rendererFactory: RendererFactory2,
@@ -34,6 +34,10 @@ export class Theme {
 
 
         this.updateTheme(this.theme);
+    }
+
+    public getSystemColor(): themes {
+        return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
     }
 
     /**

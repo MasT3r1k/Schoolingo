@@ -1,7 +1,7 @@
 import { Injectable } from "@angular/core";
 import { formError } from 'src/app/login/login.component';
 
-export type modalList = 'newHomework' | null;
+export type modalList = 'homework' | 'changeTheme' | null;
 
 @Injectable()
 export class Modals {

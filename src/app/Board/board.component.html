@@ -35,7 +35,7 @@
 
 
         <div class="right">
-            <div class="user dropdown" (click)="dropdown.toggleDropdown('user')"> 
+            <div class="user dropdown" (click)="dropdown.toggleDropdown('user')" > 
                 <p class="name" *ngIf="userService.getUser()">{{ schoolingo.formatPlaceholders(schoolingo.getUsernamePlaceholders()) }}</p>
                 <p class="name" *ngIf="!userService.getUser()">{{ locale.getLocale('logining_btn') }}</p>
                 <p class="role" *ngIf="userService.getUser()">{{ locale.getLocale('roles/' + schoolingo.formatPlaceholders('%role%')) }} <span [attr.tooltip]="userService.getUser()?.class?.join(', ')" *ngIf="userService.getUser()?.type == 'teacher' && userService.getUser()?.class">{{ ' - ' + locale.getLocale('roles/isClassTeacher') }}</span> <span *ngIf="userService.getUser()?.type == 'teacher' && userService.getUser()?.isPrincipal">{{ ' - ' + locale.getLocale('roles/isPrincipal') }}</span></p>
