@@ -40,14 +40,17 @@ class="calendar"
                  options.noWeekendError) ? locale.getLocale(options.noWeekendError) : ''"
 
                 [ngClass]="{
-                    today: (calendarDays[i * 7 + i2].day == schoolingo.getToday().getDate() &&
-                    date.getMonth() == schoolingo.getToday().getMonth() &&
-                    date.getFullYear() == schoolingo.getToday().getFullYear()),
-
+                    today: (
+                        calendarDays[i * 7 + i2].day == schoolingo.getToday().getDate() &&
+                        calendarDays[i * 7 + i2].month == schoolingo.getToday().getMonth() &&
+                        calendarDays[i * 7 + i2].year == schoolingo.getToday().getFullYear()
+                    ),
                     isGray: !calendarDays[i * 7 + i2].isMonth,
-                    active: (calendarDays[i * 7 + i2].day == date.getDate() &&
-                    calendarDays[i * 7 + i2].isMonth &&
-                    date.getFullYear() == date.getFullYear()),
+                    active: (
+                        calendarDays[i * 7 + i2].day == date.getDate() &&
+                        calendarDays[i * 7 + i2].month == date.getMonth() &&
+                        calendarDays[i * 7 + i2].year == date.getFullYear()
+                    ),
                     isAllowed: !(schoolingo.isDayWeekend(returnAsDate(calendarDays[i * 7 + i2].day, calendarDays[i * 7 + i2].month, calendarDays[i * 7 + i2].year)) && this.options.allowWeekends == false) && calendarDays[i * 7 + i2].isMonth
                     }"
                 (click)="
