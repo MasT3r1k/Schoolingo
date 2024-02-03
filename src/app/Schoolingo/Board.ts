@@ -177,18 +177,16 @@ export class Schoolingo {
             this.socketService.connectAnon();
             return;
           }
-          switch(data.status) {
-            case 1:
-                console.log(data.user);
-        
-                data.user.class = JSON.parse(data.user.class as string);
-                data.user.teacherId = data.teacherId ?? null;
-                data.user.studentId = data.studentId ?? null;
-                this.userService.setUser(data.user as UserMain);
-                this.boardSidebar = this.getBoardSidebar();
+          if (data.status === 1) {
+            console.log(data.user);
+    
+            data.user.class = JSON.parse(data.user.class as string);
+            data.user.teacherId = data.teacherId ?? null;
+            data.user.studentId = data.studentId ?? null;
+            this.userService.setUser(data.user as UserMain);
+            this.boardSidebar = this.getBoardSidebar();
 
-                this.logger.send('Socket', 'Updated user data');
-                break;
+            this.logger.send('Socket', 'Updated user data');
           }
         });
     

@@ -53,3 +53,20 @@ npm run build
 - A také nepřítomnost
 - Je zde seznam studentů a maximální počet hodin, které student může mít, aby bylo možné zapsat všechny hodiny.
 ![Absence](/readme/setAbsence.png)
+
+## Nastavení uživatele
+### Změna hesla
+- Změna hesla jde pouze když nejste v OFFLINE MÓDU
+![ChangePassword](/readme/changePassword.png)
+
+### Změna jazyku
+- Změnit jazyk lze i v OFFLINE MÓDU
+- Když jste připojeni k systému - jazyk se změní i v systému
+- Když nejste připojeni k systému - jazyk se změní pouze lokálně na zařízení
+![ChangeLanguage](/readme/changeLocale.png)
+
+### Změna vzhledu
+- Změnit vzhledu lze i v OFFLINE MóDU
+- Když jste připojeni k systému - téma se změní i v systému
+- Když nejste připojeni k systému - téma se změní pouze lokálně na zařízení
+![ChangeTheme](/readme/changeTheme.png)

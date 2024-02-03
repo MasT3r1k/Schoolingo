@@ -44,7 +44,6 @@ export class BoardComponent implements OnInit {
     public logger: Logger
   ) {
 
-    // Register dropdowns
     this.dropdown.addDropdown('user');
 
     // Change title on page change
@@ -95,7 +94,6 @@ export class BoardComponent implements OnInit {
       return;
     }
     
-    // Close all dropdown
     this.dropdown.closeAllDropdowns();
 
     // Load data from storage
