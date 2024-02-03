@@ -3,13 +3,15 @@ import { User, UserMain } from './User.d';
 import { Cache } from "./Cache";
 import { Router } from "@angular/router";
 import { ToastService } from "@Components/Toast";
+import { SocketService } from "./Socket";
 
 @NgModule()
 export class UserService {
     constructor(
         private cache: Cache,
         private router: Router,
-        private toast: ToastService
+        private toast: ToastService,
+        private socketService: SocketService
     ) {
         let user = this.cache.get(this.cache.userCacheName) as UserMain;
         if (user) { this.setUser(user) }
@@ -67,6 +69,10 @@ export class UserService {
      * Disconnect from socket, remove user from memory, remove token from memory and storage and redirect to login page
      */
     public logout(): void {
+        if (this.socketService.getSocket().Socket) {
+            this.socketService.getSocket().Socket?.emit('logout');
+        }
+        this.socketService.socketFunctions = {};
         this.setUser(null);
         this.setToken('', new Date());
         this.toast.closeAll();

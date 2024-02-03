@@ -3,6 +3,44 @@
         <h2>{{ locale.getLocale('sidebar/user/devices') }}</h2>
     </header>
     <div class="box-content">
-        <h2>Aktivní připojení</h2>
+        <p>Zde naleznete veškeré Vaše připojené zařízení, které jsou připojené k Vašemu Schoolingo účtu. Můžete zde odhlásit kterékoliv zařízení nebo všechny.</p>
+        <p>Pokud tu naleznete zařízení, které nepoznáváte. Odhlašte to zařízení a <a [routerLink]="['', 'user', 'settings']">změňte si heslo</a>!</p>
+        <h2 class="small">Aktuální připojení</h2>
+        <div class="select select-column">
+            <div class="select-option only-value">
+                <div class="icon">
+                    <i [ngClass]="{ti: true, 'ti-device-desktop': !getMobile(getOwnUserAgent()), 'ti-device-mobile': getMobile(getOwnUserAgent())}"></i>
+                </div>
+
+                <div class="information">
+                    <div class="device">{{ getOS(getOwnUserAgent()).toUpperCase() + ' - ' + getBrowser(getOwnUserAgent()).toUpperCase() }} <div class="badges"><div class="badge" *ngIf="schoolingo.getOfflineMode()">Offline Mod</div></div></div>
+                    <div class="time"></div>
+                </div>
+
+            </div>
+        </div>
+        <h2 class="small mt">Ostatní zařízení</h2>
+        <div class="alert alert-error" *ngIf="schoolingo.getOfflineMode()">
+            {{ locale.getLocale('alerts/notAllowedInOfflineMode') }}
+            <div class="btn" (click)="schoolingo.refreshConnection()" [innerHTML]="schoolingo.getRefreshingText()"></div>
+        </div>
+        
+        <div class="alert alert-error" *ngIf="getAnotherDevices().length == 0 && !schoolingo.getOfflineMode()">
+            {{ locale.getLocale('devices/notAnotherFound') }}
+        </div>
+
+        <div class="select select-column" *ngIf="!schoolingo.getOfflineMode()">
+            <div class="select-option only-value" *ngFor="let device of getAnotherDevices()">
+                <div class="icon">
+                    <i [ngClass]="{ti: true, 'ti-device-desktop': !getMobile(device.userAgent), 'ti-device-mobile': getMobile(device.userAgent)}"></i>
+                </div>
+
+                <div class="information">
+                    <div class="device">{{ getOS(device.userAgent).toUpperCase() + ' - ' + getBrowser(device.userAgent).toUpperCase() }} <div class="badges"><div class="badge" *ngIf="schoolingo.getOfflineMode()">Offline Mod</div></div></div>
+                    <div class="time"></div>
+                </div>
+
+            </div>
+        </div>
     </div>
 </div>

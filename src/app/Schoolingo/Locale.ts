@@ -196,6 +196,7 @@ export class Locale {
 
             alerts: {
                 offlineMode: "Nacházíte se v <b>OFFLINE</b> módu. Veškeré informace jsou pouze z historie vaší poslední návštěvy.",
+                notAllowedInOfflineMode: "V Offline módu toto není k dispozici.",
             },
 
             buttons: {
@@ -247,6 +248,10 @@ export class Locale {
                 personalDetails: "Osobní údaje",
                 residence: "Bydliště",
                 relatives: "Příbuzní",
+            },
+
+            devices: {
+                notAnotherFound: "Žádné další zařízení nebyly nalezeny.",
             },
 
             subjects: "Předměty",

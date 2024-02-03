@@ -109,7 +109,7 @@ export class Tabs {
 
     setOnChangeFunc(tab: string, fun: Function): void {
         let tTab: Tab = this.tabs.filter(_ => _.name == tab)?.[0];
-        if (!tTab) return console.error('Tab not found.');
+        if (!tTab) return;
         tTab.onChange = (index: number) => fun(index);
     }
 

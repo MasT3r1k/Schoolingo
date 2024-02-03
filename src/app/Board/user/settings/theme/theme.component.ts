@@ -6,7 +6,7 @@ import { Component } from "@angular/core";
 
 @Component({
     selector: 'theme-selector',
-    template: `<h2>{{ locale.getLocale('themeTitle') }}</h2>
+    template: `<h2 class="small">{{ locale.getLocale('themeTitle') }}</h2>
 <div class="alert alert-error" *ngIf="schoolingo.getOfflineMode()">
     <span>{{ locale.getLocale('offlineModeChange') }}</span>
 </div>
