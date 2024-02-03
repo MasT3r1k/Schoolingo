@@ -8,6 +8,7 @@ type Device = {
   hasSocket: boolean;
   id: number;
   userAgent: string;
+  expires: string;
 }
 
 @Component({
@@ -34,6 +35,15 @@ export class DevicesComponent implements OnInit {
     this.socketService.addFunction("getDevices", (data: any) => {
       this.devices = data;
     });
+
+    this.socketService.addFunction("removeDevice", (data: any) => {
+      let index = this.devices.findIndex((device: Device) => device.id == data.id);
+      this.devices.splice(index, 1);
+    });
+
+    this.socketService.addFunction("connect", (data: any) => {
+      this.socketService.getSocket().Socket?.emit('getDevices');
+    })
   }
 
   ngOnDestroy(): void {
@@ -82,5 +92,27 @@ export class DevicesComponent implements OnInit {
   public getAnotherDevices(): Device[] {
     return this.devices.filter((device: Device) => device.active == false);
   }
+
+  public getActiveDevice(): Device {
+    return this.devices.filter((device: Device) => device.active == true)?.[0];
+  }
+
+  public removeDevice(id: number): void {
+    this.socketService.getSocket().Socket?.emit('removeDevice', { id });
+  }
+
+
+  public removeAllDevices(): void {   // TODO! velmi ošklivé :(, NEBEZPEČNÝ: (MOŽNÉ) přiliš mnoho requestů
+    this.getAnotherDevices().forEach((device: Device) => {
+      this.removeDevice(device.id);
+    });
+  }
+
+  public returnAsDate(date: string): string {
+    let dat: Date = new Date(date);
+    return dat.getHours() + ':' + dat.getMinutes() + ':' + dat.getSeconds() + ' ' + dat.getDate() + '. ' + (dat.getMonth() + 1) + '. ' + dat.getFullYear();
+  }
+
+
 
 }

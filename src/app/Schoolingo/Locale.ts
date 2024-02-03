@@ -251,6 +251,7 @@ export class Locale {
             },
 
             devices: {
+                until: "Platné do ",
                 notAnotherFound: "Žádné další zařízení nebyly nalezeny.",
             },
 
