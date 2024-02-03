@@ -26,7 +26,7 @@ export class AbsenceComponent implements OnInit {
 
   ngOnDestroy(): void {
     // Reset getUserAbsence
-    this.socketService.socketFunctions["getUserAbsence"] = [];
+    this.socketService.socketFunctions["getUserAbsence"] = {};
   }
 
 }

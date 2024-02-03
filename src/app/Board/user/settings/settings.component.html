@@ -12,7 +12,16 @@
                 <div class="right" style="margin-left: 1rem;">{{ getUser().username }}</div>
             </div>
         </div>
-
+        <h2>{{ locale.getLocale('changepasswordTitle') }}</h2>
+        <div class="alert alert-success" *ngIf="changedPassword == true">
+            <span>{{ locale.getLocale('password_changed') }}</span>
+        </div>
+        <div class="alert alert-error" *ngIf="schoolingo.getOfflineMode()">
+            <span>{{ locale.getLocale('cantChangePasswordInOfflineMode') }}</span>
+        </div>
+        <div class="alert alert-error" *ngIf="!schoolingo.getOfflineMode()">
+            <span>{{ locale.getLocale('changePasswordLogout') }}</span>
+        </div>
         <div class="form">
             <form>
                 <div class="form-group">
@@ -20,7 +29,7 @@
                         {{ locale.getLocale('oldpassword') }}
                         <span class="label-error" *ngIf="errorFilter('old_password') != false"> - {{ locale.getLocale(errorFilter('old_password').toString()) }}</span>
                     </label>
-                    <input type="password" name="old_password" [ngClass]="{ invalid: errorFilter('old_password') != false }" [formControl]="old_password" [placeholder]="locale.getLocale('oldpassword')">
+                    <input type="password" [readonly]="schoolingo.getOfflineMode()" name="old_password" [ngClass]="{ invalid: errorFilter('old_password') != false }" [formControl]="old_password" [placeholder]="locale.getLocale('oldpassword')">
                 </div>
 
                 <div class="form-group">
@@ -28,7 +37,7 @@
                         {{ locale.getLocale('newpassword') }}
                         <span class="label-error" *ngIf="errorFilter('password') != false"> - {{ locale.getLocale(errorFilter('password').toString()) }}</span>
                     </label>
-                    <input type="password" name="password" [ngClass]="{ invalid: errorFilter('password') != false }" [formControl]="password" [placeholder]="locale.getLocale('newpassword')">
+                    <input type="password" [readonly]="schoolingo.getOfflineMode()" name="password" [ngClass]="{ invalid: errorFilter('password') != false }" [formControl]="password" [placeholder]="locale.getLocale('newpassword')">
                 </div>
 
                 <div class="form-group">
@@ -36,21 +45,24 @@
                         {{ locale.getLocale('againNewpassword') }}
                         <span class="label-error" *ngIf="errorFilter('password2') != false"> - {{ locale.getLocale(errorFilter('password2').toString()) }}</span>
                     </label>
-                    <input type="password" name="password2" [ngClass]="{ invalid: errorFilter('password2') != false }" [formControl]="password2" [placeholder]="locale.getLocale('againNewpassword')">
+                    <input type="password" [readonly]="schoolingo.getOfflineMode()" name="password2" [ngClass]="{ invalid: errorFilter('password2') != false }" [formControl]="password2" [placeholder]="locale.getLocale('againNewpassword')">
                 </div>
 
                 <div class="form-group">
                     <input type="submit" value="" (click)="changePassword()" style="display: none;">
-                    <div [ngClass]="{submit: true}" role="button" (click)="changePassword()">{{ locale.getLocale('changepassword') }}</div>
-                    <p>Změna hesla Vás automaticky odhlásí ze všech zařízení!</p>
+                    <div [ngClass]="{submit: true, disabled: schoolingo.getOfflineMode()}" role="button" (click)="changePassword()" [innerHTML]="getChangingPasswordText()"></div>
                 </div>
             </form>
         </div>
     </div>
 
     <div class="box-content" *ngIf="tabs.getTabValue(tabName) == 1">
+        <h2>{{ locale.getLocale('languageTitle') }}</h2>
+        <div class="alert alert-error" *ngIf="schoolingo.getOfflineMode()">
+            <span>{{ locale.getLocale('offlineModeChange') }}</span>
+        </div>
         <div class="select select-column">
-            <div [ngClass]="{'select-option': true, active: locale.getUserLocale() == lng}" (click)="locale.setUserLocale(lng);tabs.setTabValue(tabName, tabs.getTabValue(tabName))" *ngFor="let lng of locale.getLanguages()">
+            <div [ngClass]="{'select-option': true, active: locale.getUserLocale() == lng}" (click)="selectLanguage(lng)" *ngFor="let lng of locale.getLanguages()">
                 <div class="left">
                     <img src="{{ locale.getLocale('flag', lng) }}" alt="{{ locale.getLocale('name', lng) }}" height="24" style="margin-right: 8px;">
                     <div class="column">

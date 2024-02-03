@@ -151,6 +151,7 @@ export class BoardComponent implements OnInit {
         this.socketService.connectUser();
         this.schoolingo.setupSocket();
         this.schoolingo.SECURITY_modal = '';
+        this.schoolingo.setOfflineMode(false);
       }else{
         if (!data.message) return;
         switch(data.message) {

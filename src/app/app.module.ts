@@ -42,6 +42,7 @@ import { ModalsComponent } from "./Components/modals/modals.component";
 import { Modals } from '@Components/modals/modals';
 import { HomeworksComponent as Homeworks } from './Board/teach/homeworks/homeworks.component';
 import { ThemeComponent as ThemeSelector } from './Board/user/settings/theme/theme.component';
+import { NotifiesComponent as SchoolingoNotifies } from '@Components/notifies/notifies.component';
 
 @NgModule({
     declarations: [
@@ -66,7 +67,8 @@ import { ThemeComponent as ThemeSelector } from './Board/user/settings/theme/the
         MessagesSend,
         ModalsComponent,
         Homeworks,
-        ThemeSelector
+        ThemeSelector,
+        SchoolingoNotifies
     ],
     providers: [
         Locale,

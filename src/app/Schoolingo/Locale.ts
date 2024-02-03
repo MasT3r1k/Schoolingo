@@ -178,16 +178,25 @@ export class Locale {
 
             // Dashboard
             change_is_instant: "Změna je okamžitá",
+            changepasswordTitle: "Změna hesla",
             changepassword: "Změnit heslo",
+            changingpassword: "Probíhá změna hesla",
             oldpassword: "Staré heslo",
             newpassword: "Nové heslo",
             againNewpassword: "Znova nové heslo",
             settings_main: "Základ",
             language: "Jazyk",
+            languageTitle: "Změna jazyku systému",
+            offlineModeChange: "Provedené změny budou aplikovány pouze lokálně.",
             theme: "Témata",
+            themeTitle: "Změna vzhledu",
             logout: "Odhlásit se",
             print: "Tisk",
             editList: "Upravit seznam",
+
+            alerts: {
+                offlineMode: "Nacházíte se v <b>OFFLINE</b> módu. Veškeré informace jsou pouze z historie vaší poslední návštěvy.",
+            },
 
             buttons: {
                 update: "Aktualizovat",
@@ -286,7 +295,10 @@ export class Locale {
             cannotbesamedate: "Nemůžeš zadat stejný datum",
             not_same: "Neshoduje se",
             is_same: "Nové heslo je stejné jako staré",
+            changePasswordLogout: "Změna hesla Vás automaticky odhlásí ze všech zařízení.",
             wrong_password: "Špatné heslo",
+            password_changed: "Heslo bylo úspěšně změněno.",
+            cantChangePasswordInOfflineMode: "Nemůžeš změnit heslo v Offline Módu!",
             user_not_found: "Uživatel nenalezen"
         },
         en: {

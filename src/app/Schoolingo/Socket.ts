@@ -1,4 +1,4 @@
-import { Injectable, NgModule } from "@angular/core";
+import { NgModule } from "@angular/core";
 import * as config from '@config';
 import { io, Socket } from 'socket.io-client';
 import { Cache } from "./Cache";
@@ -19,16 +19,16 @@ export class SocketService {
     private socket: Socket | null = null;
     public socket_err: boolean = false;
     private socket_errMsg: string = '';
-    public socketFunctions: Record<string, Function[]> = {};
+    public socketFunctions: Record<string, Record<string, Function>> = {};
     public socketFunctionsNotConnected: Record<string, Function[]> = {};
 
-    public addFunction(event: string, fn: Function): void {
+    public addFunction(event: string, fn: Function, name: string = event): void {
         if (!this.socketFunctions[event]) {
             this.logger.send('Socket', 'Listening new event ' + event);
-            this.socketFunctions[event] = [];
+            this.socketFunctions[event] = {};
         }
-        
-        if (!this.socketFunctions[event].includes(fn)) this.socketFunctions[event].push(fn);
+
+        if (!this.socketFunctions[event][name]) this.socketFunctions[event][name] = fn;
     }
 
     public addFunctionNotConnected(event: string, fn: Function): void {
@@ -59,15 +59,15 @@ export class SocketService {
         try {
             this.socket = io(config.server);
             this.listenBasicEvents();
-            this.socket.onAny((event, ...args) => {
+            this.socket?.onAny((event, ...args) => {
                 this.connected = true;
                 this.socket_err = false;
-                if (this.socketFunctionsNotConnected[event]) {
+                if (this.socketFunctionsNotConnected[event] && this.socketFunctionsNotConnected[event].length > 0) {
                     this.socketFunctionsNotConnected[event].forEach((fn: Function) => {
                         fn(args?.[0]);
-                    })
+                    });
                 }
-            });
+            });  
         } catch(e) {
             console.error(e);
             this.socket?.disconnect();
@@ -86,15 +86,15 @@ export class SocketService {
 
             this.socket = io(config.server, { extraHeaders: { Authorization: 'Bearer ' + token.token }});
             this.listenBasicEvents();
-            this.socket.onAny((event, ...args) => {
-                this.connected = true;
-                this.socket_err = false;
-                if (this.socketFunctions[event]) {
-                    this.socketFunctions[event].forEach((fn: Function) => {
-                        fn(args?.[0]);
-                    })
-                }
-            });
+                this.socket?.onAny((event, ...args) => {
+                    this.connected = true;
+                    this.socket_err = false;
+                    if (this.socketFunctions[event] && Object.values(this.socketFunctions[event]).length > 0) {
+                        Object.values(this.socketFunctions[event]).forEach((fn: Function) => {
+                            fn(args?.[0]);
+                        });
+                    }
+            })
             return this.socket;
         } catch(e) {
             this.socket?.disconnect();

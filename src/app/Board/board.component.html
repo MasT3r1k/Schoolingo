@@ -94,8 +94,8 @@
             </ul>
         </div>
         <div class="main-content" (click)="schoolingo.sidebarToggled = false;">
-            <div class="alert alert-error" *ngIf="socketService.connected !== true">
-                <span>Nacházíte se v <b>OFFLINE</b> módu. Veškeré informace jsou pouze z historie vaší poslední návštěvy.</span> 
+            <div class="alert alert-error" *ngIf="socketService.connected !== true || schoolingo.getOfflineMode()">
+                <span [innerHTML]="locale.getLocale('alerts/offlineMode')"></span> 
                 <div class="btn" (click)="schoolingo.refreshConnection()"
                 [innerHTML]="schoolingo.getRefreshingText()"></div>
             </div>
@@ -129,10 +129,10 @@
                 </div>
             </form>
             <div class="form-group">
-                <div [ngClass]="{submit: true}" (click)="schoolingo.SECURITY_modal = ''" role="button" style="background-color: #fff;color: #000;">Pokračovat v offline módu</div>
+                <div [ngClass]="{submit: true}" (click)="schoolingo.SECURITY_modal = '';schoolingo.setOfflineMode(true)" role="button" style="background-color: var(--color);color: var(--background-header);">Pokračovat v offline módu</div>
             </div>
         </div>
-        <div class="close-btn" (click)="schoolingo.SECURITY_modal = ''">
+        <div class="close-btn" (click)="schoolingo.SECURITY_modal = '';schoolingo.setOfflineMode(true)">
             <i class="ti ti-x"></i>
         </div>
     </div>
@@ -140,15 +140,7 @@
 
 <!--  Notify  -->
 
-<div class="notify" *ngIf="false">
-    <div class="left">
-        <p>Pozor - máte neuloženou změnu!</p>
-    </div>
-    <div class="right">
-        <div class="notify-button reset">Obnovit</div>
-        <div class="notify-button save">Uložit změny</div>
-    </div>
-</div>
+<schoolingo-notifies></schoolingo-notifies>
 
 <!--  -->
 

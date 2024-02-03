@@ -1,11 +1,17 @@
+import { Schoolingo } from "@Schoolingo";
 import { Locale } from "@Schoolingo/Locale";
-import { Theme } from "@Schoolingo/Theme";
+import { SocketService } from "@Schoolingo/Socket";
+import { Theme, themes } from "@Schoolingo/Theme";
 import { Component } from "@angular/core";
 
 @Component({
     selector: 'theme-selector',
-    template: `<div class="select select-row">
-    <div [ngClass]="{'select-option': true, active: theme.getTheme() == them}" (click)="theme.updateTheme(them);" *ngFor="let them of theme.getThemes()">
+    template: `<h2>{{ locale.getLocale('themeTitle') }}</h2>
+<div class="alert alert-error" *ngIf="schoolingo.getOfflineMode()">
+    <span>{{ locale.getLocale('offlineModeChange') }}</span>
+</div>
+<div class="select select-row">
+    <div [ngClass]="{'select-option': true, active: theme.getTheme() == them}" (click)="selectTheme(them);" *ngFor="let them of theme.getThemes()">
         <div class="left">
             <div class="column">
                 <div class="preview">
@@ -33,6 +39,33 @@ import { Component } from "@angular/core";
 export class ThemeComponent {
     constructor(
         public theme: Theme,
-        public locale: Locale
-    ) {}
+        public locale: Locale,
+        public schoolingo: Schoolingo,
+        private socketService: SocketService
+    ) {
+
+        this.socketService.addFunction("updateUser", (data: any): void => {
+            if (!data.message) return;
+            if (data.status === 1) {
+                switch(data.message) {
+                    case "theme_changed":
+                        if (data.theme === undefined) return;
+                        this.theme.updateTheme(this.theme.getThemes()[data.theme]);
+                    break;
+                }
+            }
+        }, "theme")
+
+    }
+
+    public selectTheme(them: themes): void {
+        if (this.schoolingo.getOfflineMode()) {
+            this.theme.updateTheme(them);
+            return;
+        }
+        this.socketService.getSocket().Socket?.emit('updateUser', { type: 'theme', theme: this.theme.getThemes().indexOf(them) });
+    }
+
+
+
 }

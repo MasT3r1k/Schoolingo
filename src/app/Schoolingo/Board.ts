@@ -50,6 +50,19 @@ export class Schoolingo {
             minutes: 20
         }
     ];
+
+    private offlineMode: boolean = false;
+    public getOfflineMode(): boolean {
+        return this.offlineMode;
+    }
+
+    public toggleOfflineMode(): void {
+        this.setOfflineMode(!this.getOfflineMode());
+    }
+
+    public setOfflineMode(status: boolean): void {
+        this.offlineMode = status;
+    }
     
 
     ///.-- INTERVALS
@@ -90,6 +103,31 @@ export class Schoolingo {
         return date;
     }
 
+    /**
+     * Output of connecting to server
+     * @returns status of connection to server
+     */
+
+        public getRefreshingText(): string {
+            if (this.getOfflineMode() && this.SECURITY_modal != 'autologout') {
+                return this.locale.getLocale('login_btn');
+            }
+            if (this.SECURITY_modal == 'autologout') {
+                return '<div class=\'btn-loader mr\'></div> ' + this.locale.getLocale('logining_btn');
+            }
+            if (this.wifiConnection == false) {
+                return '<i class=\'ti ti-x\'></i> ' + this.locale.getLocale('buttons/noInternetConnection');
+            }
+            if (this.tempData['refreshingConnection'] == true) {
+                return '<div class=\'btn-loader mr\'></div>' + this.locale.getLocale('buttons/updating');
+            }
+            if (this.tempData['refreshingConnection'] == 'error') {
+                return '<i class=\'ti ti-x\'></i> ' + this.locale.getLocale('buttons/failed');
+            }
+            return this.locale.getLocale('buttons/update');
+        }
+    
+
     ///.-- Refresh connection
     /** 
      *  Refresh connection to server, with updating output text
@@ -101,6 +139,11 @@ export class Schoolingo {
 
         clearInterval(this.intervals?.[firstIntervalName ]);
         clearInterval(this.intervals?.[secondIntervalName]);
+
+        if (this.getOfflineMode()) {
+            this.SECURITY_modal = 'autologout';
+            return;
+        }
 
         this.tempData['refreshingConnection'] = true;
         this.intervals[firstIntervalName] = setInterval(() => {
@@ -213,25 +256,6 @@ export class Schoolingo {
           this.logger.send('Socket', 'Updated timetable');
         });    
       }
-
-
-    /**
-     * Output of connecting to server
-     * @returns status of connection to server
-     */
-
-    public getRefreshingText(): string {
-        if (this.wifiConnection == false) {
-            return '<i class=\'ti ti-x\'></i> ' + this.locale.getLocale('buttons/noInternetConnection');
-        }
-        if (this.tempData['refreshingConnection'] == true) {
-            return '<div class=\'btn-loader mr\'></div>' + this.locale.getLocale('buttons/updating');
-        }
-        if (this.tempData['refreshingConnection'] == 'error') {
-            return '<i class=\'ti ti-x\'></i> ' + this.locale.getLocale('buttons/failed');
-        }
-        return this.locale.getLocale('buttons/update');
-    }
 
     /**
      * @returns username output with placeholders its used in user dropdown in board

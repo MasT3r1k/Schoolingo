@@ -11,7 +11,7 @@ export class Theme {
     private themeCache: string[] = [this.cache.settingsCacheName, this.cacheName];
     private renderer: Renderer2;
     private theme: themes = 'system';
-    private themes: themes[] = ['dark', 'light'];
+    private themes: themes[] = ['system', 'dark', 'light'];
 
     constructor(
         private rendererFactory: RendererFactory2,
@@ -23,12 +23,14 @@ export class Theme {
         this.theme = this.cache.get(this.themeCache[0], this.themeCache[1]);
 
         if (!this.theme) {
-            const isDark: MediaQueryList = window.matchMedia("(prefers-color-scheme: dark)");
-            this.theme = isDark.matches ? 'dark' : 'light';
+            this.theme = this.getSystemColor();
         }
         
         window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', event => {
-            if (this.theme !== 'system') return; 
+            if (this.theme !== 'system') {
+                
+                return;
+            } 
             this.updateTheme(event.matches ? "dark" : "light", false);
         });
 
@@ -54,7 +56,7 @@ export class Theme {
         this.renderer.removeClass(document.body.parentElement, 'dark');
         // this.renderer.removeClass(document.body.parentElement, 'moonlight');
         if (theme !== 'system') { this.renderer.addClass(document.body.parentElement, theme) }
-        else { this.renderer.addClass(document.body.parentElement, window.matchMedia("(prefers-color-scheme: dark)") ? 'dark' : 'light') }
+        else { this.renderer.addClass(document.body.parentElement, this.getSystemColor()) }
 
     }
 
