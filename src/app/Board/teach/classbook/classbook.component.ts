@@ -200,8 +200,9 @@ export class ClassbookComponent {
     });
 
 
-    this.socketService.addFunction("getLesson", (lesson: any) =>{
-      this.lessonTopic. setValue(lesson[0].topic);
+    this.socketService.addFunction("getLesson", (lesson: any) => {
+      if (!lesson[0]) return;
+      this.lessonTopic. setValue(lesson?.[0]?.topic);
       this.lessonNote . setValue(lesson[0].note);
       this.internalNote.setValue(lesson[0].internalNote);
       this.lesson = lesson[0];

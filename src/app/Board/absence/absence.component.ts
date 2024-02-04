@@ -1,9 +1,10 @@
 import { Component, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
 import { ToastService } from '@Components/Toast';
 import { SocketService } from '@Schoolingo/Socket';
 import { UserService } from '@Schoolingo/User';
 import { Locale } from '@Schoolingo/Locale';
+import { Tabs } from '@Components/Tabs/Tabs';
+import { Schoolingo } from '@Schoolingo';
 
 @Component({
   templateUrl: './absence.component.html',
@@ -14,8 +15,12 @@ export class AbsenceComponent implements OnInit {
     public toast: ToastService,
     private socketService: SocketService,
     private userService: UserService,
-    public locale: Locale
+    public locale: Locale,
+    public schoolingo: Schoolingo,
+    public tabs: Tabs
   ) {}
+
+  public tabName: string = 'ABSENCE_TAB_SELECT';
 
   ngOnInit(): void {
     this.socketService.addFunction("getUserAbsence", (data: any) => {

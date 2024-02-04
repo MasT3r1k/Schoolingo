@@ -110,7 +110,7 @@ export class DevicesComponent implements OnInit {
 
   public returnAsDate(date: string): string {
     let dat: Date = new Date(date);
-    return dat.getHours() + ':' + dat.getMinutes() + ':' + dat.getSeconds() + ' ' + dat.getDate() + '. ' + (dat.getMonth() + 1) + '. ' + dat.getFullYear();
+    return dat.getHours() + ':' + this.schoolingo.addZeros(dat.getMinutes(), 2) + ':' + this.schoolingo.addZeros(dat.getSeconds(), 2) + ' ' + dat.getDate() + '. ' + (dat.getMonth() + 1) + '. ' + dat.getFullYear();
   }
 
 

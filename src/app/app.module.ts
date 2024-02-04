@@ -43,6 +43,7 @@ import { Modals } from '@Components/modals/modals';
 import { HomeworksComponent as Homeworks } from './Board/teach/homeworks/homeworks.component';
 import { ThemeComponent as ThemeSelector } from './Board/user/settings/theme/theme.component';
 import { NotifiesComponent as SchoolingoNotifies } from '@Components/notifies/notifies.component';
+import { AbsenceComponent as Absence } from './Board/absence/absence.component';
 
 @NgModule({
     declarations: [
@@ -68,7 +69,8 @@ import { NotifiesComponent as SchoolingoNotifies } from '@Components/notifies/no
         ModalsComponent,
         Homeworks,
         ThemeSelector,
-        SchoolingoNotifies
+        SchoolingoNotifies,
+        Absence
     ],
     providers: [
         Locale,
