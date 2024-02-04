@@ -75,15 +75,15 @@ export class DevicesComponent implements OnInit {
     let browser: string = '???';
     if ((userAgent.indexOf("Opera") || userAgent.indexOf('OPR')) != -1) {
       browser = "Opera";
-    } if (userAgent.indexOf("Edg") != -1) {
+    } else if (userAgent.indexOf("Edg") != -1) {
       browser = "Edge";
-    } if (userAgent.indexOf("Chrome") != -1) {
+    } else if (userAgent.indexOf("Chrome") != -1) {
       browser = "Chrome";
-    } if (userAgent.indexOf("Safari") != -1) {
+    } else if (userAgent.indexOf("Safari") != -1) {
       browser = "Safari";
-    } if (userAgent.indexOf("Firefox") != -1) {
+    } else if (userAgent.indexOf("Firefox") != -1) {
       browser = "Mozilla";
-    } if ((userAgent.indexOf("MSIE") != -1) || (!!(document as any).documentMode == true)) {
+    } else if ((userAgent.indexOf("MSIE") != -1) || (!!(document as any).documentMode == true)) {
       browser = 'IE';
     }
     return browser;

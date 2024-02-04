@@ -70,3 +70,9 @@ npm run build
 - Když jste připojeni k systému - téma se změní i v systému
 - Když nejste připojeni k systému - téma se změní pouze lokálně na zařízení
 ![ChangeTheme](/readme/changeTheme.png)
+
+## Přihlášené zařízení
+- Zde si zobrazíte zařízení, na kterých je přihlašen Váš účet
+- Můžete zde odhlásit jakékoliv zařízení nebo všechny zařízení
+- Nefunguje v OFFLINE MÓDU z bezpečnostních důvodů
+![Devices](/readme/devices.png)
