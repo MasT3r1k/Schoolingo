@@ -14,7 +14,8 @@
 
                 <div class="information">
                     <div class="device">{{ getOS(getOwnUserAgent()).toUpperCase() + ' - ' + getBrowser(getOwnUserAgent()).toUpperCase() }} <div class="badges"><div class="badge" *ngIf="schoolingo.getOfflineMode()">Offline Mod</div></div></div>
-                    <div class="time" *ngIf="!schoolingo.getOfflineMode() && getActiveDevice()">{{ locale.getLocale('devices/until') + returnAsDate(getActiveDevice().expires) }}</div>
+                    <div class="time" *ngIf="!schoolingo.getOfflineMode() && userService.getExpiration()">{{ locale.getLocale('devices/until') + formatDate(userService.getExpiration()) }}</div>
+                    <div class="time" *ngIf="schoolingo.getOfflineMode()">{{ 'Nyní se nacházíte v OFFLINE MODU' }}</div>
                 </div>
 
             </div>
@@ -37,7 +38,7 @@
 
                 <div class="information">
                     <div class="device">{{ getOS(device.userAgent).toUpperCase() + ' - ' + getBrowser(device.userAgent).toUpperCase() }} <div class="badges"><div class="badge" *ngIf="schoolingo.getOfflineMode()">Offline Mod</div></div></div>
-                    <div class="time">{{ locale.getLocale('devices/until') + returnAsDate(device.expires) }}</div>
+                    <div class="time">{{ locale.getLocale('devices/until') + formatDate(returnAsDate(device.expires)) }}</div>
                 </div>
 
                 <div class="logout" (click)="removeDevice(device.id)"><i class="ti ti-x"></i></div>

@@ -44,6 +44,7 @@ import { HomeworksComponent as Homeworks } from './Board/teach/homeworks/homewor
 import { ThemeComponent as ThemeSelector } from './Board/user/settings/theme/theme.component';
 import { NotifiesComponent as SchoolingoNotifies } from '@Components/notifies/notifies.component';
 import { AbsenceComponent as Absence } from './Board/absence/absence.component';
+import { CookieService } from '@Schoolingo/Cookie';
 
 @NgModule({
     declarations: [
@@ -87,6 +88,7 @@ import { AbsenceComponent as Absence } from './Board/absence/absence.component';
         Table,
         Calendar,
         Modals,
+        CookieService,
     ],
     bootstrap: [AppComponent],
     imports: [

@@ -1,23 +1,28 @@
 import { Injectable, NgModule } from "@angular/core";
 import { User, UserMain } from './User.d';
-import { Cache } from "./Cache";
+import { Storage } from "./Storage";
 import { Router } from "@angular/router";
 import { ToastService } from "@Components/Toast";
 import { SocketService } from "./Socket";
+import { Schoolingo } from "@Schoolingo";
+import { CookieService } from "./Cookie";
 
 @NgModule()
 export class UserService {
     constructor(
-        private cache: Cache,
+        private storage: Storage,
         private router: Router,
         private toast: ToastService,
-        private socketService: SocketService
+        private socketService: SocketService,
+        private cookieService: CookieService
     ) {
-        let user = this.cache.get(this.cache.userCacheName) as UserMain;
+        let user = this.storage.get(this.storage.userCacheName) as UserMain;
         if (user) { this.setUser(user) }
 
-        let token = this.cache.get(this.cache.tokenCacheName);
-        if (token !== false && token?.token && token?.expiration) { this.setToken(token.token, token.expiration) }
+        let token = this.cookieService.getCookie("token");
+        let date = new Date();
+        date.setTime(new Date().getTime() + 300000)
+        if (token !== '') { this.setToken(token, date) }
     }
 
     // Main
@@ -36,7 +41,7 @@ export class UserService {
      * @param user user data from server
      */
     public setUser(user: UserMain | null) {
-        user ? this.cache.save(this.cache.userCacheName, user) : this.cache.remove(this.cache.userCacheName);
+        user ? this.storage.save(this.storage.userCacheName, user) : this.storage.remove(this.storage.userCacheName);
         this.user = user;
     }
 
@@ -52,6 +57,15 @@ export class UserService {
         return this.token;
     }
 
+    public setExpiration(date: string): void {
+        let dat = new Date(date);
+        this.tokenExpiration = dat;
+    }
+
+    public getExpiration(): Date {
+        return this.tokenExpiration;
+    }
+
     /**
      * Set token to User Service and save it to the storage
      * 
@@ -60,9 +74,10 @@ export class UserService {
      *  
      */
     public setToken(token: string, expiration: Date): void {
+        this.cookieService.setCookie("token", token, 30);
         this.token = token;
         this.tokenExpiration = expiration;
-        this.cache.save(this.cache.tokenCacheName, { token: token, expiration: expiration });
+        this.storage.save(this.storage.tokenCacheName, { expiration });
     }
 
     /**

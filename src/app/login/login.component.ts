@@ -6,7 +6,7 @@ import { Tabs } from '@Components/Tabs/Tabs';
 import { ToastService } from '@Components/Toast';
 import * as config from '@config';
 import { Schoolingo } from '@Schoolingo';
-import { Cache } from '@Schoolingo/Cache';
+import { Storage } from '@Schoolingo/Storage';
 import { Locale } from '@Schoolingo/Locale';
 import { Logger } from '@Schoolingo/Logger';
 import { SocketService } from '@Schoolingo/Socket';
@@ -49,7 +49,7 @@ export class LoginComponent implements OnInit {
     public schoolingo: Schoolingo,
     public tabs: Tabs,
     private title: Title,
-    private storage: Cache,
+    private storage: Storage,
     public theme: Theme
   ) {}
 

@@ -1,7 +1,7 @@
 import { Injectable } from "@angular/core";
 
 @Injectable({providedIn: 'root'})
-export class Cache {
+export class Storage {
 
     public userCacheName: string = 'user';
     public tokenCacheName: string = 'token';

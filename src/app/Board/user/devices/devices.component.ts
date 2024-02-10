@@ -1,6 +1,7 @@
 import { Schoolingo } from '@Schoolingo';
 import { Locale } from '@Schoolingo/Locale';
 import { SocketService } from '@Schoolingo/Socket';
+import { UserService } from '@Schoolingo/User';
 import { Component, OnInit } from '@angular/core';
 
 type Device = {
@@ -20,7 +21,8 @@ export class DevicesComponent implements OnInit {
   constructor(
     public locale: Locale,
     public schoolingo: Schoolingo,
-    private socketService: SocketService
+    private socketService: SocketService,
+    public userService: UserService
   ) {
 
     if (!this.schoolingo.getOfflineMode() && this.socketService.getSocket().Socket) {
@@ -108,10 +110,15 @@ export class DevicesComponent implements OnInit {
     });
   }
 
-  public returnAsDate(date: string): string {
-    let dat: Date = new Date(date);
-    return dat.getHours() + ':' + this.schoolingo.addZeros(dat.getMinutes(), 2) + ':' + this.schoolingo.addZeros(dat.getSeconds(), 2) + ' ' + dat.getDate() + '. ' + (dat.getMonth() + 1) + '. ' + dat.getFullYear();
+  public returnAsDate(date: string): Date {
+    return new Date(date);
   }
+
+public formatDate(dat: Date): string {
+  if (!dat || !dat?.getTime) return '';
+  return dat.getHours() + ':' + this.schoolingo.addZeros(dat.getMinutes(), 2) + ':' + this.schoolingo.addZeros(dat.getSeconds(), 2) + ' ' + dat.getDate() + '. ' + (dat.getMonth() + 1) + '. ' + dat.getFullYear();
+
+}
 
 
 

@@ -1,5 +1,5 @@
 import { Injectable, Renderer2, RendererFactory2 } from "@angular/core";
-import { Cache } from "./Cache";
+import { Storage } from "./Storage";
 import { Logger } from "./Logger";
 
 export type themes = 'system' | 'light' | 'dark';
@@ -8,19 +8,19 @@ export type themes = 'system' | 'light' | 'dark';
 export class Theme {
     private logName: string = 'Theme';
     private cacheName: string = 'theme';
-    private themeCache: string[] = [this.cache.settingsCacheName, this.cacheName];
+    private themeCache: string[] = [this.storage.settingsCacheName, this.cacheName];
     private renderer: Renderer2;
     private theme: themes = 'system';
     private themes: themes[] = ['system', 'dark', 'light'];
 
     constructor(
         private rendererFactory: RendererFactory2,
-        private cache: Cache,
+        private storage: Storage,
         private logger: Logger
     ) {
         this.renderer = rendererFactory.createRenderer(null, null);
         logger.send(this.logName, 'Loading theme..')
-        this.theme = this.cache.get(this.themeCache[0], this.themeCache[1]);
+        this.theme = this.storage.get(this.themeCache[0], this.themeCache[1]);
 
         if (!this.theme) {
             this.theme = this.getSystemColor();
@@ -50,7 +50,7 @@ export class Theme {
         this.logger.send(this.logName, 'Theme set to ' + theme.toUpperCase() + '.');
         let obj: Record<string, string> = {};
         obj[this.themeCache[1]] = theme;
-        this.cache.save(this.themeCache[0], obj);
+        this.storage.save(this.themeCache[0], obj);
         if (update) { this.theme = theme as themes }
         this.renderer.removeClass(document.body.parentElement, 'light');
         this.renderer.removeClass(document.body.parentElement, 'dark');

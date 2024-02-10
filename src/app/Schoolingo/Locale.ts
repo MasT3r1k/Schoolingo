@@ -1,5 +1,5 @@
 import { Injectable } from "@angular/core";
-import { Cache } from "./Cache";
+import { Storage } from "./Storage";
 import { Logger } from "./Logger";
 
 export type languages = 'cs' | 'en';
@@ -40,7 +40,7 @@ export class Locale {
 
     constructor(
         // Imports
-        private cache: Cache,
+        private storage: Storage,
         private logger: Logger
         ) {
 
@@ -417,7 +417,7 @@ export class Locale {
      */
     public setUserLocale(lng: languages) {
         this.logger.send(this.logName, 'Language ' + lng + ' was loaded and saved.');
-        this.cache.save(this.cache.settingsCacheName, {locale: lng});
+        this.storage.save(this.storage.settingsCacheName, {locale: lng});
     }
 
     /**
@@ -425,7 +425,7 @@ export class Locale {
      * @returns user's language
      */
     public getUserLocale(): languages {
-        return this.cache.get(this.cache.settingsCacheName, 'locale') as languages;
+        return this.storage.get(this.storage.settingsCacheName, 'locale') as languages;
     }
 
     /**

@@ -1,8 +1,13 @@
 import { Component } from '@angular/core';
 import { Schoolingo } from '@Schoolingo';
 import { Locale } from '@Schoolingo/Locale';
-import { Teacher } from '@Schoolingo/User.d';
+import { Teacher, UserPermissions } from '@Schoolingo/User.d';
 import { UserService } from '@Schoolingo/User';
+
+type MessageType = {
+  label: string;
+  perms: UserPermissions[];
+};
 
 @Component({
   templateUrl: './send.component.html',
@@ -15,8 +20,33 @@ export class SendComponent {
     public userService: UserService
   ) {}
 
-  public selectedReceivers: any[] = [];
+  public selectedMessageType: number = 0;
+  public selectedReceivers: number[] = [];
   public teachers = this.schoolingo.getTeachers();
+
+  public types: MessageType[] = [
+    {
+      label: 'Klasická zpráva',
+      perms: ['all']
+    }, {
+      label: 'Odevzdání úkolu',
+      perms: ['student']
+    }, {
+      label: 'Omluvení žáka',
+      perms: ['parent']
+    }, {
+      label: 'Ohodnocení žáka',
+      perms: ['teacher', 'principal']
+    },
+    {
+      label: 'Zpráva na nástěnku',
+      perms: ['teacher', 'principal']
+    }
+  ]
+
+  public getTypes(): MessageType[] {
+    return this.types.filter((type: MessageType) => this.schoolingo.checkPermissions(type.perms));
+  }
 
   ngOnInit(): void {
     let user = this.userService.getUser();

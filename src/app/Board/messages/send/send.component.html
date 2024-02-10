@@ -5,13 +5,27 @@
 
     <div class="box-content">
         <ng-select
+        [(ngModel)]="selectedMessageType"
+        [notFoundText]="locale.getLocale('errors/noMessageTypeFound')"
+        [multiple]="false"
+        [markFirst]="true"
+        [searchable]="false"
+        [clearable]="false"
+        >
+            <ng-option *ngFor="let type of getTypes()" [value]="types.indexOf(type)">
+                {{ type.label }}
+            </ng-option>
+        </ng-select>
+
+        <ng-select
             [(ngModel)]="selectedReceivers"
             [notFoundText]="locale.getLocale('errors/noReceiversFound')"
             [multiple]="true"
             [markFirst]="true"
-            [searchable]="false"
+            [searchable]="true"
+            *ngIf="selectedMessageType === 0"
         >
-            <ng-option *ngFor="let teacher of teachers" [value]="{type: 'teacher', id: teacher.teacherId}">
+            <ng-option *ngFor="let teacher of teachers" [value]="teacher.teacherId">
                 <div class="select">
                     {{ teacher.firstName + ' ' + teacher.lastName }}
                     <div class="badge" *ngIf="teacher.teacherId == userService.getUser()?.classTeacher">{{ locale.getLocale('roles/classteacher') }}</div>
@@ -19,7 +33,7 @@
             </ng-option>
         </ng-select>
 
-        <div>{{ selectedReceivers | json }}</div>
+        <div *ngIf="selectedMessageType === 0">{{ selectedReceivers | json }}</div>
     </div>
     <div class="right">
         <div class="btn" (click)="sendMessage()"><i class="ti ti-send"></i> {{ locale.getLocale('buttons/send') }}</div>
