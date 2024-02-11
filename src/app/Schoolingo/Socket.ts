@@ -10,8 +10,8 @@ export class SocketService {
   constructor(
     private storage: Storage,
     private logger: Logger,
-    private cookieService: CookieService    
-    ) {}
+    private cookieService: CookieService
+  ) {}
 
   /**
    * Main declaration of socket

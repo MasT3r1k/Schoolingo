@@ -11,7 +11,7 @@ type MessageType = {
 
 @Component({
   templateUrl: './send.component.html',
-  styleUrls: ['./send.component.css', '../../board.css']
+  styleUrls: ['../../board.css', '../../../input.css', './send.component.css']
 })
 export class SendComponent {
   constructor(

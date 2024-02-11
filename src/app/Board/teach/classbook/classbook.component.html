@@ -35,16 +35,16 @@
                 <div
                 class="classbook-title"
                 *ngIf="selectedLesson != undefined &&
-                    schoolingo.getTimetable()[calendarEl.date.getDay() - 1] &&
-                    schoolingo.getTimetable()?.[calendarEl.date.getDay() - 1]?.lessons?.[selectedLesson] &&
-                    schoolingo.getTimetable()?.[calendarEl.date.getDay() - 1]?.lessons?.[selectedLesson]?.[0]">
+                    schoolingo.getTimetable()?.[(this.calendarEl.date.getDay() == 0) ? 6 : this.calendarEl.date.getDay() - 1] &&
+                    schoolingo.getTimetable()?.[(this.calendarEl.date.getDay() == 0) ? 6 : this.calendarEl.date.getDay() - 1]?.lessons?.[selectedLesson] &&
+                    schoolingo.getTimetable()?.[(this.calendarEl.date.getDay() == 0) ? 6 : this.calendarEl.date.getDay() - 1]?.lessons?.[selectedLesson]?.[0]">
                     <div class="subject">
                         {{ schoolingo.getTimetable()[calendarEl.date.getDay() - 1].lessons[selectedLesson][0].subject?.[2] }}
                     </div>
                     <div>
                         {{
                             calendarEl.date.getDate() + '. ' + (calendarEl.date.getMonth() + 1) + '. ' + calendarEl.date.getFullYear() +
-                            ' (' + schoolingo.full_days[calendarEl.date.getDay() - 1] + ')' + ' ' +
+                            ' (' + schoolingo.full_days[(this.calendarEl.date.getDay() == 0) ? 6 : this.calendarEl.date.getDay() - 1] + ')' + ' ' +
                             (selectedLesson + 1) + '. hodina, ' + schoolingo.getSHours()[selectedLesson].start + ' - ' + schoolingo.getSHours()[selectedLesson].end
                         }}
                     </div>

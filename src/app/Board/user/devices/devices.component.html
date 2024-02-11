@@ -20,7 +20,10 @@
 
             </div>
         </div>
-        <h2 class="small mt mb">Ostatní zařízení <div class="btn" *ngIf="getAnotherDevices().length > 0">Odhlásit ze všech zařízení</div></h2>
+        <h2 class="small mt mb">
+            Ostatní zařízení
+            <div class="btn" *ngIf="getAnotherDevices().length > 0" (click)="removeAllDevices()">Odhlásit ze všech zařízení</div>
+        </h2>
         <div class="alert alert-error" *ngIf="schoolingo.getOfflineMode()">
             {{ locale.getLocale('alerts/notAllowedInOfflineMode') }}
             <div class="btn" (click)="schoolingo.refreshConnection()" [innerHTML]="schoolingo.getRefreshingText()"></div>

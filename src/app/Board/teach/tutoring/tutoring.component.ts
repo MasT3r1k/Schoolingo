@@ -10,4 +10,7 @@ export class TutoringComponent {
   constructor(
     public locale: Locale
   ) {}
+
+  public creatingNewOne: boolean = false;
+
 }

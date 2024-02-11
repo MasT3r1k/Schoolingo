@@ -1,42 +1,70 @@
 <div class="box">
-    <header>
-        <h2>{{ locale.getLocale('sidebar/messages/send') }}</h2>
-    </header>
+  <header>
+    <h2>{{ locale.getLocale("sidebar/messages/send") }}</h2>
+  </header>
 
-    <div class="box-content">
-        <ng-select
+  <div class="box-content">
+    <div class="form-group">
+      <label for="messagetype">Typ zprávy</label>
+      <ng-select
+        id="messagetype"
         [(ngModel)]="selectedMessageType"
         [notFoundText]="locale.getLocale('errors/noMessageTypeFound')"
         [multiple]="false"
         [markFirst]="true"
         [searchable]="false"
         [clearable]="false"
+      >
+        <ng-option
+          *ngFor="let type of getTypes()"
+          [value]="types.indexOf(type)"
         >
-            <ng-option *ngFor="let type of getTypes()" [value]="types.indexOf(type)">
-                {{ type.label }}
-            </ng-option>
-        </ng-select>
+          {{ type.label }}
+        </ng-option>
+      </ng-select>
+    </div>
 
-        <ng-select
-            [(ngModel)]="selectedReceivers"
-            [notFoundText]="locale.getLocale('errors/noReceiversFound')"
-            [multiple]="true"
-            [markFirst]="true"
-            [searchable]="true"
-            *ngIf="selectedMessageType === 0"
-        >
-            <ng-option *ngFor="let teacher of teachers" [value]="teacher.teacherId">
-                <div class="select">
-                    {{ teacher.firstName + ' ' + teacher.lastName }}
-                    <div class="badge" *ngIf="teacher.teacherId == userService.getUser()?.classTeacher">{{ locale.getLocale('roles/classteacher') }}</div>
-                </div>
-            </ng-option>
-        </ng-select>
+    <div class="form-group" *ngIf="selectedMessageType === 0">
+      <label for="messageReceiver">Přijemce zprávy</label>
+      <ng-select
+        id="messageReceiver"
+        [(ngModel)]="selectedReceivers"
+        [notFoundText]="locale.getLocale('errors/noReceiversFound')"
+        [placeholder]="'Vyhledejte jméno přijemce'"
+        [multiple]="true"
+        [markFirst]="true"
+        [searchable]="true"
+      >
+        <ng-option *ngFor="let teacher of teachers" [value]="teacher.teacherId">
+          <div class="select">
+            {{ teacher.firstName + " " + teacher.lastName }}
+            <div
+              class="badge"
+              *ngIf="teacher.teacherId == userService.getUser()?.classTeacher"
+            >
+              {{ locale.getLocale("roles/classteacher") }}
+            </div>
+          </div>
+        </ng-option>
+      </ng-select>
+    </div>
 
-        <div *ngIf="selectedMessageType === 0">{{ selectedReceivers | json }}</div>
+    <div *ngIf="selectedMessageType === 0">{{ selectedReceivers | json }}</div>
+    <div class="form-group">
+      <label for="message">Zpráva</label>
+      <textarea
+        id="message"
+        (resize)="('horizontal')"
+        placeholder="Vaše zpráva :)"
+      ></textarea>
     </div>
     <div class="right">
-        <div class="btn" (click)="sendMessage()"><i class="ti ti-send"></i> {{ locale.getLocale('buttons/send') }}</div>
+      <div class="form-group">
+        <div class="btn" (click)="sendMessage()">
+          <i class="ti ti-send"></i> {{ locale.getLocale("buttons/send") }}
+        </div>
+        <p class="mt" style="text-align: center;">{{ locale.getLocale('messages/privacy') }}</p>
+      </div>
     </div>
-
+  </div>
 </div>

@@ -250,9 +250,17 @@ export class Locale {
                 relatives: "Příbuzní",
             },
 
+            tutoring: {
+                new: "Nové doučování"
+            },
+
             devices: {
                 until: "Platné do ",
                 notAnotherFound: "Žádné další zařízení nebyly nalezeny.",
+            },
+
+            messages: {
+                privacy: "Zprávy poslané přes aplikaci Schoolingo se nedají považovat za soukromé. K zprávům mají přístup včetně přijemců i ředistelství školy a správci systému.",
             },
 
             subjects: "Předměty",

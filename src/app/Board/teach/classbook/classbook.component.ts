@@ -37,7 +37,78 @@ export class ClassbookComponent {
     public socketService: SocketService,
     public calendarService: Calendar,
     public modals: Modals
-  ) {}
+  ) {
+    this.socketService.addFunction('getClassInfo', (classInfo: any) => {
+      this.classInfo = classInfo.classInfo;
+      this.classInfo['maxHours'] = classInfo.maxHours;
+    });
+
+    this.socketService.addFunction('getClassStudents', (students: any[]) => {
+      this.students = students.sort((a, b): any => {
+        if (a.lastName < b.lastName) {
+          return -1;
+        }
+        if (a.lastName > b.lastName) {
+          return 1;
+        }
+      });
+
+      let studentIds: number[] = [];
+      this.students.forEach((st: any) => {
+        studentIds.push(st.student);
+      });
+
+      this.socketService
+        .getSocket()
+        .Socket?.emit('getAbsence', {
+          students: studentIds,
+          date: this.calendarEl.date,
+        });
+    });
+
+    this.socketService.addFunction('getLesson', (lesson: any) => {
+      if (!lesson[0]) return;
+      this.lessonTopic.setValue(lesson?.[0]?.topic);
+      this.lessonNote.setValue(lesson[0].note);
+      this.internalNote.setValue(lesson[0].internalNote);
+      this.lesson = lesson[0];
+    });
+
+    this.socketService.addFunction('setAbsence', (data: any) => {
+      let dataDate = new Date(data[0].date);
+      if (
+        !(
+          dataDate.getDate() == this.calendarEl.date.getDate() &&
+          dataDate.getMonth() == this.calendarEl.date.getMonth() &&
+          dataDate.getFullYear() == this.calendarEl.date.getFullYear()
+        )
+      ) {
+        return;
+      }
+
+      for (let i = 0; i < data[0].absence.length; i++) {
+        this.addAbsence(data[0].absence[i].student, [
+          { lesson: data[0].lesson, type: data[0].absence[i].absence },
+        ]);
+      }
+    });
+
+    this.socketService.addFunction('getAbsence', (data: any) => {
+      for (let i = 0; i < data.length; i++) {
+        this.addAbsence(data[i].student, [
+          { lesson: data[i].lesson as number, type: data[i].type as number },
+        ]);
+      }
+    });
+
+    this.socketService.addFunction('getHomeworks', (homeworks: any[]) => {
+      this.homeworks = homeworks;
+    });
+
+    this.socketService.addFunction('setHomework', () => {
+      this.modals.showModal(null);
+    });
+  }
 
   public selectedLesson: number | undefined = undefined;
   public students: any[] = [];
@@ -241,77 +312,6 @@ export class ClassbookComponent {
           } while (this.selectedLesson == undefined);
         };
       }
-    });
-
-    this.socketService.addFunction('getClassInfo', (classInfo: any) => {
-      this.classInfo = classInfo.classInfo;
-      this.classInfo['maxHours'] = classInfo.maxHours;
-    });
-
-    this.socketService.addFunction('getClassStudents', (students: any[]) => {
-      this.students = students.sort((a, b): any => {
-        if (a.lastName < b.lastName) {
-          return -1;
-        }
-        if (a.lastName > b.lastName) {
-          return 1;
-        }
-      });
-
-      let studentIds: number[] = [];
-      this.students.forEach((st: any) => {
-        studentIds.push(st.student);
-      });
-
-      this.socketService
-        .getSocket()
-        .Socket?.emit('getAbsence', {
-          students: studentIds,
-          date: this.calendarEl.date,
-        });
-    });
-
-    this.socketService.addFunction('getLesson', (lesson: any) => {
-      if (!lesson[0]) return;
-      this.lessonTopic.setValue(lesson?.[0]?.topic);
-      this.lessonNote.setValue(lesson[0].note);
-      this.internalNote.setValue(lesson[0].internalNote);
-      this.lesson = lesson[0];
-    });
-
-    this.socketService.addFunction('setAbsence', (data: any) => {
-      let dataDate = new Date(data[0].date);
-      if (
-        !(
-          dataDate.getDate() == this.calendarEl.date.getDate() &&
-          dataDate.getMonth() == this.calendarEl.date.getMonth() &&
-          dataDate.getFullYear() == this.calendarEl.date.getFullYear()
-        )
-      ) {
-        return;
-      }
-
-      for (let i = 0; i < data[0].absence.length; i++) {
-        this.addAbsence(data[0].absence[i].student, [
-          { lesson: data[0].lesson, type: data[0].absence[i].absence },
-        ]);
-      }
-    });
-
-    this.socketService.addFunction('getAbsence', (data: any) => {
-      for (let i = 0; i < data.length; i++) {
-        this.addAbsence(data[i].student, [
-          { lesson: data[i].lesson as number, type: data[i].type as number },
-        ]);
-      }
-    });
-
-    this.socketService.addFunction('getHomeworks', (homeworks: any[]) => {
-      this.homeworks = homeworks;
-    });
-
-    this.socketService.addFunction('setHomework', () => {
-      this.modals.showModal(null);
     });
   }
 

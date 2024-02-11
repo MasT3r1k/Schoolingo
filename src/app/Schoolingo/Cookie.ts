@@ -2,8 +2,7 @@ import { Injectable } from '@angular/core';
 
 @Injectable()
 export class CookieService {
-
-  constructor() { }
+  constructor() {}
 
   public getCookie(name: string) {
     let ca: Array<string> = document.cookie.split(';');
@@ -21,16 +20,26 @@ export class CookieService {
   }
 
   public deleteCookie(name: string) {
-    this.setCookie(name, "", -1);
+    this.setCookie(name, '', -1);
   }
 
-  public setCookie(name: string, value: string, expireDays: number, path: string = "") {
+  public setCookie(
+    name: string,
+    value: string,
+    expireDays: number
+  ) {
     let d: Date = new Date();
     d.setTime(d.getTime() + expireDays * 24 * 60 * 60 * 1000);
-    let expires: string = "expires=" + d.toUTCString();
-    let cookie = name + "=" + value + "; " + expires + (path.length > 0 ? "; path=" + path + ";" : ";") + " Secure; SameSite=Strict;";
+    let expires: string = 'expires=' + d.toUTCString();
+    let cookie =
+      name +
+      '=' +
+      value +
+      '; ' +
+      expires +
+      '; path=/;'
+      ' Secure; SameSite=Strict;';
     console.log(cookie);
     document.cookie = cookie;
   }
-
 }
