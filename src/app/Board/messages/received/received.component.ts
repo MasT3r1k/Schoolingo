@@ -1,13 +1,23 @@
+import { Locale } from '@Schoolingo/Locale';
 import { Component } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { FormControl } from '@angular/forms';
+
+type sentMessage = {
+  receivers: any[];
+  message: string;
+  sent: Date;
+}
 
 @Component({
-  selector: 'app-received',
-  standalone: true,
-  imports: [CommonModule],
   templateUrl: './received.component.html',
-  styleUrl: './received.component.css'
+  styleUrls: ['../../board.css', '../../../input.css', './received.component.css']
 })
 export class ReceivedComponent {
+  constructor(
+    public locale: Locale
+  ) {}
 
+  private messages: sentMessage[] = [];
+  public message: string = '';
+  public search = new FormControl('');
 }

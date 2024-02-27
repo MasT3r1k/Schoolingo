@@ -5,7 +5,7 @@
 
   <div class="box-content">
     <div class="form-group">
-      <label for="messagetype">Typ zprávy</label>
+      <label for="messagetype">{{ locale.getLocale('messages/type') }}</label>
       <ng-select
         id="messagetype"
         [(ngModel)]="selectedMessageType"
@@ -19,19 +19,25 @@
           *ngFor="let type of getTypes()"
           [value]="types.indexOf(type)"
         >
-          {{ type.label }}
+          {{ locale.getLocale('messages/types/' + type.label) }}
         </ng-option>
       </ng-select>
     </div>
 
-    <div class="form-group" *ngIf="selectedMessageType === 0">
-      <label for="messageReceiver">Přijemce zprávy</label>
+    <div class="form-group" *ngIf="(selectedMessageType === 0) || (selectedMessageType === 3)">
+      <label for="messageReceiver">
+        {{ (selectedMessageType === 0) ? locale.getLocale('messages/receiver') :
+           (selectedMessageType === 3) ? locale.getLocale('roles/student') : ''
+        }}
+      </label>
       <ng-select
         id="messageReceiver"
         [(ngModel)]="selectedReceivers"
         [notFoundText]="locale.getLocale('errors/noReceiversFound')"
-        [placeholder]="'Vyhledejte jméno přijemce'"
-        [multiple]="true"
+        [placeholder]="
+        (selectedMessageType === 0) ? locale.getLocale('messages/findreceiver') : 
+        (selectedMessageType === 3) ? locale.getLocale('messages/findstudent') : ''"
+        [multiple]="(selectedMessageType === 0)"
         [markFirst]="true"
         [searchable]="true"
       >
@@ -49,13 +55,13 @@
       </ng-select>
     </div>
 
-    <div *ngIf="selectedMessageType === 0">{{ selectedReceivers | json }}</div>
     <div class="form-group">
-      <label for="message">Zpráva</label>
+      <label for="message">{{ locale.getLocale('messages/message') }}</label>
       <textarea
         id="message"
+        [(ngModel)]="message"
         (resize)="('horizontal')"
-        placeholder="Vaše zpráva :)"
+        [placeholder]="locale.getLocale('messages/messagePlaceholder')"
       ></textarea>
     </div>
     <div class="right">

@@ -6,13 +6,25 @@
         </div>
     </header>
     <div class="box-content" *ngIf="tabs.getTabValue(tabName) == 0">
-        <div *ngFor="let subject of schoolingo.getSubjects()">
-            
-            {{ subject[2] }}
+        <table>
+            <thead>
+                <th>{{ locale.getLocale('subject') }}</th>
+                <th>{{ locale.getLocale('sidebar/absence') }}</th>
+                <th>%</th>
+            </thead>
+            <tbody>
+                <tr *ngFor="let subject of schoolingo.getSubjects()">
+                    <td style="width: 100%;">{{ subject[2] }}</td>
+                    <td style="text-align: right;">
+                        {{ getAbsenceBySubject(subject[0]).length + ' / ' + getLessonsBySubject(subject[0]).length }}
+                    </td>
+                    <td style="text-align: right;">
+                        {{ getLessonsBySubject(subject[0]).length > 0 ? (getAbsenceBySubject(subject[0]).length / getLessonsBySubject(subject[0]).length * 100) + '%' : '' }}
+                    </td>
+                </tr>
+            </tbody>
+        </table>
 
-
-
-        </div>
     </div>
     <div class="box-content" *ngIf="tabs.getTabValue(tabName) == 1">
         

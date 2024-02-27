@@ -42,6 +42,13 @@ import { ManagebooksComponent as LibraryManagebooks } from './Board/library/mana
 import { OrderComponent as CanteenOrder } from './Board/canteen/order/order.component';
 import { DispensingComponent as CanteenDispensing } from './Board/canteen/dispensing/dispensing.component';
 import { MealsComponent as CanteenMeals } from './Board/canteen/meals/meals.component';
+import { CompaniesComponent as TraineeCompanies } from './Board/traineeships/companies/companies.component';
+import { DiaryComponent as TraineeDiary } from './Board/traineeships/diary/diary.component';
+import { ManageComponent as TraineeManage } from './Board/traineeships/manage/manage.component';
+import { OverviewComponent as TraineeOverview } from './Board/traineeships/overview/overview.component';
+import { SettingsComponent as TraineeSettings } from './Board/traineeships/settings/settings.component';
+import { SchoolSettingsComponent } from './Board/school/settings/school-settings.component';
+import { InformationComponent as SchoolInformationComponent } from './Board/school/information/information.component';
 
 const routes: Routes = [
 {
@@ -89,6 +96,21 @@ const routes: Routes = [
       }]
     }, {
       path: 'absence', component: AbsenceComponent
+    }, {
+      path: 'traineeship', children: [
+        {
+          path: 'overview', component: TraineeOverview
+        },
+        {
+          path: 'companies', component: TraineeCompanies
+        }, {
+          path: 'diary', component: TraineeDiary
+        }, {
+          path: 'manage', component: TraineeManage
+        }, {
+          path: 'settings', component: TraineeSettings
+        }
+      ]
     }, {
       path: 'actionplan', component: ActionplanComponent
     }, {
@@ -153,6 +175,15 @@ const routes: Routes = [
       }]
     }, */{
       path: 'calendar', component: CalendarComponent
+    }, {
+      path: 'school', children: [
+        {
+          path: 'information', component: SchoolInformationComponent,
+        },
+        {
+          path: 'settings', component: SchoolSettingsComponent
+        }
+      ]
     }, {
       path: '**', redirectTo: 'main'
     }]

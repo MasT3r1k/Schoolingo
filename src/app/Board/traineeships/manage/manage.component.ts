@@ -2,10 +2,10 @@ import { Component } from '@angular/core';
 import { Locale } from '@Schoolingo/Locale';
 
 @Component({
-  templateUrl: './calendar.component.html',
-  styleUrls: ['./calendar.component.css', '../board.css']
+  templateUrl: './manage.component.html',
+  styleUrls: ['./manage.component.css', '../../board.css', '../../../input.css']
 })
-export class CalendarComponent {
+export class ManageComponent {
   constructor(
     public locale: Locale
   ) {}

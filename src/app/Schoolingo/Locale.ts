@@ -97,6 +97,14 @@ export class Locale {
                 },
 
                 absence: "Absence",
+                traineeship: {
+                    overview: "Můj přehled",
+                    main: "Odborná praxe",
+                    companies: "Seznam firem",
+                    diary: "Deník",
+                    manage: "Správa praxí",
+                    settings: "Nastavení modulu praxí"
+                },
                 actionPlan: "Plán akcí",
                 calendar: "Kalendář",
                 documents: "Dokumenty",
@@ -150,7 +158,12 @@ export class Locale {
                     scopes: "Obory",
                     list: "Seznam tříd",
                     create: "Vytvořit třídu",
-                }
+                },
+                school: {
+                    main: "Škola",
+                    information: "Informace o škole",
+                    settings: "Nastavení školy"
+                },
             },
             settings: "Nastavení",
             // System roles
@@ -205,6 +218,8 @@ export class Locale {
                 failed: "Selhalo!",
                 noInternetConnection: "Nepřipojeno k internetu",
                 send: "Poslat",
+                reply: "Odpovědět",
+                replyAll: "Odpovědět všem",
             },
 
             timetable: {
@@ -261,6 +276,21 @@ export class Locale {
 
             messages: {
                 privacy: "Zprávy poslané přes aplikaci Schoolingo se nedají považovat za soukromé. K zprávům mají přístup včetně přijemců i ředistelství školy a správci systému.",
+                type: "Typ zprávy",
+                message: "Zpráva",
+                messagePlaceholder: "Vaše zpráva :)",
+                receiver: "Příjemce zprávy",
+                findreceiver: "Vyhledejte jméno přijemce",
+                findstudent: "Vyhledejte jméno žáka",
+                noSelected: "Nevybral jste žádného příjemce",
+
+                types: {
+                    message: "Klasická zpráva",
+                    homework: "Odevzdání úkolu",
+                    excusestudent: "Omluvení žáka",
+                    ratestudent: "Ohodnocení žáka",
+                    noticeboard: "Zpráva na nástěnku"
+                },
             },
 
             subjects: "Předměty",

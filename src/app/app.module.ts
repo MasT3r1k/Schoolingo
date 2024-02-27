@@ -36,6 +36,8 @@ import { Table } from '@Components/table/Table';
 import { CalendarComponent } from '@Components/calendar/calendar.component';
 import { Calendar } from '@Components/calendar/calendar';
 import { SendComponent as MessagesSend } from './Board/messages/send/send.component';
+import { SentComponent as MessagesSent } from './Board/messages/sent/sent.component';
+import { ReceivedComponent as MessagesReceived } from './Board/messages/received/received.component';
 import { NgSelectModule } from '@ng-select/ng-select';
 import { MidtermComponent  as BoardMarksMidterm} from './Board/marks/midterm/midterm.component';
 import { ModalsComponent } from "./Components/modals/modals.component";
@@ -45,6 +47,11 @@ import { ThemeComponent as ThemeSelector } from './Board/user/settings/theme/the
 import { NotifiesComponent as SchoolingoNotifies } from '@Components/notifies/notifies.component';
 import { AbsenceComponent as Absence } from './Board/absence/absence.component';
 import { CookieService } from '@Schoolingo/Cookie';
+import { CompaniesComponent as TraineeCompanies } from './Board/traineeships/companies/companies.component';
+import { DiaryComponent as TraineeDiary } from './Board/traineeships/diary/diary.component';
+import { ManageComponent as TraineeManage } from './Board/traineeships/manage/manage.component';
+import { OverviewComponent as TraineeOverview } from './Board/traineeships/overview/overview.component';
+import { SettingsComponent as TraineeSettings } from './Board/traineeships/settings/settings.component';
 
 @NgModule({
     declarations: [
@@ -67,11 +74,19 @@ import { CookieService } from '@Schoolingo/Cookie';
         PupilcardComponent,
         CalendarComponent,
         MessagesSend,
+        MessagesSent,
+        MessagesReceived,
         ModalsComponent,
         Homeworks,
         ThemeSelector,
         SchoolingoNotifies,
-        Absence
+        Absence,
+        TraineeCompanies,
+        TraineeDiary,
+        TraineeManage,
+        TraineeOverview,
+        TraineeSettings,
+        CalendarComponent
     ],
     providers: [
         Locale,

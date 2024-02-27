@@ -3,6 +3,9 @@ import { Schoolingo } from '@Schoolingo';
 import { Locale } from '@Schoolingo/Locale';
 import { Teacher, UserPermissions } from '@Schoolingo/User.d';
 import { UserService } from '@Schoolingo/User';
+import { formError } from 'src/app/login/login.component';
+import { FormControl } from '@angular/forms';
+import { SocketService } from '@Schoolingo/Socket';
 
 type MessageType = {
   label: string;
@@ -17,29 +20,30 @@ export class SendComponent {
   constructor(
     public locale: Locale,
     public schoolingo: Schoolingo,
-    public userService: UserService
+    public userService: UserService,
+    public socketService: SocketService
   ) {}
 
   public selectedMessageType: number = 0;
   public selectedReceivers: number[] = [];
+  public message: string = '';
   public teachers = this.schoolingo.getTeachers();
 
   public types: MessageType[] = [
-    {
-      label: 'Klasická zpráva',
+    {       // 0
+      label: 'message',
       perms: ['all']
-    }, {
-      label: 'Odevzdání úkolu',
+    }, {    // 1
+      label: 'homework',
       perms: ['student']
-    }, {
-      label: 'Omluvení žáka',
+    }, {    // 2
+      label: 'excusestudent',
       perms: ['parent']
-    }, {
-      label: 'Ohodnocení žáka',
+    }, {    // 3
+      label: 'ratestudent',
       perms: ['teacher', 'principal']
-    },
-    {
-      label: 'Zpráva na nástěnku',
+    }, {    // 4
+      label: 'noticeboard',
       perms: ['teacher', 'principal']
     }
   ]
@@ -60,11 +64,31 @@ export class SendComponent {
     }
   }
 
+
+  formErrors: formError[] = [];
+  public errorFilter(name: string): boolean | string {
+    let filter = this.formErrors.filter((err) => err.input == name);
+    return filter.length == 0 ? false : filter[0].locale;
+  }
+
   public sendMessage(): void {
-    if (this.selectedReceivers.length == 0) {
-      console.log('NO RECEIVER FOUND!');
-      return;
+
+    // Validate form
+    if (this.message == '') {
+      this.formErrors.push({ input: 'message', locale: 'required' });
     }
+    if (this.selectedReceivers.length == 0) {
+      this.formErrors.push({ input: 'receiver', locale: 'required' });
+    }
+    if (this.formErrors.length > 0) return;
+
+    this.socketService.getSocket().Socket?.emit('messages::sendMessage',
+    {
+      type: this.selectedMessageType,
+      receivers: this.selectedReceivers,
+      message: this.message
+    });
+
   }
 
 }

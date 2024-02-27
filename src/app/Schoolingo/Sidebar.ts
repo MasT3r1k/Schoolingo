@@ -17,9 +17,11 @@ export interface SidebarGroup {
 
 export class Sidebar {
     public data: SidebarGroup[] =
-    [{
+    [
+    {
         label: "sidebar/main",
-        items: [{
+        items: [
+        {
             item: 'sidebar/home',
             icon: 'dashboard',
             url: 'main',
@@ -89,7 +91,8 @@ export class Sidebar {
             }]
         }, {
             item: 'sidebar/messages/main',
-            children: [{
+            children: [
+            {
                 item: 'sidebar/messages/send',
                 url: 'messages/send',
             }, {
@@ -109,6 +112,35 @@ export class Sidebar {
             item: 'sidebar/absence',
             permission: ['student', 'parent'],
             url: 'absence',
+        }, {
+            item: "sidebar/traineeship/main",
+            children: [
+            {
+                item: "sidebar/traineeship/overview",
+                url: "traineeship/overview",
+                permission: ['student', 'teacher']
+            },
+            {
+                item: "sidebar/traineeship/diary",
+                url: "traineeship/diary",
+                permission: ['student']
+            },
+            {
+                item: "sidebar/traineeship/companies",
+                url: "traineeship/companies",
+                permission: ['student', 'teacher']
+            },
+            {
+                item: "sidebar/traineeship/manage",
+                url: "traineeship/manage",
+                permission: ['all']
+            },
+            {
+                item: "sidebar/traineeship/settings",
+                url: "traineeship/settings",
+                permission: ['all']
+            }
+            ]
         }, {
             item: 'sidebar/actionPlan',
             permission: ['student', 'parent', 'teacher'],
@@ -246,7 +278,19 @@ export class Sidebar {
                 item: 'sidebar/subjects/create',
                 url: 'subjects/create',
             }]
-        }]
+        }, {
+            item: 'sidebar/school/main',
+            permission: ['all'],
+            children: [{
+                url: 'school/information',
+                item: 'sidebar/school/information',
+            }, {
+                url: 'school/settings',
+                item: 'sidebar/school/settings'
+            }]
+        }
+    
+    ]
     }];
 
     public visibleDropdown: number | null = null;
