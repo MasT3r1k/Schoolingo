@@ -1,66 +1,115 @@
 <main>
-    <div class="row">
-        <h1>SCHOOLINGO</h1>
+  <div class="row">
+    <h1>SCHOOLINGO</h1>
+  </div>
+  <div class="card">
+    <div class="card-top" *ngIf="socketService.connected == false">
+      <span><i class="fa-solid fa-xmark"></i> Nejste připojení k serveru.</span>
+      <div class="btn">Offline mode</div>
     </div>
-    <div class="card">
-        <div class="card-top" *ngIf="socketService.connected == false">
-            <span><i class='fa-solid fa-xmark'></i> Nejste připojení k serveru.</span>
-            <div class="btn">Offline mode</div>
+    <div class="row">
+      <div class="form">
+        <div class="title">{{ locale.getLocale("login_formTitle") }}</div>
+        <div class="school">{{ config.school }}</div>
+
+        <schoolingo-form [inputs]="inputs" [buttons]="buttons" [form]="formName"></schoolingo-form>
+
+        <!-- <form [formGroup]="formData" (submit)="form.buttons[0].func ? form.buttons[0].func() : ''">
+            <input type="submit" value="" style="display: none" />
+            @for (input of form.inputs; track input.name) {
+                <div class="form-group">
+                    @if (input.label) {
+                        <label [attr.for]="input.name" [ngClass]="{ error: form.getError(input.name) != null }">
+                            {{ locale.getLocale(input.label) }}
+                            <span
+                class="label-error"
+                *ngIf="form.getError(input.name) != null"
+              >
+                -
+                {{ locale.getLocale('' + form.getError(input.name)) }}</span
+              >
+                        </label>
+                        <input [type]="input.type" [ngClass]="{ invalid: form.getError(input.name) != null}" [name]="input.name" [formControlName]="input.name" [placeholder]="input.placeholder ? locale.getLocale(input.placeholder) : ''" (required)="input.required">
+                        @for(note of input.notes; track note.note) {
+                            @if (note.url) {
+                                <a [href]="note.url">{{ locale.getLocale(note.note) }}</a>
+                            }
+
+                            @if (note.func) {
+                                <a (click)="note.func()">{{ locale.getLocale(note.note) }}</a>
+                            }
+                        }
+                    }
+                </div>
+            }
+
+            @for (button of form.buttons;track button) {
+                <div class="form-group">
+                    <div [ngClass]="{btn: true, submit: true, disabled: !canLogin}" role="button" (click)="button?.func()" [innerHTML]="form.executing ? '<div class=btn-loader></div> ' + locale.getLocale(button.executed) : locale.getLocale(button.label)"></div>
+                </div>
+            }
+
+        </form> -->
+      </div>
+      <div class="bar">{{ locale.getLocale("or") }}</div>
+      <div class="qrcode">
+        <div class="title" style="margin-bottom: 1rem">
+          {{ locale.getLocale("login_qrcodeTitle") }}
         </div>
-        <div class="row">
-            <div class="form">
-                <div class="title">{{ locale.getLocale('login_formTitle') }}</div>
-                <div class="school">{{ config.school }}</div>
-                <form method="post" (submit)="login()">
-                    <div class="form-group">
-                        <label for="username" [ngClass]="{error: errorFilter('username') != false}">{{ locale.getLocale('username') }} <span class="label-error" *ngIf="errorFilter('username') != false"> - {{ locale.getLocale(errorFilter('username').toString()) }}</span></label>
-                        <input type="text" name="username" [ngClass]="{ invalid: errorFilter('username') != false }" [formControl]="username" [placeholder]="locale.getLocale('username')" />
-                    </div>
-                    <div class="form-group">
-                        <label for="password" [ngClass]="{error: errorFilter('password') != false}">{{ locale.getLocale('password') }} <span class="label-error" *ngIf="errorFilter('password') != false"> - {{ locale.getLocale(errorFilter('password').toString()) }}</span></label>
-                        <input type="password" name="password" [ngClass]="{ invalid: errorFilter('password') != false }" [formControl]="password" [placeholder]="locale.getLocale('password')">
-                        <p style="margin: 6px 8px 4px;color: var(--theme-color-dark);cursor: pointer;">{{ locale.getLocale('forgot_pass') }}</p>
-                    </div>
-                    <input type="submit" value="" style="display: none;">
-                    <div [ngClass]="{submit: true, disabled: canLogin() == false}" role="button" (click)="login()" [innerHTML]="getLoginButtonText()"></div>
-                </form>
-            </div>
-            <div class="bar">{{ locale.getLocale('or') }}</div>
-            <div class="qrcode">
-                <div class="title" style="margin-bottom: 1rem;">{{ locale.getLocale('login_qrcodeTitle') }}</div>
-                <!-- Waiting to load QR code -->
-                <div *ngIf="qrStatus.whatIsVisible == 'loading'" class="loader"></div>
-                <!-- Error QR code -->
-                <div *ngIf="qrStatus.whatIsVisible == 'error'">NASTALA NĚKDE CHYBA. Obnovení proběhne automaticky.</div>
+        <!-- Waiting to load QR code -->
+        <div *ngIf="qrStatus.whatIsVisible == 'loading'" class="loader"></div>
+        <!-- Error QR code -->
+        <div *ngIf="qrStatus.whatIsVisible == 'error'">
+          NASTALA NĚKDE CHYBA. Obnovení proběhne automaticky.
+        </div>
 
-                <!-- QR code -->
-                <qrcode *ngIf="
-                (qrStatus.whatIsVisible == 'scan' || qrStatus.whatIsVisible == 'trylogin') && qrStatus?.code && qrStatus.code != ''"
-                [ngStyle]="{ filter: (qrStatus.whatIsVisible == 'trylogin') ? 'blur(4px)' : 'none' }" [qrdata]="qrStatus.code ?? ''"
-                [allowEmptyString]="false"
-                [width]="160"
-                [margin]="0"
-                [elementType]="'canvas'"
-                [errorCorrectionLevel]="'M'"
-                [title]="'SCHOOLINGO QR Fastlogin'"
-                [imageSrc]="'./assets/logo.webp'"
-                [imageHeight]="56"
-                [imageWidth]="56"
-                [colorDark]="(theme.getTheme() == 'light') ? '#000000' : '#ffffff'"
-                [colorLight]="(theme.getTheme() == 'light') ? '#ffffff' : '#000000'"
-                ></qrcode>
-                <div style="margin-top: 1rem;text-align: center;" *ngIf="(qrStatus.whatIsVisible == 'scan' && qrStatus.code != '') || qrStatus.whatIsVisible == 'loading'" [innerHTML]="locale.getLocale('scan_qrcode')"></div>
-                <div style="margin-top: 1rem;text-align: center;" *ngIf="qrStatus.user">Pokoušíte se příhlasit za <b>{{ qrStatus.user.firstName + " " + qrStatus.user.lastName }}</b>. Zkontrolujte vaše mobilní zařízení pro více informací.</div>
+        <!-- QR code -->
+        <qrcode
+          *ngIf="
+            (qrStatus.whatIsVisible == 'scan' ||
+              qrStatus.whatIsVisible == 'trylogin') &&
+            qrStatus?.code &&
+            qrStatus.code != ''
+          "
+          [ngStyle]="{
+            filter: qrStatus.whatIsVisible == 'trylogin' ? 'blur(4px)' : 'none'
+          }"
+          [qrdata]="qrStatus.code ?? ''"
+          [allowEmptyString]="false"
+          [width]="160"
+          [margin]="0"
+          [elementType]="'canvas'"
+          [errorCorrectionLevel]="'M'"
+          [title]="'SCHOOLINGO QR Fastlogin'"
+          [imageSrc]="'./assets/logo.webp'"
+          [imageHeight]="56"
+          [imageWidth]="56"
+          [colorDark]="theme.getTheme() == 'light' ? '#000000' : '#ffffff'"
+          [colorLight]="theme.getTheme() == 'light' ? '#ffffff' : '#000000'"
+        ></qrcode>
+        <div
+          style="margin-top: 1rem; text-align: center"
+          *ngIf="
+            (qrStatus.whatIsVisible == 'scan' && qrStatus.code != '') ||
+            qrStatus.whatIsVisible == 'loading'
+          "
+          [innerHTML]="locale.getLocale('scan_qrcode')"
+        ></div>
+        <div style="margin-top: 1rem; text-align: center" *ngIf="qrStatus.user">
+          Pokoušíte se příhlasit za
+          <b>{{ qrStatus.user.firstName + " " + qrStatus.user.lastName }}</b
+          >. Zkontrolujte vaše mobilní zařízení pro více informací.
+        </div>
 
-                <!-- <div *ngIf="qrcode == 'ERR' && !qrCodeResult" (click)="refreshQRCode()">NASTALA NĚKDE CHYBA. Obnovit</div>
+        <!-- <div *ngIf="qrcode == 'ERR' && !qrCodeResult" (click)="refreshQRCode()">NASTALA NĚKDE CHYBA. Obnovit</div>
                 <qrcode *ngIf="getSocketStatus().connected == true && qrcode != '' && qrcode !== 'ERR'" [qrdata]="qrcode" [ngStyle]="{ filter: (qrCodeResult) ? 'blur(4px)' : 'none'}" [allowEmptyString]="false" [width]="160" [margin]="0" [elementType]="'svg'" [errorCorrectionLevel]="'M'"></qrcode>
                 <div *ngIf="getSocketStatus().connected == false && qrcode == '' && !qrCodeResult" class="loader"></div>
                 <div style="margin-top: 1rem;text-align: center;" *ngIf="!qrCodeResult">Naskejnute QR kód v <b>mobilní aplikaci</b> pro rychlé přihlášení</div>
                 <div style="margin-top: 1rem;text-align: center;" *ngIf="qrCodeResult">Pokoušíte se příhlasit za <b>{{ qrCodeResult.firstName + " " + qrCodeResult.lastName }}</b>. Zkontrolujte vaše mobilní zařízení pro více informací.</div> -->
-            </div>
-        </div>
+      </div>
     </div>
-    <!-- <p>Vyzkoušejte školním systém na svém chytrém zařízení</p>
+  </div>
+  <!-- <p>Vyzkoušejte školním systém na svém chytrém zařízení</p>
     <div class="row">
         <img src="/assets/google-play-badge.webp" height="40" alt="Google Play">
         <img src="/assets/app-store-badge.webp" height="40" alt="App Store">

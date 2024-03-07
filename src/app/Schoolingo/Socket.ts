@@ -21,7 +21,7 @@ export class SocketService {
   public socket_err: boolean = false;
   private socket_errMsg: string = '';
   public socketFunctions: Record<string, Record<string, Function>> = {};
-  public socketFunctionsNotConnected: Record<string, Function[]> = {};
+  public socketFunctionsNotConnected: Record<string, Record<string, Function>> = {};
 
   public addFunction(event: string, fn: Function, name: string = event): void {
     if (!this.socketFunctions[event]) {
@@ -33,14 +33,14 @@ export class SocketService {
       this.socketFunctions[event][name] = fn;
   }
 
-  public addFunctionNotConnected(event: string, fn: Function): void {
+  public addFunctionNotConnected(event: string, fn: Function, name: string = event): void {
     if (!this.socketFunctionsNotConnected[event]) {
       this.logger.send('Socket', 'Listening new event ' + event);
-      this.socketFunctionsNotConnected[event] = [];
+      this.socketFunctionsNotConnected[event] = {};
     }
 
-    if (!this.socketFunctionsNotConnected[event].includes(fn))
-      this.socketFunctionsNotConnected[event].push(fn);
+    if (!this.socketFunctionsNotConnected[event][name])
+      this.socketFunctionsNotConnected[event][name] = fn;
   }
 
   /**
@@ -58,7 +58,7 @@ export class SocketService {
   /**
    * Connect to socket as anonymous based on url from @config.server
    */
-  public connectAnon(): void {
+  public connectAnon(): Socket | void {
     try {
       this.socket = io(config.server);
       this.listenBasicEvents();
@@ -67,15 +67,15 @@ export class SocketService {
         this.socket_err = false;
         if (
           this.socketFunctionsNotConnected[event] &&
-          this.socketFunctionsNotConnected[event].length > 0
+          Object.values(this.socketFunctionsNotConnected[event]).length > 0
         ) {
-          this.socketFunctionsNotConnected[event].forEach((fn: Function) => {
+          Object.values(this.socketFunctionsNotConnected[event]).forEach((fn: Function) => {
             fn(args?.[0]);
           });
         }
       });
+      return this.socket;
     } catch (e) {
-      console.error(e);
       this.socket?.disconnect();
       this.socket?.removeAllListeners();
     }

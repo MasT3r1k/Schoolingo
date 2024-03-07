@@ -3,17 +3,25 @@
         <h2>{{ locale.getLocale('sidebar/traineeship/manage') }}</h2>
     </header>
     <div class="box-content">
-
-        <div class="list-items">
-            <div class="item">
-                <div class="left">
-                    Seznam firem (Celkem: -1)
+        @switch(page) {
+            @case('main') {
+                <div class="list-items">
+                    <div class="item">
+                        <div class="left">
+                            Seznam firem (Celkem: -1)
+                        </div>
+                        <div class="right">
+                            <div class="btn mini-btn" (click)="page = 'createCompany'">Přidat firmu</div>
+                            <div class="btn mini-btn btn-gray" [routerLink]="['/traineeship/companies']">Procházet</div>
+                        </div>
+                    </div>
                 </div>
-                <div class="right">
-                    <div class="btn mini-btn">Přidat firmu</div>
-                </div>
-            </div>
-        </div>
+            }
 
+            @case('createCompany') {
+                <schoolingo-form [inputs]="CompanyAdd_inputs" [buttons]="CompanyAdd_buttons" [form]="formName"></schoolingo-form>
+            }
+        }
     </div>
+
 </div>

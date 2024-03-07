@@ -317,7 +317,7 @@ export class Schoolingo {
     let user = this.userService.getUser() as UserMain;
     let output = '';
     if (!user) {
-      return 'Načítání';
+      return this.locale.getLocale('loading');
     }
 
     if (user.type == 'student') {

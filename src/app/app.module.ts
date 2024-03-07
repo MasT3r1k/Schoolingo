@@ -52,6 +52,7 @@ import { DiaryComponent as TraineeDiary } from './Board/traineeships/diary/diary
 import { ManageComponent as TraineeManage } from './Board/traineeships/manage/manage.component';
 import { OverviewComponent as TraineeOverview } from './Board/traineeships/overview/overview.component';
 import { SettingsComponent as TraineeSettings } from './Board/traineeships/settings/settings.component';
+import { FormList, FormManager } from '@Schoolingo/FormManager';
 
 @NgModule({
     declarations: [
@@ -104,6 +105,7 @@ import { SettingsComponent as TraineeSettings } from './Board/traineeships/setti
         Calendar,
         Modals,
         CookieService,
+        FormList
     ],
     bootstrap: [AppComponent],
     imports: [
@@ -114,6 +116,7 @@ import { SettingsComponent as TraineeSettings } from './Board/traineeships/setti
         ReactiveFormsModule,
         QRCodeModule,
         HttpClientModule,
+        FormManager,
     ]
 })
 export class AppModule { }

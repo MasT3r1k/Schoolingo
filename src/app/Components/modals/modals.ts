@@ -1,5 +1,5 @@
+import { FormError } from "@Schoolingo/FormManager";
 import { Injectable } from "@angular/core";
-import { formError } from 'src/app/login/login.component';
 
 export type modalList = 'homework' | 'changeTheme' | null;
 
@@ -11,7 +11,7 @@ export class Modals {
 
     private modal: modalList = null;
     public data: any = {};
-    public formErrors: formError[] = [];
+    public formErrors: FormError[] = [];
     
     public errorFilter(name: string): boolean | string {
         let filter = this.formErrors.filter((err) => err.input == name);

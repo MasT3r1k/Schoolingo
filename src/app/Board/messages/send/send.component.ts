@@ -3,9 +3,9 @@ import { Schoolingo } from '@Schoolingo';
 import { Locale } from '@Schoolingo/Locale';
 import { Teacher, UserPermissions } from '@Schoolingo/User.d';
 import { UserService } from '@Schoolingo/User';
-import { formError } from 'src/app/login/login.component';
 import { FormControl } from '@angular/forms';
 import { SocketService } from '@Schoolingo/Socket';
+import { FormError } from '@Schoolingo/FormManager';
 
 type MessageType = {
   label: string;
@@ -65,7 +65,7 @@ export class SendComponent {
   }
 
 
-  formErrors: formError[] = [];
+  formErrors: FormError[] = [];
   public errorFilter(name: string): boolean | string {
     let filter = this.formErrors.filter((err) => err.input == name);
     return filter.length == 0 ? false : filter[0].locale;

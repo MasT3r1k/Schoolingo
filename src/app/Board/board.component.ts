@@ -15,8 +15,8 @@ import { Lesson, Room, Subject } from '@Schoolingo/Board.d';
 import { Storage } from '@Schoolingo/Storage';
 import { LoginData, Teacher, UserPermissions } from '@Schoolingo/User.d';
 import { Logger } from '@Schoolingo/Logger';
-import { formError } from '../login/login.component';
 import { FormControl } from '@angular/forms';
+import { FormError } from '@Schoolingo/FormManager';
 
 @Component({
   selector: 'schoolingo-board',
@@ -202,7 +202,7 @@ export class BoardComponent implements OnInit {
   password: FormControl<string | null> = new FormControl<string>('');
   public tryingToLogin: boolean = false;
 
-  formErrors: formError[] = [];
+  formErrors: FormError[] = [];
   public errorFilter(name: string): boolean | string {
     let filter = this.formErrors.filter((err) => err.input == name);
     return filter.length == 0 ? false : filter[0].locale;

@@ -16,14 +16,18 @@ export class UserService {
     private socketService: SocketService,
     private cookieService: CookieService
   ) {
-    let user = this.storage.get(this.storage.userCacheName) as UserMain;
-    if (user) {
-      this.setUser(user);
+    try {
+      let user = this.storage.get(this.storage.userCacheName) as UserMain;
+      if (user) {
+        this.setUser(user);
+      }
+    } catch(e) {
+      this.storage.remove(this.storage.userCacheName);
+      this.setUser(null);
     }
 
     let token = this.cookieService.getCookie('token');
-    let date = new Date();
-    date.setTime(new Date().getTime() + 300000);
+    let date = this.storage.get(this.storage.tokenCacheName, 'expiration') as Date;
     if (token !== '') {
       this.setToken(token, date);
     }

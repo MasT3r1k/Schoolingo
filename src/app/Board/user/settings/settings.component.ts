@@ -1,13 +1,13 @@
 import { Tabs } from '@Components/Tabs/Tabs';
 import { Modals } from '@Components/modals/modals';
 import { Schoolingo } from '@Schoolingo';
+import { FormError } from '@Schoolingo/FormManager';
 import { Locale, languages } from '@Schoolingo/Locale';
 import { SocketService } from '@Schoolingo/Socket';
 import { Theme } from '@Schoolingo/Theme';
 import { UserMain, UserService } from '@Schoolingo/User';
 import { Component } from '@angular/core';
 import { FormControl } from '@angular/forms';
-import { formError } from 'src/app/login/login.component';
 
 @Component({
   templateUrl: './settings.component.html',
@@ -22,7 +22,7 @@ export class SettingsComponent {
   public password = new FormControl('');
   public password2 = new FormControl('');
 
-  public formErrors: formError[] = [];
+  public formErrors: FormError[] = [];
   public errorFilter(name: string): string | false {
       let filter = this.formErrors.filter((err) => err.input == name);
       return (filter.length == 0) ? false : filter[0].locale;

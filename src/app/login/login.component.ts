@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { FormControl } from '@angular/forms';
+import { Form, FormBuilder, FormControl, FormGroup } from '@angular/forms';
 import { Title } from '@angular/platform-browser';
 import { ActivatedRoute, Params, Router } from '@angular/router';
 import { Tabs } from '@Components/Tabs/Tabs';
@@ -13,30 +13,54 @@ import { SocketService } from '@Schoolingo/Socket';
 import { Theme } from '@Schoolingo/Theme';
 import { UserService } from '@Schoolingo/User';
 import { LoginData, User } from '@Schoolingo/User.d';
+import { FormButton, FormInput, FormList, FormManager } from '@Schoolingo/FormManager';
+
+export type pageTypes = 'login' | 'forgotpass';
 
 type QRPages = 'loading' | 'error' | 'scan' | 'trylogin';
-
-export type formError = {
-  input: string;
-  locale: string;
-}
 
 type QRStatus = {
   whatIsVisible: QRPages;
   code?: string;
   error?: boolean;
   user?: User;
-}
+};
 
 @Component({
   templateUrl: './login.component.html',
-  styleUrls: ['./login.component.css', '../../card.css', '../input.css']
+  styleUrls: ['./login.component.css', '../../card.css', '../input.css'],
 })
 export class LoginComponent implements OnInit {
-
-
   private declare routerSocket;
-  formErrors: formError[] = [];
+
+  public inputs: FormInput[] = [
+    {
+      type: 'text',
+      name: 'username',
+      placeholder: 'username',
+      label: 'username',
+    },
+    {
+      type: 'password',
+      name: 'password',
+      placeholder: 'password',
+      label: 'password',
+      notes: [
+        {
+          note: 'forgot_pass',
+          func: () => {
+            window.history.pushState(100, "Forgot password", "/login?forgotpass")
+            this.switch('forgotpass');
+          },
+        },
+      ],
+    },
+  ];
+  public buttons: FormButton[] = [{ label: 'login_btn', executed: 'logining_btn', func: () => this.login() }];
+  public declare form: FormManager;
+
+  public formName: string = 'Login_Form';
+
 
   constructor(
     public locale: Locale,
@@ -50,96 +74,185 @@ export class LoginComponent implements OnInit {
     public tabs: Tabs,
     private title: Title,
     private storage: Storage,
-    public theme: Theme
-  ) {}
+    public theme: Theme,
+    private formList: FormList
+  ) {
+
+    this.form = formList.getForm(this.formName) as FormManager;
+
+  }
+
+  public switch(type: pageTypes): void {
+    switch (type) {
+      case 'login':
+        this.inputs = [
+          {
+            type: 'text',
+            name: 'username',
+            placeholder: 'username',
+            label: 'username',
+          },
+          {
+            type: 'password',
+            name: 'password',
+            placeholder: 'password',
+            label: 'password',
+            notes: [
+              {
+                note: 'forgot_pass',
+                func: () => {
+                  window.history.pushState(100, "Forgot password", "/login?forgotpass")
+                  this.switch('forgotpass');
+                },
+              },
+            ],
+          },
+        ];
+
+        this.buttons = [{ label: 'login_btn', executed: 'logining_btn', func: () => this.login() }];
+        break;
+      case 'forgotpass':
+        this.inputs = [
+            {
+              type: 'text',
+              name: 'username',
+              placeholder: 'username',
+              label: 'username',
+              notes: [
+                {
+                  note: 'remembered_pass',
+                  func: () => {
+                    window.history.pushState(100, "Login", "/login")
+                    this.switch('login');
+                  },
+                },
+              ],
+            },
+          ];
+
+          this.buttons = [{ label: 'reset_pass', executed: 'reseting_pass', func: () => this.login() }];
+        break;
+    
+    }
+
+    if (!this.form) this.form = this.formList.getForm(this.formName) as FormManager;
+    this.form.refreshFormGroup()
+  }
 
   ngOnInit(): void {
 
+    this.form = this.formList.getForm(this.formName) as FormManager;
+
+    this.route.queryParamMap.subscribe((param: Params) => {
+      // Check if show forgot password form //* /login?forgotpass
+      if (param['params']['forgotpass'] != undefined) {
+        this.switch('forgotpass');
+      }
+    });
+
     this.routerSocket = this.router.events.subscribe((url: any) => {
       this.tabs.clearTabs();
-      if ((!url?.routerEvent?.urlAfterRedirects && !url?.url) || !(url?.routerEvent?.urlAfterRedirects?.startsWith('/login') || url?.url?.startsWith('/login'))) { return; }
+      if (
+        (!url?.routerEvent?.urlAfterRedirects && !url?.url) ||
+        !(
+          url?.routerEvent?.urlAfterRedirects?.startsWith('/login') ||
+          url?.url?.startsWith('/login')
+        )
+      ) {
+        return;
+      }
 
-      this.title.setTitle(this.locale.getLocale('login_title') + ' | SCHOOLINGO')
+      this.title.setTitle(
+        this.locale.getLocale('login_title') + ' | SCHOOLINGO'
+      );
       this.schoolingo.sidebarToggled = false;
-  
+
       this.socketService.connectAnon();
       this.refreshQRcode();
 
-  
-      this?.socketService.addFunctionNotConnected('login', (data: LoginData) => {
-        this.tryingToLogin = false;
-        if (data.status == 1 && data?.token && data?.expires) {
-          this.logger.send('Login', 'Successful logged in.');
-          this.storage.removeAll();
-          this.toast.showToast(this.locale.getLocale('successfulLogin'), 'success', 5000);
-          this.userService.setToken(data.token, data.expires);
-
-          let nextURL: string = 'main';
-          this.route.queryParams.forEach((param: Params) => {
-            if (param['returnUrl']) {
-              nextURL = param['returnUrl'].slice(1);
+      this?.socketService.addFunctionNotConnected(
+        'login',
+        (data: LoginData) => {
+          this.form.executing = false;
+          if (data.status == 1 && data?.token && data?.expires) {
+            this.logger.send('Login', 'Successful logged in.');
+            this.storage.removeAll();
+            this.toast.showToast(
+              this.locale.getLocale('successfulLogin'),
+              'success',
+              5000
+            );
+            this.userService.setToken(data.token, data.expires);
+            this.socketService.getSocket().Socket?.disconnect();
+            let nextURL: string = 'main';
+            this.route.queryParams.forEach((param: Params) => {
+              if (param['returnUrl']) {
+                nextURL = param['returnUrl'].slice(1);
+              }
+            });
+            this.router.navigate(['', nextURL]);
+          } else {
+            if (!data.message) return;
+            switch (data.message) {
+              case 'user_not_found':
+                this.form.addError('username', data.message);
+                break;
+              case 'wrong_password':
+                this.form.addError('password', data.message);
+                break;
+              default:
+                this.logger.send('Login', 'Error: ' + data.message);
+                break;
             }
-          })
-          this.router.navigate(['', nextURL]);
-        }else{
-          if (!data.message) return;
-          switch(data.message) {
-            case "user_not_found":
-              this.formErrors = [{ input: 'username', locale: data.message }];
-              break;
-            case "wrong_password":
-              this.formErrors = [{ input: 'password', locale: data.message }];
-              break;
-            default:
-              this.logger.send('Login', 'Error: ' + data.message);
-              break;
-          } 
+          }
         }
-      })
+      );
     });
-
   }
 
   ngOnDestroy(): void {
     this.routerSocket.unsubscribe();
     this.socketService.getSocket()?.Socket?.disconnect();
-
   }
 
   // Config import
   public config = config;
 
   // Main login code
-  username: FormControl<string | null> = new FormControl<string>('');
-  password: FormControl<string | null> = new FormControl<string>('');
-  public tryingToLogin: boolean = false;
-
   public login(): void {
-    this.formErrors = [];
+    if (!this.form) this.form = this.formList.getForm(this.formName) as FormManager;
+    this.form.errors = [];
     if (this.canLogin() == false) {
-      if (this.username.value == null || this.username.value == '') {
-        this.formErrors.push({ input: 'username', locale: 'required' });
+      if (
+        this.form.formData.value.username == null ||
+        this.form.formData.value.username == ''
+      ) {
+        this.form.addError('username', 'required');
       }
-      if (this.password.value == null || this.password.value == '') {
-        this.formErrors.push({ input: 'password', locale: 'required' });
-
+      if (
+        this.form.formData.value.password == null ||
+        this.form.formData.value.password == ''
+      ) {
+        this.form.addError('password', 'required');
       }
       return;
     }
-    this.tryingToLogin = true;
-    this.logger.send('Login', 'Trying to login.')
-    this.socketService?.getSocket().Socket?.emit('login', { username: this.username.value, password: this.password.value });
+    this.form.executing = true;
+    this.logger.send('Login', 'Trying to login.');
+    this.socketService?.getSocket().Socket?.emit('login', {
+      username: this.form.formData.value.username,
+      password: this.form.formData.value.password,
+    });
   }
 
   public canLogin(): boolean {
-    return !(this.username.value == null || this.username.value == '' || this.password.value == null || this.password.value == '');
+    return !(
+      this?.form.formData.value.username == null ||
+      this?.form.formData.value.username == '' ||
+      this.form.formData.value.password == null ||
+      this.form.formData.value.password == ''
+    );
   }
-
-  public errorFilter(name: string): boolean | string {
-    let filter = this.formErrors.filter((err) => err.input == name);
-    return (filter.length == 0) ? false : filter[0].locale;
-  }
-
 
   // QR CODE
   private qrCode: string = '';
@@ -182,13 +295,22 @@ export class LoginComponent implements OnInit {
   }
 
   public getLoginButtonText(): string {
-    if (this.tryingToLogin == true) return '<div class=\'btn-loader\'></div> ' + this.locale.getLocale('logining_btn');
+    if (this.form && this.form.executing == true)
+      return (
+        "<div class='btn-loader'></div> " +
+        this.locale.getLocale('logining_btn')
+      );
     return this.locale.getLocale('login_btn');
   }
 
   public getQRcodeStatus(): QRStatus {
     let page: QRPages | null = null;
-    if (this.qrCode == '' && this.socketService.socket_err == false && this.qrCodeError == false && this.qrCodeResult == null) {
+    if (
+      this.qrCode == '' &&
+      this.socketService.socket_err == false &&
+      this.qrCodeError == false &&
+      this.qrCodeResult == null
+    ) {
       page = 'loading';
     } else if (this.qrCode != '' && this.qrCodeError == false) {
       if (this.qrCodeResult == null) {
@@ -202,12 +324,7 @@ export class LoginComponent implements OnInit {
     return {
       whatIsVisible: page,
       code: this.qrCode,
-      user: this.qrCodeResult
-    }
+      user: this.qrCodeResult,
+    };
   }
-
-
-
-
-
 }

@@ -37,8 +37,8 @@ export class CookieService {
       value +
       '; ' +
       expires +
-      '; path=/;'
-      ' Secure; SameSite=Strict;';
+      '; path=/;' +
+      ' Secure; SameSite=Lax; ';
     console.log(cookie);
     document.cookie = cookie;
   }

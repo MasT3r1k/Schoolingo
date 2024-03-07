@@ -166,6 +166,7 @@ export class Locale {
                 },
             },
             settings: "Nastavení",
+
             // System roles
             roles: {
                 systemadmin: "Správce systému",
@@ -293,6 +294,18 @@ export class Locale {
                 },
             },
 
+            traineeship: {
+                companyName: "Název společnosti",
+                officeAddress: "Adresa pobočky",
+                traineeAddress: "Adresa praxe",
+                CIN: "DIČ",
+                activity: "Aktivity ve firmě",
+                equipment: "Věci potřebné pro práci",
+
+                addCompany: "Přidat firmu",
+                addingCompany: "Firma se přidává"
+            },
+
             subjects: "Předměty",
             subject: "Předmět",
 
@@ -306,6 +319,10 @@ export class Locale {
             city: "Město",
             email: "Email",
             phone: "Telefon",
+            web: "Webová stránka",
+            contact: "Kontakt",
+            description: "Popis",
+
             
             months: ["leden", "únor", "březen", "duben", "květen", "červen", "červenec", "srpen", "září", "říjen", "listopad", "prosinec"],
 
@@ -322,10 +339,14 @@ export class Locale {
 
             or: "nebo",
             close: "Zavřít",
+            loading: "Načítání..",
 
             // Authentication
             login_title: "Přihlášení",
             forgot_pass: "Zapomenuté heslo?",
+            reset_pass: "Resetovat heslo",
+            reseting_pass: "Posílání e-mailu.",
+            remembered_pass: "Vzpomněli jste si na heslo?",
             login_btn: "Přihlásit se",
             logining_btn: "Přihlašování..",
             loading_user: "Probíhá načítání vašich dat ze systému..",
