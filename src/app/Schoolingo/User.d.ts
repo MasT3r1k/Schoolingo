@@ -13,9 +13,8 @@ export type UserMain = {
     type: UserRoles;
     class: string[];
     userBirthNumber: string;
-
     classTeacher: number;
-
+    recommendChangePassword: boolean;
     teacherId?: number;
     studentId?: number;
     isPrincipal?: boolean;

@@ -34,16 +34,16 @@ export class DevicesComponent implements OnInit {
 
 
   ngOnInit(): void {
-    this.socketService.addFunction("getDevices", (data: any) => {
+    this.socketService.addFunction("getDevices").subscribe((data: any) => {
       this.devices = data;
     });
 
-    this.socketService.addFunction("removeDevice", (data: any) => {
+    this.socketService.addFunction("removeDevice").subscribe((data: any) => {
       let index = this.devices.findIndex((device: Device) => device.id == data.id);
       this.devices.splice(index, 1);
     });
 
-    this.socketService.addFunction("connect", (data: any) => {
+    this.socketService.addFunction("connect").subscribe((data: any) => {
       this.socketService.getSocket().Socket?.emit('getDevices');
     })
   }

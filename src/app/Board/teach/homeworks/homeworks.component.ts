@@ -15,7 +15,7 @@ export class HomeworksComponent implements OnInit {
 
   ngOnInit(): void {
     this.socketService.getSocket().Socket?.emit('getUserHomeworks');
-    this.socketService.addFunction("getUserHomeworks", (data: any) => {
+    this.socketService.addFunction("getUserHomeworks").subscribe((data: any) => {
       console.log(data);
     });
   }

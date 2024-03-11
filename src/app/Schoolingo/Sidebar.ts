@@ -288,6 +288,10 @@ export class Sidebar {
                 url: 'school/settings',
                 item: 'sidebar/school/settings'
             }]
+        }, {
+            item: 'sidebar/system',
+            permission: ['all'],
+            url: 'system'
         }
     
     ]

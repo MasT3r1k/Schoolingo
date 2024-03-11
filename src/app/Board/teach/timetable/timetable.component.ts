@@ -10,6 +10,7 @@ import { UserService } from '@Schoolingo/User';
 import { CalendarComponent, CalendarOptions } from '@Components/calendar/calendar.component';
 import { Calendar } from '@Components/calendar/calendar';
 import { TTableLesson } from '@Schoolingo/Board.d';
+import { Modals } from '@Components/modals/modals';
 
 @Component({
   templateUrl: './timetable.component.html',
@@ -24,7 +25,8 @@ export class TimetableComponent implements OnInit {
     public tabs: Tabs,
     private renderer: Renderer2,
     private router: Router,
-    private calendarService: Calendar
+    private calendarService: Calendar,
+    private modals: Modals
   ) {
     this.dropdown.addDropdown('absence');
     this.dropdown.addDropdown('lessonInformation');
@@ -141,6 +143,10 @@ export class TimetableComponent implements OnInit {
     this.routerSub.unsubscribe();
     this.renderBeforePrint();
     this.renderAfterPrint();
+  }
+
+  public showPrintModal(): void {
+    this.modals.openModal('print_timetable', { title: 'Vytisknout rozvrh', disableEscape: false, allowMultiModals: false });
   }
 
 }

@@ -44,7 +44,7 @@ export class ThemeComponent {
         private socketService: SocketService
     ) {
 
-        this.socketService.addFunction("updateUser", (data: any): void => {
+        this.socketService.addFunction("updateUser").subscribe((data: any): void => {
             if (!data.message) return;
             if (data.status === 1) {
                 switch(data.message) {
@@ -54,7 +54,7 @@ export class ThemeComponent {
                     break;
                 }
             }
-        }, "theme")
+        })
 
     }
 

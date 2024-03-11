@@ -2,7 +2,7 @@
     <header>
         <h2>{{ locale.getLocale('sidebar/teach/timetable') }}</h2>
         <div class="flex-items">
-            <div [ngClass]="{absence: true, item: true, tab: true, 'no-realy-small': true }" onclick="window.print();">
+            <div [ngClass]="{absence: true, item: true, tab: true, 'no-realy-small': true }" (click)="showPrintModal()">
                 <span><i class="ti ti-printer"></i> {{ locale.getLocale('print') }}</span>
             </div>
 
@@ -64,5 +64,4 @@
     <p *ngIf="userService.getUser()?.teacherId">Třída: {{ selectedLesson.class }}</p>
     <p>Předmět: {{ selectedLesson.subject?.[2] }}</p>
     <p>Místnost: {{ selectedLesson.room?.label }}</p>
-
 </div>

@@ -37,7 +37,7 @@ export class AbsenceComponent implements OnInit {
   public subjectLessons: Subject[] = [];
 
   ngOnInit(): void {
-    this.socketService.addFunction("getUserAbsence", (data: any) => {
+    this.socketService.addFunction("getUserAbsence").subscribe((data: any) => {
       this.subjectLessons = data.allLessons;
       this.absence = data.absence;
       console.log(data);

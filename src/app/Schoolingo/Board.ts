@@ -195,7 +195,7 @@ export class Schoolingo {
   }
 
   public setupSocket(): void {
-    this.socketService.addFunction('token', (data: any) => {
+    this.socketService.listenEvent('token').subscribe((data: any) => {
       if (!data.status || data?.user == undefined || data.status == 401) {
         this.SECURITY_modal = 'autologout';
         this.logger.send('User', 'Logging out due problem with token.');
@@ -225,7 +225,7 @@ export class Schoolingo {
       }
     });
 
-    this.socketService.addFunction('subjects', (subjects: any[]) => {
+    this.socketService.addFunction('subjects').subscribe((subjects: any[]) => {
       let subjectList: Subject[] = [];
       for (let i = 0; i < subjects.length; i++) {
         subjectList.push([
@@ -238,17 +238,17 @@ export class Schoolingo {
       this.logger.send('Socket', 'Updated list of subjects');
     });
 
-    this.socketService.addFunction('rooms', (rooms: any[]) => {
+    this.socketService.addFunction('rooms').subscribe((rooms: any[]) => {
       this.setRooms(rooms);
       this.logger.send('Socket', 'Updated list of rooms');
     });
 
-    this.socketService.addFunction('teachers', (teachers: any[]) => {
+    this.socketService.addFunction('teachers').subscribe((teachers: any[]) => {
       this.setTeachers(teachers);
       this.logger.send('Socket', 'Updated list of teachers');
     });
 
-    this.socketService.addFunction('timetable', (timetable: any[]) => {
+    this.socketService.addFunction('timetable').subscribe((timetable: any[]) => {
       let lessons: Lesson[][][] = [];
 
       for (let i = 0; i < timetable.length; i++) {

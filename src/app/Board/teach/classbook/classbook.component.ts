@@ -38,12 +38,12 @@ export class ClassbookComponent {
     public calendarService: Calendar,
     public modals: Modals
   ) {
-    this.socketService.addFunction('getClassInfo', (classInfo: any) => {
+    this.socketService.addFunction('getClassInfo').subscribe((classInfo: any) => {
       this.classInfo = classInfo.classInfo;
       this.classInfo['maxHours'] = classInfo.maxHours;
     });
 
-    this.socketService.addFunction('getClassStudents', (students: any[]) => {
+    this.socketService.addFunction('getClassStudents').subscribe((students: any[]) => {
       this.students = students.sort((a, b): any => {
         if (a.lastName < b.lastName) {
           return -1;
@@ -66,7 +66,7 @@ export class ClassbookComponent {
         });
     });
 
-    this.socketService.addFunction('getLesson', (lesson: any) => {
+    this.socketService.addFunction('getLesson').subscribe((lesson: any) => {
       if (!lesson[0]) return;
       this.lessonTopic.setValue(lesson?.[0]?.topic);
       this.lessonNote.setValue(lesson[0].note);
@@ -74,7 +74,7 @@ export class ClassbookComponent {
       this.lesson = lesson[0];
     });
 
-    this.socketService.addFunction('setAbsence', (data: any) => {
+    this.socketService.addFunction('setAbsence').subscribe((data: any) => {
       let dataDate = new Date(data[0].date);
       if (
         !(
@@ -93,7 +93,7 @@ export class ClassbookComponent {
       }
     });
 
-    this.socketService.addFunction('getAbsence', (data: any) => {
+    this.socketService.addFunction('getAbsence').subscribe((data: any) => {
       for (let i = 0; i < data.length; i++) {
         this.addAbsence(data[i].student, [
           { lesson: data[i].lesson as number, type: data[i].type as number },
@@ -101,11 +101,11 @@ export class ClassbookComponent {
       }
     });
 
-    this.socketService.addFunction('getHomeworks', (homeworks: any[]) => {
+    this.socketService.addFunction('getHomeworks').subscribe((homeworks: any[]) => {
       this.homeworks = homeworks;
     });
 
-    this.socketService.addFunction('setHomework', () => {
+    this.socketService.addFunction('setHomework').subscribe(() => {
       this.modals.showModal(null);
     });
   }

@@ -1,5 +1,19 @@
 <div class="modals" (click)="modals.showModal(null);">
 
+    @for(modal of modals.modals;track modal.name) {
+
+        <div class="modal">
+            <div class="modal-header">
+                <h2>{{ locale.getLocale(modal.options.title)}}</h2>
+            </div>
+            <div class="close-btn" (click)="modals.modals.splice(modals.modals.indexOf(modal))">
+                <i class="ti ti-x"></i>
+            </div>
+
+        </div>
+    }
+
+
 <!-- Creating new homework (classbook) -->
 
     <div class="modal" (click)="$event.stopPropagation();dropdowns.closeAllDropdowns();modals.data.isEditingList = false;" *ngIf="modals.getModal() == 'homework'">

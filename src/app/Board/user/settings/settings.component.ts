@@ -38,7 +38,7 @@ export class SettingsComponent {
     public schoolingo: Schoolingo
   ) {
 
-    this.socketService.addFunction("updateUser", (data: any) => {
+    this.socketService.addFunction("updateUser").subscribe((data: any) => {
       this.isChangingPassword = false;
       console.log(data);
       if (!data.message) return;

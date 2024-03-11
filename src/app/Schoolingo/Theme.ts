@@ -21,7 +21,7 @@ export class Theme {
     private storage: Storage,
     private logger: Logger
   ) {
-    this.renderer = rendererFactory.createRenderer(null, null);
+    this.renderer = this.rendererFactory.createRenderer(null, null);
     logger.send(this.logName, 'Loading theme..');
     this.theme = this.storage.get(this.themeCache[0], this.themeCache[1]);
 

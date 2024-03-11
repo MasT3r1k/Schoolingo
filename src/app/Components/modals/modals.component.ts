@@ -19,8 +19,7 @@ export class ModalsComponent {
     public schoolingo: Schoolingo,
     public dropdowns: Dropdowns,
     private calendar: Calendar,
-    private socketService: SocketService,
-    private renderer: Renderer2
+    private socketService: SocketService
   ) {}
 
 

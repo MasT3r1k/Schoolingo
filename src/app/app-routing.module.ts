@@ -49,6 +49,7 @@ import { OverviewComponent as TraineeOverview } from './Board/traineeships/overv
 import { SettingsComponent as TraineeSettings } from './Board/traineeships/settings/settings.component';
 import { SchoolSettingsComponent } from './Board/school/settings/school-settings.component';
 import { InformationComponent as SchoolInformationComponent } from './Board/school/information/information.component';
+import { SystemComponent } from './Board/system/system.component';
 
 const routes: Routes = [
 {
@@ -184,6 +185,8 @@ const routes: Routes = [
           path: 'settings', component: SchoolSettingsComponent
         }
       ]
+    }, {
+      path: 'system', component: SystemComponent
     }, {
       path: '**', redirectTo: 'main'
     }]

@@ -4,6 +4,7 @@ import { io, Socket } from 'socket.io-client';
 import { Storage } from './Storage';
 import { Logger } from './Logger';
 import { CookieService } from './Cookie';
+import { Observable } from 'rxjs';
 
 @NgModule()
 export class SocketService {
@@ -20,17 +21,31 @@ export class SocketService {
   private socket: Socket | null = null;
   public socket_err: boolean = false;
   private socket_errMsg: string = '';
+
+  public socketEvents: Map<string, any[]> = new Map<string, any[]>();
+
   public socketFunctions: Record<string, Record<string, Function>> = {};
   public socketFunctionsNotConnected: Record<string, Record<string, Function>> = {};
 
-  public addFunction(event: string, fn: Function, name: string = event): void {
-    if (!this.socketFunctions[event]) {
-      this.logger.send('Socket', 'Listening new event ' + event);
-      this.socketFunctions[event] = {};
-    }
+  public addFunction(event: string): Observable<any> {
 
-    if (!this.socketFunctions[event][name])
-      this.socketFunctions[event][name] = fn;
+    return new Observable<any>(observer => {
+      const listener = (data: any) => observer.next(data);
+      this.socket?.on(event, listener);
+      // Store the listener for re-registration upon reconnection
+      if (!this.socketEvents.has(event)) {
+        this.socketEvents.set(event, []);
+      }
+      this.socketEvents.get(event)?.push(listener);
+    });
+
+    // if (!this.socketFunctions[event]) {
+    //   this.logger.send('Socket', 'Listening new event ' + event);
+    //   this.socketFunctions[event] = {};
+    // }
+
+    // if (!this.socketFunctions[event][name])
+    //   this.socketFunctions[event][name] = fn;
   }
 
   public addFunctionNotConnected(event: string, fn: Function, name: string = event): void {
@@ -141,4 +156,24 @@ export class SocketService {
       this.socket_errMsg = 'Disconnect';
     });
   }
+
+
+
+  public listenEvent(event: string): Observable<any> {
+    return new Observable<any>(observer => {
+      this.socket?.on(event, (data: any) => observer.next(data));
+    });
+  }
+
+  public emitEvent(event: string, data: any): void {
+    if (!this.socket) return;
+    this.socket?.emit(event, data);
+  }
+
+  public onReconnect(): Observable<any> {
+    return new Observable<any>(observer => {
+      this.socket?.on('reconnect', () => observer.next());
+    });
+  }
+
 }

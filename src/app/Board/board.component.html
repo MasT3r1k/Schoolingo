@@ -98,6 +98,11 @@
                 <span [innerHTML]="locale.getLocale('alerts/offlineMode')"></span> 
                 <div class="btn" (click)="schoolingo.refreshConnection()" [innerHTML]="schoolingo.getRefreshingText()"></div>
             </div>
+            <div class="alert alert-error" *ngIf="socketService.connected === true && userService.getUser()?.recommendChangePassword">
+                <span [innerHTML]="">DOPORUČUJEME Vám změnit heslo, protože naposledy Vaše heslo bylo změněno správcem systému.</span> 
+                <div class="btn" [routerLink]="['/user/settings']" [innerHTML]="'Změnit heslo'"></div>
+                <div class="btn" [innerHTML]="'Znovu nezobrazovat'"></div>
+            </div>
             <router-outlet></router-outlet>
         </div>
     </div>
