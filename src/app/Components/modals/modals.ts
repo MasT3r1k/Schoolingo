@@ -1,16 +1,36 @@
-import { FormError } from "@Schoolingo/FormManager";
+import { FormError, FormManager } from "@Schoolingo/FormManager";
 import { Injectable, Renderer2, RendererFactory2 } from "@angular/core";
 
 export type Modal = {
     name: string;
     options: ModalOptions;
+    data: any;
 };
+
+export type ModalComponentText = {
+    type: 'text';
+    text: string;
+}
+
+export type ModalComponentForm = {
+    type: 'form';
+    form: FormManager;
+}
+
+export type ModalComponentButton = {
+    type: 'button',
+    text: string;
+    func: Function;
+}
+
+
+export type ModalComponent = ModalComponentText | ModalComponentForm | ModalComponentButton;
 
 export type ModalOptions = {
     title: string;
     disableEscape?: boolean;
     allowMultiModals?: boolean;
-
+    components?: ModalComponent[];
 };
 
 export type modalList = 'homework' | 'changeTheme' | null;
@@ -20,8 +40,9 @@ export class Modals {
     private renderer: Renderer2;
 
 
-    constructor(    private rendererFactory: RendererFactory2,
-        ) {
+    constructor(
+        private rendererFactory: RendererFactory2,
+    ) {
         this.renderer = this.rendererFactory.createRenderer(null, null);
 
         this.renderer.listen(window, 'keydown', (event: any) => {
@@ -39,9 +60,9 @@ export class Modals {
 
     public modals: Modal[] = [];
 
-    public openModal(name: string, options: ModalOptions): void {
+    public openModal(name: string, options: ModalOptions, data?: any): void {
         if (this.modals[this.modals.length - 1] && !this.modals[this.modals.length - 1].options?.allowMultiModals) { return; }
-        this.modals.push({ name, options });
+        this.modals.push({ name, options, data });
     }
 
     private modal: modalList = null;

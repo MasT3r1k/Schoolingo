@@ -1,4 +1,4 @@
-<div class="modals" (click)="modals.showModal(null);">
+<div class="modals">
 
     @for(modal of modals.modals;track modal.name) {
 
@@ -9,6 +9,16 @@
             <div class="close-btn" (click)="modals.modals.splice(modals.modals.indexOf(modal))">
                 <i class="ti ti-x"></i>
             </div>
+
+            @if (modal.options.components) {
+                @for(component of modal.options.components;track component.type) {
+                    @switch (component.type) {
+                        @case ("text") {
+                            <div>{{ component.text }}</div>
+                        }
+                    }
+                }
+            }
 
         </div>
     }
@@ -35,7 +45,7 @@
                 <div class="form-group date-pick">
                     <div class="first-margin">
                         <label for="startDate" style="margin-bottom: 8px;">{{ locale.getLocale('homeworks/startDate') }}</label>
-                        <schoolingo-calendar name="HOMEWORK_STARTDATE" [date]="(this.modals.data.start) ? this.modals.data.start : schoolingo.getToday()" [disabled]=true></schoolingo-calendar>
+                        <schoolingo-calendar name="HOMEWORK_STARTDATE" [date]="this.modals.data.start" [disabled]="true"></schoolingo-calendar>
                     </div>
                     <div class="last-margin">
                         <label for="endDate" style="margin-bottom: 8px;" [ngClass]="{error: modals.errorFilter('endDate') != false}">{{ locale.getLocale('homeworks/endDate') }} <span class="label-error" *ngIf="modals.errorFilter('endDate') != false"> - {{ locale.getLocale(modals.errorFilter('endDate').toString()) }}</span></label>

@@ -53,6 +53,7 @@ import { ManageComponent as TraineeManage } from './Board/traineeships/manage/ma
 import { OverviewComponent as TraineeOverview } from './Board/traineeships/overview/overview.component';
 import { SettingsComponent as TraineeSettings } from './Board/traineeships/settings/settings.component';
 import { FormList, FormManager } from '@Schoolingo/FormManager';
+import { IntermRecordComponent } from './Board/marks/interm-record/interm-record.component';
 
 @NgModule({
     declarations: [
@@ -87,7 +88,8 @@ import { FormList, FormManager } from '@Schoolingo/FormManager';
         TraineeManage,
         TraineeOverview,
         TraineeSettings,
-        CalendarComponent
+        CalendarComponent,
+        IntermRecordComponent
     ],
     providers: [
         Locale,

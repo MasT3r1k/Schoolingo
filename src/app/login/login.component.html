@@ -13,43 +13,6 @@
         <div class="school">{{ config.school }}</div>
 
         <schoolingo-form [inputs]="inputs" [buttons]="buttons" [form]="formName"></schoolingo-form>
-
-        <!-- <form [formGroup]="formData" (submit)="form.buttons[0].func ? form.buttons[0].func() : ''">
-            <input type="submit" value="" style="display: none" />
-            @for (input of form.inputs; track input.name) {
-                <div class="form-group">
-                    @if (input.label) {
-                        <label [attr.for]="input.name" [ngClass]="{ error: form.getError(input.name) != null }">
-                            {{ locale.getLocale(input.label) }}
-                            <span
-                class="label-error"
-                *ngIf="form.getError(input.name) != null"
-              >
-                -
-                {{ locale.getLocale('' + form.getError(input.name)) }}</span
-              >
-                        </label>
-                        <input [type]="input.type" [ngClass]="{ invalid: form.getError(input.name) != null}" [name]="input.name" [formControlName]="input.name" [placeholder]="input.placeholder ? locale.getLocale(input.placeholder) : ''" (required)="input.required">
-                        @for(note of input.notes; track note.note) {
-                            @if (note.url) {
-                                <a [href]="note.url">{{ locale.getLocale(note.note) }}</a>
-                            }
-
-                            @if (note.func) {
-                                <a (click)="note.func()">{{ locale.getLocale(note.note) }}</a>
-                            }
-                        }
-                    }
-                </div>
-            }
-
-            @for (button of form.buttons;track button) {
-                <div class="form-group">
-                    <div [ngClass]="{btn: true, submit: true, disabled: !canLogin}" role="button" (click)="button?.func()" [innerHTML]="form.executing ? '<div class=btn-loader></div> ' + locale.getLocale(button.executed) : locale.getLocale(button.label)"></div>
-                </div>
-            }
-
-        </form> -->
       </div>
       <div class="bar">{{ locale.getLocale("or") }}</div>
       <div class="qrcode">

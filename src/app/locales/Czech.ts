@@ -176,6 +176,7 @@ export default {
         thisWeek: "Tento týden",
         nextWeek: "Příští týden",
         permanent: "Stálý",
+        print: "Vytisknout rozvrh"
     },
     
     homeworks: {
@@ -196,6 +197,8 @@ export default {
         newHomework: "Zadat domácí úkol",
         notes: "Poznámky",
         newNote: "Nová poznámka",
+
+        extendService: "Prodloužit službu"
     },
 
     absence: {
@@ -206,6 +209,8 @@ export default {
         late: "Pozdní příchod",
         early: "Dřívejší odchod",
         distance: "Distanční výuka",
+        writeAbsenceTitle: "Zapisování absence",
+        writeAbsenceBtn: "Zapsat absenci"
     },
 
     pupilcard: {
@@ -221,7 +226,9 @@ export default {
 
     devices: {
         until: "Platné do ",
-        notAnotherFound: "Žádné další zařízení nebyly nalezeny.",
+        thisDevice: "Aktuální připojení",
+        anotherDevices: "Ostatní zařízení",
+        notAnotherFound: "Žádné další zařízení nebylo nalezeno.",
     },
 
 

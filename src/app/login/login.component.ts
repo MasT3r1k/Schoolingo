@@ -171,7 +171,7 @@ export class LoginComponent implements OnInit {
       this.refreshQRcode();
 
       this?.socketService.addFunctionNotConnected(
-        'login',
+        'login').subscribe(
         (data: LoginData) => {
           this.form.executing = false;
           if (data.status == 1 && data?.token && data?.expires) {
@@ -272,14 +272,14 @@ export class LoginComponent implements OnInit {
     this.qrCodeResult = null;
     this.qrStatus = this.getQRcodeStatus();
 
-    this.socketService.addFunctionNotConnected('login-qrcode', (data: any) => {
+    this.socketService.addFunctionNotConnected('login-qrcode').subscribe((data: any) => {
       this.logger.send('QRCode', 'QR code loaded.');
       this.qrCode = data;
       this.qrCodeError = false;
       this.qrStatus = this.getQRcodeStatus();
     });
 
-    this.socketService.addFunctionNotConnected('qrScanCode', (data: any) => {
+    this.socketService.addFunctionNotConnected('qrScanCode').subscribe((data: any) => {
       this.qrCodeResult = data;
       this.qrStatus = this.getQRcodeStatus();
     });

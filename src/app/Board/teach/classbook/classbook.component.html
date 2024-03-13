@@ -49,8 +49,13 @@
                         }}
                     </div>
                     <div>{{ schoolingo.getTimetable()[calendarEl.date.getDay() - 1].lessons[selectedLesson][0].class }}</div>
-                    <div *ngIf="getService().length > 0">Služba: {{ getService().join(', ') }}</div>
-                    <div *ngIf="getService().length == 0">Nikdo dnes nemá službu</div>
+                    <div *ngIf="getService().length > 0" style="display: flex;flex-direction: row;align-items: center;">
+                        Služba: {{ getService().join(', ') }}
+                        <div class="btn mini-btn" style="width: fit-content" (click)="modals.openModal('extendService', { title: 'classbook/extendService', components: [{ type: 'text', text: 'Opravdu si přejete prodloužit službu o týden?' }] })">{{ locale.getLocale('classbook/extendService') }}</div>
+                    </div>
+                    <div *ngIf="getService().length == 0">
+                        Nikdo dnes nemá službu
+                    </div>
 
 <!-- Write lesson -->
                     <div class="classbook-content" *ngIf="tabs.getTabValue(tabName) == 0">

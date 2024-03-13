@@ -31,6 +31,7 @@ import { FormError } from '@Schoolingo/FormManager';
 })
 export class BoardComponent implements OnInit {
   private routerSub;
+  private declare loginEventListener;
   private declare loginTimeout;
   public isTakingTooLogin: boolean = false;
   config = config;
@@ -59,22 +60,22 @@ export class BoardComponent implements OnInit {
       if (url?.type != 1) {
         return;
       }
-      if (url?.url == '/login') return;
+      if (url?.url.startsWith('/login')) return;
 
-      let item = this.sidebar.getItem(url.url?.slice(1));
+      let item = this.sidebar.getItem(url.url.split('?')[0].split('#')[0]?.slice(1));
 
       if (
-        !item?.[item.length - 1] ||
-        (item[item.length - 1] &&
+        (item && item.length > 0 && item[item.length - 1] &&
           item[item.length - 1].permission &&
           schoolingo.checkPermissions(
             item[item.length - 1].permission as UserPermissions[]
           ) == false) ||
-        (item[0].permission &&
+        (item[0] && item[0].permission &&
           schoolingo.checkPermissions(
             item[0].permission as UserPermissions[]
           ) == false)
       ) {
+        console.error('No access to this page!')
         this.router.navigateByUrl('main');
         this.toast.showToast(
           'Nepodařilo se zobrazit požadovanou stránku.',
@@ -87,7 +88,7 @@ export class BoardComponent implements OnInit {
       setTimeout(() => {
         this.schoolingo.sidebarToggled = false;
         this.title.setTitle(
-          this.locale.getLocale(item[item.length - 1].item) + ' | SCHOOLINGO'
+          item?.[item.length - 1] ? this.locale.getLocale(item[item.length - 1].item) + ' | SCHOOLINGO' : 'SCHOOLINGO'
         );
       });
 
@@ -157,7 +158,7 @@ export class BoardComponent implements OnInit {
       }
     }, 50);
 
-    this?.socketService.addFunctionNotConnected('login', (data: LoginData) => {
+    this.loginEventListener = this?.socketService.addFunctionNotConnected('login').subscribe((data: LoginData) => {
       this.tryingToLogin = false;
       clearTimeout(this.loginTimeout);
       if (data.status == 1 && data?.token && data?.expires) {
@@ -194,6 +195,8 @@ export class BoardComponent implements OnInit {
 
   ngOnDestroy(): void {
     this.routerSub.unsubscribe();
+    this.loginEventListener.unsubscribe()
+    this.schoolingo.unSetupSocket();
     this.socketService?.getSocket()?.Socket?.disconnect();
   }
 

@@ -146,7 +146,7 @@ export class TimetableComponent implements OnInit {
   }
 
   public showPrintModal(): void {
-    this.modals.openModal('print_timetable', { title: 'Vytisknout rozvrh', disableEscape: false, allowMultiModals: false });
+    this.modals.openModal('print_timetable', { title: 'timetable/print', disableEscape: false, allowMultiModals: false,  });
   }
 
 }

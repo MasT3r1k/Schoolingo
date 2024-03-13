@@ -30,11 +30,13 @@ export class CalendarComponent {
   @Input() name: string = '';
   @Input() options: CalendarOptions = {};
   @Input() date: Date = new Date();
-  @Input() disabled: boolean | undefined;
+  @Input() disabled!: boolean;
 
   ngOnInit(): void {
     this.calendar.addCalendar(this);
     this.dropdown.addDropdown('calendar_' + this.name);
+
+    console.log(this.date);
 
     this.refreshCalendar();
   }

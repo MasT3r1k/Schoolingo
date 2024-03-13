@@ -1,0 +1,44 @@
+<div class="box">
+    <header>
+        <h2>{{ locale.getLocale('sidebar/marks/intermRecord') }}</h2>
+    </header>
+
+    @if (getGroupId() === -1 || getSubjectId() === -1) {
+        <div class="box-content">
+            <div class="select select-column">
+                @for (item of list; track index; let index = $index) {
+                    <div class="select-option" (click)="selectItem(index)">
+                        {{ locale.getLocale('class') + ': ' + item[1] + ' | ' + locale.getLocale('subject') + ': ' + item[2] }}
+                    </div>
+                }
+            </div>
+        </div>
+    } @else {
+        <div class="box-content">
+            <div class="main-content">
+                <div class="students">
+                    @for(student of students;track student) {
+                        <div class="student">
+                            <div class="student-name">
+                                {{ student.firstName + ' ' + student.lastName }}
+                            </div>
+                        </div>
+                    } @empty {
+                        <div class="alert alert-error">Žádní studenti nebyli nalezeni.</div>
+                    }
+                </div>
+                <div class="grades">
+                    @for(student of [].constructor(students.length);track $index) {
+                        <div class="row">
+                            @for (item of [].constructor(25); track $index) {
+                                <div [ngClass]="{grade: true}"></div>
+                            }
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    }
+
+
+</div>

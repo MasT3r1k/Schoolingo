@@ -50,6 +50,7 @@ import { SettingsComponent as TraineeSettings } from './Board/traineeships/setti
 import { SchoolSettingsComponent } from './Board/school/settings/school-settings.component';
 import { InformationComponent as SchoolInformationComponent } from './Board/school/information/information.component';
 import { SystemComponent } from './Board/system/system.component';
+import { IntermRecordComponent } from './Board/marks/interm-record/interm-record.component';
 
 const routes: Routes = [
 {
@@ -70,6 +71,8 @@ const routes: Routes = [
         path: 'interm', component: MarkInterm
       }, {
         path: 'midterm', component: MarkMidterm
+      }, {
+        path: 'intermRecord', component: IntermRecordComponent
       }]
     }, {
       path: 'teach', children: [{

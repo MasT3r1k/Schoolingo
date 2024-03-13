@@ -1,5 +1,4 @@
 import { Tabs } from '@Components/Tabs/Tabs';
-import { TTableLesson, Lesson, TTableDay } from '@Schoolingo/Board.d';
 import { Schoolingo } from '@Schoolingo';
 import { Locale } from '@Schoolingo/Locale';
 import { Component, OnInit } from '@angular/core';

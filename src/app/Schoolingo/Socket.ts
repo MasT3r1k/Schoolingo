@@ -23,6 +23,7 @@ export class SocketService {
   private socket_errMsg: string = '';
 
   public socketEvents: Map<string, any[]> = new Map<string, any[]>();
+  public socketNonEvents: Map<string, any[]> = new Map<string, any[]>();
 
   public socketFunctions: Record<string, Record<string, Function>> = {};
   public socketFunctionsNotConnected: Record<string, Record<string, Function>> = {};
@@ -48,14 +49,25 @@ export class SocketService {
     //   this.socketFunctions[event][name] = fn;
   }
 
-  public addFunctionNotConnected(event: string, fn: Function, name: string = event): void {
-    if (!this.socketFunctionsNotConnected[event]) {
-      this.logger.send('Socket', 'Listening new event ' + event);
-      this.socketFunctionsNotConnected[event] = {};
-    }
+  public addFunctionNotConnected(event: string): Observable<any> {
 
-    if (!this.socketFunctionsNotConnected[event][name])
-      this.socketFunctionsNotConnected[event][name] = fn;
+    return new Observable<any>(observer => {
+      const listener = (data: any) => observer.next(data);
+      this.socket?.on(event, listener);
+      // Store the listener for re-registration upon reconnection
+      if (!this.socketNonEvents.has(event)) {
+        this.socketNonEvents.set(event, []);
+      }
+      this.socketNonEvents.get(event)?.push(listener);
+    });
+
+    // if (!this.socketFunctionsNotConnected[event]) {
+    //   this.logger.send('Socket', 'Listening new event ' + event);
+    //   this.socketFunctionsNotConnected[event] = {};
+    // }
+
+    // if (!this.socketFunctionsNotConnected[event][name])
+    //   this.socketFunctionsNotConnected[event][name] = fn;
   }
 
   /**
@@ -77,18 +89,13 @@ export class SocketService {
     try {
       this.socket = io(config.server);
       this.listenBasicEvents();
-      this.socket?.onAny((event, ...args) => {
-        this.connected = true;
-        this.socket_err = false;
-        if (
-          this.socketFunctionsNotConnected[event] &&
-          Object.values(this.socketFunctionsNotConnected[event]).length > 0
-        ) {
-          Object.values(this.socketFunctionsNotConnected[event]).forEach((fn: Function) => {
-            fn(args?.[0]);
-          });
-        }
+
+      this.socketNonEvents.forEach((listeners, event) => {
+        listeners.forEach(listener => {
+          this.socket?.on(event, listener);
+        });
       });
+
       return this.socket;
     } catch (e) {
       this.socket?.disconnect();
@@ -108,17 +115,11 @@ export class SocketService {
         extraHeaders: { Authorization: 'Bearer ' + token },
       });
       this.listenBasicEvents();
-      this.socket?.onAny((event, ...args) => {
-        this.connected = true;
-        this.socket_err = false;
-        if (
-          this.socketFunctions[event] &&
-          Object.values(this.socketFunctions[event]).length > 0
-        ) {
-          Object.values(this.socketFunctions[event]).forEach((fn: Function) => {
-            fn(args?.[0]);
-          });
-        }
+
+      this.socketEvents.forEach((listeners, event) => {
+        listeners.forEach(listener => {
+          this.socket?.on(event, listener);
+        });
       });
       return this.socket;
     } catch (e) {
@@ -146,11 +147,9 @@ export class SocketService {
       this.connected = false;
       this.socket_err = true;
       this.socket_errMsg = data.message;
-      this.socket?.removeAllListeners();
     });
 
     this.socket.on('disconnect', (data) => {
-      this.socket?.removeAllListeners();
       this.connected = false;
       this.socket_err = false;
       this.socket_errMsg = 'Disconnect';

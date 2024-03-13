@@ -185,8 +185,6 @@ export class ClassbookComponent {
     this.absence = [];
     this.tabs.setTabValue(this.tabName, 0);
 
-    console.log(this.socketService.getSocket().Socket);
-
     this.socketService.getSocket().Socket?.emit('getLesson', {
       group:
         this.schoolingo.getTimetable()[
@@ -252,6 +250,12 @@ export class ClassbookComponent {
     abType: number = this.selectedAbsence
   ): void {
     if (this.selectedLesson === undefined) return;
+
+    if ([1, 4, 5].includes(this.selectedAbsence)) {
+      this.modals.openModal("absenceModal", { title: "absence/writeAbsenceTitle" }, { absence: this.selectedAbsence });
+      return;
+    };
+
     this.socketService.getSocket().Socket?.emit('setAbsence', {
       absence: [
         {
@@ -333,7 +337,7 @@ export class ClassbookComponent {
     let serviceList: number[] = [];
     let absenceList: number[] = [];
     let nonAbsenceList: number[] = [];
-    let homework = this.getHomework(id as number);
+    let homework = id !== undefined ? this.getHomework(id) : undefined;
 
     this.absence.forEach((st: number[], index: number) => {
       if (this.selectedLesson == undefined || st[this.selectedLesson] == -1)
@@ -373,10 +377,10 @@ export class ClassbookComponent {
     });
 
     let date: Date = new Date();
-    if (id === undefined) {
-      date.setDate(this.calendarEl.date.getDate());
-      date.setMonth(this.calendarEl.date.getMonth());
-      date.setFullYear(this.calendarEl.date.getFullYear());
+    if (homework === undefined) {
+      date.setDate(this.schoolingo.getToday().getDate());
+      date.setMonth(this.schoolingo.getToday().getMonth());
+      date.setFullYear(this.schoolingo.getToday().getFullYear());
       let i = 0;
       while (i == 0) {
         date = this.schoolingo.addDayToDate(date, 1);
@@ -405,8 +409,8 @@ export class ClassbookComponent {
       note: homework
         ? new FormControl(homework.note)
         : new FormControl(undefined),
-      start: homework ? new Date(homework.start) : undefined,
-      end: homework ? new Date(homework.end) : date,
+      start: homework !== undefined ? new Date(homework.start) : this.schoolingo.getToday(),
+      end: homework !== undefined ? new Date(homework.end) : date,
       students: this.students,
       selectedStudents: studentList,
       serviceList,

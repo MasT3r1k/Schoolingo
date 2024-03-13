@@ -194,8 +194,16 @@ export class Schoolingo {
     this.SECURITY_modal = '';
   }
 
+
+  private socketEventListeners: any[] = [];
+
+
+  public unSetupSocket(): void {
+    this.socketEventListeners.forEach((listener: any) => listener.unsubscribe());
+  }
+
   public setupSocket(): void {
-    this.socketService.listenEvent('token').subscribe((data: any) => {
+    this.socketEventListeners.push(this.socketService.listenEvent('token').subscribe((data: any) => {
       if (!data.status || data?.user == undefined || data.status == 401) {
         this.SECURITY_modal = 'autologout';
         this.logger.send('User', 'Logging out due problem with token.');
@@ -223,9 +231,9 @@ export class Schoolingo {
 
         this.logger.send('Socket', 'Updated user data');
       }
-    });
+    }));
 
-    this.socketService.addFunction('subjects').subscribe((subjects: any[]) => {
+    this.socketEventListeners.push(this.socketService.addFunction('subjects').subscribe((subjects: any[]) => {
       let subjectList: Subject[] = [];
       for (let i = 0; i < subjects.length; i++) {
         subjectList.push([
@@ -236,19 +244,19 @@ export class Schoolingo {
       }
       this.setSubjects(subjectList);
       this.logger.send('Socket', 'Updated list of subjects');
-    });
+    }));
 
-    this.socketService.addFunction('rooms').subscribe((rooms: any[]) => {
+    this.socketEventListeners.push(this.socketService.addFunction('rooms').subscribe((rooms: any[]) => {
       this.setRooms(rooms);
       this.logger.send('Socket', 'Updated list of rooms');
-    });
+    }));
 
-    this.socketService.addFunction('teachers').subscribe((teachers: any[]) => {
+    this.socketEventListeners.push(this.socketService.addFunction('teachers').subscribe((teachers: any[]) => {
       this.setTeachers(teachers);
       this.logger.send('Socket', 'Updated list of teachers');
-    });
+    }));
 
-    this.socketService.addFunction('timetable').subscribe((timetable: any[]) => {
+    this.socketEventListeners.push(this.socketService.addFunction('timetable').subscribe((timetable: any[]) => {
       let lessons: Lesson[][][] = [];
 
       for (let i = 0; i < timetable.length; i++) {
@@ -307,7 +315,7 @@ export class Schoolingo {
       }
       this.setLessons(lessons);
       this.logger.send('Socket', 'Updated timetable');
-    });
+    }));
   }
 
   /**
@@ -326,6 +334,31 @@ export class Schoolingo {
     output += '%first-name% %last-name% ';
 
     return output;
+  }
+
+  public getClassesAndSubjects(): { class: string, group: number, subjects: number[] }[] {
+    if (!this.userService.getUser()?.teacherId) return [];
+    let data: Record<number, number[]> = {};
+    let groupClasses: Record<number, string> = {};
+    let classes: { class: string, group: number, subjects: number[] }[] = [];
+    this.timetableLessonsLast.forEach((day: Lesson[][]) => {
+      day.forEach((hour: Lesson[]) => {
+        hour.forEach((lesson: Lesson) => {
+
+          if (lesson.subject === -1 || !lesson.group) return;
+          if (!data[lesson.group.id]) {
+            groupClasses[lesson.group.id] = lesson.class as string;
+            data[lesson.group.id] = [lesson.subject];
+          } else if (!data[lesson.group.id].includes(lesson.subject)) {
+            data[lesson.group.id].push(lesson.subject);
+          }
+        });
+      });
+    });
+    Object.entries(data).forEach((item: [string, number[]]) => {
+      classes.push({ group: parseInt(item[0]), class: groupClasses[parseInt(item[0])], subjects: item[1] });
+    });
+    return classes;
   }
 
   /**
