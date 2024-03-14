@@ -103,6 +103,11 @@
                 <div class="btn" [routerLink]="['/user/settings']" [innerHTML]="'Změnit heslo'"></div>
                 <div class="btn" [innerHTML]="'Znovu nezobrazovat'"></div>
             </div>
+            <div class="alert alert-error" *ngIf="socketService.connected === true && !userService.getUser()?.Cookies">
+                <span [innerHTML]="">Všiml jsme si, že jste neodsouhlasili používání Cookies.</span> 
+                <div class="btn" [innerHTML]="'Souhlasím'"></div>
+                <div class="btn" [routerLink]="['/cookies']" [innerHTML]="'Zobrazit více'"></div>
+            </div>
             <router-outlet></router-outlet>
         </div>
     </div>

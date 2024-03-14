@@ -1,5 +1,6 @@
 import { Injectable, NgModule } from '@angular/core';
-import { User, UserMain } from './User.d';
+import { User, UserMain, UserPermissions, UserRoles } from './User.d';
+export type { User, UserMain, UserPermissions, UserRoles }
 import { Storage } from './Storage';
 import { Router } from '@angular/router';
 import { ToastService } from '@Components/Toast';
@@ -104,4 +105,3 @@ export class UserService {
     this.router.navigate(['login']);
   }
 }
-export { User, UserMain };

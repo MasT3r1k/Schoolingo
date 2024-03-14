@@ -112,6 +112,8 @@ export default {
             information: "Informace o škole",
             settings: "Nastavení školy"
         },
+        gdpr: "GDPR",
+        cookies: "Cookies",
         system: "O systému",
     },
     settings: "Nastavení",
@@ -260,7 +262,19 @@ export default {
         equipment: "Věci potřebné pro práci",
 
         addCompany: "Přidat firmu",
-        addingCompany: "Firma se přidává"
+        addingCompany: "Firma se přidává",
+    },
+
+    school: {
+        name: "Název školy",
+        startHours: "Začátek školy (formát: Hodin:minut)",
+        LessonLength: "Délka vyučovací hodiny v minutách",
+        defaultBreakTime: "Základní délka přestávky",
+        defaultBreakTimeNote: "Nejčastější délka přestávek na škole",
+
+
+        saveSettings: "Uložit nastavení",
+        savingSettings: "Ukládám nastavení",
     },
 
     subjects: "Předměty",
@@ -271,6 +285,7 @@ export default {
 
     firstName: "Jméno",
     lastName: "Příjmení",
+    address: "Adresa",
     class: "Třída",
     sex: "Pohlaví",
     city: "Město",
@@ -321,5 +336,6 @@ export default {
     wrong_password: "Špatné heslo",
     password_changed: "Heslo bylo úspěšně změněno.",
     cantChangePasswordInOfflineMode: "Nemůžeš změnit heslo v Offline Módu!",
-    user_not_found: "Uživatel nenalezen"
+    user_not_found: "Uživatel nenalezen",
+    tryOnAnotherDevice: "Vyzkoušejte školním systém na také svém chytrém zařízení"
 };

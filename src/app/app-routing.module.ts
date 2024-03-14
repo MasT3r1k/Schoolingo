@@ -51,6 +51,8 @@ import { SchoolSettingsComponent } from './Board/school/settings/school-settings
 import { InformationComponent as SchoolInformationComponent } from './Board/school/information/information.component';
 import { SystemComponent } from './Board/system/system.component';
 import { IntermRecordComponent } from './Board/marks/interm-record/interm-record.component';
+import { GdprComponent } from './Board/gdpr/gdpr.component';
+import { CookiesComponent } from './Board/cookies/cookies.component';
 
 const routes: Routes = [
 {
@@ -188,6 +190,10 @@ const routes: Routes = [
           path: 'settings', component: SchoolSettingsComponent
         }
       ]
+    }, {
+      path: 'gdpr', component: GdprComponent
+    }, {
+      path: 'cookies', component: CookiesComponent
     }, {
       path: 'system', component: SystemComponent
     }, {

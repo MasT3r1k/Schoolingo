@@ -29,8 +29,12 @@ export type { FormInput, FormButton, FormError };
                         <a [href]="note.url">{{ locale.getLocale(note.note) }}</a>
                     }
 
-                    @if (note.func) {
+                    @else if (note.func) {
                         <a (click)="note.func()">{{ locale.getLocale(note.note) }}</a>
+                    }
+
+                    @else {
+                        <a>{{ locale.getLocale(note.note) }}</a>
                     }
                 }
             }
@@ -75,7 +79,6 @@ export class FormManager implements OnInit {
     updateButtons(buttons: FormButton[]): void {
         this.buttons = buttons;
         this.refreshFormGroup();
-
     }
 
     addError(input: string, error: string): void {
@@ -131,6 +134,10 @@ export class FormManager implements OnInit {
           obj[input.name] = new FormControl('');
         });
         this.formData = new FormGroup(obj);
+    }
+
+    public removeMe(): void {
+        this.forms.forms.splice(this.forms.forms.indexOf(this), 1);
     }
 
 }

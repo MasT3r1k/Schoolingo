@@ -6,6 +6,7 @@ import { UserService } from '@Schoolingo/User';
 import { FormControl } from '@angular/forms';
 import { SocketService } from '@Schoolingo/Socket';
 import { FormError } from '@Schoolingo/FormManager';
+import { MessageManager } from '@Schoolingo/Messages';
 
 type MessageType = {
   label: string;
@@ -21,7 +22,8 @@ export class SendComponent {
     public locale: Locale,
     public schoolingo: Schoolingo,
     public userService: UserService,
-    public socketService: SocketService
+    public socketService: SocketService,
+    public messageManager: MessageManager
   ) {}
 
   public selectedMessageType: number = 0;
@@ -29,27 +31,8 @@ export class SendComponent {
   public message: string = '';
   public teachers = this.schoolingo.getTeachers();
 
-  public types: MessageType[] = [
-    {       // 0
-      label: 'message',
-      perms: ['all']
-    }, {    // 1
-      label: 'homework',
-      perms: ['student']
-    }, {    // 2
-      label: 'excusestudent',
-      perms: ['parent']
-    }, {    // 3
-      label: 'ratestudent',
-      perms: ['teacher', 'principal']
-    }, {    // 4
-      label: 'noticeboard',
-      perms: ['teacher', 'principal']
-    }
-  ]
-
   public getTypes(): MessageType[] {
-    return this.types.filter((type: MessageType) => this.schoolingo.checkPermissions(type.perms));
+    return this.messageManager.types.filter((type: MessageType) => this.schoolingo.checkPermissions(type.perms));
   }
 
   ngOnInit(): void {

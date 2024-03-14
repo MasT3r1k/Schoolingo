@@ -54,6 +54,8 @@ import { OverviewComponent as TraineeOverview } from './Board/traineeships/overv
 import { SettingsComponent as TraineeSettings } from './Board/traineeships/settings/settings.component';
 import { FormList, FormManager } from '@Schoolingo/FormManager';
 import { IntermRecordComponent } from './Board/marks/interm-record/interm-record.component';
+import { MessageManager } from '@Schoolingo/Messages';
+import { SchoolSettingsComponent } from './Board/school/settings/school-settings.component';
 
 @NgModule({
     declarations: [
@@ -89,7 +91,8 @@ import { IntermRecordComponent } from './Board/marks/interm-record/interm-record
         TraineeOverview,
         TraineeSettings,
         CalendarComponent,
-        IntermRecordComponent
+        IntermRecordComponent,
+        SchoolSettingsComponent
     ],
     providers: [
         Locale,
@@ -107,7 +110,8 @@ import { IntermRecordComponent } from './Board/marks/interm-record/interm-record
         Calendar,
         Modals,
         CookieService,
-        FormList
+        FormList,
+        MessageManager
     ],
     bootstrap: [AppComponent],
     imports: [

@@ -28,10 +28,13 @@ type QRStatus = {
 
 @Component({
   templateUrl: './login.component.html',
-  styleUrls: ['./login.component.css', '../../card.css', '../input.css'],
+  styleUrls: ['./login.component.css', '../../card.css'],
 })
 export class LoginComponent implements OnInit {
   private declare routerSocket;
+
+  private QRListeners: any[] = [];
+  private Listeners: any[] = [];
 
   public inputs: FormInput[] = [
     {
@@ -143,12 +146,12 @@ export class LoginComponent implements OnInit {
 
     this.form = this.formList.getForm(this.formName) as FormManager;
 
-    this.route.queryParamMap.subscribe((param: Params) => {
+    this.Listeners.push(this.route.queryParamMap.subscribe((param: Params) => {
       // Check if show forgot password form //* /login?forgotpass
       if (param['params']['forgotpass'] != undefined) {
         this.switch('forgotpass');
       }
-    });
+    }));
 
     this.routerSocket = this.router.events.subscribe((url: any) => {
       this.tabs.clearTabs();
@@ -170,9 +173,10 @@ export class LoginComponent implements OnInit {
       this.socketService.connectAnon();
       this.refreshQRcode();
 
-      this?.socketService.addFunctionNotConnected(
+      this.Listeners.push(this?.socketService.addFunctionNotConnected(
         'login').subscribe(
         (data: LoginData) => {
+          console.log(data);
           this.form.executing = false;
           if (data.status == 1 && data?.token && data?.expires) {
             this.logger.send('Login', 'Successful logged in.');
@@ -206,13 +210,20 @@ export class LoginComponent implements OnInit {
             }
           }
         }
-      );
+      ));
     });
+
+
+
   }
 
   ngOnDestroy(): void {
     this.routerSocket.unsubscribe();
+    this.form.removeMe();
     this.socketService.getSocket()?.Socket?.disconnect();
+    this.Listeners.forEach((listen: any) => listen.unsubscribe());
+    this.QRListeners.forEach((listen: any) => listen.unsubscribe());
+
   }
 
   // Config import
@@ -239,7 +250,7 @@ export class LoginComponent implements OnInit {
     }
     this.form.executing = true;
     this.logger.send('Login', 'Trying to login.');
-    this.socketService?.getSocket().Socket?.emit('login', {
+    this.socketService.emitEvent('login', {
       username: this.form.formData.value.username,
       password: this.form.formData.value.password,
     });
@@ -266,23 +277,26 @@ export class LoginComponent implements OnInit {
    * Set default values to QRCode variables and reset timeout of loading qrcode
    */
   public refreshQRcode(): void {
+
+    this.QRListeners.forEach((listen: any) => listen.unsubscribe());
+
     this.logger.send('QRCode', 'Loading QR code..');
     this.qrCode = '';
     this.qrCodeError = false;
     this.qrCodeResult = null;
     this.qrStatus = this.getQRcodeStatus();
 
-    this.socketService.addFunctionNotConnected('login-qrcode').subscribe((data: any) => {
+    this.QRListeners.push(this.socketService.addFunctionNotConnected('login-qrcode').subscribe((data: any) => {
       this.logger.send('QRCode', 'QR code loaded.');
       this.qrCode = data;
       this.qrCodeError = false;
       this.qrStatus = this.getQRcodeStatus();
-    });
+    }));
 
-    this.socketService.addFunctionNotConnected('qrScanCode').subscribe((data: any) => {
+    this.QRListeners.push(this.socketService.addFunctionNotConnected('qrScanCode').subscribe((data: any) => {
       this.qrCodeResult = data;
       this.qrStatus = this.getQRcodeStatus();
-    });
+    }));
 
     clearTimeout(this.qrTimeout);
     this.qrTimeout = setTimeout(() => {

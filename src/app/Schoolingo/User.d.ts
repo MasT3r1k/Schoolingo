@@ -15,6 +15,8 @@ export type UserMain = {
     userBirthNumber: string;
     classTeacher: number;
     recommendChangePassword: boolean;
+    GDPR: boolean;
+    Cookies: boolean;
     teacherId?: number;
     studentId?: number;
     isPrincipal?: boolean;

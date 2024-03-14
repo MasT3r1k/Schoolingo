@@ -289,6 +289,14 @@ export class Sidebar {
                 item: 'sidebar/school/settings'
             }]
         }, {
+            item: 'sidebar/gdpr',
+            permission: ['all'],
+            url: 'gdpr'
+        }, {
+            item: 'sidebar/cookies',
+            permission: ['all'],
+            url: 'cookies'
+        }, {
             item: 'sidebar/system',
             permission: ['all'],
             url: 'system'
