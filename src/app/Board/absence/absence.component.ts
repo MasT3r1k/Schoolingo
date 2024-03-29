@@ -43,14 +43,18 @@ export class AbsenceComponent implements OnInit {
       console.log(data);
     });
     this.socketService.getSocket().Socket?.emit('getUserAbsence', this.userService.getUser()?.studentId);
+
+
   }
 
   public getAbsenceBySubject(subject: number): Absence[] {
     return this.absence.filter((absence: Absence) => absence.subject === subject);
   }
 
-  public getLessonsBySubject(subject: number): Subject[] {
-    return this.subjectLessons.filter((lesson: Subject) => lesson.subject === subject);
+  public getLessonsBySubject(subject: number): Subject {
+    let lessons = this.subjectLessons.filter((lesson: Subject) => lesson.subject === subject);
+    if (lessons.length === 0) return { subject, lessons: 0 };
+    return lessons[0];
   }
 
   ngOnDestroy(): void {

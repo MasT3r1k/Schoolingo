@@ -51,3 +51,74 @@ input[type='search'] {
     display: flex;
     pointer-events: all;
 }
+
+
+
+
+.multisteps {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(0, 1fr));
+    align-items: center;
+    position: relative;
+}
+
+.multisteps > .step {
+    position: relative;
+    padding-top: 24px;
+    cursor: pointer;
+    text-align: center;
+    overflow: visible;
+
+    transition: all .35s;
+
+    --step-size: 16px;
+}
+
+.multisteps > .step > .alert {
+    position: absolute;
+    top: -8px;
+    transform: translate(-50%, -100%);
+    left: 50%;
+    background-color: var(--primary);
+    color: #fff;
+    width: fit-content;
+    padding: 8px 16px;
+    border-radius: var(--radius);
+}
+
+.multisteps > .step.active {
+    color: var(--primary);
+}
+
+.multisteps > .step::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: var(--step-size);
+    z-index: 5;
+    height: var(--step-size);
+    background-color: var(--border-color);
+    border-radius: 999rem;
+    transition: all .35s;
+
+
+}
+
+.multisteps > .step:not(:first-child)::after {
+    position: absolute;
+    top: 7px;
+    left: calc(-50% + var(--step-size) / 2);
+    display: block;
+    width: calc(100% - var(--step-size));
+    height: 2px;
+    content: "";
+    background-color: var(--border-color);
+    z-index: 1;
+    transition: all .35s;
+}
+
+.multisteps > .step.active::before, .multisteps > .step.active::after {
+    background-color: var(--primary)!important;
+}

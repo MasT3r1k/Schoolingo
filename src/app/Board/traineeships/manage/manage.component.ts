@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { FormList, FormManager } from '@Schoolingo/FormManager';
+import { FormInput, FormList, FormManager } from '@Schoolingo/FormManager';
 import { Locale } from '@Schoolingo/Locale';
 import { SocketService } from '@Schoolingo/Socket';
 
@@ -24,7 +24,7 @@ export class ManageComponent implements OnInit {
     this.form = this.formList.getForm(this.formName) as FormManager;
   }
 
-  public CompanyAdd_inputs = [
+  public CompanyAdd_inputs: FormInput[] = [
     {
       type: 'text',
       name: 'companyName',

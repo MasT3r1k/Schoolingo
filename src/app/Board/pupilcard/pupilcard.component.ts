@@ -1,10 +1,10 @@
-import { HttpClient } from '@angular/common/http';
-import { Component, OnInit, Renderer2 } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { Dropdowns } from '@Components/Dropdown/Dropdown';
 import { getTable, Table } from '@Components/table/Table';
 import { TableColumn, TableOptions } from '@Components/table/Table';
 import { Tabs } from '@Components/Tabs/Tabs';
+import { FormInput } from '@Schoolingo/FormManager';
 import { Locale } from '@Schoolingo/Locale';
 import { SocketService } from '@Schoolingo/Socket';
 import { debounceTime } from 'rxjs';
@@ -24,44 +24,35 @@ type Student = {
 export class PupilcardComponent implements OnInit {
   constructor(
     public locale: Locale,
-    private renderer: Renderer2,
     private socketService: SocketService,
     public tabs: Tabs,
-    private http: HttpClient,
     public dropdown: Dropdowns
   ) {}
 
+  private listeners: any[] = [];
+
   public tableName: string = 'student-list';
   public creatingNewOne: boolean = false;
+
 
   searchStudent = new FormControl('');
   searchPlace = new FormControl('');
 
   columns: TableColumn[] = [
-    {
-      name: 'firstName',
-    },
-    {
-      name: 'lastName',
-    },
-    {
-      name: 'class',
-    },
-    {
-      name: 'sex',
-    },
-    {
-      name: 'city',
-    },
+    { name: 'firstName' },
+    { name: 'lastName'  },
+    { name: 'class'     },
+    { name: 'sex'       },
+    { name: 'city'      },
   ];
 
   _dat: any[] = [];
   data: any[] = [];
 
   gender: any = null;
-  genders: any[] = ['muž', 'žena'];
+  genders: any[] = ['genders/0', 'genders/1'];
   class: any = null;
-  classes: any[] = ['B3.I', 'B2.I'];
+  classes: any[] = ['B2.I', 'B3.I'];
 
   addresses: any[] = [];
   addressesDropdown: string = 'searchAddresses';
@@ -88,35 +79,23 @@ export class PupilcardComponent implements OnInit {
             ') from ' +
             this.data[id][4]
         );
+
       };
 
       this.socketService.getSocket().Socket?.emit('getStudents');
-      this.socketService.addFunction('listStudents').subscribe((student: Student[]) => {
+      this.listeners.push(this.socketService.addFunction('listStudents').subscribe((student: Student[]) => {
         this.data = [];
         for (let i = 0; i < student.length; i++) {
           this.data.push([
             student[i].firstName,
             student[i].lastName,
             student[i].class,
-            this.genders[student[i].sex],
+            this.locale.getLocale('genders/' + student[i].sex),
             student[i].city,
           ]);
         }
         this.table.updateValue(this.data);
-      });
-    });
-
-    this.renderer.listen(window, 'keydown', (event: KeyboardEvent) => {
-      if (event.key && (event?.target as HTMLElement).nodeName !== 'INPUT') {
-        switch (event.key) {
-          case 'Escape':
-            if (this.table.selectedItem != undefined)
-              this.table.selectedItem = undefined;
-            if (this.creatingNewOne) this.creatingNewOne = false;
-            break;
-        }
-        //console.log(event);
-      }
+      }));
     });
 
     this.searchStudent.valueChanges
@@ -125,24 +104,12 @@ export class PupilcardComponent implements OnInit {
         this.updateFilter();
       });
 
-    this.searchPlace.valueChanges
-      .pipe(debounceTime(300))
-      .subscribe((value: string | null): void => {
-        if (!value || value == '') return;
-        this.http
-          .get(
-            'https://api.locationiq.com/v1/autocomplete?key=pk.6e7bdb2789440ab001b900727b68e395&q=' +
-              value +
-              '&limit=5&dedupe=1'
-          )
-          .subscribe((response: any): void => {
-            this.addresses = response;
-          });
-      });
   }
 
   ngOnDestroy(): void {
-    this.socketService.socketFunctions['listStudents'] = {};
+
+    this.listeners.forEach((listen: any) => {if (listen.unsubscribe) {listen.unsubscribe()}});
+
   }
 
   public updateFilter(): void {
@@ -162,4 +129,130 @@ export class PupilcardComponent implements OnInit {
       },
     ]);
   }
+
+  /*** Creating new student  */
+  public selectedTabInCreatingStudent: number = 0;
+  public progressInCreatingStudentAlert: string = '';
+  public progressInCreatingStudentAlertInterval!: any;
+  public selectTabInCreatingStudent(id: number): void {
+    this.progressInCreatingStudentAlert = '';
+    clearTimeout(this.progressInCreatingStudentAlertInterval);
+    if (this.selectedTabInCreatingStudent === 0 && id > 0) {
+      this.progressInCreatingStudentAlert = 'pupilcard/firstFillInformation';
+      this.progressInCreatingStudentAlertInterval = setTimeout(() => {
+        this.progressInCreatingStudentAlert = '';
+      }, 3500);
+      return;
+    }
+    this.selectedTabInCreatingStudent = id;
+  }
+
+  public studentCreateInputsBasicInfo: FormInput[] = [
+    {
+      type: 'text',
+      name: 'firstName',
+      label: 'firstName',
+    },
+    {
+      type: 'text',
+      name: 'lastName',
+      label: 'lastName',
+    },
+    {
+      type: 'date',
+      name: 'birthday',
+      label: 'birthday',
+    },
+    { /** TODO: SELECT  */
+      type: 'select',
+      select: 'row',
+      name: 'sex',
+      label: 'sex',
+      options: ['genders/0', 'genders/1'],
+      value: 'genders/0',
+      optionAsLocale: true
+    },
+    { /** TODO: SELECT  */
+      type: 'text',
+      name: 'class',
+      label: 'class',
+    },
+    { /** TODO: SUPPORT FOR MORE emails */
+      type: 'text',
+      name: 'email',
+      label: 'email',
+    },
+    { /** TODO: SUPPORT FOR MORE phone numbers */
+      type: 'text',
+      name: 'phone',
+      label: 'phone',
+    },
+  ];
+
+  public studentCreateInputsAddress: FormInput[] = [
+    {
+      type: 'text',
+      name: 'street',
+      label: 'street'
+    }, {
+      type: 'text',
+      name: 'number',
+      label: 'houseNumber'
+    }, {
+      type: 'text',
+      name: 'city',
+      label: 'city'
+    }, {
+      type: 'text', 
+      name: 'postcode', 
+      label: 'postcode'
+    }, {
+      type: 'text',
+      name: 'nationality',
+      label: 'nationality'
+    }, {
+      type: 'text',
+      name: 'district',
+      label: 'district'
+    }, {
+      type: 'text',
+      name: 'cityPart',
+      label: 'cityPart'
+    }
+  ]
+
+  /*** Details of student */
+
+  public studentInfoInputs: FormInput[] = [
+    {
+      type: 'text',
+      name: 'firstName',
+      label: 'firstName',
+      readonly: true,
+      value: () => this.data[this.table.selectedItem as number][0]
+    },
+    {
+      type: 'text',
+      name: 'lastName',
+      label: 'lastName',
+      readonly: true,
+      value: () => this.data[this.table.selectedItem as number][1]
+    },
+    {
+      type: 'text',
+      name: 'class',
+      label: 'class',
+      readonly: true,
+      value: () => this.data[this.table.selectedItem as number][2]
+    },
+    {
+      type: 'text',
+      name: 'sex',
+      label: 'sex',
+      readonly: true,
+      value: () => this.data[this.table.selectedItem as number][3]
+    }
+  ]
+
+
 }

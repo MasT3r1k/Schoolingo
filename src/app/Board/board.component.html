@@ -99,12 +99,12 @@
                 <div class="btn" (click)="schoolingo.refreshConnection()" [innerHTML]="schoolingo.getRefreshingText()"></div>
             </div>
             <div class="alert alert-error" *ngIf="socketService.connected === true && userService.getUser()?.recommendChangePassword">
-                <span [innerHTML]="">DOPORUČUJEME Vám změnit heslo, protože naposledy Vaše heslo bylo změněno správcem systému.</span> 
+                <span [innerHTML]=""><b>DOPORUČUJEME</b> Vám změnit heslo, protože naposledy Vaše heslo bylo změněno správcem systému.</span> 
                 <div class="btn" [routerLink]="['/user/settings']" [innerHTML]="'Změnit heslo'"></div>
                 <div class="btn" [innerHTML]="'Znovu nezobrazovat'"></div>
             </div>
-            <div class="alert alert-error" *ngIf="socketService.connected === true && !userService.getUser()?.Cookies">
-                <span [innerHTML]="">Všiml jsme si, že jste neodsouhlasili používání Cookies.</span> 
+            <div class="alert alert-error" *ngIf="socketService.connected === true && !userService.getUser()?.cookies">
+                <span [innerHTML]="">Všimli jsme si, že jste neodsouhlasili používání Cookies.</span> 
                 <div class="btn" [innerHTML]="'Souhlasím'"></div>
                 <div class="btn" [routerLink]="['/cookies']" [innerHTML]="'Zobrazit více'"></div>
             </div>

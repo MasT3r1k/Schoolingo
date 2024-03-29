@@ -3,6 +3,7 @@ import { FormInput, FormButton, FormError } from './FormManager.d';
 import { Locale } from './Locale';
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
+import { removeDiacritics } from './SearchFilter';
 export type { FormInput, FormButton, FormError };
 
 @Component({
@@ -13,7 +14,7 @@ export type { FormInput, FormButton, FormError };
     <input type="submit" value="" style="display: none" />
     @for (input of this.inputs; track input.name) {
         <div class="form-group">
-            @if (input.label) {
+            @if(input.label) {
                 <label [attr.for]="input.name" [ngClass]="{ error: this.getError(input.name) != null }">
                     {{ locale.getLocale(input.label) }}
                     <span
@@ -23,19 +24,50 @@ export type { FormInput, FormButton, FormError };
                         -
                         {{ locale.getLocale('' + this.getError(input.name)) }}</span
                 ></label>
-                <input [type]="input.type" [ngClass]="{ invalid: this.getError(input.name) != null}" [name]="input.name" [formControlName]="input.name" [placeholder]="input.placeholder ? locale.getLocale(input.placeholder) : ''" (required)="input.required">
-                @for(note of input.notes; track note.note) {
-                    @if (note.url) {
-                        <a [href]="note.url">{{ locale.getLocale(note.note) }}</a>
-                    }
+            }
 
-                    @else if (note.func) {
-                        <a (click)="note.func()">{{ locale.getLocale(note.note) }}</a>
-                    }
+            @switch(input.type) {
+                @case('select') {
+                    @if (input.select === 'search') {
 
-                    @else {
-                        <a>{{ locale.getLocale(note.note) }}</a>
+                        <input [type]="input.type" [ngClass]="{ invalid: this.getError(input.name) != null}" [name]="input.name" [formControlName]="input.name" [placeholder]="input.placeholder ? locale.getLocale(input.placeholder) : ''">
+
+                        <div class="search-dropdown" id="suggets">
+                            @for(option of input.options;track $index) {
+                                @if (removeDiacritics(option).toLowerCase().includes(removeDiacritics(this.formData.value[input.name]).toLowerCase())) {
+                                    <div [ngClass]="{'input-select-option': true, active: (input.value !== undefined) ? option === getValue(input.value) : false}" (click)="input?.onSelect(option)">{{ input.optionAsLocale ? locale.getLocale(option) : option }}</div>
+                                }
+                            }
+                        </div>
+
+                    } @else {
+                        <div [ngClass]="{'input-select': true, 'input-row': input.select === 'row', 'input-column': input.select === 'column'}">
+                            @for(option of input.options;track $index) {
+                                <div [ngClass]="{'input-select-option': true, active: (input.value !== undefined) ? option === getValue(input.value) : false}" (click)="input?.onSelect(option)">
+                                    {{ input.optionAsLocale ? locale.getLocale(option) : option }}
+                                </div>
+                            }
+
+                        </div>
                     }
+                }
+
+                @default {
+                    <input [type]="input.type" [ngClass]="{ invalid: this.getError(input.name) != null}" [name]="input.name" [formControlName]="input.name" [placeholder]="input.placeholder ? locale.getLocale(input.placeholder) : ''" [required]="'' + input.required" [readOnly]="input.readonly">
+                }
+            }
+            
+            @for(note of input.notes; track note.note) {
+                @if (note.url) {
+                    <a [href]="note.url">{{ locale.getLocale(note.note) }}</a>
+                }
+
+                @else if (note.func) {
+                    <a (click)="note.func()">{{ locale.getLocale(note.note) }}</a>
+                }
+
+                @else {
+                    <a>{{ locale.getLocale(note.note) }}</a>
                 }
             }
         </div>
@@ -67,9 +99,16 @@ export class FormManager implements OnInit {
     public executeFn: Function = () => {};
     private declare executingTimeout;
 
+    removeDiacritics = removeDiacritics;
+
     @Input() form!: string;
     @Input() inputs: FormInput[] = [];
     @Input() buttons: FormButton[] = [];
+
+    public getValue(value: Function | string | undefined): string {
+        if (value === undefined) return '';
+        return (typeof value === 'function') ? value() : value;
+    }
 
     updateInputs(inputs: FormInput[]): void {
         this.inputs = inputs;
@@ -99,7 +138,7 @@ export class FormManager implements OnInit {
     public canExecute(): boolean {
         let canExecuted: boolean = true;
         this.inputs.forEach((input: FormInput) => {
-            if (input?.required === true && this.formData.value[input.name] === '' ) {
+            if (input.type !== 'select' && input?.required === true && this.formData.value[input.name] === '' ) {
                 canExecuted = true;
             }
         });
@@ -112,7 +151,7 @@ export class FormManager implements OnInit {
         this.executing = true;
         this.errors = [];
         this.inputs.forEach((input: FormInput) => {
-            if (input?.required === true && this.formData.value[input.name] === '') {
+            if (input.type !== 'select' && input?.required === true && this.formData.value[input.name] === '') {
                 this.addError(input.name, 'required');
             }
         });
@@ -131,7 +170,7 @@ export class FormManager implements OnInit {
         let obj: any = {};
         if (!this || this.inputs.length == 0) return;
         this.inputs.forEach((input: FormInput) => {
-          obj[input.name] = new FormControl('');
+          obj[input.name] = new FormControl(this.getValue(input.value) ?? '');
         });
         this.formData = new FormGroup(obj);
     }

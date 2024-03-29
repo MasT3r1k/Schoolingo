@@ -12,6 +12,10 @@ export default {
         light: "Světlý režím"
     },
 
+    genders: ['muž', 'žena'],
+    days: ['Pondělí', 'Úterý', 'Středa', 'Čtvrtek', 'Pátek', 'Sobota', 'Neděle'],
+    short_days: ['Po', 'út', 'St', 'Čt', 'Pá', 'So', 'Ne'],
+
     // Sidebar
     sidebar: {
         home: "Můj přehled",
@@ -220,6 +224,7 @@ export default {
         personalDetails: "Osobní údaje",
         residence: "Bydliště",
         relatives: "Příbuzní",
+        firstFillInformation: "Vyplň nejdříve základní informace!"
     },
 
     tutoring: {
@@ -266,12 +271,16 @@ export default {
     },
 
     school: {
+        code: "Kód školy",
         name: "Název školy",
+        searchDistrict: "Vyhledávejte okres",
         startHours: "Začátek školy (formát: Hodin:minut)",
         LessonLength: "Délka vyučovací hodiny v minutách",
         defaultBreakTime: "Základní délka přestávky",
         defaultBreakTimeNote: "Nejčastější délka přestávek na škole",
 
+        wannaOwnCode: "Přejete si mít vlastní poznávací kód školy?",
+        dontSeeDistrict: "Nepodařilo se Vám najít Váš okres?",
 
         saveSettings: "Uložit nastavení",
         savingSettings: "Ukládám nastavení",
@@ -285,7 +294,16 @@ export default {
 
     firstName: "Jméno",
     lastName: "Příjmení",
+    birthday: "Datum narození",
+    
     address: "Adresa",
+    street: 'Ulice',
+    houseNumber: 'Číslo popisné',
+    postcode: 'PSČ',
+    nationality: 'Národnost',
+    district: "Okres",
+    cityPart: "Část města",
+
     class: "Třída",
     sex: "Pohlaví",
     city: "Město",

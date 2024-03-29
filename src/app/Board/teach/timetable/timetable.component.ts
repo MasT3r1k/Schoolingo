@@ -1,9 +1,7 @@
 import { Component, OnInit, Renderer2 } from '@angular/core';
-import { DatePipe } from '@angular/common';
 import { Schoolingo } from '@Schoolingo';
 import { Locale } from '@Schoolingo/Locale';
 import { Dropdowns } from '@Components/Dropdown/Dropdown';
-import { FormControl } from '@angular/forms';
 import { Tabs } from '@Components/Tabs/Tabs';
 import { Router } from '@angular/router';
 import { UserService } from '@Schoolingo/User';
@@ -11,6 +9,8 @@ import { CalendarComponent, CalendarOptions } from '@Components/calendar/calenda
 import { Calendar } from '@Components/calendar/calendar';
 import { TTableLesson } from '@Schoolingo/Board.d';
 import { Modals } from '@Components/modals/modals';
+import * as pdfMake from 'pdfmake/build/pdfmake';
+import * as pdfFonts from "pdfmake/build/vfs_fonts";
 
 @Component({
   templateUrl: './timetable.component.html',
@@ -28,6 +28,9 @@ export class TimetableComponent implements OnInit {
     private calendarService: Calendar,
     private modals: Modals
   ) {
+
+    (window as any).pdfMake.vfs = pdfFonts.pdfMake.vfs; // PDF FONTS
+
     this.dropdown.addDropdown('absence');
     this.dropdown.addDropdown('lessonInformation');
   }
@@ -112,7 +115,6 @@ export class TimetableComponent implements OnInit {
 
     this.renderBeforePrint = this.renderer.listen(window, 'beforeprint', () => this.beforePrint());
     this.renderAfterPrint = this.renderer.listen(window, 'afterprint', () => this.afterPrint());
-
   }
 
   public registerOnChangeFunc(): void {
@@ -137,6 +139,10 @@ export class TimetableComponent implements OnInit {
         this.schoolingo.refreshTimetable();
       })
     });
+
+    pdfMake.createPdf(this.timeTablePDF).getDataUrl((url: string): void => {
+      console.log(url);
+    });
   }
 
   ngOnDestroy(): void {
@@ -148,5 +154,27 @@ export class TimetableComponent implements OnInit {
   public showPrintModal(): void {
     this.modals.openModal('print_timetable', { title: 'timetable/print', disableEscape: false, allowMultiModals: false,  });
   }
+
+
+  public timeTablePDF: any = {
+    info: {
+      title: this.locale.getLocale('sidebar/teach/timetable'),
+      author: "SCHOOLINGO System"
+    },
+
+    content: [
+      {
+        text: 'Your awesome name - and your class',
+        style: 'header'
+      }
+    ],
+
+    styles: {
+      header: {
+        fontSize: 18,
+        bold: true
+      }
+    }
+  };
 
 }

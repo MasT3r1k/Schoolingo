@@ -18,7 +18,7 @@ import { Component } from "@angular/core";
                     <div [ngClass]="['wrapper', (them == 'system') ? (theme.getSystemColor() == 'dark') ? 'dark' : 'light' : them]">
                         <div class="header" style="height: 48px"></div>
                         <div class="content">
-                            <div class="sidebar" style="height: 100vh;width: 100px"></div>
+                            <div class="sidebar active" style="height: 100vh;width: 100px"></div>
                             <div class="main-content">
                                 <div class="box">
                                 </div>

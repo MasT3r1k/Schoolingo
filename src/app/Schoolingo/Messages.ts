@@ -20,6 +20,9 @@ export class MessageManager {
           label: 'noticeboard',
           perms: ['teacher', 'principal']
         }
-      ]
+    ];
+
+    
+
 
 }

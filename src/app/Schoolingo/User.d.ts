@@ -16,7 +16,7 @@ export type UserMain = {
     classTeacher: number;
     recommendChangePassword: boolean;
     GDPR: boolean;
-    Cookies: boolean;
+    cookies: boolean;
     teacherId?: number;
     studentId?: number;
     isPrincipal?: boolean;

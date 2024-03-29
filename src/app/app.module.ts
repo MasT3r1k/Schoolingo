@@ -92,7 +92,7 @@ import { SchoolSettingsComponent } from './Board/school/settings/school-settings
         TraineeSettings,
         CalendarComponent,
         IntermRecordComponent,
-        SchoolSettingsComponent
+        SchoolSettingsComponent,
     ],
     providers: [
         Locale,

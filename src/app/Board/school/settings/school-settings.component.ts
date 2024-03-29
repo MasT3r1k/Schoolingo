@@ -16,7 +16,25 @@ export class SchoolSettingsComponent implements OnInit {
     private formList: FormList
   ) {}
 
+  public selectedDistrict: string = 'Písek';
+  public getSchoolDistrict(): string {
+    return this.selectedDistrict;
+  }
+
+
   public inputs: FormInput[] = [
+    {
+      type: 'text',
+      name: 'schoolCode',
+      placeholder: 'school/code',
+      label: 'school/code',
+      readonly: true,
+      notes: [
+        {
+          note: 'school/wannaOwnCode'
+        }
+      ]
+    },
     {
       type: 'text',
       name: 'schoolName',
@@ -30,6 +48,21 @@ export class SchoolSettingsComponent implements OnInit {
       placeholder: 'address',
       label: 'address',
       required: true,
+    },
+    {
+      type: 'select',
+      select: 'search',
+      name: 'schoolDistrict',
+      placeholder: 'school/searchDistrict',
+      label: 'district',
+      options: ["Benešov","Beroun","Blansko","Brno-město","Brno-venkov","Bruntál","Břeclav","Cheb","Chomutov","Chrudim","České Budějovice","Český Krumlov","Česká Lípa","Domažlice","Děčin","Frýdek-Místek","Havlíčkův Brod","Hodonín","Hradec Králové","Jablonec nad Nisou","Jeseník","Jihlava","Jindřichův Hradec","Jičín","Karlovy Vary","Karviná","Kladno","Klatovy","Kolín","Kroměříž","Kutná Hora","Liberec","Litoměřice","Louny","Mladá Boleslav","Most","Mělník","Nový Jičín","Nymburk","Náchod","Olomouc","Opava","Ostrava-město","Pardubice","Pelhřimov","Plzeň-jih","Plzeň-město","Plzeň-sever","Prachatice","Praha 1","Praha 2","Praha 3","Praha 4","Praha 5","Praha 6","Praha 7","Praha 8","Praha 9","Praha 10","Praha-východ","Praha-západ","Prostějov","Písek","Přerov","Příbram","Rakovník","Rokycany","Rychnov nad Kněžnou","Semily","Sokolov","Strakonice","Svitavy","Šumperk","Tachov","Teplice","Trutnov","Tábor","Třebíč","Uherské Hradiště","Ústí nad Labem","Ústí nad Orlicí","Vsetín","Vyškov","Zlín","Znojmo","Ždár nad Sázavou"],
+      value: () => this.getSchoolDistrict(),
+      onSelect: (option: string) => { this.selectedDistrict = option },
+      notes: [
+        {
+          note: "school/dontSeeDistrict"
+        }
+      ],
     },
     {
       type: 'text',
@@ -72,7 +105,7 @@ export class SchoolSettingsComponent implements OnInit {
 
 
   ngOnDestroy(): void {
-    this.form.removeMe();
+    this.form?.removeMe();
   }
 
 

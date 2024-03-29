@@ -13,9 +13,12 @@ export class HomeworksComponent implements OnInit {
   ) {}
   public tabName: string = "Homeworks_TAB";
 
+  public homeworks: any[] = [];
+
   ngOnInit(): void {
     this.socketService.getSocket().Socket?.emit('getUserHomeworks');
     this.socketService.addFunction("getUserHomeworks").subscribe((data: any) => {
+      this.homeworks = data;
       console.log(data);
     });
   }

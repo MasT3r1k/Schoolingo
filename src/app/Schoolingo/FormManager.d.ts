@@ -1,18 +1,59 @@
+type InputType = 
+  | 'button'
+  | 'checkbox'
+  | 'color'
+  | 'date'
+  | 'datetime-local'
+  | 'email'
+  | 'file'
+  | 'hidden'
+  | 'image'
+  | 'month'
+  | 'number'
+  | 'password'
+  | 'radio'
+  | 'range'
+  | 'reset'
+  | 'search'
+  | 'submit'
+  | 'tel'
+  | 'text'
+  | 'time'
+  | 'url'
+  | 'week';
+
+type FormSelectTypes = 'row' | 'column' | 'search';
+
+
 export type FormNote = {
   note: string;
   url?: string;
   func?: Function;
 };
 
-export type FormInput = {
-  type: string;
-  name: string;
+export type FormSelect = {
+  type: 'select';
+  select?: FormSelectTypes;
+  options: string[];
+  optionAsLocale?: boolean;
   placeholder?: string;
-  label?: string;
+  onSelect?: Function;
+}
+
+export type FormInputForm = {
+  type: InputType;
+  placeholder?: string;
   check?: Function;
   required?: boolean;
-  notes?: FormNote[];
+  readonly?: boolean;
 };
+
+export type FormInput = (FormSelect | FormInputForm) & {
+  name: string;
+  label: string;
+  notes?: FormNote[];
+  value?: Function | string; // Support dynamic and static value
+}; 
 
 export type FormError = {
   input: string;
