@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 
 @Injectable()
 export class CookieService {
+  constructor() {}
   public getCookie(name: string): string {
     let ca: Array<string> = document.cookie.split(';');
     let caLen: number = ca.length;
