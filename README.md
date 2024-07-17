@@ -17,7 +17,7 @@
 1. Stažení zdrojového kódu 
 with GIT:
 ```sh
-git clone https://github.com/MasT3r1k/Todo.git
+git clone --branch 1.0-old https://github.com/MasT3r1k/Schoolingo.git
 ```
 nebo můžeme přímo stáhnout z Githubu
 
