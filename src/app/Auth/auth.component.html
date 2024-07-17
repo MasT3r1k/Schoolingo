@@ -1,1 +1,68 @@
-<p>auth works!</p>
+<main>
+
+    <div class="row">
+        <h1>{{ app.name.toUpperCase() }}</h1>
+      </div>
+
+    <div class="card">
+        @if (schoolingo.socketService.socket?.connected == false) {
+            <div class="card-top">
+                <span><i class="fa-solid fa-xmark"></i> Nejste připojení k serverům Schoolinga</span>
+                <!-- <div class="btn">Offline mode</div -->
+            </div>
+        }
+        <div class="card-row">
+            <div class="left">
+                <h2 class="title">{{ schoolingo.locale.getLocale("login_formTitle") }}</h2>
+                @if (school.name == '') {
+                    <h3 class="school skeleton" style="width: 225px;height: 24px;margin: 0 auto 1rem;"></h3>
+                } @else {
+                    <p class="school">{{ school.name }}</p>
+                }
+                <schoolingo-form [inputs]="inputs" [buttons]="buttons" [form]="formName"></schoolingo-form>
+            </div>
+            <div class="splitter">
+                {{ schoolingo.locale.getLocale('or') }}
+            </div>
+            <div class="right qrcode">
+                <div class="qrcode">
+                    <div class="title" style="margin-bottom: 1rem">
+                        {{ schoolingo.locale.getLocale("login_qrcodeTitle") }}
+                    </div>
+                    @if (qrStatus.code == '' || qrStatus.code == null) {
+                        <div
+                        class="skeleton"
+                        [ngStyle]="{ width: 'var(--qrcode-size)', height: 'var(--qrcode-size)' }"></div>
+                    } @else {
+                        <qrcode
+                        [allowEmptyString]="false"
+                        [width]="160"
+                        [margin]="0"
+                        [elementType]="'canvas'"
+                        [errorCorrectionLevel]="'M'"
+                        [title]="'SCHOOLINGO QR Fastlogin'"
+                        [imageSrc]="'./assets/logo.webp'"
+                        [imageHeight]="56"
+                        [imageWidth]="56"
+                        [qrdata]="qrStatus.code"
+                        [colorDark]="schoolingo.theme.getTheme() == 'light' ? '#000000' : '#ffffff'"
+                        [colorLight]="schoolingo.theme.getTheme() == 'light' ? '#ffffff' : '#000000'"
+                        ></qrcode>
+                    }
+                </div>
+                @if (qrStatus.whatIsVisible != 'trylogin') {
+                    <div
+                    style="margin-top: 1rem; text-align: center"
+                    [innerHTML]="schoolingo.locale.getLocale('scan_qrcode')"
+                    ></div>
+                }
+            </div>
+
+        </div>
+    </div>
+    <p>{{ schoolingo.locale.getLocale('tryOnAnotherDevice') }}</p>
+    <div class="row">
+        <img src="/assets/google-play-badge.webp" height="40" alt="Google Play">
+        <img src="/assets/app-store-badge.webp" height="40" alt="App Store">
+    </div>
+</main>

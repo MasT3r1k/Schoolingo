@@ -1,0 +1,49 @@
+<div class="wrapper">
+
+    <!-- Navbar -->
+
+    <div class="navbar">
+        <div class="left">
+            <img src="/assets/logo.webp" draggable="false" width="36" height="36" alt="" style="position: absolute;left: 4px;user-select: none;" />
+            <div class="title">
+                <div class="application">
+                    SCHOOLINGO
+                </div>
+                <div class="school">{{ school.name }}</div>
+            </div>
+        </div>
+
+        <div class="right">
+            <div class="options">
+                <div class="item">
+                    <div class="icon">
+                        <i class="ti ti-settings"></i>
+
+                    </div>
+                    <div class="name">{{ schoolingo.locale.getLocale('settings') }}</div>
+                </div>
+            </div>
+            <div class="user">
+                @if (schoolingo.userService.getUser()) {
+                    <p class="name">Josef Kosík</p>
+                    <p class="role">Žák</p>
+                } @else {
+                    <p class="name">Josef Kosík</p>
+                    <p class="role">Žák - B2.I</p>
+                }
+            </div>
+            <div class="btn logout">
+                {{ schoolingo.locale.getLocale('logout') }}
+            </div>
+        </div>
+    </div>
+
+    @if (schoolingo.userService.getUser() != null) {
+        <div class="content">
+            <div [ngClass]="{sidebar: true, active: schoolingo.sidebarToggled}">
+                @for (section of schoolingo.; track $index) {}
+            </div>
+        </div>
+    }
+    
+</div>

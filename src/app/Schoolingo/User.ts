@@ -3,6 +3,7 @@ import { Router } from "@angular/router";
 import { user } from "@Schoolingo/User.d";
 import { CookieService } from "@Schoolingo/Cookie";
 import { SocketService } from "./Socket";
+import { Storage } from "./Storage";
 
 @NgModule()
 export class UserService {
