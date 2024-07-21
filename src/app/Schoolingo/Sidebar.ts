@@ -197,11 +197,11 @@ export class Sidebar {
         let gotItem: SidebarItem[] = [];
         this.data.forEach((group) => {
             group.items.forEach((item: SidebarItem) => {
-                if (item?.url == url) {
+                if (item.url == url) {
                     gotItem[0] = item;
                 }
                 item.children?.forEach((nItem: SidebarItem) => {
-                    if (nItem?.url == url) {
+                    if (nItem.url == url) {
                         gotItem[0] = item;
                         gotItem[1] = nItem;
                     };
