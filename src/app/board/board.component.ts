@@ -22,11 +22,11 @@ export class BoardComponent {
     private routerImport: Router,
     private title: Title
   ) {
-    this.router = routerImport;
+    this.router = routerImport as Router;
   }
 
   private router: Router;
-  private routerSub!: Subscription;
+  private routerSub: Subscription | undefined = undefined;
 
   ngOnInit(): void {
     this.routerSub = this.router.events.subscribe((url: any): void => {
@@ -45,7 +45,7 @@ export class BoardComponent {
   }
 
   ngOnDestroy(): void {
-    if (this.routerSub) this.routerSub.unsubscribe();
+    if (this.routerSub != undefined) this.routerSub.unsubscribe();
   }
 
 
