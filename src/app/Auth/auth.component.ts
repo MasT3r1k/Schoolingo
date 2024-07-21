@@ -63,31 +63,9 @@ export class AuthComponent {
 
 
   // Form
-  public formName: string = 'Login_Form';
-  public inputs: FormInput[] = [
-    {
-      type: 'text',
-      name: 'username',
-      placeholder: 'username',
-      label: 'username',
-    },
-    {
-      type: 'password',
-      name: 'password',
-      placeholder: 'password',
-      label: 'password',
-      notes: [
-        {
-          note: 'forgot_pass',
-          func: () => {
-            window.history.pushState(100, "Forgot password", "/login?forgotpass")
-            this.switch('forgotpass');
-          },
-        },
-      ],
-    },
-  ];
-  public buttons: FormButton[] = [{ label: 'login_btn', executed: 'logining_btn', func: () => {this.login()} }];
+  public formName = 'Login_Form';
+  public inputs: FormInput[] = [];
+  public buttons: FormButton[] = [];
   public form?: FormManager = undefined;
 
 
@@ -163,6 +141,7 @@ export class AuthComponent {
 
     this.form = this.formList.getForm(this.formName) as FormManager;
 
+    this.switch('login');
     this.Listeners.push(this.route.queryParamMap.subscribe((param: Params) => {
       // Check if show forgot password form //* /login?forgotpass
       if (param['params']['forgotpass'] != undefined) {
@@ -180,10 +159,8 @@ export class AuthComponent {
     this.Listeners.push(this.schoolingo.socketService.addFunction(
       'login').subscribe(
       (data: LoginData) => {
-        console.log(data);
         if (this.form) {
           this.form.executing = false;
-
         }
         if (data.status == 1 && data?.token && data?.expires) {
           this.logger.send('Login', 'Successful logged in.');

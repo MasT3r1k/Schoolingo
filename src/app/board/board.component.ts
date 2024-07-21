@@ -19,10 +19,13 @@ export class BoardComponent {
   constructor(
     public school: School,
     public schoolingo: Schoolingo,
-    private router: Router,
+    private routerImport: Router,
     private title: Title
-  ){}
+  ) {
+    this.router = routerImport;
+  }
 
+  private router: Router;
   private routerSub!: Subscription;
 
   ngOnInit(): void {
@@ -42,7 +45,7 @@ export class BoardComponent {
   }
 
   ngOnDestroy(): void {
-    this.routerSub.unsubscribe();
+    if (this.routerSub) this.routerSub.unsubscribe();
   }
 
 
