@@ -25,13 +25,13 @@ type InputType =
 type FormSelectTypes = 'row' | 'column' | 'search';
 
 
-export type FormNote = {
+export interface FormNote {
   note: string;
   url?: string;
   func?: Function;
 };
 
-export type FormSelect = {
+export interface FormSelect {
   type: 'select';
   select?: FormSelectTypes;
   options: string[];
@@ -40,7 +40,7 @@ export type FormSelect = {
   onSelect?: Function;
 }
 
-export type FormInputForm = {
+export interface FormInputForm {
   type: InputType;
   placeholder?: string;
   check?: Function;
@@ -55,12 +55,12 @@ export type FormInput = (FormSelect | FormInputForm) & {
   value?: Function | string; // Support dynamic and static value
 }; 
 
-export type FormError = {
+export interface FormError {
   input: string;
   locale: string;
 };
 
-export type FormButton = {
+export interface FormButton {
     label: string;
     executed: string;
     func?: Function;

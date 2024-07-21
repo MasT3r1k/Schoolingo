@@ -30,10 +30,10 @@ export class BoardComponent {
       if (url instanceof NavigationEnd) {
         if (url.url) {
           let item: SidebarItem[] = this.schoolingo.sidebar.getItem(url.url.split('?')[0].split('#')[0]?.slice(1));
-          for(let i = 0;i < item.length;i++) {
-            if (!item[i].children || item[i]?.children?.length == 0) {
-              let pageTitle = `${this.schoolingo.locale.getLocale(item[i].item)} - ${name}`;
-              this.title.setTitle(pageTitle.toString());
+          for(const x of item) {
+            if (!x.children || x.children?.length == 0) {
+              let pageTitle = `${this.schoolingo.locale.getLocale(x.item)} - ${name}`;
+              this.title.setTitle(pageTitle);
             }
           }
         }

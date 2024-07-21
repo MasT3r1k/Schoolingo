@@ -1,0 +1,237 @@
+diff --git a/src/app/Schoolingo/Sidebar.ts b/src/app/Schoolingo/Sidebar.ts
+--- a/src/app/Schoolingo/Sidebar.ts
++++ b/src/app/Schoolingo/Sidebar.ts
+@@ -200,1 +200,1 @@
+-                if (item?.url == url) {
++                if (item.url == url) {
+@@ -204,1 +204,1 @@
+-                    if (nItem?.url == url) {
++                    if (nItem.url == url) {
+diff --git a/src/app/Schoolingo/Permissions.d.ts b/src/app/Schoolingo/Permissions.d.ts
+--- a/src/app/Schoolingo/Permissions.d.ts
++++ b/src/app/Schoolingo/Permissions.d.ts
+@@ -4,1 +4,1 @@
+-export type modulePerm = {
++export interface modulePerm {
+diff --git a/src/app/Schoolingo/Locale.ts b/src/app/Schoolingo/Locale.ts
+--- a/src/app/Schoolingo/Locale.ts
++++ b/src/app/Schoolingo/Locale.ts
+@@ -25,1 +25,1 @@
+-            function entryCountTest(obj: any): void {
++            function entryCountTest(obj: unknown): void {
+@@ -27,1 +27,1 @@
+-                a.forEach((b: Record<string, string>) => entryCountTest(Object.values(b)));
++                a.forEach((b: Record<string, string>) => { entryCountTest(Object.values(b)); });
+@@ -53,1 +53,1 @@
+-    private logName: string = 'Locale';
++    private logName = 'Locale';
+@@ -55,1 +55,1 @@
+-    private locales: Record<languages, any> = {
++    private locales: Record<languages, unknown> = {
+diff --git a/src/app/Schoolingo/Socket.ts b/src/app/Schoolingo/Socket.ts
+--- a/src/app/Schoolingo/Socket.ts
++++ b/src/app/Schoolingo/Socket.ts
+@@ -15,1 +15,1 @@
+-  public isConnected: boolean = false;
++  public isConnected = false;
+@@ -40,1 +40,1 @@
+-  public addFunction(event: string): Observable<any> {
++  public addFunction(event: string): Observable<unknown> {
+@@ -41,1 +41,1 @@
+-    return new Observable<any>(observer => {
++    return new Observable<unknown>(observer => {
+@@ -42,1 +42,1 @@
+-      const listener: Function = (data: any) => observer.next(data);
++      const listener: Function = (data: unknown) => observer.next(data);
+@@ -43,1 +43,1 @@
+-      this.socket?.on(event, listener as any);
++      this.socket?.on(event, listener as unknown);
+@@ -51,1 +51,1 @@
+-  public emit(event: string, data: any): void {
++  public emit(event: string, data: unknown): void {
+diff --git a/src/app/Schoolingo/SearchFilter.ts b/src/app/Schoolingo/SearchFilter.ts
+--- a/src/app/Schoolingo/SearchFilter.ts
++++ b/src/app/Schoolingo/SearchFilter.ts
+@@ -1,1 +1,1 @@
+-type replaceList = {
++interface replaceList {
+@@ -304,1 +304,1 @@
+-  for (var i: number = 0; i < replacementList.length; i += 1) {
++  for (var i = 0; i < replacementList.length; i += 1) {
+@@ -306,1 +306,1 @@
+-    for (var j: number = 0; j < chars.length; j += 1) {
++    for (var j = 0; j < chars.length; j += 1) {
+diff --git a/src/app/Schoolingo/School.ts b/src/app/Schoolingo/School.ts
+--- a/src/app/Schoolingo/School.ts
++++ b/src/app/Schoolingo/School.ts
+@@ -8,1 +8,1 @@
+-    public name: string = '';
++    public name = '';
+diff --git a/src/app/Schoolingo/Config.ts b/src/app/Schoolingo/Config.ts
+--- a/src/app/Schoolingo/Config.ts
++++ b/src/app/Schoolingo/Config.ts
+@@ -1,1 +1,1 @@
+-export const name: string = 'Schoolingo';
++export const name = 'Schoolingo';
+@@ -2,1 +2,1 @@
+-export const version: string = '2.0';
++export const version = '2.0';
+@@ -5,1 +5,1 @@
+-export const api: string = 'http://localhost:8888/api/';
++export const api = 'http://localhost:8888/api/';
+@@ -6,1 +6,1 @@
+-export const socketIP: string = 'http://localhost:8888';
++export const socketIP = 'http://localhost:8888';
+diff --git a/src/app/Components/Forms/FormManager.d.ts b/src/app/Components/Forms/FormManager.d.ts
+--- a/src/app/Components/Forms/FormManager.d.ts
++++ b/src/app/Components/Forms/FormManager.d.ts
+@@ -28,1 +28,1 @@
+-export type FormNote = {
++export interface FormNote {
+@@ -34,1 +34,1 @@
+-export type FormSelect = {
++export interface FormSelect {
+@@ -43,1 +43,1 @@
+-export type FormInputForm = {
++export interface FormInputForm {
+@@ -58,1 +58,1 @@
+-export type FormError = {
++export interface FormError {
+@@ -63,1 +63,1 @@
+-export type FormButton = {
++export interface FormButton {
+diff --git a/src/app/Components/Forms/FormManager.ts b/src/app/Components/Forms/FormManager.ts
+--- a/src/app/Components/Forms/FormManager.ts
++++ b/src/app/Components/Forms/FormManager.ts
+@@ -97,1 +97,1 @@
+-    public executing: boolean = false;
++    public executing = false;
+@@ -139,1 +139,1 @@
+-        let canExecuted: boolean = true;
++        let canExecuted = true;
+@@ -141,1 +141,1 @@
+-            if (input.type !== 'select' && input?.required === true && this.formData.value[input.name] === '' ) {
++            if (input.type !== 'select' && input.required === true && this.formData.value[input.name] === '' ) {
+@@ -170,1 +170,1 @@
+-        let obj: any = {};
++        let obj: unknown = {};
+diff --git a/src/app/Schoolingo/School.d.ts b/src/app/Schoolingo/School.d.ts
+--- a/src/app/Schoolingo/School.d.ts
++++ b/src/app/Schoolingo/School.d.ts
+@@ -1,1 +1,1 @@
+-export type SchoolInfo = {
++export interface SchoolInfo {
+diff --git a/src/app/Auth/auth.component.ts b/src/app/Auth/auth.component.ts
+--- a/src/app/Auth/auth.component.ts
++++ b/src/app/Auth/auth.component.ts
+@@ -21,1 +21,1 @@
+-type QRStatus = {
++interface QRStatus {
+@@ -27,1 +27,1 @@
+-export type LoginData = {
++export interface LoginData {
+@@ -66,1 +66,1 @@
+-  public formName: string = 'Login_Form';
++  public formName = 'Login_Form';
+@@ -168,1 +168,1 @@
+-      if (param['params']['forgotpass'] != undefined) {
++      if (param.params['forgotpass'] != undefined) {
+diff --git a/src/app/Schoolingo/Storage.ts b/src/app/Schoolingo/Storage.ts
+--- a/src/app/Schoolingo/Storage.ts
++++ b/src/app/Schoolingo/Storage.ts
+@@ -6,1 +6,1 @@
+-    public userCacheName: string = 'user';
++    public userCacheName = 'user';
+@@ -7,1 +7,1 @@
+-    public tokenCacheName: string = 'token';
++    public tokenCacheName = 'token';
+@@ -8,1 +8,1 @@
+-    public settingsCacheName: string = 'settings';
++    public settingsCacheName = 'settings';
+@@ -17,1 +17,1 @@
+-    public save(key: string, value: Record<string, any>): boolean {
++    public save(key: string, value: Record<string, unknown>): boolean {
+@@ -38,1 +38,1 @@
+-    public get(key: string, value?: string): any {
++    public get(key: string, value?: string): unknown {
+diff --git a/src/app/Schoolingo/Cookie.ts b/src/app/Schoolingo/Cookie.ts
+--- a/src/app/Schoolingo/Cookie.ts
++++ b/src/app/Schoolingo/Cookie.ts
+@@ -7,1 +7,1 @@
+-    let ca: Array<string> = document.cookie.split(';');
++    let ca: string[] = document.cookie.split(';');
+@@ -9,1 +9,1 @@
+-    let cookieName: string = `${name}=`;
++    let cookieName = `${name}=`;
+@@ -14,1 +14,1 @@
+-      if (c.indexOf(cookieName) == 0) {
++      if (c.startsWith(cookieName)) {
+diff --git a/src/app/Components/Tabs/Tabs.ts b/src/app/Components/Tabs/Tabs.ts
+--- a/src/app/Components/Tabs/Tabs.ts
++++ b/src/app/Components/Tabs/Tabs.ts
+@@ -3,1 +3,1 @@
+-type Tab = {
++interface Tab {
+@@ -20,1 +20,1 @@
+-          let _ = document?.querySelectorAll(".tabs div.tab.active") as NodeListOf<Element>;
++          let _ = document.querySelectorAll(".tabs div.tab.active") as NodeListOf<Element>;
+@@ -21,1 +21,1 @@
+-          _.forEach((__: HTMLElement | any) => {
++          _.forEach((__: HTMLElement | unknown) => {
+@@ -54,1 +54,1 @@
+-    createTab(name: string = this.generateRandomTabName(), options: string[], value: number = 0): void {
++    createTab(name: string = this.generateRandomTabName(), options: string[], value = 0): void {
+@@ -56,1 +56,1 @@
+-        if (this.tabs.filter(_ => _.name == name).length > 0) return console.error('Duplicate tab (' + name + ') detected!');
++        if (this.tabs.filter(_ => _.name == name).length > 0) { console.error('Duplicate tab (' + name + ') detected!'); return; }
+@@ -69,1 +69,1 @@
+-        let tTab: Tab = this.tabs.filter(_ => _.name == tab)?.[0];
++        let tTab: Tab = this.tabs.filter(_ => _.name == tab)[0];
+@@ -75,1 +75,1 @@
+-          if (tTab?.onChange) {
++          if (tTab.onChange) {
+@@ -87,1 +87,1 @@
+-            let _ = document?.querySelector(".tabs#" + tab + " div.tab.active") as HTMLElement;
++            let _ = document.querySelector(".tabs#" + tab + " div.tab.active") as HTMLElement;
+@@ -90,1 +90,1 @@
+-              width: _?.clientWidth || 0,
++              width: _.clientWidth || 0,
+@@ -91,1 +91,1 @@
+-              height: _?.clientHeight || 0,
++              height: _.clientHeight || 0,
+@@ -92,1 +92,1 @@
+-              offset: _?.offsetLeft - parseInt(window?.getComputedStyle(_.parentElement as HTMLElement).getPropertyValue('padding-left'))
++              offset: _?.offsetLeft - parseInt(window?.getComputedStyle(_.parentElement!).getPropertyValue('padding-left'))
+@@ -122,1 +122,1 @@
+-    getTabGlider(tab: string): any {
++    getTabGlider(tab: string): unknown {
+diff --git a/src/app/Schoolingo/User.ts b/src/app/Schoolingo/User.ts
+--- a/src/app/Schoolingo/User.ts
++++ b/src/app/Schoolingo/User.ts
+@@ -68,1 +68,1 @@
+-  private token: string = '';
++  private token = '';
+diff --git a/src/app/board/board.component.ts b/src/app/board/board.component.ts
+--- a/src/app/board/board.component.ts
++++ b/src/app/board/board.component.ts
+@@ -29,1 +29,1 @@
+-    this.routerSub = this.router.events.subscribe((url: any): void => {
++    this.routerSub = this.router.events.subscribe((url: unknown): void => {
+@@ -35,1 +35,1 @@
+-              let pageTitle: string = `${this.schoolingo.locale.getLocale(item[i].item)} - ${name}`;
++              let pageTitle = `${this.schoolingo.locale.getLocale(item[i].item)} - ${name}`;
+diff --git a/src/app/Schoolingo/Theme.ts b/src/app/Schoolingo/Theme.ts
+--- a/src/app/Schoolingo/Theme.ts
++++ b/src/app/Schoolingo/Theme.ts
+@@ -9,1 +9,1 @@
+-  private logName: string = 'Theme';
++  private logName = 'Theme';
+@@ -10,1 +10,1 @@
+-  private cacheName: string = 'theme';
++  private cacheName = 'theme';
+@@ -54,1 +54,1 @@
+-  public updateTheme(theme: themes, update: boolean = true): void {
++  public updateTheme(theme: themes, update = true): void {
+@@ -60,1 +60,1 @@
+-      this.theme = theme as themes;
++      this.theme = theme;

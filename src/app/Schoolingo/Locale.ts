@@ -10,7 +10,7 @@ export type languages = 'cs' | 'en';
 @Injectable()
 export class Locale {
 
-    public declare translatedLanguages: Record<languages, number>;
+    public translatedLanguages!: Record<languages, number>;
 
     public highestTexts = 0;
     public defaultLanguage: languages = 'en';

@@ -1,7 +1,7 @@
 export type UserRoles = 'admin' | 'principal' | 'teacher' | 'parent' | 'student';
 export type permType = UserRoles | 'all';
 
-export type modulePerm = {
+export interface modulePerm {
     name: string;
     canView: boolean;
     canEdit: boolean;

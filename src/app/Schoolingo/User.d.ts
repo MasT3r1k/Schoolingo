@@ -1,10 +1,10 @@
-export type degree = {
+export interface degree {
     degree: string;
     shortcut: string;
     isBefore: boolean;
 }
 
-export type personDetails = {
+export interface personDetails {
     personId: number;
     firstName: string;
     lastName: string;
