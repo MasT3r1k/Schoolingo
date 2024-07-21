@@ -13,8 +13,8 @@ import * as config from '@Schoolingo/Config';
 })
 export class AppComponent {
   constructor(private http: HttpClient, private school: School) {
-    this.http.get<SchoolInfo>(config.api + 'v1/getSchoolInfo').subscribe((res: SchoolInfo) => {
-      this.school.getAPI(res);
+    http.get<SchoolInfo>(config.api + 'v1/getSchoolInfo').subscribe((res: SchoolInfo): void => {
+      school.getAPI(res);
     });
   }
 

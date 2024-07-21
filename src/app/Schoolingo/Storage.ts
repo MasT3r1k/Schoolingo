@@ -14,12 +14,12 @@ export class Storage {
      * @param value Value of storage item
      * @returns if save was successful
      */
-    public save(key: string, value: Record<string, string | any>): boolean {
-        let saved: string = localStorage.getItem(key) as string;
+    public save(key: string, value: Record<string, any>): boolean {
+        let saved: string = localStorage.getItem(key)!;
         let json: Record<string, string> = JSON.parse(saved);
         let data: Record<string, string> = json ?? {};
         Object.keys(value).forEach((dataKey: string) => {
-            data[dataKey] = value[dataKey];
+            data[dataKey.toString()] = value[dataKey];
         })
         try {
             localStorage.setItem(key, JSON.stringify(data));
@@ -37,7 +37,7 @@ export class Storage {
      */
     public get(key: string, value?: string): any {
         try {
-            let saved: string = localStorage.getItem(key) as string;
+            let saved: string = localStorage.getItem(key)!;
             let json: Record<string, string> = JSON.parse(saved);
 
             if (json == null) return false;

@@ -13,6 +13,7 @@ import { Tabs } from '@Components/Tabs/Tabs';
 import { Schoolingo } from '@Schoolingo';
 import { Storage } from '@Schoolingo/Storage';
 import { Sidebar } from '@Schoolingo/Sidebar';
+import { Subscription } from 'rxjs';
 
 export type pageTypes = 'login' | 'forgotpass';
 type QRPages = 'loading' | 'error' | 'scan' | 'trylogin';
@@ -39,11 +40,11 @@ export type LoginData = {
 })
 export class AuthComponent {
   /** Imports */
-  app = app;
+  app: Record<string, string> = app;
 
-  private Listeners: any[] = [];
-  private QRListeners: any[] = [];
-  private declare routerSocket;
+  private Listeners: Subscription[] = [];
+  private QRListeners: Subscription[] = [];
+  private routerSocket!: Subscription;
 
   constructor(
     public school: School,
@@ -87,7 +88,7 @@ export class AuthComponent {
     },
   ];
   public buttons: FormButton[] = [{ label: 'login_btn', executed: 'logining_btn', func: () => this.login() }];
-  public declare form: FormManager;
+  public form?: FormManager = undefined;
 
 
   public selectLanguage(lng: languages): void {
@@ -149,10 +150,12 @@ export class AuthComponent {
     
     }
 
-    this.form = this.formList.getForm(this.formName) as FormManager;
-    this.form.updateInputs(this.inputs);
-    this.form.updateButtons(this.buttons);
-    this.form.refreshFormGroup()
+    this.form = this.formList.getForm(this.formName);
+    if (this.form) {
+      this.form.updateInputs(this.inputs);
+      this.form.updateButtons(this.buttons);
+      this.form.refreshFormGroup()
+    }
   }
 
   ngOnInit(): void {
@@ -174,11 +177,14 @@ export class AuthComponent {
 
     this.refreshQRcode();
 
-    this.Listeners.push(this?.schoolingo.socketService.addFunction(
+    this.Listeners.push(this.schoolingo.socketService.addFunction(
       'login').subscribe(
       (data: LoginData) => {
         console.log(data);
-        this.form.executing = false;
+        if (this.form) {
+          this.form.executing = false;
+
+        }
         if (data.status == 1 && data?.token && data?.expires) {
           this.logger.send('Login', 'Successful logged in.');
           this.storage.removeAll();
@@ -193,16 +199,18 @@ export class AuthComponent {
           this.router.navigate(['', nextURL]);
         } else {
           if (!data.message) return;
-          switch (data.message) {
-            case 'user_not_found':
-              this.form.addError('username', data.message);
-              break;
-            case 'wrong_password':
-              this.form.addError('password', data.message);
-              break;
-            default:
-              this.logger.send('Login', 'Error: ' + data.message);
-              break;
+          if (this.form) {
+            switch (data.message) {
+              case 'user_not_found':
+                this.form.addError('username', data.message);
+                break;
+              case 'wrong_password':
+                this.form.addError('password', data.message);
+                break;
+              default:
+                this.logger.send('Login', 'Error: ' + data.message);
+                break;
+            }
           }
         }
       }
@@ -211,7 +219,7 @@ export class AuthComponent {
 
   ngOnDestroy(): void {
     this.routerSocket.unsubscribe();
-    this.form.removeMe();
+    if (this.form) this.form.removeMe();
     this.schoolingo.socketService.disconnect();
     this.Listeners.forEach((listen: any) => listen.unsubscribe());
     this.QRListeners.forEach((listen: any) => listen.unsubscribe());
@@ -246,11 +254,11 @@ export class AuthComponent {
   }
 
   public canLogin(): boolean {
-    return !(
+    return !(this.form && (
       this?.form.formData.value.username == null ||
       this?.form.formData.value.username == '' ||
       this.form.formData.value.password == null ||
-      this.form.formData.value.password == ''
+      this.form.formData.value.password == '')
     );
   }
 

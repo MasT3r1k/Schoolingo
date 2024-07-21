@@ -97,7 +97,7 @@ export class FormManager implements OnInit {
     public executing: boolean = false;
 
     public executeFn: Function = () => {};
-    private declare executingTimeout;
+    private executingTimeout!: NodeJS.Timeout;
 
     removeDiacritics = removeDiacritics;
 
@@ -190,8 +190,8 @@ export class FormList {
         this.forms.push(form);
     }
 
-    getForm(name: string): FormManager | null {
-        return this.forms.filter((form: FormManager) => form.form === name)[0] ?? null;
+    getForm(name: string): FormManager | undefined {
+        return this.forms.filter((form: FormManager) => form.form === name)[0] ?? undefined;
     }
 
 

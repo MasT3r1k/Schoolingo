@@ -11,7 +11,7 @@ export class Sidebar {
         this.build();
     }
 
-    public sidebarToggled: boolean = false;
+    public sidebarToggled = false;
     public data: SidebarGroup[] = [];
     public toggledDropdowns: number[] = [];
     public toggleDropdown(id: number): void {
@@ -165,7 +165,7 @@ export class Sidebar {
           section.items.forEach((item: SidebarItem): void => {
             if (item.permission && !this.Permissions.checkPermission(item.permission)) return;
             if (item.children) {
-              let delC: number = 0;
+              let delC = 0;
               let children = JSON.parse(JSON.stringify(item.children)) as SidebarItem[];
               children.forEach((child: SidebarItem, index: number) => {
                 if (!(child.permission && !this.Permissions.checkPermission(child.permission)))
@@ -183,7 +183,7 @@ export class Sidebar {
 
         // Load data from storage
         if (localStorage.getItem('sidebar')) {
-            this.toggledDropdowns = JSON.parse(localStorage.getItem('sidebar') as string);
+            this.toggledDropdowns = JSON.parse(localStorage.getItem('sidebar')!);
         }
 
     }
@@ -196,11 +196,11 @@ export class Sidebar {
     public getItem(url: string): SidebarItem[] {
         let gotItem: SidebarItem[] = [];
         this.data.forEach((group) => {
-            group.items.forEach((item: SidebarItem | any) => {
+            group.items.forEach((item: SidebarItem) => {
                 if (item?.url == url) {
                     gotItem[0] = item;
                 }
-                item.children?.forEach((nItem: SidebarItem | any) => {
+                item.children?.forEach((nItem: SidebarItem) => {
                     if (nItem?.url == url) {
                         gotItem[0] = item;
                         gotItem[1] = nItem;

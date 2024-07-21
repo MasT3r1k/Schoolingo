@@ -19,7 +19,8 @@ export class Permission {
 
     public getUserPermissions(): void {
         if (!this.socketService.socket?.connected) {
-            return this.logger.send("Perms", "Failed to get perms. No socket found.");
+            this.logger.send("Perms", "Failed to get perms. No socket found.");
+            return;
         }
         this.socketService.socket.emit('getUserPermissions');
     }

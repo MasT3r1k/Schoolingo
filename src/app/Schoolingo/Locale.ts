@@ -12,19 +12,19 @@ export class Locale {
 
     public declare translatedLanguages: Record<languages, number>;
 
-    public highestTexts: number = 0;
+    public highestTexts = 0;
     public defaultLanguage: languages = 'en';
 
     public getLanguageTranslated(): void {
         this.getLanguages().forEach((lng: languages) => {
             if (!this.translatedLanguages) {
-                (this.translatedLanguages as any) = {};
+                (this.translatedLanguages as unknown) = {};
             }
             let num = 0;
             let objEntries = Object.values(this.locales[lng]);
             function entryCountTest(obj: any): void {
-                let a = obj?.filter((o: any) => typeof o == 'object');
-                a.forEach((b: any) => entryCountTest(Object.values(b)));
+                let a = obj?.filter((o: Record<string, string> | string) => typeof o == 'object');
+                a.forEach((b: Record<string, string>) => entryCountTest(Object.values(b)));
                 num += obj.length - a.length;
             }
 
@@ -113,18 +113,18 @@ export class Locale {
             this.setDefaultLocale();
         }
         let pathSplitted = path.split('/');
-        let _locale = this.locales[locale || this.getUserLocale()];
+        let nextLocale = this.locales[locale ?? this.getUserLocale()];
 
         pathSplitted.forEach(p => {
-            if (_locale?.[p]) {
-                _locale = _locale[p];
+            if (nextLocale[p]) {
+                nextLocale = nextLocale[p];
             }else{
-                _locale =
+                nextLocale =
                 (locale == 'cs' || this.getUserLocale() == 'cs') ?
                 '[' + path + ']' : this.getLocale(path, 'cs');
             }
         })
-        return _locale;
+        return nextLocale;
     }
 
 }
