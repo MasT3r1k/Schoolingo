@@ -22,7 +22,7 @@ export class BoardComponent {
     private routerImport: Router,
     private title: Title
   ) {
-    this.router = routerImport as Router;
+    this.router = routerImport!;
   }
 
   private router: Router;
