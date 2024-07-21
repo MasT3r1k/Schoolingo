@@ -1,4 +1,5 @@
 export type UserRoles = 'admin' | 'principal' | 'teacher' | 'parent' | 'student';
+export type permType = UserRoles | 'all';
 
 export type modulePerm = {
     name: string;

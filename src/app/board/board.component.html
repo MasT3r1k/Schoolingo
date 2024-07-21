@@ -38,12 +38,45 @@
         </div>
     </div>
 
-    @if (schoolingo.userService.getUser() != null) {
-        <div class="content">
-            <div [ngClass]="{sidebar: true, active: schoolingo.sidebarToggled}">
-                @for (section of schoolingo.; track $index) {}
-            </div>
+    <div class="content">
+        <div [ngClass]="{sidebar: true, active: schoolingo.sidebar.sidebarToggled}">
+            @for (section of schoolingo.sidebar.data; track $index) {
+                <ul>
+                    @for (item of section.items; track $index) {
+                        <li [routerLink]="item.url" [routerLinkActive]="'active'" [ngClass]="{ opened: item.children && item.children.length > 0 && schoolingo.sidebar.toggledDropdowns.includes($index) }" (click)="schoolingo.sidebar.toggleDropdown($index)">
+                            <div class="item">
+                                <div class="item-label">
+                                    {{ schoolingo.locale.getLocale(item.item) }}
+                                </div>
+                                @if (item.children && item.children.length > 0) {
+                                    <div class="dropdown-icon" [ngStyle]="{ transform: schoolingo.sidebar.toggledDropdowns.includes($index) ? 'rotate(180deg)' : '' }">
+                                        <svg xmlns="http://www.w3.org/2000/svg" height="16" width="14" viewBox="0 0 448 512">
+                                            <path fill="currentColor" d="M201.4 342.6c12.5 12.5 32.8 12.5 45.3 0l160-160c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L224 274.7 86.6 137.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l160 160z"/>
+                                        </svg>
+                                    </div>
+                                }
+                            </div>
+                            @if (item.children && item.children.length > 0) {
+                                <div class="dropdown-child" [ngStyle]="{height: schoolingo.sidebar.toggledDropdowns.includes($index) ? 'auto' : '0px'}" (click)="$event.stopPropagation()">
+                                    <ul>
+                                        @for (child of item.children; track $index) {
+                                            <li [routerLink]="child.url" [routerLinkActive]="'active'">
+                                                <div class="item">
+                                                    {{ schoolingo.locale.getLocale(child.item) }}
+                                                </div>
+                                            </li>
+                                        }
+                                    </ul>
+                                </div>
+                            }
+                        </li>
+                    }
+                </ul>
+            }
         </div>
-    }
+        <div class="main-content" (click)="schoolingo.sidebar.sidebarToggled = false;">
+            <router-outlet></router-outlet>
+        </div>
+    </div>
     
 </div>

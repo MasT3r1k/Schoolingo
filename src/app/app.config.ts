@@ -12,6 +12,8 @@ import { FormManager } from './Components/Forms/FormManager';
 import { Tabs } from '@Components/Tabs/Tabs';
 import { Schoolingo } from '@Schoolingo';
 import { Theme } from '@Schoolingo/Theme';
+import { Sidebar } from '@Schoolingo/Sidebar';
+import { Permission } from '@Schoolingo/Permissions';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -26,6 +28,8 @@ export const appConfig: ApplicationConfig = {
     FormManager,
     Tabs,
     Schoolingo,
-    Theme
+    Theme,
+    Sidebar,
+    Permission
   ]
 };

@@ -157,7 +157,7 @@
 .wrapper .btn, .wrapper .user {
     clip-path: polygon(4px 0, 100% 0%, calc(100% - 4px) 100%, 0% 100%);
     padding: 6px 12px;
-    background-color: rgb(70,70,70,.36);
+    background-color: rgb(70,70,70,.12);
     color: #fff;
     margin: 0 8px;
 }
@@ -211,12 +211,23 @@
 }
 
 .wrapper .content .sidebar ul li {
-    border-radius: 8px;
     color: var(--color-darker);
     font-weight: 400;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.wrapper > .content > .sidebar > ul > li > .item {
+    padding-left: 12px;
+} 
+
+.wrapper > .content > .sidebar > ul > li > .item {
+    clip-path: polygon(4px 0, 100% 0%, calc(100% - 4px) 100%, 0% 100%);
+
 }
 
 .wrapper .content .sidebar .item {
+
     user-select: none;
     display: flex;
     flex-direction: row;
@@ -240,18 +251,18 @@
 
 .wrapper .content .sidebar .dropdown-child {
     padding-top: 1px;
-    width: 100%;
+    border-bottom-left-radius: 8px;
+    border-bottom-right-radius: 8px;
+    width: calc(100% - 4px);
+    overflow: hidden;
 }
 
 .wrapper .content .sidebar .dropdown-child ul {
     padding-left: 32px;
-    padding-right: 4px;
+    padding-right: 8px;
     padding-bottom: 4px;
-}
+    clip-path: polygon(4px 0, 100% 0%, calc(100% - 4px) 100%, 0% 100%);
 
-.wrapper .content .sidebar ul li {
-    text-overflow: ellipsis;
-    white-space: nowrap;
 }
 
 .wrapper .content .sidebar ul li.active {
@@ -321,4 +332,35 @@
         display: flex!important;
     }
 
+}
+
+/* Unordered list */
+ul {
+    list-style: none;
+    padding: 0;
+}
+
+ul li {
+    margin: 4px 0;
+    cursor: pointer;
+    position: relative;
+}
+
+ul li .item {
+    padding: 8px 12px;
+}
+
+ul li .item:hover  {
+    background-color: var(--background-hover);
+}
+
+li.active > .item, li.opened > .item, ul li.opened .dropdown-child {
+    background-color: var(--background-active);
+}
+
+ul li .item.btn {
+    background-color: var(--primary);
+    color: #fff;
+    text-align: center;
+    cursor: pointer;
 }

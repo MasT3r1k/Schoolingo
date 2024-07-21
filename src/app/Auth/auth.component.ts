@@ -12,6 +12,7 @@ import { Title } from '@angular/platform-browser';
 import { Tabs } from '@Components/Tabs/Tabs';
 import { Schoolingo } from '@Schoolingo';
 import { Storage } from '@Schoolingo/Storage';
+import { Sidebar } from '@Schoolingo/Sidebar';
 
 export type pageTypes = 'login' | 'forgotpass';
 type QRPages = 'loading' | 'error' | 'scan' | 'trylogin';
@@ -169,7 +170,7 @@ export class AuthComponent {
     this.title.setTitle(
       this.schoolingo.locale.getLocale('login_title') + ' | SCHOOLINGO'
     );
-    this.schoolingo.sidebarToggled = false;
+    this.schoolingo.sidebar.sidebarToggled = false;
 
     this.refreshQRcode();
 

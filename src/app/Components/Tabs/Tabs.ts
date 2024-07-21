@@ -24,7 +24,7 @@ export class Tabs {
             ___.glider = {
                 width: __.clientWidth || 0,
                 height: __.clientHeight || 0,
-                offset: __.offsetLeft - parseInt(window?.getComputedStyle(__.parentElement as HTMLElement)?.getPropertyValue('padding-left')) ?? 0,
+                offset: __.offsetLeft - parseInt(window.getComputedStyle(__.parentElement as HTMLElement).getPropertyValue('padding-left')),
             }
           })
         } catch(e) {
@@ -89,7 +89,7 @@ export class Tabs {
             tTab.glider = {
               width: _?.clientWidth || 0,
               height: _?.clientHeight || 0,
-              offset: _?.offsetLeft - parseInt(window?.getComputedStyle(_?.parentElement as HTMLElement)?.getPropertyValue('padding-left')) ?? 0
+              offset: _?.offsetLeft - parseInt(window?.getComputedStyle(_.parentElement as HTMLElement).getPropertyValue('padding-left'))
             };
           } catch(e) {
             console.error(e);
