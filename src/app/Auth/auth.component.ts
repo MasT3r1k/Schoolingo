@@ -156,8 +156,7 @@ export class AuthComponent {
 
     this.refreshQRcode();
 
-    this.Listeners.push(this.schoolingo.socketService.addFunction(
-      'login').subscribe(
+    this.Listeners.push(this.schoolingo.socketService.addFunction('login').subscribe(
       (data: LoginData) => {
         if (this.form) {
           this.form.executing = false;
@@ -198,8 +197,8 @@ export class AuthComponent {
     this.routerSocket.unsubscribe();
     if (this.form) this.form.removeMe();
     this.schoolingo.socketService.disconnect();
-    this.Listeners.forEach((listen: any) => listen.unsubscribe());
-    this.QRListeners.forEach((listen: any) => listen.unsubscribe());
+    this.Listeners.forEach((listen: Subscription) => listen.unsubscribe());
+    this.QRListeners.forEach((listen: Subscription) => listen.unsubscribe());
 
   }
 
@@ -240,10 +239,10 @@ export class AuthComponent {
   }
 
   // QR CODE
-  private qrCode: string = '';
+  private qrCode!: string;
   private qrCodeError: boolean = false;
   private qrCodeResult: any = null;
-  private qrTimeout: any;
+  private qrTimeout!: NodeJS.Timeout;
 
   public qrStatus: QRStatus = this.getQRcodeStatus();
 

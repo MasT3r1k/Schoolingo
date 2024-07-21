@@ -5,7 +5,7 @@ export type { SchoolInfo };
 @Injectable({ providedIn: 'root' })
 export class School {
     
-    public name: string = '';
+    public name!: string;
 
     getAPI(data: SchoolInfo): void {
 
