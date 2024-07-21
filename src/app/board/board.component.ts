@@ -32,8 +32,8 @@ export class BoardComponent {
           let item: SidebarItem[] = this.schoolingo.sidebar.getItem(url.url.split('?')[0].split('#')[0]?.slice(1));
           for(let i = 0;i < item.length;i++) {
             if (!item[i].children || item[i]?.children?.length == 0) {
-              this.title.setTitle(this.schoolingo.locale.getLocale(item[i].item) + ' - ' + name);
-              console.log(item[i]);
+              let pageTitle: string = `${this.schoolingo.locale.getLocale(item[i].item)} - ${name}`;
+              this.title.setTitle(pageTitle);
             }
           }
         }

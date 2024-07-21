@@ -87,7 +87,7 @@ export class AuthComponent {
       ],
     },
   ];
-  public buttons: FormButton[] = [{ label: 'login_btn', executed: 'logining_btn', func: () => this.login() }];
+  public buttons: FormButton[] = [{ label: 'login_btn', executed: 'logining_btn', func: () => {this.login()} }];
   public form?: FormManager = undefined;
 
 
@@ -124,7 +124,7 @@ export class AuthComponent {
           },
         ];
 
-        this.buttons = [{ label: 'login_btn', executed: 'logining_btn', func: () => this.login() }];
+        this.buttons = [{ label: 'login_btn', executed: 'logining_btn', func: () => { this.login() }}];
         break;
       case 'forgotpass':
         this.inputs = [
@@ -145,7 +145,7 @@ export class AuthComponent {
             },
           ];
 
-          this.buttons = [{ label: 'reset_pass', executed: 'reseting_pass', func: () => this.login() }];
+          this.buttons = [{ label: 'reset_pass', executed: 'reseting_pass', func: () => {this.login()} }];
         break;
     
     }
