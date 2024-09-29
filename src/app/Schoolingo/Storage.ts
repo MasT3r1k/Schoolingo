@@ -13,7 +13,7 @@ export class Storage {
      * @param key Name of storage item
      * @param value Value of storage item
      * @returns if save was successful
-     */
+    */
     public save(key: string, value: Record<string, any>): boolean {
         let saved: string = localStorage.getItem(key)!;
         let json: Record<string, string> = JSON.parse(saved);
@@ -34,16 +34,21 @@ export class Storage {
      * @param key Name of storage item
      * @param value Item of JSON (optional)
      * @returns Value from storage or false if is not set
-     */
+    */
     public get(key: string, value?: string): any {
         try {
             let saved: string = localStorage.getItem(key)!;
-            let json: Record<string, string> = JSON.parse(saved);
+            try {
+                let json: Record<string, string> = JSON.parse(saved);
 
-            if (json == null) return false;
-            if (!value) return json;
-            if (!json[value]) return false; 
-            return json[value];
+                if (json == null) return false;
+                if (!value) return json;
+                if (!json[value]) return false; 
+                return json[value];
+            } catch(e) {
+                return "";
+            }
+
         } catch(e) {
             return "";
         }
@@ -53,7 +58,7 @@ export class Storage {
      * Remove storage item from storage
      * @param key Name of storage item
      * @returns if remove was successful
-     */
+    */
     public remove(key: string): boolean {
         try {
             localStorage.removeItem(key);
@@ -67,7 +72,7 @@ export class Storage {
      * Remove all items from storage
      * @returns if removeAll was successful
      * ! No saves !
-     */
+    */
     public removeAll(): boolean {
         try {
             localStorage.clear();

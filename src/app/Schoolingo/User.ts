@@ -4,6 +4,7 @@ import { user } from "@Schoolingo/User.d";
 import { CookieService } from "@Schoolingo/Cookie";
 import { SocketService } from "./Socket";
 import { Storage } from "./Storage";
+export { user }
 
 @NgModule()
 export class UserService {

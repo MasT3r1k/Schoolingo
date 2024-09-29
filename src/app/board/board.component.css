@@ -24,6 +24,7 @@
     align-items: center;
     position: relative;
     justify-content: space-between;
+    z-index: 15;
 
 }
 
@@ -87,6 +88,12 @@
     padding: 0 8px;
 }
 
+.wrapper > .navbar .options {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+
 .wrapper > .navbar .options > .item {
     cursor: pointer;
     margin: 0 8px;
@@ -95,7 +102,7 @@
 }
 
 .wrapper > .navbar .options > .item .icon, .wrapper > .navbar .options > .item .name {
-    clip-path: polygon(4px 0, 100% 0%, calc(100% - 4px) 100%, 0% 100%);
+    clip-path: var(--polygon);
     transition: background .3s;
 }
 
@@ -109,9 +116,10 @@
     font-size: 20px;
 }
 
-.wrapper > .navbar .options > .item:hover .icon {
+.wrapper > .navbar .options > .item:hover .icon, .wrapper > .navbar .options > .item.active .icon {
     background-color: rgb(70,70,70,.36);
 }
+
 
 
 .wrapper > .navbar .options > .item .name {
@@ -125,6 +133,9 @@
     background-color: rgb(70,70,70,.72);
     padding: 8px 16px;
     transition: opacity .3s;
+    min-width: 120px;
+    width: max-content;
+    text-align: center;
 }
 
 .wrapper > .navbar .options > .item:hover .name {
@@ -154,8 +165,8 @@
     opacity: .7;
 }
 
-.wrapper .btn, .wrapper .user {
-    clip-path: polygon(4px 0, 100% 0%, calc(100% - 4px) 100%, 0% 100%);
+.wrapper > .navbar .btn, .wrapper .user {
+    clip-path: var(--polygon);
     padding: 6px 12px;
     background-color: rgb(70,70,70,.12);
     color: #fff;
@@ -163,7 +174,7 @@
 }
 
 /* Logout button */
-.wrapper .logout {
+.wrapper > .navbar .logout {
     background-color: rgba(196, 7, 30, .16);
     cursor: pointer;
     color: #ED213A;
@@ -188,6 +199,10 @@
 }
 
 /* Sidebar */
+.show-sidebar {
+    display: none;
+}
+
 .wrapper .content .sidebar {
     width: 250px;
     max-width: 250px;
@@ -196,7 +211,7 @@
     display: flex;
     color: var(--color-darker);
     flex-direction: column;
-    z-index: 1;
+    z-index: 2;
     margin-top: -1px;
     background-color: var(--background-body);
     overflow-y: auto;
@@ -222,8 +237,8 @@
 } 
 
 .wrapper > .content > .sidebar > ul > li > .item {
-    clip-path: polygon(4px 0, 100% 0%, calc(100% - 4px) 100%, 0% 100%);
-
+    clip-path: var(--polygon);
+    z-index: 99999;
 }
 
 .wrapper .content .sidebar .item {
@@ -261,7 +276,7 @@
     padding-left: 32px;
     padding-right: 8px;
     padding-bottom: 4px;
-    clip-path: polygon(4px 0, 100% 0%, calc(100% - 4px) 100%, 0% 100%);
+    clip-path: var(--polygon);
 
 }
 
@@ -295,8 +310,10 @@
     flex-shrink: 1;
     transition: all .3s;
     position: relative;
+    z-index: 1;
     overflow-y: auto;
     background-color: var(--background-header);
+    padding: 2rem;
 }
 
 @media (max-width: 1300px) {
@@ -363,4 +380,147 @@ ul li .item.btn {
     color: #fff;
     text-align: center;
     cursor: pointer;
+}
+
+.modals {
+    width: 100vw;
+    height: 100vh;
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    z-index: 500;
+}
+
+.modals > .modal {
+    z-index: 500;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    position: relative;
+    background-color: var(--background-body);
+    box-shadow: rgba(2, 2, 2, 0.5) 0px 0px 3px;
+}
+
+.modals > .modal > .modal-close {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    font-size: 24px;
+    cursor: pointer;
+    color: var(--color-darker);
+}
+
+.modals > .modal > .modal-header {
+    padding: 2rem;
+    text-align: center;
+    text-transform: uppercase;
+}
+
+.modals > .modal > .modal-header {
+    font-size: 24px;
+    font-weight: 600;
+}
+
+.modals > .modal > .modal-header i {
+    font-size: 28px;
+    margin-right: 8px;
+}
+
+.modals > .modal > .modal-center {
+    display: flex;
+    justify-content: center;
+}
+
+.modals > .modal .modal-body {
+    margin: 1rem 2rem;
+    border: 1px solid var(--border-color);
+    background-color: var(--background-hover);
+    width: calc(100% - 4rem);
+    height: 25rem;
+}
+
+.modals > .modal > .alert {
+    padding: 8px 16px;
+    text-align: center;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    margin: 8px 0;
+}
+
+.alerts {
+    display: flex;
+    flex-direction: column;
+}
+
+.alerts > .alert {
+    padding: 8px 16px;
+    clip-path: var(--polygon);
+    text-align: center;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    margin-bottom: 8px;
+}
+
+.alerts > .alert > .actions {
+    margin-left: 1rem;
+}
+
+.alerts > .alert > .actions > .btn {
+    padding: 4px 16px;
+    border: 1px solid var(--error-color);
+    color: var(--error-color);
+    font-size: 14px;
+    line-height: 18px;
+    border-radius: 9999rem;
+    transition: all .3s;
+    cursor: pointer;
+    user-select: none;
+}
+
+.alerts > .alert > .actions > .btn:hover {
+    background-color: var(--error-color);
+    color: #fff;
+}
+
+.alerts > .alert > .close {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    right: 16px;
+    cursor: pointer;
+}
+
+
+
+.modals > .modal > .modal-center > .modal-body .child {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px;
+    background-color: var(--background-body);
+    transition: all .3s;
+}
+.modals > .modal > .modal-center > .modal-body .child .child-name {
+    font-weight: bold;
+}
+
+.modals > .modal > .modal-center > .modal-body .child .child-info {
+    color: var(--color-darker);
+}
+
+.modals > .modal > .modal-center > .modal-body .child .btn {
+    padding: 8px 16px;
+    cursor: pointer;
+    transition: all .3s;
+    border: 1px solid var(--border-color);
+}
+
+.modals > .modal > .modal-center > .modal-body .child .btn:hover {
+    background-color: var(--background-hover);
 }

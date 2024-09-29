@@ -14,10 +14,12 @@ import { Schoolingo } from '@Schoolingo';
 import { Theme } from '@Schoolingo/Theme';
 import { Sidebar } from '@Schoolingo/Sidebar';
 import { Permission } from '@Schoolingo/Permissions';
+import { HttpClient, provideHttpClient } from '@angular/common/http';
 
 export const appConfig: ApplicationConfig = {
   providers: [
     provideRouter(routes),
+    provideHttpClient(),
     UserService,
     Storage,
     CookieService,
@@ -30,6 +32,8 @@ export const appConfig: ApplicationConfig = {
     Schoolingo,
     Theme,
     Sidebar,
-    Permission
-  ]
+    Permission,
+    HttpClient
+  ],
+  
 };

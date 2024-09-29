@@ -1,12 +1,15 @@
 import { Component } from '@angular/core';
+import { Schoolingo } from '@Schoolingo';
 
 @Component({
   selector: 'app-settings',
   standalone: true,
   imports: [],
   templateUrl: './settings.component.html',
-  styleUrl: './settings.component.css'
+  styleUrls: ['./settings.component.css', '../../../Styles/card.css']
 })
 export class SettingsComponent {
-
+  constructor(
+    public schoolingo: Schoolingo
+  ) {}
 }

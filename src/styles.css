@@ -34,14 +34,16 @@ a {
     --primary-gradient: linear-gradient(90deg, var(--primary), var(--primary-second));
     --red: hsl(0deg, 63%, 43%);
     --error: var(--red);
-    --green: hsl(144deg, 58%, 32%);
-    --green-darker: hsl(143deg, 61%, 24%);
+    --green: hsl(134, 62%, 41%);
+    --green-darker: hsl(135, 65%, 31%);
     --radius: 8px;
+    --polygon: polygon(4px 0, 100% 0%, calc(100% - 4px) 100%, 0% 100%);
 }
 
 .light {
     --background-body: hsl(0deg, 0%, 90%);
     --background-header: hsl(0deg, 0%, 100%);
+    --background-basic: hsl(228deg 6% 32.5% / 4%);
     --background-hover: hsl(223deg 5.8% 52.9% / 8%);
     --background-active: hsl(223deg 5.8% 52.9% / 12%);
     --dark-border: hsl(0deg, 0%, 13%);
@@ -53,7 +55,7 @@ a {
     --border-color: rgba(0,0,0,0.10);
     --alert-button-border: hsl(0deg, 0%, 100%);
     --error-start-bg: hsl(353deg, 85%, 53%);
-    --error-end-bg: var(--error);
+    --error-end-bg: hsl(0deg, 63%, 43%);
     --error-color: hsl(0deg, 0%, 100%);
     --info-start-bg: hsl(206deg, 84%, 55%);
     --info-end-bg: hsl(206deg, 88%, 38%);
@@ -63,6 +65,7 @@ a {
 .dark {
     --background-body: hsl(240deg, 6%, 10%);
     --background-header: hsl(0deg, 0%, 5%);
+    --background-basic: hsl(228deg 6% 32.5% / 8%);
     --background-hover: hsl(228deg 6% 32.5% / 16%);
     --background-active: hsl(228deg 6% 32.5% / 24%);
     --dark-border: hsla(0deg, 0%, 93%, 0.133);
@@ -78,7 +81,18 @@ a {
     --error-color: hsl(338deg, 82%, 69%);
     --info-start-bg: hsl(206deg, 84%, 35%);
     --info-end-bg: hsl(206deg, 88%, 18%);
+}
 
+.green, .success {
+    background-image: linear-gradient(90deg, var(--green), var(--green-darker));
+    background-color: var(--green) !important;
+    color: #fff !important;
+}
+
+.red, .error {
+    background-image: linear-gradient(90deg, var(--error-start-bg), var(--error-end-bg));
+    background-color: var(--error-start-bg) !important;
+    color: var(--error-color) !important;
 }
 
 h1, h2, h3, h4, h5, h6, p {
@@ -217,12 +231,6 @@ body {
 
 .spin {
     animation: rotate 1s infinite linear;
-}
-
-.green {
-    background-image: linear-gradient(90deg, rgb(40,168,69), rgb(28,131,53));
-    background-color: hsl(139, 47.3%, 43.9%) !important;
-    color: #fff !important;
 }
 
 @keyframes rotate {

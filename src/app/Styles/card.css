@@ -4,27 +4,28 @@
     justify-content: center;
     box-shadow: rgba(2, 2, 2, 0.5) 0px 0px 3px;
     background-color: var(--background-body);
-    border-radius: calc(2 * var(--radius));
     padding: 2rem;
     min-width: 784px;
     position: relative;
-    margin-bottom: 18px;
 }
 
 .card-top {
+    display: flex;
+    flex-direction: column;
+}
+
+.alert {
     position: relative;
-    padding: 4px 16px;
-    border-radius: 99px;
+    padding: 8px 20px;
+    margin: 4px 0;
     display: flex;
     flex-direction: row;
     align-items: center;
     justify-content: space-between;
-    background-color: red;
-    color: #fff;
-    margin-top: -1rem;
+    clip-path: var(--polygon);
 }
 
-.card-top .btn {
+.alert .btn {
     cursor: pointer;
     padding: 2px 6px;
     font-size: 14px;
@@ -36,12 +37,61 @@
     transition: all .3s;
 }
 
-.card-top .btn:hover {
+.alert .btn:hover {
     background-color: transparent;
     color: red;
 }
 
-.card-row {
+.alert:last-child {
+    margin-bottom: 1rem;
+}
+
+.card-header {
+    justify-content: space-between;
+}
+
+.card-row, .card-header, .select-items {
     display: flex;
     flex-direction: row;
+}
+
+.select-item {
+    clip-path: var(--polygon);
+    font-size: .875rem;
+    line-height: 1.25rem;
+    text-align: left;
+    padding: .5rem 1rem;
+    background-color: var(--background-basic);
+    display: flex;
+    transition: all .3s;
+    flex-direction: row;
+    cursor: pointer;
+}
+.select-item:not(:first-child) {
+    margin-left: -4px;
+    position: relative;
+}
+
+.select-item:not(:first-child)::before {
+    content: '';
+    position: absolute;
+    height: 150%;
+    width: 2px;
+    top: 0;
+    overflow: visible;
+    transform: skewX(-4deg);
+    background-color: var(--background-hover);
+    z-index: 15;
+}
+
+.select-item:not(:first-child)::before {
+    left: 1px;
+}
+
+
+.select-item:hover {
+    background-color: var(--background-hover);
+}
+.select-item.active {
+    background-color: var(--background-active);
 }

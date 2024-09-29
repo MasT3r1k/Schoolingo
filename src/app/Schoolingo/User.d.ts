@@ -26,5 +26,5 @@ export type user = ({
     selectedChildren: number = 0;
     children: (personDetails & { class: string })[];
 }) & {
-    locale: string;
+    id: number;
 }

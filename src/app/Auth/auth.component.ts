@@ -194,7 +194,7 @@ export class AuthComponent {
   }
 
   ngOnDestroy(): void {
-    this.routerSocket.unsubscribe();
+    if (this.routerSocket) this.routerSocket.unsubscribe();
     if (this.form) this.form.removeMe();
     this.schoolingo.socketService.disconnect();
     this.Listeners.forEach((listen: Subscription) => listen.unsubscribe());

@@ -1,11 +1,12 @@
 import { NgClass, NgStyle } from '@angular/common';
 import { Component } from '@angular/core';
-import { Title } from '@angular/platform-browser';
 import { NavigationEnd, Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { Schoolingo } from '@Schoolingo';
-import { name } from '@Schoolingo/Config';
+import { alertManager, AlertManagerClass } from '@Schoolingo/Alert';
+import { languages } from '@Schoolingo/Locale';
 import { School } from '@Schoolingo/School';
-import { SidebarItem } from '@Schoolingo/Sidebar';
+import { SocketUpdateTheme, SocketUpdateLocale } from '@Schoolingo/Socket';
+import { user } from '@Schoolingo/User';
 import { Subscription } from 'rxjs';
 
 @Component({
@@ -16,31 +17,54 @@ import { Subscription } from 'rxjs';
   styleUrl: './board.component.css'
 })
 export class BoardComponent {
+  public alertManager: AlertManagerClass = alertManager;
   constructor(
     public school: School,
     public schoolingo: Schoolingo,
-    private routerImport: Router,
-    private title: Title
+    private routerImport: Router
   ) {
-    this.router = routerImport!;
+    this.router = this.routerImport;
+
   }
 
   private router: Router;
   private routerSub: Subscription | undefined = undefined;
 
   ngOnInit(): void {
+    
+    this.schoolingo.refreshTitle();
     this.routerSub = this.router.events.subscribe((url: any): void => {
       if (url instanceof NavigationEnd) {
         if (url.url) {
-          let item: SidebarItem[] = this.schoolingo.sidebar.getItem(url.url.split('?')[0].split('#')[0]?.slice(1));
-          for(const x of item) {
-            if (!x.children || x.children?.length == 0) {
-              let pageTitle = `${this.schoolingo.locale.getLocale(x.item)} - ${name}`;
-              this.title.setTitle(pageTitle);
-            }
-          }
+          this.schoolingo.refreshTitle();
         }
       }
+    });
+    this.schoolingo.socketService.connect();
+    this.schoolingo.socketService.addFunction("connect").subscribe(() => {
+      this.schoolingo.socketService.emit('tokens:getUser', { userId: 'myself' });
+    });
+
+    this.schoolingo.socketService.addFunction("main:updateUser").subscribe((data: user) => {
+      this.schoolingo.userService.setUser(data);
+    });
+    this.schoolingo.socketService.addFunction("main:updateLocale").subscribe((data: SocketUpdateLocale) => {
+      this.schoolingo.locale.setUserLocale(data.lng as languages);
+    });
+    this.schoolingo.socketService.addFunction("main:updateTheme").subscribe((data: SocketUpdateTheme) => {
+      this.schoolingo.theme.updateTheme(this.schoolingo.theme.getThemes()[data.theme]);
+    });
+    this.schoolingo.socketService.addFunction("system:error").subscribe((data: { status: string, error: number }) => {
+      switch (data.status) {
+        case "error":
+          switch(data.error) {
+            case 500:
+              
+              break;
+          }
+          break;
+      }
+      console.log('ERROR: ' + data.error);
     });
   }
 

@@ -1,14 +1,14 @@
 import { NgModule } from "@angular/core";
-import { Storage } from "@Schoolingo/Storage";
 import { CookieService } from "./Cookie";
 import { io, Socket } from "socket.io-client";
 import { Observable } from "rxjs";
-import { api, socketIP } from "./Config";
+import { socketIP } from "./Config";
+import { SocketUpdateLocale, SocketUpdateTheme } from "./Socket.d";
+export { SocketUpdateLocale, SocketUpdateTheme }
 
 @NgModule()
 export class SocketService {
   constructor(
-      private storage: Storage,
       private cookieService: CookieService
   ) {}
 
@@ -25,13 +25,12 @@ export class SocketService {
 
   public connect(): void {
     let token = this.cookieService.getCookie('token');
-    console.log('token: ' + token);
     if (token == '') {
-      this.socket = io('localhost:8888');
+      this.socket = io(socketIP);
       return;
     }
     this.socket = io(socketIP, {
-      extraHeaders: { Authorization: 'Bearer ' + token },
+      extraHeaders: { authorization: 'Bearer ' + token }
     });
   }
 
