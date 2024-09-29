@@ -8,12 +8,12 @@ import { HttpClient } from "@angular/common/http";
 import { localeURL } from "@Schoolingo/Config";
 import { BehaviorSubject } from "rxjs";
 
-export type languages = 'cs' | 'en';
+export type languages = 'cs' | 'en' | "null";
 
 @Injectable()
 export class Locale {
 
-    public defaultLanguage: languages = 'en';
+    public defaultLanguage: languages = 'null';
     public language: BehaviorSubject<languages> = new BehaviorSubject(this.defaultLanguage);
 
     constructor(
@@ -22,12 +22,13 @@ export class Locale {
         private logger: Logger,
         private http: HttpClient
         ) {}
-    private logName: string = 'Locale';
+    private logName = 'Locale';
 
     // Big future problem with more languages and locales :(
     private locales: Record<languages, any> = {
         cs: CzechLanguage,
-        en: EnglishLanguage
+        en: EnglishLanguage,
+        null: {}
     }
 
     /**
@@ -53,17 +54,17 @@ export class Locale {
      * @param lng user's new language
      */
     public setUserLocale(lng: languages) {
-        try {
-            this.http.get(localeURL + this.locales[lng].file).subscribe((data: any) => {
-                this.locale = data;
-                this.language.next(lng);
-                this.logger.send(this.logName, 'Language ' + lng + ' was loaded and saved.');
-                this.storage.save(this.storage.settingsCacheName, {locale: lng});
-            });
-        } catch(e) {
+        this.http.get(localeURL + this.locales[lng].file).subscribe((data: any) => {
+            this.locale = data;
+            this.language.next(lng);
+            this.logger.send(this.logName, 'Language ' + lng + ' was loaded and saved.');
+            this.storage.save(this.storage.settingsCacheName, {locale: lng});
+        }, (err: any): void => {
+            this.locale = {};
+            this.language.next("null");
             this.logger.send(this.logName, 'Language ' + lng + ' failed to load.');
-            console.error(e);
-        }
+            console.error(err);
+        });
     }
 
     /**
@@ -71,7 +72,7 @@ export class Locale {
      * @returns user's language
      */
     public getUserLocale(): languages {
-        return this.storage.get(this.storage.settingsCacheName, 'locale') as languages;
+        return this.language.getValue();
     }
 
     /**

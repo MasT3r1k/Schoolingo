@@ -15,15 +15,14 @@ import { Subscription } from 'rxjs';
 })
 export class AppComponent implements OnInit {
   private localeLanguageSubscribe!: Subscription;
-  public isLoaded: boolean = false;
 
   constructor(private http: HttpClient, private school: School, public locale: Locale) {}
 
 
   ngOnInit(): void {
 
-    this.localeLanguageSubscribe = this.locale.language.subscribe(() => {
-      this.isLoaded = true;
+    this.localeLanguageSubscribe = this.locale.language.subscribe((data: any) => {
+      console.log(data);
     });
 
     this.http.get<SchoolInfo>(config.api + 'v1/getSchoolInfo').subscribe((res: SchoolInfo): void => {
