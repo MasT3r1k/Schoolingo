@@ -1,10 +1,10 @@
 import { NgModule } from "@angular/core";
 import { Router } from "@angular/router";
-import { user } from "@Schoolingo/User.d";
+import { child, personDetails, user } from "@Schoolingo/User.d";
 import { CookieService } from "@Schoolingo/Cookie";
 import { SocketService } from "./Socket";
 import { Storage } from "./Storage";
-export { user }
+export { user, child, personDetails }
 
 @NgModule()
 export class UserService {
@@ -34,7 +34,12 @@ export class UserService {
       } catch(e) {
         this.setToken("", new Date());
       }
-    }
+  }
+
+  /** Children (only parents) */
+  public selectedChild: number = 0;
+  public children: child[] = [];
+
 
   //** Users
   private user: user | null = null;

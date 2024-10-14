@@ -56,42 +56,35 @@
 }
 
 .select-item {
-    clip-path: var(--polygon);
     font-size: .875rem;
     line-height: 1.25rem;
     text-align: left;
-    padding: .5rem 1rem;
-    background-color: var(--background-basic);
+    padding: .35rem .75rem;
+    background-color: var(--background-active);
     display: flex;
     transition: all .3s;
     flex-direction: row;
     cursor: pointer;
 }
-.select-item:not(:first-child) {
-    margin-left: -4px;
-    position: relative;
+
+.select-item:first-child {
+    border-top-left-radius: calc(2 * var(--radius));
+    border-bottom-left-radius: calc(2 * var(--radius));
 }
 
-.select-item:not(:first-child)::before {
-    content: '';
-    position: absolute;
-    height: 150%;
-    width: 2px;
-    top: 0;
-    overflow: visible;
-    transform: skewX(-4deg);
-    background-color: var(--background-hover);
-    z-index: 15;
+.select-item:last-child {
+    border-top-right-radius: calc(2 * var(--radius));
+    border-bottom-right-radius: calc(2 * var(--radius));
 }
-
-.select-item:not(:first-child)::before {
-    left: 1px;
-}
-
 
 .select-item:hover {
     background-color: var(--background-hover);
 }
+
 .select-item.active {
-    background-color: var(--background-active);
+    background-color: var(--primary);
+    background-image: var(--primary-gradient);
+}
+.select-item.active:hover {
+    background-color: var(--primary-second);
 }

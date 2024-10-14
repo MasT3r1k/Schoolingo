@@ -34,8 +34,8 @@ a {
     --primary-gradient: linear-gradient(90deg, var(--primary), var(--primary-second));
     --red: hsl(0deg, 63%, 43%);
     --error: var(--red);
-    --green: hsl(134, 62%, 41%);
-    --green-darker: hsl(135, 65%, 31%);
+    --green: hsl(134deg, 62%, 41%);
+    --green-darker: hsl(135deg, 65%, 31%);
     --radius: 8px;
     --polygon: polygon(4px 0, 100% 0%, calc(100% - 4px) 100%, 0% 100%);
 }
@@ -52,7 +52,7 @@ a {
     --secondary-color: hsl(215deg, 61%, 94%);
     --secondary-color-hover: hsl(215deg 61% 94% / 48%);
     --sidebar-arrow: hsl(0deg, 0%, 87%);
-    --border-color: rgba(0,0,0,0.10);
+    --border-color: rgba(0,0,0,10%);
     --alert-button-border: hsl(0deg, 0%, 100%);
     --error-start-bg: hsl(353deg, 85%, 53%);
     --error-end-bg: hsl(0deg, 63%, 43%);
@@ -68,7 +68,7 @@ a {
     --background-basic: hsl(228deg 6% 32.5% / 8%);
     --background-hover: hsl(228deg 6% 32.5% / 16%);
     --background-active: hsl(228deg 6% 32.5% / 24%);
-    --dark-border: hsla(0deg, 0%, 93%, 0.133);
+    --dark-border: hsla(0deg, 0%, 93%, 13.3%);
     --color: hsl(0deg, 0%, 100%);
     --color-darker: rgb(179, 179, 179);
     --secondary-color: hsl(216deg, 5%, 12%);
@@ -115,7 +115,7 @@ h1, h2, h3, h4, h5, h6, p {
     left: 50%;
     z-index: 9999999;
     font-size: 14px;
-    box-shadow: 0px 0px 2px rgba(6, 6, 7, 0.1);
+    box-shadow: 0px 0px 2px rgba(6, 6, 7, 10%);
     content: attr(tooltip);
 }
 
@@ -249,4 +249,49 @@ body {
         visibility: hidden;
     }
 
+}
+
+.alerts {
+    display: flex;
+    flex-direction: column;
+}
+
+.alerts > .alert {
+    padding: 8px 16px;
+    clip-path: var(--polygon);
+    text-align: center;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    margin-bottom: 8px;
+}
+
+.alerts > .alert > .actions {
+    margin-left: 1rem;
+}
+
+.alerts > .alert > .actions > .btn {
+    padding: 4px 16px;
+    border: 1px solid var(--error-color);
+    color: var(--error-color);
+    font-size: 14px;
+    line-height: 18px;
+    border-radius: 9999rem;
+    transition: all .3s;
+    cursor: pointer;
+    user-select: none;
+}
+
+.alerts > .alert > .actions > .btn:hover {
+    border-color: #fff;
+    color: #fff;
+}
+
+.alerts > .alert > .close {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    right: 16px;
+    cursor: pointer;
 }

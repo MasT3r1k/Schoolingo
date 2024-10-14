@@ -1,1 +1,63 @@
-<p>timetable works!</p>
+<div class="card">
+    <div class="card-top"></div>
+    <div class="card-header">
+        <h2>{{ schoolingo.locale.getLocale('sidebar/teach/timetable') }}</h2>
+        <div class="flex-items">
+            <div class="select-items">
+                <div class="select-item active">{{ schoolingo.locale.getLocale('timetable/thisWeek') }}</div>
+                <div class="select-item">{{ schoolingo.locale.getLocale('timetable/nextWeek') }}</div>
+                <div class="select-item">{{ schoolingo.locale.getLocale('timetable/permanent') }}</div>
+                <div class="select-item">{{ schoolingo.locale.getLocale('sidebar/calendar') }}</div>
+            </div>
+        </div>
+    </div>
+    <div class="card-body">
+
+        <div class="timetable">
+            <div class="hours">
+                <div class="week-type">
+
+                </div>
+                @for (hour of schoolingo.getTimetableHours(); track $index) {
+                    <div class="hour-info">
+                        <div class="hour-id">
+                            {{ $index + 1 }}
+                        </div>
+                        <div class="hour-time">
+                            {{ hour.start + ' - ' + hour.end }}
+                        </div>
+                    </div>
+                }
+            </div>
+            <div class="days">
+                @for (day of [].constructor(5); track index;let index = $index) {
+                    <div class="day">
+                        <div class="name">
+                            {{ schoolingo.locale.getLocale('days/' + index) }}
+                        </div>
+                        @if (false) {
+                            <div class="item all-day"></div>
+                        }
+                        @for (hour of [].constructor(schoolingo.getTimetableHours().length); track index2;let index2 = $index) {
+
+                            <div class="item lesson-hour">
+                                @for (lesson of schoolingo.getTimetableLessons()[index][index2]; track $index) {
+                                    <div class="sub-lesson-hour">
+                                        <div class="group">
+                                            <span>{{ lesson.group.text + ' ' + lesson.group.num }}</span>
+                                        </div>
+                                        <div class="room">{{ lesson.room }}</div>
+                                        <div class="subject">{{ lesson.subjectShortcut }}</div>
+                                        <div class="teacher">{{ lesson.teacher }}</div>
+                                    </div>
+                                }
+                            </div>
+                        }
+                    </div>
+                }
+            </div>
+        </div>
+
+    </div>
+
+</div>

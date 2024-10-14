@@ -13,15 +13,21 @@ export type languages = 'cs' | 'en' | "null";
 @Injectable()
 export class Locale {
 
-    public defaultLanguage: languages = 'null';
-    public language: BehaviorSubject<languages> = new BehaviorSubject(this.defaultLanguage);
+    public defaultLanguage: languages = 'en';
+    public language: BehaviorSubject<languages> = new BehaviorSubject("null" as languages);
 
     constructor(
         // Imports
         private storage: Storage,
         private logger: Logger,
         private http: HttpClient
-        ) {}
+        ) {
+            let lng = this.storage.get(this.storage.settingsCacheName)["locale"];
+            if (!lng) {
+                lng = this.defaultLanguage;
+            }
+            this.setUserLocale(lng ?? this.defaultLanguage);
+        }
     private logName = 'Locale';
 
     // Big future problem with more languages and locales :(

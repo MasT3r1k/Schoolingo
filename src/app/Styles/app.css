@@ -1,0 +1,79 @@
+/** Loading Icon **/
+.loading {
+    width: 100vw;
+    height: 100vh;
+    background-color: var(--background-header);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+}
+
+.loading .triangle {
+    stroke-dasharray: 17;
+    animation: dash 3s cubic-bezier(0.35, 0.04, 0.63, 0.95) infinite;
+}
+
+@keyframes dash {
+    to {
+      stroke-dashoffset: -136;
+    }
+}
+
+
+/** Loading alerts **/
+.alerts {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 0 auto;
+    width: 100%;
+    position: absolute;
+}
+
+.alerts.top {
+    top: 0;
+}
+
+.alerts.bottom {
+    bottom: 0;
+}
+
+.alerts .alert {
+    width: 500px;
+    transition: all .3s;
+    background-color: var(--background-body);
+    animation-duration: .75s;
+    animation-delay: 250ms;
+    animation-range-end: 100%;
+    animation-fill-mode: forwards;
+}
+
+.alerts.top .alert {
+    animation-name: show_top;
+    transform: translateY(-100%);
+}
+
+
+.alerts.bottom .alert {
+    animation-name: show_bottom;
+    transform: translateY(100%);
+}
+
+@keyframes show_top {
+    0% {
+        transform: translateY(-100%);
+    }
+    100% {
+        transform: translateY(16px);
+    }
+}
+
+@keyframes show_bottom {
+    0% {
+        transform: translateY(100%);
+    }
+    100% {
+        transform: translateY(-16px);
+    }
+}

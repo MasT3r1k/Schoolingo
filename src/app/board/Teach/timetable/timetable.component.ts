@@ -1,12 +1,20 @@
 import { Component } from '@angular/core';
+import { Schoolingo } from '@Schoolingo';
 
 @Component({
-  selector: 'app-timetable',
   standalone: true,
   imports: [],
   templateUrl: './timetable.component.html',
-  styleUrl: './timetable.component.css'
+  styleUrls: ['./timetable.component.css', '../../../Styles/card.css']
 })
 export class TimetableComponent {
+
+
+
+  constructor(public schoolingo: Schoolingo) {
+  }
+
+  ngOnInit(): void {
+  }
 
 }

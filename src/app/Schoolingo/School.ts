@@ -5,12 +5,15 @@ export type { SchoolInfo };
 @Injectable({ providedIn: 'root' })
 export class School {
     
-    public name!: string;
+    public schoolInfo!: SchoolInfo;
 
     getAPI(data: SchoolInfo): void {
+        if (data.name == "") {
+            // Failed to get data
+            return;
+        }
 
-        this.name = data.name;
-
+        this.schoolInfo = data;
     }
 
 }

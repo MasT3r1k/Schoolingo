@@ -9,7 +9,7 @@
                 <div class="application">
                     SCHOOLINGO
                 </div>
-                <div class="school">{{ school.name }}</div>
+                <div class="school">{{ school.schoolInfo.name }}</div>
             </div>
             <div class="options">
                 <div class="item show-sidebar" (click)="
@@ -117,33 +117,39 @@
     <div class="modals" (click)="schoolingo.modal = ''">
         @switch (schoolingo.modal) {
             @case ("switchChildren") {
-                <div class="modal" style="width: 500px;" (click)="$event.stopPropagation()">
-                    <div class="modal-close" (click)="schoolingo.modal = ''">
-                        <i class="ti ti-x"></i>
-                    </div>
-                    <div class="modal-header">
-                        <i class="ti ti-users"></i>
-                        {{ schoolingo.locale.getLocale('dropdowns/switchChildren/title') }}
-                    </div>
-                    <div class="alert error">
-                        <div class="text">
-                            Nepodařilo se spojit s našim systémem Schoolingo
+                @if (schoolingo.userService.getUser()?.type == "parent") {
+                    <div class="modal" style="width: 500px;" (click)="$event.stopPropagation()">
+                        <div class="modal-close" (click)="schoolingo.modal = ''">
+                            <i class="ti ti-x"></i>
                         </div>
-                    </div>
-                    <div class="modal-center">
-                        <div class="modal-body scroll">
-                            <div class="child">
-                                <div class="left">
-                                    <div class="child-name">Tratam Tadada</div>
-                                    <div class="child-info">B3.I</div>
-                                </div>
-                                <div class="right">
-                                    <div class="btn">Přepnout</div>
-                                </div>
+                        <div class="modal-header">
+                            <i class="ti ti-users"></i>
+                            {{ schoolingo.locale.getLocale('dropdowns/switchChildren/title') }}
+                        </div>
+                        <div class="alert error">
+                            <div class="text">
+                                Nepodařilo se spojit s našim systémem Schoolingo
+                            </div>
+                        </div>
+                        <div class="modal-center">
+                            <div class="modal-body scroll">
+                                @for (child of schoolingo.userService.children; track $index) {
+                                    <div [ngClass]="{child: true, active: schoolingo.userService.selectedChild == $index}">
+                                        <div class="left">
+                                            <div class="child-name">{{ child.firstName + ' ' + child.lastName  }}</div>
+                                            <div class="child-info">{{ child.class }}</div>
+                                        </div>
+                                        <div class="right">
+                                            @if (schoolingo.userService.selectedChild !== $index) {
+                                                <div class="btn" (click)="schoolingo.userService.selectedChild = $index">Přepnout</div>
+                                            }
+                                        </div>
+                                    </div>
+                                }
                             </div>
                         </div>
                     </div>
-                </div>
+                }
             }
         }
     </div>

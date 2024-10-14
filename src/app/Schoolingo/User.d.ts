@@ -23,8 +23,8 @@ export type user = ({
 } | {
     type: 'parent',
     person: personDetails;
-    selectedChildren: number = 0;
-    children: (personDetails & { class: string })[];
 }) & {
     id: number;
 }
+
+export type child = (personDetails & { class: string });

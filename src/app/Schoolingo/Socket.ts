@@ -47,7 +47,7 @@ export class SocketService {
     });
   }
 
-  public emit(event: string, data: any): void {
+  public emit(event: string, data: any = {}): void {
     if (!this.socket) return;
     this.socket.emit(event, data); 
   }
