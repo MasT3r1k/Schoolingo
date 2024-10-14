@@ -4,9 +4,9 @@
         <h2>{{ schoolingo.locale.getLocale('sidebar/teach/timetable') }}</h2>
         <div class="flex-items">
             <div class="select-items">
-                <div class="select-item active">{{ schoolingo.locale.getLocale('timetable/thisWeek') }}</div>
-                <div class="select-item">{{ schoolingo.locale.getLocale('timetable/nextWeek') }}</div>
-                <div class="select-item">{{ schoolingo.locale.getLocale('timetable/permanent') }}</div>
+                <div [ngClass]="{'select-item': true, active: schoolingo.timetableSelectedWeek.getValue() == schoolingo.todayWeek}" (click)="schoolingo.timetableSelectedWeek.next(schoolingo.todayWeek)">{{ schoolingo.locale.getLocale('timetable/thisWeek') }}</div>
+                <div [ngClass]="{'select-item': true, active: schoolingo.timetableSelectedWeek.getValue() == schoolingo.todayWeek + 1}" (click)="schoolingo.timetableSelectedWeek.next(schoolingo.todayWeek + 1)">{{ schoolingo.locale.getLocale('timetable/nextWeek') }}</div>
+                <div [ngClass]="{'select-item': true, active: schoolingo.timetableSelectedWeek.getValue() == -1}" (click)="schoolingo.timetableSelectedWeek.next(-1)">{{ schoolingo.locale.getLocale('timetable/permanent') }}</div>
                 <div class="select-item">{{ schoolingo.locale.getLocale('sidebar/calendar') }}</div>
             </div>
         </div>
@@ -16,7 +16,11 @@
         <div class="timetable">
             <div class="hours">
                 <div class="week-type">
-
+                    @if(schoolingo.timetableSelectedWeek.getValue() % 2 == 0) {
+                        Sudý týden
+                    } @else {
+                        Lichý týden
+                    }
                 </div>
                 @for (hour of schoolingo.getTimetableHours(); track $index) {
                     <div class="hour-info">
@@ -47,7 +51,11 @@
                                             <span>{{ lesson.group.text + ' ' + lesson.group.num }}</span>
                                         </div>
                                         <div class="room">{{ lesson.room }}</div>
-                                        <div class="subject">{{ lesson.subjectShortcut }}</div>
+                                        <div class="subject">
+                                            @if (schoolingo.timetableSelectedWeek.getValue() == -1 && lesson.type !== 0) {
+                                                {{ lesson.type == 1 ? 'L: ' : 'S: ' }}
+                                            }
+                                            {{ lesson.subjectShortcut }}</div>
                                         <div class="teacher">{{ lesson.teacher }}</div>
                                     </div>
                                 }

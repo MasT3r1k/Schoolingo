@@ -40,6 +40,7 @@ export class BoardComponent {
     public schoolingo: Schoolingo,
     private routerImport: Router
   ) {
+    
     this.router = this.routerImport;
 
   }
@@ -50,38 +51,65 @@ export class BoardComponent {
   ngOnInit(): void {
     
     this.schoolingo.refreshTitle();
+
     this.routerSub = this.router.events.subscribe((url: any): void => {
+
       if (url instanceof NavigationEnd) {
+
         if (url.url) {
+
           this.schoolingo.refreshTitle();
+
         }
+
       }
+
     });
+
     this.schoolingo.socketService.connect();
+
     this.schoolingo.socketService.addFunction("connect").subscribe(() => {
+
       this.schoolingo.socketService.emit('tokens:getUser', { userId: 'myself' });
+
     });
 
     this.schoolingo.socketService.addFunction("main:updateUser").subscribe((data: userAPI) => {
+
       if (data.type == "parent" && data.children.length > 0) {
         this.schoolingo.userService.children = data.children;
       }
+
       this.schoolingo.userService.setUser(data);
+
       let userId = 0;
       let user: user | null = this.schoolingo.userService.getUser();
+
       if (user && user.type == 'parent') {
+
         userId = this.schoolingo.userService.children[this.schoolingo.userService.selectedChild].personId;
+
       } else if (user) {
+
         userId = user?.id;
+
       }
+
       this.schoolingo.socketService.emit("timetable:getLessons", { userId })
     });
+
     this.schoolingo.socketService.addFunction("main:updateLocale").subscribe((data: SocketUpdateLocale) => {
+
       this.schoolingo.locale.setUserLocale(data.lng as languages);
+
     });
+
     this.schoolingo.socketService.addFunction("main:updateTheme").subscribe((data: SocketUpdateTheme) => {
+
       this.schoolingo.theme.updateTheme(this.schoolingo.theme.getThemes()[data.theme]);
+
     });
+
     this.schoolingo.socketService.addFunction("system:error").subscribe((data: { status: string, error: number }) => {
       switch (data.status) {
         case "error":
@@ -96,14 +124,22 @@ export class BoardComponent {
     });
 
     this.schoolingo.socketService.addFunction("timetable:getLessons").subscribe((data: TimetableAPI[]) => {
+
         this.schoolingo.timetableAPI = data;
         this.schoolingo.refreshTimetableHours();
         this.schoolingo.refreshTimetableLessons();
+
     });
+
+
+
+
   }
 
   ngOnDestroy(): void {
+
     if (this.routerSub != undefined) this.routerSub.unsubscribe();
+
   }
 
 

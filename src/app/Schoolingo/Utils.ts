@@ -11,4 +11,8 @@ export function addZeros(num: number, len: number = 2): string {
     return (
       new Array(len - num.toString().length).fill('0').join('') + num.toString()
     );
-  }
+}
+
+export function isOdd(num: number): boolean {
+  return num % 2 == 0;
+}

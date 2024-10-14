@@ -6,8 +6,27 @@ import { UserService } from "./User";
 import { Sidebar } from "./Sidebar";
 import { TimetableAPI, TimetableHours, TimetableLesson } from './Schoolingo.d';
 import { School } from "./School";
-import { addZeros } from "./Utils";
+import { addZeros, isOdd } from "./Utils";
+import { BehaviorSubject } from "rxjs";
 export { TimetableAPI }
+
+
+declare global {
+    interface Date {
+      getWeek: Function;
+    }
+}
+
+// Somewhere from Stackoverflow
+Date.prototype.getWeek = function (): any {
+    var d: Date = new Date(+this);
+    d.setHours(0, 0, 0);
+    d.setDate(d.getDate() + 4 - (d.getDay() || 7));
+    return Math.ceil(
+      ((d.getTime() - new Date(d.getFullYear(), 0, 1).getTime()) / 8.64e7 + 1) / 7
+    );
+  };
+  
 
 @Injectable()
 export class Schoolingo {
@@ -25,15 +44,26 @@ export class Schoolingo {
         this.locale.language.subscribe((value: languages) => {
             this.refreshTitle();
         });
+
+        this.timetableSelectedWeek.subscribe((week: number) => {
+            this.refreshTimetableLessons();
+        });
     }
+
+    // Today's data
+    public todayWeek: number = new Date().getWeek();
+
+
 
     public modal: string = '';
 
     public getUserRole(): string {
         let user = this.userService.getUser();
+
         if (user == null) {
             return "";
         }
+
         switch(user.type) {
             case "student":
                 return this.locale.getLocale('roles/' + user.type) + ' - ' + user.class;
@@ -43,19 +73,25 @@ export class Schoolingo {
     }
 
     public refreshTitle(): void {
+
         this.sidebar.updateTitle(window.location.pathname);
+
     }
 
     // Timetable
     public timetableAPI: TimetableAPI[] = [];
+    public timetableSelectedWeek: BehaviorSubject<number> = new BehaviorSubject(new Date().getWeek());
     private timetableLessons: TimetableLesson[][][] = [];
     public getTimetableLessons(): TimetableLesson[][][] {
+
         return this.timetableLessons;
+
     }
 
     private timetableHours: TimetableHours[] = [];
     public refreshTimetableHours(): void {
         let maxHours: number = 0;
+
         for(let i = 0;i < this.timetableAPI.length;i++) {
             if (this.timetableAPI[i].hour > maxHours) {
                 maxHours = this.timetableAPI[i].hour;
@@ -65,8 +101,10 @@ export class Schoolingo {
         let hours: TimetableHours[] = [];
         let startHour: [number, number] = JSON.parse(JSON.stringify(this.school.schoolInfo.startHour));
         let endHour: [number, number] = JSON.parse(JSON.stringify(startHour));
+
         for(let i = 1;i <= maxHours;i++) {
             endHour[1] += this.school.schoolInfo.lessonHour;
+
             while(endHour[1] >= 60) {
                 endHour[0]++;
                 endHour[1] -= 60;
@@ -74,6 +112,7 @@ export class Schoolingo {
             
             let startTime: string = startHour[0] + ':' + addZeros(startHour[1], 2);
             let endTime: string = endHour[0] + ':' + addZeros(endHour[1], 2);
+
             hours.push({ start: startTime, end: endTime })
             endHour[1] += this.school.schoolInfo.breaks[i + 1] || this.school.schoolInfo.breakTime;
             startHour = JSON.parse(JSON.stringify(endHour));
@@ -90,7 +129,7 @@ export class Schoolingo {
         this.refreshTimetableHours();
 
         // Fill lessons
-        this.timetableAPI.forEach((lesson: TimetableAPI) => {
+        this.timetableAPI.forEach((lesson: TimetableAPI): void => {
 
             if (!this.timetableLessons[lesson.day]) {
                 this.timetableLessons[lesson.day] = [];
@@ -98,6 +137,12 @@ export class Schoolingo {
 
             if (!this.timetableLessons[lesson.day][lesson.hour - 1]) {
                 this.timetableLessons[lesson.day][lesson.hour - 1] = [];
+            }
+
+            if (lesson.type !== 0 && this.timetableSelectedWeek.getValue() !== -1) {
+                if (lesson.type === 1 && isOdd(this.timetableSelectedWeek.getValue()) || lesson.type === 2 && !isOdd(this.timetableSelectedWeek.getValue())) {
+                    return;
+                }
             }
 
             this.timetableLessons[lesson.day][lesson.hour - 1].push(
@@ -147,8 +192,6 @@ export class Schoolingo {
                 }
             }
         }
-
-        console.log(this.timetableLessons)
     }
 
 }
