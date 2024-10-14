@@ -16,3 +16,15 @@ export function addZeros(num: number, len: number = 2): string {
 export function isOdd(num: number): boolean {
   return num % 2 == 0;
 }
+
+export function randomstring(length: number): string {
+
+  let chars: string = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+  let text: string = '';
+
+    for (let i = 0; i < length; i++) {
+      text += chars.charAt(Math.floor(Math.random() * chars.length));
+    }
+
+  return text;
+}

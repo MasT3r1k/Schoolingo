@@ -27,7 +27,6 @@ type userAPI = ({
 }
 
 @Component({
-  selector: 'app-board',
   standalone: true,
   imports: [NgClass, NgStyle, RouterLink, RouterLinkActive, RouterOutlet],
   templateUrl: './board.component.html',
@@ -40,7 +39,7 @@ export class BoardComponent {
     public schoolingo: Schoolingo,
     private routerImport: Router
   ) {
-    
+
     this.router = this.routerImport;
 
   }

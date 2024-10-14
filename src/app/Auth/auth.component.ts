@@ -9,7 +9,6 @@ import { ActivatedRoute, Params, Router } from '@angular/router';
 import { UserService } from '@Schoolingo/User';
 import { Logger } from '@Schoolingo/Logger';
 import { Title } from '@angular/platform-browser';
-import { Tabs } from '@Components/Tabs/Tabs';
 import { Schoolingo } from '@Schoolingo';
 import { Storage } from '@Schoolingo/Storage';
 import { Sidebar } from '@Schoolingo/Sidebar';
@@ -55,7 +54,6 @@ export class AuthComponent {
     private logger: Logger,
     private title: Title,
     private storage: Storage,
-    private tabs: Tabs,
     public schoolingo: Schoolingo
   ) {
     this.form = formList.getForm(this.formName) as FormManager;

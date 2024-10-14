@@ -1,0 +1,8 @@
+<div class="tabs" [id]="name">
+    <div class="options">
+        @for (option of options; track $index) {
+            <div [ngClass]="{tab: true, calendar: true, active: value.getValue() == $index}" (click)="value.next($index)">{{ locale.getLocale(option) }}</div>
+        }
+    </div>
+    <div class="glider" [ngStyle]="{ width: getGlider().width + 'px', height: getGlider().height + 'px', transform: getGlider().transform}"></div>
+</div>

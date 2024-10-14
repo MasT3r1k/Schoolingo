@@ -4,10 +4,7 @@
         <h2>{{ schoolingo.locale.getLocale('sidebar/teach/timetable') }}</h2>
         <div class="flex-items">
             <div class="select-items">
-                <div [ngClass]="{'select-item': true, active: schoolingo.timetableSelectedWeek.getValue() == schoolingo.todayWeek}" (click)="schoolingo.timetableSelectedWeek.next(schoolingo.todayWeek)">{{ schoolingo.locale.getLocale('timetable/thisWeek') }}</div>
-                <div [ngClass]="{'select-item': true, active: schoolingo.timetableSelectedWeek.getValue() == schoolingo.todayWeek + 1}" (click)="schoolingo.timetableSelectedWeek.next(schoolingo.todayWeek + 1)">{{ schoolingo.locale.getLocale('timetable/nextWeek') }}</div>
-                <div [ngClass]="{'select-item': true, active: schoolingo.timetableSelectedWeek.getValue() == -1}" (click)="schoolingo.timetableSelectedWeek.next(-1)">{{ schoolingo.locale.getLocale('timetable/permanent') }}</div>
-                <div class="select-item">{{ schoolingo.locale.getLocale('sidebar/calendar') }}</div>
+                <schoolingo-tabs [value]="selectedTab" [options]="['timetable/thisWeek', 'timetable/nextWeek', 'timetable/permanent', 'sidebar/calendar']"></schoolingo-tabs>
             </div>
         </div>
     </div>
@@ -16,10 +13,12 @@
         <div class="timetable">
             <div class="hours">
                 <div class="week-type">
-                    @if(schoolingo.timetableSelectedWeek.getValue() % 2 == 0) {
-                        Sudý týden
-                    } @else {
-                        Lichý týden
+                    @if ([0, 1].includes(selectedTab.getValue())) {
+                        @if(schoolingo.timetableSelectedWeek.getValue() % 2 == 0) {
+                            Sudý týden
+                        } @else {
+                            Lichý týden
+                        }
                     }
                 </div>
                 @for (hour of schoolingo.getTimetableHours(); track $index) {
@@ -46,7 +45,7 @@
 
                             <div class="item lesson-hour">
                                 @for (lesson of schoolingo.getTimetableLessons()[index][index2]; track $index) {
-                                    <div class="sub-lesson-hour">
+                                    <div [ngClass]="['sub-lesson-hour', 'lesson-count-' + schoolingo.getTimetableLessons()[index][index2].length]">
                                         <div class="group">
                                             <span>{{ lesson.group.text + ' ' + lesson.group.num }}</span>
                                         </div>

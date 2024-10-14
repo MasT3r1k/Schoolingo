@@ -9,12 +9,12 @@ import { School } from '@Schoolingo/School';
 import { Logger } from '@Schoolingo/Logger';
 import { Locale } from '@Schoolingo/Locale';
 import { FormManager } from './Components/Forms/FormManager';
-import { Tabs } from '@Components/Tabs/Tabs';
 import { Schoolingo } from '@Schoolingo';
 import { Theme } from '@Schoolingo/Theme';
 import { Sidebar } from '@Schoolingo/Sidebar';
 import { Permission } from '@Schoolingo/Permissions';
 import { HttpClient, provideHttpClient } from '@angular/common/http';
+import { TabsComponent } from '@Components/Tabs/Tabs';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -28,12 +28,12 @@ export const appConfig: ApplicationConfig = {
     Logger,
     Locale,
     FormManager,
-    Tabs,
     Schoolingo,
     Theme,
     Sidebar,
     Permission,
-    HttpClient
+    HttpClient,
+    TabsComponent
   ],
   
 };
