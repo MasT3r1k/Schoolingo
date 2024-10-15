@@ -35,6 +35,7 @@ type userAPI = ({
 })
 export class BoardComponent {
   public alertManager: AlertManagerClass = alertManager;
+  private subscribers: Subscription[] = [];
   constructor(
     public school: School,
     public schoolingo: Schoolingo,
@@ -47,13 +48,12 @@ export class BoardComponent {
   }
 
   private router: Router;
-  private routerSub: Subscription | undefined = undefined;
 
   ngOnInit(): void {
     
     this.schoolingo.refreshTitle();
 
-    this.routerSub = this.router.events.subscribe((url: any): void => {
+    this.subscribers.push(this.router.events.subscribe((url: any): void => {
 
       if (url instanceof NavigationEnd) {
 
@@ -65,17 +65,17 @@ export class BoardComponent {
 
       }
 
-    });
+    }));
 
     this.schoolingo.socketService.connect();
 
-    this.schoolingo.socketService.addFunction("connect").subscribe(() => {
+    this.subscribers.push(this.schoolingo.socketService.addFunction("connect").subscribe(() => {
 
       this.schoolingo.socketService.emit('tokens:getUser', { userId: 'myself' });
 
-    });
+    }));
 
-    this.schoolingo.socketService.addFunction("main:updateUser").subscribe((data: userAPI) => {
+    this.subscribers.push(this.schoolingo.socketService.addFunction("main:updateUser").subscribe((data: userAPI) => {
 
       if (data.type == "parent" && data.children.length > 0) {
         this.schoolingo.userService.children = data.children;
@@ -97,21 +97,21 @@ export class BoardComponent {
       }
 
       this.schoolingo.socketService.emit("timetable:getLessons", { userId })
-    });
+    }));
 
-    this.schoolingo.socketService.addFunction("main:updateLocale").subscribe((data: SocketUpdateLocale) => {
+    this.subscribers.push(this.schoolingo.socketService.addFunction("main:updateLocale").subscribe((data: SocketUpdateLocale) => {
 
       this.schoolingo.locale.setUserLocale(data.lng as languages);
 
-    });
+    }));
 
-    this.schoolingo.socketService.addFunction("main:updateTheme").subscribe((data: SocketUpdateTheme) => {
+    this.subscribers.push(this.schoolingo.socketService.addFunction("main:updateTheme").subscribe((data: SocketUpdateTheme) => {
 
       this.schoolingo.theme.updateTheme(this.schoolingo.theme.getThemes()[data.theme]);
 
-    });
+    }));
 
-    this.schoolingo.socketService.addFunction("system:error").subscribe((data: { status: string, error: number }) => {
+    this.subscribers.push(this.schoolingo.socketService.addFunction("system:error").subscribe((data: { status: string, error: number }) => {
       switch (data.status) {
         case "error":
           switch(data.error) {
@@ -122,15 +122,15 @@ export class BoardComponent {
           break;
       }
       console.log('ERROR: ' + data.error);
-    });
+    }));
 
-    this.schoolingo.socketService.addFunction("timetable:getLessons").subscribe((data: TimetableAPI[]) => {
+    this.subscribers.push(this.schoolingo.socketService.addFunction("timetable:getLessons").subscribe((data: TimetableAPI[]) => {
 
         this.schoolingo.timetableAPI = data;
         this.schoolingo.refreshTimetableHours();
         this.schoolingo.refreshTimetableLessons();
 
-    });
+    }));
 
 
 
@@ -139,7 +139,7 @@ export class BoardComponent {
 
   ngOnDestroy(): void {
 
-    if (this.routerSub != undefined) this.routerSub.unsubscribe();
+    this.subscribers.forEach((sub: Subscription) => sub.unsubscribe());
 
   }
 
