@@ -1,6 +1,7 @@
 import { NgClass, NgStyle } from "@angular/common";
 import { Component, Injectable, OnInit, RendererFactory2 } from "@angular/core";
 import { ContextMenu } from "./Dropdown.d";
+import { Locale } from "@Schoolingo/Locale";
 
 //! DON'T IMPORT THIS INTO SPECIFIC COMPONENTS, ITS ALREADY IN THE MAIN COMPONENT
 
@@ -20,6 +21,7 @@ export class Dropdown implements OnInit {
     public renderer;
 
     constructor(
+        public locale: Locale,
         private factory: RendererFactory2
         ) {
             this.renderer = this.factory.createRenderer(window, null);

@@ -1,7 +1,10 @@
 @for (dropdown of getDropdowns(); track $index) {
     <div (click)="$event.stopPropagation()" [ngClass]="{dropdown: true, active: dropdown[1].isOpen}" [id]="dropdown[0]" [ngStyle]="{ transform: 'translate(' + dropdown[1].position?.[0] + 'px, ' + dropdown[1].position?.[1] +'px)' }">
-
-
+        @for (item of dropdown[1].items; track $index) {
+            <div [ngClass]="{'dropdown-item': true, active: item.isActive}">
+                {{ locale.getLocale(item.label) }}
+            </div>
+        }
 
     </div>
 }

@@ -38,7 +38,7 @@ export class TimetableComponent {
 
     this.dropdown.create(this.timetableOptionsName, { title: '', isOpen: false, items: [
       {
-        label: 'Vytisknout',
+        label: 'timetable/print',
         type: 'function',
         func: () => {},
         isActive: true
