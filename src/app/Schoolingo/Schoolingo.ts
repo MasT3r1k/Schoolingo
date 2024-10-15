@@ -8,25 +8,8 @@ import { TimetableAPI, TimetableHours, TimetableLesson } from './Schoolingo.d';
 import { School } from "./School";
 import { addZeros, isOdd } from "./Utils";
 import { BehaviorSubject } from "rxjs";
+import moment from "moment";
 export { TimetableAPI }
-
-
-declare global {
-    interface Date {
-      getWeek: Function;
-    }
-}
-
-// Somewhere from Stackoverflow
-Date.prototype.getWeek = function (): any {
-    var d: Date = new Date(+this);
-    d.setHours(0, 0, 0);
-    d.setDate(d.getDate() + 4 - (d.getDay() || 7));
-    return Math.ceil(
-      ((d.getTime() - new Date(d.getFullYear(), 0, 1).getTime()) / 8.64e7 + 1) / 7
-    );
-  };
-  
 
 @Injectable()
 export class Schoolingo {
@@ -51,7 +34,7 @@ export class Schoolingo {
     }
 
     // Today's data
-    public todayWeek: number = new Date().getWeek();
+    public todayWeek: number = moment().week();
 
 
 
@@ -78,9 +61,16 @@ export class Schoolingo {
 
     }
 
+    // Date and Time
+    public getDayOfWeek(week: number, day: number = 0): moment.Moment {
+        return moment().set('weeks', week).startOf('week').add(day + 1, 'days');
+    }
+
+
+
     // Timetable
     public timetableAPI: TimetableAPI[] = [];
-    public timetableSelectedWeek: BehaviorSubject<number> = new BehaviorSubject(new Date().getWeek());
+    public timetableSelectedWeek: BehaviorSubject<number> = new BehaviorSubject(moment().week());
     private timetableLessons: TimetableLesson[][][] = [];
     public getTimetableLessons(): TimetableLesson[][][] {
 
