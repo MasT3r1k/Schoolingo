@@ -8,7 +8,7 @@ import { BehaviorSubject } from 'rxjs';
   standalone: true,
   imports: [NgClass, TabsComponent],
   templateUrl: './timetable.component.html',
-  styleUrls: ['./timetable.component.css', '../../../Styles/card.css']
+  styleUrls: ['./timetable.component.css', '../../../Styles/card.css', '../../../Styles/item.css']
 })
 export class TimetableComponent {
 

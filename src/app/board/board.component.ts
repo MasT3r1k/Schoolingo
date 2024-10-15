@@ -30,7 +30,7 @@ type userAPI = ({
   standalone: true,
   imports: [NgClass, NgStyle, RouterLink, RouterLinkActive, RouterOutlet],
   templateUrl: './board.component.html',
-  styleUrl: './board.component.css'
+  styleUrls: ['./board.component.css', '../Styles/item.css']
 })
 export class BoardComponent {
   public alertManager: AlertManagerClass = alertManager;
