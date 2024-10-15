@@ -1,3 +1,5 @@
+import moment from "moment";
+
   /**
    * Adds zeros in front of number based on length
    * @param number number where you want change length
@@ -28,3 +30,8 @@ export function randomstring(length: number): string {
 
   return text;
 }
+
+    // Date and Time
+export function getDayOfWeek(week: number, day: number = 0): moment.Moment {
+      return moment().set('weeks', week).startOf('week').add(day + 1, 'days');
+  }

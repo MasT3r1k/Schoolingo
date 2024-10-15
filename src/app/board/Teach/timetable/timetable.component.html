@@ -7,7 +7,7 @@
                 <schoolingo-tabs [value]="selectedTab" [options]="['timetable/thisWeek', 'timetable/nextWeek', 'timetable/permanent', 'sidebar/calendar']"></schoolingo-tabs>
             </div>
 
-            <div class="item-btn">
+            <div class="item-btn" [attr.dropdown]="timetableOptionsName" (click)="$event.stopPropagation();dropdown.toggle(timetableOptionsName)">
                 <div class="icon">
                     <i class="ti ti-dots-vertical"></i>
                 </div>
@@ -15,7 +15,6 @@
         </div>
     </div>
     <div class="card-body">
-
         <div class="timetable">
             <div class="hours">
                 <div class="week-type">
@@ -43,9 +42,11 @@
                     <div class="day">
                         <div class="name">
                             {{ schoolingo.locale.getLocale('days/' + index) }}
-                            <div class="time">
-                                {{ schoolingo.getDayOfWeek(schoolingo.timetableSelectedWeek.getValue(), index).format('D. M.') }}
-                            </div>
+                            @if (schoolingo.timetableSelectedWeek.getValue() !== -1) {
+                                <div class="time">
+                                    {{ utils.getDayOfWeek(schoolingo.timetableSelectedWeek.getValue(), index).format('D. M.') }}
+                                </div>
+                            }
                         </div>
                         @if (false) {
                             <div class="item all-day"></div>
@@ -54,7 +55,7 @@
 
                             <div class="item lesson-hour">
                                 @for (lesson of schoolingo.getTimetableLessons()[index][index2]; track $index) {
-                                    <div [ngClass]="['sub-lesson-hour', 'lesson-count-' + schoolingo.getTimetableLessons()[index][index2].length]">
+                                    <div [ngClass]="['sub-lesson-hour', 'lesson-count-' + schoolingo.getTimetableLessons()[index][index2].length, (lesson.empty) ? 'empty' : '']">
                                         <div class="group">
                                             <span>{{ lesson.group.text + ' ' + lesson.group.num }}</span>
                                         </div>

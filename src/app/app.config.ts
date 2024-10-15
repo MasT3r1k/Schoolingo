@@ -15,6 +15,7 @@ import { Sidebar } from '@Schoolingo/Sidebar';
 import { Permission } from '@Schoolingo/Permissions';
 import { HttpClient, provideHttpClient } from '@angular/common/http';
 import { TabsComponent } from '@Components/Tabs/Tabs';
+import { Dropdown } from '@Components/Dropdowns/Dropdown';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -33,7 +34,8 @@ export const appConfig: ApplicationConfig = {
     Sidebar,
     Permission,
     HttpClient,
-    TabsComponent
+    TabsComponent,
+    Dropdown
   ],
   
 };

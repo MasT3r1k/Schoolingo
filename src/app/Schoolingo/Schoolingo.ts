@@ -1,4 +1,4 @@
-import { booleanAttribute, Injectable } from "@angular/core";
+import { Injectable } from "@angular/core";
 import { languages, Locale } from "./Locale";
 import { SocketService } from "./Socket";
 import { Theme } from "./Theme";
@@ -60,12 +60,6 @@ export class Schoolingo {
         this.sidebar.updateTitle(window.location.pathname);
 
     }
-
-    // Date and Time
-    public getDayOfWeek(week: number, day: number = 0): moment.Moment {
-        return moment().set('weeks', week).startOf('week').add(day + 1, 'days');
-    }
-
 
 
     // Timetable

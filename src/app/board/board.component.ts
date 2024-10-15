@@ -1,6 +1,7 @@
 import { NgClass, NgStyle } from '@angular/common';
 import { Component } from '@angular/core';
 import { NavigationEnd, Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
+import { Dropdown } from '@Components/Dropdowns/Dropdown';
 import { Schoolingo, TimetableAPI } from '@Schoolingo';
 import { alertManager, AlertManagerClass } from '@Schoolingo/Alert';
 import { languages } from '@Schoolingo/Locale';
@@ -28,7 +29,7 @@ type userAPI = ({
 
 @Component({
   standalone: true,
-  imports: [NgClass, NgStyle, RouterLink, RouterLinkActive, RouterOutlet],
+  imports: [NgClass, NgStyle, RouterLink, RouterLinkActive, RouterOutlet, Dropdown],
   templateUrl: './board.component.html',
   styleUrls: ['./board.component.css', '../Styles/item.css']
 })
@@ -37,7 +38,8 @@ export class BoardComponent {
   constructor(
     public school: School,
     public schoolingo: Schoolingo,
-    private routerImport: Router
+    private routerImport: Router,
+    public dropdown: Dropdown
   ) {
 
     this.router = this.routerImport;

@@ -10,7 +10,7 @@ import { BehaviorSubject } from "rxjs";
     standalone: true,
     imports: [NgClass, NgStyle],
     styleUrl: './Tabs.css'
-  })
+})
 export class TabsComponent implements OnInit {
     
     public renderer;
