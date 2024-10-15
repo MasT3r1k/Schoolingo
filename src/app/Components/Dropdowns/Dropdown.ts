@@ -1,5 +1,5 @@
 import { NgClass, NgStyle } from "@angular/common";
-import { Component, Injectable, OnInit } from "@angular/core";
+import { Component, Injectable, OnInit, RendererFactory2 } from "@angular/core";
 import { ContextMenu } from "./Dropdown.d";
 
 //! DON'T IMPORT THIS INTO SPECIFIC COMPONENTS, ITS ALREADY IN THE MAIN COMPONENT
@@ -17,20 +17,50 @@ let dropdowns: Record<string, ContextMenu> = {};
 @Injectable()
 export class Dropdown implements OnInit {
 
-    ngOnInit(): void {}
+    public renderer;
 
-    public getDropdowns(): ContextMenu[] {
-        return Object.values(dropdowns).filter((dropdown: ContextMenu) => dropdown.isOpen == true);
+    constructor(
+        private factory: RendererFactory2
+        ) {
+            this.renderer = this.factory.createRenderer(window, null);
+            this.renderer.listen(window, 'resize', () => {
+                Object.keys(dropdowns).forEach((id: string) => this.refreshPosition(id));
+            });
+        }
+
+    ngOnInit(): void {
+    }
+
+    public getDropdowns(): [string, ContextMenu][] {
+        return Object.entries(dropdowns);
+    }
+
+    public refreshPosition(id: string): void {
+        let btn: HTMLElement = document.querySelector("[dropdown='" + id + "']") as HTMLElement;
+        let dropdown: HTMLElement = document.querySelector(".dropdown[id='" + id + "']") as HTMLElement;
+        if (!btn) return;
+        if (!dropdown) return;
+        let boundClientRectBtn = btn.getBoundingClientRect();
+        let boundClientRectDropdown = dropdown.getBoundingClientRect();
+        let maxX = document.body.clientWidth - boundClientRectDropdown.width - 5;
+        let x = boundClientRectBtn.x;
+        // Check borders
+        if (x > maxX) {
+            x = maxX;
+        }
+        if (x < 0) {
+            x = 0;
+        }
+        dropdowns[id].position = [x, boundClientRectBtn.y + boundClientRectBtn.height + 2];
     }
 
     public create(id: string, data: ContextMenu): void {
         dropdowns[id] = data;
+        this.refreshPosition(id);
     }
 
     public open(id: string): void {
-        let el: HTMLElement = document.querySelector("[dropdown='" + id + "']") as HTMLElement;
-        let boundClientRect = el.getBoundingClientRect();
-        dropdowns[id].position = [boundClientRect.x, boundClientRect.y + boundClientRect.height];
+        this.refreshPosition(id);
         dropdowns[id].isOpen = true;
     }
 
