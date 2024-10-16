@@ -1,6 +1,6 @@
 import { NgClass, NgStyle } from "@angular/common";
 import { Component, Injectable, OnInit, RendererFactory2 } from "@angular/core";
-import { ContextMenu } from "./Dropdown.d";
+import { ContextButton, ContextMenu } from "./Dropdown.d";
 import { Locale } from "@Schoolingo/Locale";
 
 //! DON'T IMPORT THIS INTO SPECIFIC COMPONENTS, ITS ALREADY IN THE MAIN COMPONENT
@@ -44,7 +44,7 @@ export class Dropdown implements OnInit {
         if (!dropdown) return;
         let boundClientRectBtn = btn.getBoundingClientRect();
         let boundClientRectDropdown = dropdown.getBoundingClientRect();
-        let maxX = document.body.clientWidth - boundClientRectDropdown.width - 5;
+        let maxX = document.body.clientWidth - boundClientRectDropdown.width - 16;
         let x = boundClientRectBtn.x;
         // Check borders
         if (x > maxX) {
@@ -64,6 +64,19 @@ export class Dropdown implements OnInit {
     public open(id: string): void {
         this.refreshPosition(id);
         dropdowns[id].isOpen = true;
+    }
+
+    public clickEvent(dropdown: string, itemId: number): void {
+        let item: ContextButton = dropdowns[dropdown].items[itemId];
+        if (!item) return;
+        switch(item.type) {
+            case "function":
+                item.func();
+                break;
+            case "toggle":
+                item.value.next(!item.value.getValue());
+                break;
+        }
     }
 
     public close(id: string): void {

@@ -19,9 +19,12 @@ export function isOdd(num: number): boolean {
   return num % 2 == 0;
 }
 
-export function randomstring(length: number): string {
+export function randomstring(length: number, numbers: boolean = true): string {
 
-  let chars: string = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+  let chars: string = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+  if (numbers) {
+    chars += "0123456789";
+  }
   let text: string = '';
 
     for (let i = 0; i < length; i++) {

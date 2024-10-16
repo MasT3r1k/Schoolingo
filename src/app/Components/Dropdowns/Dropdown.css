@@ -1,6 +1,6 @@
 .dropdown {
     width: 250px;
-    background-color: var(--background-body);
+    background-color: #1f1f23;
     box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px, rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
     z-index: 5000000;
     position: absolute;
@@ -9,6 +9,8 @@
     transition: visibility 0s linear 300ms, opacity 300ms;
     display: flex;
     flex-direction: column;
+    border-radius: var(--radius);
+    padding: .5rem;
 }
 
 .dropdown.active {
@@ -18,16 +20,96 @@
     pointer-events: all;
 }
 
-.dropdown > .dropdown-item {
+.dropdown > .line {
+    border-top: 1px solid rgba(83, 83, 95, 0.5);
+    margin: .5rem .25rem;
+    white-space: nowrap;
+}
+
+.dropdown > .item {
     margin: 4px 0;
     padding: 8px 16px;
+    padding-right: 32px;
     color: #fff;
+    user-select: none;
+    position: relative;
+    border-radius: var(--radius);
+    transition: all .3s;
+}
+
+.dropdown > .item.text {
+    vertical-align: bottom;
+    padding: 0px 12px;
+    color: var(--primary);
+    font-weight: 600;
 }
 
 .dropdown > .dropdown-item.active {
     cursor: pointer;
 }
 
-.dropdown > .dropdown-item.active:hover {
-    background-color: var(--background-hover);
+.dropdown > .dropdown-item.active:hover { background-color: var(--background-hover); }
+.dropdown > .dropdown-item.active:active { background-color: var(--background-active); }
+
+.dropdown > .dropdown-item > i {
+    position: absolute;
+    right: 8px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 20px;
+}
+
+.dropdown > .dropdown-item > i.icon-active {
+    color: var(--primary);
+}
+
+
+.checkmark {
+    display: none;
+}
+
+.checkmark.active {
+    display: block;
+}
+.checkmark.draw::after {
+      animation-duration: 800ms;
+      animation-timing-function: ease;
+      animation-name: checkmark;
+      transform: scaleX(-1) rotate(135deg);
+}
+    
+.checkmark::after {
+    content: '';
+    opacity: 1;
+    height: 1em;
+    width: .5em;
+    transform-origin: left top;
+    border-right: 2px solid var(--primary);
+    border-top: 2px solid var(--primary);
+    top: 50%;
+    transform: translateY(-50%);
+    position: absolute;
+    right: 1.5rem;
+}
+
+
+
+@keyframes checkmark {
+    0% {
+      height: 0;
+      width: 0;
+      opacity: 1;
+    }
+
+    20% {
+      height: 0;
+      width: .5em;
+      opacity: 1;
+    }
+
+    40%, 100% {
+      height: 1em;
+      width: .5em;
+      opacity: 1;
+    }
 }

@@ -26,6 +26,11 @@ export class TimetableComponent {
 
   // Dropdown Timetable Options
   public timetableOptionsName: string = 'timetableOptions';
+  public options: Record<string, BehaviorSubject<boolean>> = {
+    teachers: new BehaviorSubject(true),
+    groups: new BehaviorSubject(true),
+    rooms: new BehaviorSubject(true)
+  };
 
 
   ngOnInit(): void {
@@ -43,19 +48,22 @@ export class TimetableComponent {
         func: () => {},
         isActive: true
       }, {
-        label: 'Zobrazit učitele',
-        type: 'function',
-        func: () => {},
+        type: 'line',
         isActive: true
       }, {
-        label: 'Zobrazit třídu',
-        type: 'function',
-        func: () => {},
+        label: 'timetable/showTeachers',
+        type: 'toggle',
+        value: this.options.teachers,
         isActive: true
       }, {
-        label: 'Zobrazit místnost',
-        type: 'function',
-        func: () => {},
+        label: 'timetable/showGroups',
+        type: 'toggle',
+        value: this.options.groups,
+        isActive: true
+      }, {
+        label: 'timetable/showRooms',
+        type: 'toggle',
+        value: this.options.rooms,
         isActive: true
       }]
     });

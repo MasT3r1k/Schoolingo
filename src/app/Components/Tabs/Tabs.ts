@@ -25,11 +25,11 @@ export class TabsComponent implements OnInit {
             });
         }
 
-    name: string = randomstring(16);
+    name: string = randomstring(16, false);
     @Input() value: BehaviorSubject<number> = new BehaviorSubject(0);
     @Input() options: string[] = [];
 
-    gliderStyles: Record<string, string | number> = {};
+    public gliderStyles: Record<string, string | number> = {};
     public getGlider(): Record<string, string | number> {
         return this.gliderStyles;
     }
@@ -51,12 +51,14 @@ export class TabsComponent implements OnInit {
 
     public refreshGlider(): void {
         try {
-            let tab: HTMLElement = document.querySelectorAll(".tabs#" + this.name + " .options .tab")?.[this.value.getValue() ?? 0] as HTMLElement;
-
+            let tab: HTMLElement = document.querySelectorAll(".tabs#" + this.name + " .options .tab")[this.value.getValue() || 0] as HTMLElement;
+            if (!tab) return;
             this.gliderStyles.width = tab.clientWidth;
             this.gliderStyles.height = tab.clientHeight;
             this.gliderStyles.transform = 'translate(' + tab.offsetLeft + 'px, ' + tab.offsetTop + 'px)';
-        } catch(e) {}
+        } catch(err) {
+            console.error(err);
+        }
     }
 
 }

@@ -56,16 +56,22 @@
                             <div class="item lesson-hour">
                                 @for (lesson of schoolingo.getTimetableLessons()[index][index2]; track $index) {
                                     <div [ngClass]="['sub-lesson-hour', 'lesson-count-' + schoolingo.getTimetableLessons()[index][index2].length, (lesson.empty) ? 'empty' : '']">
-                                        <div class="group">
-                                            <span>{{ lesson.group.text + ' ' + lesson.group.num }}</span>
-                                        </div>
-                                        <div class="room">{{ lesson.room }}</div>
+                                        @if (options.groups.getValue()) {
+                                            <div class="group">
+                                                <span>{{ lesson.group.text + ' ' + lesson.group.num }}</span>
+                                            </div>
+                                        }
+                                        @if (options.rooms.getValue()) {
+                                            <div class="room">{{ lesson.room }}</div>
+                                        }
                                         <div class="subject">
                                             @if (schoolingo.timetableSelectedWeek.getValue() == -1 && lesson.type !== 0) {
                                                 {{ lesson.type == 1 ? 'L: ' : 'S: ' }}
                                             }
                                             {{ lesson.subjectShortcut }}</div>
-                                        <div class="teacher">{{ lesson.teacher }}</div>
+                                        @if (options.teachers.getValue()) {
+                                            <div class="teacher">{{ lesson.teacher }}</div>
+                                        }
                                     </div>
                                 }
                             </div>
