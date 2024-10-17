@@ -1,7 +1,8 @@
 import { NgClass, NgStyle } from "@angular/common";
 import { Component, Injectable, OnInit, RendererFactory2 } from "@angular/core";
-import { ContextButton, ContextMenu } from "./Dropdown.d";
+import { ContextButton, ContextButtonRightText, ContextMenu } from "./Dropdown.d";
 import { Locale } from "@Schoolingo/Locale";
+import { SafeHtml } from "@angular/platform-browser";
 
 //! DON'T IMPORT THIS INTO SPECIFIC COMPONENTS, ITS ALREADY IN THE MAIN COMPONENT
 
@@ -33,6 +34,18 @@ export class Dropdown implements OnInit {
     ngOnInit(): void {
     }
 
+    public formatRightText(text: ContextButtonRightText): SafeHtml {
+        let html: SafeHtml = "";
+        if (text == "arrow") { }
+        text.split(' ').forEach((word: string) => {
+            if (word.startsWith("[key:") && word.endsWith(']')) {
+                let key = word.slice(5, -1);
+                html += "<div class='key'>" + key + "</div>";
+            }
+        })
+        return html;
+    }
+
     public getDropdowns(): [string, ContextMenu][] {
         return Object.entries(dropdowns);
     }
@@ -61,11 +74,6 @@ export class Dropdown implements OnInit {
         this.refreshPosition(id);
     }
 
-    public open(id: string): void {
-        this.refreshPosition(id);
-        dropdowns[id].isOpen = true;
-    }
-
     public clickEvent(dropdown: string, itemId: number): void {
         let item: ContextButton = dropdowns[dropdown].items[itemId];
         if (!item) return;
@@ -79,15 +87,20 @@ export class Dropdown implements OnInit {
         }
     }
 
-    public close(id: string): void {
-        dropdowns[id].isOpen = false;
-    }
-
     public toggle(id: string): void {
         if (dropdowns[id].isOpen === true) {
             return this.close(id);
         }
         return this.open(id);
+    }
+
+    public open(id: string): void {
+        this.refreshPosition(id);
+        dropdowns[id].isOpen = true;
+    }
+
+    public close(id: string): void {
+        dropdowns[id].isOpen = false;
     }
 
     public closeAll(): void {

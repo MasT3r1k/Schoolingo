@@ -1,11 +1,14 @@
 import { BehaviorSubject } from "rxjs";
 
+export type ContextButtonRightText = 'arrow' | string;
+
 export type ContextButton = {
     isActive: boolean = true;
 } & ({
     type: 'function';
     func: Function;
     label: string;
+    rightText?: ContextButtonRightText;
 } | {
     type: 'toggle';
     value: BehaviorSubject<boolean>;

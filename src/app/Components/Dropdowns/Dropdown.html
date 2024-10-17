@@ -11,11 +11,13 @@
                     <div class="line"></div>
                 }
                 @default {
-                    <div [ngClass]="{'dropdown-item': true, item: true, active: item.isActive}" (click)="clickEvent(dropdown[0], $index)">
-                        {{ locale.getLocale(item.label) }}
+                    <div [ngClass]="{'dropdown-item': true, item: true, active: item.isActive, checkbox: item.type == 'toggle'}" (click)="clickEvent(dropdown[0], $index)">
+                        <span>{{ locale.getLocale(item.label) }}</span>
                         @if (item.type == "toggle") {
                             <div [ngClass]="{checkmark: true, draw: true, active: item.value.getValue()}"></div>
-                            <!-- <i class="ti ti-check icon-active"></i> -->
+                        }
+                        @if (item.type == "function" && item.rightText) {
+                            <div [innerHTML]="formatRightText(item.rightText)"></div>
                         }
                     </div>
                 }
