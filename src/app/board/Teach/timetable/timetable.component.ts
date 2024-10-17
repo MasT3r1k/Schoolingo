@@ -1,5 +1,5 @@
 import { NgClass } from '@angular/common';
-import { Component } from '@angular/core';
+import { Component, Renderer2, RendererFactory2 } from '@angular/core';
 import { Schoolingo } from '@Schoolingo';
 import { TabsComponent } from '@Components/Tabs/Tabs';
 import { BehaviorSubject } from 'rxjs';
@@ -13,10 +13,14 @@ import { Dropdown } from '@Components/Dropdowns/Dropdown';
   styleUrls: ['./timetable.component.css', '../../../Styles/card.css', '../../../Styles/item.css']
 })
 export class TimetableComponent {
+  private renderer: Renderer2;
   constructor(
     public schoolingo: Schoolingo,
-    public dropdown: Dropdown
-    ) {}
+    public dropdown: Dropdown,
+    private factory: RendererFactory2
+    ) {
+        this.renderer = this.factory.createRenderer(window, null);
+    }
 
   // Imports
   utils = utils;
@@ -33,6 +37,14 @@ export class TimetableComponent {
   };
 
 
+  // Printer
+  public printSelectedTab: number = this.selectedTab.getValue();
+
+  public beforePrint(): void {
+    this.printSelectedTab = this.selectedTab.getValue();
+    this.selectedTab.next(2);
+  }
+
   ngOnInit(): void {
 
     // Select Week Tab
@@ -45,7 +57,12 @@ export class TimetableComponent {
       {
         label: 'timetable/print',
         type: 'function',
-        func: () => {},
+        func: () => {
+          this.dropdown.close(this.timetableOptionsName);
+          this.beforePrint();
+          setTimeout(() => window.print())
+        },
+        rightText: '[key:CTRL] [key:P]',
         isActive: true
       }, {
         type: 'line',
@@ -67,5 +84,10 @@ export class TimetableComponent {
         isActive: true
       }]
     });
+
+
+    this.renderer.listen(window, "afterprint", () => {
+      this.selectedTab.next(this.printSelectedTab);
+    })
   }
 }

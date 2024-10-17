@@ -1,3 +1,7 @@
+.card-header {
+    margin-bottom: 2rem;
+}
+
 .timetable {
     display: flex;
     flex-direction: column;
@@ -16,7 +20,6 @@
     justify-content: end;
     align-items: center;
     flex-direction: column;
-    min-height: 96px;
 }
 
 .timetable > .hours > .hour-info > .hour-id, .timetable .item .sub-lesson-hour .subject {
@@ -163,7 +166,34 @@
 
 
 @media print {
+    
+    @page {
+        size: A4 landscape;
+        margin: .4in;
+    }
+    
+
     .timetable {
         visibility: visible;
+    }
+
+    .timetable > .days > .day > .name, .timetable > .hours > .hour-info > .hour-id, .timetable .item .sub-lesson-hour .subject {
+        color: #000;
+    }
+
+    .timetable > .hours > div, .timetable > .days > .day > div {
+        min-width: 96px;
+    }
+
+    .timetable > .days > .day > div {
+        min-height: 96px;
+        height: 96px;
+    }
+
+    .timetable > .days > .day:first-child > .item,
+    .timetable > .days > .day > .item:nth-child(2),
+    .timetable > .days > .day:last-child > .item,
+    .timetable > .days > .day > .item:last-child {
+        border-color: #000;
     }
 }
