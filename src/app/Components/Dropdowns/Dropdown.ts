@@ -3,6 +3,7 @@ import { Component, Injectable, OnInit, RendererFactory2 } from "@angular/core";
 import { ContextButton, ContextButtonRightText, ContextMenu } from "./Dropdown.d";
 import { Locale } from "@Schoolingo/Locale";
 import { SafeHtml } from "@angular/platform-browser";
+export { ContextButton, ContextButtonRightText, ContextMenu }
 
 //! DON'T IMPORT THIS INTO SPECIFIC COMPONENTS, ITS ALREADY IN THE MAIN COMPONENT
 
@@ -58,7 +59,7 @@ export class Dropdown implements OnInit {
         let boundClientRectBtn = btn.getBoundingClientRect();
         let boundClientRectDropdown = dropdown.getBoundingClientRect();
         let maxX = document.body.clientWidth - boundClientRectDropdown.width - 16;
-        let x = boundClientRectBtn.x;
+        let x = boundClientRectBtn.x - (boundClientRectDropdown.width - boundClientRectBtn.width) / 2;
         // Check borders
         if (x > maxX) {
             x = maxX;
