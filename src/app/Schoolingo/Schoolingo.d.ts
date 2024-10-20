@@ -41,3 +41,15 @@ export type TimetableHours = {
     start: string;
     end: string;
 }
+
+export type ClassbookAPI = {
+    topic: string;
+    date: Date;
+    dayHour: number;
+    absence: number = -1;
+}
+
+export type ClassbookLesson = {
+    topic: string;
+
+}

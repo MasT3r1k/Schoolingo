@@ -4,15 +4,19 @@ import { SocketService } from "./Socket";
 import { Theme } from "./Theme";
 import { UserService } from "./User";
 import { Sidebar } from "./Sidebar";
-import { TimetableAPI, TimetableHours, TimetableLesson } from './Schoolingo.d';
+import { ClassbookAPI, ClassbookLesson, TimetableAPI, TimetableHours, TimetableLesson } from './Schoolingo.d';
 import { School } from "./School";
 import { addZeros, isOdd } from "./Utils";
-import { BehaviorSubject } from "rxjs";
+import { BehaviorSubject, Subscription } from "rxjs";
 import moment from "moment";
-export { TimetableAPI }
+import { Absence, absence } from "./Absence";
+export { TimetableAPI, ClassbookAPI, ClassbookLesson }
 
 @Injectable()
 export class Schoolingo {
+
+    public subscribers: Subscription[] = [];
+    public absence: Absence[] = absence;
 
     constructor(
 
@@ -22,21 +26,24 @@ export class Schoolingo {
         public userService: UserService,
         public sidebar: Sidebar,
         public school: School
-
     ) {
-        this.locale.language.subscribe((value: languages) => {
+        this.subscribers.push(this.locale.language.subscribe((value: languages) => {
             this.refreshTitle();
-        });
+        }));
 
-        this.timetableSelectedWeek.subscribe((week: number) => {
+        this.subscribers.push(this.timetableSelectedWeek.subscribe((week: number) => {
             this.refreshTimetableLessons();
-        });
+
+            let data = { week, child: -1 };
+            if (userService.getUser()?.type == 'parent') {
+                data["child"] = this.userService.children[this.userService.selectedChild].personId;
+            }
+            this.socketService.emit('timetable:getClassbook', data);
+        }));
     }
 
     // Today's data
-    public todayWeek: number = moment().week();
-
-
+    public todayWeek: number = moment().isoWeek();
 
     public modal: string = '';
 
@@ -66,6 +73,8 @@ export class Schoolingo {
     public timetableAPI: TimetableAPI[] = [];
     public timetableSelectedWeek: BehaviorSubject<number> = new BehaviorSubject(moment().week());
     private timetableLessons: TimetableLesson[][][] = [];
+    public classbookLessons: Record<string, ClassbookLesson[]> = {};
+    public classbookAbsence: Record<string, number[]> = {};
     public getTimetableLessons(): TimetableLesson[][][] {
 
         return this.timetableLessons;
