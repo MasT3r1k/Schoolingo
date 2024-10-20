@@ -18,6 +18,9 @@ export type ContextButton = {
     label: string;
 } | {
     type: 'line',
+} | {
+    type: 'calendar',
+    date: BehaviorSubject<date>;
 })
 
 export type ContextMenu = {
