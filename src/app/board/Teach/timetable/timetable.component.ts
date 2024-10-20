@@ -13,7 +13,7 @@ import { absence } from '@Schoolingo/Absence';
   standalone: true,
   imports: [NgClass, TabsComponent],
   templateUrl: './timetable.component.html',
-  styleUrls: ['./timetable.component.css', '../../../Styles/card.css', '../../../Styles/item.css', '../../../Styles/absence.css']
+  styleUrls: ['./timetable.component.css', '../../../Styles/card.css', '../../../Styles/item.css']
 })
 export class TimetableComponent {
   private renderer: Renderer2;
