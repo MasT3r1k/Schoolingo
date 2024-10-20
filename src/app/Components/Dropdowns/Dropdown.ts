@@ -69,9 +69,13 @@ export class Dropdown implements OnInit {
         dropdowns[id].position = [x, boundClientRectBtn.y + boundClientRectBtn.height + 2];
     }
 
-    public create(id: string, data: ContextMenu): void {
+    public create(id: string, data: ContextMenu): boolean {
+        if (dropdowns[id]) {
+            return false;
+        }
         dropdowns[id] = data;
         this.refreshPosition(id);
+        return true;
     }
 
     public clickEvent(dropdown: string, itemId: number): void {
