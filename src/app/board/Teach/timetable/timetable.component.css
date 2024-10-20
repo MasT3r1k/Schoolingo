@@ -1,11 +1,62 @@
+.select-items {
+    position: relative;
+}
+
+.calendar-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    font-size: 13px;
+    line-height: 18px;
+    padding: 6px 12px;
+    cursor: pointer;
+    user-select: none;
+    z-index: 3!important;
+    color: var(--color-darker);
+    transition: all 0.15s ease-in;
+}
+
+.calendar {
+    position: absolute;
+    width: 100%;
+    top: 100%;
+    padding-top: 5px;
+    border-radius: 15px;
+    border-top-left-radius: 0;
+    border-top-right-radius: 0;
+    right: 0;
+    background-color: var(--background-active);
+    transition: all .3s;
+}
+
+.calendar::after {
+    content: '';
+    position: absolute;
+    top: 2px;
+    left: 10%;
+    right: 10%;
+    width: 80%;
+    height: 1px;
+    background-color: var(--border-color);
+}
+
+.calendar:hover {
+    background-color: var(--background-hover);
+}
+
+.calendar-button i {
+    margin-right: .5rem;
+    font-size: 15px;
+}
+
 .card-header {
-    margin-bottom: 2rem;
+    margin-bottom: calc(30px + 2rem);
 }
 
 .timetable {
     display: flex;
     flex-direction: column;
-    align-items: center;
 }
 
 .timetable > .hours {
@@ -25,10 +76,21 @@
 .timetable > .hours > .hour-info > .hour-id, .timetable .item .sub-lesson-hour .subject {
     font-size: 15px;
     font-weight: 600;
-    color: var(--primary);
     line-height: 16px;
     min-height: 16px;
     text-align: center;
+}
+
+.timetable > .hours > .hour-info > .hour-id {
+    color: var(--primary);
+}
+
+.timetable .item .sub-lesson-hour .subject {
+    color: var(--color);
+}
+
+.timetable .item.classbook .sub-lesson-hour .subject {
+    color: var(--primary);
 }
 
 .timetable .item .sub-lesson-hour.lesson-count-1 .subject {
@@ -133,7 +195,7 @@
 }
 
 .timetable .item .sub-lesson-hour:not(.empty):hover {
-    background-color: var(--background-hover);
+    background-color: var(--background-active);
 }
 
 .timetable .item .sub-lesson-hour .group, .timetable .item .sub-lesson-hour .room {
@@ -164,6 +226,16 @@
     max-width: 100%;
 }
 
+.timetable .item .sub-lesson-hour .absence {
+    position: absolute;
+    bottom: 4px;
+    left: 8px;
+    width: calc(100% - 16px);
+    right: 8px;
+    height: 4px;
+    border-radius: 16px;
+    background-color: var(--absence-color);
+}
 
 @media print {
     

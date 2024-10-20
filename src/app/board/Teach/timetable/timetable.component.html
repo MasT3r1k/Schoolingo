@@ -3,8 +3,17 @@
     <div class="card-header">
         <h2>{{ schoolingo.locale.getLocale('sidebar/teach/timetable') }}</h2>
         <div class="flex-items">
+
             <div class="select-items">
-                <schoolingo-tabs [value]="selectedTab" [options]="['timetable/thisWeek', 'timetable/nextWeek', 'timetable/permanent', 'sidebar/calendar']"></schoolingo-tabs>
+                <schoolingo-tabs [value]="selectedTab" [no_bottom_radius]="selectedTab.getValue() === 3" [options]="['timetable/thisWeek', 'timetable/nextWeek', 'timetable/permanent', 'sidebar/calendar']"></schoolingo-tabs>
+                @if (selectedTab.getValue() === 3) {
+                    <div class="calendar">
+                        <div class="calendar-button">
+                            <i class="ti ti-calendar-month"></i>
+                            {{ selectedDate.getValue().format('DD. MM. YYYY') }}
+                        </div>
+                    </div>
+                }
             </div>
 
             <div class="item-btn" [attr.dropdown]="timetableOptionsName" (click)="$event.stopPropagation();dropdown.toggle(timetableOptionsName)">
@@ -14,16 +23,12 @@
             </div>
         </div>
     </div>
-    <div class="card-body">
+    <div class="card-body center">
         <div class="timetable">
             <div class="hours">
                 <div class="week-type">
                     @if ([0, 1, 3].includes(selectedTab.getValue())) {
-                        @if(schoolingo.timetableSelectedWeek.getValue() % 2 == 0) {
-                            Sudý týden
-                        } @else {
-                            Lichý týden
-                        }
+                        {{ (schoolingo.timetableSelectedWeek.getValue() % 2) ? 'Lichý týden' : 'Sudý týden' }}
                     }
                 </div>
                 @for (hour of schoolingo.getTimetableHours(); track $index) {
@@ -53,7 +58,7 @@
                         }
                         @for (hour of [].constructor(schoolingo.getTimetableHours().length); track index2;let index2 = $index) {
 
-                            <div class="item lesson-hour">
+                            <div [ngClass]="{item: true, 'lesson-hour': true, classbook: isClassbook(index, index2)}">
                                 @for (lesson of schoolingo.getTimetableLessons()[index][index2]; track $index) {
                                     <div [ngClass]="['sub-lesson-hour', 'lesson-count-' + schoolingo.getTimetableLessons()[index][index2].length, (lesson.empty) ? 'empty' : '']">
                                         @if (options.groups.getValue()) {
@@ -71,6 +76,9 @@
                                             {{ lesson.subjectShortcut }}</div>
                                         @if (options.teachers.getValue()) {
                                             <div class="teacher">{{ lesson.teacher }}</div>
+                                        }
+                                        @if (getAbsence(index, index2) != -1) {
+                                            <div [ngClass]="['absence', 'ab-' + schoolingo.absence[getAbsence(index, index2)].locale]"></div>
                                         }
                                     </div>
                                 }
