@@ -28,6 +28,7 @@ export class TabsComponent implements OnInit {
     name: string = randomstring(16, false);
     @Input() value: BehaviorSubject<number> = new BehaviorSubject(0);
     @Input() options: string[] = [];
+    @Input() no_bottom_radius: boolean = false;
 
     public gliderStyles: Record<string, string | number> = {};
     public getGlider(): Record<string, string | number> {
