@@ -34,7 +34,7 @@ export function randomstring(length: number, numbers: boolean = true): string {
   return text;
 }
 
-    // Date and Time
+// Date and Time
 export function getDayOfWeek(week: number, day: number = 0): moment.Moment {
-      return moment().set('weeks', week).startOf('week').add(day + 1, 'days');
-  }
+  return moment().weeks(week).startOf('week').add(day + 1, 'd');
+}
