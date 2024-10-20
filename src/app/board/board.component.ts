@@ -98,7 +98,8 @@ export class BoardComponent {
 
       }
 
-      this.schoolingo.socketService.emit("timetable:getLessons", { userId })
+      this.schoolingo.socketService.emit("timetable:getLessons", { userId });
+      
     }));
 
     this.subscribers.push(this.schoolingo.socketService.addFunction("main:updateLocale").subscribe((data: SocketUpdateLocale) => {
@@ -122,7 +123,7 @@ export class BoardComponent {
               break;
           }
           break;
-      }
+      } 
       console.log('ERROR: ' + data.error);
     }));
 
@@ -135,22 +136,33 @@ export class BoardComponent {
     }));
 
     this.subscribers.push(this.schoolingo.socketService.addFunction("timetable:getClassbook").subscribe((data: ClassbookAPI[] | any) => {
-      console.log(data);
+
       for(let i = 0;i < data.length;i++) {
+
         let date = moment(data[i].date).format("YYYY-MM-DD");
+
         if (!this.schoolingo.classbookLessons[date]) {
+
           this.schoolingo.classbookLessons[date] = [];
+
         }
+
         this.schoolingo.classbookLessons[date][data[i].dayHour] = { topic: data[i].topic };
+
         if (!this.schoolingo.classbookAbsence[date]) {
+
           this.schoolingo.classbookAbsence[date] = [];
+
         }
+
         this.schoolingo.classbookAbsence[date][data[i].dayHour] = data[i].absence ?? -1;
       }
     }));
 
     this.subscribers.push(this.schoolingo.socketService.addFunction("main:updatePersons").subscribe((data: Record<number, personDetails>) => {
+
       this.schoolingo.addPersons(data);
+
     }));
 
 
@@ -158,6 +170,7 @@ export class BoardComponent {
 
   ngOnDestroy(): void {
 
+    // Unsubscribe all listeners
     this.subscribers.forEach((sub: Subscription) => sub.unsubscribe());
     this.schoolingo.subscribers.forEach((sub: Subscription) => sub.unsubscribe());
 
