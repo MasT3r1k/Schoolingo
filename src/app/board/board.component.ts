@@ -2,6 +2,7 @@ import { NgClass, NgStyle } from '@angular/common';
 import { Component } from '@angular/core';
 import { NavigationEnd, Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { Dropdown } from '@Components/Dropdowns/Dropdown';
+import { ClassbookAPI } from '@Schoolingo';
 import { Schoolingo, TimetableAPI } from '@Schoolingo';
 import { alertManager, AlertManagerClass } from '@Schoolingo/Alert';
 import { languages } from '@Schoolingo/Locale';
@@ -9,6 +10,7 @@ import { School } from '@Schoolingo/School';
 import { SocketUpdateTheme, SocketUpdateLocale } from '@Schoolingo/Socket';
 import { child, personDetails } from '@Schoolingo/User';
 import { user } from '@Schoolingo/User';
+import moment from 'moment';
 import { Subscription } from 'rxjs';
 
 type userAPI = ({
@@ -132,7 +134,20 @@ export class BoardComponent {
 
     }));
 
-
+    this.subscribers.push(this.schoolingo.socketService.addFunction("timetable:getClassbook").subscribe((data: ClassbookAPI[] | any) => {
+      console.log(data);
+      for(let i = 0;i < data.length;i++) {
+        let date = moment(data[i].date).format("YYYY-MM-DD");
+        if (!this.schoolingo.classbookLessons[date]) {
+          this.schoolingo.classbookLessons[date] = [];
+        }
+        this.schoolingo.classbookLessons[date][data[i].dayHour] = { topic: data[i].topic };
+        if (!this.schoolingo.classbookAbsence[date]) {
+          this.schoolingo.classbookAbsence[date] = [];
+        }
+        this.schoolingo.classbookAbsence[date][data[i].dayHour] = data[i].absence ?? -1;
+      }
+    }));
 
 
   }
@@ -140,6 +155,7 @@ export class BoardComponent {
   ngOnDestroy(): void {
 
     this.subscribers.forEach((sub: Subscription) => sub.unsubscribe());
+    this.schoolingo.subscribers.forEach((sub: Subscription) => sub.unsubscribe());
 
   }
 
