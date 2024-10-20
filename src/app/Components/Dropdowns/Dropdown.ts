@@ -59,7 +59,6 @@ export class Dropdown implements OnInit {
                 html += word + " ";
             }
         })
-        console.log(html);
         return html;
     }
 
