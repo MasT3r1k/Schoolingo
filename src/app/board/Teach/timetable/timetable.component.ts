@@ -6,6 +6,8 @@ import { BehaviorSubject } from 'rxjs';
 import * as utils from '@Schoolingo/Utils';
 import { Dropdown } from '@Components/Dropdowns/Dropdown';
 import moment from 'moment';
+import { ContextButton } from '@Components/Dropdowns/Dropdown';
+import { absence } from '@Schoolingo/Absence';
 
 @Component({
   standalone: true,
@@ -33,6 +35,8 @@ export class TimetableComponent {
   public selectedDate: BehaviorSubject<moment.Moment> = new BehaviorSubject(moment());
 
   // Dropdown Timetable Options
+  public timetableAbsenceName: string = 'timetableAbsence';
+
   public timetableOptionsName: string = 'timetableOptions';
   public options: Record<string, BehaviorSubject<boolean>> = {
     teachers: new BehaviorSubject(true),
@@ -61,6 +65,17 @@ export class TimetableComponent {
       let arrayWeek: number[] = [this.schoolingo.todayWeek, this.schoolingo.todayWeek + 1, -1, this.schoolingo.todayWeek];
       this.schoolingo.timetableSelectedWeek.next(arrayWeek[id]);
     })
+
+    let dropdownAbsence: ContextButton[] = [];
+    for(let i = 0;i < absence.length;i++) {
+      dropdownAbsence.push({ 
+        type: 'custom',
+        html: '<div class="flex align-items-center absence-item"><div class="absence ab-' + absence[i].locale + '"></div> [l:absence/' + absence[i].locale + ']' + ' </div>',
+        isActive: true
+      });
+    }
+
+    this.dropdown.create(this.timetableAbsenceName, { title: '', isOpen: false, items: dropdownAbsence})
 
     this.dropdown.create(this.timetableOptionsName, { title: '', isOpen: false, items: [
       {
