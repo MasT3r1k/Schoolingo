@@ -21,7 +21,7 @@ export type TimetableAPI = {
     day: number;
     hour: number;
     type: number;
-    teacher: string;
+    teacher: number;
     room: string;
     subjectName: string;
     subjectShortcut: string;
@@ -29,7 +29,7 @@ export type TimetableAPI = {
 
 export type TimetableLesson = {
     type: number;
-    teacher: string;
+    teacher: number;
     room: string;
     subjectName: string;
     subjectShortcut: string;

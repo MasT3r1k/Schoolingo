@@ -2,7 +2,7 @@ import { Injectable } from "@angular/core";
 import { languages, Locale } from "./Locale";
 import { SocketService } from "./Socket";
 import { Theme } from "./Theme";
-import { UserService } from "./User";
+import { personDetails, UserService } from "./User";
 import { Sidebar } from "./Sidebar";
 import { ClassbookAPI, ClassbookLesson, TimetableAPI, TimetableHours, TimetableLesson } from './Schoolingo.d';
 import { School } from "./School";
@@ -172,7 +172,7 @@ export class Schoolingo {
                     this.timetableLessons[i][y].push({
                         subjectName: "",
                         subjectShortcut: "",
-                        teacher: "",
+                        teacher: -1,
                         room: "",
                         type: 0,
                         group: {
@@ -185,6 +185,25 @@ export class Schoolingo {
                 }
             }
         }
+    }
+
+    // Person information
+    private persons: Record<number, personDetails> = {};
+
+    public addPersons(persons: Record<number, personDetails>): void {
+
+        Object.entries(persons).forEach((value: [string, personDetails]) => {
+
+            this.persons[parseInt(value[0])] = value[1];
+
+        });
+
+    }
+
+    public getPerson(personId: number): personDetails | null {
+        if (personId === -1) return null;
+        return this.persons[personId];
+
     }
 
 }

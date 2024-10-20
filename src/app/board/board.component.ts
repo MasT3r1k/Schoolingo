@@ -149,6 +149,10 @@ export class BoardComponent {
       }
     }));
 
+    this.subscribers.push(this.schoolingo.socketService.addFunction("main:updatePersons").subscribe((data: Record<number, personDetails>) => {
+      this.schoolingo.addPersons(data);
+    }));
+
 
   }
 
