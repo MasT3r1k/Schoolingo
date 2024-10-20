@@ -81,8 +81,8 @@
                                                 {{ lesson.type == 1 ? 'L: ' : 'S: ' }}
                                             }
                                             {{ lesson.subjectShortcut }}</div>
-                                        @if (options.teachers.getValue()) {
-                                            <div class="teacher">{{ lesson.teacher }}</div>
+                                        @if (options.teachers.getValue() && lesson.teacher != -1) {
+                                            <div class="teacher">{{ schoolingo.getPerson(lesson.teacher)?.lastName }}</div>
                                         }
                                         @if (getAbsence(index, index2) != -1) {
                                             <div [ngClass]="['absence', 'ab-' + schoolingo.absence[getAbsence(index, index2)].locale]"></div>
