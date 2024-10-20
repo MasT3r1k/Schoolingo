@@ -4,19 +4,24 @@
         <h2>{{ schoolingo.locale.getLocale('sidebar/teach/timetable') }}</h2>
         <div class="flex-items">
 
-            <div class="select-items">
-                <schoolingo-tabs [value]="selectedTab" [no_bottom_radius]="selectedTab.getValue() === 3" [options]="['timetable/thisWeek', 'timetable/nextWeek', 'timetable/permanent', 'sidebar/calendar']"></schoolingo-tabs>
-                @if (selectedTab.getValue() === 3) {
-                    <div class="calendar">
-                        <div class="calendar-button">
-                            <i class="ti ti-calendar-month"></i>
-                            {{ selectedDate.getValue().format('DD. MM. YYYY') }}
-                        </div>
-                    </div>
-                }
+            <div [ngClass]="{'item-btn': true, text: true, active: dropdown.isOpen(timetableAbsenceName)}" [attr.dropdown]="timetableAbsenceName" (click)="$event.stopPropagation();dropdown.toggle(timetableAbsenceName)">
+                <div class="text">
+                    {{ schoolingo.locale.getLocale('sidebar/absence') }}
+                </div>
             </div>
 
-            <div class="item-btn" [attr.dropdown]="timetableOptionsName" (click)="$event.stopPropagation();dropdown.toggle(timetableOptionsName)">
+            <div class="select-items">
+                <schoolingo-tabs [value]="selectedTab" [options]="['timetable/thisWeek', 'timetable/nextWeek', 'timetable/permanent', 'sidebar/calendar']"></schoolingo-tabs>
+            </div>
+
+            @if (selectedTab.getValue() === 3) {
+                <div class="button">
+                    <i class="ti ti-calendar-month"></i>
+                    {{ selectedDate.getValue().format('DD. MM. YYYY') }}
+                </div>
+            }
+
+            <div [ngClass]="{'item-btn': true, active: dropdown.isOpen(timetableOptionsName)}" [attr.dropdown]="timetableOptionsName" (click)="$event.stopPropagation();dropdown.toggle(timetableOptionsName)">
                 <div class="icon">
                     <i class="ti ti-dots-vertical"></i>
                 </div>
