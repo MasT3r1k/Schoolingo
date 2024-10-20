@@ -14,7 +14,7 @@ let dropdowns: Record<string, ContextMenu> = {};
     templateUrl: './Dropdown.html',
     standalone: true,
     imports: [NgClass, NgStyle],
-    styleUrl: './Dropdown.css'
+    styleUrls: ['./Dropdown.css']
 })
 
 @Injectable()
@@ -35,6 +35,7 @@ export class Dropdown implements OnInit {
     ngOnInit(): void {
     }
 
+    // Item format
     public formatRightText(text: ContextButtonRightText): SafeHtml {
         let html: SafeHtml = "";
         if (text == "arrow") { }
@@ -47,6 +48,22 @@ export class Dropdown implements OnInit {
         return html;
     }
 
+    public formatHtmlText(text: string): SafeHtml {
+        let html: SafeHtml = "";
+        if (text == "arrow") { }
+        text.split(' ').forEach((word: string) => {
+            if (word.startsWith("[l:") && word.endsWith(']')) {
+                let key = word.slice(3, -1);
+                html += this.locale.getLocale(key);
+            } else {
+                html += word + " ";
+            }
+        })
+        console.log(html);
+        return html;
+    }
+
+    //
     public getDropdowns(): [string, ContextMenu][] {
         return Object.entries(dropdowns);
     }
@@ -92,14 +109,21 @@ export class Dropdown implements OnInit {
         }
     }
 
+    // Functions
+
     public toggle(id: string): void {
         if (dropdowns[id].isOpen === true) {
             return this.close(id);
         }
         return this.open(id);
     }
+    
+    public isOpen(id: string): boolean {
+        return dropdowns[id].isOpen;
+    }
 
     public open(id: string): void {
+        this.closeAll();
         this.refreshPosition(id);
         dropdowns[id].isOpen = true;
     }

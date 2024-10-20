@@ -1,3 +1,4 @@
+import { SafeHtml } from "@angular/platform-browser";
 import { BehaviorSubject } from "rxjs";
 
 export type ContextButtonRightText = 'arrow' | string;
@@ -14,13 +15,16 @@ export type ContextButton = {
     value: BehaviorSubject<boolean>;
     label: string;
 } | {
-    type: 'text',
+    type: 'text';
     label: string;
 } | {
-    type: 'line',
+    type: 'line';
 } | {
-    type: 'calendar',
+    type: 'calendar';
     date: BehaviorSubject<date>;
+} | {
+    type: 'custom';
+    html: SafeHtml;
 })
 
 export type ContextMenu = {
