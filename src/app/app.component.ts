@@ -39,7 +39,7 @@ export class AppComponent implements OnInit {
         }
       }
     });
-    this.http.post<SchoolInfo>(config.api + 'v1/getSchoolInfo', { domain: window.location.host }).subscribe((res: SchoolInfo): void => {
+    this.http.get<SchoolInfo>(config.api + 'v1/getSchoolInfo').subscribe((res: SchoolInfo): void => {
       this.school.getAPI(res);
       if (!this.loadedState.includes("school")) {
         this.loadedState.push('school');
