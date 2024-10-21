@@ -6,7 +6,6 @@ import { School, SchoolInfo } from '@Schoolingo/School';
 import * as config from '@Schoolingo/Config';
 import { languages, Locale } from '@Schoolingo/Locale';
 import { Subscription } from 'rxjs';
-import { Theme } from '@Schoolingo/Theme';
 
 type loadingStates = 'language' | 'school';
 
@@ -22,10 +21,9 @@ export class AppComponent implements OnInit {
 
   constructor(
     private http: HttpClient,
-    private school: School,
-    public locale: Locale,
-    private theme: Theme
-  ) {}
+    public school: School,
+    public locale: Locale
+    ) {}
 
   public loadedState: loadingStates[] = [];
 

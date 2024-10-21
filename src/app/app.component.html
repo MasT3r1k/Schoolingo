@@ -1,22 +1,28 @@
-@if (loadedState.length != 2) {
-    <div class="loading">
-        <svg width="200" height="250" viewBox="0 0 40 60">
-            <polygon
-            class="triangle"
-            fill="none"
-            points="16,1 32,32 1,32"
-            stroke="#fff"
-            stroke-width="1"
-            ></polygon>
-        </svg>
-    </div>
-    <div class="alerts bottom">
-        <div class="alert">
-            <div class="text">
-                {{ "Loading Schoolingo application (" + (loadedState.length + 1)  + "/2)" }}
+@if (!school.getIsActiveSchool()) {
+    DOMÉNA NENALEZENA
+}
+
+@if (school.getIsActiveSchool()) {
+    @if (loadedState.length != 2) {
+        <div class="loading">
+            <svg width="200" height="250" viewBox="0 0 40 60">
+                <polygon
+                class="triangle"
+                fill="none"
+                points="16,1 32,32 1,32"
+                stroke="#fff"
+                stroke-width="1"
+                ></polygon>
+            </svg>
+        </div>
+        <div class="alerts bottom">
+            <div class="alert">
+                <div class="text">
+                    {{ "Loading Schoolingo application (" + (loadedState.length + 1)  + "/2)" }}
+                </div>
             </div>
         </div>
-    </div>
-} @else {
-    <router-outlet></router-outlet>
-}
+    } @else {
+        <router-outlet></router-outlet>
+    }
+    }
