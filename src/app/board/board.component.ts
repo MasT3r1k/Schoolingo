@@ -84,6 +84,7 @@ export class BoardComponent {
       }
 
       this.schoolingo.userService.setUser(data);
+      this.schoolingo.sidebar.build();
 
       let userId = 0;
       let user: user | null = this.schoolingo.userService.getUser();

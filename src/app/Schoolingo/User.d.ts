@@ -1,3 +1,5 @@
+import { UserRoles } from "./Permissions";
+
 export interface degree {
     degree: string;
     shortcut: string;
@@ -24,6 +26,7 @@ export type user = ({
     type: 'parent',
     person: personDetails;
 }) & {
+    type: UserRoles;
     id: number;
 }
 
