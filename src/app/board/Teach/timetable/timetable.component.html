@@ -66,8 +66,8 @@
                         @for (hour of [].constructor(schoolingo.getTimetableHours().length); track index2;let index2 = $index) {
 
                             <div [ngClass]="{item: true, 'lesson-hour': true, classbook: isClassbook(index, index2)}">
-                                @for (lesson of schoolingo.getTimetableLessons()[index][index2]; track $index) {
-                                    <div [ngClass]="['sub-lesson-hour', 'lesson-count-' + schoolingo.getTimetableLessons()[index][index2].length, (lesson.empty) ? 'empty' : '']">
+                                @for (lesson of schoolingo.getTimetableLessons()?.[index]?.[index2]; track $index) {
+                                    <div [ngClass]="['sub-lesson-hour', 'lesson-count-' + schoolingo.getTimetableLessons()?.[index]?.[index2]?.length, (lesson.empty) ? 'empty' : '']">
                                         @if (options.groups.getValue()) {
                                             <div class="group">
                                                 <span>{{ lesson.group.text + ' ' + lesson.group.num }}</span>
