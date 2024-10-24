@@ -34,10 +34,10 @@ export class TimetableComponent {
   // Calendar
   public selectedDate: BehaviorSubject<moment.Moment> = new BehaviorSubject(moment());
 
-  // Dropdown Timetable Options
+  // Dropdowns
   public timetableAbsenceName: string = 'timetableAbsence';
-
   public timetableOptionsName: string = 'timetableOptions';
+  public timetableCalendarName: string = 'timetableCalendar';
   public options: Record<string, BehaviorSubject<boolean>> = {
     teachers: new BehaviorSubject(true),
     groups: new BehaviorSubject(true),
@@ -108,6 +108,12 @@ export class TimetableComponent {
         isActive: true
       }]
     });
+    
+    this.dropdown.create(this.timetableCalendarName, { title: '', isOpen: false, items: [{
+      type: 'calendar',
+      date: this.selectedDate,
+      isActive: true
+    }] })
 
 
     this.renderer.listen(window, "afterprint", () => {
@@ -121,7 +127,6 @@ export class TimetableComponent {
 
   public getAbsence(day: number, hour: number): number {
     let absence: number = this.schoolingo.classbookAbsence[utils.getDayOfWeek(this.schoolingo.timetableSelectedWeek.getValue(), day).format('YYYY-MM-DD').toString()]?.[hour];
-    console.log(absence);
     if (absence === undefined || absence == -1) {
       return -1;
     }

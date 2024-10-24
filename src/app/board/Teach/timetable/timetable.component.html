@@ -16,7 +16,7 @@
 
             @if (selectedTab.getValue() === 3) {
                 <!-- TODO -->
-                <div class="button">
+                <div [ngClass]="{button: true, active: dropdown.isOpen(timetableCalendarName)}" [attr.dropdown]="timetableCalendarName" (click)="$event.stopPropagation();dropdown.toggle(timetableCalendarName)">
                     <i class="ti ti-calendar-month"></i>
                     {{ selectedDate.getValue().format('DD. MM. YYYY') }}
                 </div>
@@ -68,12 +68,12 @@
                             <div [ngClass]="{item: true, 'lesson-hour': true, classbook: isClassbook(index, index2)}">
                                 @for (lesson of schoolingo.getTimetableLessons()?.[index]?.[index2]; track $index) {
                                     <div [ngClass]="['sub-lesson-hour', 'lesson-count-' + schoolingo.getTimetableLessons()?.[index]?.[index2]?.length, (lesson.empty) ? 'empty' : '']">
-                                        @if (options.groups.getValue()) {
+                                        @if (options.groups.getValue() === true) {
                                             <div class="group">
                                                 <span>{{ lesson.group.text + ' ' + lesson.group.num }}</span>
                                             </div>
                                         }
-                                        @if (options.rooms.getValue()) {
+                                        @if (options.rooms.getValue() === true) {
                                             <div class="room">{{ lesson.room }}</div>
                                         }
                                         <div class="subject">
@@ -81,7 +81,7 @@
                                                 {{ lesson.type == 1 ? 'L: ' : 'S: ' }}
                                             }
                                             {{ lesson.subjectShortcut }}</div>
-                                        @if (options.teachers.getValue() && lesson.teacher != -1) {
+                                        @if (options.teachers.getValue() === true && lesson.teacher != -1) {
                                             <div class="teacher">{{ schoolingo.getPerson(lesson.teacher)?.lastName }}</div>
                                         }
                                         @if (getAbsence(index, index2) != -1) {

@@ -1,4 +1,5 @@
 import { SafeHtml } from "@angular/platform-browser";
+import moment from "moment";
 import { BehaviorSubject } from "rxjs";
 
 export type ContextButtonRightText = 'arrow' | string;
@@ -21,7 +22,7 @@ export type ContextButton = {
     type: 'line';
 } | {
     type: 'calendar';
-    date: BehaviorSubject<date>;
+    date: BehaviorSubject<moment.Moment>;
 } | {
     type: 'custom';
     html: SafeHtml;
