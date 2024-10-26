@@ -1,21 +1,19 @@
 <div class="card">
     <div class="card-top">
-        <div class="alert error">
+        <!-- <div class="alert error">
             helo
-        </div>
+        </div> -->
     </div>
     <div class="card-header">
         <h2>{{ schoolingo.locale.getLocale('settings') }}</h2>
         <div class="flex-items">
-            <div class="select-items">
-                <div class="select-item active">{{ schoolingo.locale.getLocale('changepassword') }}</div>
-                <div class="select-item">{{ schoolingo.locale.getLocale('language') }}</div>
-                <div class="select-item">{{ schoolingo.locale.getLocale('theme') }}</div>
-            </div>
+            <schoolingo-tabs [value]="selectedTab" [options]="options"></schoolingo-tabs>
+
         </div>
     </div>
     <div class="card-body">
-        <div class="card-tab active" id="changepassword">
+        <div [ngClass]="{'card-tab': true, active: options.indexOf('changepassword') == selectedTab.getValue()}" id="changepassword">
+            <h2 class="small">{{ schoolingo.locale.getLocale('changepassword') }}</h2>
             <div class="form">
                 <!-- <form>
                     <div class="form-group">
@@ -47,6 +45,17 @@
                         <div [ngClass]="{submit: true, disabled: schoolingo.getOfflineMode()}" role="button" (click)="changePassword()" [innerHTML]="getChangingPasswordText()"></div>
                     </div>
                 </form> -->
+            </div>
+        </div>
+        <div [ngClass]="{'card-tab': true, active: options.indexOf('language') == selectedTab.getValue()}" id="language">
+            <h2 class="small">{{ schoolingo.locale.getLocale('language') }}</h2>
+            <div class="form">
+            </div>
+        </div>
+        <div [ngClass]="{'card-tab': true, active: options.indexOf('theme') == selectedTab.getValue()}" id="theme">
+            <h2 class="small">{{ schoolingo.locale.getLocale('theme') }}</h2>
+            <div class="form">
+
             </div>
         </div>
     </div>
