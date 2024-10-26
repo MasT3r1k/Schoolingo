@@ -139,7 +139,6 @@ export class TimetableComponent {
       }
       this.schoolingo.socketService.emit('timetable:getLessons', { userId, week: date.isoWeek(), year: date.year() });
       this.schoolingo.timetableSelectedWeek.next(date.isoWeek());
-      console.log(date);
     })
 
 
