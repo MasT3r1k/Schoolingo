@@ -15,7 +15,6 @@
             </div>
 
             @if (selectedTab.getValue() === 3) {
-                <!-- TODO -->
                 <div [ngClass]="{button: true, active: dropdown.isOpen(timetableCalendarName)}" [attr.dropdown]="timetableCalendarName" (click)="$event.stopPropagation();dropdown.toggle(timetableCalendarName)">
                     <i class="ti ti-calendar-month"></i>
                     {{ selectedDate.getValue().format('DD. MM. YYYY') }}
@@ -66,28 +65,30 @@
                         @for (hour of [].constructor(schoolingo.getTimetableHours().length); track index2;let index2 = $index) {
 
                             <div [ngClass]="{item: true, 'lesson-hour': true, classbook: isClassbook(index, index2)}">
-                                @for (lesson of schoolingo.getTimetableLessons()?.[index]?.[index2]; track $index) {
-                                    <div [ngClass]="['sub-lesson-hour', 'lesson-count-' + schoolingo.getTimetableLessons()?.[index]?.[index2]?.length, (lesson.empty) ? 'empty' : '']">
-                                        @if (options.groups.getValue() === true) {
-                                            <div class="group">
-                                                <span>{{ lesson.group.text + ' ' + lesson.group.num }}</span>
-                                            </div>
-                                        }
-                                        @if (options.rooms.getValue() === true) {
-                                            <div class="room">{{ lesson.room }}</div>
-                                        }
-                                        <div class="subject">
-                                            @if (schoolingo.timetableSelectedWeek.getValue() == -1 && lesson.type !== 0) {
-                                                {{ lesson.type == 1 ? 'L: ' : 'S: ' }}
+                                @if (schoolingo.getTimetableLessons()[index]) {
+                                    @for (lesson of schoolingo.getTimetableLessons()[index][index2]; track $index) {
+                                        <div [ngClass]="['sub-lesson-hour', 'lesson-count-' + schoolingo.getTimetableLessons()[index][index2].length, (lesson.empty) ? 'empty' : '']">
+                                            @if (options.groups.getValue() === true) {
+                                                <div class="group">
+                                                    <span>{{ lesson.group.text + ' ' + lesson.group.num }}</span>
+                                                </div>
                                             }
-                                            {{ lesson.subjectShortcut }}</div>
-                                        @if (options.teachers.getValue() === true && lesson.teacher != -1) {
-                                            <div class="teacher">{{ schoolingo.getPerson(lesson.teacher)?.lastName }}</div>
-                                        }
-                                        @if (getAbsence(index, index2) != -1) {
-                                            <div [ngClass]="['absence', 'ab-' + schoolingo.absence[getAbsence(index, index2)].locale]"></div>
-                                        }
-                                    </div>
+                                            @if (options.rooms.getValue() === true) {
+                                                <div class="room">{{ lesson.room }}</div>
+                                            }
+                                            <div class="subject">
+                                                @if (schoolingo.timetableSelectedWeek.getValue() == -1 && lesson.type !== 0) {
+                                                    {{ lesson.type == 1 ? 'L: ' : 'S: ' }}
+                                                }
+                                                {{ lesson.subjectShortcut }}</div>
+                                            @if (options.teachers.getValue() === true && lesson.teacher != -1) {
+                                                <div class="teacher">{{ schoolingo.getPerson(lesson.teacher)?.lastName }}</div>
+                                            }
+                                            @if (getAbsence(index, index2) != -1) {
+                                                <div [ngClass]="['absence', 'ab-' + schoolingo.absence[getAbsence(index, index2)].locale]"></div>
+                                            }
+                                        </div>
+                                    }
                                 }
                             </div>
                         }

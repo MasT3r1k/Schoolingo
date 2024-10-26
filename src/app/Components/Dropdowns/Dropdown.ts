@@ -1,8 +1,9 @@
 import { NgClass, NgStyle } from "@angular/common";
 import { Component, Injectable, OnInit, RendererFactory2 } from "@angular/core";
-import { ContextButton, ContextButtonRightText, ContextMenu } from "./Dropdown.d";
+import { Calendar, ContextButton, ContextButtonRightText, ContextMenu } from "./Dropdown.d";
 import { Locale } from "@Schoolingo/Locale";
 import { SafeHtml } from "@angular/platform-browser";
+import moment from "moment";
 export { ContextButton, ContextButtonRightText, ContextMenu }
 
 //! DON'T IMPORT THIS INTO SPECIFIC COMPONENTS, ITS ALREADY IN THE MAIN COMPONENT
@@ -108,8 +109,43 @@ export class Dropdown implements OnInit {
         }
     }
 
-    // Functions
+    // Calendar
+    public getCalendar(date: moment.Moment): Calendar[] {
+        let calendar: Calendar[] = [];
+        let startMonth = date.clone().startOf('month');
 
+        // Before month
+        for(let i = startMonth.day() ? startMonth.day() - 1 : 6;i > 0;i--) {
+            let day = date.clone().subtract(i, 'day');
+            calendar.push({
+                date: day,
+                gray: true
+            })
+        }
+
+        // Month
+        for(let i = 0;i < startMonth.daysInMonth();i++) {
+            let day = startMonth.clone().add(i, 'day');
+            calendar.push({
+                date: day,
+                gray: false
+            })
+        }
+
+        // After month
+        let endMonth = startMonth.clone().endOf('month');
+        for(let i = 1;i < (endMonth ? 8 - endMonth.day() : 6);i++) {
+            let day = endMonth.clone().add(i, 'day');
+            calendar.push({
+                date: day,
+                gray: true
+            })
+        }
+
+        return calendar;
+    }
+
+    // Functions
     public toggle(id: string): void {
         if (dropdowns[id].isOpen === true) {
             return this.close(id);

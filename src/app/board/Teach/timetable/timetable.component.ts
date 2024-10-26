@@ -8,6 +8,7 @@ import { Dropdown } from '@Components/Dropdowns/Dropdown';
 import moment from 'moment';
 import { ContextButton } from '@Components/Dropdowns/Dropdown';
 import { absence } from '@Schoolingo/Absence';
+import { user } from '@Schoolingo/User';
 
 @Component({
   standalone: true,
@@ -62,7 +63,19 @@ export class TimetableComponent {
 
     // Select Week Tab
     this.selectedTab.subscribe((id: number) => {
-      let arrayWeek: number[] = [this.schoolingo.todayWeek, this.schoolingo.todayWeek + 1, -1, this.schoolingo.todayWeek];
+      let arrayWeek: number[] = [moment().isoWeek(), moment().isoWeek() + 1, -1, this.schoolingo.todayWeek];
+      let user: user | null = this.schoolingo.userService.getUser();
+      let userId = user?.id;
+
+      if (user && user.type == 'parent') {
+        userId = this.schoolingo.userService.children[this.schoolingo.userService.selectedChild].personId;
+      }
+      if (this.selectedDate.getValue().format("DD-MM-YYYY") !== moment().format("DD-MM-YYYY")) {
+        if (id !== 3) {
+          this.selectedDate.next(moment())
+        }
+        this.schoolingo.socketService.emit('timetable:getLessons', { userId, week: (arrayWeek[id] == -1) ? moment().isoWeek() : arrayWeek[id], year: moment().year() });
+      }
       this.schoolingo.timetableSelectedWeek.next(arrayWeek[id]);
     })
 
@@ -108,12 +121,26 @@ export class TimetableComponent {
         isActive: true
       }]
     });
-    
+
+    // Calendar
     this.dropdown.create(this.timetableCalendarName, { title: '', isOpen: false, items: [{
       type: 'calendar',
       date: this.selectedDate,
+      selectedMonth: this.selectedDate.getValue().clone(),
       isActive: true
-    }] })
+    }] });
+
+    this.selectedDate.subscribe((date: moment.Moment) => {
+      let user: user | null = this.schoolingo.userService.getUser();
+      let userId = user?.id;
+
+      if (user && user.type == 'parent') {
+        userId = this.schoolingo.userService.children[this.schoolingo.userService.selectedChild].personId;
+      }
+      this.schoolingo.socketService.emit('timetable:getLessons', { userId, week: date.isoWeek(), year: date.year() });
+      this.schoolingo.timetableSelectedWeek.next(date.isoWeek());
+      console.log(date);
+    })
 
 
     this.renderer.listen(window, "afterprint", () => {

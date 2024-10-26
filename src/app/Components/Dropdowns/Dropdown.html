@@ -11,7 +11,52 @@
                     <div class="line"></div>
                 }
                 @case("calendar") {
-
+                    <div class="calendar">
+                        <div class="calendar-header">
+                            <div class="icon" (click)="item.selectedMonth.subtract(1, 'month')">
+                                <i class="ti ti-chevron-left"></i>
+                            </div>
+                            <div class="month">
+                                {{ locale.getLocale('months/' + item.selectedMonth.month()) + ', ' + item.selectedMonth.year() }}
+                            </div>
+                            <div class="icon" (click)="item.selectedMonth.add(1, 'month')">
+                                <i class="ti ti-chevron-right"></i>
+                            </div>
+                        </div>
+                        <div class="calendar-body">
+                            <div class="calendar-days">
+                                @for (_ of [].constructor(7); track $index) {
+                                    <div class="calendar-day">
+                                        {{ locale.getLocale('short_days/' + $index) }}
+                                    </div>
+                                }
+                            </div>
+                            <div class="calendar-row">
+                                @for (day of getCalendar(item.selectedMonth); track $index) {
+                                    <div [ngClass]="{'calendar-day': true, active: day.date.isoWeek() === item.date.getValue().isoWeek()}" (click)="item.date.next(day.date);dropdown[1].isOpen = false">
+                                        <span [ngClass]="{gray: day.gray}">
+                                            {{ day.date.date() }}
+                                        </span>
+                                    </div>
+                                }
+                                <!-- @for (_ of [].constructor(((item.date.getValue().startOf('month').day() || 7) - 1) + item.date.getValue().daysInMonth() + (6 - item.date.getValue().endOf('m').day() - 1)); track $index) {
+                                    <div class="calendar-day">
+                                        @if (item.date.getValue().clone().subtract(1, 'month').endOf('m').subtract(item.date.getValue().startOf('month').day() - $index - 1, 'd').date() > $index) {
+                                            <span class="gray">{{ item.date.getValue().clone().subtract(1, 'month').endOf('m').subtract(item.date.getValue().startOf('month').day() - $index, 'd').date() }}</span>
+                                        } @else {
+                                            @if (item.date.getValue().clone().startOf('m').add($index - (item.date.getValue().startOf('month').day() || 7) + 1, 'd').date() < $index) {
+                                                <span class="gray">
+                                                    {{ item.date.getValue().clone().startOf('m').add($index - (item.date.getValue().startOf('month').day() || 7) + 1, 'd').date() }}
+                                                </span>
+                                            } @else {
+                                                {{ item.date.getValue().clone().startOf('m').add($index - (item.date.getValue().startOf('month').day() || 7) + 1, 'd').date() }}
+                                            }
+                                        }
+                                    </div>
+                                } -->
+                            </div>
+                        </div>
+                    </div>
                 }
                 @case("function") {
                     <div [ngClass]="{'dropdown-item': true, item: true, active: item.isActive}" (click)="clickEvent(dropdown[0], $index)">

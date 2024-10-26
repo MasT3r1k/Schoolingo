@@ -23,14 +23,20 @@ export type ContextButton = {
 } | {
     type: 'calendar';
     date: BehaviorSubject<moment.Moment>;
+    selectedMonth: moment.Moment = moment();
 } | {
     type: 'custom';
     html: SafeHtml;
-})
+});
 
 export type ContextMenu = {
     title: string = '';
     position?: [number, number] = [0,0];
     isOpen: boolean = false;
     items: ContextButton[] = [];
+};
+
+export type Calendar = {
+    date: moment.Moment;
+    gray: Boolean;
 }
