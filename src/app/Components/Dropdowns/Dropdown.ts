@@ -116,7 +116,7 @@ export class Dropdown implements OnInit {
 
         // Before month
         for(let i = startMonth.day() ? startMonth.day() - 1 : 6;i > 0;i--) {
-            let day = date.clone().subtract(i, 'day');
+            let day = startMonth.clone().subtract(i, 'day');
             calendar.push({
                 date: day,
                 gray: true
