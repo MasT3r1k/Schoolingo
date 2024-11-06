@@ -147,6 +147,12 @@ export class TimetableComponent {
     })
   }
 
+  ngOnDestroy(): void {
+    this.dropdown.remove(this.timetableAbsenceName);
+    this.dropdown.remove(this.timetableOptionsName);
+    this.dropdown.remove(this.timetableCalendarName);
+  }
+
   public isClassbook(day: number, hour: number): boolean {
     return this.schoolingo.classbookLessons?.[utils.getDayOfWeek(this.schoolingo.timetableSelectedWeek.getValue(), day).format('YYYY-MM-DD').toString()]?.[hour] === undefined ? false : true;
   }
