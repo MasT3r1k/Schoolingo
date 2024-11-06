@@ -1,1 +1,86 @@
-<p>received works!</p>
+<!-- [ngStyle]="{ width: selectedMessage == undefined ? '100%' : '' }" -->
+
+<div class="card">
+    <div class="card-top"></div>
+    <div class="card-header">
+      <h2>{{ locale.getLocale("sidebar/messages/received") }}</h2>
+    </div>
+  
+    <div class="card-body">
+        @if(!loadingMessages) {
+            @if (messages.length > 0) {
+                <div class="left">
+                    <div class="form-group">
+                        <input type="search" [formControl]="search" placeholder="Vyhledat podle autora">
+                    </div>
+                    <div class="select select-column">
+                        @for(message of messages;track $index) {
+                            <div [ngClass]="{'select-option': true, active: selectedMessage === $index, isNew: !messages[$index].isRead}" (click)="selectMessage($index)">
+                                <div class="chat-header">
+                                    <div class="left">
+                                        <p class="chat-author">{{ message.sender.firstName + ' ' + message.sender.lastName }}</p>
+                                        <p class="chat-type">{{ locale.getLocale('messages/types/' + messageManager.types[message.type].label) }}</p>
+                                    </div>
+                                    <div class="right">
+                                        <div class="chat-time">{{ message.sent.locale(locale.getUserLocale()).calendar() }}</div>
+                                        <div class="chat-tags">
+                                            @for (tag of message.tags; track $index) {
+                                                <div class="chat-tag error">
+                                                    <i class="ti ti-alert-triangle"></i>
+                                                    {{ messageManager.tags[tag].label }}
+                                                </div>
+                                            }
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="chat-message">
+                                    <p>
+                                        {{ message.message }}
+                                    </p>
+                                </div>
+                            </div>
+                        }
+                    </div>
+        
+                </div>
+                <div class="right">
+
+                @if(selectedMessage !== undefined) {
+
+                        <div class="chat-header">
+                            <div class="left">
+                                <p class="chat-author">{{ messages[selectedMessage].sender.firstName + ' ' + messages[selectedMessage].sender.lastName }}</p>
+                                <p class="chat-type">{{ locale.getLocale('messages/types/' + messageManager.types[messages[selectedMessage].type].label) }}</p>
+                            </div>
+                            <div class="right">
+                                <div class="chat-time">{{ messages[selectedMessage].sent.locale(locale.getUserLocale()).calendar() }}</div>
+                            </div>
+                        </div>
+                        <div class="chat-message">
+                            {{ messages[selectedMessage].message }}
+                        </div>
+                        <div class="chat-reply">
+                            <textarea
+                            id="message"
+                            [(ngModel)]="message"
+                            (resize)="('horizontal')"
+                            [placeholder]="'Vaše rychlá odpověď!'"
+                            ></textarea>
+                            <div class="form-group">
+                                <div class="btn submit small" role="button">
+                                    <i class="ti ti-send"></i> {{ locale.getLocale("buttons/reply") }}
+                                </div>
+                            </div>
+                        </div>
+                        } @else {
+                            <p style="margin: auto;">Nejdříve rozklikněte zprávu pro zobrazení</p>
+                        }
+                
+            </div>
+            } @else {
+                <div class="alert alert-error" style="width: 100%">{{ locale.getLocale('errors/noReceivedMessages') }}</div>
+            }
+        } @else {
+        }
+    </div>
+</div>

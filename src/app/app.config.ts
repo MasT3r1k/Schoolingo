@@ -16,6 +16,7 @@ import { Permission } from '@Schoolingo/Permissions';
 import { HttpClient, provideHttpClient } from '@angular/common/http';
 import { TabsComponent } from '@Components/Tabs/Tabs';
 import { Dropdown } from '@Components/Dropdowns/Dropdown';
+import { MessageManager } from '@Schoolingo/Messages';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -35,7 +36,8 @@ export const appConfig: ApplicationConfig = {
     Permission,
     HttpClient,
     TabsComponent,
-    Dropdown
+    Dropdown,
+    MessageManager
   ],
   
 };
