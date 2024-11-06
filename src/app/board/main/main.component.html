@@ -1,1 +1,31 @@
-<p>main works!</p>
+<div class="grid">
+    <div class="module">
+        <div class="module-header">
+            @switch(timetableSelectedTab.getValue()) {
+                @case(0) {
+                    <h2 class="has-link" [routerLink]="['', 'teach', 'timetable']">
+                        {{ locale.getLocale('sidebar/teach/timetable') }}
+                    </h2>
+                }
+                @case(1) {
+                    <h2>
+                        {{ locale.getLocale('backpack') }}
+                    </h2>
+                }
+            }
+            <div class="flex-items">
+                <schoolingo-tabs [value]="timetableSelectedTab" [options]="['sidebar/teach/timetable', 'backpack']"></schoolingo-tabs>
+                <div [ngClass]="{'item-btn': true, active: dropdown.isOpen(timetableOptionsName)}" [attr.dropdown]="timetableOptionsName" (click)="$event.stopPropagation();dropdown.toggle(timetableOptionsName)">
+                    <div class="icon">
+                        <i class="ti ti-dots-vertical"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="module-body"></div>
+    </div>
+    <div class="module skeleton"></div>
+    <div class="module skeleton"></div>
+    <div class="module skeleton"></div>
+    <div class="module skeleton"></div>
+</div>
