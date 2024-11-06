@@ -7,20 +7,22 @@ import EnglishLanguage from '../locales/English';
 import { HttpClient } from "@angular/common/http";
 import { localeURL } from "@Schoolingo/Config";
 import { BehaviorSubject } from "rxjs";
-
-export type languages = 'cs' | 'en' | "null";
+import * as moment from 'moment';
+import 'moment/locale/cs';
+import 'moment/locale/en-gb';
+export type languages = 'cs' | 'en-gb' | "null";
 
 @Injectable()
 export class Locale {
 
-    public defaultLanguage: languages = 'en';
+    public defaultLanguage: languages = 'en-gb';
     public language: BehaviorSubject<languages> = new BehaviorSubject("null" as languages);
 
     constructor(
         // Imports
         private storage: Storage,
         private logger: Logger,
-        private http: HttpClient
+        private http: HttpClient,
         ) {
             let lng = this.storage.get(this.storage.settingsCacheName)["locale"];
             if (!lng) {
@@ -33,7 +35,7 @@ export class Locale {
     // Big future problem with more languages and locales :(
     private locales: Record<languages, any> = {
         cs: CzechLanguage,
-        en: EnglishLanguage,
+        'en-gb': EnglishLanguage,
         null: {}
     }
 
@@ -63,6 +65,9 @@ export class Locale {
         this.http.get(localeURL + this.locales[lng].file).subscribe((data: any) => {
             this.locale = data;
             this.language.next(lng);
+            if (lng != "null") {
+                moment.locale(lng);
+            }
             this.logger.send(this.logName, 'Language ' + lng + ' was loaded and saved.');
             this.storage.save(this.storage.settingsCacheName, {locale: lng});
         }, (err: any): void => {
