@@ -10,6 +10,7 @@ import { School } from '@Schoolingo/School';
 import { SocketUpdateTheme, SocketUpdateLocale } from '@Schoolingo/Socket';
 import { child, personDetails } from '@Schoolingo/User';
 import { user } from '@Schoolingo/User';
+import { Country } from 'country-state-city';
 import moment from 'moment';
 import { Subscription } from 'rxjs';
 
@@ -53,6 +54,8 @@ export class BoardComponent {
 
   ngOnInit(): void {
     
+    console.log(Country.getCountryByCode("CZ")?.flag)
+
     this.schoolingo.refreshTitle();
 
     this.subscribers.push(this.router.events.subscribe((url: any): void => {
