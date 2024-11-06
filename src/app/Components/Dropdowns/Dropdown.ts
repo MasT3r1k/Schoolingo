@@ -4,6 +4,7 @@ import { Calendar, ContextButton, ContextButtonRightText, ContextMenu } from "./
 import { Locale } from "@Schoolingo/Locale";
 import { SafeHtml } from "@angular/platform-browser";
 import moment from "moment";
+import { Logger } from "@Schoolingo/Logger";
 export { ContextButton, ContextButtonRightText, ContextMenu }
 
 //! DON'T IMPORT THIS INTO SPECIFIC COMPONENTS, ITS ALREADY IN THE MAIN COMPONENT
@@ -25,7 +26,8 @@ export class Dropdown implements OnInit {
 
     constructor(
         public locale: Locale,
-        private factory: RendererFactory2
+        private factory: RendererFactory2,
+        private logger: Logger
         ) {
             this.renderer = this.factory.createRenderer(window, null);
             this.renderer.listen(window, 'resize', () => {
@@ -96,6 +98,14 @@ export class Dropdown implements OnInit {
         return true;
     }
 
+    public remove(id: string): boolean {
+        if (!dropdowns[id]) {
+            return false;
+        }
+        delete dropdowns[id];
+        return true;
+    }
+
     public clickEvent(dropdown: string, itemId: number): void {
         let item: ContextButton = dropdowns[dropdown].items[itemId];
         if (!item) return;
@@ -147,6 +157,9 @@ export class Dropdown implements OnInit {
 
     // Functions
     public toggle(id: string): void {
+        if (!dropdowns[id]) {
+            return this.logger.send("Dropdown", "Dropdown #" + id + " is not found.");
+        }
         if (dropdowns[id].isOpen === true) {
             return this.close(id);
         }
@@ -154,12 +167,15 @@ export class Dropdown implements OnInit {
     }
     
     public isOpen(id: string): boolean {
-        return dropdowns[id].isOpen;
+        return dropdowns?.[id]?.isOpen;
     }
 
     public open(id: string): void {
         this.closeAll();
         this.refreshPosition(id);
+        if (!dropdowns[id]) {
+            return this.logger.send("Dropdown", "Dropdown #" + id + " is not found.");
+        }
         dropdowns[id].isOpen = true;
     }
 
