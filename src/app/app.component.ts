@@ -1,15 +1,13 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterOutlet } from '@angular/router';
-import { HttpClient, HttpClientModule } from '@angular/common/http';
+import { HttpClient, HttpClientModule, HttpErrorResponse } from '@angular/common/http';
 import { School, SchoolInfo } from '@Schoolingo/School';
 import * as config from '@Schoolingo/Config';
-import { languages, Locale } from '@Schoolingo/Locale';
+import { Locale } from '@Schoolingo/Locale';
 import { Subscription } from 'rxjs';
 import { Theme } from '@Schoolingo/Theme';
 import { ErrorMain } from './Errors';
-
-type loadingStates = 'language' | 'school';
 
 @Component({
   selector: 'app-root',
@@ -28,28 +26,29 @@ export class AppComponent implements OnInit {
     public theme: Theme
     ) {}
 
-  public loadedState: loadingStates[] = [];
-
-  public isBackendWorking: boolean = true;
-
+  public afterLoadedSchool: boolean = false;
 
   ngOnInit(): void {
 
-    this.locale.language.subscribe((lng: languages) => {
-      if (lng !== "null") {
-        if (!this.loadedState.includes("language")) {
-          this.loadedState.push('language');
-        }
-      }
-    });
+
     this.http.get<SchoolInfo>(config.api + 'v1/getSchoolInfo').subscribe((res: SchoolInfo): void => {
       this.school.getAPI(res);
-      if (!this.loadedState.includes("school")) {
-        this.loadedState.push('school');
+      this.afterLoadedSchool = true;
+    }, (err: HttpErrorResponse) => {
+      console.log(err);
+      if (err.ok === false) {
+        switch(err.status) {
+          case 0:
+            this.school.errorReason = 1001;
+            break;
+          case 404:
+            this.school.errorReason = 1003;
+            break;
+        }
 
       }
-    }, (err: string) => {
-      this.isBackendWorking = false;
+
+      this.afterLoadedSchool = true;
     });
   }
 

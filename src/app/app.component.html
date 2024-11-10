@@ -1,28 +1,26 @@
-@if (!school.getIsActiveSchool() && school.errorReason) {
-    <error-main [error]="school.errorReason"></error-main>
-}
-
-@if (school.getIsActiveSchool()) {
-    @if (loadedState.length != 2) {
-        <div class="loading">
-            <svg width="200" height="250" viewBox="0 0 40 60">
-                <polygon
-                class="triangle"
-                fill="none"
-                points="16,1 32,32 1,32"
-                stroke="#fff"
-                stroke-width="1"
-                ></polygon>
-            </svg>
-        </div>
-        <div class="alerts bottom">
-            <div class="alert">
-                <div class="text">
-                    {{ "Loading Schoolingo application (" + (loadedState.length + 1)  + "/2)" }}
-                </div>
+@defer (when afterLoadedSchool) {
+    @if (school.getIsActiveSchool()) {
+        <router-outlet></router-outlet>
+    } @else {
+        <error-main [error]="school.errorReason"></error-main>
+    }
+} @placeholder {
+    <div class="loading">
+        <svg width="200" height="300" viewBox="0 0 40 60">
+            <polygon
+            class="triangle"
+            fill="none"
+            points="16,1 32,32 1,32"
+            stroke="#fff"
+            stroke-width="1"
+            ></polygon>
+        </svg>
+    </div>
+    <div class="alerts bottom">
+        <div class="alert">
+            <div class="text">
+                {{ "Probíhá načítání aplikace" }}
             </div>
         </div>
-    } @else {
-        <router-outlet></router-outlet>
-    }
-    }
+    </div>
+}

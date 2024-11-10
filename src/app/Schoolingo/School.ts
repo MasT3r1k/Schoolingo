@@ -6,7 +6,6 @@ export type { SchoolInfo };
 export class School {
     
     public schoolInfo!: SchoolInfo;
-
     public errorReason: number = -1;
 
     getAPI(data: SchoolInfo): void {

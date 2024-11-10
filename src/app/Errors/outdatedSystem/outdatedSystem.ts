@@ -2,14 +2,14 @@ import { CommonModule } from "@angular/common";
 import { Component, OnInit } from "@angular/core";
 
 @Component({
-    host: {'error': 'domain-not-found'},
+    host: {'error': 'outdated-system'},
     standalone: true,
     imports: [CommonModule],
-    templateUrl: './domainNotFound.html',
-    styleUrls: ['./domainNotFound.css']
+    templateUrl: './outdatedSystem.html',
+    styleUrls: ['./outdatedSystem.css']
 })
 
-export class domainNotFoundError implements OnInit {
+export class outdatedSystemError implements OnInit {
 
     constructor() {}
 

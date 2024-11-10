@@ -2,6 +2,7 @@ import { CommonModule } from "@angular/common";
 import { Component, OnInit } from "@angular/core";
 
 @Component({
+    host: {'error': 'no-system-access'},
     standalone: true,
     imports: [CommonModule],
     templateUrl: './noSystemAccess.html',
@@ -10,12 +11,8 @@ import { Component, OnInit } from "@angular/core";
 
 export class noSystemAccessError implements OnInit {
 
-    constructor() {
+    constructor() {}
 
-    }
-
-    ngOnInit(): void {
-        
-    }
+    ngOnInit(): void {}
 
 }

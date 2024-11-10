@@ -94,6 +94,15 @@ export class Schoolingo {
 
     private timetableHours: TimetableHours[] = [];
     public refreshTimetableHours(): void {
+
+        // School is not set
+        if (!this.school.schoolInfo) {
+            return;
+        }
+
+        /*
+        * @default: 0
+        */
         let maxHours: number = 0;
 
         for(let i = 0;i < this.timetableAPI.length;i++) {
