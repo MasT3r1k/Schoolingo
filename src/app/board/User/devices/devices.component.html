@@ -1,1 +1,72 @@
-<p>devices works!</p>
+<div class="card">
+    <div class="card-top"></div>
+    <div class="card-header">
+        <h2>{{ schoolingo.locale.getLocale('sidebar/user/devices') }}</h2>
+    </div>
+    <div class="card-body">
+        <p>Zde naleznete veškeré Vaše připojené zařízení, které jsou připojené k Vašemu Schoolingo účtu. Můžete zde odhlásit kterékoliv zařízení nebo všechny.</p>
+        <p>Pokud tu naleznete zařízení, které nepoznáváte. Odhlašte to zařízení a <a [routerLink]="['', 'user', 'settings']">změňte si heslo</a>!</p>
+        <h2 class="small">{{ schoolingo.locale.getLocale('devices/thisDevice') }}</h2>
+        <div class="select select-column">
+            <div class="select-option only-value">
+                <div class="icon">
+                    <i [ngClass]="{ti: true, 'ti-device-desktop': !getMobile(getOwnUserAgent()), 'ti-device-mobile': getMobile(getOwnUserAgent())}"></i>
+                </div>
+
+                <div class="information">
+                    <div class="device">
+                        {{ getOS(getOwnUserAgent()).toUpperCase() + ' - ' + getBrowser(getOwnUserAgent()).toUpperCase() }}
+                        <div class="badges">
+                            @if (schoolingo.getOfflineMode()) {
+                                <div class="badge">Offline Mod</div>
+                            }
+                        </div>
+                    </div>
+                    @if (!schoolingo.getOfflineMode() && schoolingo.userService.getExpiration()) {
+                        <div class="time">{{ schoolingo.locale.getLocale('devices/until') + schoolingo.userService.getExpiration().format('HH:MM:SS DD.MM.YYYY') }}</div>
+                    }
+                    @if (schoolingo.getOfflineMode()) {
+                        <div class="time">{{ 'Nyní se nacházíte v OFFLINE MODU' }}</div>
+                    }
+                </div>
+
+            </div>
+        </div>
+        <h2 class="small">
+            {{ schoolingo.locale.getLocale('devices/anotherDevices') }}
+            @if (getAnotherDevices().length > 0) {
+                <div class="btn" (click)="removeAllDevices()">Odhlásit ze všech zařízení</div>
+
+            }
+        </h2>
+        
+        @if(!schoolingo.getOfflineMode()) {
+            <div class="select select-column">
+                @for (device of getAnotherDevices(); track $index) {
+                    <div class="select-option only-value">
+                        <div class="icon">
+                            <i [ngClass]="{ti: true, 'ti-device-desktop': !getMobile(device.userAgent), 'ti-device-mobile': getMobile(device.userAgent)}"></i>
+                        </div>
+        
+                        <div class="information">
+                            <div class="device">{{ getOS(device.userAgent).toUpperCase() + ' - ' + getBrowser(device.userAgent).toUpperCase() }}
+                                <div class="badges">
+                                    @if (schoolingo.getOfflineMode()) {
+                                        <div class="badge">Offline Mod</div>
+                                    }
+                                </div>
+                            </div>
+                            <div class="time">{{ schoolingo.locale.getLocale('devices/until') + device.expires.format('HH:MM:SS DD.MM.YYYY') }}</div>
+                        </div>
+        
+                        <div class="logout" (click)="removeDevice(device.id)"><i class="ti ti-x"></i></div>
+                    </div>
+                } @empty {
+                    <div class="alert error">
+                        {{ schoolingo.locale.getLocale('devices/notAnotherFound') }}
+                    </div>
+                }
+            </div>
+        }
+    </div>
+</div>
