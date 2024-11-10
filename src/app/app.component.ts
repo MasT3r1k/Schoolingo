@@ -6,13 +6,15 @@ import { School, SchoolInfo } from '@Schoolingo/School';
 import * as config from '@Schoolingo/Config';
 import { languages, Locale } from '@Schoolingo/Locale';
 import { Subscription } from 'rxjs';
+import { Theme } from '@Schoolingo/Theme';
+import { ErrorMain } from './Errors';
 
 type loadingStates = 'language' | 'school';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [CommonModule, RouterOutlet, HttpClientModule],
+  imports: [CommonModule, RouterOutlet, HttpClientModule, ErrorMain],
   templateUrl: './app.component.html',
   styleUrls: ['Styles/app.css']
 })
@@ -22,7 +24,8 @@ export class AppComponent implements OnInit {
   constructor(
     private http: HttpClient,
     public school: School,
-    public locale: Locale
+    public locale: Locale,
+    public theme: Theme
     ) {}
 
   public loadedState: loadingStates[] = [];
