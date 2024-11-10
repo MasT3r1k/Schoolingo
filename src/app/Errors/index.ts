@@ -4,6 +4,7 @@ import { Schoolingo } from "@Schoolingo";
 import { domainNotFoundError } from "./DomainNotFound/domainNotFound";
 import { noSystemAccessError } from "./noSystemAccess/noSystemAccess";
 import { outdatedSystemError } from "./outdatedSystem/outdatedSystem";
+import { failedLoadAppError } from "./failedLoadApp/failedLoadApp";
 
 @Component({
     selector: 'error-main',
@@ -19,7 +20,8 @@ export class ErrorMain implements OnInit {
     public errors: Record<number | string, Type<noSystemAccessError | domainNotFoundError | Component | string>> = {
         1001: noSystemAccessError,
         1002: domainNotFoundError,
-        1003: outdatedSystemError
+        1003: outdatedSystemError,
+        1004: failedLoadAppError
     };
 
     constructor(
