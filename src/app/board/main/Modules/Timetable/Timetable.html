@@ -1,3 +1,22 @@
-<p>
-    Stránka nebyla nalezena
-</p>
+@if (schoolingo.getTimetableLessons()[day.day() ? day.day() - 1 : 6]) {
+    <div class="subjects">
+        @for (lesson of schoolingo.getTimetableLessons()[day.day() ? day.day() - 1 : 6]; track $index) {
+            <div class="subject timetable">
+                <span class="subjectIndex">{{ $index + 1 }}</span>
+                
+                <div class="subjectName" [title]="(!lesson[0].subjectName) ? 'Volná hodina' : (lesson[0].subjectName)">
+                    <span>{{ (!lesson[0].subjectName) ? 'Volná hodina' : (lesson[0].subjectName) }}</span>
+                    <div class="tags">
+                        <div class="tag absence ab-absence">A</div>
+                        <div class="tag orange">D</div>
+                    </div>
+                </div>
+                @if (schoolingo.getTimetableHours()[$index]) {
+                    <span style="position: absolute;right: 8px;font-size: 12px;line-height: 18px;width: 70px;text-align: right;">
+                        {{ schoolingo.getTimetableHours()[$index].start + ' - ' + schoolingo.getTimetableHours()[$index].end }}
+                    </span>
+                }
+            </div>
+        }
+    </div>
+}
