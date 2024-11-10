@@ -42,6 +42,17 @@ export class Schoolingo {
         }));
     }
 
+    // Offline mode
+    private isOfflineMode: boolean = false;
+
+    public getOfflineMode(): boolean {
+        return this.isOfflineMode;
+    }
+
+    public setOfflineMode(status: boolean): void {
+        this.isOfflineMode = status;
+    }
+
     // Today's data
     public todayWeek: number = moment().isoWeek();
 
