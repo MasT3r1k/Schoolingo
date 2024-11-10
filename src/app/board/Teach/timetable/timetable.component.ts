@@ -56,11 +56,6 @@ export class TimetableComponent {
 
   ngOnInit(): void {
 
-    // If is weekend, select next week as default
-    if (moment().isoWeekday() >= 6) {
-      this.selectedTab.next(1);
-    }
-
     // Select Week Tab
     this.selectedTab.subscribe((id: number) => {
       let arrayWeek: number[] = [moment().isoWeek(), moment().isoWeek() + 1, -1, this.schoolingo.todayWeek];
@@ -145,6 +140,11 @@ export class TimetableComponent {
     this.renderer.listen(window, "afterprint", () => {
       this.selectedTab.next(this.printSelectedTab);
     })
+
+    // If is weekend, select next week as default
+    if (moment().isoWeekday() >= 6) {
+      this.selectedTab.next(1);
+    }
   }
 
   ngOnDestroy(): void {
