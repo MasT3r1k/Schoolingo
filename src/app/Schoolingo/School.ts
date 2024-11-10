@@ -7,12 +7,11 @@ export class School {
     
     public schoolInfo!: SchoolInfo;
 
-    private isSchool: boolean = true;
+    public errorReason: number = -1;
 
     getAPI(data: SchoolInfo): void {
-        if (data.name == "") {
-            // Failed to get data
-            this.isSchool = false;
+        if (data.error) {
+            this.errorReason = data.error;
             return;
         }
 
@@ -20,7 +19,7 @@ export class School {
     }
 
     public getIsActiveSchool(): boolean {
-        return this.isSchool;
+        return this.errorReason == -1;
     }
 
 }

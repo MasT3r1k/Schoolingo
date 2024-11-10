@@ -6,4 +6,6 @@ export type SchoolInfo  = {
     resetPasswordWithEmail: boolean;
     warningAbsence: number;
     breaks: Record<number, number> = {};
+} & {
+    error: number;
 }
