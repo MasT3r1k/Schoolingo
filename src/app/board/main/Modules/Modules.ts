@@ -27,7 +27,7 @@ export class Modules {
                     link: ["", "teach", "homeworks"]
                 }
             ],
-            component: TimetableComponent
+            component: null
         },
         {
             titles: [
@@ -35,7 +35,7 @@ export class Modules {
                     title: "announcements",
                 }
             ],
-            component: TimetableComponent
+            component: null
         },
         {
             titles: [
@@ -44,7 +44,7 @@ export class Modules {
                     link: ["", "marks", "interm"]
                 }
             ],
-            component: TimetableComponent
+            component: null
         },
         {
             titles: [
@@ -53,7 +53,7 @@ export class Modules {
                     link: ["", "teach", "substitution"]
                 }
             ],
-            component: TimetableComponent
+            component: null
         },
         {
             titles: [
@@ -62,7 +62,7 @@ export class Modules {
                     link: ["", "traineeship", "main"]
                 }
             ],
-            component: TimetableComponent
+            component: null
         },
         {
             titles: [
@@ -71,7 +71,7 @@ export class Modules {
                     link: ["", "canteen", "menu"]
                 }
             ],
-            component: TimetableComponent
+            component: null
         }
     ];
 }
