@@ -4,6 +4,8 @@ import { child, personDetails, user } from "@Schoolingo/User.d";
 import { CookieService } from "@Schoolingo/Cookie";
 import { SocketService } from "./Socket";
 import { Storage } from "./Storage";
+import { Moment } from "moment";
+import moment from "moment";
 export { user, child, personDetails }
 
 @NgModule()
@@ -27,12 +29,12 @@ export class UserService {
   
       try {
         let token: string = this.cookieService.getCookie('token');
-        let date: Date = this.storage.get(this.storage.tokenCacheName, 'expiration') as Date;
+        let date: Moment = this.storage.get(this.storage.tokenCacheName, 'expiration') as Moment;
         if (token !== '') {
           this.setToken(token, date);
         }
       } catch(e) {
-        this.setToken("", new Date());
+        this.setToken("", moment());
       }
   }
 
@@ -72,7 +74,7 @@ export class UserService {
 
   //* Tokens
   private token: string = '';
-  private tokenExpiration: Date = new Date();
+  private tokenExpiration: Moment = moment();
 
   /**
  * Get Token string to access server
@@ -83,11 +85,11 @@ export class UserService {
   }
 
   public setExpiration(date: string): void {
-    let dat: Date = new Date(date);
+    let dat: Moment = moment(date);
     this.tokenExpiration = dat;
   }
 
-  public getExpiration(): Date {
+  public getExpiration(): Moment {
     return this.tokenExpiration;
   }
   
@@ -99,10 +101,10 @@ export class UserService {
    * @param expiration Date of token
    *
    */
-  public setToken(token: string, expiration: Date): void {
+  public setToken(token: string, expiration: Moment): void {
     this.cookieService.setCookie('token', token, 30);
     this.token = token;
-    this.tokenExpiration = expiration;
+    // this.tokenExpiration = expiration;
     this.storage.save(this.storage.tokenCacheName, { expiration });
   }
 
@@ -115,7 +117,7 @@ export class UserService {
     }
     this.socketService.socketEvents = new Map<string, Function[]>();
     this.setUser(null);
-    this.setToken('', new Date());
+    this.setToken('', moment());
     // this.toast.closeAll();
     this.router.navigate(['login']);
   }
