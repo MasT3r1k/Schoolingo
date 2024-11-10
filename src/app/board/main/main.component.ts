@@ -22,7 +22,7 @@ export class MainComponent {
     public modules: Modules
   ) {}
 
-  public getComponent(module: Module): Type<any> {
+  public getComponent(module: Module): Type<any> | null {
     if (Array.isArray(module.component)) {
       return module.component[module.selectedTab?.getValue() ?? 0];
     }
