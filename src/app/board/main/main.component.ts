@@ -1,28 +1,44 @@
-import { NgClass } from '@angular/common';
-import { Component } from '@angular/core';
+import { NgClass, NgComponentOutlet } from '@angular/common';
+import { Component, Type } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { Dropdown } from '@Components/Dropdowns/Dropdown';
 import { TabsComponent } from '@Components/Tabs/Tabs';
 import { Locale } from '@Schoolingo/Locale';
 import { BehaviorSubject } from 'rxjs';
+import { Module, Modules } from './Modules/Modules';
+import { ModuleTitle } from './Modules/Modules';
 
 @Component({
   selector: 'app-main',
   standalone: true,
-  imports: [RouterLink, TabsComponent, NgClass],
+  imports: [RouterLink, TabsComponent, NgClass, NgComponentOutlet],
   templateUrl: './main.component.html',
   styleUrls: ['./main.component.css', '../../Styles/item.css']
 })
 export class MainComponent {
   constructor(
     public locale: Locale,
-    public dropdown: Dropdown
+    public dropdown: Dropdown,
+    public modules: Modules
   ) {}
 
+  public getComponent(module: Module): Type<any> {
+    if (Array.isArray(module.component)) {
+      return module.component[module.selectedTab?.getValue() ?? 0];
+    }
+    return module.component;
+  }
+
+  public getTitles(module: Module): string[] {
+    let titles: string[] = [];
+    module.titles.forEach((title: ModuleTitle): void => {
+      titles.push(title.title);
+    })
+    return titles;
+  }
 
   // Timetable module
   public timetableSelectedTab: BehaviorSubject<number> = new BehaviorSubject(0);
   public timetableOptionsName: string = 'timetableOptions';
-  
 
 }
