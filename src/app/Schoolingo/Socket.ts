@@ -24,13 +24,7 @@ export class SocketService {
   }
 
   public connect(): void {
-    let token = this.cookieService.getCookie('token');
-    if (token == '') {
-      this.socket = io(socketIP);
-      return;
-    }
     this.socket = io(socketIP, {
-      extraHeaders: { authorization: 'Bearer ' + token },
       withCredentials: true
     });
   }
