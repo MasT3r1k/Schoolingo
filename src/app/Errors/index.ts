@@ -1,8 +1,9 @@
 import { CommonModule, NgComponentOutlet } from "@angular/common";
 import { Component, Input, OnInit, Type } from "@angular/core";
+import { Schoolingo } from "@Schoolingo";
 import { domainNotFoundError } from "./DomainNotFound/domainNotFound";
 import { noSystemAccessError } from "./noSystemAccess/noSystemAccess";
-import { Schoolingo } from "@Schoolingo";
+import { outdatedSystemError } from "./outdatedSystem/outdatedSystem";
 
 @Component({
     selector: 'error-main',
@@ -14,20 +15,17 @@ import { Schoolingo } from "@Schoolingo";
 
 export class ErrorMain implements OnInit {
 
-    public errors: Record<number | string, Type<noSystemAccessError | Component>> = {
+    @Input() error!: number;
+    public errors: Record<number | string, Type<noSystemAccessError | domainNotFoundError | Component | string>> = {
         1001: noSystemAccessError,
-        1002: domainNotFoundError
+        1002: domainNotFoundError,
+        1003: outdatedSystemError
     };
 
     constructor(
         public schoolingo: Schoolingo
-    ) {
+    ) {}
 
-    }
-
-    @Input() error: number = -1;
-
-    ngOnInit(): void {
-    }
+    ngOnInit(): void {}
 
 }
