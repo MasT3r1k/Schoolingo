@@ -2,20 +2,18 @@ import { NgClass } from '@angular/common';
 import { Component } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { Schoolingo } from '@Schoolingo';
-import { addZeros } from '@Schoolingo/Utils';
-import { Moment } from 'moment';
+import moment, { Moment } from 'moment';
 import { Subscription } from 'rxjs';
 
 type Device = {
   active: boolean;
-  hasSocket: boolean;
+  isSocket: boolean;
   id: number;
   userAgent: string;
   expires: Moment;
 }
 
 @Component({
-  selector: 'app-devices',
   standalone: true,
   imports: [RouterLink, NgClass],
   templateUrl: './devices.component.html',
@@ -29,18 +27,22 @@ export class DevicesComponent {
     public schoolingo: Schoolingo
   ) {}
 
+  moment = moment;
+
   ngOnInit(): void {
-    this.subscribers.push(this.schoolingo.socketService.addFunction("getDevices").subscribe((data: any) => {
+    this.schoolingo.socketService.emit('devices:getDevices');
+
+    this.subscribers.push(this.schoolingo.socketService.addFunction("devices:getDevices").subscribe((data: Device[]) => {
       this.devices = data;
     }));
 
-    this.subscribers.push(this.schoolingo.socketService.addFunction("removeDevice").subscribe((data: any) => {
+    this.subscribers.push(this.schoolingo.socketService.addFunction("devices:removeDevice").subscribe((data: any) => {
       let index = this.devices.findIndex((device: Device) => device.id == data.id);
       this.devices.splice(index, 1);
     }));
 
     this.subscribers.push(this.schoolingo.socketService.addFunction("connect").subscribe((data: any) => {
-      this.schoolingo.socketService.emit('getDevices');
+      this.schoolingo.socketService.emit('devices:getDevices');
     }));
   }
 
@@ -96,7 +98,7 @@ export class DevicesComponent {
   }
 
   public removeDevice(id: number): void {
-    this.schoolingo.socketService.emit('removeDevice', { id });
+    this.schoolingo.socketService.emit('devices:removeDevice', { id });
   }
 
 
@@ -105,15 +107,4 @@ export class DevicesComponent {
       this.removeDevice(device.id);
     });
   }
-
-  public returnAsDate(date: string): Date {
-    return new Date(date);
-  }
-
-  public formatDate(dat: Date): string {
-    if (!dat || !dat?.getTime) return '';
-    return dat.getHours() + ':' + addZeros(dat.getMinutes(), 2) + ':' + addZeros(dat.getSeconds(), 2) + ' ' + dat.getDate() + '. ' + (dat.getMonth() + 1) + '. ' + dat.getFullYear();
-  
-  }
-
 }
