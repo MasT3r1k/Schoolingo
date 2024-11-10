@@ -11,7 +11,6 @@ import { Logger } from '@Schoolingo/Logger';
 import { Title } from '@angular/platform-browser';
 import { Schoolingo } from '@Schoolingo';
 import { Storage } from '@Schoolingo/Storage';
-import { Sidebar } from '@Schoolingo/Sidebar';
 import { Subscription } from 'rxjs';
 import { Moment } from 'moment';
 
