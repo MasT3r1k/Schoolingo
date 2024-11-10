@@ -152,7 +152,9 @@ export class AuthComponent {
     );
     this.schoolingo.sidebar.sidebarToggled = false;
 
-    this.refreshQRcode();
+    this.Listeners.push(this.schoolingo.socketService.addFunction("connect").subscribe(() => {
+      this.refreshQRcode()
+    }))
 
     this.Listeners.push(this.schoolingo.socketService.addFunction('login').subscribe(
       (data: LoginData) => {
@@ -256,6 +258,8 @@ export class AuthComponent {
     this.qrCodeError = false;
     this.qrCodeResult = null;
     this.qrStatus = this.getQRcodeStatus();
+    
+    this.schoolingo.socketService.emit("generate-qrcode");
 
     this.QRListeners.push(this.schoolingo.socketService.addFunction('login-qrcode').subscribe((data: any) => {
       this.logger.send('QRCode', 'QR code loaded.');
@@ -306,7 +310,7 @@ export class AuthComponent {
     if (page == null) page = 'error';
 
     return {
-      whatIsVisible: 'loading', // page
+      whatIsVisible: page, // page
       code: this.qrCode,
     };
   }
