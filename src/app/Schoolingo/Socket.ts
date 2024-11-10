@@ -30,7 +30,8 @@ export class SocketService {
       return;
     }
     this.socket = io(socketIP, {
-      extraHeaders: { authorization: 'Bearer ' + token }
+      extraHeaders: { authorization: 'Bearer ' + token },
+      withCredentials: true
     });
   }
 
