@@ -31,7 +31,8 @@ export class AppComponent implements OnInit {
   ngOnInit(): void {
 
 
-    this.http.get<SchoolInfo>(config.api + 'v1/getSchoolInfo').subscribe((res: SchoolInfo): void => {
+    this.http.get<SchoolInfo>(config.api + 'v1/getSchoolInfo', { withCredentials: true }).subscribe((res: SchoolInfo): void => {
+      console.log(res)
       this.school.getAPI(res);
       this.afterLoadedSchool = true;
     }, (err: HttpErrorResponse) => {
