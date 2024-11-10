@@ -8,7 +8,7 @@ import { alertManager, AlertManagerClass } from '@Schoolingo/Alert';
 import { languages } from '@Schoolingo/Locale';
 import { School } from '@Schoolingo/School';
 import { SocketUpdateTheme, SocketUpdateLocale } from '@Schoolingo/Socket';
-import { child, personDetails } from '@Schoolingo/User';
+import { child, personDetails, UserService } from '@Schoolingo/User';
 import { user } from '@Schoolingo/User';
 import { Country } from 'country-state-city';
 import moment from 'moment';
@@ -123,8 +123,12 @@ export class BoardComponent {
       switch (data.status) {
         case "error":
           switch(data.error) {
-            case 500:
+            case 101:
               console.log("System database is not working.")
+              break;
+            case 102:
+              this.schoolingo.userService.logout();
+              console.log("Invalid token");
               break;
           }
           break;
