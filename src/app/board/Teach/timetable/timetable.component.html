@@ -33,7 +33,7 @@
             <div class="hours">
                 <div class="week-type">
                     @if ([0, 1, 3].includes(selectedTab.getValue())) {
-                        <!-- TODO -->
+                        <!-- TODO design -->
                         {{ (schoolingo.timetableSelectedWeek.getValue() % 2) ? 'Lichý týden' : 'Sudý týden' }}
                     }
                 </div>
@@ -52,7 +52,8 @@
                 @for (day of [].constructor(5); track index;let index = $index) {
                     <div class="day">
                         <div class="name">
-                            {{ schoolingo.locale.getLocale('days/' + index) }}
+                            {{ utils.getDayOfWeek(schoolingo.timetableSelectedWeek.getValue(), index - 1).format('dddd') }}
+                            <!-- {{ schoolingo.locale.getLocale('days/' + index) }} -->
                             @if (schoolingo.timetableSelectedWeek.getValue() !== -1) {
                                 <div class="time">
                                     {{ utils.getDayOfWeek(schoolingo.timetableSelectedWeek.getValue(), index - 1).format('D. M.') }}
