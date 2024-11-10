@@ -119,11 +119,12 @@ export class BoardComponent {
     }));
 
     this.subscribers.push(this.schoolingo.socketService.addFunction("system:error").subscribe((data: { status: string, error: number }) => {
+      console.log(data)
       switch (data.status) {
         case "error":
           switch(data.error) {
             case 500:
-              
+              console.log("System database is not working.")
               break;
           }
           break;
