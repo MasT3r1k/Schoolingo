@@ -13,6 +13,7 @@ import { Schoolingo } from '@Schoolingo';
 import { Storage } from '@Schoolingo/Storage';
 import { Sidebar } from '@Schoolingo/Sidebar';
 import { Subscription } from 'rxjs';
+import { Moment } from 'moment';
 
 export type pageTypes = 'login' | 'forgotpass';
 type QRPages = 'loading' | 'error' | 'scan' | 'trylogin';
@@ -27,7 +28,7 @@ export type LoginData = {
   status: number;
   message: string;
   token?: string;
-  expires?: Date;
+  expires?: Moment;
 }
 
 @Component({
