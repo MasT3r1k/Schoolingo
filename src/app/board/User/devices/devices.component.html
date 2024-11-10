@@ -56,7 +56,9 @@
                                     }
                                 </div>
                             </div>
-                            <div class="time">{{ schoolingo.locale.getLocale('devices/until') + device.expires.format('HH:MM:SS DD.MM.YYYY') }}</div>
+                            @if (device.expires) {
+                                <div class="time">{{ schoolingo.locale.getLocale('devices/until') + moment(device.expires).format('HH:MM:SS DD.MM.YYYY') }}</div>
+                            }
                         </div>
         
                         <div class="logout" (click)="removeDevice(device.id)"><i class="ti ti-x"></i></div>
