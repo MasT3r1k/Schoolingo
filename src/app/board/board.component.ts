@@ -2,6 +2,7 @@ import { NgClass, NgStyle } from '@angular/common';
 import { Component } from '@angular/core';
 import { NavigationEnd, Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { Dropdown } from '@Components/Dropdowns/Dropdown';
+import { TabsComponent } from '@Components/Tabs/Tabs';
 import { ClassbookAPI } from '@Schoolingo';
 import { Schoolingo, TimetableAPI } from '@Schoolingo';
 import { alertManager, AlertManagerClass } from '@Schoolingo/Alert';
@@ -32,7 +33,7 @@ type userAPI = ({
 
 @Component({
   standalone: true,
-  imports: [NgClass, NgStyle, RouterLink, RouterLinkActive, RouterOutlet, Dropdown],
+  imports: [NgClass, NgStyle, RouterLink, RouterLinkActive, RouterOutlet, Dropdown, TabsComponent],
   templateUrl: './board.component.html',
   styleUrls: ['./board.component.css', '../Styles/item.css']
 })

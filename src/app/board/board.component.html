@@ -25,7 +25,7 @@
             <div class="options">
 
                 @if (schoolingo.userService.getUser()?.type == 'parent') {
-                    <div class="item-btn" (click)="schoolingo.modal = 'switchChildren'">
+                    <div class="item-btn" (click)="schoolingo.modal = 'main:switchChildren'">
                         <div class="icon">
                             <i class="ti ti-users"></i>
                         </div>
@@ -113,7 +113,7 @@
 @if(schoolingo.modal !== '') {
     <div class="modals" (click)="schoolingo.modal = ''">
         @switch (schoolingo.modal) {
-            @case ("switchChildren") {
+            @case ("main:switchChildren") {
                 @if (schoolingo.userService.getUser()?.type == "parent") {
                     <div class="modal" style="width: 500px;" (click)="$event.stopPropagation()">
                         <div class="modal-close" (click)="schoolingo.modal = ''">
@@ -147,6 +147,30 @@
                         </div>
                     </div>
                 }
+            }
+
+            @case ("timetable:showLesson") {
+                <div class="modal" style="width: 1000px;" (click)="$event.stopPropagation()">
+                    <div class="modal-close" (click)="schoolingo.modal = ''">
+                        <i class="ti ti-x"></i>
+                    </div>
+                    <div class="modal-header">
+                        <i class="ti ti-school"></i>
+                        {{ schoolingo.locale.getLocale('timetable/dropdown/showLesson/title') }}
+                    </div>
+                    <div class="alert error">
+                        <div class="text">
+                            Nepodařilo se spojit s našim systémem Schoolingo
+                        </div>
+                    </div>
+                    <div class="modal-items">
+                        <schoolingo-tabs [options]="['timetable/dropdown/showLesson/basicInfo', 'sidebar/teach/homeworks', 'timetable/dropdown/showLesson/absence', 'timetable/dropdown/showLesson/other']" [option_width]="'25%'"></schoolingo-tabs>
+                    </div>
+                    <div class="modal-center">
+                        <div class="modal-body scroll">
+                        </div>
+                    </div>
+                </div>
             }
         }
     </div>

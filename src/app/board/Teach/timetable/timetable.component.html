@@ -64,10 +64,10 @@
                         }
                         @for (hour of [].constructor(schoolingo.getTimetableHours().length); track index2;let index2 = $index) {
 
-                            <div [ngClass]="{item: true, 'lesson-hour': true, classbook: isClassbook(index - 1, index2)}">
+                            <div [ngClass]="{item: true, 'lesson-hour': true}">
                                 @if (schoolingo.getTimetableLessons()[index]) {
                                     @for (lesson of schoolingo.getTimetableLessons()[index][index2]; track $index) {
-                                        <div [ngClass]="['sub-lesson-hour', 'lesson-count-' + schoolingo.getTimetableLessons()[index][index2].length, (lesson.empty) ? 'empty' : '']">
+                                        <div [ngClass]="['sub-lesson-hour', 'lesson-count-' + schoolingo.getTimetableLessons()[index][index2].length, (lesson.empty) ? 'empty' : '', schoolingo.isClassbook(index - 1, index2) ? 'classbook' : '']" (click)="openLesson({lesson, day: index, hour: index2, sub: $index})">
                                             @if (options.groups.getValue() === true) {
                                                 <div class="group">
                                                     <span>{{ lesson.group.text + ' ' + lesson.group.num }}</span>

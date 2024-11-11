@@ -153,7 +153,8 @@ export class TimetableComponent {
     this.dropdown.remove(this.timetableCalendarName);
   }
 
-  public isClassbook(day: number, hour: number): boolean {
-    return this.schoolingo.classbookLessons?.[utils.getDayOfWeek(this.schoolingo.timetableSelectedWeek.getValue(), day).format('YYYY-MM-DD').toString()]?.[hour] === undefined ? false : true;
+  public openLesson(lesson: any): void {
+    this.schoolingo.modal = 'timetable:showLesson';
+    console.log(lesson)
   }
 }
