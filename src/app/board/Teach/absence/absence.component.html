@@ -1,1 +1,42 @@
-<p>absence works!</p>
+<div class="card">
+    <div class="card-top"></div>
+    <div class="card-header">
+        <h2>{{ schoolingo.locale.getLocale('sidebar/absence') }}</h2>
+        <div class="flex-items">
+            <schoolingo-tabs [value]="selectedTab" [options]="['sidebar/teach/subjects', 'absence/overviewAbsence']"></schoolingo-tabs>
+        </div>
+    </div>
+    <div class="card-body card-row">
+        <div [ngClass]="{'card-tab': true, active: selectedTab.getValue() === 0}">
+            <h2 class="small">{{ schoolingo.locale.getLocale('sidebar/teach/subjects') }}</h2>
+            <table>
+                <thead>
+                    <th>{{ schoolingo.locale.getLocale('subject') }}</th>
+                    <th>{{ schoolingo.locale.getLocale('sidebar/absence') }}</th>
+                    <th>%</th>
+                </thead>
+                <tbody>
+                    @for (subject of schoolingo.getSubjects(); track $index) {
+                        <tr>
+                            <td style="width: 100%;">{{ subject }}</td>
+                            <td>
+                                {{ absence[subject] ? absence[subject].absence + '/' + absence[subject].lessons : "0/0" }}
+                            </td>
+                            @if (schoolingo.school.schoolInfo && absence[subject]) {
+                                <td [ngStyle]="{ color: (absence[subject].absence / absence[subject].lessons * 100) >= schoolingo.school.schoolInfo.warningAbsence ? 'red' : ''}">
+                                    {{ (absence[subject].absence / absence[subject].lessons * 100).toFixed(2) + '%' }}
+                                </td>
+                            } @else {
+                                <td>0%</td>
+                            }
+                        </tr>
+                    }
+                </tbody>
+            </table>
+
+        </div>
+        <div [ngClass]="{'card-tab': true, active: selectedTab.getValue() === 1}">
+            <h2 class="small">{{ schoolingo.locale.getLocale('absence/overviewAbsence') }}</h2>
+        </div>
+    </div>
+</div>
