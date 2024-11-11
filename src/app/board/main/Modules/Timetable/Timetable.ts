@@ -10,7 +10,7 @@ import { BehaviorSubject } from 'rxjs';
   standalone: true,
   imports: [NgClass],
   templateUrl: './Timetable.html',
-  styleUrl: './Timetable.css'
+  styleUrls: ['./Timetable.css', '../Modules.css']
 })
 export class TimetableComponent implements OnInit {
   constructor(
