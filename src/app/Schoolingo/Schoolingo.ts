@@ -10,6 +10,7 @@ import { addZeros, isOdd } from "./Utils";
 import { BehaviorSubject, Subscription } from "rxjs";
 import moment from "moment";
 import { Absence, absence } from "./Absence";
+import * as utils from "@Schoolingo/Utils";
 export { TimetableAPI, ClassbookAPI, ClassbookLesson }
 
 @Injectable()
@@ -86,6 +87,16 @@ export class Schoolingo {
     private timetableLessons: TimetableLesson[][][] = [];
     public classbookLessons: Record<string, ClassbookLesson[]> = {};
     public classbookAbsence: Record<string, number[]> = {};
+
+    // Absence
+    public getAbsence(day: number, hour: number): number {
+        let absence: number = this.classbookAbsence[utils.getDayOfWeek(this.timetableSelectedWeek.getValue(), day).format('YYYY-MM-DD').toString()]?.[hour];
+        if (absence === undefined || absence == -1) {
+            return -1;
+        }
+        return absence;
+    }
+
     public getTimetableLessons(): TimetableLesson[][][] {
 
         return this.timetableLessons;
@@ -206,6 +217,7 @@ export class Schoolingo {
             }
         }
     }
+
 
     // Person information
     private persons: Record<number, personDetails> = {};
