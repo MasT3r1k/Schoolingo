@@ -104,6 +104,10 @@ export class Schoolingo {
         return absence;
     }
 
+    public isClassbook(day: number, hour: number): boolean {
+        return this.classbookLessons?.[utils.getDayOfWeek(this.timetableSelectedWeek.getValue(), day).format('YYYY-MM-DD').toString()]?.[hour] === undefined ? false : true;
+    }
+
     public getTimetableLessons(): TimetableLesson[][][] {
 
         return this.timetableLessons;
