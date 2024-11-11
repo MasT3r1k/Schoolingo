@@ -156,13 +156,4 @@ export class TimetableComponent {
   public isClassbook(day: number, hour: number): boolean {
     return this.schoolingo.classbookLessons?.[utils.getDayOfWeek(this.schoolingo.timetableSelectedWeek.getValue(), day).format('YYYY-MM-DD').toString()]?.[hour] === undefined ? false : true;
   }
-
-  public getAbsence(day: number, hour: number): number {
-    let absence: number = this.schoolingo.classbookAbsence[utils.getDayOfWeek(this.schoolingo.timetableSelectedWeek.getValue(), day).format('YYYY-MM-DD').toString()]?.[hour];
-    if (absence === undefined || absence == -1) {
-      return -1;
-    }
-    return absence;
-  }
-
 }
