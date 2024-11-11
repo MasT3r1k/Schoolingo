@@ -53,7 +53,6 @@
                     <div class="day">
                         <div class="name">
                             {{ utils.getDayOfWeek(schoolingo.timetableSelectedWeek.getValue(), index - 1).format('dddd') }}
-                            <!-- {{ schoolingo.locale.getLocale('days/' + index) }} -->
                             @if (schoolingo.timetableSelectedWeek.getValue() !== -1) {
                                 <div class="time">
                                     {{ utils.getDayOfWeek(schoolingo.timetableSelectedWeek.getValue(), index - 1).format('D. M.') }}
@@ -65,7 +64,7 @@
                         }
                         @for (hour of [].constructor(schoolingo.getTimetableHours().length); track index2;let index2 = $index) {
 
-                            <div [ngClass]="{item: true, 'lesson-hour': true, classbook: isClassbook(index, index2)}">
+                            <div [ngClass]="{item: true, 'lesson-hour': true, classbook: isClassbook(index - 1, index2)}">
                                 @if (schoolingo.getTimetableLessons()[index]) {
                                     @for (lesson of schoolingo.getTimetableLessons()[index][index2]; track $index) {
                                         <div [ngClass]="['sub-lesson-hour', 'lesson-count-' + schoolingo.getTimetableLessons()[index][index2].length, (lesson.empty) ? 'empty' : '']">
@@ -85,8 +84,8 @@
                                             @if (options.teachers.getValue() === true && lesson.teacher != -1) {
                                                 <div class="teacher">{{ schoolingo.getPerson(lesson.teacher)?.lastName }}</div>
                                             }
-                                            @if (getAbsence(index, index2) != -1) {
-                                                <div [ngClass]="['absence', 'ab-' + schoolingo.absence[getAbsence(index, index2)].locale]"></div>
+                                            @if (schoolingo.getAbsence(index - 1, index2) != -1) {
+                                                <div [ngClass]="['absence', 'ab-' + schoolingo.absence[schoolingo.getAbsence(index - 1, index2)].locale]"></div>
                                             }
                                         </div>
                                     }
