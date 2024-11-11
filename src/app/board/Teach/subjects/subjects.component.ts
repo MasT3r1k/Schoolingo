@@ -1,12 +1,14 @@
 import { Component } from '@angular/core';
+import { Schoolingo } from '@Schoolingo';
 
 @Component({
-  selector: 'app-subjects',
   standalone: true,
   imports: [],
   templateUrl: './subjects.component.html',
-  styleUrl: './subjects.component.css'
+  styleUrls: ['./subjects.component.css', '../../../Styles/card.css']
 })
 export class SubjectsComponent {
-
+  constructor(
+    public schoolingo: Schoolingo
+  ) {}
 }

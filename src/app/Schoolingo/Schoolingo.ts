@@ -85,6 +85,13 @@ export class Schoolingo {
     public timetableAPI: TimetableAPI[] = [];
     public timetableSelectedWeek: BehaviorSubject<number> = new BehaviorSubject(moment().week());
     private timetableLessons: TimetableLesson[][][] = [];
+    private timetableSubjects: Record<string, number[]> = {};
+    public getSubjects(): string[] {
+        return Object.keys(this.timetableSubjects);
+    }
+    public getTeachersFromSubject(subject: string): number[] {
+        return this.timetableSubjects[subject];
+    }
     public classbookLessons: Record<string, ClassbookLesson[]> = {};
     public classbookAbsence: Record<string, number[]> = {};
 
@@ -169,6 +176,14 @@ export class Schoolingo {
                 }
             }
 
+            if (!this.timetableSubjects[lesson.subjectName]) {
+                this.timetableSubjects[lesson.subjectName] = [];
+            }
+
+            if (!this.timetableSubjects[lesson.subjectName].includes(lesson.teacher)) {
+                this.timetableSubjects[lesson.subjectName].push(lesson.teacher);
+            }
+
             this.timetableLessons[lesson.day][lesson.hour - 1].push(
                 {
                     subjectName: lesson.subjectName,
@@ -235,7 +250,11 @@ export class Schoolingo {
     public getPerson(personId: number): personDetails | null {
         if (personId === -1) return null;
         return this.persons[personId];
+    }
 
+    public formatPerson(personId: number): string {
+        let person: personDetails = this.getPerson(personId) as personDetails;
+        return person.firstName + ' ' + person.lastName;
     }
 
 }
