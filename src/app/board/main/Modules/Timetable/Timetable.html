@@ -1,35 +1,36 @@
 <main>
     <div class="subjects">
-        @if (schoolingo.getTimetableLessons()[day.getValue().day() ? day.getValue().day() - 1 : 6]) {
-            @for (lesson of schoolingo.getTimetableLessons()[day.getValue().day() ? day.getValue().day() - 1 : 6]; track $index) {
-                <div class="subject timetable">
-                    <span class="subjectIndex">{{ $index + 1 }}</span>
-                    
-                    <div class="subjectName" [title]="(!lesson[0].subjectName) ? 'Volná hodina' : (lesson[0].subjectName)">
-                        <span>{{ (!lesson[0].subjectName) ? 'Volná hodina' : (lesson[0].subjectName) }}</span>
-                        <div class="tags">
-                            @if(schoolingo.getAbsence(day.getValue().day() - 2, $index) != -1) {
-                                <div
-                                [ngClass]="['tag', 'absence',  'ab-' + schoolingo.absence[schoolingo.getAbsence(day.getValue().day() - 2, $index)].locale]"
-                                [title]="schoolingo.locale.getLocale('absence/' + schoolingo.absence[schoolingo.getAbsence(day.getValue().day() - 2, $index)].locale)">A</div>
-                            }
-                            <div class="tag orange" [title]="schoolingo.locale.getLocale('homeworks/homework')">D</div>
-                        </div>
+        @for (lesson of schoolingo.getTimetableLessons()?.[day.getValue().day() ? day.getValue().day() - 1 : 6]; track $index) {
+            <div class="subject timetable">
+                <span class="subjectIndex">{{ $index + 1 }}</span>
+                
+                <div [ngClass]="{subjectName: true, classbook: schoolingo.isClassbook(day.getValue().day() - 2, $index)}" [title]="(!lesson[0].subjectName) ? 'Volná hodina' : (lesson[0].subjectName)">
+                    <span>{{ (!lesson[0].subjectName) ? 'Volná hodina' : (lesson[0].subjectName) }}</span>
+                    <div class="tags">
+                        @if(schoolingo.getAbsence(day.getValue().day() - 2, $index) != -1) {
+                            <div
+                            [ngClass]="['tag', 'absence',  'ab-' + schoolingo.absence[schoolingo.getAbsence(day.getValue().day() - 2, $index)].locale]"
+                            [title]="schoolingo.locale.getLocale('absence/' + schoolingo.absence[schoolingo.getAbsence(day.getValue().day() - 2, $index)].locale)">A</div>
+                        }
+                        <div class="tag orange" [title]="schoolingo.locale.getLocale('homeworks/homework')">D</div>
                     </div>
-                    @if (schoolingo.getTimetableHours()[$index]) {
-                        <span style="position: absolute;right: 8px;font-size: 12px;line-height: 18px;width: 70px;text-align: right;">
-                            {{ schoolingo.getTimetableHours()[$index].start + ' - ' + schoolingo.getTimetableHours()[$index].end }}
-                        </span>
-                    }
                 </div>
-            }
+                @if (schoolingo.getTimetableHours()[$index]) {
+                    <span style="position: absolute;right: 8px;font-size: 12px;line-height: 18px;width: 70px;text-align: right;">
+                        {{ schoolingo.getTimetableHours()[$index].start + ' - ' + schoolingo.getTimetableHours()[$index].end }}
+                    </span>
+                }
+            </div>
+        } @empty {
+            <div class="center">{{ schoolingo.locale.getLocale('timetable/notStudyDay') }}</div>
         }
     </div>
 
+    <div class="shadow"></div>
     
     <div class="bottom">
         <i class="ti ti-chevron-left" (click)="day.next(day.getValue().subtract(1, 'day'))"></i>
-        <div class="date">{{ day.getValue().format("dddd, DD. MM.") }}</div>
+        <div class="label">{{ day.getValue().format("dddd, DD. MM.") }}</div>
         <i class="ti ti-chevron-right" (click)="day.next(day.getValue().add(1, 'day'))"></i>
     </div>
 </main>
