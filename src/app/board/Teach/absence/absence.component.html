@@ -17,7 +17,7 @@
                 </thead>
                 <tbody>
                     @for (subject of schoolingo.getSubjects(); track $index) {
-                        <tr>
+                        <tr [ngClass]="{ error: (schoolingo.school.schoolInfo && absence[subject] && absence[subject].absence / absence[subject].lessons * 100) >= schoolingo.school.schoolInfo.warningAbsence }">
                             <td style="width: 100%;">{{ subject }}</td>
                             <td>
                                 {{ absence[subject] ? absence[subject].absence + '/' + absence[subject].lessons : "0/0" }}
