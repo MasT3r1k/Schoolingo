@@ -3,7 +3,7 @@ import { Component, OnInit } from '@angular/core';
 import { Schoolingo } from '@Schoolingo';
 import { user } from '@Schoolingo/User';
 import moment from 'moment';
-import { BehaviorSubject } from 'rxjs';
+import { BehaviorSubject, Subscription } from 'rxjs';
 
 @Component({
   host: {'module': 'timetable'},
@@ -17,13 +17,14 @@ export class TimetableComponent implements OnInit {
     public schoolingo: Schoolingo
   ) {}
 
+  private listeners: Subscription[] = [];
   public day: BehaviorSubject<moment.Moment> = new BehaviorSubject(moment());
 
   ngOnInit(): void {
 
-    this.day.subscribe((val: moment.Moment) => {
+    this.listeners.push(this.day.subscribe((val: moment.Moment) => {
       this.schoolingo.timetableSelectedWeek.next(val.isoWeek());
-    });
+    }));
 
     // Get timetable
     let user: user | null = this.schoolingo.userService.getUser();
@@ -34,6 +35,10 @@ export class TimetableComponent implements OnInit {
     }
     this.schoolingo.socketService.emit('timetable:getLessons', { userId, week: this.day.getValue().isoWeek(), year: this.day.getValue().year() });
 
+  }
+
+  ngOnDestroy(): void {
+    this.listeners.forEach((sub: Subscription) => sub.unsubscribe());
   }
 
 }
