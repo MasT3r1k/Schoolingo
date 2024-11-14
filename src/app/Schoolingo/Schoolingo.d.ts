@@ -25,6 +25,9 @@ export type TimetableAPI = {
     room: string;
     subjectName: string;
     subjectShortcut: string;
+    groupId: number;
+    groupName: string;
+    groupNum: string;
 }
 
 export type TimetableLesson = {

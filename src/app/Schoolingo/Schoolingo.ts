@@ -11,7 +11,7 @@ import { BehaviorSubject, Subscription } from "rxjs";
 import moment from "moment";
 import { Absence, absence } from "./Absence";
 import * as utils from "@Schoolingo/Utils";
-export { TimetableAPI, ClassbookAPI, ClassbookLesson }
+export { TimetableAPI, ClassbookAPI, ClassbookLesson, TimetableLesson }
 
 @Injectable()
 export class Schoolingo {
@@ -196,9 +196,9 @@ export class Schoolingo {
                     room: lesson.room,
                     type: lesson.type,
                     group: {
-                        id: 0,
-                        text: '',
-                        num: ''
+                        id: lesson.groupId,
+                        text: lesson.groupName,
+                        num: lesson.groupNum
                     },
                     empty: false
                 }
