@@ -70,7 +70,12 @@
                                         <div [ngClass]="['sub-lesson-hour', 'lesson-count-' + schoolingo.getTimetableLessons()[index][index2].length, (lesson.empty) ? 'empty' : '', schoolingo.isClassbook(index - 1, index2) ? 'classbook' : '']" (click)="openLesson({lesson, day: index, hour: index2, sub: $index})">
                                             @if (options.groups.getValue() === true) {
                                                 <div class="group">
-                                                    <span>{{ lesson.group.text + ' ' + lesson.group.num }}</span>
+                                                    @if (lesson.group.text != '') {
+                                                        <span>{{ lesson.group.text }}</span>
+                                                    }
+                                                    @if (lesson.group.num != '') {
+                                                        <span>{{ lesson.group.num }}</span>
+                                                    }
                                                 </div>
                                             }
                                             @if (options.rooms.getValue() === true) {
