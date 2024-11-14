@@ -17,7 +17,7 @@
                                 <i class="ti ti-chevron-left"></i>
                             </div>
                             <div class="month">
-                                {{ locale.getLocale('months/' + item.selectedMonth.month()) + ', ' + item.selectedMonth.year() }}
+                                {{ item.selectedMonth.format('MMMM') + ', ' + item.selectedMonth.year() }}
                             </div>
                             <div class="icon" (click)="item.selectedMonth.add(1, 'month')">
                                 <i class="ti ti-chevron-right"></i>
@@ -27,7 +27,7 @@
                             <div class="calendar-days">
                                 @for (_ of [].constructor(7); track $index) {
                                     <div class="calendar-day">
-                                        {{ locale.getLocale('short_days/' + $index) }}
+                                        {{ item.selectedMonth.clone().set('d', $index + 1).format('ddd') }}
                                     </div>
                                 }
                             </div>
