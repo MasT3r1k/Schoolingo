@@ -11,6 +11,7 @@ import { BehaviorSubject, Subscription } from "rxjs";
 import moment from "moment";
 import { Absence, absence } from "./Absence";
 import * as utils from "@Schoolingo/Utils";
+import { removeDiacritics } from "./SearchFilter";
 export { TimetableAPI, ClassbookAPI, ClassbookLesson, TimetableLesson }
 
 @Injectable()
@@ -87,7 +88,9 @@ export class Schoolingo {
     private timetableLessons: TimetableLesson[][][] = [];
     private timetableSubjects: Record<string, number[]> = {};
     public getSubjects(): string[] {
-        return Object.keys(this.timetableSubjects);
+        return Object.keys(this.timetableSubjects).sort((a: string, b: string) => 
+            removeDiacritics(a).localeCompare(removeDiacritics(b))
+        );
     }
     public getTeachersFromSubject(subject: string): number[] {
         return this.timetableSubjects[subject];
