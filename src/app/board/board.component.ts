@@ -104,6 +104,7 @@ export class BoardComponent {
       }
 
       this.schoolingo.socketService.emit("timetable:getLessons", { userId });
+      this.schoolingo.socketService.emit("timetable:getClassbook", { userId, week: this.schoolingo.timetableSelectedWeek.getValue() });
       
     }));
 
