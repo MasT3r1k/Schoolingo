@@ -136,6 +136,7 @@ export class AuthComponent {
 
   ngOnInit(): void {
     this.schoolingo.socketService.connect();
+    this.schoolingo.resetToDefault();
 
     this.form = this.formList.getForm(this.formName) as FormManager;
 

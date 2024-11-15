@@ -17,6 +17,18 @@ export { TimetableAPI, ClassbookAPI, ClassbookLesson, TimetableLesson }
 @Injectable()
 export class Schoolingo {
 
+    public resetToDefault(): void {
+        this.modal = '';
+        this.timetableAPI = [];
+        this.timetableLessons = [];
+        this.timetableSubjects = {};
+        this.timetableHours = [];
+        this.classbookLessons = {};
+        this.classbookAbsence = {};
+        this.todayWeek = moment().isoWeek();
+        this.isOfflineMode = false;
+    }
+
     public subscribers: Subscription[] = [];
     public absence: Absence[] = absence;
 
@@ -155,6 +167,7 @@ export class Schoolingo {
             endHour[1] += this.school.schoolInfo.breaks[i + 1] || this.school.schoolInfo.breakTime;
             startHour = JSON.parse(JSON.stringify(endHour));
         }
+
         this.timetableHours = hours;
     }
     public getTimetableHours(): TimetableHours[] {
