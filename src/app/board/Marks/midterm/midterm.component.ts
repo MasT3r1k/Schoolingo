@@ -5,7 +5,7 @@ import { Schoolingo } from '@Schoolingo';
   standalone: true,
   imports: [],
   templateUrl: './midterm.component.html',
-  styleUrl: './midterm.component.css'
+  styleUrls: ['./midterm.component.css', '../../../Styles/card.css']
 })
 export class MidtermComponent {
   constructor(
