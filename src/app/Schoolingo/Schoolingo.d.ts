@@ -1,3 +1,4 @@
+import { Moment } from "moment";
 import { themes } from "./Theme";
 
 export type Person = {
@@ -23,6 +24,7 @@ export type TimetableAPI = {
     type: number;
     teacher: number;
     room: string;
+    subject: number;
     subjectName: string;
     subjectShortcut: string;
     groupId: number;
@@ -55,4 +57,15 @@ export type ClassbookAPI = {
 export type ClassbookLesson = {
     topic: string;
 
+}
+
+export type Mark = {
+    mark: number;
+    weight: number;
+    subject: number;
+    teacher: number;
+    topic: string;
+    description: string;
+    type: number;
+    created: Moment;
 }

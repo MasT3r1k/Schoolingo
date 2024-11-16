@@ -3,7 +3,7 @@ import { Component } from '@angular/core';
 import { NavigationEnd, Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { Dropdown } from '@Components/Dropdowns/Dropdown';
 import { TabsComponent } from '@Components/Tabs/Tabs';
-import { ClassbookAPI } from '@Schoolingo';
+import { ClassbookAPI, Mark } from '@Schoolingo';
 import { Schoolingo, TimetableAPI } from '@Schoolingo';
 import { alertManager, AlertManagerClass } from '@Schoolingo/Alert';
 import { languages } from '@Schoolingo/Locale';
@@ -105,6 +105,7 @@ export class BoardComponent {
 
       this.schoolingo.socketService.emit("timetable:getLessons", { userId });
       this.schoolingo.socketService.emit("timetable:getClassbook", { userId, week: this.schoolingo.timetableSelectedWeek.getValue() });
+      this.schoolingo.socketService.emit("grades:getGrades", { userId, week: this.schoolingo.timetableSelectedWeek.getValue() });
       
     }));
 
@@ -168,6 +169,16 @@ export class BoardComponent {
 
         this.schoolingo.classbookAbsence[date][data[i].dayHour] = data[i].absence ?? -1;
       }
+    }));
+
+    this.subscribers.push(this.schoolingo.socketService.addFunction("grades:getGrades").subscribe((data: any[]) => {
+      let marks: Mark[] = [];
+      data.forEach((mark: any) => {
+        mark["created"] = moment(mark["created"]);
+        marks.push(mark);
+      });
+
+      this.schoolingo.marks = marks;
     }));
 
     this.subscribers.push(this.schoolingo.socketService.addFunction("main:updatePersons").subscribe((data: Record<number, personDetails>) => {

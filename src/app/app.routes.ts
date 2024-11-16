@@ -18,6 +18,8 @@ import { SentComponent as MessagesSent } from './board/Messages/sent/sent.compon
 import { GroupsComponent as MessagesGroups } from './board/Messages/groups/groups.component';
 import { NoticeboardComponent as MessagesNoticeboard } from './board/Messages/noticeboard/noticeboard.component';
 import { Error404Component } from './board/Errors/error404/error404.component';
+import { IntermComponent as MarksInterm } from './board/Marks/interm/interm.component';
+import { MidtermComponent as MarksMidterm } from './board/Marks/midterm/midterm.component';
 
 export const routes: Routes = [
     {
@@ -30,6 +32,17 @@ export const routes: Routes = [
       path: '', canActivate: [UserGuard], component: BoardComponent, children: [
         {
           path: 'main', component: BoardMain
+        },
+        {
+          path: 'marks',
+          children: [
+            {
+              path: 'interm', component: MarksInterm
+            },
+            {
+              path: 'midterm', component: MarksMidterm
+            }
+          ]
         },
         {
           path: 'teach',

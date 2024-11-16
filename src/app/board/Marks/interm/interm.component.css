@@ -1,0 +1,144 @@
+.subjects {
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.subjects .subject:not(:last-child) {
+    border-bottom: 1px solid var(--border-color);
+}
+
+.subjects .subject:not(:empty), .grades {
+    display: flex;
+    flex-direction: row;
+    height: 72px;
+}
+
+.subjects .subject .left {
+    width: 300px;
+    min-width: 300px;
+    padding-left: 16px;
+    position: relative;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.subjects .subject .left .name {
+    font-size: 15px;
+    font-weight: 600;
+    line-height: 20px;
+    color: var(--primary);
+    padding-top: 12px;
+    padding-bottom: 4px;
+    overflow: hidden;
+    height: 100%;
+    width: 100%;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    text-wrap: wrap;
+}
+
+.subjects .subject .left .prumer {
+    height: 100%;
+    width: 55px;
+    min-width: 55px;
+}
+
+.subjects .subject .left .prumer span {
+    font-size: 14px;
+    color: var(--primary);
+    line-height: 18px;
+    font-weight: 600;
+    text-align: center;
+}
+
+.grades {
+    overflow: hidden;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    width: calc(100% - 2rem);
+    position: relative;
+    padding-inline: 1rem;
+}
+
+.grades .list-grades {
+    display: flex;
+    flex-direction: row;
+    overflow: hidden;
+    width: 100%;
+}
+
+.grades .list-grades > div {
+    display: flex;
+    flex-direction: row;
+    transition-duration: .5s;
+}
+
+.grades .grade {
+    height: 72px;
+    width: 56px;
+    min-width: 56px;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+    cursor: pointer;
+    transition: all .3s;
+    user-select: none;
+}
+
+.grades .grade .number {
+    font-size: 22px;
+    font-weight: 600;
+    margin: auto;
+}
+
+.grades .grade .date {
+    width: 100%;
+    height: 22px;
+    font-weight: 400;
+    font-size: 10px;
+    color: var(--color-darker);
+    line-height: 18px;
+    text-align: center;
+    transition: all .3s;
+
+}
+
+.grades .grade:nth-child(2n - 1) {
+    background-color: rgba(117, 141, 150, 0.05);
+}
+
+.grades .grade:hover, .grades .grade:hover .date {
+    background-color: var(--secondary-color);
+    color: var(--primary);
+}
+
+.move {
+    height: 100%;
+    width: 24px;
+    min-width: 24px;
+    font-size: 24px;
+    display: flex;
+    visibility: hidden;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    margin-inline: 4px;
+    transition: all .3s;
+    color: var(--color-darker);
+    pointer-events: none;
+}
+
+.move.active {
+    visibility: visible;
+    pointer-events: all;
+}
+
+.move:hover {
+    background-color: var(--background-hover);
+}
