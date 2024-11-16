@@ -20,7 +20,7 @@ let dropdowns: Record<string, ContextMenu> = {};
 })
 
 @Injectable()
-export class Dropdown implements OnInit {
+export class Dropdown {
 
     public renderer;
 
@@ -28,15 +28,13 @@ export class Dropdown implements OnInit {
         public locale: Locale,
         private factory: RendererFactory2,
         private logger: Logger
-        ) {
-            this.renderer = this.factory.createRenderer(window, null);
-            this.renderer.listen(window, 'resize', () => {
-                Object.keys(dropdowns).forEach((id: string) => this.refreshPosition(id));
-            });
-        }
-
-    ngOnInit(): void {
+    ) {
+        this.renderer = this.factory.createRenderer(window, null);
+        this.renderer.listen(window, 'resize', () => {
+            Object.keys(dropdowns).forEach((id: string) => this.refreshPosition(id));
+        });
     }
+
 
     // Item format
     public formatRightText(text: ContextButtonRightText): SafeHtml {
