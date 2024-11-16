@@ -50,6 +50,10 @@ export class TabsComponent implements OnInit {
         
     }
 
+    ngAfterContentInit(): void {
+        this.refreshGlider();
+    }
+
 
     public refreshGlider(): void {
         try {
