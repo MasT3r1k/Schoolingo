@@ -4,7 +4,7 @@ import { SocketService } from "./Socket";
 import { Theme } from "./Theme";
 import { personDetails, UserService } from "./User";
 import { Sidebar } from "./Sidebar";
-import { ClassbookAPI, ClassbookLesson, TimetableAPI, TimetableHours, TimetableLesson } from './Schoolingo.d';
+import { ClassbookAPI, ClassbookLesson, Mark, TimetableAPI, TimetableHours, TimetableLesson } from './Schoolingo.d';
 import { School } from "./School";
 import { addZeros, isOdd } from "./Utils";
 import { BehaviorSubject, Subscription } from "rxjs";
@@ -12,7 +12,8 @@ import moment from "moment";
 import { Absence, absence } from "./Absence";
 import * as utils from "@Schoolingo/Utils";
 import { removeDiacritics } from "./SearchFilter";
-export { TimetableAPI, ClassbookAPI, ClassbookLesson, TimetableLesson }
+import { degree } from "./User";
+export { TimetableAPI, ClassbookAPI, ClassbookLesson, TimetableLesson, Mark }
 
 @Injectable()
 export class Schoolingo {
@@ -27,6 +28,7 @@ export class Schoolingo {
         this.classbookAbsence = {};
         this.todayWeek = moment().isoWeek();
         this.isOfflineMode = false;
+        this.marks = [];
     }
 
     public subscribers: Subscription[] = [];
@@ -99,14 +101,17 @@ export class Schoolingo {
     public timetableSelectedWeek: BehaviorSubject<number> = new BehaviorSubject(moment().week());
     private timetableLessons: TimetableLesson[][][] = [];
     private timetableSubjects: Record<string, number[]> = {};
+
     public getSubjects(): string[] {
         return Object.keys(this.timetableSubjects).sort((a: string, b: string) => 
             removeDiacritics(a).localeCompare(removeDiacritics(b))
         );
     }
+
     public getTeachersFromSubject(subject: string): number[] {
         return this.timetableSubjects[subject];
     }
+
     public classbookLessons: Record<string, ClassbookLesson[]> = {};
     public classbookAbsence: Record<string, number[]> = {};
 
@@ -170,9 +175,11 @@ export class Schoolingo {
 
         this.timetableHours = hours;
     }
+
     public getTimetableHours(): TimetableHours[] {
         return this.timetableHours;
     }
+
     public refreshTimetableLessons(): void {
 
         this.timetableLessons = [];
@@ -194,6 +201,10 @@ export class Schoolingo {
                 if (lesson.type === 1 && isOdd(this.timetableSelectedWeek.getValue()) || lesson.type === 2 && !isOdd(this.timetableSelectedWeek.getValue())) {
                     return;
                 }
+            }
+
+            if (!this.subjects[lesson.subject]) {
+                this.subjects[lesson.subject] = lesson.subjectName;
             }
 
             if (!this.timetableSubjects[lesson.subjectName]) {
@@ -272,9 +283,35 @@ export class Schoolingo {
         return this.persons[personId];
     }
 
-    public formatPerson(personId: number): string {
-        let person: personDetails = this.getPerson(personId) as personDetails;
-        return person.firstName + ' ' + person.lastName;
+    public formatPerson(personId: number | undefined): string {
+
+        if (personId == -1 || personId == undefined) {
+            return '';
+        }
+
+        let person: personDetails | null = this.getPerson(personId);
+
+        if (person == null) {
+            return '';
+        }
+
+        let text = '';
+        person.degrees.forEach((degree: degree): void => {
+            if (degree.isBefore) {
+                text += `${degree.shortcut} `;
+            }
+        });
+        text += `${person.firstName} ${person.lastName}`
+        person.degrees.forEach((degree: degree): void => {
+            if (!degree.isBefore) {
+                text += ` ${degree.shortcut}`;
+            }
+        })
+        return text;
+
     }
+
+    public subjects: Record<number, string> = {};
+    public marks: Mark[] = [];
 
 }

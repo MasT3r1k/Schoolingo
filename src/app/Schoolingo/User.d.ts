@@ -11,7 +11,7 @@ export interface personDetails {
     firstName: string;
     lastName: string;
     sex: number;
-    degress: degree[];
+    degrees: degree[];
 }
 
 export type user = ({

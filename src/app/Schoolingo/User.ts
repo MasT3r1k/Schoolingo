@@ -1,12 +1,12 @@
 import { NgModule } from "@angular/core";
 import { Router } from "@angular/router";
-import { child, personDetails, user } from "@Schoolingo/User.d";
+import { child, degree, personDetails, user } from "@Schoolingo/User.d";
 import { CookieService } from "@Schoolingo/Cookie";
 import { SocketService } from "./Socket";
 import { Storage } from "./Storage";
 import { Moment } from "moment";
 import moment from "moment";
-export { user, child, personDetails }
+export { user, child, personDetails, degree }
 
 @NgModule()
 export class UserService {
