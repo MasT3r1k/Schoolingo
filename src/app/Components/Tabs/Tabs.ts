@@ -54,6 +54,9 @@ export class TabsComponent implements OnInit {
         this.refreshGlider();
     }
 
+    ngOnDestroy(): void {
+        this.renderer.destroy();
+    }
 
     public refreshGlider(): void {
         try {
