@@ -5,7 +5,9 @@
         </div>
         <div class="card-body">
             <p>Omlouváme se za komplikace. Ale nastala nějaká chyba. 😒</p>
-            <ng-component [ngComponentOutlet]="errors[error]"></ng-component>
+            @if (errors[error].length) {
+                <ng-component [ngComponentOutlet]="getComponent(error)"></ng-component>
+            }
         </div>
     </div>
 </div>

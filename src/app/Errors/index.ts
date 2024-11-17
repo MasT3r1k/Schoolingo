@@ -17,12 +17,20 @@ import { failedLoadAppError } from "./failedLoadApp/failedLoadApp";
 export class ErrorMain implements OnInit {
 
     @Input() error!: number;
-    public errors: Record<number | string, Type<noSystemAccessError | domainNotFoundError | Component | string>> = {
+    public errors: Record<number | string, Type<any> | string> = {
         1001: noSystemAccessError,
         1002: domainNotFoundError,
         1003: outdatedSystemError,
-        1004: failedLoadAppError
+        1004: failedLoadAppError,
+        1005: "School year not found"
     };
+
+    public getComponent(error: number): any {
+        let err = this.errors[error];
+        if (typeof err !== "string") {
+            return this.errors[error];            
+        }
+    }
 
     constructor(
         public schoolingo: Schoolingo
