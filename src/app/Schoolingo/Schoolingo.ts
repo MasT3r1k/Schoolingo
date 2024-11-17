@@ -197,12 +197,6 @@ export class Schoolingo {
                 this.timetableLessons[lesson.day][lesson.hour - 1] = [];
             }
 
-            if (lesson.type !== 0 && this.timetableSelectedWeek.getValue() !== -1) {
-                if (lesson.type === 1 && isOdd(this.timetableSelectedWeek.getValue()) || lesson.type === 2 && !isOdd(this.timetableSelectedWeek.getValue())) {
-                    return;
-                }
-            }
-
             if (!this.subjects[lesson.subject]) {
                 this.subjects[lesson.subject] = lesson.subjectName;
             }
@@ -213,6 +207,12 @@ export class Schoolingo {
 
             if (!this.timetableSubjects[lesson.subjectName].includes(lesson.teacher)) {
                 this.timetableSubjects[lesson.subjectName].push(lesson.teacher);
+            }
+
+            if (lesson.type !== 0 && this.timetableSelectedWeek.getValue() !== -1) {
+                if (lesson.type === 1 && isOdd(this.timetableSelectedWeek.getValue()) || lesson.type === 2 && !isOdd(this.timetableSelectedWeek.getValue())) {
+                    return;
+                }
             }
 
             this.timetableLessons[lesson.day][lesson.hour - 1].push(
