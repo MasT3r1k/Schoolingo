@@ -1,6 +1,6 @@
 import { NgClass } from '@angular/common';
 import { Component, Renderer2, RendererFactory2 } from '@angular/core';
-import { Schoolingo } from '@Schoolingo';
+import { Schoolingo, TimetableLesson } from '@Schoolingo';
 import { TabsComponent } from '@Components/Tabs/Tabs';
 import { BehaviorSubject } from 'rxjs';
 import * as utils from '@Schoolingo/Utils';
@@ -153,8 +153,9 @@ export class TimetableComponent {
     this.dropdown.remove(this.timetableCalendarName);
   }
 
-  public openLesson(lesson: any): void {
+  public openLesson(lesson: { lesson: TimetableLesson, day: number, hour: number, sub: number }): void {
+    if (lesson.lesson.empty) return;
     this.schoolingo.modal = 'timetable:showLesson';
-    console.log(lesson)
+    console.log(lesson.lesson)
   }
 }

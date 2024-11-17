@@ -50,23 +50,23 @@ export class AbsenceComponent implements OnInit {
 
     this.schoolingo.socketService.emit('absence:getAbsence', { userId });
 
-    this.renderer.listen(document.querySelector(".main-content"), "scroll", (ev: any) => {
-      let el = ev.target as HTMLElement;
-      if (el.scrollTop > 160) {
-        this.tableHeader["active"] = true;
-      } else {
-        this.tableHeader["active"] = false
-      }
-      let oldEl = document.querySelector("thead.table-row") as any;
-      this.tableHeader["width"] = oldEl.clientWidth;
-      this.tableHeader["top"] = el.scrollTop;
-    })
+    // this.renderer.listen(document.querySelector(".main-content"), "scroll", (ev: any) => {
+    //   let el = ev.target as HTMLElement;
+    //   if (el.scrollTop > 160) {
+    //     this.tableHeader["active"] = true;
+    //   } else {
+    //     this.tableHeader["active"] = false
+    //   }
+    //   let oldEl = document.querySelector("thead.table-row") as any;
+    //   this.tableHeader["width"] = oldEl.clientWidth;
+    //   this.tableHeader["top"] = el.scrollTop;
+    // })
 
   
-    this.renderer.listen("window", "resize", () => {
-      this.tableHeader["width"] = document.querySelector("thead.table-row")?.clientWidth as number;
-      setTimeout(() => this.tableHeader["width"] = document.querySelector("thead.table-row")?.clientWidth as number, 300)
-    })
+    // this.renderer.listen("window", "resize", () => {
+    //   this.tableHeader["width"] = document.querySelector("thead.table-row")?.clientWidth as number;
+    //   setTimeout(() => this.tableHeader["width"] = document.querySelector("thead.table-row")?.clientWidth as number, 300)
+    // })
 
   }
 
