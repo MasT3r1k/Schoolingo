@@ -15,9 +15,13 @@
                 </div>
             </div>
             @defer {
-                <div class="module-body">
-                    <ng-component [ngComponentOutlet]="getComponent(module)"></ng-component>
-                </div>
+                @if (module.component == null) {
+                    <div class="module-body skeleton"></div>
+                } @else {
+                    <div class="module-body">
+                        <ng-component [ngComponentOutlet]="getComponent(module)"></ng-component>
+                    </div>
+                }
             } @placeholder {
                 <div class="module-body skeleton"></div>
             }
