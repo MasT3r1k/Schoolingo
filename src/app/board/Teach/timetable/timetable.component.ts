@@ -151,6 +151,7 @@ export class TimetableComponent {
     this.dropdown.remove(this.timetableAbsenceName);
     this.dropdown.remove(this.timetableOptionsName);
     this.dropdown.remove(this.timetableCalendarName);
+    this.renderer.destroy();
   }
 
   public openLesson(lesson: any): void {

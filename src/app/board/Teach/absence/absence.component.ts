@@ -72,6 +72,7 @@ export class AbsenceComponent implements OnInit {
 
   ngOnDestroy(): void {
     this.listeners.forEach((subscribe: Subscription) => subscribe.unsubscribe());
+    this.renderer.destroy();
   }
 
   public getMonths(): number {

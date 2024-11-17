@@ -28,7 +28,6 @@ export class Theme {
     if (!this.theme) {
       this.theme = this.getSystemColor();
     }
-
     window
       .matchMedia('(prefers-color-scheme: dark)')
       .addEventListener('change', (event) => {
@@ -39,6 +38,10 @@ export class Theme {
       });
 
     this.updateTheme(this.theme);
+  }
+
+  ngOnDestroy(): void {
+    this.renderer.destroy();
   }
 
   public getSystemColor(): themes {
