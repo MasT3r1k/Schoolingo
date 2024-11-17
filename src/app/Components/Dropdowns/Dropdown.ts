@@ -35,11 +35,6 @@ export class Dropdown {
         });
     }
 
-    ngOnDestroy(): void {
-        this.renderer.destroy();
-    }
-
-
     // Item format
     public formatRightText(text: ContextButtonRightText): SafeHtml {
         let html: SafeHtml = "";

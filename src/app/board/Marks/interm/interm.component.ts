@@ -53,10 +53,6 @@ export class IntermComponent implements OnInit {
     }, 100);
   }
 
-  ngOnDestroy(): void {
-    this.renderer.destroy();
-  }
-
   public refreshGrades(): void {
     document.querySelectorAll(".list-grades").forEach((val: Element, index: number) => {
       this.gradeWidth = val.clientWidth;

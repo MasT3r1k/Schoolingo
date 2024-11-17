@@ -72,7 +72,6 @@ export class AbsenceComponent implements OnInit {
 
   ngOnDestroy(): void {
     this.listeners.forEach((subscribe: Subscription) => subscribe.unsubscribe());
-    this.renderer.destroy();
   }
 
   public getMonths(): number {
@@ -145,76 +144,4 @@ export class AbsenceComponent implements OnInit {
     });
     return count;
   }
-
-  public getMonths(): number {
-    let count: number = 0;
-    let date = this.schoolingo.school.schoolYear.start.clone();
-    let end = this.schoolingo.school.schoolYear.end;
-
-    do {
-      count++;
-      date.add(1, 'month');
-    } while (date.isBefore(end))
-    return count;
-  }
-
-  public daysInMonth(month: number): number {
-    let startMonth = this.schoolingo.school.schoolYear.start.clone().add(month, 'month').startOf('month');
-    let daysInMonth = startMonth.daysInMonth();
-    return daysInMonth;
-  }
-
-  public getCountMonthInDay(month: number, day: number): number[] {
-    let date = this.schoolingo.school.schoolYear.start.clone().add(month, 'month').startOf('month').add(day, 'day');
-    let countAbsence: number[] = [];
-    if (!this.schoolingo.classbookAbsence?.[date.format('YYYY-MM-DD')]) {
-      return countAbsence;
-    }
-    this.schoolingo.classbookAbsence[date.format('YYYY-MM-DD')].forEach((absence: number) => {
-      if (!countAbsence[absence]) {
-        countAbsence[absence] = 0;
-      }
-      countAbsence[absence] += 1;
-    });
-    return countAbsence;
-  }
-
-  public getCountAbsenceInMonthInDay(month: number, day: number): number {
-    let absence = this.getCountMonthInDay(month, day);
-    let count = 0;
-    absence.forEach((ab: number) => {
-      count += ab;
-    });
-    return count;
-  }
-
-  public getCountMonth(month: number): number[] {
-    let startMonth = this.schoolingo.school.schoolYear.start.clone().add(month, 'month').startOf('month');
-    let daysInMonth = startMonth.daysInMonth();
-    let date = startMonth.clone();
-    let countAbsence: number[] = [];
-    for(let i = 0;i < daysInMonth;i++) {
-      date.add(1, 'day');
-      if (!this.schoolingo.classbookAbsence?.[date.format('YYYY-MM-DD')]) {
-        continue;
-      }
-      this.schoolingo.classbookAbsence[date.format('YYYY-MM-DD')].forEach((absence: number) => {
-        if (!countAbsence[absence]) {
-          countAbsence[absence] = 0;
-        }
-        countAbsence[absence] += 1;
-      });
-    }
-    return countAbsence;
-  }
-
-  public getCountAbsenceInMonth(month: number): number {
-    let absence = this.getCountMonth(month);
-    let count = 0;
-    absence.forEach((ab: number) => {
-      count += ab;
-    });
-    return count;
-  }
-
 }
