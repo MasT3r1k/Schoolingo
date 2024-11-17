@@ -4,21 +4,36 @@ th, td {
 }
 
 table {
-    margin: 1rem auto 1rem;
+    margin: 1rem auto;
+    border-collapse: collapse;
+    table-layout: auto;
+    width: 100%;
+    position: relative;
+    overflow-y: auto;
 }
 
 
 table th {
     text-align: left;
-    color: var(--primary);
-    padding: 8px 16px
+    /* color: var(--primary); */
+    padding: 8px 16px;
+    z-index: 9999;
 }
-table, tr, td {
-    border: 1px solid var(--border-color);
+
+thead {
+    background-color: var(--background-body);
+}
+
+tr, th {
+    border-bottom: 1px solid var(--border-color);
     border-collapse: collapse;
 }
 
-table tr:nth-child(2n) {
+tr:last-child {
+    border-bottom: none;
+}
+
+table tr:nth-child(odd) {
     background-color: var(--background-hover);
 }
 
@@ -28,4 +43,63 @@ table tr:hover {
 
 table th:not(:first-child), table td:not(:first-child) {
     text-align: right;
+}
+
+
+.absence-block {
+    user-select: none;
+    width: 22px;
+    min-width: 22px;
+    height: 22px;
+    min-height: 22px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: var(--absence-color);
+}
+
+
+.table-row {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+
+thead > .table-row {
+    height: 56px;
+}
+
+tbody > .table-row {
+    height: 48px;
+}
+
+.table-row .table-item:first-child {
+    min-width: 175px;
+}
+
+.table-row .table-item:last-child {
+    min-width: 100px;
+}
+
+.table-row .table-item {
+    border-right: 1px solid var(--border-color);
+}
+
+.table-row .table-item:last-child {
+    border-right: none;
+}
+
+
+.table-item {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    user-select: none;
+}
+
+.absence-item {
+    min-width: 56px;
+    max-width: 10%;
 }

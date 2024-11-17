@@ -7,36 +7,129 @@
         </div>
     </div>
     <div class="card-body card-row">
-        <div [ngClass]="{'card-tab': true, active: selectedTab.getValue() === 0}">
-            <h2 class="small">{{ schoolingo.locale.getLocale('sidebar/teach/subjects') }}</h2>
-            <table>
-                <thead>
-                    <th>{{ schoolingo.locale.getLocale('subject') }}</th>
-                    <th>{{ schoolingo.locale.getLocale('sidebar/absence') }}</th>
-                    <th>%</th>
-                </thead>
-                <tbody>
-                    @for (subject of schoolingo.getSubjects(); track $index) {
-                        <tr [ngClass]="{ error: (schoolingo.school.schoolInfo && absence[subject] && absence[subject].absence / absence[subject].lessons * 100) >= schoolingo.school.schoolInfo.warningAbsence }">
-                            <td style="width: 100%;">{{ subject }}</td>
-                            <td>
-                                {{ absence[subject] ? absence[subject].absence + '/' + absence[subject].lessons : "0/0" }}
-                            </td>
-                            @if (schoolingo.school.schoolInfo && absence[subject]) {
+        @if (selectedTab.getValue() === 0) {
+            <div class="card-tab active">
+                <table class="table-subjects">
+                    <thead>
+                        <th>{{ schoolingo.locale.getLocale('subject') }}</th>
+                        <th style="min-width: 100px;">{{ schoolingo.locale.getLocale('sidebar/absence') }}</th>
+                        <th style="min-width: 100px;">%</th>
+                    </thead>
+                    <tbody>
+                        @for (subject of schoolingo.getSubjects(); track $index) {
+                            <tr [ngClass]="{ error: (schoolingo.school.schoolInfo && absence[subject] && absence[subject].absence / absence[subject].lessons * 100) >= schoolingo.school.schoolInfo.warningAbsence }">
+                                <td style="width: 100%;">{{ subject }}</td>
                                 <td>
-                                    {{ (absence[subject].absence / absence[subject].lessons * 100).toFixed(2) + '%' }}
+                                    {{ absence[subject] ? absence[subject].absence + '/' + absence[subject].lessons : "0/0" }}
                                 </td>
-                            } @else {
-                                <td>0%</td>
-                            }
-                        </tr>
-                    }
-                </tbody>
-            </table>
+                                @if (schoolingo.school.schoolInfo && absence[subject]) {
+                                    <td style="min-width: 100px;">
+                                        {{ (absence[subject].absence / absence[subject].lessons * 100).toFixed(2) + '%' }}
+                                    </td>
+                                } @else {
+                                    <td style="min-width: 100px;">0%</td>
+                                }
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+    
+            </div>
+        }
 
-        </div>
-        <div [ngClass]="{'card-tab': true, active: selectedTab.getValue() === 1}">
-            <h2 class="small">{{ schoolingo.locale.getLocale('absence/overviewAbsence') }}</h2>
-        </div>
+        @if(selectedTab.getValue() === 1) {
+            <div class="card-tab active">
+                <table style="width: 100%;">
+                    <thead class="table-row">
+                        <th class="table-item">Datum</th>
+                        @for (absence of absenceConfig; track $index) {
+                            <th class="table-item absence-item">
+                                <div [ngClass]="['absence-block', 'ab-' + absence.locale]" [title]="schoolingo.locale.getLocale('absence/' + absence.locale)">
+                                    @if (absence.icon) {
+                                        <i [ngClass]="['ti', 'ti-' + absence.icon]"></i>
+                                    } @else {
+                                        {{ schoolingo.locale.getLocale('absence/' + absence.locale).charAt(0).toUpperCase() }}
+                                    }
+                                </div>
+                            </th>
+                        }
+                        <th class="table-item">
+                            {{ schoolingo.locale.getLocale('total') }}
+                        </th>
+                    </thead>
+                    <tbody>
+                        @for (_ of [].constructor(getMonths()); track month;let month = $index) {
+                            @if (!monthStatus[month]) {
+                                <tr class="table-row">
+                                    <td class="table-item clickable" style="justify-content: flex-start" (click)="monthStatus[month] = true">
+                                        {{ this.schoolingo.school.schoolYear.start.clone().add(month, 'month').startOf('month').format('MMMM YYYY') }}
+                                    </td>
+                                    @for (absence of absenceConfig; track [];let index2 = $index) {
+                                        <td class="table-item absence-item">{{ getCountMonth(month)[index2] }}</td>
+                                    }
+                                    <td class="table-item">
+                                        {{ getCountAbsenceInMonth(month) || "" }}
+                                    </td>
+                                </tr>
+                            } @else {
+                                
+                                @for (_ of [].constructor(daysInMonth(month)); track [];let day = $index;let isFirst = $first) {
+                                    <tr class="table-row">
+                                        <td class="table-item clickable" style="justify-content: space-between" (click)="monthStatus[month] = false">
+                                            <div>
+                                            @if (isFirst) {
+                                                {{ this.schoolingo.school.schoolYear.start.clone().add(month, 'month').format('MMMM YYYY') }}
+                                            }
+                                            </div>
+
+                                            <div style="width: 48px;">
+                                                {{ day + 1 }}
+                                            </div>
+                                        </td>
+                                        @for (absence of absenceConfig; track [];let index2 = $index) {
+                                            <td class="table-item absence-item">{{ getCountMonthInDay(month, day)[index2] }}</td>
+                                        }
+                                        <td class="table-item">
+                                            {{ getCountAbsenceInMonthInDay(month, day) || "" }}
+                                        </td>
+                                    </tr>
+                                }
+                                <tr class="table-row" style="background-color: rgba(0,0,0,.24);">
+                                    <td class="table-item" style="justify-content: flex-start" (click)="monthStatus[month] = true">
+                                        <span style="color: var(--color-darker);white-space: pre;">celkem za </span> {{ this.schoolingo.school.schoolYear.start.clone().add(month, 'month').startOf('month').format('MMMM YYYY') }}
+                                    </td>
+                                    @for (absence of absenceConfig; track [];let index2 = $index) {
+                                        <td class="table-item absence-item">{{ getCountMonth(month)[index2] }}</td>
+                                    }
+                                    <td class="table-item">
+                                        {{ getCountAbsenceInMonth(month) || "" }}
+                                    </td>
+                                </tr>
+                            }
+                        }
+                    </tbody>
+                </table>
+            </div>
+
+            @if (tableHeader.active) {
+                <thead class="table-row" id="tableHeader" [ngStyle]="{ position: 'absolute', top: '-32px', left: '50%', width: tableHeader.width + 'px', transform: 'translate(-50%, ' + tableHeader.top + 'px)' }">
+                    <th class="table-item">Datum</th>
+                    @for (absence of absenceConfig; track $index) {
+                        <th class="table-item absence-item">
+                            <div [ngClass]="['absence-block', 'ab-' + absence.locale]" [title]="schoolingo.locale.getLocale('absence/' + absence.locale)">
+                                @if (absence.icon) {
+                                    <i [ngClass]="['ti', 'ti-' + absence.icon]"></i>
+                                } @else {
+                                    {{ schoolingo.locale.getLocale('absence/' + absence.locale).charAt(0).toUpperCase() }}
+                                }
+                            </div>
+                        </th>
+                    }
+                    <th class="table-item">
+                        {{ schoolingo.locale.getLocale('total') }}
+                    </th>
+                </thead>
+            }
+        }
     </div>
 </div>
