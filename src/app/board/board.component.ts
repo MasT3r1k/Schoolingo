@@ -9,7 +9,7 @@ import { alertManager, AlertManagerClass } from '@Schoolingo/Alert';
 import { languages } from '@Schoolingo/Locale';
 import { School } from '@Schoolingo/School';
 import { SocketUpdateTheme, SocketUpdateLocale } from '@Schoolingo/Socket';
-import { child, personDetails, UserService } from '@Schoolingo/User';
+import { child, personDetails } from '@Schoolingo/User';
 import { user } from '@Schoolingo/User';
 import { Country } from 'country-state-city';
 import moment from 'moment';
