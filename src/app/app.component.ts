@@ -8,6 +8,7 @@ import { Locale } from '@Schoolingo/Locale';
 import { Subscription } from 'rxjs';
 import { Theme } from '@Schoolingo/Theme';
 import { ErrorMain } from './Errors';
+import { SchoolYear } from '@Schoolingo/School';
 
 @Component({
   selector: 'app-root',
@@ -28,29 +29,34 @@ export class AppComponent implements OnInit {
 
   public afterLoadedSchool: boolean = false;
 
-  ngOnInit(): void {
-
-
-    this.http.get<SchoolInfo>(config.api + 'v1/getSchoolInfo', { withCredentials: true }).subscribe((res: SchoolInfo): void => {
-      console.log(res)
-      this.school.getAPI(res);
-      this.afterLoadedSchool = true;
-    }, (err: HttpErrorResponse) => {
-      console.log(err);
-      if (err.ok === false) {
-        switch(err.status) {
-          case 0:
-            this.school.errorReason = 1001;
-            break;
-          case 404:
-            this.school.errorReason = 1003;
-            break;
-        }
-
+  public httpError = (err: HttpErrorResponse) => {
+    console.log(err);
+    if (err.ok === false) {
+      switch(err.status) {
+        case 0:
+          this.school.errorReason = 1001;
+          break;
+        case 404:
+          this.school.errorReason = 1003;
+          break;
       }
 
+    }
+
+    this.afterLoadedSchool = true;
+  }
+
+  ngOnInit(): void {
+
+    this.http.get<SchoolInfo>(config.api + 'v1/getSchoolInfo', { withCredentials: true }).subscribe((data: SchoolInfo): void => {
+      this.school.setSchoolInfo(data);
       this.afterLoadedSchool = true;
-    });
+    }, this.httpError);
+
+    
+    this.http.get<any>(config.api + 'v1/getSchoolYear', { withCredentials: true }).subscribe((data: SchoolYear): void => {
+      this.school.setSchoolYear(data)
+    }, this.httpError);
   }
 
   ngOnDestroy(): void {

@@ -1,4 +1,4 @@
-export type SchoolInfo  = {
+export type SchoolInfo = {
     name: string;
     startHour: [number, number];
     lessonHour: number;
@@ -6,6 +6,13 @@ export type SchoolInfo  = {
     resetPasswordWithEmail: boolean;
     warningAbsence: number;
     breaks: Record<number, number> = {};
+} & {
+    error: number;
+}
+
+export type SchoolYear = {
+    start: moment.Moment;
+    end: moment.Moment;
 } & {
     error: number;
 }
