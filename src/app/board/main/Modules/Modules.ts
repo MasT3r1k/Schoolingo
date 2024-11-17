@@ -2,6 +2,7 @@ import { BehaviorSubject } from 'rxjs';
 import { Module, ModuleTitle } from './Modules.d';
 import { TimetableComponent } from './Timetable/Timetable';
 import { BackpackComponent } from './Backpack/Backpack';
+import { IntermComponent } from './Interm/Interm';
 export { Module, ModuleTitle };
 
 export class Modules {
@@ -44,7 +45,7 @@ export class Modules {
                     link: ["", "marks", "interm"]
                 }
             ],
-            component: null
+            component: IntermComponent
         },
         {
             titles: [

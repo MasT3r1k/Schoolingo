@@ -1,0 +1,16 @@
+<main>
+    <div class="marks">
+        @if (schoolingo.getTimetableLessons()) {
+            @for (mark of sortMarks(); track $index) {
+                <div class="mark-item">
+                    <span class="mark">{{ mark.mark }}</span>
+                    <span class="subject">{{ schoolingo.subjects[mark.subject] }}</span>
+                    <span class="topic">{{ mark.topic }}</span>
+                    <span class="date">{{ mark.created.format('DD.MM.') }}</span>
+                </div>
+            } @empty {
+                <div class="center">{{ schoolingo.locale.getLocale('timetable/notStudyDay') }}</div>
+            }
+        }
+    </div>
+</main>
