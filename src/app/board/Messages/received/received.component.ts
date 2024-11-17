@@ -21,7 +21,7 @@ type sentMessage = {
 @Component({
   selector: 'app-received',
   standalone: true,
-  imports: [NgClass, ReactiveFormsModule, FormsModule, NgStyle],
+  imports: [NgClass, ReactiveFormsModule, FormsModule],
   templateUrl: './received.component.html',
   styleUrls: ['./received.component.css', '../../../Styles/card.css', '../../../Styles/input.css']
 })
