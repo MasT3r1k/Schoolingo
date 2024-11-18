@@ -26,7 +26,7 @@ export class TabsComponent implements OnInit {
         }
 
     name: string = randomstring(16, false);
-    @Input() value: BehaviorSubject<number> = new BehaviorSubject(0);
+    @Input() value: BehaviorSubject<number> = new BehaviorSubject<number>(0);
     @Input() options: string[] = [];
     @Input() no_bottom_radius: boolean = false;
     @Input() option_width!: string;

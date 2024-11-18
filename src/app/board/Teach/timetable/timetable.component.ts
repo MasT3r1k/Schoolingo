@@ -30,19 +30,19 @@ export class TimetableComponent {
   utils = utils;
 
   // Select Week Tab
-  public selectedTab: BehaviorSubject<number> = new BehaviorSubject(0);
+  public selectedTab: BehaviorSubject<number> = new BehaviorSubject<number>(0);
   
   // Calendar
-  public selectedDate: BehaviorSubject<moment.Moment> = new BehaviorSubject(moment());
+  public selectedDate: BehaviorSubject<moment.Moment> = new BehaviorSubject<moment.Moment>(moment());
 
   // Dropdowns
   public timetableAbsenceName: string = 'timetableAbsence';
   public timetableOptionsName: string = 'timetableOptions';
   public timetableCalendarName: string = 'timetableCalendar';
   public options: Record<string, BehaviorSubject<boolean>> = {
-    teachers: new BehaviorSubject(true),
-    groups: new BehaviorSubject(true),
-    rooms: new BehaviorSubject(true)
+    teachers: new BehaviorSubject<boolean>(true),
+    groups: new BehaviorSubject<boolean>(true),
+    rooms: new BehaviorSubject<boolean>(true)
   };
 
 

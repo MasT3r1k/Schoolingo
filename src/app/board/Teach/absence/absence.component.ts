@@ -25,7 +25,7 @@ export class AbsenceComponent implements OnInit {
 
   public absence: Record<string, { absence: number, lessons: number }> = {};
   public absenceConfig = AbsenceConfig.absence;
-  public selectedTab: BehaviorSubject<number> = new BehaviorSubject(0);
+  public selectedTab: BehaviorSubject<number> = new BehaviorSubject<number>(0);
   private listeners: Subscription[] = [];
   public monthStatus: boolean[] = [];
 

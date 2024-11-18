@@ -18,7 +18,7 @@ export class AnnouncementsComponent implements OnInit {
   ) {}
 
   private listeners: Subscription[] = [];
-  public day: BehaviorSubject<moment.Moment> = new BehaviorSubject(moment());
+  public day: BehaviorSubject<moment.Moment> = new BehaviorSubject<moment.Moment>(moment());
 
   ngOnInit(): void {
     this.listeners.push(this.day.subscribe((val: moment.Moment) => {

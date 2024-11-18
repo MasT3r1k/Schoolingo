@@ -18,7 +18,7 @@ export class TimetableComponent implements OnInit {
   ) {}
 
   private listeners: Subscription[] = [];
-  public day: BehaviorSubject<moment.Moment> = new BehaviorSubject(moment());
+  public day: BehaviorSubject<moment.Moment> = new BehaviorSubject<moment.Moment>(moment());
 
   ngOnInit(): void {
 
