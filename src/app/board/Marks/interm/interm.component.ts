@@ -72,8 +72,8 @@ export class IntermComponent implements OnInit {
 
   public getSubjectIdByName(subjectName: string): number {
     let id = -1;
-    Object.entries(this.schoolingo.subjects).forEach((data: [string, string]) => {
-      if (data[1] === subjectName) {
+    Object.entries(this.schoolingo.subjects).forEach((data: [string, string[]]) => {
+      if (data[1][0] === subjectName) {
         id = parseInt(data[0]);
       }
     })
