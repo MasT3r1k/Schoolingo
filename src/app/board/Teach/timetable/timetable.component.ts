@@ -157,6 +157,5 @@ export class TimetableComponent {
   public openLesson(lesson: { lesson: TimetableLesson, day: number, hour: number, sub: number }): void {
     if (lesson.lesson.empty) return;
     this.schoolingo.modal = 'timetable:showLesson';
-    console.log(lesson.lesson)
   }
 }
