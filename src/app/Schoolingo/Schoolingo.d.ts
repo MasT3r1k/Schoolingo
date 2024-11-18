@@ -1,4 +1,4 @@
-import { Moment } from "moment";
+import moment, { Moment } from "moment";
 import { themes } from "./Theme";
 
 export type Person = {
@@ -38,6 +38,8 @@ export type TimetableLesson = {
     room: string;
     subjectName: string;
     subjectShortcut: string;
+    oldTeacher: number;
+    oldSubject: string[];
     group: { id: number, text: string, num: string };
     empty: boolean = false;
 }
@@ -75,4 +77,14 @@ export type Mark = {
     description: string;
     type: number;
     created: Moment;
+}
+
+export type Substitution = {
+    substitutionId: number;
+    teacherId: number;
+    subjectId: number;
+    groupId: number;
+    hour: number;
+    date: moment.Moment;
+    created: moment.Moment;
 }

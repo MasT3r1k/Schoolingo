@@ -2,16 +2,27 @@
     <div class="subjects">
         @if (schoolingo.getTimetableLessons()) {
             @for (lesson of schoolingo.getTimetableLessons()[day.getValue().day() ? day.getValue().day() - 1 : 6]; track $index) {
-                <div class="subject">
-                    <span class="subjectIndex">{{ $index + 1 }}</span>
+                <div [ngClass]="{subject: true, freetime: !lesson[0].subjectName}">
+                    <span [ngClass]="{subjectIndex: true, error: !lesson[0].subjectName && schoolingo.substitution[day.getValue().format('YYYY-MM-DD')] && schoolingo.substitution[day.getValue().format('YYYY-MM-DD')][$index + 1]}">{{ $index + 1 }}</span>
                     
-                    <div [ngClass]="{subjectName: true, classbook: schoolingo.isClassbook(day.getValue().day() - 2, $index)}" [title]="(!lesson[0].subjectName) ? 'Volná hodina' : (lesson[0].subjectName)">
-                        <span>{{ (!lesson[0].subjectName) ? 'Volná hodina' : (lesson[0].subjectName) }}</span>
+                    <div [ngClass]="{subjectName: true, classbook: schoolingo.isClassbook(day.getValue().day() - 2, $index), error: !lesson[0].subjectName && schoolingo.substitution[day.getValue().format('YYYY-MM-DD')] && schoolingo.substitution[day.getValue().format('YYYY-MM-DD')][$index + 1]}" [title]="(!lesson[0].subjectName) ? 'Volná hodina' : (lesson[0].subjectName)">
+                        <span>
+                            {{ (!lesson[0].subjectName) ?
+                                (schoolingo.substitution[day.getValue().format('YYYY-MM-DD')] && schoolingo.substitution[day.getValue().format('YYYY-MM-DD')][$index + 1])
+                                ?
+                                'Zrušeno (' + lesson[0].oldSubject[1] + ', ' + schoolingo.getPerson(lesson[0].oldTeacher)?.lastName + ')'
+                                :
+                                schoolingo.locale.getLocale('timetable/freetime')
+                            : (lesson[0].subjectName) }}
+                        </span>
                         <div class="tags">
                             @if(schoolingo.getAbsence(day.getValue().day() - 2, $index) != -1) {
                                 <div
                                 [ngClass]="['tag', 'absence',  'ab-' + schoolingo.absenceConfig[schoolingo.getAbsence(day.getValue().day() - 2, $index)].locale]"
                                 [title]="schoolingo.locale.getLocale('absence/' + schoolingo.absenceConfig[schoolingo.getAbsence(day.getValue().day() - 2, $index)].locale)">A</div>
+                            }
+                            @if (schoolingo.substitution[day.getValue().format('YYYY-MM-DD')] && schoolingo.substitution[day.getValue().format('YYYY-MM-DD')][$index + 1]) {
+                                <div class="tag red" [title]="schoolingo.locale.getLocale('sidebar/teach/substitution')">{{ schoolingo.locale.getLocale('sidebar/teach/substitution').charAt(0).toUpperCase() }}</div>
                             }
                             <div class="tag orange" [title]="schoolingo.locale.getLocale('homeworks/homework')">D</div>
                         </div>

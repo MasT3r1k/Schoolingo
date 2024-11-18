@@ -4,7 +4,7 @@ import { SocketService } from "./Socket";
 import { Theme } from "./Theme";
 import { personDetails, UserService } from "./User";
 import { Sidebar } from "./Sidebar";
-import { Absence, ClassbookAPI, ClassbookLesson, Mark, TimetableAPI, TimetableHours, TimetableLesson } from './Schoolingo.d';
+import { Absence, ClassbookAPI, ClassbookLesson, Mark, Substitution, TimetableAPI, TimetableHours, TimetableLesson } from './Schoolingo.d';
 import { School } from "./School";
 import { addZeros, isOdd } from "./Utils";
 import { BehaviorSubject, Subscription } from "rxjs";
@@ -13,7 +13,7 @@ import { AbsenceConfig, absence } from "./Absence";
 import * as utils from "@Schoolingo/Utils";
 import { removeDiacritics } from "./SearchFilter";
 import { degree } from "./User";
-export { TimetableAPI, ClassbookAPI, ClassbookLesson, TimetableLesson, Mark, Absence }
+export { TimetableAPI, ClassbookAPI, ClassbookLesson, TimetableLesson, Mark, Absence, Substitution }
 
 @Injectable()
 export class Schoolingo {
@@ -199,16 +199,18 @@ export class Schoolingo {
                 this.timetableLessons[lesson.day][lesson.hour - 1] = [];
             }
 
-            if (!this.subjects[lesson.subject]) {
-                this.subjects[lesson.subject] = lesson.subjectName;
+            if (!this.subjects[lesson.subject] && lesson.subject != -1) {
+                this.subjects[lesson.subject] = [lesson.subjectName, lesson.subjectShortcut];
             }
 
-            if (!this.timetableSubjects[lesson.subjectName]) {
-                this.timetableSubjects[lesson.subjectName] = [];
-            }
-
-            if (!this.timetableSubjects[lesson.subjectName].includes(lesson.teacher)) {
-                this.timetableSubjects[lesson.subjectName].push(lesson.teacher);
+            if (lesson.subjectName != undefined) {
+                if (!this.timetableSubjects[lesson.subjectName]) {
+                    this.timetableSubjects[lesson.subjectName] = [];
+                }
+    
+                if (!this.timetableSubjects[lesson.subjectName].includes(lesson.teacher) && lesson.subjectName != undefined) {
+                    this.timetableSubjects[lesson.subjectName].push(lesson.teacher);
+                }
             }
 
             if (lesson.type !== 0 && this.timetableSelectedWeek.getValue() !== -1) {
@@ -217,11 +219,27 @@ export class Schoolingo {
                 }
             }
 
+            let date = moment().set('isoWeeks', this.timetableSelectedWeek.getValue()).add(lesson.day, 'day');
+            let subjectName: string = lesson.subjectName;
+            let subjectShortcut: string = lesson.subjectShortcut;
+            let oldSubject: string[] = [lesson.subjectName, lesson.subjectShortcut];
+            let teacher: number = lesson.teacher;
+            let oldTeacher: number = lesson.teacher;
+            let substitution = this.substitution?.[date.format('YYYY-MM-DD')];
+
+            if (substitution && substitution?.[lesson.hour]) {
+                subjectName = this.subjects?.[substitution[lesson.hour].subjectId]?.[0];
+                subjectShortcut = this.subjects?.[substitution[lesson.hour].subjectId]?.[1];
+                teacher = substitution[lesson.hour].teacherId;
+            }
+
             this.timetableLessons[lesson.day][lesson.hour - 1].push(
                 {
-                    subjectName: lesson.subjectName,
-                    subjectShortcut: lesson.subjectShortcut,
-                    teacher: lesson.teacher,
+                    subjectName: subjectName,
+                    subjectShortcut: subjectShortcut,
+                    oldSubject: oldSubject,
+                    oldTeacher: oldTeacher,
+                    teacher: teacher,
                     room: lesson.room,
                     type: lesson.type,
                     group: {
@@ -251,7 +269,9 @@ export class Schoolingo {
                     this.timetableLessons[i][y].push({
                         subjectName: "",
                         subjectShortcut: "",
+                        oldSubject: [],
                         teacher: -1,
+                        oldTeacher: -1,
                         room: "",
                         type: 0,
                         group: {
@@ -271,13 +291,9 @@ export class Schoolingo {
     private persons: Record<number, personDetails> = {};
 
     public addPersons(persons: Record<number, personDetails>): void {
-
         Object.entries(persons).forEach((value: [string, personDetails]) => {
-
             this.persons[parseInt(value[0])] = value[1];
-
         });
-
     }
 
     public getPerson(personId: number): personDetails | null {
@@ -313,7 +329,14 @@ export class Schoolingo {
 
     }
 
-    public subjects: Record<number, string> = {};
+    public subjects: Record<number, string[]> = {};
+    public addSubjects(subjects: Record<number, string[]>): void {
+        Object.entries(subjects).forEach((value: [string, string[]]) => {
+            this.subjects[parseInt(value[0])] = value[1];
+        });
+    }
     public marks: Mark[] = [];
+
+    public substitution: Record<string, Substitution[]> = {};
 
 }
