@@ -26,6 +26,10 @@ export class BackpackComponent implements OnInit {
     }));
   }
 
+  ngOnDestroy(): void {
+    this.listeners.forEach((sub: Subscription) => sub.unsubscribe());
+  }
+
   public compareSubjects(from: TimetableLesson[][] = [], to: TimetableLesson[][] = []): string[] {
     let fromSubjects: string[] = [];
     let subjects: string[] = [];
