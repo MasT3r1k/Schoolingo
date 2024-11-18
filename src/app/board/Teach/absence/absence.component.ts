@@ -1,7 +1,7 @@
 import { NgClass, NgStyle } from '@angular/common';
 import { Component, OnInit, Renderer2 } from '@angular/core';
 import { TabsComponent } from '@Components/Tabs/Tabs';
-import { Schoolingo } from '@Schoolingo';
+import { Absence, Schoolingo } from '@Schoolingo';
 import { BehaviorSubject, Subscription } from 'rxjs';
 import * as AbsenceConfig from "@Schoolingo/Absence";
 
@@ -32,7 +32,6 @@ export class AbsenceComponent implements OnInit {
   public tableHeader: { active: boolean;top: number;width: number } = { active: false, top: 0, width: 0 };
 
   ngOnInit(): void {
-
     let userId = this.schoolingo.userService.getUser()?.person.personId;
     if (this.schoolingo.userService.getUser()?.type == 'parent') {
       userId = this.schoolingo.userService.children[this.schoolingo.userService.selectedChild].personId;
@@ -63,12 +62,10 @@ export class AbsenceComponent implements OnInit {
       this.tableHeader["top"] = el.scrollTop;
     })
 
-  
     this.renderer.listen("window", "resize", () => {
       this.tableHeader["width"] = document.querySelector("thead.table-row")?.clientWidth as number;
       setTimeout(() => this.tableHeader["width"] = document.querySelector("thead.table-row")?.clientWidth as number, 300)
     })
-
   }
 
   ngOnDestroy(): void {
@@ -97,14 +94,14 @@ export class AbsenceComponent implements OnInit {
   public getCountMonthInDay(month: number, day: number): number[] {
     let date = this.schoolingo.school.schoolYear.start.clone().add(month, 'month').startOf('month').add(day, 'day');
     let countAbsence: number[] = [];
-    if (!this.schoolingo.classbookAbsence?.[date.format('YYYY-MM-DD')]) {
+    if (!this.schoolingo.absence?.[date.format('YYYY-MM-DD')]) {
       return countAbsence;
     }
-    this.schoolingo.classbookAbsence[date.format('YYYY-MM-DD')].forEach((absence: number) => {
-      if (!countAbsence[absence]) {
-        countAbsence[absence] = 0;
+    this.schoolingo.absence[date.format('YYYY-MM-DD')].forEach((absence: Absence) => {
+      if (!countAbsence[absence.type]) {
+        countAbsence[absence.type] = 0;
       }
-      countAbsence[absence] += 1;
+      countAbsence[absence.type] += 1;
     });
     return countAbsence;
   }
@@ -125,14 +122,14 @@ export class AbsenceComponent implements OnInit {
     let countAbsence: number[] = [];
     for(let i = 0;i < daysInMonth;i++) {
       date.add(1, 'day');
-      if (!this.schoolingo.classbookAbsence?.[date.format('YYYY-MM-DD')]) {
+      if (!this.schoolingo.absence?.[date.format('YYYY-MM-DD')]) {
         continue;
       }
-      this.schoolingo.classbookAbsence[date.format('YYYY-MM-DD')].forEach((absence: number) => {
-        if (!countAbsence[absence]) {
-          countAbsence[absence] = 0;
+      this.schoolingo.absence[date.format('YYYY-MM-DD')].forEach((absence: Absence) => {
+        if (!countAbsence[absence.type]) {
+          countAbsence[absence.type] = 0;
         }
-        countAbsence[absence] += 1;
+        countAbsence[absence.type] += 1;
       });
     }
     return countAbsence;

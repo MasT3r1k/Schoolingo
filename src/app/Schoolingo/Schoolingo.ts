@@ -4,16 +4,16 @@ import { SocketService } from "./Socket";
 import { Theme } from "./Theme";
 import { personDetails, UserService } from "./User";
 import { Sidebar } from "./Sidebar";
-import { ClassbookAPI, ClassbookLesson, Mark, TimetableAPI, TimetableHours, TimetableLesson } from './Schoolingo.d';
+import { Absence, ClassbookAPI, ClassbookLesson, Mark, TimetableAPI, TimetableHours, TimetableLesson } from './Schoolingo.d';
 import { School } from "./School";
 import { addZeros, isOdd } from "./Utils";
 import { BehaviorSubject, Subscription } from "rxjs";
 import moment from "moment";
-import { Absence, absence } from "./Absence";
+import { AbsenceConfig, absence } from "./Absence";
 import * as utils from "@Schoolingo/Utils";
 import { removeDiacritics } from "./SearchFilter";
 import { degree } from "./User";
-export { TimetableAPI, ClassbookAPI, ClassbookLesson, TimetableLesson, Mark }
+export { TimetableAPI, ClassbookAPI, ClassbookLesson, TimetableLesson, Mark, Absence }
 
 @Injectable()
 export class Schoolingo {
@@ -32,7 +32,9 @@ export class Schoolingo {
     }
 
     public subscribers: Subscription[] = [];
-    public absence: Absence[] = absence;
+    public absenceConfig: AbsenceConfig[] = absence;
+
+    public absence: Record<string, Absence[]> = {};
 
     constructor(
 

@@ -3,7 +3,7 @@ import { Component } from '@angular/core';
 import { NavigationEnd, Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { Dropdown } from '@Components/Dropdowns/Dropdown';
 import { TabsComponent } from '@Components/Tabs/Tabs';
-import { ClassbookAPI, Mark } from '@Schoolingo';
+import { Absence, ClassbookAPI, Mark } from '@Schoolingo';
 import { Schoolingo, TimetableAPI } from '@Schoolingo';
 import { alertManager, AlertManagerClass } from '@Schoolingo/Alert';
 import { languages } from '@Schoolingo/Locale';
@@ -106,6 +106,7 @@ export class BoardComponent {
       this.schoolingo.socketService.emit("timetable:getLessons", { userId });
       this.schoolingo.socketService.emit("timetable:getClassbook", { userId, week: this.schoolingo.timetableSelectedWeek.getValue() });
       this.schoolingo.socketService.emit("grades:getGrades", { userId, week: this.schoolingo.timetableSelectedWeek.getValue() });
+      this.schoolingo.socketService.emit("absence:getAllAbsence", { userId });
       
     }));
 
@@ -185,6 +186,23 @@ export class BoardComponent {
 
       this.schoolingo.addPersons(data);
 
+    }));
+
+    this.subscribers.push(this.schoolingo.socketService.addFunction("absence:getAllAbsence").subscribe((data: any[]) => {
+      let absenceList: Record<string, Absence[]> = {};
+      for(let i = 0;i < data.length;i++) {
+        let date = moment(data[i].date);
+        if (!absenceList[date.format('YYYY-MM-DD')]) {
+          absenceList[date.format('YYYY-MM-DD')] = [];
+        }
+        absenceList[date.format('YYYY-MM-DD')][data[i].dayHour] = {
+          type: data[i].type,
+          subject: data[i].subject,
+          reason: data[i].reason,
+          minutes: data[i].minutes
+        }
+      }
+      this.schoolingo.absence = absenceList;
     }));
 
 

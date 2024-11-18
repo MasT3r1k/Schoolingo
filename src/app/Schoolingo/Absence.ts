@@ -1,9 +1,9 @@
-export type Absence = {
+export type AbsenceConfig = {
     locale: string;
     icon?: string;
 }
 
-export const absence: Absence[] = [
+export const absence: AbsenceConfig[] = [
     { locale: 'absence', icon: 'slash' },
     { locale: 'excused', icon: 'x' },
     { locale: 'unexcused' },
