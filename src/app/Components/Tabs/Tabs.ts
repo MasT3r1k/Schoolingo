@@ -46,7 +46,11 @@ export class TabsComponent implements OnInit {
 
         this.value.subscribe(() => {
             this.refreshGlider();
-        }); 
+        });
+
+        this.locale.language.subscribe(() => {
+            this.refreshGlider();
+        });
         
     }
 
