@@ -1,12 +1,16 @@
 import { Component } from '@angular/core';
+import { Schoolingo } from '@Schoolingo';
 
 @Component({
-  selector: 'app-substitution',
   standalone: true,
   imports: [],
   templateUrl: './substitution.component.html',
-  styleUrl: './substitution.component.css'
+  styleUrls: ['./substitution.component.css', '../../../Styles/card.css']
 })
 export class SubstitutionComponent {
+
+  constructor(
+    public schoolingo: Schoolingo
+  ) {}
 
 }
