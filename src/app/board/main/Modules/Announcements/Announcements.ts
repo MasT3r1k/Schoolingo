@@ -1,6 +1,5 @@
 import { Component, OnInit } from '@angular/core';
 import { Schoolingo } from '@Schoolingo';
-import { Subscription } from 'rxjs';
 
 @Component({
   host: {'module': 'Announcements'},
