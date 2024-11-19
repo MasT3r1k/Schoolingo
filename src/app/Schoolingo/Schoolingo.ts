@@ -231,8 +231,8 @@ export class Schoolingo {
 
             if (substitution?.[lesson.hour]) {
                 if (this.subjects[substitution[lesson.hour].subjectId]) {
-                    subjectName = this.subjects[substitution[lesson.hour].subjectId]?.[0];
-                    subjectShortcut = this.subjects[substitution[lesson.hour].subjectId]?.[1];
+                    subjectName = this.subjects[substitution[lesson.hour].subjectId][0];
+                    subjectShortcut = this.subjects[substitution[lesson.hour].subjectId][1];
                 }
                 teacher = substitution[lesson.hour].teacherId;
             }
