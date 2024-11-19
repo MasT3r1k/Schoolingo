@@ -5,7 +5,7 @@ import { Absence, Schoolingo } from '@Schoolingo';
 import { BehaviorSubject, Subscription } from 'rxjs';
 import * as AbsenceConfig from "@Schoolingo/Absence";
 
-type AbsenceAPI = {
+interface AbsenceAPI {
   subject: string;
   absence_count: number;
   total_lessons: number;
@@ -50,21 +50,21 @@ export class AbsenceComponent implements OnInit {
     this.schoolingo.socketService.emit('absence:getAbsence', { userId });
 
     this.renderer.listen(document.querySelector(".main-content"), "scroll", (ev: any) => {
-      let el = ev.target as HTMLElement;
+      let el: HTMLElement = ev.target!;
       if (el.scrollTop > 160) {
-        this.tableHeader["active"] = true;
+        this.tableHeader.active = true;
       } else {
-        this.tableHeader["active"] = false
+        this.tableHeader.active = false
       }
       let oldEl = document.querySelector("thead.table-row") as any;
       if (!oldEl) return;
-      this.tableHeader["width"] = oldEl.clientWidth;
-      this.tableHeader["top"] = el.scrollTop;
+      this.tableHeader.width = oldEl.clientWidth;
+      this.tableHeader.top = el.scrollTop;
     })
 
     this.renderer.listen("window", "resize", () => {
-      this.tableHeader["width"] = document.querySelector("thead.table-row")?.clientWidth as number;
-      setTimeout(() => this.tableHeader["width"] = document.querySelector("thead.table-row")?.clientWidth as number, 300)
+      this.tableHeader.width = document.querySelector("thead.table-row")?.clientWidth!;
+      setTimeout(() => this.tableHeader.width = document.querySelector("thead.table-row")?.clientWidth!, 300)
     })
   }
 
@@ -74,7 +74,7 @@ export class AbsenceComponent implements OnInit {
   }
 
   public getMonths(): number {
-    let count: number = 0;
+    let count = 0;
     let date = this.schoolingo.school.schoolYear.start.clone();
     let end = this.schoolingo.school.schoolYear.end;
 
@@ -91,9 +91,8 @@ export class AbsenceComponent implements OnInit {
     return daysInMonth;
   }
 
-  public getCountMonthInDay(month: number, day: number): number[] {
+  public getCountMonthInDay(month: number, day: number, countAbsence: number[] = []): number[] {
     let date = this.schoolingo.school.schoolYear.start.clone().add(month, 'month').startOf('month').add(day, 'day');
-    let countAbsence: number[] = [];
     if (!this.schoolingo.absence?.[date.format('YYYY-MM-DD')]) {
       return countAbsence;
     }
@@ -118,19 +117,9 @@ export class AbsenceComponent implements OnInit {
   public getCountMonth(month: number): number[] {
     let startMonth = this.schoolingo.school.schoolYear.start.clone().add(month, 'month').startOf('month');
     let daysInMonth = startMonth.daysInMonth();
-    let date = startMonth.clone();
     let countAbsence: number[] = [];
     for(let i = 0;i < daysInMonth;i++) {
-      date.add(1, 'day');
-      if (!this.schoolingo.absence?.[date.format('YYYY-MM-DD')]) {
-        continue;
-      }
-      this.schoolingo.absence[date.format('YYYY-MM-DD')].forEach((absence: Absence) => {
-        if (!countAbsence[absence.type]) {
-          countAbsence[absence.type] = 0;
-        }
-        countAbsence[absence.type] += 1;
-      });
+      countAbsence = this.getCountMonthInDay(month, i, countAbsence);
     }
     return countAbsence;
   }
