@@ -2,7 +2,7 @@ import { NgClass } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { Schoolingo, Substitution, TimetableLesson } from '@Schoolingo';
 import moment from 'moment';
-import { BehaviorSubject } from 'rxjs';
+import { BehaviorSubject, Subscription } from 'rxjs';
 
 @Component({
   host: {'module': 'Substitution'},
@@ -12,6 +12,7 @@ import { BehaviorSubject } from 'rxjs';
   styleUrls: ['./Substitution.css', '../Modules.css']
 })
 export class SubstitutionComponent implements OnInit {
+  public listeners: Subscription[] = [];
 
   constructor(
     public schoolingo: Schoolingo
@@ -36,5 +37,12 @@ export class SubstitutionComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    this.listeners.push(this.schoolingo.timetableSelectedWeek.subscribe((week: number) => {
+      this.date.next(moment().set('isoWeeks', week).startOf('isoWeek'));
+    }));
+  }
+
+  ngOnDestroy(): void {
+    this.listeners.forEach((sub: Subscription) => sub.unsubscribe());
   }
 }

@@ -23,7 +23,12 @@ export class TimetableComponent implements OnInit {
   ngOnInit(): void {
 
     this.listeners.push(this.day.subscribe((val: moment.Moment) => {
+      if (this.schoolingo.timetableSelectedWeek.getValue() === val.isoWeek()) return;
       this.schoolingo.timetableSelectedWeek.next(val.isoWeek());
+    }));
+
+    this.listeners.push(this.schoolingo.timetableSelectedWeek.subscribe((week: number): void => {
+      this.day.next(this.day.getValue().set('isoWeeks', week));
     }));
 
     // Get timetable
