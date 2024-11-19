@@ -30,20 +30,32 @@ export class BackpackComponent implements OnInit {
     this.listeners.forEach((sub: Subscription) => sub.unsubscribe());
   }
 
-  public compareSubjects(from: TimetableLesson[][] = [], to: TimetableLesson[][] = []): string[] {
-    let fromSubjects: string[] = [];
+  public compareSubjects(type: 'takeout' | 'give'): string[] {
+    /*TODO: Skip empty daaays */
+    let listSubjects: string[][] = [[], []];
+    let lessons = this.schoolingo.getTimetableLessons()[this.day.getValue().clone().subtract(1, 'day').weekday()];
+    let lessonsNextDay = this.schoolingo.getTimetableLessons()[this.day.getValue().clone().weekday()];
+    if (lessons) {
+      lessons.forEach((lesson: TimetableLesson[]) => {
+        if (lesson[0].subjectName == "") return;
+        listSubjects[0].push(lesson[0].subjectName);
+      });
+    }
+    if (lessonsNextDay) {
+      lessonsNextDay.forEach((lesson: TimetableLesson[]) => {
+        if (lesson[0].subjectName == "") return;
+        listSubjects[1].push(lesson[0].subjectName);
+      });
+    }
+  
     let subjects: string[] = [];
-    from.forEach((lesson: TimetableLesson[]) => {
-      if (!fromSubjects.includes(lesson[0].subjectName)) {
-        fromSubjects.push(lesson[0].subjectName);
+    let id: number = type == 'takeout' ? 0 : 1;
+    for(let i = 0;i < listSubjects[id].length;i++) {
+      if (!subjects.includes(listSubjects[id][i]) && !listSubjects[id ? 0 : 1].includes(listSubjects[id][i])) {
+        subjects.push(listSubjects[id][i]);
       }
-    });
-    to.forEach((lesson: TimetableLesson[]) => {
-      if (!subjects.includes(lesson[0].subjectName) && !fromSubjects.includes(lesson[0].subjectName) && lesson[0].subjectName != '') {
-        subjects.push(lesson[0].subjectName);
-      }
-    });
-    fromSubjects = [];
+    }
+
     return subjects;
   }
 

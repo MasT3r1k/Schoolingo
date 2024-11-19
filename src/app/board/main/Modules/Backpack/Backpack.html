@@ -9,31 +9,29 @@
     </header>
 
     <div class="content">
-        @if (schoolingo.getTimetableLessons()) {
-            <div class="title">Vyndej z batohu</div>
-            <div class="subjects">
-                @for (subject of compareSubjects(schoolingo.getTimetableLessons()[day.getValue().clone().add(1, 'day').isoWeekday() ? day.getValue().isoWeekday() : 6], schoolingo.getTimetableLessons()[day.getValue().isoWeekday() ? day.getValue().isoWeekday() : 6]); track $index) {
-                    <div class="subject">
-                        <span class="subjectIndex">{{ $index + 1 }}</span>
-                        <div class="subjectName">{{ subject }}</div>
-                    </div>
-                } @empty {
-                    Nic nevyndavej 😭
-                }
-            </div>
+        <div class="title">Vyndej z batohu</div>
+        <div class="subjects">
+            @for (subject of compareSubjects('takeout'); track $index) {
+                <div class="subject">
+                    <span class="subjectIndex">{{ $index + 1 }}</span>
+                    <div class="subjectName">{{ subject }}</div>
+                </div>
+            } @empty {
+                Nic nevyndavej 😭
+            }
+        </div>
 
-            <div class="title mt">Dej do batohu</div>
-            <div class="subjects">
-                @for (subject of compareSubjects(schoolingo.getTimetableLessons()[day.getValue().isoWeekday() ? day.getValue().isoWeekday() : 6], schoolingo.getTimetableLessons()[day.getValue().clone().add(1, 'day').isoWeekday() ? day.getValue().isoWeekday() : 6]); track $index) {
-                    <div class="subject">
-                        <span class="subjectIndex">{{ $index + 1 }}</span>
-                        <div class="subjectName">{{ subject }}</div>
-                    </div>
-                } @empty {
-                    Nic nepřidávej 😃
-                }
-            </div>
-        }
+        <div class="title mt">Dej do batohu</div>
+        <div class="subjects">
+            @for (subject of compareSubjects('give'); track $index) {
+                <div class="subject">
+                    <span class="subjectIndex">{{ $index + 1 }}</span>
+                    <div class="subjectName">{{ subject }}</div>
+                </div>
+            } @empty {
+                Nic nepřidávej 😃
+            }
+        </div>
     </div>
 
     <div class="shadow"></div>
