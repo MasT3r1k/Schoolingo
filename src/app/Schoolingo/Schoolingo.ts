@@ -222,9 +222,7 @@ export class Schoolingo {
             let date = moment().set('isoWeeks', this.timetableSelectedWeek.getValue()).add(lesson.day, 'day');
             let subjectName: string = lesson.subjectName;
             let subjectShortcut: string = lesson.subjectShortcut;
-            let oldSubject: string[] = [lesson.subjectName, lesson.subjectShortcut];
             let teacher: number = lesson.teacher;
-            let oldTeacher: number = lesson.teacher;
             let substitution = this.substitution?.[date.format('YYYY-MM-DD')];
 
             if (substitution && substitution?.[lesson.hour]) {
@@ -237,8 +235,8 @@ export class Schoolingo {
                 {
                     subjectName: subjectName,
                     subjectShortcut: subjectShortcut,
-                    oldSubject: oldSubject,
-                    oldTeacher: oldTeacher,
+                    oldSubject: [lesson.subjectName, lesson.subjectShortcut],
+                    oldTeacher: lesson.teacher,
                     teacher: teacher,
                     room: lesson.room,
                     type: lesson.type,
@@ -284,6 +282,8 @@ export class Schoolingo {
                 }
             }
         }
+
+        console.log(this.timetableLessons);
     }
 
 
@@ -314,15 +314,21 @@ export class Schoolingo {
         }
 
         let text = '';
-        person.degrees.forEach((degree: degree): void => {
+        let degrees: degree[] = person.degrees.sort((a, b) => a.weight - b.weight);
+        degrees.forEach((degree: degree): void => {
             if (degree.isBefore) {
                 text += `${degree.shortcut} `;
             }
         });
         text += `${person.firstName} ${person.lastName}`
-        person.degrees.forEach((degree: degree): void => {
+        degrees.forEach((degree: degree): void => {
+            let i = 0;
             if (!degree.isBefore) {
+                if (i > 0) {
+                    text += ",";
+                }
                 text += ` ${degree.shortcut}`;
+                i++;
             }
         })
         return text;

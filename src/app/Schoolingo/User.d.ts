@@ -4,6 +4,7 @@ export interface degree {
     degree: string;
     shortcut: string;
     isBefore: boolean;
+    weight: number;
 }
 
 export interface personDetails {
