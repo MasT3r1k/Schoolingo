@@ -10,7 +10,7 @@
                             {{ (!lesson[0].subjectName) ?
                                 (schoolingo.substitution[day.getValue().format('YYYY-MM-DD')] && schoolingo.substitution[day.getValue().format('YYYY-MM-DD')][$index + 1])
                                 ?
-                                'Zrušeno (' + lesson[0].oldSubject[1] + ', ' + schoolingo.getPerson(lesson[0].oldTeacher)?.lastName + ')'
+                                schoolingo.locale.getLocale('timetable/cancelled') + ' (' + lesson[0].oldSubject[1] + ', ' + schoolingo.getPerson(lesson[0].oldTeacher)?.lastName + ')'
                                 :
                                 schoolingo.locale.getLocale('timetable/freetime')
                             : (lesson[0].subjectName) }}
