@@ -27,7 +27,7 @@ export class AppComponent implements OnInit {
     public theme: Theme
     ) {}
 
-  public afterLoadedSchool: boolean = false;
+  public afterLoadedSchool = false;
 
   public httpError = (err: HttpErrorResponse) => {
     console.log(err);
@@ -54,7 +54,7 @@ export class AppComponent implements OnInit {
     }, this.httpError);
 
     
-    this.http.get<any>(config.api + 'v1/getSchoolYear', { withCredentials: true }).subscribe((data: SchoolYear): void => {
+    this.http.get<SchoolYear>(config.api + 'v1/getSchoolYear', { withCredentials: true }).subscribe((data: SchoolYear): void => {
       this.school.setSchoolYear(data)
     }, this.httpError);
   }

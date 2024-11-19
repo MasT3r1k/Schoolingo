@@ -38,7 +38,7 @@ export class MainComponent {
   }
 
   // Timetable module
-  public timetableSelectedTab: BehaviorSubject<number> = new BehaviorSubject(0);
-  public timetableOptionsName: string = 'timetableOptions';
+  public timetableSelectedTab = new BehaviorSubject(0);
+  public timetableOptionsName = 'timetableOptions';
 
 }

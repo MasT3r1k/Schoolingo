@@ -17,13 +17,13 @@ import { Moment } from 'moment';
 export type pageTypes = 'login' | 'forgotpass';
 type QRPages = 'loading' | 'error' | 'scan' | 'trylogin';
 
-type QRStatus = {
+interface QRStatus {
   whatIsVisible: QRPages;
   code?: string;
   error?: boolean;
 };
 
-export type LoginData = {
+export interface LoginData {
   status: number;
   message: string;
   token?: string;
@@ -207,7 +207,7 @@ export class AuthComponent {
   public login(): void {
     if (!this.form) this.form = this.formList.getForm(this.formName) as FormManager;
     this.form.errors = [];
-    if (this.canLogin() == false) {
+    if (!this.canLogin()) {
       if (
         this.form.formData.value.username == null ||
         this.form.formData.value.username == ''
@@ -252,7 +252,7 @@ export class AuthComponent {
    */
   public refreshQRcode(): void {
 
-    this.QRListeners.forEach((listen: any) => listen.unsubscribe());
+    this.QRListeners.forEach((listen: Subscription) => listen.unsubscribe());
 
     this.logger.send('QRCode', 'Loading QR code..');
     this.qrCode = '';
@@ -297,11 +297,11 @@ export class AuthComponent {
     let page: QRPages | null = null;
     if (
       this.qrCode == '' &&
-      this.qrCodeError == false &&
+      !this.qrCodeError &&
       this.qrCodeResult == null
     ) {
       page = 'loading';
-    } else if (this.qrCode != '' && this.qrCodeError == false) {
+    } else if (this.qrCode != '' && !this.qrCodeError) {
       if (this.qrCodeResult == null) {
         page = 'scan';
       } else {

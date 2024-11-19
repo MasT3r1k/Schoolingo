@@ -64,7 +64,7 @@ export type ClassbookLesson = {
 export type Absence = {
     type: number;
     subject: number;
-    reason: number;
+    reason: string;
     minutes: number;
 }
 

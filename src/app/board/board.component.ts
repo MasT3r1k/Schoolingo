@@ -32,6 +32,15 @@ type userAPI = ({
   id: number;
 }
 
+interface AbsenceAPI {
+  type: number;
+  subject: number;
+  reason: string;
+  minutes: number;
+  dayHour: number;
+  date: moment.Moment;
+}
+
 @Component({
   standalone: true,
   imports: [NgClass, NgStyle, RouterLink, RouterLinkActive, RouterOutlet, Dropdown, TabsComponent],
@@ -79,7 +88,7 @@ export class BoardComponent {
       this.schoolingo.sidebar.build();
 
       let userId = 0;
-      let user: user | null = this.schoolingo.userService.getUser();
+      let user: user = this.schoolingo.userService.getUser()!;
 
       if (user && user.type == 'parent') {
         userId = this.schoolingo.userService.children[this.schoolingo.userService.selectedChild].personId;
@@ -125,24 +134,24 @@ export class BoardComponent {
         this.schoolingo.refreshTimetableLessons();
     }));
 
-    this.subscribers.push(this.schoolingo.socketService.addFunction("timetable:getClassbook").subscribe((data: ClassbookAPI[] | any) => {
-      for(let i = 0;i < data.length;i++) {
-        let date = moment(data[i].date).format("YYYY-MM-DD");
+    this.subscribers.push(this.schoolingo.socketService.addFunction("timetable:getClassbook").subscribe((data: ClassbookAPI[]) => {
+      data.forEach((info: ClassbookAPI) => {
+        let date = moment(info.date).format("YYYY-MM-DD");
         if (!this.schoolingo.classbookLessons[date]) {
           this.schoolingo.classbookLessons[date] = [];
         }
-        this.schoolingo.classbookLessons[date][data[i].dayHour] = { topic: data[i].topic };
+        this.schoolingo.classbookLessons[date][info.dayHour] = { topic: info.topic };
         if (!this.schoolingo.classbookAbsence[date]) {
           this.schoolingo.classbookAbsence[date] = [];
         }
-        this.schoolingo.classbookAbsence[date][data[i].dayHour] = data[i].absence ?? -1;
-      }
+        this.schoolingo.classbookAbsence[date][info.dayHour] = info.absence || -1;
+      })
     }));
 
-    this.subscribers.push(this.schoolingo.socketService.addFunction("grades:getGrades").subscribe((data: any[]) => {
+    this.subscribers.push(this.schoolingo.socketService.addFunction("grades:getGrades").subscribe((data: Mark[]) => {
       let marks: Mark[] = [];
-      data.forEach((mark: any) => {
-        mark["created"] = moment(mark["created"]);
+      data.forEach((mark: Mark) => {
+        mark.created = moment(mark["created"]);
         marks.push(mark);
       });
 
@@ -157,24 +166,24 @@ export class BoardComponent {
       this.schoolingo.addSubjects(data);
     }));
 
-    this.subscribers.push(this.schoolingo.socketService.addFunction("absence:getAllAbsence").subscribe((data: any[]) => {
+    this.subscribers.push(this.schoolingo.socketService.addFunction("absence:getAllAbsence").subscribe((data: AbsenceAPI[]) => {
       let absenceList: Record<string, Absence[]> = {};
-      for(let i = 0;i < data.length;i++) {
-        let date = moment(data[i].date);
+      data.forEach((info: AbsenceAPI) => {
+        let date = moment(info.date);
         if (!absenceList[date.format('YYYY-MM-DD')]) {
           absenceList[date.format('YYYY-MM-DD')] = [];
         }
-        absenceList[date.format('YYYY-MM-DD')][data[i].dayHour] = {
-          type: data[i].type,
-          subject: data[i].subject,
-          reason: data[i].reason,
-          minutes: data[i].minutes
+        absenceList[date.format('YYYY-MM-DD')][info.dayHour] = {
+          type: info.type,
+          subject: info.subject,
+          reason: info.reason,
+          minutes: info.minutes
         }
-      }
+      })
       this.schoolingo.absence = absenceList;
     }));
 
-    this.subscribers.push(this.schoolingo.socketService.addFunction("timetable:timetableChanges").subscribe((data: any[]) => {
+    this.subscribers.push(this.schoolingo.socketService.addFunction("timetable:timetableChanges").subscribe((data: Substitution[]) => {
       let substitutions: Record<string, Substitution[]> = {};
       data.forEach((substitution: any) => {
         let date = moment(substitution.date);
