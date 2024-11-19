@@ -223,17 +223,15 @@ export class Schoolingo {
                 }
             }
 
-            let date = moment().set('isoWeeks', this.timetableSelectedWeek.getValue()).add(lesson.day - 1, 'day');
+            let date = moment().set('isoWeeks', this.timetableSelectedWeek.getValue()).startOf('isoWeek').add(lesson.day, 'day');
             let subjectName: string = lesson.subjectName;
             let subjectShortcut: string = lesson.subjectShortcut;
             let teacher: number = lesson.teacher;
             let substitution = this.substitution?.[date.format('YYYY-MM-DD')];
 
             if (substitution?.[lesson.hour]) {
-                if (this.subjects[substitution[lesson.hour].subjectId]) {
-                    subjectName = this.subjects[substitution[lesson.hour].subjectId][0];
-                    subjectShortcut = this.subjects[substitution[lesson.hour].subjectId][1];
-                }
+                subjectName = this.subjects?.[substitution[lesson.hour].subjectId]?.[0];
+                subjectShortcut = this.subjects?.[substitution[lesson.hour].subjectId]?.[1];
                 teacher = substitution[lesson.hour].teacherId;
             }
 

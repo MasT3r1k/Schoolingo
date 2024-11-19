@@ -30,10 +30,10 @@ export class TimetableComponent {
   utils = utils;
 
   // Select Week Tab
-  public selectedTab: BehaviorSubject<number> = new BehaviorSubject<number>(0);
+  public selectedTab = new BehaviorSubject<number>(0);
   
   // Calendar
-  public selectedDate: BehaviorSubject<moment.Moment> = new BehaviorSubject<moment.Moment>(moment());
+  public selectedDate = new BehaviorSubject<moment.Moment>(moment());
 
   // Dropdowns
   public timetableAbsenceName: string = 'timetableAbsence';

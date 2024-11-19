@@ -185,7 +185,7 @@ export class BoardComponent {
 
     this.subscribers.push(this.schoolingo.socketService.addFunction("timetable:timetableChanges").subscribe((data: Substitution[]) => {
       let substitutions: Record<string, Substitution[]> = {};
-      data.forEach((substitution: any) => {
+      data.forEach((substitution: Substitution) => {
         let date = moment(substitution.date);
         if (!substitutions[date.format('YYYY-MM-DD')]) {
           substitutions[date.format('YYYY-MM-DD')] = [];
