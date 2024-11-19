@@ -9,7 +9,7 @@ export interface modulePerm {
 }
 
 export type UserPerms =
-{
+| {
     role: 'admin' | 'principal'
 } | {
     role: 'teacher',

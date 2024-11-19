@@ -4,14 +4,14 @@ import { Injectable } from '@angular/core';
 export class CookieService {
   constructor() {}
   public getCookie(name: string): string {
-    let ca: Array<string> = document.cookie.split(';');
+    let ca: string[] = document.cookie.split(';');
     let caLen: number = ca.length;
-    let cookieName: string = `${name}=`;
+    let cookieName = `${name}=`;
     let c: string;
 
     for (let i = 0; i < caLen; i += 1) {
       c = ca[i].replace(/^\s+/g, '');
-      if (c.indexOf(cookieName) == 0) {
+      if (c.startsWith(cookieName)) {
         return c.substring(cookieName.length, c.length);
       }
     }

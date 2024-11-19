@@ -93,7 +93,7 @@ export class Sidebar {
     public updateTitle(url: string): void {
         let item: SidebarItem[] = this.getItem(url.split('?')[0].split('#')[0]?.slice(1));
         for(const x of item) {
-          if (!x.children || x.children?.length == 0) {
+          if (!x.children || x.children.length == 0) {
             let pageTitle = `${this.locale.getLocale(x.item)} - ${name}`;
             this.title.setTitle(pageTitle);
           }

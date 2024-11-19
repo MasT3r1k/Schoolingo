@@ -1,4 +1,4 @@
-export type AbsenceConfig = {
+export interface AbsenceConfig {
     locale: string;
     icon?: string;
 }

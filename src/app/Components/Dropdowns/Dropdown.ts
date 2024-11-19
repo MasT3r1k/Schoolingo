@@ -72,8 +72,8 @@ export class Dropdown {
     }
 
     public refreshPosition(id: string): void {
-        let btn: HTMLElement = document.querySelector("[dropdown='" + id + "']") as HTMLElement;
-        let dropdown: HTMLElement = document.querySelector(".dropdown[id='" + id + "']") as HTMLElement;
+        let btn: HTMLElement = document.querySelector("[dropdown='" + id + "']")!;
+        let dropdown: HTMLElement = document.querySelector(".dropdown[id='" + id + "']")!;
         if (!btn) return;
         if (!dropdown) return;
         let boundClientRectBtn = btn.getBoundingClientRect();
@@ -168,7 +168,8 @@ export class Dropdown {
     }
     
     public isOpen(id: string): boolean {
-        return dropdowns?.[id]?.isOpen;
+        if (!dropdowns[id]) return false;
+        return dropdowns[id].isOpen;
     }
 
     public open(id: string): void {

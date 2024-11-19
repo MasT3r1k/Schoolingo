@@ -143,7 +143,7 @@ export class AuthComponent {
     this.switch('login');
     this.Listeners.push(this.route.queryParamMap.subscribe((param: Params) => {
       // Check if show forgot password form //* /login?forgotpass
-      if (param['params']['forgotpass'] != undefined) {
+      if (param.params['forgotpass'] != undefined) {
         this.switch('forgotpass');
       }
     }));
@@ -162,15 +162,15 @@ export class AuthComponent {
         if (this.form) {
           this.form.executing = false;
         }
-        if (data.status == 1 && data?.token && data?.expires) {
+        if (data.status == 1 && data.token && data?.expires) {
           this.logger.send('Login', 'Successful logged in.');
           this.storage.removeAll();
           this.userService.setToken(data.token, data.expires);
           this.schoolingo.socketService.disconnect();
-          let nextURL: string = 'main';
+          let nextURL = 'main';
           this.route.queryParams.forEach((param: Params) => {
-            if (param['returnUrl']) {
-              nextURL = param['returnUrl'].slice(1);
+            if (param.returnUrl) {
+              nextURL = param.returnUrl.slice(1);
             }
           });
           this.router.navigate(['', nextURL]);
@@ -195,7 +195,7 @@ export class AuthComponent {
   }
 
   ngOnDestroy(): void {
-    if (this.routerSocket) this.routerSocket.unsubscribe();
+    this.routerSocket.unsubscribe();
     if (this.form) this.form.removeMe();
     this.schoolingo.socketService.disconnect();
     this.Listeners.forEach((listen: Subscription) => listen.unsubscribe());
@@ -232,8 +232,8 @@ export class AuthComponent {
 
   public canLogin(): boolean {
     return !(this.form && (
-      this?.form.formData.value.username == null ||
-      this?.form.formData.value.username == '' ||
+      this.form.formData.value.username == null ||
+      this.form.formData.value.username == '' ||
       this.form.formData.value.password == null ||
       this.form.formData.value.password == '')
     );
@@ -241,7 +241,7 @@ export class AuthComponent {
 
   // QR CODE
   private qrCode!: string;
-  private qrCodeError: boolean = false;
+  private qrCodeError = false;
   private qrCodeResult: any = null;
   private qrTimeout!: NodeJS.Timeout;
 

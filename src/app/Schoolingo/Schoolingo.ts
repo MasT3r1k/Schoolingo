@@ -282,8 +282,6 @@ export class Schoolingo {
                 }
             }
         }
-
-        console.log(this.timetableLessons);
     }
 
 

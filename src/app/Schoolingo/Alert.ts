@@ -6,8 +6,6 @@ export type AlertSettings = {
 
 @Injectable({ providedIn: 'root' })
 export class AlertManagerClass {
-    constructor() {}
-
     private alerts: Record<string, Alert[]> = {};
     public add(alert: Alert): void {
         if (!this.alerts[alert.getId()]) {
@@ -23,15 +21,15 @@ export class AlertManagerClass {
 }
 
 export class Alert {
-    private parent: string = '';
-    public text: string = '';
-    public settings: AlertSettings | {} = {};
+    private parent = '';
+    public text = '';
+    public settings: AlertSettings | object = {};
     
     public getId(): string {
         return this.parent;
     }
 
-    constructor(parent: string, text: string, settings: AlertSettings | {} = {}) {
+    constructor(parent: string, text: string, settings: AlertSettings | object = {}) {
         this.parent = parent;
         this.text = text;
         this.settings = settings;

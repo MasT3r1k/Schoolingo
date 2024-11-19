@@ -138,7 +138,7 @@ export class FormManager implements OnInit {
     public canExecute(): boolean {
         let canExecuted: boolean = true;
         this.inputs.forEach((input: FormInput) => {
-            if (input.type !== 'select' && input?.required === true && this.formData.value[input.name] === '' ) {
+            if (input.type !== 'select' && input.required === true && this.formData.value[input.name] === '' ) {
                 canExecuted = true;
             }
         });
