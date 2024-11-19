@@ -2,7 +2,7 @@ import { Injectable } from "@angular/core";
 import { languages, Locale } from "./Locale";
 import { SocketService } from "./Socket";
 import { Theme } from "./Theme";
-import { personDetails, UserService } from "./User";
+import { personDetails, user, UserService } from "./User";
 import { Sidebar } from "./Sidebar";
 import { Absence, ClassbookAPI, ClassbookLesson, Mark, Substitution, TimetableAPI, TimetableHours, TimetableLesson } from './Schoolingo.d';
 import { School } from "./School";
@@ -330,7 +330,17 @@ export class Schoolingo {
             }
         })
         return text;
+    }
 
+    public getStudentId(): number {
+        let user: user = this.userService.getUser()!;
+        let userId = user?.id;
+    
+        if (user && user.type == 'parent') {
+          userId = this.userService.children[this.userService.selectedChild].personId;
+        }
+        
+        return userId;
     }
 
     public subjects: Record<number, string[]> = {};

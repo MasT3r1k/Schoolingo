@@ -144,14 +144,14 @@ export class BoardComponent {
         if (!this.schoolingo.classbookAbsence[date]) {
           this.schoolingo.classbookAbsence[date] = [];
         }
-        this.schoolingo.classbookAbsence[date][info.dayHour] = info.absence || -1;
+        this.schoolingo.classbookAbsence[date][info.dayHour] = info.absence ?? -1;
       })
     }));
 
     this.subscribers.push(this.schoolingo.socketService.addFunction("grades:getGrades").subscribe((data: Mark[]) => {
       let marks: Mark[] = [];
       data.forEach((mark: Mark) => {
-        mark.created = moment(mark["created"]);
+        mark.created = moment(mark.created);
         marks.push(mark);
       });
 

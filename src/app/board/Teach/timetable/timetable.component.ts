@@ -59,12 +59,8 @@ export class TimetableComponent {
     // Select Week Tab
     this.selectedTab.subscribe((id: number) => {
       let arrayWeek: number[] = [moment().isoWeek(), moment().isoWeek() + 1, -1, this.schoolingo.todayWeek];
-      let user: user | null = this.schoolingo.userService.getUser();
-      let userId = user?.id;
+      let userId = this.schoolingo.getStudentId();
 
-      if (user && user.type == 'parent') {
-        userId = this.schoolingo.userService.children[this.schoolingo.userService.selectedChild].personId;
-      }
       if (this.selectedDate.getValue().format("DD-MM-YYYY") !== moment().format("DD-MM-YYYY")) {
         if (id !== 3) {
           this.selectedDate.next(moment())
@@ -126,12 +122,8 @@ export class TimetableComponent {
     }] });
 
     this.selectedDate.subscribe((date: moment.Moment) => {
-      let user: user | null = this.schoolingo.userService.getUser();
-      let userId = user?.id;
-
-      if (user && user.type == 'parent') {
-        userId = this.schoolingo.userService.children[this.schoolingo.userService.selectedChild].personId;
-      }
+      let userId = this.schoolingo.getStudentId();
+;
       this.schoolingo.socketService.emit('timetable:getLessons', { userId, week: date.isoWeek(), year: date.year() });
       this.schoolingo.timetableSelectedWeek.next(date.isoWeek());
     })

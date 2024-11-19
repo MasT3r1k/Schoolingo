@@ -32,12 +32,7 @@ export class TimetableComponent implements OnInit {
     }));
 
     // Get timetable
-    let user: user | null = this.schoolingo.userService.getUser();
-    let userId = user?.id;
-
-    if (user && user.type == 'parent') {
-      userId = this.schoolingo.userService.children[this.schoolingo.userService.selectedChild].personId;
-    }
+    let userId = this.schoolingo.getStudentId();
     this.schoolingo.socketService.emit('timetable:getLessons', { userId, week: this.day.getValue().isoWeek(), year: this.day.getValue().year() });
 
   }
