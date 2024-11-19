@@ -54,14 +54,14 @@ export class Schoolingo {
 
             let data = { week, child: -1 };
             if (userService.getUser()?.type == 'parent') {
-                data["child"] = this.userService.children[this.userService.selectedChild].personId;
+                data.child = this.userService.children[this.userService.selectedChild].personId;
             }
             this.socketService.emit('timetable:getClassbook', data);
         }));
     }
 
     // Offline mode
-    private isOfflineMode: boolean = false;
+    private isOfflineMode = false;
 
     public getOfflineMode(): boolean {
         return this.isOfflineMode;
@@ -74,7 +74,7 @@ export class Schoolingo {
     // Today's data
     public todayWeek: number = moment().isoWeek();
 
-    public modal: string = '';
+    public modal = '';
 
     public getUserRole(): string {
         let user = this.userService.getUser();
@@ -92,15 +92,13 @@ export class Schoolingo {
     }
 
     public refreshTitle(): void {
-
         this.sidebar.updateTitle(window.location.pathname);
-
     }
 
 
     // Timetable
     public timetableAPI: TimetableAPI[] = [];
-    public timetableSelectedWeek: BehaviorSubject<number> = new BehaviorSubject(moment().week());
+    public timetableSelectedWeek = new BehaviorSubject(moment().week());
     private timetableLessons: TimetableLesson[][][] = [];
     private timetableSubjects: Record<string, number[]> = {};
 
@@ -119,7 +117,11 @@ export class Schoolingo {
 
     // Absence
     public getAbsence(day: number, hour: number): number {
-        let absence: number = this.classbookAbsence[utils.getDayOfWeek(this.timetableSelectedWeek.getValue(), day).format('YYYY-MM-DD').toString()]?.[hour];
+        let date = utils.getDayOfWeek(this.timetableSelectedWeek.getValue(), day).format('YYYY-MM-DD');
+        if (!this.classbookAbsence[date]) {
+            return -1
+        }
+        let absence: number = this.classbookAbsence[date][hour];
         if (absence === undefined || absence == -1) {
             return -1;
         }
@@ -127,7 +129,9 @@ export class Schoolingo {
     }
 
     public isClassbook(day: number, hour: number): boolean {
-        return this.classbookLessons?.[utils.getDayOfWeek(this.timetableSelectedWeek.getValue(), day).format('YYYY-MM-DD').toString()]?.[hour] === undefined ? false : true;
+        let date = utils.getDayOfWeek(this.timetableSelectedWeek.getValue(), day).format('YYYY-MM-DD');
+        if (!this.classbookLessons[date]) return false;
+        return this.classbookLessons[date][hour] !== undefined;
     }
 
     public getTimetableLessons(): TimetableLesson[][][] {
@@ -147,7 +151,7 @@ export class Schoolingo {
         /*
         * @default: 0
         */
-        let maxHours: number = 0;
+        let maxHours = 0;
 
         for(let i = 0;i < this.timetableAPI.length;i++) {
             if (this.timetableAPI[i].hour > maxHours) {
@@ -225,9 +229,11 @@ export class Schoolingo {
             let teacher: number = lesson.teacher;
             let substitution = this.substitution?.[date.format('YYYY-MM-DD')];
 
-            if (substitution && substitution?.[lesson.hour]) {
-                subjectName = this.subjects?.[substitution[lesson.hour].subjectId]?.[0];
-                subjectShortcut = this.subjects?.[substitution[lesson.hour].subjectId]?.[1];
+            if (substitution?.[lesson.hour]) {
+                if (this.subjects[substitution[lesson.hour].subjectId]) {
+                    subjectName = this.subjects[substitution[lesson.hour].subjectId]?.[0];
+                    subjectShortcut = this.subjects[substitution[lesson.hour].subjectId]?.[1];
+                }
                 teacher = substitution[lesson.hour].teacherId;
             }
 
@@ -253,13 +259,13 @@ export class Schoolingo {
         // Fill empty lessons
         for(let i = 0;i < this.timetableLessons.length;i++) {
 
-            if (!this.timetableLessons?.[i]) {
+            if (!this.timetableLessons[i]) {
                 this.timetableLessons[i] = [];
             }
 
             for(let y = 0;y < this.timetableHours.length;y++) {
 
-                if (!this.timetableLessons[i]?.[y]) {
+                if (!this.timetableLessons[i][y]) {
                     this.timetableLessons[i][y] = [];
                 }
 
@@ -305,7 +311,7 @@ export class Schoolingo {
             return '';
         }
 
-        let person: personDetails | null = this.getPerson(personId);
+        let person: personDetails = this.getPerson(personId)!;
 
         if (person == null) {
             return '';
