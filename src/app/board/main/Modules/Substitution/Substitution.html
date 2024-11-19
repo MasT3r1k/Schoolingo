@@ -1,0 +1,36 @@
+<main>
+    <div class="items">
+        @for (_ of [].constructor(7); track day;let day = $index) {
+            @if (schoolingo.substitution[date.getValue().clone().add(day, 'day').format("YYYY-MM-DD")]) {
+                @for (substitution of schoolingo.substitution[date.getValue().clone().add(day, 'day').format("YYYY-MM-DD")]; track $index) {
+                    @if (substitution) {
+                        <div class="item">
+                            <div class="icon center" [ngClass]="{ red: substitution.subjectId, 'blue-info': !substitution.subjectId }">
+                                <span>{{ ((substitution.subjectId) ? schoolingo.locale.getLocale('sidebar/teach/substitution') : schoolingo.locale.getLocale('timetable/cancelled')).charAt(0).toUpperCase() }}</span>
+                            </div>
+                            <div class="info">
+                                <div class="date">
+                                    <span>{{ date.getValue().clone().add(day, 'day').format('dd') }}</span>
+                                    <span>{{ date.getValue().clone().add(day, 'day').format('DD.MM.') }}</span>
+                                    <div class="divider"></div>
+                                    <span>{{ substitution.hour }}. {{ schoolingo.locale.getLocale('hour') }}</span>
+                                </div>
+                                <div class="description">
+                                    <span>{{ getDescription(substitution) }}</span>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                }
+            }
+        }
+    </div>
+
+    <div class="shadow"></div>
+    
+    <div class="bottom">
+        <i class="ti ti-chevron-left" (click)="date.next(date.getValue().subtract(1, 'week'))"></i>
+        <div class="label dontCapitalize">{{ 'Týden od ' + date.getValue().format("DD. MM.") + ' do ' + date.getValue().clone().endOf('isoWeek').format('DD. MM.') }}</div>
+        <i class="ti ti-chevron-right" (click)="date.next(date.getValue().add(1, 'week'))"></i>
+    </div>
+</main>

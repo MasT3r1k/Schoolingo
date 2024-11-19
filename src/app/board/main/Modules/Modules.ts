@@ -4,6 +4,7 @@ import { TimetableComponent } from './Timetable/Timetable';
 import { BackpackComponent } from './Backpack/Backpack';
 import { IntermComponent } from './Interm/Interm';
 import { AnnouncementsComponent } from './Announcements/Announcements';
+import { SubstitutionComponent } from './Substitution/Substitution';
 export { Module, ModuleTitle };
 
 export class Modules {
@@ -55,7 +56,7 @@ export class Modules {
                     link: ["", "teach", "substitution"]
                 }
             ],
-            component: null
+            component: SubstitutionComponent
         },
         {
             titles: [
