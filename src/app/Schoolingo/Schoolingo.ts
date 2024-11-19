@@ -219,7 +219,7 @@ export class Schoolingo {
                 }
             }
 
-            let date = moment().set('isoWeeks', this.timetableSelectedWeek.getValue()).add(lesson.day, 'day');
+            let date = moment().set('isoWeeks', this.timetableSelectedWeek.getValue()).add(lesson.day - 1, 'day');
             let subjectName: string = lesson.subjectName;
             let subjectShortcut: string = lesson.subjectShortcut;
             let teacher: number = lesson.teacher;
