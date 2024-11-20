@@ -28,6 +28,8 @@ export class Schoolingo {
         this.classbookLessons = {};
         this.classbookAbsence = {};
         this.todayWeek = moment().isoWeek();
+        this.subjects = {};
+        this.substitution = {};
         this.isOfflineMode = false;
         this.marks = [];
     }
