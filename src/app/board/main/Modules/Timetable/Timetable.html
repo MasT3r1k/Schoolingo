@@ -1,11 +1,11 @@
 <main>
     <div class="subjects">
         @if (schoolingo.getTimetableLessons()) {
-            @for (lesson of schoolingo.getTimetableLessons()[day.getValue().day() ? day.getValue().day() - 1 : 6]; track $index) {
+            @for (lesson of schoolingo.getTimetableLessons()[day.getValue().isoWeekday() - 1]; track $index) {
                 <div [ngClass]="{subject: true, freetime: !lesson[0].subjectName && (schoolingo.substitution[day.getValue().format('YYYY-MM-DD')] && !schoolingo.substitution[day.getValue().format('YYYY-MM-DD')][$index + 1] || !schoolingo.substitution[day.getValue().format('YYYY-MM-DD')])}">
                     <span [ngClass]="{subjectIndex: true, error: !lesson[0].subjectName && schoolingo.substitution[day.getValue().format('YYYY-MM-DD')] && schoolingo.substitution[day.getValue().format('YYYY-MM-DD')][$index + 1]}">{{ $index + 1 }}</span>
                     
-                    <div [ngClass]="{subjectName: true, classbook: schoolingo.isClassbook(day.getValue().day() - 2, $index), error: !lesson[0].subjectName && schoolingo.substitution[day.getValue().format('YYYY-MM-DD')] && schoolingo.substitution[day.getValue().format('YYYY-MM-DD')][$index + 1]}" [title]="(!lesson[0].subjectName) ? 'Volná hodina' : (lesson[0].subjectName)">
+                    <div [ngClass]="{subjectName: true, classbook: schoolingo.isClassbook(day.getValue().day() - 2, $index), error: !lesson[0].subjectName && schoolingo.substitution[day.getValue().format('YYYY-MM-DD')] && schoolingo.substitution[day.getValue().format('YYYY-MM-DD')][$index + 1]}" [title]="(!lesson[0].subjectName) ? schoolingo.locale.getLocale('timetable/freetime') : (lesson[0].subjectName)">
                         <span>
                             {{ (!lesson[0].subjectName) ?
                                 (schoolingo.substitution[day.getValue().format('YYYY-MM-DD')] && schoolingo.substitution[day.getValue().format('YYYY-MM-DD')][$index + 1])
@@ -30,13 +30,27 @@
                         }
                     </div>
                     @if (schoolingo.getTimetableHours()[$index]) {
-                        <span style="position: absolute;right: 8px;font-size: 12px;line-height: 18px;width: 70px;text-align: right;">
+                        <span style="position: absolute;right: 8px;font-size: 12px;line-height: 18px;width: 70px;">
                             {{ schoolingo.getTimetableHours()[$index].start + ' - ' + schoolingo.getTimetableHours()[$index].end }}
                         </span>
                     }
                 </div>
             } @empty {
                 <div class="center">{{ schoolingo.locale.getLocale('timetable/notStudyDay') }}</div>
+            }
+            @if (getHours().length > 0) {
+                <div class="subject freetime">
+                    <span class="subjectIndex">{{ getHours().length + 1 }}</span>
+                    
+                    <div class="subjectName" [title]="schoolingo.locale.getLocale('timetable/endOfClass')">
+                        <span>{{ schoolingo.locale.getLocale('timetable/endOfClass') }}</span>
+                    </div>
+                    @if (schoolingo.getTimetableHours()[getHours().length - 1]) {
+                        <span style="position: absolute;right: 8px;font-size: 12px;line-height: 18px;width: 70px;">
+                            {{ schoolingo.getTimetableHours()[getHours().length - 1].end }}
+                        </span>
+                    }
+                </div>
             }
         }
     </div>

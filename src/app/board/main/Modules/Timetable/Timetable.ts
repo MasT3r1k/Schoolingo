@@ -1,6 +1,6 @@
 import { NgClass } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
-import { Schoolingo } from '@Schoolingo';
+import { Schoolingo, TimetableLesson } from '@Schoolingo';
 import { user } from '@Schoolingo/User';
 import moment from 'moment';
 import { BehaviorSubject, Subscription } from 'rxjs';
@@ -39,6 +39,18 @@ export class TimetableComponent implements OnInit {
 
   ngOnDestroy(): void {
     this.listeners.forEach((sub: Subscription) => sub.unsubscribe());
+  }
+
+  public getHours(): TimetableLesson[][] {
+    let lessons = this.schoolingo.getTimetableLessons()[this.day.getValue().isoWeekday() - 1];
+    if (!lessons) {
+      return [];
+    }
+    while (lessons[lessons.length - 1][0].empty) {
+      lessons.splice(lessons.length - 1, 1);
+    }
+
+    return lessons;
   }
 
 }
