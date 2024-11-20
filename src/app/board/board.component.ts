@@ -9,6 +9,7 @@ import { Schoolingo, TimetableAPI } from '@Schoolingo';
 import { alertManager, AlertManagerClass } from '@Schoolingo/Alert';
 import { languages } from '@Schoolingo/Locale';
 import { School } from '@Schoolingo/School';
+import { SidebarItem } from '@Schoolingo/Sidebar';
 import { SocketUpdateTheme, SocketUpdateLocale } from '@Schoolingo/Socket';
 import { child, personDetails } from '@Schoolingo/User';
 import { user } from '@Schoolingo/User';
@@ -164,6 +165,7 @@ export class BoardComponent {
 
     this.subscribers.push(this.schoolingo.socketService.addFunction("main:updateSubjects").subscribe((data: Record<number, string[]>) => {
       this.schoolingo.addSubjects(data);
+      this.schoolingo.refreshTimetableLessons();
     }));
 
     this.subscribers.push(this.schoolingo.socketService.addFunction("absence:getAllAbsence").subscribe((data: AbsenceAPI[]) => {
