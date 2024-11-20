@@ -30,6 +30,9 @@ export class Sidebar {
         }
         localStorage.setItem('sidebar', JSON.stringify(this.toggledDropdowns));
     }
+    public isToggled(id: number): boolean {
+      return this.toggledDropdowns.includes(id);
+    }
     private config: SidebarGroup[] = SidebarConfig.default;
 
     public build(): void {
