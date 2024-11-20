@@ -1,3 +1,4 @@
+import { BehaviorSubject } from 'rxjs';
 import { MessageTag, MessageType } from './Messages.d';
 export type { MessageTag, MessageType };
 
@@ -30,6 +31,8 @@ export class MessageManager {
         label: "Důležité"
       }
     ];
+
+    public unreadMessage = new BehaviorSubject(12);
 
     
 

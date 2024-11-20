@@ -1,4 +1,7 @@
+import { Schoolingo } from "@Schoolingo";
 import { SidebarGroup } from "./Sidebar";
+import { Locale } from "./Locale";
+import { BehaviorSubject } from "rxjs";
 
 let config: SidebarGroup[] = [
     {
@@ -86,6 +89,7 @@ let config: SidebarGroup[] = [
                 }, {
                     item: 'sidebar/messages/received',
                     url: 'messages/received',
+                    badge: ((schoolingo: Schoolingo) => schoolingo.messages.unreadMessage).toString()
                 }, {
                     item: 'sidebar/messages/sent',
                     url: 'messages/sent',

@@ -213,5 +213,14 @@ export class BoardComponent {
     this.schoolingo.subscribers.forEach((sub: Subscription) => sub.unsubscribe());
   }
 
+  public getSidebarBadge(item: SidebarItem): any {
+    let a = eval(item.badge)?.(this.schoolingo)?.getValue();
+    if (!a)
+      return "";
+    if (a >= 10) {
+      return "9+";
+    }
+    return a || "";
+  }
 
 }

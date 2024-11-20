@@ -1,3 +1,4 @@
+import { BehaviorSubject } from 'rxjs';
 import { permType, UserRoles } from './Permissions';
 
 export interface SidebarItem {
@@ -5,6 +6,7 @@ export interface SidebarItem {
     url?: string;
     permission?: permType[];
     children?: SidebarItem[];
+    badge?: any;
     modules?: string[];
 }
 

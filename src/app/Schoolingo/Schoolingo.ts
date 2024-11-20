@@ -13,6 +13,7 @@ import { AbsenceConfig, absence } from "./Absence";
 import * as utils from "@Schoolingo/Utils";
 import { removeDiacritics } from "./SearchFilter";
 import { degree } from "./User";
+import { MessageManager } from "./Messages";
 export { TimetableAPI, ClassbookAPI, ClassbookLesson, TimetableLesson, Mark, Absence, Substitution }
 
 @Injectable()
@@ -43,7 +44,8 @@ export class Schoolingo {
         public theme: Theme,
         public userService: UserService,
         public sidebar: Sidebar,
-        public school: School
+        public school: School,
+        public messages: MessageManager
     ) {
         this.subscribers.push(this.locale.language.subscribe((value: languages) => {
             this.refreshTitle();

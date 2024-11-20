@@ -77,7 +77,14 @@
                                         @for (child of item.children; track $index) {
                                             <li (click)="schoolingo.sidebar.sidebarToggled = false" [routerLink]="child.url" [routerLinkActive]="'active'">
                                                 <div class="item">
-                                                    {{ schoolingo.locale.getLocale(child.item) }}
+                                                    <div class="item-label">
+                                                        {{ schoolingo.locale.getLocale(child.item) }}
+                                                    </div>
+                                                    @if (getSidebarBadge(child) != "") {
+                                                        <div class="badge blue-info">
+                                                            {{ getSidebarBadge(child) }}
+                                                        </div>
+                                                    }
                                                 </div>
                                             </li>
                                         }
