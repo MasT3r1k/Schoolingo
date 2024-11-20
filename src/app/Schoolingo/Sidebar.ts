@@ -40,9 +40,7 @@ export class Sidebar {
         let newSidebar: SidebarGroup[] = [];
     
         boardSidebar.forEach((section: SidebarGroup): void => {
-          if (
-               section.permission && !this.Permissions.checkPermission(section.permission)
-            || section.items.length == 0) return;
+          if (section.permission && !this.Permissions.checkPermission(section.permission) || section.items.length == 0) return;
 
           let items: SidebarItem[] = [];
           section.items.forEach((item: SidebarItem): void => {

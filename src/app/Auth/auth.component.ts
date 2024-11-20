@@ -162,7 +162,7 @@ export class AuthComponent {
         if (this.form) {
           this.form.executing = false;
         }
-        if (data.status == 1 && data.token && data?.expires) {
+        if (data.status == 1 && data.token && data.expires) {
           this.logger.send('Login', 'Successful logged in.');
           this.storage.removeAll();
           this.userService.setToken(data.token, data.expires);
@@ -262,14 +262,14 @@ export class AuthComponent {
     
     this.schoolingo.socketService.emit("generate-qrcode");
 
-    this.QRListeners.push(this.schoolingo.socketService.addFunction('login-qrcode').subscribe((data: any) => {
+    this.QRListeners.push(this.schoolingo.socketService.addFunction('login-qrcode').subscribe((data: string) => {
       this.logger.send('QRCode', 'QR code loaded.');
       this.qrCode = data;
       this.qrCodeError = false;
       this.qrStatus = this.getQRcodeStatus();
     }));
 
-    this.QRListeners.push(this.schoolingo.socketService.addFunction('qrScanCode').subscribe((data: any) => {
+    this.QRListeners.push(this.schoolingo.socketService.addFunction('qrScanCode').subscribe((data: unknown) => {
       this.qrCodeResult = data;
       this.qrStatus = this.getQRcodeStatus();
     }));
