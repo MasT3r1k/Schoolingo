@@ -142,7 +142,6 @@ export class Schoolingo {
 
     private timetableHours: TimetableHours[] = [];
     public refreshTimetableHours(): void {
-
         // School is not set
         if (!this.school.schoolInfo) {
             return;
@@ -152,7 +151,6 @@ export class Schoolingo {
         * @default: 0
         */
         let maxHours = 0;
-
         for(let i = 0;i < this.timetableAPI.length;i++) {
             if (this.timetableAPI[i].hour > maxHours) {
                 maxHours = this.timetableAPI[i].hour;
@@ -160,23 +158,13 @@ export class Schoolingo {
         }
 
         let hours: TimetableHours[] = [];
-        let startHour: [number, number] = JSON.parse(JSON.stringify(this.school.schoolInfo.startHour));
-        let endHour: [number, number] = JSON.parse(JSON.stringify(startHour));
+        let time: moment.Moment = moment().set('hours', this.school.schoolInfo.startHour[0]).set('minutes', this.school.schoolInfo.startHour[1]);
 
         for(let i = 1;i <= maxHours;i++) {
-            endHour[1] += this.school.schoolInfo.lessonHour;
-
-            while(endHour[1] >= 60) {
-                endHour[0]++;
-                endHour[1] -= 60;
-            }
-            
-            let startTime: string = startHour[0] + ':' + addZeros(startHour[1], 2);
-            let endTime: string = endHour[0] + ':' + addZeros(endHour[1], 2);
-
-            hours.push({ start: startTime, end: endTime })
-            endHour[1] += this.school.schoolInfo.breaks[i + 1] || this.school.schoolInfo.breakTime;
-            startHour = JSON.parse(JSON.stringify(endHour));
+            let startHour = time.clone();
+            time.add(this.school.schoolInfo.lessonHour, 'minutes');
+            hours.push({ start: startHour.format('HH:mm'), end: time.format('HH:mm') })
+            time.add(this.school.schoolInfo.breaks[i + 1] || this.school.schoolInfo.breakTime, 'minutes');
         }
 
         this.timetableHours = hours;
