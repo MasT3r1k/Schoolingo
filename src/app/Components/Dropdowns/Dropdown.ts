@@ -1,8 +1,8 @@
 import { NgClass, NgStyle } from "@angular/common";
-import { Component, Injectable, OnInit, RendererFactory2 } from "@angular/core";
+import { Component, Injectable, RendererFactory2 } from "@angular/core";
 import { Calendar, ContextButton, ContextButtonRightText, ContextMenu } from "./Dropdown.d";
 import { Locale } from "@Schoolingo/Locale";
-import { SafeHtml } from "@angular/platform-browser";
+import { DomSanitizer, SafeHtml } from "@angular/platform-browser";
 import moment from "moment";
 import { Logger } from "@Schoolingo/Logger";
 export { ContextButton, ContextButtonRightText, ContextMenu }
@@ -27,7 +27,8 @@ export class Dropdown {
     constructor(
         public locale: Locale,
         private factory: RendererFactory2,
-        private logger: Logger
+        private logger: Logger,
+        private sanitized: DomSanitizer
     ) {
         this.renderer = this.factory.createRenderer(window, null);
         this.renderer.listen(window, 'resize', () => {
@@ -46,7 +47,7 @@ export class Dropdown {
         text.split(' ').forEach((word: string) => {
             if (word.startsWith("[key:") && word.endsWith(']')) {
                 let key = word.slice(5, -1);
-                html += "<div class='key'>" + key + "</div>";
+                html = this.sanitized.bypassSecurityTrustHtml(html + "<div class='key'>" + key + "</div>");
             }
         })
         return html;
