@@ -40,9 +40,10 @@ export class Sidebar {
         let newSidebar: SidebarGroup[] = [];
     
         boardSidebar.forEach((section: SidebarGroup): void => {
-          if (section.permission && !this.Permissions.checkPermission(section.permission))
-            return;
-          if (section.items.length == 0) return;
+          if (
+               section.permission && !this.Permissions.checkPermission(section.permission)
+            || section.items.length == 0) return;
+
           let items: SidebarItem[] = [];
           section.items.forEach((item: SidebarItem): void => {
             if (item.permission && !this.Permissions.checkPermission(item.permission)) return;
@@ -65,7 +66,7 @@ export class Sidebar {
 
         // Load data from storage
         if (localStorage.getItem('sidebar')) {
-            this.toggledDropdowns = JSON.parse(localStorage.getItem('sidebar')!);
+          this.toggledDropdowns = JSON.parse(localStorage.getItem('sidebar')!);
         }
 
     }
