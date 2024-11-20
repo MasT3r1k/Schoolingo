@@ -21,11 +21,11 @@ export function isOdd(num: number): boolean {
 
 export function randomstring(length: number, numbers: boolean = true): string {
 
-  let chars: string = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+  let chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
   if (numbers) {
     chars += "0123456789";
   }
-  let text: string = '';
+  let text = '';
 
     for (let i = 0; i < length; i++) {
       text += chars.charAt(Math.floor(Math.random() * chars.length));

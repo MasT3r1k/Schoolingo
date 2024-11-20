@@ -18,7 +18,7 @@ type Page = {
 export class IntermComponent implements OnInit {
 
   public selectedTab: BehaviorSubject<number> = new BehaviorSubject(0);
-  public gradeWidth: number = 0;
+  public gradeWidth = 0;
   public pages: Page[] = [];
 
   public holdPages: { id: number, page: number }[] = [];
