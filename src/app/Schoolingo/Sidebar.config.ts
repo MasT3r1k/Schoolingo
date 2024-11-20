@@ -1,7 +1,5 @@
 import { Schoolingo } from "@Schoolingo";
 import { SidebarGroup } from "./Sidebar";
-import { Locale } from "./Locale";
-import { BehaviorSubject } from "rxjs";
 
 let config: SidebarGroup[] = [
     {
