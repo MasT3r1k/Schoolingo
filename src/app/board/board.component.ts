@@ -42,6 +42,12 @@ interface AbsenceAPI {
   date: moment.Moment;
 }
 
+interface AbsenceSubjectAPI {
+  subject: string;
+  absence_count: number;
+  total_lessons: number;
+}
+
 @Component({
   standalone: true,
   imports: [NgClass, NgStyle, RouterLink, RouterLinkActive, RouterOutlet, Dropdown, TabsComponent],
@@ -88,19 +94,19 @@ export class BoardComponent {
       this.schoolingo.userService.setUser(data);
       this.schoolingo.sidebar.build();
 
-      let userId = 0;
-      let user: user = this.schoolingo.userService.getUser()!;
-
-      if (user && user.type == 'parent') {
-        userId = this.schoolingo.userService.children[this.schoolingo.userService.selectedChild].personId;
-      } else if (user) {
-        userId = user?.id;
+      let user = this.schoolingo.userService.getUser()!;
+      let userId = user.id;
+      if (user.type == "parent") {
+        userId = this.schoolingo.getStudentId();
       }
 
       this.schoolingo.socketService.emit("timetable:getLessons", { userId });
+      this.schoolingo.socketService.emit("classes:getClassService", { userId });
       this.schoolingo.socketService.emit("timetable:getClassbook", { userId, week: this.schoolingo.timetableSelectedWeek.getValue() });
       this.schoolingo.socketService.emit("grades:getGrades", { userId, week: this.schoolingo.timetableSelectedWeek.getValue() });
+      this.schoolingo.socketService.emit('absence:getAbsence', { userId });
       this.schoolingo.socketService.emit("absence:getAllAbsence", { userId });
+      
     }));
 
     this.subscribers.push(this.schoolingo.socketService.addFunction("main:updateLocale").subscribe((data: SocketUpdateLocale) => {
@@ -142,11 +148,13 @@ export class BoardComponent {
           this.schoolingo.classbookLessons[date] = [];
         }
         this.schoolingo.classbookLessons[date][info.dayHour] = { topic: info.topic };
-        if (!this.schoolingo.classbookAbsence[date]) {
-          this.schoolingo.classbookAbsence[date] = [];
-        }
-        this.schoolingo.classbookAbsence[date][info.dayHour] = info.absence ?? -1;
       })
+    }));
+
+    this.subscribers.push(this.schoolingo.socketService.addFunction("absence:getAbsence").subscribe((data: AbsenceSubjectAPI[]) => {
+      data.forEach((data: AbsenceSubjectAPI) => {
+        this.schoolingo.absenceSubjects[data.subject] = { absence: data.absence_count, lessons: data.total_lessons };
+      });
     }));
 
     this.subscribers.push(this.schoolingo.socketService.addFunction("grades:getGrades").subscribe((data: Mark[]) => {
@@ -207,6 +215,12 @@ export class BoardComponent {
       this.schoolingo.refreshTimetableLessons();
     }));
 
+    this.subscribers.push(this.schoolingo.socketService.addFunction("classes:getClassService").subscribe((data: any[]) => {
+      if (data.length > 0) {
+        this.schoolingo.studentService = { status: true, start: moment(data[0].start), end: moment(data[0].end) };
+      }
+    }));
+
   }
 
   ngOnDestroy(): void {
@@ -219,7 +233,7 @@ export class BoardComponent {
     let a = eval(item.badge)?.(this.schoolingo)?.getValue();
     if (!a)
       return "";
-    if (a >= 10) {
+    if (a > 9) {
       return "9+";
     }
     return a || "";

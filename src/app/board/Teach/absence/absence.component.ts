@@ -5,12 +5,6 @@ import { Absence, Schoolingo } from '@Schoolingo';
 import { BehaviorSubject, Subscription } from 'rxjs';
 import * as AbsenceConfig from "@Schoolingo/Absence";
 
-interface AbsenceAPI {
-  subject: string;
-  absence_count: number;
-  total_lessons: number;
-}
-
 @Component({
   standalone: true,
   imports: [TabsComponent, NgClass, NgStyle],
@@ -23,32 +17,15 @@ export class AbsenceComponent implements OnInit {
     private renderer: Renderer2
   ) {}
 
-  public absence: Record<string, { absence: number, lessons: number }> = {};
   public absenceConfig = AbsenceConfig.absence;
   public selectedTab: BehaviorSubject<number> = new BehaviorSubject<number>(0);
   private listeners: Subscription[] = [];
   public monthStatus: boolean[] = [];
+  public ignoredAbsence: AbsenceConfig.AbsenceType[] = [AbsenceConfig.AbsenceType.NON_COUNT];
 
   public tableHeader: { active: boolean;top: number;width: number } = { active: false, top: 0, width: 0 };
 
   ngOnInit(): void {
-    let userId = this.schoolingo.userService.getUser()?.person.personId;
-    if (this.schoolingo.userService.getUser()?.type == 'parent') {
-      userId = this.schoolingo.userService.children[this.schoolingo.userService.selectedChild].personId;
-    }
-
-    this.listeners.push(this.schoolingo.socketService.addFunction("connect").subscribe(() => {
-      this.schoolingo.socketService.emit('absence:getAbsence', { userId });
-    }));
-
-    this.listeners.push(this.schoolingo.socketService.addFunction("absence:getAbsence").subscribe((data: AbsenceAPI[]) => {
-      data.forEach((data: AbsenceAPI) => {
-        this.absence[data.subject] = { absence: data.absence_count, lessons: data.total_lessons };
-      });
-    }));
-
-    this.schoolingo.socketService.emit('absence:getAbsence', { userId });
-
     this.renderer.listen(document.querySelector(".main-content"), "scroll", (ev: any) => {
       let el: HTMLElement = ev.target!;
       if (el.scrollTop > 160) {

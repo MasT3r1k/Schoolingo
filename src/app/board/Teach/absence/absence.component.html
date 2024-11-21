@@ -17,14 +17,14 @@
                     </thead>
                     <tbody>
                         @for (subject of schoolingo.getSubjects(); track $index) {
-                            <tr [ngClass]="{ error: (schoolingo.school.schoolInfo && absence[subject] && absence[subject].absence / absence[subject].lessons * 100) >= schoolingo.school.schoolInfo.warningAbsence }">
+                            <tr [ngClass]="{ error: (schoolingo.school.schoolInfo && schoolingo.absenceSubjects[subject] && schoolingo.absenceSubjects[subject].absence / schoolingo.absenceSubjects[subject].lessons * 100) >= schoolingo.school.schoolInfo.warningAbsence }">
                                 <td style="width: 100%;">{{ subject }}</td>
                                 <td>
-                                    {{ absence[subject] ? absence[subject].absence + '/' + absence[subject].lessons : "0/0" }}
+                                    {{ schoolingo.absenceSubjects[subject] ? schoolingo.absenceSubjects[subject].absence + '/' + schoolingo.absenceSubjects[subject].lessons : "0/0" }}
                                 </td>
-                                @if (schoolingo.school.schoolInfo && absence[subject]) {
+                                @if (schoolingo.school.schoolInfo && schoolingo.absenceSubjects[subject]) {
                                     <td style="min-width: 100px;">
-                                        {{ (absence[subject].absence / absence[subject].lessons * 100).toFixed(2) + '%' }}
+                                        {{ (schoolingo.absenceSubjects[subject].absence / schoolingo.absenceSubjects[subject].lessons * 100).toFixed(2) + '%' }}
                                     </td>
                                 } @else {
                                     <td style="min-width: 100px;">0%</td>
