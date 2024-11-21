@@ -22,7 +22,12 @@ export class BackpackComponent implements OnInit {
 
   ngOnInit(): void {
     this.listeners.push(this.day.subscribe((val: moment.Moment) => {
+      if (this.schoolingo.timetableSelectedWeek.getValue() === val.isoWeek()) return;
       this.schoolingo.timetableSelectedWeek.next(val.isoWeek());
+    }));
+
+    this.listeners.push(this.schoolingo.timetableSelectedWeek.subscribe((week: number): void => {
+      this.day.next(this.day.getValue().set('isoWeeks', week));
     }));
   }
 
@@ -37,21 +42,19 @@ export class BackpackComponent implements OnInit {
     let lessonsNextDay = this.schoolingo.getTimetableLessons()[this.day.getValue().clone().weekday()];
     if (lessons) {
       lessons.forEach((lesson: TimetableLesson[]) => {
-        if (lesson[0].subjectName == "") return;
-        listSubjects[0].push(lesson[0].subjectName);
+        if (lesson[0].subjectName !== "" && !lesson[0].empty) listSubjects[0].push(lesson[0].subjectName);
       });
     }
     if (lessonsNextDay) {
       lessonsNextDay.forEach((lesson: TimetableLesson[]) => {
-        if (lesson[0].subjectName == "") return;
-        listSubjects[1].push(lesson[0].subjectName);
+        if (lesson[0].subjectName !== "" && !lesson[0].empty) listSubjects[1].push(lesson[0].subjectName);
       });
     }
   
     let subjects: string[] = [];
-    let id: number = type == 'takeout' ? 0 : 1;
+    let id: number = type === 'give' ? 1 : 0;
     for(let i = 0;i < listSubjects[id].length;i++) {
-      if (!subjects.includes(listSubjects[id][i]) && !listSubjects[id ? 0 : 1].includes(listSubjects[id][i])) {
+      if (!subjects.includes(listSubjects[id][i]) && !listSubjects[id ? 0 : 1].includes(listSubjects[id][i]) && listSubjects[id][i] != undefined) {
         subjects.push(listSubjects[id][i]);
       }
     }
