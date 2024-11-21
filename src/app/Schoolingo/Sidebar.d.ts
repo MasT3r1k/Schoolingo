@@ -1,5 +1,6 @@
 import { BehaviorSubject } from 'rxjs';
 import { permType, UserRoles } from './Permissions';
+import { modules } from './Modules';
 
 export interface SidebarItem {
     item: string;
@@ -7,12 +8,12 @@ export interface SidebarItem {
     permission?: permType[];
     children?: SidebarItem[];
     badge?: any;
-    modules?: string[];
+    modules?: modules[];
 }
 
 export interface SidebarGroup {
     label: string;
     permission?: permType[];
-    modules?: string[];
+    modules?: modules[];
     items: SidebarItem[];
 }

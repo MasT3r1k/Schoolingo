@@ -6,6 +6,7 @@ import { name } from '@Schoolingo/Config';
 import * as SidebarConfig from "@Schoolingo/Sidebar.config";
 
 import { Title } from '@angular/platform-browser';
+import { Modules } from './Modules';
 export type { SidebarGroup, SidebarItem };
 
 @Injectable()
@@ -13,7 +14,8 @@ export class Sidebar {
     constructor(
         private Permissions: Permission,
         private locale: Locale,
-        private title: Title
+        private title: Title,
+        private modules: Modules
     ) {
         this.build();
     }
@@ -44,12 +46,12 @@ export class Sidebar {
 
           let items: SidebarItem[] = [];
           section.items.forEach((item: SidebarItem): void => {
-            if (item.permission && !this.Permissions.checkPermission(item.permission)) return;
+            if (item.permission && !this.Permissions.checkPermission(item.permission) || (item.modules && !this.modules.checkModule(item.modules))) return;
             if (item.children) {
               let delC = 0;
               let children = JSON.parse(JSON.stringify(item.children)) as SidebarItem[];
               children.forEach((child: SidebarItem, index: number) => {
-                if (!(child.permission && !this.Permissions.checkPermission(child.permission)))
+                if (!(child.permission && !this.Permissions.checkPermission(child.permission)) || (child.modules && !this.modules.checkModule(child.modules)))
                   return;
                 item.children?.splice(index - delC, 1);
                 delC++;

@@ -100,6 +100,35 @@ let config: SidebarGroup[] = [
                 }]
             },
             {
+                item: "sidebar/traineeship/main",
+                modules: ['traineeship'],
+                children: [{
+                    item: "sidebar/traineeship/overview",
+                    url: "traineeship/overview",
+                    permission: ['student', 'teacher']
+                },
+                {
+                    item: "sidebar/traineeship/diary",
+                    url: "traineeship/diary",
+                    permission: ['student']
+                },
+                {
+                    item: "sidebar/traineeship/companies",
+                    url: "traineeship/companies",
+                    permission: ['student', 'teacher']
+                },
+                {
+                    item: "sidebar/traineeship/manage",
+                    url: "traineeship/manage",
+                    permission: ['all']
+                },
+                {
+                    item: "sidebar/traineeship/settings",
+                    url: "traineeship/settings",
+                    permission: ['all']
+                }]
+            },
+            {
                 item: 'sidebar/actionPlan',
                 permission: ['student', 'parent', 'teacher'],
                 url: 'actionplan',
