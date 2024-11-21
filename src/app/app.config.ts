@@ -17,7 +17,7 @@ import { HttpClient, provideHttpClient } from '@angular/common/http';
 import { TabsComponent } from '@Components/Tabs/Tabs';
 import { Dropdown } from '@Components/Dropdowns/Dropdown';
 import { MessageManager } from '@Schoolingo/Messages';
-import { Modules as mainModules } from './board/main/Modules/Modules';
+import { MainModules } from './board/main/Modules/Modules';
 import { Modules } from '@Schoolingo/Modules';
 
 export const appConfig: ApplicationConfig = {
@@ -40,8 +40,8 @@ export const appConfig: ApplicationConfig = {
     TabsComponent,
     Dropdown,
     MessageManager,
-    mainModules,
-    Modules
+    Modules,
+    MainModules
   ],
   
 };

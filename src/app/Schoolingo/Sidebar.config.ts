@@ -129,6 +129,42 @@ let config: SidebarGroup[] = [
                 }]
             },
             {
+                item: 'sidebar/library/main',
+                permission: ['all'],
+                modules: ['library'],
+                children: [{
+                    item: 'sidebar/library/overview',
+                    url: 'library/overview'
+                },{
+                    item: 'sidebar/library/listbooks',
+                    url: 'library/listbooks'
+                }, {
+                    item: 'sidebar/library/managebooks',
+                    url: 'library/managebooks'
+                }, {
+                    item: 'settings',
+                    url: 'library/settings'
+                }]
+            },
+            {
+                item: 'sidebar/canteen/main',
+                modules: ['canteen'],
+                permission: ['all'],
+                children: [{
+                    item: 'sidebar/canteen/order',
+                    url: 'canteen/order'
+                }, {
+                    item: 'sidebar/canteen/dispensing',
+                    url: 'canteen/dispensing'
+                }, {
+                    item: 'sidebar/canteen/meals',
+                    url: 'canteen/meals'
+                }, {
+                    item: 'settings',
+                    url: 'canteen/settings'
+                }]
+            },
+            {
                 item: 'sidebar/actionPlan',
                 permission: ['student', 'parent', 'teacher'],
                 url: 'actionplan',

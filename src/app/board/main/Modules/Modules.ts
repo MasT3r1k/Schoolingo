@@ -5,9 +5,16 @@ import { BackpackComponent } from './Backpack/Backpack';
 import { IntermComponent } from './Interm/Interm';
 import { AnnouncementsComponent } from './Announcements/Announcements';
 import { SubstitutionComponent } from './Substitution/Substitution';
+import { Modules } from '@Schoolingo/Modules';
+import { Injectable } from '@angular/core';
 export { Module, ModuleTitle };
 
-export class Modules {
+@Injectable()
+export class MainModules {
+
+    constructor(
+        public moduleManager: Modules
+    ) {}
 
     public modules: Module[] = [
         {
@@ -65,6 +72,7 @@ export class Modules {
                     link: ["", "traineeship", "main"]
                 }
             ],
+            modules: ['traineeship'],
             component: null
         },
         {
@@ -74,6 +82,17 @@ export class Modules {
                     link: ["", "canteen", "menu"]
                 }
             ],
+            modules: ['canteen'],
+            component: null
+        },
+        {
+            titles: [
+                {
+                    title: "sidebar/library/main",
+                    link: ["", "library", "overview"]
+                }
+            ],
+            modules: ['library'],
             component: null
         },
         {

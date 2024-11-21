@@ -1,22 +1,28 @@
 import { Injectable } from "@angular/core";
 import { SchoolInfo, SchoolYear } from './School.d';
 import moment from "moment";
+import { Modules } from "./Modules";
 export type { SchoolInfo, SchoolYear };
 
 @Injectable({ providedIn: 'root' })
 export class School {
+
+    constructor(
+        private modules: Modules
+    ) {}
     
     public schoolInfo!: SchoolInfo;
     public schoolYear!: SchoolYear;
     public errorReason: number = -1;
 
-    public setSchoolInfo(data: SchoolInfo): void {
+    public setSchoolInfo(data: SchoolInfo, modules: number): void {
         if (data.error) {
             this.errorReason = data.error;
             return;
         }
 
         this.schoolInfo = data;
+        this.modules.setModules(modules)
     }
 
     public setSchoolYear(data: SchoolYear): void {

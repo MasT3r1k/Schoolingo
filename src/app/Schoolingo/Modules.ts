@@ -3,27 +3,25 @@ import { ModuleConfig, modules } from "./Modules.d";
 import { modulesConfig } from "./Modules.config";
 export { ModuleConfig, modules }
 
-@Injectable()
+@Injectable({ providedIn: 'root' })
 export class Modules {
     
     private config: Record<string, ModuleConfig> = modulesConfig;
-    private moduleActive: boolean[] = [true];
+    private moduleActive: boolean[] = [];
 
-    // (this.moduleActive >>> 0).toString(2).split('');
+    public setModules(data: number): void {
+        (data >>> 0).toString(2).split('').forEach((bool: string) => {
+            this.moduleActive.unshift(bool == "1" ? true : false);
+        });
+    }
+
     public checkModule(modules: modules[]): boolean {
         let isActive = true;
         let keys = Object.keys(this.config);
-        console.log(modules)
         modules.forEach((module: modules) => {
-            console.log(module)
             let index = keys.indexOf(module);
-            console.log(index)
-            if (index === -1) isActive = false;
-            if (!this.moduleActive[index]) {
-                isActive = false;
-            }
+            if (index === -1 || !this.moduleActive[index]) isActive = false;
         })
-        console.log(isActive);
         return isActive;
     }
 

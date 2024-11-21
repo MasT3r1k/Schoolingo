@@ -48,8 +48,8 @@ export class AppComponent implements OnInit {
 
   ngOnInit(): void {
 
-    this.http.get<SchoolInfo>(config.api + 'v1/getSchoolInfo', { withCredentials: true }).subscribe((data: SchoolInfo): void => {
-      this.school.setSchoolInfo(data);
+    this.http.get<SchoolInfo>(config.api + 'v1/getSchoolInfo', { withCredentials: true }).subscribe((data: (SchoolInfo & { modules?: number })): void => {
+      this.school.setSchoolInfo(data, data.modules ?? 0);
       this.afterLoadedSchool = true;
     }, this.httpError);
 

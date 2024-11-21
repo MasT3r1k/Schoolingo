@@ -1,33 +1,35 @@
 <div class="grid">
     @for (module of modules.modules; track $index) {
-        <div class="module">
-            <div class="module-header">
-                <h2 [ngClass]="{'has-link': module.titles[module.selectedTab?.getValue() ?? 0].link != undefined}" [routerLink]="module.titles[module.selectedTab?.getValue() ?? 0].link">{{ locale.getLocale(module.titles[module.selectedTab?.getValue() ?? 0].title) }}</h2>
-                <div class="flex-items">
-                    @if (module.titles.length > 1 && module.selectedTab) {
-                        <schoolingo-tabs [options]="getTitles(module)" [value]="module.selectedTab"></schoolingo-tabs>
-                    }
-                    <div [ngClass]="{'item-btn': true, active: dropdown.isOpen(timetableOptionsName)}" [attr.dropdown]="timetableOptionsName" (click)="$event.stopPropagation();dropdown.toggle(timetableOptionsName)">
-                        <div class="icon">
-                            <i class="ti ti-dots-vertical"></i>
+        @if (module.modules && modules.moduleManager.checkModule(module.modules) || !module.modules) {
+            <div class="module">
+                <div class="module-header">
+                    <h2 [ngClass]="{'has-link': module.titles[module.selectedTab?.getValue() ?? 0].link != undefined}" [routerLink]="module.titles[module.selectedTab?.getValue() ?? 0].link">{{ locale.getLocale(module.titles[module.selectedTab?.getValue() ?? 0].title) }}</h2>
+                    <div class="flex-items">
+                        @if (module.titles.length > 1 && module.selectedTab) {
+                            <schoolingo-tabs [options]="getTitles(module)" [value]="module.selectedTab"></schoolingo-tabs>
+                        }
+                        <div [ngClass]="{'item-btn': true, active: dropdown.isOpen(timetableOptionsName)}" [attr.dropdown]="timetableOptionsName" (click)="$event.stopPropagation();dropdown.toggle(timetableOptionsName)">
+                            <div class="icon">
+                                <i class="ti ti-dots-vertical"></i>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
-            @defer {
-                @if (module.component == null) {
+                @defer {
+                    @if (module.component == null) {
+                        <div class="module-body skeleton"></div>
+                    } @else {
+                        <div class="module-body">
+                            <ng-component [ngComponentOutlet]="getComponent(module)"></ng-component>
+                        </div>
+                    }
+                } @placeholder {
                     <div class="module-body skeleton"></div>
-                } @else {
-                    <div class="module-body">
-                        <ng-component [ngComponentOutlet]="getComponent(module)"></ng-component>
-                    </div>
+                } @error {
+                    <div class="module-body skeleton"></div>
                 }
-            } @placeholder {
-                <div class="module-body skeleton"></div>
-            } @error {
-                <div class="module-body skeleton"></div>
-            }
-        </div>
+            </div>
+        }
     }
 </div>
 
