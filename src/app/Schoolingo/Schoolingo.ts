@@ -4,7 +4,7 @@ import { SocketService } from "./Socket";
 import { Theme } from "./Theme";
 import { personDetails, user, UserService } from "./User";
 import { Sidebar } from "./Sidebar";
-import { Absence, ClassbookAPI, ClassbookLesson, Mark, Substitution, TimetableAPI, TimetableHours, TimetableLesson } from './Schoolingo.d';
+import { Absence, ClassbookAPI, ClassbookLesson, Mark, studentService, Substitution, TimetableAPI, TimetableHours, TimetableLesson } from './Schoolingo.d';
 import { School } from "./School";
 import { addZeros, isOdd } from "./Utils";
 import { BehaviorSubject, Subscription } from "rxjs";
@@ -14,7 +14,7 @@ import * as utils from "@Schoolingo/Utils";
 import { removeDiacritics } from "./SearchFilter";
 import { degree } from "./User";
 import { MessageManager } from "./Messages";
-export { TimetableAPI, ClassbookAPI, ClassbookLesson, TimetableLesson, Mark, Absence, Substitution }
+export { TimetableAPI, ClassbookAPI, ClassbookLesson, TimetableLesson, Mark, Absence, Substitution, studentService }
 
 @Injectable()
 export class Schoolingo {
@@ -26,17 +26,21 @@ export class Schoolingo {
         this.timetableSubjects = {};
         this.timetableHours = [];
         this.classbookLessons = {};
-        this.classbookAbsence = {};
+        // this.classbookAbsence = {};
         this.todayWeek = moment().isoWeek();
         this.subjects = {};
         this.substitution = {};
         this.isOfflineMode = false;
         this.marks = [];
+        this.absence = {};
+        this.absenceSubjects = {};
+        this.studentService = { status: false };
     }
 
     public subscribers: Subscription[] = [];
     public absenceConfig: AbsenceConfig[] = absence;
 
+    public absenceSubjects: Record<string, { absence: number, lessons: number }> = {};
     public absence: Record<string, Absence[]> = {};
 
     constructor(
@@ -117,19 +121,15 @@ export class Schoolingo {
     }
 
     public classbookLessons: Record<string, ClassbookLesson[]> = {};
-    public classbookAbsence: Record<string, number[]> = {};
 
     // Absence
     public getAbsence(day: number, hour: number): number {
         let date = utils.getDayOfWeek(this.timetableSelectedWeek.getValue(), day).format('YYYY-MM-DD');
-        if (!this.classbookAbsence[date]) {
+        if (!this.absence[date]) {
             return -1
         }
-        let absence: number = this.classbookAbsence[date][hour];
-        if (absence === undefined || absence == -1) {
-            return -1;
-        }
-        return absence;
+        let absence: number = this.absence[date][hour].type;
+        return absence ?? -1;
     }
 
     public isClassbook(day: number, hour: number): boolean {
@@ -218,7 +218,6 @@ export class Schoolingo {
             let subjectShortcut: string = lesson.subjectShortcut;
             let teacher: number = lesson.teacher;
             let substitution = this.substitution?.[date.format('YYYY-MM-DD')];
-            console.log(substitution?.[lesson.hour]);
 
             if (substitution?.[lesson.hour]) {
                 subjectName = this.subjects?.[substitution[lesson.hour].subjectId]?.[0];
@@ -347,5 +346,7 @@ export class Schoolingo {
     public marks: Mark[] = [];
 
     public substitution: Record<string, Substitution[]> = {};
+
+    public studentService: studentService = { status: false };
 
 }

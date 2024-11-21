@@ -1,5 +1,6 @@
 import moment, { Moment } from "moment";
 import { themes } from "./Theme";
+import { AbsenceType } from "./Absence";
 
 export type Person = {
     id: number;
@@ -87,4 +88,12 @@ export type Substitution = {
     hour: number;
     date: moment.Moment;
     created: moment.Moment;
+}
+
+export type studentService = {
+    status: false;
+} | {
+    status: true;
+    start: moment.Moment;
+    end: moment.Moment;
 }

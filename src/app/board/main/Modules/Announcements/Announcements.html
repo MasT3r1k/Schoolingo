@@ -1,9 +1,34 @@
 <main>
     <div class="items">
-        <div class="item">
-            <span>
-                Máte x hodin neomluvené absence
-            </span>
-        </div>
+        @if (getUnexcusedAbsence()) {
+            <div class="item red">
+                <div class="icon">
+                    <i class="ti ti-alert-triangle"></i>
+                </div>
+                <div class="text">
+                    {{ getDescription("unexcusedAbsence") }}                
+                </div>
+            </div>
+        }
+        @if (schoolingo.messages.unreadMessage.getValue() > 0) {
+            <div class="item blue-info">
+                <div class="icon">
+                    <i class="ti ti-info-circle"></i>
+                </div>
+                <div class="text">
+                    {{ getDescription("unreadMessages") }}               
+                </div>
+            </div>
+        }
+        @if (schoolingo.studentService.status) {
+            <div class="item blue-info">
+                <div class="icon">
+                    <i class="ti ti-info-circle"></i>
+                </div>
+                <div class="text">
+                    {{ getDescription("studentService") }}
+                </div>
+            </div>
+        }
     </div>
 </main>
