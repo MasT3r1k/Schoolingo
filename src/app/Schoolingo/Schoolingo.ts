@@ -103,7 +103,7 @@ export class Schoolingo {
 
     // Timetable
     public timetableAPI: TimetableAPI[] = [];
-    public timetableSelectedWeek = new BehaviorSubject(moment().week());
+    public timetableSelectedWeek = new BehaviorSubject(moment().isoWeek());
     private timetableLessons: TimetableLesson[][][] = [];
     private timetableSubjects: Record<string, number[]> = {};
 
