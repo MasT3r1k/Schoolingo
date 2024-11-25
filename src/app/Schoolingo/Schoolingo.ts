@@ -215,7 +215,6 @@ export class Schoolingo {
             let subjectShortcut: string = lesson.subjectShortcut;
             let teacher: number = lesson.teacher;
             let substitution = this.substitution?.[date.format('YYYY-MM-DD')];
-
             if (substitution?.[lesson.hour]) {
                 subjectName = this.subjects?.[substitution[lesson.hour].subjectId]?.[0];
                 subjectShortcut = this.subjects?.[substitution[lesson.hour].subjectId]?.[1];
