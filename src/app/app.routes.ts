@@ -34,6 +34,12 @@ export const routes: Routes = [
           path: 'main', component: BoardMain
         },
         {
+          path: 'persons', component: Persons
+        },
+        {
+          path: 'discordconnect', component: DiscordConnectComponent
+        },
+        {
           path: 'marks',
           children: [
             {
