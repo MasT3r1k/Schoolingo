@@ -122,7 +122,7 @@ export class Schoolingo {
     // Absence
     public getAbsence(day: number, hour: number): number {
         let date = utils.getDayOfWeek(this.timetableSelectedWeek.getValue(), day).format('YYYY-MM-DD');
-        if (!this.absence[date]) {
+        if (!this.absence[date] || !this.absence[date][hour]) {
             return -1
         }
         let absence: number = this.absence[date][hour].type;
