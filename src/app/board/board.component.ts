@@ -99,7 +99,8 @@ export class BoardComponent {
         userId = this.schoolingo.getStudentId();
       }
 
-      this.schoolingo.socketService.emit("timetable:getLessons", { userId });
+          // Get timetable
+      this.schoolingo.socketService.emit('timetable:getLessons', { userId, week: moment().isoWeek(), year: moment().year() });
       this.schoolingo.socketService.emit("classes:getClassService", { userId });
       this.schoolingo.socketService.emit("timetable:getClassbook", { userId, week: this.schoolingo.timetableSelectedWeek.getValue() });
       this.schoolingo.socketService.emit("grades:getGrades", { userId, week: this.schoolingo.timetableSelectedWeek.getValue() });
