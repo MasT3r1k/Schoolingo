@@ -30,11 +30,6 @@ export class TimetableComponent implements OnInit {
     this.listeners.push(this.schoolingo.timetableSelectedWeek.subscribe((week: number): void => {
       this.day.next(this.day.getValue().set('isoWeeks', week));
     }));
-
-    // Get timetable
-    let userId = this.schoolingo.getStudentId();
-    this.schoolingo.socketService.emit('timetable:getLessons', { userId, week: this.day.getValue().isoWeek(), year: this.day.getValue().year() });
-
   }
 
   ngOnDestroy(): void {
