@@ -1,0 +1,38 @@
+<div class="card">
+    <div class="card-top"></div>
+    <div class="card-header">
+        <h2 class="mb">{{ schoolingo.locale.getLocale('sidebar/library/loans') }}</h2>
+    </div>
+    <div class="card-body">
+        <div class="items">
+
+            <table>
+
+                <thead>
+
+                    <th>Název</th>
+                    <th>Autor</th>
+                    <th>ISBN</th>
+                    <th>Žánr</th>
+                    <th>Stav</th>
+
+                </thead>
+
+                <tbody>
+                    @for (item of loans; track $index) {
+                        <tr>
+                            <td>{{ item.name }}</td>
+                            <td>Želva Žlutá</td>
+                            <td>978-80-259-0505-3</td>
+                            <td>Thriller</td>
+                            <td>{{ schoolingo.locale.getLocale('library/status/' + item.status) }}</td>
+                        </tr>
+                    } @empty {
+                        <div class="alert error">Nemáte žádné knihy vypůjčené</div>
+                    }
+                </tbody>
+
+            </table>
+        </div>
+    </div>
+</div>
