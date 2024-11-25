@@ -22,6 +22,7 @@ export class Schoolingo {
     public resetToDefault(): void {
         this.modal = '';
         this.timetableAPI = [];
+        this.timetableSelectedWeek.next(moment().isoWeek());
         this.timetableLessons = [];
         this.timetableSubjects = {};
         this.timetableHours = [];
