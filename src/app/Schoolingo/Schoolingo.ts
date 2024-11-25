@@ -61,11 +61,7 @@ export class Schoolingo {
         this.subscribers.push(this.timetableSelectedWeek.subscribe((week: number) => {
             this.refreshTimetableLessons();
 
-            let data = { week, child: -1 };
-            if (userService.getUser()?.type == 'parent') {
-                data.child = this.userService.children[this.userService.selectedChild].personId;
-            }
-            this.socketService.emit('timetable:getClassbook', data);
+            this.socketService.emit('timetable:getClassbook', { week, userId: this.getStudentId() });
         }));
     }
 
