@@ -24,6 +24,13 @@
         <div class="right">
             <div class="options">
 
+                <div class="item-btn" [routerLink]="['', 'discordconnect']" [routerLinkActive]="'active'">
+                    <div class="icon">
+                        <i class="ti ti-brand-discord"></i>
+                    </div>
+                    <div class="name">{{ schoolingo.locale.getLocale('dropdowns/discord/main') }}</div>
+                </div>
+
                 @if (schoolingo.userService.getUser()?.type == 'parent') {
                     <div class="item-btn" (click)="schoolingo.modal = 'main:switchChildren'">
                         <div class="icon">
@@ -141,8 +148,8 @@
                                         </div>
                                         <div class="right">
                                             @if (schoolingo.userService.selectedChild !== $index) {
-                                                <div class="btn" (click)="schoolingo.userService.selectedChild = $index">Přepnout</div>
-                                            }
+                                                <div class="btn" (click)="schoolingo.userService.selectedChild = $index">{{ schoolingo.locale.getLocale('buttons/switch') }}</div>
+                                            } 
                                         </div>
                                     </div>
                                 }
