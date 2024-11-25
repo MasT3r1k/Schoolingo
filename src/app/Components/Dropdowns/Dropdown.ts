@@ -47,7 +47,7 @@ export class Dropdown {
         text.split(' ').forEach((word: string) => {
             if (word.startsWith("[key:") && word.endsWith(']')) {
                 let key = word.slice(5, -1);
-                html = this.sanitized.bypassSecurityTrustHtml(html + "<div class='key'>" + key + "</div>");
+                html = html + "<div class='key'>" + key + "</div>";
             }
         })
         return html;
