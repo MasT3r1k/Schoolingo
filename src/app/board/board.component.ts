@@ -221,6 +221,11 @@ export class BoardComponent {
       }
     }));
 
+    this.subscribers.push(this.schoolingo.timetableSelectedWeek.subscribe((val: number) => {
+      let userId = this.schoolingo.getStudentId();
+      this.schoolingo.socketService.emit('timetable:getLessons', { userId, week: val, year: moment().year() });
+    }))
+
   }
 
   ngOnDestroy(): void {
