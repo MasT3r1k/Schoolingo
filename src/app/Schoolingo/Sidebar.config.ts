@@ -12,8 +12,8 @@ let config: SidebarGroup[] = [
                 permission: ['all']
             },
             {
-                item: "sidebar/pupilcard",
-                url: 'pupilcard',
+                item: "sidebar/persons",
+                url: 'persons',
                 permission: ['teacher']
             },
             {
@@ -120,12 +120,12 @@ let config: SidebarGroup[] = [
                 {
                     item: "sidebar/traineeship/manage",
                     url: "traineeship/manage",
-                    permission: ['all']
+                    permission: ['principal']
                 },
                 {
                     item: "sidebar/traineeship/settings",
                     url: "traineeship/settings",
-                    permission: ['all']
+                    permission: ['principal']
                 }]
             },
             {
@@ -133,17 +133,19 @@ let config: SidebarGroup[] = [
                 permission: ['all'],
                 modules: ['library'],
                 children: [{
-                    item: 'sidebar/library/overview',
-                    url: 'library/overview'
-                },{
-                    item: 'sidebar/library/listbooks',
-                    url: 'library/listbooks'
+                    item: 'sidebar/library/loans',
+                    url: 'library/loans'
+                }, {
+                    item: 'sidebar/library/books',
+                    url: 'library/books'
                 }, {
                     item: 'sidebar/library/managebooks',
-                    url: 'library/managebooks'
+                    url: 'library/managebooks',
+                    permission: ['principal']
                 }, {
                     item: 'settings',
-                    url: 'library/settings'
+                    url: 'library/settings',
+                    permission: ['principal']
                 }]
             },
             {
@@ -168,14 +170,21 @@ let config: SidebarGroup[] = [
                 item: 'sidebar/actionPlan',
                 permission: ['student', 'parent', 'teacher'],
                 url: 'actionplan',
-            }, {
+            },
+            {
                 item: 'sidebar/calendar',
                 permission: ['student', 'parent', 'teacher'],
                 url: 'calendar',
-            }, {
+            },
+            {
                 item: 'sidebar/documents',
                 permission: ['all'],
                 url: 'documents',
+            },
+            {
+                item: 'dropdowns/discord/main',
+                permission: ['all'],
+                url: 'discordconnect',
             },
             {
                 item: 'sidebar/user/main',
