@@ -12,7 +12,6 @@ import { School } from '@Schoolingo/School';
 import { SidebarItem } from '@Schoolingo/Sidebar';
 import { SocketUpdateTheme, SocketUpdateLocale } from '@Schoolingo/Socket';
 import { child, personDetails } from '@Schoolingo/User';
-import { user } from '@Schoolingo/User';
 import { Country } from 'country-state-city';
 import moment from 'moment';
 import { Subscription } from 'rxjs';
