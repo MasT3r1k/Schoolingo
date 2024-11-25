@@ -27,6 +27,9 @@ export class SocketService {
     this.socket = io(socketIP, {
       withCredentials: true
     });
+    this.socket.onAny((event, ...args) => {
+        console.log('Event ' + event + ' got ' + args);
+    })
   }
 
 
