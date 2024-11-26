@@ -1,0 +1,44 @@
+<div class="items">
+    @if (options.search) {
+        <div class="search mb">
+            <input type="text" name="search" placeholder="Vyhledávejte podle názvu knihy či ISBN">
+        </div>
+    }
+
+    <table>
+        <thead>
+            @for (item of head; track $index) {
+                <th>{{ locale.getLocale(item) }}</th>
+            }
+        </thead>
+        <tbody>
+            @for (item of visibleData; track $index) {
+                <tr>
+                    @for (info of item; track $index) {
+                        @if (info.isLocale) {
+                            <td>{{ locale.getLocale(info.value) }}</td>
+                        } @else {
+                            <td>{{ info.value }}</td>
+                        }
+                    }
+                </tr>
+            }
+        </tbody>
+    </table>
+    <div class="bottom">
+        <div class="left">
+            <p>Zobrazeno {{ this.visibleData.length }} z {{ this.data.getValue().length }}, stránka {{ page }} z {{ getMaxPages() }}</p>
+        </div>
+        <div class="right">
+            <div [ngClass]="{page: true, center: true, previous: true, disabled: page == 1}" (click)="goPage(page - 1)">
+                <i class="ti ti-chevron-left"></i>
+            </div>
+            @for (_ of [].constructor(getMaxPages()); track index;let index = $index;) {
+                <div [ngClass]="{page: true, center: true, active: page === index + 1}" [id]="(page == (index + 1)) ? 'currentPage' : ''" [attr.contenteditable]="(page == (index + 1)) ? isEditingPage : false" (click)="goPage(index + 1)" (keydown.enter)="savePage()">{{ index + 1 }}</div>
+            }
+            <div [ngClass]="{page: true, center: true, next: true, disabled: page == getMaxPages() }" (click)="goPage(page + 1)">
+                <i class="ti ti-chevron-right"></i>
+            </div>
+        </div>
+    </div>    
+</div>

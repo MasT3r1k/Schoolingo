@@ -1,38 +1,14 @@
 <div class="card">
     <div class="card-top"></div>
-    <div class="card-header">
-        <h2 class="mb">{{ schoolingo.locale.getLocale('sidebar/library/loans') }}</h2>
+    <div class="card-header mb">
+        <h2>{{ schoolingo.locale.getLocale('sidebar/library/loans') }}</h2>
+        <div class="flex-items">
+            <schoolingo-tabs [options]="['active', 'all']" [value]="tabValue"></schoolingo-tabs>
+        </div>
     </div>
     <div class="card-body">
-        <div class="items">
 
-            <table>
+        <schoolingo-datalist (datalist)="receivedDatalist($event)" [options]="{ search: false, url: 'library:getLoans', ignore: tabValue.getValue() ? [] : ['returned', 'overdue'] }" [head]="['library/name', 'library/authors', 'library/ISBN', 'library/genre', 'library/status/main']" [data]="loans"></schoolingo-datalist>
 
-                <thead>
-
-                    <th>Název</th>
-                    <th>Autor</th>
-                    <th>ISBN</th>
-                    <th>Žánr</th>
-                    <th>Stav</th>
-
-                </thead>
-
-                <tbody>
-                    @for (item of loans; track $index) {
-                        <tr>
-                            <td>{{ item.name }}</td>
-                            <td>Želva Žlutá</td>
-                            <td>978-80-259-0505-3</td>
-                            <td>Thriller</td>
-                            <td>{{ schoolingo.locale.getLocale('library/status/' + item.status) }}</td>
-                        </tr>
-                    } @empty {
-                        <div class="alert error">Nemáte žádné knihy vypůjčené</div>
-                    }
-                </tbody>
-
-            </table>
-        </div>
     </div>
 </div>
