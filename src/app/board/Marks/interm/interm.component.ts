@@ -119,8 +119,20 @@ export class IntermComponent implements OnInit {
     let total = 0;
     let total_devide = 0;
     grades.forEach((_) => {
+      let mark = parseInt(_.mark);
       if (_.type === 0) {
-        total += _.mark * _.weight;
+        if (_.mark.length > 2) {
+          return;
+        }
+        
+        if (_.mark.endsWith("+")) {
+          total -= 0.25 * _.weight;
+        }
+        if (_.mark.endsWith("-")) {
+          mark = parseInt(_.mark.slice(0, -1));
+          total += 0.5 * _.weight;
+        }
+        total += mark * _.weight;
         total_devide += _.weight;
       }
     });
