@@ -222,6 +222,7 @@ export class BoardComponent {
     }));
 
     this.subscribers.push(this.schoolingo.timetableSelectedWeek.subscribe((val: number) => {
+      if (val === -1) return;
       let userId = this.schoolingo.getStudentId();
       this.schoolingo.socketService.emit('timetable:getLessons', { userId, week: val, year: moment().year() });
     }))
