@@ -70,7 +70,7 @@ export type Absence = {
 }
 
 export type Mark = {
-    mark: number;
+    mark: string;
     weight: number;
     subject: number;
     teacher: number;
