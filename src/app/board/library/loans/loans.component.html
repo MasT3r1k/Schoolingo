@@ -10,7 +10,7 @@
 
         <div class="form-group search mb">
             <input type="text" name="search" [formControl]="search" [placeholder]="schoolingo.locale.getLocale('library/searchBook')">
-            <div class="btn submit" role="button">{{ schoolingo.locale.getLocale('library/bookNow') }}</div>
+            <div class="btn submit blue-info" role="button">{{ schoolingo.locale.getLocale('library/bookNow') }}</div>
         </div>
 
         <schoolingo-datalist (datalist)="receivedDatalist($event)" [options]="{ search: false, url: 'library:getLoans', ignore: tabValue.getValue() ? [] : ['returned', 'overdue'] }" [head]="['library/name', 'library/authors', 'library/ISBN', 'library/genre', 'library/status/main']" [data]="loans" [clickFc]="onClick" [metadata]="metadata" [search]="search"></schoolingo-datalist>
