@@ -77,4 +77,14 @@ export class SettingsComponent implements OnInit {
     this.listeners.forEach((subscribe: Subscription) => subscribe.unsubscribe());
   }
 
+  public selectLanguage(lng: languages): void {
+    if (this.schoolingo.locale.getUserLocale() == lng) {return;}
+    if (this.schoolingo.getOfflineMode()) {
+      this.schoolingo.locale.setUserLocale(lng);
+      return;
+    }
+    this.schoolingo.socketService.emit('main:updateUser', { type: 'locale', lng })
+  }
+
+
 }
