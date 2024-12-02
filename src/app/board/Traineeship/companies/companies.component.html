@@ -1,1 +1,16 @@
-<p>companies works!</p>
+<div class="card">
+    <div class="card-top"></div>
+    <div class="card-header mb">
+        <h2>{{ schoolingo.locale.getLocale('sidebar/traineeship/companies') }}</h2>
+    </div>
+    <div class="card-body">
+
+        <div class="form-group search mb">
+            <input type="text" name="search" [formControl]="search" [placeholder]="schoolingo.locale.getLocale('traineeship/search')">
+            <div class="btn submit blue-info" role="button">{{ schoolingo.locale.getLocale('traineeship/requestAddCompany') }}</div>
+        </div>
+
+        <schoolingo-datalist (datalist)="receivedDatalist($event)" [options]="{ search: false, url: 'traineeship:getCompanies', ignore: [] }" [head]="['traineeship/companyName', 'traineeship/officeAddress', 'traineeship/CIN', 'web']" [data]="companies" [metadata]="metadata" [search]="search"></schoolingo-datalist>
+
+    </div>
+</div>
