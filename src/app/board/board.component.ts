@@ -3,11 +3,12 @@ import { Component } from '@angular/core';
 import { NavigationEnd, Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { Dropdown } from '@Components/Dropdowns/Dropdown';
 import { ModalComponent } from '@Components/Modal/Modal';
-import { Substitution } from '@Schoolingo';
+import { BookInfo, Substitution } from '@Schoolingo';
 import { Absence, ClassbookAPI, Mark } from '@Schoolingo';
 import { Schoolingo, TimetableAPI } from '@Schoolingo';
 import { alertManager, AlertManagerClass } from '@Schoolingo/Alert';
 import { languages } from '@Schoolingo/Locale';
+import { Modules } from '@Schoolingo/Modules';
 import { School } from '@Schoolingo/School';
 import { SidebarItem } from '@Schoolingo/Sidebar';
 import { SocketUpdateTheme, SocketUpdateLocale } from '@Schoolingo/Socket';
@@ -60,7 +61,8 @@ export class BoardComponent {
     public school: School,
     public schoolingo: Schoolingo,
     private routerImport: Router,
-    public dropdown: Dropdown
+    public dropdown: Dropdown,
+    public modules: Modules
   ) {
 
     this.router = this.routerImport;
@@ -225,7 +227,19 @@ export class BoardComponent {
       if (val === -1) return;
       let userId = this.schoolingo.getStudentId();
       this.schoolingo.socketService.emit('timetable:getLessons', { userId, week: val, year: moment().year() });
-    }))
+    }));
+
+    if (this.modules.checkModule(["library"])) {
+      this.subscribers.push(this.schoolingo.socketService.addFunction("library:getBookInfo").subscribe((data: BookInfo & {[key: string]: Date | moment.Moment} | any) => {
+        console.log(data);
+        data.created = moment(data[0].created);
+        data.acquisitionDate = moment(data[0].acquisitionDate);
+        data.date_loan = moment(data[0].date_loan);
+        data.date_has_to_be_returned = moment(data[0].date_has_to_be_returned);
+        data.date_return = moment(data[0].date_return);
+        this.schoolingo.bookInfo.next(data);
+      }));
+    }
 
   }
 

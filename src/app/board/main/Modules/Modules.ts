@@ -69,7 +69,7 @@ export class MainModules {
             titles: [
                 {
                     title: "sidebar/traineeship/main",
-                    link: ["", "traineeship", "main"]
+                    link: ["", "traineeship", "overview"]
                 }
             ],
             modules: ['traineeship'],
