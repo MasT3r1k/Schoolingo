@@ -33,7 +33,7 @@ export class Locale {
     private logName = 'Locale';
 
     // Big future problem with more languages and locales :(
-    private locales: Record<languages, any> = {
+    public locales: Record<languages, { name: string;flag: string;file: string } | {} | any> = {
         cs: CzechLanguage,
         'en-gb': EnglishLanguage,
         null: {}
@@ -46,14 +46,15 @@ export class Locale {
     public getLanguages(): languages[] {
         let list: languages[] = [];
         Object.keys(this.locales).forEach((value) => {
+            if (value == "null") return;
             list.push(value as languages)
         });
         return list;
     }
 
 
-    private locale: any = {};
-    public getLocaleConfig(): any {
+    private locale: BehaviorSubject<any> = new BehaviorSubject({});
+    public getLocaleConfig(): BehaviorSubject<any> {
         return this.locale;
     }
 
@@ -63,7 +64,7 @@ export class Locale {
      */
     public setUserLocale(lng: languages) {
         this.http.get(localeURL + this.locales[lng].file).subscribe((data: any) => {
-            this.locale = data;
+            this.locale.next(data);
             this.language.next(lng);
             if (lng != "null") {
                 moment.locale(lng);
@@ -71,7 +72,7 @@ export class Locale {
             this.logger.send(this.logName, 'Language ' + lng + ' was loaded and saved.');
             this.storage.save(this.storage.settingsCacheName, {locale: lng});
         }, (err: any): void => {
-            this.locale = {};
+            this.locale.next({});
             this.language.next("null");
             this.logger.send(this.logName, 'Language ' + lng + ' failed to load.');
             console.error(err);
@@ -113,7 +114,7 @@ export class Locale {
             this.setDefaultLocale();
         }
         let pathSplitted = path.split('/');
-        let nextLocale = this.locale;
+        let nextLocale = this.locale.getValue();
 
         pathSplitted.forEach(p => {
             if (nextLocale[p]) {

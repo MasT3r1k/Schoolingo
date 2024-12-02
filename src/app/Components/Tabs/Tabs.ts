@@ -49,7 +49,11 @@ export class TabsComponent implements OnInit {
         });
 
         this.locale.language.subscribe(() => {
-            this.refreshGlider();
+            setTimeout(() => this.refreshGlider());
+        });
+
+        this.locale.getLocaleConfig().subscribe(() => {
+            setTimeout(() => this.refreshGlider())
         });
         
     }
