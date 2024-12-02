@@ -5,11 +5,13 @@ import { FormButton, FormInput, FormManager } from '@Components/Forms/FormManage
 import { TabsComponent } from '@Components/Tabs/Tabs';
 import { Schoolingo } from '@Schoolingo';
 import { BehaviorSubject, Subscription } from 'rxjs';
+import { ThemeSelector } from './theme/theme';
+import { languages } from '@Schoolingo/Locale';
 
 @Component({
   selector: 'app-settings',
   standalone: true,
-  imports: [TabsComponent, NgClass, FormManager],
+  imports: [TabsComponent, NgClass, FormManager, ThemeSelector],
   templateUrl: './settings.component.html',
   styleUrls: ['./settings.component.css', '../../../Styles/card.css']
 })
