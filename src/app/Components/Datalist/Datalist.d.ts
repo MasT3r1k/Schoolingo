@@ -1,10 +1,25 @@
-export interface Data {
+export type Data = {
     value: string;
-    isLocale: boolean;
-}
+} & ({
+    isLocale: true;
+    localePrefix?: string;
+} | {
+    isLocale: false;
+}) | {
+    id: number;
+};
 
 export interface DatalistOptions {
     url?: string;
     search?: boolean;
     ignore?: string[];
+}
+
+export interface dataAPI {
+    rows: number;
+    data: any[];
+}
+
+export interface Metadata {
+    rows: number;
 }

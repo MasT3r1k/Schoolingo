@@ -1,15 +1,16 @@
 import { Component, EventEmitter, Input, OnInit, Output } from "@angular/core";
 import { Locale } from "@Schoolingo/Locale";
-import { Data, DatalistOptions } from "@Components/Datalist/Datalist.d";
-import { BehaviorSubject, Subscription } from "rxjs";
+import { Data, DatalistOptions, Metadata, dataAPI } from "@Components/Datalist/Datalist.d";
+import { BehaviorSubject, debounceTime, Subscription } from "rxjs";
 import { NgClass } from "@angular/common";
 import { SocketService } from "@Schoolingo/Socket";
-export { Data, DatalistOptions }
+import { FormControl, FormsModule, ReactiveFormsModule } from "@angular/forms";
+export { Data, DatalistOptions, Metadata, dataAPI }
 @Component({
     selector: 'schoolingo-datalist',
     templateUrl: './Datalist.html',
     standalone: true,
-    imports: [NgClass],
+    imports: [NgClass, FormsModule, ReactiveFormsModule],
     styleUrls: ['./Datalist.css', '../../Styles/input.css'],
     outputs: ['datalist']
 })
@@ -24,7 +25,10 @@ export class DatalistComponent implements OnInit {
 
     @Input() options: DatalistOptions = {};
     @Input() head: string[] = [];
+    @Input() metadata: Metadata = { rows: 0 };
     @Input() data: BehaviorSubject<any> = new BehaviorSubject([]);
+    @Input() search: FormControl<string> = new FormControl();
+    @Input() clickFc!: Function;
     @Output() datalist = new EventEmitter<this>();
 
     public page: number = 1;
@@ -57,7 +61,7 @@ export class DatalistComponent implements OnInit {
 
     public loadData(): void {
         if (this.options.url) {
-            this.socketService.emit(this.options.url, { limit: this.dataPerPage, page: this.page, ignore: this.options.ignore ?? [] });
+            this.socketService.emit(this.options.url, { limit: this.dataPerPage, page: this.page, ignore: this.options.ignore ?? [], search: this.search.value ?? "" });
         }
     }
 
@@ -67,6 +71,12 @@ export class DatalistComponent implements OnInit {
 
         this.page = page;
         this.refreshData();
+    }
+
+    public clickEvent(index: number): void {
+        if (!this.clickFc) return;
+        let ids = this.data.getValue()[index].filter((_: any) => _.id);
+        this.clickFc(ids);
     }
 
     ngOnInit(): void {
@@ -82,6 +92,10 @@ export class DatalistComponent implements OnInit {
                 this.refreshData();
             }));
         }
+
+        this.listeners.push(this.search.valueChanges.pipe(debounceTime(300)).subscribe(() => {
+            this.loadData();
+        }));
         
     }
 
