@@ -4,7 +4,7 @@ import { SocketService } from "./Socket";
 import { Theme } from "./Theme";
 import { personDetails, user, UserService } from "./User";
 import { Sidebar } from "./Sidebar";
-import { Absence, ClassbookAPI, ClassbookLesson, Mark, studentService, Substitution, TimetableAPI, TimetableHours, TimetableLesson } from './Schoolingo.d';
+import { Absence, BookInfo, ClassbookAPI, ClassbookLesson, Mark, studentService, Substitution, TimetableAPI, TimetableHours, TimetableLesson } from './Schoolingo.d';
 import { School } from "./School";
 import { addZeros, isOdd } from "./Utils";
 import { BehaviorSubject, Subscription } from "rxjs";
@@ -15,7 +15,7 @@ import { removeDiacritics } from "./SearchFilter";
 import { degree } from "./User";
 import { MessageManager } from "./Messages";
 import { Modal } from "@Components/Modal/Modal";
-export { TimetableAPI, ClassbookAPI, ClassbookLesson, TimetableLesson, Mark, Absence, Substitution, studentService }
+export { TimetableAPI, ClassbookAPI, ClassbookLesson, TimetableLesson, Mark, Absence, Substitution, studentService, BookInfo }
 
 @Injectable()
 export class Schoolingo {
@@ -345,5 +345,12 @@ export class Schoolingo {
     public substitution: Record<string, Substitution[]> = {};
 
     public studentService: studentService = { status: false };
+
+    /** LIBRARY */
+    public bookInfo: BehaviorSubject<BookInfo | null> = new BehaviorSubject<BookInfo | null>(null);
+    public showBook(id: any[], type: 'book' | 'copy'): void {
+        this.socketService.emit("library:getBookInfo", { type, id: id[0], loan: id[1] });
+        
+    }
 
 }

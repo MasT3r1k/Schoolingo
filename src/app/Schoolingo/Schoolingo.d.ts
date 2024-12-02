@@ -97,3 +97,24 @@ export type studentService = {
     start: moment.Moment;
     end: moment.Moment;
 }
+
+export type BookInfo = {
+    name: string;
+    subtitle: string;
+    year: number;
+    isbn: string;
+    publisher: string;
+    editionNumber: number;
+    pages: number;
+    annotation: string;
+    tags: string;
+    keywords: string;
+    signature: number;
+    language: string;
+    description: string;
+    acquisitionDate: moment.Moment | Date;
+    created: moment.Moment | Date;
+    date_loan: moment.Moment | Date;
+    date_has_to_be_returned: moment.Moment | Date;
+    date_return: moment.Moment | Date;
+}

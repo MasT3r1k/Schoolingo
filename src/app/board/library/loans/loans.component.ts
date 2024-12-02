@@ -1,4 +1,6 @@
-import { Component, EventEmitter, Input, OnInit } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
+import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { dataAPI, Metadata } from '@Components/Datalist/Datalist';
 import { Data, DatalistComponent } from '@Components/Datalist/Datalist';
 import { Modal } from '@Components/Modal/Modal';
 import { TabsComponent } from '@Components/Tabs/Tabs';
@@ -16,9 +18,9 @@ enum bookLoanStatus {
 
 @Component({
   standalone: true,
-  imports: [DatalistComponent, TabsComponent],
+  imports: [DatalistComponent, TabsComponent, ReactiveFormsModule, FormsModule],
   templateUrl: './loans.component.html',
-  styleUrls: ['./loans.component.css', '../../../Styles/card.css'],
+  styleUrls: ['../../../Styles/card.css', '../../../Styles/input.css', './loans.component.css'],
   outputs: ['datalist']
 })
 export class LoansComponent implements OnInit {
@@ -28,6 +30,11 @@ export class LoansComponent implements OnInit {
 
   public tabValue: BehaviorSubject<number> = new BehaviorSubject(0);
   public loans: BehaviorSubject<Data[][] | any> = new BehaviorSubject([]);
+  public search = new FormControl();
+
+  public metadata: Metadata = {
+    rows: 0
+  };
 
   datalist: DatalistComponent | null = null;
   public modal: Modal = new Modal({ title: { icon: "book", text: "library/dropdown/showBook/title" }, size: 'size-2', closeable: true, items: [
@@ -205,11 +212,12 @@ export class LoansComponent implements OnInit {
       setTimeout(() => this.datalist?.loadData())
     });
 
-    this.schoolingo.socketService.addFunction("library:getLoans").subscribe((data: any[]) => {
+    this.schoolingo.socketService.addFunction("library:getLoans").subscribe((data: dataAPI) => {
       let loanList: Data[][] = []
-      data.forEach((loan: any) => {
-        loanList.push([{value: loan.name, isLocale: false}, {value: "Želva", isLocale: false}, {value: loan.isbn, isLocale: false}, {value: "", isLocale: false}, {value: 'library/status/' + loan.loanStatus, isLocale: true}])
+      data.data.forEach((loan: any) => {
+        loanList.push([{ id: loan.copyId }, { id: loan.loanId }, {value: loan.name, isLocale: false}, {value: "Želva", isLocale: false}, {value: loan.isbn, isLocale: false}, {value: "", isLocale: false}, {value: 'library/status/' + loan.loanStatus, isLocale: true}])
       })
+      this.metadata.rows = data.rows;
       this.loans.next(loanList);
     });
   }
