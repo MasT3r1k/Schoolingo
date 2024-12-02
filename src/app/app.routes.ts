@@ -24,6 +24,9 @@ import { PersonsComponent as Persons } from './board/persons/persons.component';
 import { DiscordConnectComponent } from './board/discord-connect/discord-connect.component';
 import { LoansComponent as LibraryLoans } from './board/library/loans/loans.component';
 import { BooksComponent as LibraryBooks } from './board/library/books/books.component';
+import { OverviewComponent as TraineeshipOverview } from './board/Traineeship/overview/overview.component';
+import { DiaryComponent as TraineeshipDiary } from './board/Traineeship/diary/diary.component';
+import { CompaniesComponent as TraineeshipCompanies } from './board/Traineeship/companies/companies.component';
 
 export const routes: Routes = [
     {
@@ -97,6 +100,20 @@ export const routes: Routes = [
             },
             {
               path: 'noticeboard', component: MessagesNoticeboard
+            }
+          ]
+        },
+        {
+          path: 'traineeship',
+          children: [
+            {
+              path: 'overview', component: TraineeshipOverview
+            },
+            {
+              path: 'diary', component: TraineeshipDiary
+            },
+            {
+              path: 'companies', component: TraineeshipCompanies
             }
           ]
         },
