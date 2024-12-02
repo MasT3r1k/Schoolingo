@@ -1,5 +1,6 @@
 import { Component, EventEmitter, Input, OnInit } from '@angular/core';
 import { Data, DatalistComponent } from '@Components/Datalist/Datalist';
+import { Modal } from '@Components/Modal/Modal';
 import { TabsComponent } from '@Components/Tabs/Tabs';
 import { Schoolingo } from '@Schoolingo';
 import { BehaviorSubject } from 'rxjs';
@@ -29,9 +30,174 @@ export class LoansComponent implements OnInit {
   public loans: BehaviorSubject<Data[][] | any> = new BehaviorSubject([]);
 
   datalist: DatalistComponent | null = null;
+  public modal: Modal = new Modal({ title: { icon: "book", text: "library/dropdown/showBook/title" }, size: 'size-2', closeable: true, items: [
+    {
+      type: 'value',
+      label: 'library/name',
+      value: {
+        object: this.schoolingo.bookInfo,
+        key: 'name'
+      }
+    },
+    {
+      type: 'value',
+      label: 'library/subtitle',
+      value: {
+        object: this.schoolingo.bookInfo,
+        key: 'subtitle'
+      }
+    },
+    {
+      type: 'value',
+      label: 'library/authors',
+      value: {
+        object: this.schoolingo.bookInfo,
+        key: 'author'
+      }
+    },
+    {
+      type: 'value',
+      label: 'library/ISBN',
+      value: {
+        object: this.schoolingo.bookInfo,
+        key: 'isbn'
+      }
+    },
+    {
+      type: 'value',
+      label: 'library/genre',
+      value: {
+        object: this.schoolingo.bookInfo,
+        key: 'genre'
+      }
+    },
+    {
+      type: 'value',
+      label: 'language',
+      value: {
+        object: this.schoolingo.bookInfo,
+        key: 'language'
+      }
+    },
+    {
+      type: 'value',
+      label: 'library/location',
+      value: {
+        object: this.schoolingo.bookInfo,
+        key: 'location'
+      }
+    },
+    {
+      type: 'value',
+      label: 'library/publisher',
+      value: {
+        object: this.schoolingo.bookInfo,
+        key: 'publisher'
+      }
+    },
+    {
+      type: 'value',
+      label: 'library/yearPublication',
+      value: {
+        object: this.schoolingo.bookInfo,
+        key: 'yearPublication'
+      }
+    },
+    {
+      type: 'value',
+      label: 'library/editionNumber',
+      value: {
+        object: this.schoolingo.bookInfo,
+        key: 'editionNumber'
+      }
+    },
+    {
+      type: 'value',
+      label: 'library/pages',
+      value: {
+        object: this.schoolingo.bookInfo,
+        key: 'pages'
+      }
+    },
+    {
+      type: 'value',
+      label: 'library/notes',
+      value: {
+        object: this.schoolingo.bookInfo,
+        key: 'notes'
+      }
+    },
+    {
+      type: 'value',
+      label: 'library/annotation',
+      value: {
+        object: this.schoolingo.bookInfo,
+        key: 'annotation'
+      }
+    },
+    {
+      type: 'value',
+      label: 'library/tags',
+      value: {
+        object: this.schoolingo.bookInfo,
+        key: 'tags'
+      }
+    },
+    {
+      type: 'value',
+      label: 'library/keywords',
+      value: {
+        object: this.schoolingo.bookInfo,
+        key: 'keywords'
+      }
+    },
+    {
+      type: 'value',
+      label: 'library/signature',
+      value: {
+        object: this.schoolingo.bookInfo,
+        key: 'signature'
+      }
+    },
+    {
+      type: 'line'
+    },
+    {
+      type: 'value',
+      label: 'library/status/main',
+      value: {
+        isLocale: true,
+        object: this.schoolingo.bookInfo,
+        localePrefix: 'library/status/',
+        key: 'status'
+      }
+    },
+    {
+      type: 'date',
+      label: 'library/loanDate',
+      value: {
+        object: this.schoolingo.bookInfo,
+        key: 'date_loan'
+      }
+    },
+    {
+      type: 'date',
+      label: 'library/returnDate',
+      value: {
+        object: this.schoolingo.bookInfo,
+        key: 'date_has_to_be_returned'
+      }
+    },
+    
+  ]})
 
   receivedDatalist(value: DatalistComponent): void {
     this.datalist = value;
+  }
+
+  onClick = (id: number[]) => {
+    this.modal.open();
+    this.schoolingo.showBook(id, "copy");
   }
 
   ngOnInit(): void {

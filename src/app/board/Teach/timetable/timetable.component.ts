@@ -8,7 +8,7 @@ import { Dropdown } from '@Components/Dropdowns/Dropdown';
 import moment from 'moment';
 import { ContextButton } from '@Components/Dropdowns/Dropdown';
 import { absence } from '@Schoolingo/Absence';
-import { user } from '@Schoolingo/User';
+import { Modal } from '@Components/Modal/Modal';
 
 @Component({
   standalone: true,
@@ -28,6 +28,22 @@ export class TimetableComponent {
 
   // Imports
   utils = utils;
+  
+
+  public modal: Modal = new Modal({
+    closeable: true,
+    title: {
+      icon: "school",
+      text: "timetable/dropdown/showLesson/title"
+    },
+    size: 'size-1',
+    items: [
+      {
+        type: 'tabs',
+        items: ['timetable/dropdown/showLesson/basicInfo', 'sidebar/teach/homeworks', 'timetable/dropdown/showLesson/absence', 'timetable/dropdown/showLesson/other']
+      }
+    ]
+  });
 
   // Select Week Tab
   public selectedTab = new BehaviorSubject<number>(0);
@@ -148,6 +164,10 @@ export class TimetableComponent {
 
   public openLesson(lesson: { lesson: TimetableLesson, day: number, hour: number, sub: number }): void {
     if (lesson.lesson.empty) return;
-    this.schoolingo.modal = 'timetable:showLesson';
+    if (!this.modal) {
+      console.error('NO MODAL')
+    }
+    this.modal?.open();
+    // this.schoolingo.modal = 'timetable:showLesson';
   }
 }

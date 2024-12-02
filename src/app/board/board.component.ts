@@ -2,7 +2,7 @@ import { NgClass, NgStyle } from '@angular/common';
 import { Component } from '@angular/core';
 import { NavigationEnd, Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { Dropdown } from '@Components/Dropdowns/Dropdown';
-import { TabsComponent } from '@Components/Tabs/Tabs';
+import { ModalComponent } from '@Components/Modal/Modal';
 import { Substitution } from '@Schoolingo';
 import { Absence, ClassbookAPI, Mark } from '@Schoolingo';
 import { Schoolingo, TimetableAPI } from '@Schoolingo';
@@ -49,7 +49,7 @@ interface AbsenceSubjectAPI {
 
 @Component({
   standalone: true,
-  imports: [NgClass, NgStyle, RouterLink, RouterLinkActive, RouterOutlet, Dropdown, TabsComponent],
+  imports: [NgClass, NgStyle, RouterLink, RouterLinkActive, RouterOutlet, Dropdown, ModalComponent],
   templateUrl: './board.component.html',
   styleUrls: ['./board.component.css', '../Styles/item.css']
 })

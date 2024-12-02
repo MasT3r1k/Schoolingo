@@ -14,6 +14,7 @@ import * as utils from "@Schoolingo/Utils";
 import { removeDiacritics } from "./SearchFilter";
 import { degree } from "./User";
 import { MessageManager } from "./Messages";
+import { Modal } from "@Components/Modal/Modal";
 export { TimetableAPI, ClassbookAPI, ClassbookLesson, TimetableLesson, Mark, Absence, Substitution, studentService }
 
 @Injectable()
