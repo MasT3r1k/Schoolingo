@@ -27,6 +27,10 @@ import { BooksComponent as LibraryBooks } from './board/library/books/books.comp
 import { OverviewComponent as TraineeshipOverview } from './board/Traineeship/overview/overview.component';
 import { DiaryComponent as TraineeshipDiary } from './board/Traineeship/diary/diary.component';
 import { CompaniesComponent as TraineeshipCompanies } from './board/Traineeship/companies/companies.component';
+import { OrderComponent as CanteenOrder } from './board/Canteen/order/order.component';
+import { DispensingComponent as CanteenDispensing } from './board/Canteen/dispensing/dispensing.component';
+import { MealsComponent as CanteenMeals } from './board/Canteen/meals/meals.component';
+import { SettingsComponent as CanteenSettings } from './board/Canteen/settings/settings.component';
 
 export const routes: Routes = [
     {
@@ -114,6 +118,23 @@ export const routes: Routes = [
             },
             {
               path: 'companies', component: TraineeshipCompanies
+            }
+          ]
+        },
+        {
+          path: 'canteen',
+          children: [
+            {
+              path: 'order', component: CanteenOrder
+            },
+            {
+              path: 'dispensing', component: CanteenDispensing
+            },
+            {
+              path: 'meals', component: CanteenMeals
+            },
+            {
+              path: 'settings', component: CanteenSettings
             }
           ]
         },
