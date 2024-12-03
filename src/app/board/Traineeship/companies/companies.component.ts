@@ -34,7 +34,14 @@ export class CompaniesComponent implements OnInit {
       let companiesList: Data[][] = []
       console.log(data);
       data.data.forEach((company: any) => {
-        companiesList.push([{ id: company.companyId }, {value: company.name, isLocale: false}, {value: company.addressOffice, isLocale: false}, {value: company.CIN, isLocale: false}, {value: company.web, isLocale: false}])
+        companiesList.push([
+          { id: company.companyId },
+          {value: company.name, isLocale: false},
+          {value: `${company.street} ${company.houseNumber}, ${company.cityName} ${company.postcode}`, isLocale: false},
+          {value: company.CIN, isLocale: false},
+          {value: company.web, isLocale: false},
+          {value: Number(company.rating).toFixed(1), isLocale: false}
+        ]);
       })
       this.metadata.rows = data.rows;
       this.companies.next(companiesList);
