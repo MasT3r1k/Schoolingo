@@ -1,5 +1,6 @@
 import { NgClass, NgStyle } from '@angular/common';
 import { Component, OnInit, Renderer2 } from '@angular/core';
+import { Data, DatalistComponent } from '@Components/Datalist/Datalist';
 import { TabsComponent } from '@Components/Tabs/Tabs';
 import { Mark, Schoolingo } from '@Schoolingo';
 import { BehaviorSubject } from 'rxjs';
@@ -11,7 +12,7 @@ type Page = {
 
 @Component({
   standalone: true,
-  imports: [TabsComponent, NgClass, NgStyle],
+  imports: [TabsComponent, NgClass, NgStyle, DatalistComponent],
   templateUrl: './interm.component.html',
   styleUrls: ['./interm.component.css', '../../../Styles/card.css']
 })
@@ -139,6 +140,15 @@ export class IntermComponent implements OnInit {
 
     let average: string = Number(total / total_devide).toFixed(2).replace('.', ',');
     return (average == 'NaN') ? '' : average;
+  }
+
+  public getMarks(): BehaviorSubject<Data[][]> {
+    let data: Data[][] = [];
+    let marks: Mark[] = this.schoolingo.marks;
+    marks.forEach((mark: Mark) => {
+      data.push([{ value: this.schoolingo.subjects[mark.subject][0], isLocale: false}, { value: mark.mark, isLocale: false }, { value: mark.topic, isLocale: false }, { value: mark.weight.toString(), isLocale: false }, { value: mark.created.format('DD.MM.YYYY'), isLocale: false }]);
+    });
+    return new BehaviorSubject(data);
   }
 
 }
