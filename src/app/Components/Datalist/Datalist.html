@@ -12,7 +12,7 @@
             }
         </thead>
         <tbody>
-            @for (item of visibleData; track $index) {
+            @for (item of options.noDynamic ? data.getValue() : visibleData; track $index) {
                 <tr (click)="clickEvent($index)">
                     @for (info of item; track $index) {
                         @if (!info.id) {
@@ -29,7 +29,7 @@
     </table>
     <div class="bottom">
         <div class="left">
-            <p>Zobrazeno {{ this.visibleData.length }} z {{ this.data.getValue().length }} (celkem {{ this.metadata.rows }}), stránka {{ page }} z {{ getMaxPages() }}</p>
+            <p>Zobrazeno {{ (options.noDynamic ? data.getValue() : visibleData).length }} z {{ this.data.getValue().length }} (celkem {{ (options.noDynamic ? data.getValue().length : this.metadata.rows) }}), stránka {{ page }} z {{ getMaxPages() }}</p>
         </div>
         <div class="right">
             <div [ngClass]="{page: true, center: true, previous: true, disabled: page == 1}" (click)="goPage(page - 1)">

@@ -13,6 +13,7 @@ export interface DatalistOptions {
     url?: string;
     search?: boolean;
     ignore?: string[];
+    noDynamic?: boolean;
 }
 
 export interface dataAPI {

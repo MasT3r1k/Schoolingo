@@ -21,7 +21,7 @@ export class DatalistComponent implements OnInit {
     constructor(
         public locale: Locale,
         public socketService: SocketService
-    ) {}
+    ) { this.refreshData() }
 
     @Input() options: DatalistOptions = {};
     @Input() head: string[] = [];
@@ -84,18 +84,16 @@ export class DatalistComponent implements OnInit {
         this.refreshData();
         this.loadData();
 
-        this.listeners.push(this.data.subscribe((val: any[]) => {
+        this.listeners.push(this.socketService.addFunction("connect").subscribe(() => this.loadData()));
+
+        this.listeners.push(this.data.subscribe(() => {
             this.refreshData();
         }));
         if (this.options.url) {
-            this.listeners.push(this.socketService.addFunction(this.options.url).subscribe(() => {
-                this.refreshData();
-            }));
+            this.listeners.push(this.socketService.addFunction(this.options.url).subscribe(() => this.refreshData()));
         }
 
-        this.listeners.push(this.search.valueChanges.pipe(debounceTime(300)).subscribe(() => {
-            this.loadData();
-        }));
+        this.listeners.push(this.search.valueChanges.pipe(debounceTime(300)).subscribe(() => this.loadData()));
         
     }
 
