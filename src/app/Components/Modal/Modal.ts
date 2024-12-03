@@ -1,8 +1,9 @@
-import { Component } from "@angular/core";
+import { Component, OnInit, Renderer2 } from "@angular/core";
 import { Locale } from "@Schoolingo/Locale";
 import { modalOptions, modalItem } from "@Components/Modal/Modal.d";
 import { NgClass, NgStyle } from "@angular/common";
 import { TabsComponent } from "@Components/Tabs/Tabs";
+import { Subscription } from "rxjs";
 export { modalOptions, modalItem }
 
 let modals: Modal[] = [];
@@ -16,8 +17,16 @@ let modals: Modal[] = [];
     outputs: ['modal']
 })
 
-export class ModalComponent {
-    constructor( public locale: Locale ) { }
+export class ModalComponent implements OnInit {
+    constructor( public locale: Locale, private renderer: Renderer2 ) { }
+
+    ngOnInit(): void {
+        this.renderer.listen("window", "keydown", (event: any) => {
+            if (event.code === "Escape") {
+                this.closeAllModals();
+            }
+        });
+    }
 
     public getModals(): Modal[] {
         return modals.filter((modal: Modal) => modal.isOpened);
