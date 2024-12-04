@@ -1,11 +1,11 @@
 import { Component, OnInit } from '@angular/core';
 import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { DomSanitizer } from '@angular/platform-browser';
 import { Data, dataAPI, DatalistComponent, Metadata } from '@Components/Datalist/Datalist';
 import { Schoolingo } from '@Schoolingo';
 import { BehaviorSubject, Subscription } from 'rxjs';
 
 @Component({
-  selector: 'app-companies',
   standalone: true,
   imports: [FormsModule, ReactiveFormsModule, DatalistComponent],
   templateUrl: './companies.component.html',
@@ -13,12 +13,22 @@ import { BehaviorSubject, Subscription } from 'rxjs';
 })
 export class CompaniesComponent implements OnInit {
   constructor(
-    public schoolingo: Schoolingo
+    public schoolingo: Schoolingo,
+    public sanitizer: DomSanitizer
   ) {}
+
+  public showPage: 'list' | 'detailCompany' | 'requestCompany' = 'list';
+
+  onClick = (id: { id: number }[]) => {
+    this.schoolingo.socketService.emit('traineeship:getCompanyInfo', { companyId: id[0].id });
+    this.showPage = 'detailCompany';
+  }
 
   private listeners: Subscription[] = [];
   public companies: BehaviorSubject<Data[][] | any> = new BehaviorSubject([]);
+  public selectedCompany: Record<string, any> = {};
   public search = new FormControl();
+  public iframeURL = this.sanitizer.bypassSecurityTrustResourceUrl("");
 
   public metadata: Metadata = {
     rows: 0
@@ -31,6 +41,15 @@ export class CompaniesComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    this.listeners.push(this.schoolingo.socketService.addFunction("traineeship:getCompanyInfo").subscribe((data: any) => {
+      this.selectedCompany = data[0];
+      this.iframeURL = this.sanitizer.bypassSecurityTrustResourceUrl('https://maps.google.com/maps?&q=' + this.selectedCompany.street + ' ' + this.selectedCompany.houseNumber + ', ' + this.selectedCompany.cityName + '&output=embed');
+      console.log(data);
+    }));
+    this.listeners.push(this.schoolingo.socketService.addFunction("traineeship:getCompanyInstructors").subscribe((data: any) => {
+      console.log(data);
+    }));
+
     this.listeners.push(this.schoolingo.socketService.addFunction("traineeship:getCompanies").subscribe((data: dataAPI) => {
       let companiesList: Data[][] = []
       data.data.forEach((company: any) => {

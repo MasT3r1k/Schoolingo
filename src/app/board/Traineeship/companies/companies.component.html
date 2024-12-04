@@ -1,16 +1,54 @@
-<div class="card">
-    <div class="card-top"></div>
-    <div class="card-header mb">
-        <h2>{{ schoolingo.locale.getLocale('sidebar/traineeship/companies') }}</h2>
-    </div>
-    <div class="card-body">
-
-        <div class="form-group search mb">
-            <input type="text" name="search" [formControl]="search" [placeholder]="schoolingo.locale.getLocale('traineeship/search')">
-            <div class="btn submit blue-info" role="button">{{ schoolingo.locale.getLocale('traineeship/requestAddCompany') }}</div>
+@switch (showPage) {
+    @case ("list") {
+        <div class="card">
+            <div class="card-top"></div>
+            <div class="card-header mb">
+                <h2>{{ schoolingo.locale.getLocale('sidebar/traineeship/companies') }}</h2>
+            </div>
+            <div class="card-body">
+    
+                <div class="form-group search mb">
+                    <input type="text" name="search" [formControl]="search" [placeholder]="schoolingo.locale.getLocale('traineeship/search')">
+                    <div (click)="showPage = 'requestCompany'" class="btn submit blue-info" role="button">{{ schoolingo.locale.getLocale('traineeship/requestAddCompany') }}</div>
+                </div>
+    
+                <schoolingo-datalist (datalist)="receivedDatalist($event)" [options]="{ search: false, url: 'traineeship:getCompanies', ignore: [] }" [head]="['traineeship/companyName', 'traineeship/officeAddress', 'traineeship/CIN', 'web', 'rate']" [clickFc]="onClick" [data]="companies" [metadata]="metadata" [search]="search"></schoolingo-datalist>
+    
+            </div>
         </div>
+    }
+    @case ("detailCompany") {
+        @if (selectedCompany) {
+            <div class="card">
+                <div class="card-top"></div>
+                <div class="card-header mb">
+                    <h2>
+                        <i (click)="showPage = 'list'" class="icon ti ti-arrow-narrow-left"></i>
+                        {{ schoolingo.locale.getLocale('traineeship/companyInfo') }} ({{ selectedCompany.name }})</h2>
+                </div>
+                <div class="card-body">
+                    <iframe width="100%" 
+                    height="450"
+                    allowFullScreen="" 
+                    referrerPolicy="no-referrer-when-downgrade"
+                    [src]="iframeURL" frameborder="0"></iframe>
+                </div>
+            </div>
+        }
 
-        <schoolingo-datalist (datalist)="receivedDatalist($event)" [options]="{ search: false, url: 'traineeship:getCompanies', ignore: [] }" [head]="['traineeship/companyName', 'traineeship/officeAddress', 'traineeship/CIN', 'web', 'rate']" [data]="companies" [metadata]="metadata" [search]="search"></schoolingo-datalist>
+    }
 
-    </div>
-</div>
+    @case ("requestCompany") {
+        <div class="card">
+            <div class="card-top"></div>
+            <div class="card-header mb">
+                <h2>
+                    <i (click)="showPage = 'list'" class="icon ti ti-arrow-narrow-left"></i>
+                    {{ schoolingo.locale.getLocale('traineeship/requestCompany') }}</h2>
+            </div>
+            <div class="card-body">
+
+            </div>
+        </div>
+    }
+}
