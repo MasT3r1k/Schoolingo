@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { Data, dataAPI, DatalistComponent, Metadata } from '@Components/Datalist/Datalist';
 import { Schoolingo } from '@Schoolingo';
-import { BehaviorSubject } from 'rxjs';
+import { BehaviorSubject, Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-companies',
@@ -33,7 +33,6 @@ export class CompaniesComponent implements OnInit {
   ngOnInit(): void {
     this.listeners.push(this.schoolingo.socketService.addFunction("traineeship:getCompanies").subscribe((data: dataAPI) => {
       let companiesList: Data[][] = []
-      console.log(data);
       data.data.forEach((company: any) => {
         companiesList.push([
           { id: company.companyId },
