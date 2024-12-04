@@ -16,6 +16,7 @@ export class CompaniesComponent implements OnInit {
     public schoolingo: Schoolingo
   ) {}
 
+  private listeners: Subscription[] = [];
   public companies: BehaviorSubject<Data[][] | any> = new BehaviorSubject([]);
   public search = new FormControl();
 
@@ -30,7 +31,7 @@ export class CompaniesComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.schoolingo.socketService.addFunction("traineeship:getCompanies").subscribe((data: dataAPI) => {
+    this.listeners.push(this.schoolingo.socketService.addFunction("traineeship:getCompanies").subscribe((data: dataAPI) => {
       let companiesList: Data[][] = []
       console.log(data);
       data.data.forEach((company: any) => {
@@ -45,7 +46,11 @@ export class CompaniesComponent implements OnInit {
       })
       this.metadata.rows = data.rows;
       this.companies.next(companiesList);
-    });
+    }));
+  }
+
+  ngOnDestroy(): void {
+    this.listeners.forEach((sub: Subscription) => sub.unsubscribe());
   }
 
 }
