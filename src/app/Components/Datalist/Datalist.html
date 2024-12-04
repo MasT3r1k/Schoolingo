@@ -15,7 +15,7 @@
             @for (item of options.noDynamic ? data.getValue() : visibleData; track $index) {
                 <tr (click)="clickEvent($index)">
                     @for (info of item; track $index) {
-                        @if (!info.id) {
+                        @if (!info.id && info.id !== null) {
                             @if (info.isLocale) {
                                 <td>{{ locale.getLocale(info.value) }}</td>
                             } @else {
