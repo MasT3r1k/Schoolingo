@@ -40,7 +40,7 @@ export class CompaniesComponent implements OnInit {
           {value: `${company.street} ${company.houseNumber}, ${company.cityName} ${company.postcode}`, isLocale: false},
           {value: company.CIN, isLocale: false},
           {value: company.web, isLocale: false},
-          {value: Number(company.rating).toFixed(1), isLocale: false}
+          {value: company.rating ? Number(company.rating).toFixed(1) : 'traineeship/noRating', isLocale: company.rating ? false : true}
         ]);
       })
       this.metadata.rows = data.rows;
