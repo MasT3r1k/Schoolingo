@@ -6,7 +6,7 @@ import { personDetails, user, UserService } from "./User";
 import { Sidebar } from "./Sidebar";
 import { Absence, BookInfo, ClassbookAPI, ClassbookLesson, DiaryDay, DiaryWeek, Mark, studentService, Substitution, TimetableAPI, TimetableHours, TimetableLesson } from './Schoolingo.d';
 import { School } from "./School";
-import { addZeros, isOdd } from "./Utils";
+import { isOdd } from "./Utils";
 import { BehaviorSubject, Subscription } from "rxjs";
 import moment from "moment";
 import { AbsenceConfig, absence } from "./Absence";
