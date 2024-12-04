@@ -3,6 +3,7 @@ export type Data = {
 } & ({
     isLocale: true;
     localePrefix?: string;
+    localeSuffix?: string;
 } | {
     isLocale: false;
 }) | {
