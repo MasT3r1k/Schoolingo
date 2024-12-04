@@ -3,7 +3,7 @@ import { Component } from '@angular/core';
 import { NavigationEnd, Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { Dropdown } from '@Components/Dropdowns/Dropdown';
 import { ModalComponent } from '@Components/Modal/Modal';
-import { BookInfo, Substitution } from '@Schoolingo';
+import { BookInfo, DiaryWeek, Substitution } from '@Schoolingo';
 import { Absence, ClassbookAPI, Mark } from '@Schoolingo';
 import { Schoolingo, TimetableAPI } from '@Schoolingo';
 import { alertManager, AlertManagerClass } from '@Schoolingo/Alert';
@@ -241,6 +241,23 @@ export class BoardComponent {
       }));
     }
 
+    if (this.modules.checkModule(["traineeship"])) {
+      this.subscribers.push(this.schoolingo.socketService.addFunction("traineeship:getDiaryWeeks").subscribe((data: DiaryWeek[]) => {
+        this.schoolingo.diaryWeeks = [];
+        data.forEach((diary: DiaryWeek) => {
+          this.schoolingo.diaryWeeks.push({ start: moment(diary.start), end: moment(diary.end) });
+        })
+        this.schoolingo.refreshDiary();
+      }));
+    }
+
+    if (this.modules.checkModule(["traineeship"])) {
+      this.subscribers.push(this.schoolingo.socketService.addFunction("traineeship:getDiaryDays").subscribe((data: any[]) => {
+
+        console.log(data)
+        this.schoolingo.refreshDiary();
+      }));
+    }
   }
 
   ngOnDestroy(): void {
