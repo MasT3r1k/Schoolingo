@@ -18,6 +18,9 @@ export class Sidebar {
         private modules: Modules
     ) {
         this.build();
+        this.listeners.push(this.locale.language.subscribe(() => {
+          this.updateTitle(window.location.pathname.slice(1));
+        }));
     }
 
     public sidebarToggled = false;
