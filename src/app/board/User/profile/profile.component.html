@@ -1,0 +1,264 @@
+@if (schoolingo.userService.getUser() && profile) {
+    <div class="card">
+        <div class="card-top"></div>
+        <div class="card-header mb">
+            <h2>{{ schoolingo.locale.getLocale('sidebar/user/profile') }}</h2>
+            <div class="flex-items">
+                <schoolingo-tabs [options]="['user/tabs/profile/main', 'user/tabs/profile/parents']" [value]="selectedTab"></schoolingo-tabs>
+            </div>
+        </div>
+        <div class="card-body mt">
+            <div [ngClass]="{'card-tab': true, 'card-row': true, active: selectedTab.getValue() === 0}">
+                <div class="left">
+                    <div class="card-table">
+                        <div class="card-table-header">{{ "Osobní údaje" }}</div>
+                        <div class="card-table-body">
+                            <div class="card-table-row">
+                                <div class="card-table-item">{{ "Celé jméno" }}</div>
+                                <div class="card-table-item">
+                                    <span>{{ schoolingo.formatPerson(schoolingo.userService.getUser()?.id ) }}</span>
+                                </div>
+                            </div>
+
+                            <div class="card-table-row">
+                                <div class="card-table-item">{{ schoolingo.locale.getLocale('birthday') }}</div>
+                                <div class="card-table-item">
+                                    <span>{{ profile.birthday.format("DD. MM. YYYY") }}</span>
+                                </div>
+                            </div>
+
+                            <div class="card-table-row">
+                                <div class="card-table-item">{{ "Třída" }}</div>
+                                <div class="card-table-item">
+                                    <span>{{ profile.className }}</span>
+                                </div>
+                            </div>
+
+                            <div class="card-table-row">
+                                <div class="card-table-item">{{ "Obor" }}</div>
+                                <div class="card-table-item">
+                                    <span>{{ profile.scopeName }}</span>
+                                </div>
+                            </div>
+
+                            <div class="card-table-row">
+                                <div class="card-table-item">{{ "Délka studia" }}</div>
+                                <div class="card-table-item">
+                                    <span>{{ profile.scopeYears }}</span>
+                                </div>
+                            </div>
+
+
+                            <div class="card-table-row">
+                                <div class="card-table-item">{{ "Kód ZP" }}</div>
+                                <div class="card-table-item">
+                                    <span>{{ "201 - VoZP" }}</span>
+                                </div>
+                            </div>
+
+                            <div class="card-table-row">
+                                <div class="card-table-item">{{ schoolingo.locale.getLocale('address') }}</div>
+                                <div class="card-table-item">
+                                    <span>{{ country.getCountryByCode("CZ")?.flag + " Šumavská 77, Strakonice 386 01" }}</span>
+                                </div>
+                            </div>
+
+                            <div class="card-table-row">
+                                <div class="card-table-item">{{ schoolingo.locale.getLocale('nationality') }}</div>
+                                <div class="card-table-item">
+                                    <span>{{ country.getCountryByCode("CZ")?.flag + ' ' + country.getCountryByCode("CZ")?.name }}</span>
+                                </div>
+                            </div>
+
+                            <div class="card-table-row">
+                                <div class="card-table-item">{{ schoolingo.locale.getLocale('sex') }}</div>
+                                <div class="card-table-item">
+                                    <span>{{ schoolingo.locale.getLocale('genders/' + schoolingo.userService.getUser()?.person?.sex) }}</span>
+                                </div>
+                            </div>
+
+                            <div class="card-table-row">
+                                <div class="card-table-item">{{ schoolingo.locale.getLocale('phone') }}</div>
+                                <div class="card-table-item">
+                                    <span>{{ Utils.formatPhone("445566778") }}</span>
+                                </div>
+                            </div>
+
+                            <div class="card-table-row">
+                                <div class="card-table-item">{{ schoolingo.locale.getLocale('email') }}</div>
+                                <div class="card-table-item">
+                                    <span>{{ "jkosik@sps-pi.cz" }}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card-table">
+                        <div class="card-table-header">{{ "Bezpečnostní nastavení" }}</div>
+                        <div class="card-table-body">
+                            <div class="card-table-row">
+                                <div class="card-table-item">{{ "Heslo naposledy změněné" }}</div>
+                                <div class="card-table-item">
+                                    <span>{{ profile.passwordChanged?.format("DD. MM. YYYY") || "Nikdy" }}</span>
+                                </div>
+                            </div>
+
+                            <div class="card-table-row">
+                                <div class="card-table-item">{{ "Dvoufázové ověření" }}</div>
+                                <div class="card-table-item">
+                                    @if (profile.twofa) {
+                                        <div class="badge activated">
+                                            <i class="ti ti-check"></i>
+                                            <span>Aktivní</span>
+                                        </div>
+                                    } @else {
+                                        <div class="badge notActivated">
+                                            <i class="ti ti-x"></i>
+                                            <span>Neaktivní</span>
+                                        </div>
+                                    }
+                                </div>
+                            </div>
+
+                            <div class="card-table-row">
+                                <div class="card-table-item">{{ "Povolení rychlého přihlášení (QR kód)" }}</div>
+                                <div class="card-table-item">
+                                    @if (profile.fastlogin) {
+                                        <div class="badge activated">
+                                            <i class="ti ti-check"></i>
+                                            <span>Aktivní</span>
+                                        </div>
+                                    } @else {
+                                        <div class="badge notActivated">
+                                            <i class="ti ti-x"></i>
+                                            <span>Neaktivní</span>
+                                        </div>
+                                    }
+                                </div>
+                            </div>
+
+                            <div class="card-table-row">
+                                <div class="card-table-item">{{ "Přihlášené zařízení" }}</div>
+                                <div class="card-table-item">
+                                    <span>{{ "3 Zařízení" }}</span>
+                                </div>
+                            </div>
+
+                            <div class="card-table-row">
+                                <div class="card-table-item">{{ "Nedávná aktivita na účtě" }}</div>
+                                <div class="card-table-item">
+                                    <span>{{ "Žádná podezřelá aktivita na účtě" }}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="right">
+                    <div class="card-table">
+                        <div class="card-table-header">{{ "Podrobnosti o účtu" }}</div>
+                        <div class="card-table-body">
+                            <div class="card-table-row">
+                                <div class="card-table-item">{{ "Přihlašovací jméno" }}</div>
+                                <div class="card-table-item">
+                                    <span>{{ profile.username }}</span>
+                                </div>
+                            </div>
+
+                            <div class="card-table-row">
+                                <div class="card-table-item">{{ "Studuješ od " }}</div>
+                                <div class="card-table-item">
+                                    <span>{{ "Září 1, 2021" }}</span>
+                                </div>
+                            </div>
+
+                            <div class="card-table-row">
+                                <div class="card-table-item">{{ "Naposledy přihlášen" }}</div>
+                                <div class="card-table-item">
+                                    <span>{{ "Prosinec 7, 2024" }}</span>
+                                </div>
+                            </div>
+
+                            <div class="card-table-row">
+                                <div class="card-table-item">{{ "Preferovaný jazyk" }}</div>
+                                <div class="card-table-item">
+                                    <span>{{ schoolingo.locale.locales[schoolingo.locale.getUserLocale()].name }}</span>
+                                </div>
+                            </div>
+
+                            
+                            <div class="card-table-row">
+                                <div class="card-table-item">{{ "Preferovaný vzhled" }}</div>
+                                <div class="card-table-item">
+                                    <span>{{ schoolingo.locale.getLocale('themes/' + schoolingo.theme.getTheme()) }}</span>
+                                </div>
+                            </div>
+
+                            <div class="card-table-row">
+                                <div class="card-table-item">{{ schoolingo.locale.getLocale('roles/main') }}</div>
+                                <div class="card-table-item">
+                                    <span>{{ schoolingo.locale.getLocale('roles/' + schoolingo.userService.getUser()?.type) }}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card-table">
+                        <div class="card-table-header">{{ "Preference" }}</div>
+                        <div class="card-table-body">
+                            <div class="card-table-row">
+                                <div class="card-table-item">{{ "Emailové oznámení" }}</div>
+                                <div class="card-table-item">
+                                    <div class="badge notActivated">
+                                        <i class="ti ti-x"></i>
+                                        <span>Neaktivní</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="card-table-row">
+                                <div class="card-table-item">{{ "Oznámení v mobilní aplikaci" }}</div>
+                                <div class="card-table-item">
+                                    <div class="badge notActivated">
+                                        <i class="ti ti-x"></i>
+                                        <span>Žádné mobilní zařízení nenalezeno</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="card-table-row">
+                                <div class="card-table-item">{{ "Oznámění o novém přihlášení" }}</div>
+                                <div class="card-table-item">
+                                    <div class="badge activated">
+                                        <i class="ti ti-check"></i>
+                                        <span>Aktivní</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="card-table-row">
+                                <div class="card-table-item">{{ "Povolené GDPR" }}</div>
+                                <div class="card-table-item">
+                                    <div class="badge activated">
+                                        <i class="ti ti-check"></i>
+                                        <span>Aktivní</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="card-table-row">
+                                <div class="card-table-item">{{ "Automaticky zobrazit další týden" }}</div>
+                                <div class="card-table-item">
+                                    <div class="badge activated">
+                                        <i class="ti ti-check"></i>
+                                        <span>Aktivní</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+}
