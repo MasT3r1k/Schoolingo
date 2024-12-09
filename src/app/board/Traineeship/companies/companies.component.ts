@@ -10,6 +10,8 @@ import { Permission } from '@Schoolingo/Permissions';
 import { Utils } from '@Schoolingo/Utils';
 import { Country } from 'country-state-city';
 import { BehaviorSubject, Subscription } from 'rxjs';
+import { AgCharts } from "ag-charts-angular";
+import { AgChartOptions } from "ag-charts-community";
 
 type Scope = {
   name: string;
@@ -18,7 +20,7 @@ type Scope = {
 
 @Component({
   standalone: true,
-  imports: [FormsModule, ReactiveFormsModule, DatalistComponent, TabsComponent, NgClass, NgStyle],
+  imports: [FormsModule, ReactiveFormsModule, DatalistComponent, TabsComponent, NgClass, NgStyle, AgCharts],
   templateUrl: './companies.component.html',
   styleUrls: ['../../../Styles/card.css', '../../../Styles/input.css', './companies.component.css']
 })
@@ -91,6 +93,7 @@ export class CompaniesComponent implements OnInit {
   }
 
   ngOnInit(): void {
+
     this.listeners.push(this.schoolingo.socketService.addFunction("traineeship:getCompanyInfo").subscribe((data: any) => {
       this.selectedCompany = data[0];
       this.iframeURL = this.sanitizer.bypassSecurityTrustResourceUrl('https://maps.google.com/maps?zoom=15&q=' + this.selectedCompany.street + ' ' + this.selectedCompany.houseNumber + ', ' + this.selectedCompany.cityName + '&output=embed');
@@ -167,5 +170,43 @@ export class CompaniesComponent implements OnInit {
   ngOnDestroy(): void {
     this.listeners.forEach((sub: Subscription) => sub.unsubscribe());
   }
+
+  options: AgChartOptions = {
+    theme: (this.schoolingo.theme.getTheme() === "light") ? 'ag-default' : 'ag-default-dark',
+    background: {
+      visible: false
+    },
+    minHeight: 250,
+    // Data: Data to be displayed in the chart
+    data: [
+      { year: "2020", students: 15 },
+      { year: "2021", students: 10 },
+      { year: "2022", students: 8 },
+      { year: "2023", students: 12 },
+      { year: "2024", students: 15 },
+    ],
+
+    axes: [
+      {
+        type: 'category',
+        position: "bottom"
+      },
+      {
+        type: "number",
+        position: "left",
+        min: 0
+      },
+    ],
+  
+    // Series: Defines which chart type and data to use
+    series: [
+      {
+        type: "line",
+        xKey: "year",
+        yKey: "students",
+        yName: "Počet studentů"
+      },
+    ],
+  };
 
 }
