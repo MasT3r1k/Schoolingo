@@ -35,10 +35,10 @@ export function randomstring(length: number, numbers: boolean = true): string {
   return text;
 }
 
-// Date and Time
-export function getDayOfWeek(week: number, day: number = 0): moment.Moment {
-  return moment().isoWeek(week).startOf('isoWeek').add(day + 1, 'd');
-}
+  // Date and Time
+  export function getDayOfWeek(week: number, day: number = 0): moment.Moment {
+    return moment().isoWeek(week).startOf('isoWeek').add(day + 1, 'd');
+  }
 
   export function formatPhone(phone: string): string {
     return ((phone || "").match(/.{1,3}/g) || [])?.join(' ');
