@@ -47,12 +47,14 @@
                     <div class="name">{{ schoolingo.locale.getLocale('settings') }}</div>
                 </div>
             </div>
-            <div class="user">
+
+            <div class="user" [routerLink]="['', 'user', 'profile']">
                 @if (schoolingo.userService.getUser()) {
                     <p class="name">{{ schoolingo.formatPerson(schoolingo.userService.getUser()?.person?.personId) }}</p>
                     <p class="role">{{ schoolingo.getUserRole() }}</p>
                 }
             </div>
+            
             <div class="btn red logout" (click)="schoolingo.userService.logout()">
                 <i class="ti ti-logout"></i>
                 {{ schoolingo.locale.getLocale('logout') }}
