@@ -37,6 +37,7 @@ export class MainModules {
                     link: ["", "teach", "homeworks"]
                 }
             ],
+            perms: ['student', 'parent'],
             component: null
         },
         {
@@ -54,6 +55,7 @@ export class MainModules {
                     link: ["", "marks", "interm"]
                 }
             ],
+            perms: ['student', 'parent'],
             component: IntermComponent
         },
         {
@@ -72,6 +74,7 @@ export class MainModules {
                     link: ["", "traineeship", "overview"]
                 }
             ],
+            perms: ['student', 'parent'],
             modules: ['traineeship'],
             component: null
         },
@@ -83,13 +86,14 @@ export class MainModules {
                 }
             ],
             modules: ['canteen'],
+            perms: ['student', 'parent'],
             component: null
         },
         {
             titles: [
                 {
                     title: "sidebar/library/main",
-                    link: ["", "library", "overview"]
+                    link: ["", "library", "loans"]
                 }
             ],
             modules: ['library'],
