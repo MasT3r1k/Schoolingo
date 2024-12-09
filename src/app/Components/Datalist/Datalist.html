@@ -8,7 +8,7 @@
     <table>
         <thead>
             @for (item of head; track $index) {
-                <th>{{ locale.getLocale(item) }}</th>
+                <th [title]="options.titles?.[$index] || ''">{{ (options.disableLocales?.[$index] === true) ? item : locale.getLocale(item) }}</th>
             }
         </thead>
         <tbody>
@@ -29,18 +29,22 @@
     </table>
     <div class="bottom">
         <div class="left">
-            <p>Zobrazeno {{ (options.noDynamic ? data.getValue() : visibleData).length }} z {{ this.data.getValue().length }} (celkem {{ (options.noDynamic ? data.getValue().length : this.metadata.rows) }}), stránka {{ page }} z {{ getMaxPages() }}</p>
+            @if (!options.hideInfo) {
+                <p>Zobrazeno {{ (options.noDynamic ? data.getValue() : visibleData).length }} z {{ this.data.getValue().length }} (celkem {{ (options.noDynamic ? data.getValue().length : this.metadata.rows) }}), stránka {{ page }} z {{ getMaxPages() }}</p>
+            }
         </div>
         <div class="right">
-            <div [ngClass]="{page: true, center: true, previous: true, disabled: page == 1}" (click)="goPage(page - 1)">
-                <i class="ti ti-chevron-left"></i>
-            </div>
-            @for (_ of [].constructor(getMaxPages()); track index;let index = $index;) {
-                <div [ngClass]="{page: true, center: true, active: page === index + 1}" [id]="(page == (index + 1)) ? 'currentPage' : ''" [attr.contenteditable]="(page == (index + 1)) ? isEditingPage : false" (click)="goPage(index + 1)" (keydown.enter)="savePage()">{{ index + 1 }}</div>
+            @if (!options.hidePagination) {
+                <div [ngClass]="{page: true, center: true, previous: true, disabled: page == 1}" (click)="goPage(page - 1)">
+                    <i class="ti ti-chevron-left"></i>
+                </div>
+                @for (_ of [].constructor(getMaxPages()); track index;let index = $index;) {
+                    <div [ngClass]="{page: true, center: true, active: page === index + 1}" [id]="(page == (index + 1)) ? 'currentPage' : ''" [attr.contenteditable]="(page == (index + 1)) ? isEditingPage : false" (click)="goPage(index + 1)" (keydown.enter)="savePage()">{{ index + 1 }}</div>
+                }
+                <div [ngClass]="{page: true, center: true, next: true, disabled: page == getMaxPages() }" (click)="goPage(page + 1)">
+                    <i class="ti ti-chevron-right"></i>
+                </div>
             }
-            <div [ngClass]="{page: true, center: true, next: true, disabled: page == getMaxPages() }" (click)="goPage(page + 1)">
-                <i class="ti ti-chevron-right"></i>
-            </div>
         </div>
     </div>    
 </div>

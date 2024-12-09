@@ -14,6 +14,10 @@ export interface DatalistOptions {
     url?: string;
     search?: boolean;
     ignore?: string[];
+    titles?: string[];
+    hideInfo?: boolean;
+    hidePagination?: boolean;
+    disableLocales?: boolean[];
     noDynamic?: boolean;
 }
 
