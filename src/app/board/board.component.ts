@@ -71,7 +71,7 @@ export class BoardComponent {
       this.schoolingo.socketService.emit('tokens:getUser', { userId: 'myself' });
     }));
 
-    this.subscribers.push(this.schoolingo.socketService.addFunction("main:updateUser").subscribe((data: userAPI) => {
+    this.subscribers.push(this.schoolingo.socketService.addFunction("main:updateUser").subscribe((data: user) => {
       if (data.type == "parent" && data.children.length > 0) {
         this.schoolingo.userService.children = data.children;
       }
