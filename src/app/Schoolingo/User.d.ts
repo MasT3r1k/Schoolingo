@@ -26,6 +26,7 @@ export type user = ({
 } | {
     type: 'parent',
     person: personDetails;
+    children: child[];
 }) & {
     type: UserRoles;
     id: number;
