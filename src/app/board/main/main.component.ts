@@ -7,6 +7,7 @@ import { Locale } from '@Schoolingo/Locale';
 import { BehaviorSubject } from 'rxjs';
 import { Module, MainModules } from './Modules/Modules';
 import { ModuleTitle } from './Modules/Modules';
+import { Permission } from '@Schoolingo/Permissions';
 
 @Component({
   selector: 'app-main',
@@ -19,7 +20,8 @@ export class MainComponent {
   constructor(
     public locale: Locale,
     public dropdown: Dropdown,
-    public modules: MainModules
+    public modules: MainModules,
+    public permissions: Permission
   ) {}
 
   public getComponent(module: Module): Type<any> | null {
@@ -40,5 +42,4 @@ export class MainComponent {
   // Timetable module
   public timetableSelectedTab = new BehaviorSubject(0);
   public timetableOptionsName = 'timetableOptions';
-
 }

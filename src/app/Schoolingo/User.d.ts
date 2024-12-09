@@ -29,6 +29,7 @@ export type user = ({
 }) & {
     type: UserRoles;
     id: number;
+    manager: number;
 }
 
 export type child = (personDetails & { class: string });

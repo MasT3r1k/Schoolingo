@@ -1,44 +1,48 @@
 import { Injectable } from '@angular/core';
-import { Logger } from './Logger';
 import { UserRoles, modulePerm, UserPerms, permType } from './Permissions.d';
-import { SocketService } from './Socket';
 import { UserService } from './User';
+import { PermissionsConfig } from './Permissions.config';
 export type { UserRoles, modulePerm, UserPerms, permType };
 
 @Injectable()
 export class Permission {
 
     constructor(
-        private socketService: SocketService,
-        private logger: Logger,
         private userService: UserService
     ){}
 
-    private userPerm: UserPerms = {
-        role: 'student',
-        class: 1
-    };
-
-    public getUserPermissions(): void {
-        if (!this.socketService.socket?.connected) {
-            this.logger.send("Perms", "Failed to get perms. No socket found.");
-            return;
-        }
-        this.socketService.socket.emit('getUserPermissions');
-    }
-
     public checkPermission(required: permType[] = []): boolean {
-        let user = this.userService.getUser();
-        
+        let user = this.userService.getUser()!;
+        let count = 0;
+
         if (!user || user.type == undefined) {
             return false;
         }
-        if (required.length == 0) {
+
+        if (required.length == 0 || required.includes("all")) {
             return true;
         }
-        if (required.includes(user.type) || required.includes('all')) {
-            return true;
-        }
-        return false;
+
+        required.forEach((perm: permType) => {
+            if (perm.startsWith("manager:")) {
+
+                if (user.manager == -1) {
+                    count++;
+                }
+                let manPerm = perm.slice(8);
+                let id = PermissionsConfig.Managers.indexOf(manPerm);
+                let bin = (user.manager >>> 0).toString(2).split('').reverse();
+                if (id !== -1 && bin[id] && bin[id].toString() == "1") {
+                    count++;
+                    return;
+                }
+            } else {
+                if (perm == user.type) {
+                    count++;
+                    return;
+                }
+            }
+        });
+        return count > 0;
     }
 }

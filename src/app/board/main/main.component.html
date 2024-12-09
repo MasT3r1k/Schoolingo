@@ -1,6 +1,6 @@
 <div class="grid">
     @for (module of modules.modules; track $index) {
-        @if (module.modules && modules.moduleManager.checkModule(module.modules) || !module.modules) {
+        @if ((module.modules && modules.moduleManager.checkModule(module.modules)) || !module.modules && ((module.perms && permissions.checkPermission(module.perms)) || !module.perms)) {
             <div class="module">
                 <div class="module-header">
                     <h2 [ngClass]="{'has-link': module.titles[module.selectedTab?.getValue() ?? 0].link != undefined}" [routerLink]="module.titles[module.selectedTab?.getValue() ?? 0].link">{{ locale.getLocale(module.titles[module.selectedTab?.getValue() ?? 0].title) }}</h2>
