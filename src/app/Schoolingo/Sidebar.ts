@@ -7,6 +7,8 @@ import * as SidebarConfig from "@Schoolingo/Sidebar.config";
 
 import { Title } from '@angular/platform-browser';
 import { Modules } from './Modules';
+import { Schoolingo } from '@Schoolingo/App';
+import { Subscription } from 'rxjs';
 export type { SidebarGroup, SidebarItem };
 
 @Injectable()
@@ -101,7 +103,7 @@ export class Sidebar {
         let item: SidebarItem[] = this.getItem(url.split('?')[0].split('#')[0]?.slice(1));
         for(const x of item) {
           if (!x.children || x.children.length == 0) {
-            let pageTitle = `${this.locale.getLocale(x.item)} - ${name}`;
+            let pageTitle = `${this.locale.getLocale(x.item)} - ${Schoolingo.APP_NAME}`;
             this.title.setTitle(pageTitle);
           }
         }

@@ -1,6 +1,6 @@
 import { NgStyle } from '@angular/common';
 import { Component } from '@angular/core';
-import * as app from '@Schoolingo/Config';
+import { Schoolingo as AppConfig } from '@Schoolingo/App';
 import { languages } from '@Schoolingo/Locale';
 import { School } from '@Schoolingo/School';
 import { QRCodeModule } from 'angularx-qrcode';
@@ -38,8 +38,7 @@ export interface LoginData {
   styleUrls: ['./auth.component.css', '../Styles/card.css', '../Styles/select.css']
 })
 export class AuthComponent {
-  /** Imports */
-  app: Record<string, string> = app;
+  public App = AppConfig;
 
   private Listeners: Subscription[] = [];
   private QRListeners: Subscription[] = [];
