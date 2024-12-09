@@ -12,30 +12,175 @@
                     <div (click)="showPage = 'requestCompany'" class="btn submit blue-info" role="button">{{ schoolingo.locale.getLocale('traineeship/requestAddCompany') }}</div>
                 </div>
     
-                <schoolingo-datalist (datalist)="receivedDatalist($event)" [options]="{ search: false, url: 'traineeship:getCompanies', ignore: [] }" [head]="['traineeship/companyName', 'traineeship/officeAddress', 'traineeship/CIN', 'web', 'rate']" [clickFc]="onClick" [data]="companies" [metadata]="metadata" [search]="search"></schoolingo-datalist>
+                <schoolingo-datalist (datalist)="receivedDatalist($event)" [options]="{ search: false, url: 'traineeship:getCompanies', ignore: [], disableLocales: getDisabledLocales(), titles: getTableTitles() }" [head]="tableHead" [clickFc]="onClick" [data]="companies" [metadata]="metadata" [search]="search"></schoolingo-datalist>
     
             </div>
         </div>
     }
     @case ("detailCompany") {
         @if (selectedCompany) {
+            <div class="companyName mb">
+                <img src="https://napicu.eu/favicon.png" alt="Logo">
+                <h2>{{ selectedCompany.name }}</h2>
+            </div>
             <div class="card">
                 <div class="card-top"></div>
                 <div class="card-header mb">
-                    <h2>
-                        <i (click)="showPage = 'list'" class="icon ti ti-arrow-narrow-left"></i>
-                        {{ schoolingo.locale.getLocale('traineeship/companyInfo') }} ({{ selectedCompany.name }})</h2>
+                    <div class="card-row">
+                        <div class="left">
+                            <div (click)="goToList()" class="btn submit gray" role="button">
+                                <i class="ti ti-arrow-narrow-left"></i>
+                                <span>{{ schoolingo.locale.getLocale('traineeship/backToList') }}</span>
+                            </div>
+                            @if (permissions.checkPermission(["student"])) {
+                                <div class="btn submit blue-info" role="button">
+                                    <span>{{ schoolingo.locale.getLocale('traineeship/registerToCompany') }}</span>
+                                </div>
+                            }
+                            @if (permissions.checkPermission(["manager:traineeship:editCompany"])) {
+                                <div class="btn submit blue" role="button">
+                                    <span>{{ schoolingo.locale.getLocale('traineeship/editCompany') }}</span>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                    <div class="flex-items">
+                        <schoolingo-tabs [options]="['traineeship/tabs/detailCompany/main', 'traineeship/tabs/detailCompany/activity', 'rate']" [value]="selectedTab"></schoolingo-tabs>
+                    </div>
                 </div>
-                <div class="card-body">
-                    <iframe width="100%" 
-                    height="450"
-                    allowFullScreen="" 
-                    referrerPolicy="no-referrer-when-downgrade"
-                    [src]="iframeURL" frameborder="0"></iframe>
+                <div class="card-body mt">
+                    <div [ngClass]="{'card-tab': true, 'card-row': true, active: selectedTab.getValue() === 0}">
+                        <div class="left">
+                            <div class="card-table">
+                                <div class="card-table-header">{{ schoolingo.locale.getLocale('traineeship/companyInfo') }}</div>
+                                <div class="card-table-body">
+                                    <div class="card-table-row">
+                                        <div class="card-table-item">{{ schoolingo.locale.getLocale('traineeship/companyName') }}</div>
+                                        <div class="card-table-item">
+                                            <span>{{ selectedCompany.name }}</span>
+                                        </div>
+                                    </div>
+    
+                                    <div class="card-table-row">
+                                        <div class="card-table-item">{{ schoolingo.locale.getLocale('traineeship/officeAddress') }}</div>
+                                        <div class="card-table-item">
+                                            @if (country.getCountryByCode(selectedCompany.code2)) {
+                                                <span>
+                                                    {{ country.getCountryByCode(selectedCompany.code2)?.flag }}
+                                                </span>
+                                            }
+                                            <span>{{ selectedCompany.street + ' ' + selectedCompany.houseNumber + ', ' + selectedCompany.cityName + ' ' + selectedCompany.postcode }}</span>
+                                        </div>
+                                    </div>
+    
+                                    <div class="card-table-row">
+                                        <div class="card-table-item">{{ schoolingo.locale.getLocale('traineeship/traineeAddress') }}</div>
+                                        <div class="card-table-item">
+                                            @if (country.getCountryByCode(selectedCompany.code2)) {
+                                                <span>
+                                                    {{ country.getCountryByCode(selectedCompany.code2)?.flag }}
+                                                </span>
+                                            }
+                                            <span>
+                                                {{selectedCompany.street + ' ' + selectedCompany.houseNumber + ', ' + selectedCompany.cityName + ' ' + selectedCompany.postcode }}
+                                            </span>
+                                        </div>
+                                    </div>
+    
+                                    <div class="card-table-row">
+                                        <div class="card-table-item">{{ schoolingo.locale.getLocale('traineeship/CIN') }}</div>
+                                        <div class="card-table-item">
+                                            {{ selectedCompany.CIN }}</div>
+                                    </div>
+    
+                                    <div class="card-table-row">
+                                        <div class="card-table-item">{{ schoolingo.locale.getLocale('web') }}</div>
+                                        <div class="card-table-item">
+                                            @if (selectedCompany.web) {
+                                                <a [href]="selectedCompany.web" target="_blank">{{ selectedCompany.web }}</a>
+                                            } @else {
+                                                {{ schoolingo.locale.getLocale("traineeship/noWeb") }}
+                                            }
+                                        </div>
+                                    </div>
+    
+                                    <div class="card-table-row">
+                                        <div class="card-table-item">{{ schoolingo.locale.getLocale('traineeship/averageRate') }}</div>
+                                        <div class="card-table-item">{{ selectedCompany.rating != null ? getRating(selectedCompany) : schoolingo.locale.getLocale(getRating(selectedCompany)) }}</div>
+                                    </div>
+    
+                                    <div class="card-table-row">
+                                        <div class="card-table-item">{{ schoolingo.locale.getLocale('email') }}</div>
+                                        <div class="card-table-item">
+                                            @if (selectedCompany.email) {
+                                                <a [href]="'mailto:' + selectedCompany.email">{{ selectedCompany.email }}</a>    
+                                            } @else {
+                                                {{ schoolingo.locale.getLocale("traineeship/noEmail") }}
+                                            }
+                                        </div>
+                                    </div>
+    
+                                    <div class="card-table-row">
+                                        <div class="card-table-item">{{ schoolingo.locale.getLocale('phone') }}</div>
+                                        <div class="card-table-item">{{ Utils.formatPhone(selectedCompany.phone) || schoolingo.locale.getLocale("traineeship/noPhone") }}</div>
+                                    </div>
+    
+                                    <div class="card-table-row">
+                                        <div class="card-table-item">{{ schoolingo.locale.getLocale('traineeship/description') }}</div>
+                                        <div class="card-table-item">{{ selectedCompany.description || schoolingo.locale.getLocale('traineeship/noDescription') }}</div>
+                                    </div>
+                                    <div class="card-table-row">
+                                        <div class="card-table-item">{{ schoolingo.locale.getLocale('traineeship/activity') }}</div>
+                                        <div class="card-table-item">{{ selectedCompany.activity || schoolingo.locale.getLocale('traineeship/noActivity') }}</div>
+                                    </div>
+                                    <div class="card-table-row">
+                                        <div class="card-table-item">{{ schoolingo.locale.getLocale('traineeship/equipment') }}</div>
+                                        <div class="card-table-item">{{ selectedCompany.equipment || schoolingo.locale.getLocale('traineeship/noEquipment') }}</div>
+                                    </div>
+                                    <div class="card-table-row">
+                                        <div class="card-table-item">{{ schoolingo.locale.getLocale('traineeship/scopes') }}</div>
+                                        <div class="card-table-item">
+                                            @for (scope of getScopes(selectedCompany); track $index) {
+                                                <p>{{ scope }}</p>
+                                            } @empty {
+                                                {{ schoolingo.locale.getLocale('traineeship/noScopes') }}
+                                            }
+                                        </div>
+                                    </div>
+                                    <div class="card-table-row">
+                                        <div class="card-table-item">{{ schoolingo.locale.getLocale('traineeship/responsiblePerson') }}</div>
+                                        <div class="card-table-item">{{ schoolingo.formatPerson(selectedCompany.responsiblePerson) }}</div>
+                                    </div>
+                                    <div class="card-table-row">
+                                        <div class="card-table-item">{{ schoolingo.locale.getLocale('traineeship/instructors') }}</div>
+                                        <div class="card-table-item">
+                                            @for (instructor of instructors; track $index) {
+                                                {{ schoolingo.formatPerson(instructor.personId) }}
+                                            } @empty {
+                                                {{ schoolingo.locale.getLocale('traineeship/noInstructors') }}
+                                            }
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="right">
+                            <div class="map">
+                                <div class="skeleton">
+                                    <iframe width="100%" 
+                                    height="100%"
+                                    [ngStyle]="{ filter: schoolingo.theme.getTheme() == 'dark' ? 'invert(90%) hue-rotate(180deg)' : '' }"
+                                    allowFullScreen=""
+                                    referrerPolicy="no-referrer-when-downgrade"
+                                    [src]="iframeURL"
+                                    frameborder="0"></iframe>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         }
-
     }
 
     @case ("requestCompany") {
@@ -43,7 +188,7 @@
             <div class="card-top"></div>
             <div class="card-header mb">
                 <h2>
-                    <i (click)="showPage = 'list'" class="icon ti ti-arrow-narrow-left"></i>
+                    <i (click)="goToList()" class="icon ti ti-arrow-narrow-left"></i>
                     {{ schoolingo.locale.getLocale('traineeship/requestCompany') }}</h2>
             </div>
             <div class="card-body">

@@ -1,12 +1,17 @@
+import { NgClass } from '@angular/common';
 import { Component } from '@angular/core';
+import { Schoolingo } from '@Schoolingo';
 
 @Component({
-  selector: 'app-settings',
   standalone: true,
-  imports: [],
+  imports: [NgClass],
   templateUrl: './settings.component.html',
-  styleUrl: './settings.component.css'
+  styleUrls: ['./settings.component.css', '../../../Styles/card.css', '../../../Styles/input.css']
 })
 export class SettingsComponent {
+  constructor(
+    public schoolingo: Schoolingo
+  ) {}
 
+  public checked: boolean = false;
 }
