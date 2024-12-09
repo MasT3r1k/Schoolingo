@@ -95,7 +95,11 @@ export class Schoolingo {
             case "student":
                 return this.locale.getLocale('roles/' + user.type) + ' - ' + user.class;
             default:
-                return this.locale.getLocale('roles/' + user.type);
+                let text = this.locale.getLocale('roles/' + user.type);
+                if (user.manager === -1) {
+                    text += " - " + this.locale.getLocale('roles/manager');
+                }
+                return text;
         }
     }
 
