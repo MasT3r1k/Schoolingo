@@ -13,6 +13,7 @@ export type { SidebarGroup, SidebarItem };
 
 @Injectable()
 export class Sidebar {
+  public listeners: Subscription[] = [];
     constructor(
         private Permissions: Permission,
         private locale: Locale,
