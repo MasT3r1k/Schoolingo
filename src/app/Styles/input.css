@@ -62,6 +62,76 @@ div[role='button'].small {
     padding: 6px 16px;
 }
 
+/* Checkbox */
+.checkbox {
+    border-radius: 100px;
+    position: relative;
+    width: 48px;
+    height: 28px;
+    overflow: hidden;
+}
+
+.checkbox > .input-checkbox {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    padding: 0;
+    margin: 0;
+    opacity: 0;
+    cursor: pointer;
+    z-index: 3;
+}
+
+.checkbox > .knob {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    z-index: 2;
+}
+
+.checkbox .knob::before {
+    font-family: "tabler-icons" !important;
+    content: "\eb55";
+    position: absolute;
+    top: 4px;
+    left: 4px;
+    aspect-ratio: 1;
+    color: var(--error-color); 
+    height: calc(100% - 8px);
+    font-size: 10px;
+    font-weight: 600;
+    line-height: 10px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #fff;
+    border-radius: 50%;
+    transition: 0.3s ease all, left 0.3s cubic-bezier(0.18, 0.89, 0.35, 1.15);
+}
+
+.checkbox.checked .knob::before {
+    content: "\ea5e";
+    left: 24px;
+}
+
+.checkbox .btn-bg {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    border-radius: 100px;
+    background-color: var(--error-color);
+    transition: 0.3s ease all;
+    z-index: 1;
+}
+
+.checkbox.checked .knob::before { color: var(--green); }
+.checkbox.checked .btn-bg { background-color: var(--green); }
+
 /* Select */
 .input-select {
     display: flex;
