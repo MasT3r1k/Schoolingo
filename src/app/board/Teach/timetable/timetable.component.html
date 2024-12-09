@@ -52,10 +52,10 @@
                 @for (day of [].constructor(schoolingo.getTimetableLessons().length > 5 ? schoolingo.getTimetableLessons().length : 5); track index;let index = $index) {
                     <div class="day">
                         <div class="name">
-                            {{ utils.getDayOfWeek(schoolingo.timetableSelectedWeek.getValue(), index - 1).format('dddd') }}
+                            {{ Utils.getDayOfWeek(schoolingo.timetableSelectedWeek.getValue(), index - 1).format('dddd') }}
                             @if (schoolingo.timetableSelectedWeek.getValue() !== -1) {
                                 <div class="time">
-                                    {{ utils.getDayOfWeek(schoolingo.timetableSelectedWeek.getValue(), index - 1).format('D. M.') }}
+                                    {{ Utils.getDayOfWeek(schoolingo.timetableSelectedWeek.getValue(), index - 1).format('D. M.') }}
                                 </div>
                             }
                         </div>
@@ -67,7 +67,7 @@
                             <div [ngClass]="{item: true, 'lesson-hour': true}">
                                 @if (schoolingo.getTimetableLessons()[index]) {
                                     @for (lesson of schoolingo.getTimetableLessons()[index][index2]; track $index) {
-                                        <div [ngClass]="['sub-lesson-hour', 'lesson-count-' + schoolingo.getTimetableLessons()[index][index2].length, (lesson.empty) ? 'empty' : '', schoolingo.isClassbook(index - 1, index2) ? 'classbook' : '', (schoolingo.substitution[utils.getDayOfWeek(schoolingo.timetableSelectedWeek.getValue(), index - 1).format('YYYY-MM-DD')] && schoolingo.substitution[utils.getDayOfWeek(schoolingo.timetableSelectedWeek.getValue(), index - 1).format('YYYY-MM-DD')][index2 + 1]) ? 'substitution' : '']" (click)="openLesson({lesson, day: index, hour: index2, sub: $index})">
+                                        <div [ngClass]="['sub-lesson-hour', 'lesson-count-' + schoolingo.getTimetableLessons()[index][index2].length, (lesson.empty) ? 'empty' : '', schoolingo.isClassbook(index - 1, index2) ? 'classbook' : '', (schoolingo.substitution[Utils.getDayOfWeek(schoolingo.timetableSelectedWeek.getValue(), index - 1).format('YYYY-MM-DD')] && schoolingo.substitution[Utils.getDayOfWeek(schoolingo.timetableSelectedWeek.getValue(), index - 1).format('YYYY-MM-DD')][index2 + 1]) ? 'substitution' : '']" (click)="openLesson({lesson, day: index, hour: index2, sub: $index})">
                                             @if (options.groups.getValue() === true) {
                                                 <div class="group">
                                                     @if (lesson.group.text != '') {
