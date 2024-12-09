@@ -3,12 +3,12 @@ import { CommonModule } from '@angular/common';
 import { RouterOutlet } from '@angular/router';
 import { HttpClient, HttpClientModule, HttpErrorResponse } from '@angular/common/http';
 import { School, SchoolInfo } from '@Schoolingo/School';
-import * as config from '@Schoolingo/Config';
 import { Locale } from '@Schoolingo/Locale';
 import { Subscription } from 'rxjs';
 import { Theme } from '@Schoolingo/Theme';
 import { ErrorMain } from './Errors';
 import { SchoolYear } from '@Schoolingo/School';
+import { Config } from '@Schoolingo/Config';
 
 @Component({
   selector: 'app-root',
@@ -48,13 +48,13 @@ export class AppComponent implements OnInit {
 
   ngOnInit(): void {
 
-    this.http.get<SchoolInfo>(config.api + 'v1/getSchoolInfo', { withCredentials: true }).subscribe((data: (SchoolInfo & { modules?: number })): void => {
+    this.http.get<SchoolInfo>(Config.API_URL + 'v1/getSchoolInfo', { withCredentials: true }).subscribe((data: (SchoolInfo & { modules?: number })): void => {
       this.school.setSchoolInfo(data, data.modules ?? 0);
       this.afterLoadedSchool = true;
     }, this.httpError);
 
     
-    this.http.get<SchoolYear>(config.api + 'v1/getSchoolYear', { withCredentials: true }).subscribe((data: SchoolYear): void => {
+    this.http.get<SchoolYear>(Config.API_URL + 'v1/getSchoolYear', { withCredentials: true }).subscribe((data: SchoolYear): void => {
       this.school.setSchoolYear(data)
     }, this.httpError);
   }

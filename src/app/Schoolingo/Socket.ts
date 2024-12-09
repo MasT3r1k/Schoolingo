@@ -1,16 +1,13 @@
 import { NgModule } from "@angular/core";
-import { CookieService } from "./Cookie";
 import { io, Socket } from "socket.io-client";
 import { Observable } from "rxjs";
-import { socketIP } from "./Config";
+import { Config } from "@Schoolingo/Config";
 import { SocketUpdateLocale, SocketUpdateTheme } from "./Socket.d";
 export { SocketUpdateLocale, SocketUpdateTheme }
 
 @NgModule()
 export class SocketService {
-  constructor(
-      private cookieService: CookieService
-  ) {}
+  constructor() {}
 
   public isConnected: boolean = false;
   public socket: Socket | null = null;
@@ -24,7 +21,7 @@ export class SocketService {
   }
 
   public connect(): void {
-    this.socket = io(socketIP, {
+    this.socket = io(Config.socketIP, {
       withCredentials: true
     });
     this.socket.onAny((event, ...args) => {

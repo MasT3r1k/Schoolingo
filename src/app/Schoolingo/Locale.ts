@@ -5,7 +5,7 @@ import { Logger } from "@Schoolingo/Logger";
 import CzechLanguage from '../locales/Czech';
 import EnglishLanguage from '../locales/English';
 import { HttpClient } from "@angular/common/http";
-import { localeURL } from "@Schoolingo/Config";
+import { Config } from "@Schoolingo/Config";
 import { BehaviorSubject } from "rxjs";
 import * as moment from 'moment';
 import 'moment/locale/cs';
@@ -63,7 +63,7 @@ export class Locale {
      * @param lng user's new language
      */
     public setUserLocale(lng: languages) {
-        this.http.get(localeURL + this.locales[lng].file).subscribe((data: any) => {
+        this.http.get(Config.localeURL + this.locales[lng].file).subscribe((data: any) => {
             this.locale.next(data);
             this.language.next(lng);
             if (lng != "null") {
