@@ -115,17 +115,17 @@ let config: SidebarGroup[] = [
                 {
                     item: "sidebar/traineeship/companies",
                     url: "traineeship/companies",
-                    permission: ['student', 'teacher']
+                    permission: ['all']
                 },
                 {
                     item: "sidebar/traineeship/manage",
                     url: "traineeship/manage",
-                    permission: ['principal']
+                    permission: ['manager:traineeship:manage']
                 },
                 {
                     item: "sidebar/traineeship/settings",
                     url: "traineeship/settings",
-                    permission: ['principal']
+                    permission: ['manager:traineeship:settings']
                 }]
             },
             {
@@ -141,11 +141,11 @@ let config: SidebarGroup[] = [
                 }, {
                     item: 'sidebar/library/managebooks',
                     url: 'library/managebooks',
-                    permission: ['principal']
+                    permission: ['manager:library:managebooks']
                 }, {
                     item: 'settings',
                     url: 'library/settings',
-                    permission: ['principal']
+                    permission: ['manager:library:settings']
                 }]
             },
             {
@@ -190,6 +190,9 @@ let config: SidebarGroup[] = [
                 item: 'sidebar/user/main',
                 permission: ['all'],
                 children: [{
+                    item: 'sidebar/user/profile',
+                    url: 'user/profile'
+                }, {
                     item: 'sidebar/user/devices',
                     url: 'user/devices'
                 }, {
