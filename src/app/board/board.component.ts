@@ -12,26 +12,10 @@ import { Modules } from '@Schoolingo/Modules';
 import { School } from '@Schoolingo/School';
 import { SidebarItem } from '@Schoolingo/Sidebar';
 import { SocketUpdateTheme, SocketUpdateLocale } from '@Schoolingo/Socket';
-import { child, personDetails } from '@Schoolingo/User';
+import { personDetails, user } from '@Schoolingo/User';
 import { Country } from 'country-state-city';
 import moment from 'moment';
 import { Subscription } from 'rxjs';
-
-type userAPI = ({
-  type: 'student';
-  person: personDetails;
-  class: string;
-} | {
-  type: 'teacher';
-  person: personDetails;
-  class: string[];
-} | {
-  type: 'parent',
-  person: personDetails;
-  children: child[];
-}) & {
-  id: number;
-}
 
 interface AbsenceAPI {
   type: number;
