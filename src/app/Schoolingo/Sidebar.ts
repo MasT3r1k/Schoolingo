@@ -60,7 +60,9 @@ export class Sidebar {
                 delC++;
               });
             }
-            items.push(item);
+            if (!item.children || item.children && item.children.length != 0) {
+              items.push(item);
+            }
           });
           newSidebar.push({ label: section.label, items: items });
         });
