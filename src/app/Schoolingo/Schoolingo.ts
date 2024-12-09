@@ -319,10 +319,7 @@ export class Schoolingo {
         degrees.forEach((degree: degree): void => {
             let i = 0;
             if (!degree.isBefore) {
-                if (i > 0) {
-                    text += ",";
-                }
-                text += ` ${degree.shortcut}`;
+                text += `, ${degree.shortcut}`;
                 i++;
             }
         })
