@@ -6,7 +6,7 @@ import { personDetails, user, UserService } from "./User";
 import { Sidebar } from "./Sidebar";
 import { Absence, BookInfo, ClassbookAPI, ClassbookLesson, DiaryDay, DiaryWeek, Mark, studentService, Substitution, TimetableAPI, TimetableHours, TimetableLesson } from './Schoolingo.d';
 import { School } from "./School";
-import { isOdd } from "./Utils";
+import { Utils } from "./Utils";
 import { BehaviorSubject, Subscription } from "rxjs";
 import moment from "moment";
 import { AbsenceConfig, absence } from "./Absence";
@@ -125,7 +125,7 @@ export class Schoolingo {
 
     // Absence
     public getAbsence(day: number, hour: number): number {
-        let date = utils.getDayOfWeek(this.timetableSelectedWeek.getValue(), day).format('YYYY-MM-DD');
+        let date = Utils.getDayOfWeek(this.timetableSelectedWeek.getValue(), day).format('YYYY-MM-DD');
         if (!this.absence[date] || !this.absence[date][hour]) {
             return -1
         }
@@ -134,7 +134,7 @@ export class Schoolingo {
     }
 
     public isClassbook(day: number, hour: number): boolean {
-        let date = utils.getDayOfWeek(this.timetableSelectedWeek.getValue(), day).format('YYYY-MM-DD');
+        let date = Utils.getDayOfWeek(this.timetableSelectedWeek.getValue(), day).format('YYYY-MM-DD');
         if (!this.classbookLessons[date]) return false;
         return this.classbookLessons[date][hour] !== undefined;
     }
@@ -209,7 +209,7 @@ export class Schoolingo {
             }
 
             if (lesson.type !== 0 && this.timetableSelectedWeek.getValue() !== -1) {
-                if (lesson.type === 1 && isOdd(this.timetableSelectedWeek.getValue()) || lesson.type === 2 && !isOdd(this.timetableSelectedWeek.getValue())) {
+                if (lesson.type === 1 && Utils.isOdd(this.timetableSelectedWeek.getValue()) || lesson.type === 2 && !Utils.isOdd(this.timetableSelectedWeek.getValue())) {
                     return;
                 }
             }

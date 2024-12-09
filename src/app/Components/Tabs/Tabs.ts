@@ -1,7 +1,7 @@
 import { NgClass, NgStyle } from "@angular/common";
 import { Component, Input, OnInit, RendererFactory2 } from "@angular/core";
 import { Locale } from "@Schoolingo/Locale";
-import { randomstring } from "@Schoolingo/Utils";
+import { Utils } from "@Schoolingo/Utils";
 import { BehaviorSubject } from "rxjs";
 
 @Component({

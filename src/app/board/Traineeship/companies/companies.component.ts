@@ -3,6 +3,9 @@ import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { DomSanitizer } from '@angular/platform-browser';
 import { Data, dataAPI, DatalistComponent, Metadata } from '@Components/Datalist/Datalist';
 import { Schoolingo } from '@Schoolingo';
+import { Permission } from '@Schoolingo/Permissions';
+import { Utils } from '@Schoolingo/Utils';
+import { Country } from 'country-state-city';
 import { BehaviorSubject, Subscription } from 'rxjs';
 
 @Component({
@@ -12,6 +15,8 @@ import { BehaviorSubject, Subscription } from 'rxjs';
   styleUrls: ['../../../Styles/card.css', '../../../Styles/input.css', './companies.component.css']
 })
 export class CompaniesComponent implements OnInit {
+  Utils = Utils;
+
   constructor(
     public schoolingo: Schoolingo,
     public sanitizer: DomSanitizer

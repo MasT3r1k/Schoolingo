@@ -3,7 +3,7 @@ import { Component, Renderer2, RendererFactory2 } from '@angular/core';
 import { Schoolingo, TimetableLesson } from '@Schoolingo';
 import { TabsComponent } from '@Components/Tabs/Tabs';
 import { BehaviorSubject } from 'rxjs';
-import * as utils from '@Schoolingo/Utils';
+import { Utils } from '@Schoolingo/Utils';
 import { Dropdown } from '@Components/Dropdowns/Dropdown';
 import moment from 'moment';
 import { ContextButton } from '@Components/Dropdowns/Dropdown';
@@ -27,7 +27,7 @@ export class TimetableComponent {
     }
 
   // Imports
-  utils = utils;
+  Utils = Utils;
   
 
   public modal: Modal = new Modal({
