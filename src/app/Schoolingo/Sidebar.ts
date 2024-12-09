@@ -40,10 +40,8 @@ export class Sidebar {
     public isToggled(id: number): boolean {
       return this.toggledDropdowns.includes(id);
     }
-    private config: SidebarGroup[] = SidebarConfig.default;
-
     public build(): void {
-        let boardSidebar = JSON.parse(JSON.stringify(this.config));
+        let boardSidebar = JSON.parse(JSON.stringify(SidebarConfig.default));
         let newSidebar: SidebarGroup[] = [];
     
         boardSidebar.forEach((section: SidebarGroup): void => {
