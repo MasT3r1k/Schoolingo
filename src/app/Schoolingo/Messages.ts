@@ -10,16 +10,24 @@ export class MessageManager {
         perms: ['all']
       }, {    // 1
         label: 'homework',
+        icon: 'briefcase-2',
+        color: 'hsl(197, 42%, 49%)',
         perms: ['student']
       }, {    // 2
         label: 'excusestudent',
+        icon: 'file-report',
+        color: 'hsl(356, 87%, 41%)',
         perms: ['parent']
       }, {    // 3
         label: 'ratestudent',
+        icon: 'thumb-up',
+        color: 'hsl(94, 54%, 38%)',
         perms: ['teacher', 'principal']
-      }, {    // 4
-        label: 'noticeboard',
-        perms: ['teacher', 'principal']
+      }, {    // 5
+        label: 'system',
+        icon: 'shield',
+        color: '#608796',
+        perms: ['principal']
       }
     ];
 

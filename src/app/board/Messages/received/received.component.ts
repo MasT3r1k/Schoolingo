@@ -1,322 +1,213 @@
 import { NgClass, NgStyle } from '@angular/common';
-import { Component } from '@angular/core';
-import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { Component, OnInit } from '@angular/core';
+import { TabsComponent } from '@Components/Tabs/Tabs';
 import { Schoolingo } from '@Schoolingo';
-import { Locale } from '@Schoolingo/Locale';
-import { MessageManager } from '@Schoolingo/Messages';
 import moment from 'moment';
+import { BehaviorSubject } from 'rxjs';
 
-type sentMessage = {
-  messageId: number;
-  receivers: any[];
-  message: string;
-  sent: moment.Moment;
-  sender: any;
-  tags: number[];
-  type: number;
-  isRead: boolean;
+enum ThreadTypes {
+  MESSAGE,
+  HOMEWORK,
+  EXCUSESTUDENT,
+  RATESTUDENT,
+  SYSTEM
 }
 
+type Message = {
+  messageId: number;
+  message: string;
+  date: moment.Moment;
+} & ({
+  type: 'member';
+  author: number;
+} | {
+  type: 'system'
+})
+
+type Thread = {
+  threadId: number;
+  author: number;
+  type: ThreadTypes;
+  memberTypes: number[];
+  members: number[];
+  tags: [];
+  newMessage: boolean;
+  messages: Message[];
+}
 
 @Component({
-  selector: 'app-received',
   standalone: true,
-  imports: [NgClass, ReactiveFormsModule, FormsModule],
+  imports: [TabsComponent, NgClass, NgStyle],
   templateUrl: './received.component.html',
-  styleUrls: ['./received.component.css', '../../../Styles/card.css', '../../../Styles/input.css']
+  styleUrls: ['./received.component.css', '../../../Styles/card.css', '../../../Styles/input.css', '../../../Styles/item.css']
 })
-export class ReceivedComponent {
-  constructor(
-    public locale: Locale,
-    public schoolingo: Schoolingo,
-    public messageManager: MessageManager
-  ) {}
+export class ReceivedComponent implements OnInit {
+  public types: string[] = ["hsl(206deg, 90%, 50%)", "hsl(94, 54%, 38%)", "hsl(25, 100%, 47%)"];
 
+  public selectedTab: BehaviorSubject<number> = new BehaviorSubject(2);
+  public selectedThread: number = -1;
+  constructor(public schoolingo: Schoolingo) {}
+
+  ThreadTypes = ThreadTypes;
+
+  public threads: Thread[] = [
+    {
+      threadId: 1,
+      author: 1,
+      members: [1],
+      memberTypes: [0],
+      type: ThreadTypes.MESSAGE,
+      tags: [],
+      newMessage: true,
+      messages: [
+        {
+          messageId: 1,
+          author: 1,
+          type: 'member',
+          message: "aaabbbccc",
+          date: moment()
+        },
+        {
+          messageId: 2,
+          type: 'system',
+          message: "Uživatel xxx přidal do skupiny uživatele xxx",
+          date: moment(),
+        }
+      ]
+    },
+    {
+      threadId: 1,
+      author: 1,
+      members: [1],
+      memberTypes: [0],
+      type: ThreadTypes.MESSAGE,
+      tags: [],
+      newMessage: true,
+      messages: [
+        {
+          messageId: 1,
+          author: 1,
+          type: 'member',
+          message: "aaabbbccc",
+          date: moment()
+        }
+      ]
+    },
+    {
+      threadId: 1,
+      author: 1,
+      type: ThreadTypes.HOMEWORK,
+      memberTypes: [0,1,2],
+      members: [1],
+      tags: [],
+      newMessage: false,
+      messages: [
+        {
+          messageId: 1,
+          author: 1,
+          type: 'member',
+          message: "aaabbbccc",
+          date: moment()
+        },
+        {
+          messageId: 2,
+          type: 'system',
+          message: "Uživatel xxx přidal do skupiny uživatele xxx",
+          date: moment(),
+        },
+        {
+          messageId: 1,
+          author: 1,
+          type: 'member',
+          message: "aaabbbccc",
+          date: moment()
+        },
+        {
+          messageId: 2,
+          type: 'system',
+          message: "Uživatel xxx přidal do skupiny uživatele xxx",
+          date: moment(),
+        }
+      ]
+    },
+    {
+      threadId: 1,
+      author: 1,
+      members: [1],
+      type: ThreadTypes.SYSTEM,
+      memberTypes: [0],
+      tags: [],
+      newMessage: false,
+      messages: [
+        {
+          messageId: 1,
+          author: 1,
+          type: 'member',
+          message: "aaabbbccc",
+          date: moment()
+        },
+        {
+          messageId: 2,
+          type: 'system',
+          message: "Uživatel xxx přidal do skupiny uživatele xxx",
+          date: moment(),
+        }
+      ]
+    },
+    {
+      threadId: 1,
+      author: 1,
+      type: ThreadTypes.EXCUSESTUDENT,
+      members: [1],
+      memberTypes: [0],
+      tags: [],
+      newMessage: false,
+      messages: [
+        {
+          messageId: 1,
+          author: 1,
+          type: 'member',
+          message: "Prosím o omluvení syna ",
+          date: moment()
+        }
+      ]
+    },
+    {
+      threadId: 1,
+      author: 1,
+      members: [1],
+      type: ThreadTypes.HOMEWORK,
+      memberTypes: [0],
+      tags: [],
+      newMessage: false,
+      messages: [
+        {
+          messageId: 1,
+          author: 1,
+          type: 'member',
+          message: "aaabbbccc",
+          date: moment()
+        },
+        {
+          messageId: 2,
+          type: 'system',
+          message: "Uživatel xxx přidal do skupiny uživatele xxx",
+          date: moment(),
+        }
+      ]
+    },
+  ];
 
   ngOnInit(): void {
-    this.schoolingo.socketService.emit('messages::getMessages', {});
-    moment.locale('cs');
-
-
-    this.schoolingo.socketService.addFunction('messages::getMessages').subscribe((data: any) => {
-      this.loadingMessages = false;
-      console.log(data);
-      this.messages = data;
-    });
+    this.getBackground(this.threads[2]);
   }
 
-  public selectMessage(id: number): void {
-    this.selectedMessage = id;
-    this.schoolingo.socketService.emit('messages::getMessage', { message: this.messages[id].messageId });
-  }
-
-  public loadingMessages: boolean = false;
-  public messages: sentMessage[] = [
-    {
-      messageId: 1,
-      tags: [0],
-      receivers: [{
-        firstName: "AAA",
-        lastName: "BBB",
-        gender: 0
-      }],
-      message: "aaaa",
-      sent: moment(),
-      sender: {
-        firstName: "AAA",
-        lastName: "BBB",
-        gender: 0
-      },
-      type: 0,
-      isRead: false
-    },
-    {
-      messageId: 1,
-      tags: [],
-      receivers: [{
-        firstName: "AAA",
-        lastName: "BBB",
-        gender: 0
-      }],
-      message: "aaaa",
-      sent: moment(),
-      sender: {
-        firstName: "AAA",
-        lastName: "BBB",
-        gender: 0
-      },
-      type: 0,
-      isRead: false
-    },
-    {
-      messageId: 1,
-      tags: [1],
-      receivers: [{
-        firstName: "AAA",
-        lastName: "BBB",
-        gender: 0
-      }],
-      message: "aaaa",
-      sent: moment(),
-      sender: {
-        firstName: "AAA",
-        lastName: "BBB",
-        gender: 0
-      },
-      type: 0,
-      isRead: false
-    },
-    {
-      messageId: 1,
-      tags: [0],
-      receivers: [{
-        firstName: "AAA",
-        lastName: "BBB",
-        gender: 0
-      }],
-      message: "aaaa",
-      sent: moment(),
-      sender: {
-        firstName: "AAA",
-        lastName: "BBB",
-        gender: 0
-      },
-      type: 0,
-      isRead: false
-    },
-    {
-      messageId: 1,
-      tags: [],
-      receivers: [{
-        firstName: "AAA",
-        lastName: "BBB",
-        gender: 0
-      }],
-      message: "aaaa",
-      sent: moment(),
-      sender: {
-        firstName: "AAA",
-        lastName: "BBB",
-        gender: 0
-      },
-      type: 0,
-      isRead: false
-    },
-    {
-      messageId: 1,
-      tags: [],
-
-      receivers: [{
-        firstName: "AAA",
-        lastName: "BBB",
-        gender: 0
-      }],
-      message: "aaaa",
-      sent: moment(),
-      sender: {
-        firstName: "AAA",
-        lastName: "BBB",
-        gender: 0
-      },
-      type: 0,
-      isRead: false
-    },
-    {
-      messageId: 1,
-      tags: [],
-
-      receivers: [{
-        firstName: "AAA",
-        lastName: "BBB",
-        gender: 0
-      }],
-      message: "aaaa",
-      sent: moment(),
-      sender: {
-        firstName: "AAA",
-        lastName: "BBB",
-        gender: 0
-      },
-      type: 0,
-      isRead: false
-    },
-    {
-      messageId: 1,
-      tags: [],
-
-      receivers: [{
-        firstName: "AAA",
-        lastName: "BBB",
-        gender: 0
-      }],
-      message: "aaaa",
-      sent: moment(),
-      sender: {
-        firstName: "AAA",
-        lastName: "BBB",
-        gender: 0
-      },
-      type: 0,
-      isRead: false
-    },
-    {
-      messageId: 1,
-      tags: [],
-
-      receivers: [{
-        firstName: "AAA",
-        lastName: "BBB",
-        gender: 0
-      }],
-      message: "aaaa",
-      sent: moment(),
-      sender: {
-        firstName: "AAA",
-        lastName: "BBB",
-        gender: 0
-      },
-      type: 0,
-      isRead: false
-    },
-    {
-      messageId: 1,
-      tags: [],
-
-      receivers: [{
-        firstName: "AAA",
-        lastName: "BBB",
-        gender: 0
-      }],
-      message: "aaaa",
-      sent: moment(),
-      sender: {
-        firstName: "AAA",
-        lastName: "BBB",
-        gender: 0
-      },
-      type: 0,
-      isRead: false
-    },
-    {
-      messageId: 1,
-      tags: [],
-
-      receivers: [{
-        firstName: "AAA",
-        lastName: "BBB",
-        gender: 0
-      }],
-      message: "aaaa",
-      sent: moment(),
-      sender: {
-        firstName: "AAA",
-        lastName: "BBB",
-        gender: 0
-      },
-      type: 0,
-      isRead: false
-    },
-    {
-      messageId: 1,
-      tags: [],
-
-      receivers: [{
-        firstName: "AAA",
-        lastName: "BBB",
-        gender: 0
-      }],
-      message: "aaaa",
-      sent: moment(),
-      sender: {
-        firstName: "AAA",
-        lastName: "BBB",
-        gender: 0
-      },
-      type: 0,
-      isRead: false
-    },
-    {
-      messageId: 1,
-      tags: [],
-
-      receivers: [{
-        firstName: "AAA",
-        lastName: "BBB",
-        gender: 0
-      }],
-      message: "aaaa",
-      sent: moment(),
-      sender: {
-        firstName: "AAA",
-        lastName: "BBB",
-        gender: 0
-      },
-      type: 0,
-      isRead: false
-    },
-    {
-      messageId: 1,
-      tags: [],
-
-      receivers: [{
-        firstName: "AAA",
-        lastName: "BBB",
-        gender: 0
-      }],
-      message: "aaaa",
-      sent: moment(),
-      sender: {
-        firstName: "AAA",
-        lastName: "BBB",
-        gender: 0
-      },
-      type: 0,
-      isRead: false
+  public getBackground(thread: Thread): string {
+    let bg = this.types[thread.memberTypes[0]] + " " + (100 / thread.memberTypes.length).toFixed(2) + "%";
+    for(let i = 1;i < thread.memberTypes.length;i++) {
+      bg += ", " + this.types[thread.memberTypes[i]] + " " + (100 / thread.memberTypes.length * (i)).toFixed(2) + "% " + (100 / thread.memberTypes.length * (i + 1)).toFixed(2) + "%"
     }
-  ];
-  public message: string = '';
-  public search = new FormControl('');
-
-  public selectedMessage: number | undefined = undefined;
-
+    bg = "linear-gradient(" + bg + ")"
+    return bg;
+  }
 }
