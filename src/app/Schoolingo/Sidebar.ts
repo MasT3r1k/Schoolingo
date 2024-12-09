@@ -2,7 +2,6 @@ import { Injectable } from '@angular/core';
 import { Permission } from './Permissions';
 import { SidebarGroup, SidebarItem } from './Sidebar.d';
 import { Locale } from './Locale';
-import { name } from '@Schoolingo/Config';
 import * as SidebarConfig from "@Schoolingo/Sidebar.config";
 
 import { Title } from '@angular/platform-browser';
