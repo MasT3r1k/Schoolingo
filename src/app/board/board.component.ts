@@ -3,7 +3,7 @@ import { Component } from '@angular/core';
 import { NavigationEnd, Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { Dropdown } from '@Components/Dropdowns/Dropdown';
 import { ModalComponent } from '@Components/Modal/Modal';
-import { BookInfo, DiaryWeek, Substitution } from '@Schoolingo';
+import { BookInfo, Substitution } from '@Schoolingo';
 import { Absence, ClassbookAPI, Mark } from '@Schoolingo';
 import { Schoolingo, TimetableAPI } from '@Schoolingo';
 import { alertManager, AlertManagerClass } from '@Schoolingo/Alert';
@@ -12,8 +12,8 @@ import { Modules } from '@Schoolingo/Modules';
 import { School } from '@Schoolingo/School';
 import { SidebarItem } from '@Schoolingo/Sidebar';
 import { SocketUpdateTheme, SocketUpdateLocale } from '@Schoolingo/Socket';
+import { DiaryWeek } from '@Schoolingo/Traineeship';
 import { personDetails, user } from '@Schoolingo/User';
-import { Country } from 'country-state-city';
 import moment from 'moment';
 import { Subscription } from 'rxjs';
 
@@ -56,7 +56,6 @@ export class BoardComponent {
   private router: Router;
 
   ngOnInit(): void {
-    console.log(Country.getCountryByCode("CZ")?.flag)
     this.schoolingo.refreshTitle();
     this.subscribers.push(this.router.events.subscribe((url: any): void => {
       if (url instanceof NavigationEnd) {
@@ -85,13 +84,17 @@ export class BoardComponent {
         userId = this.schoolingo.getStudentId();
       }
 
-          // Get timetable
+      // Get timetable
       this.schoolingo.socketService.emit('timetable:getLessons', { userId, week: moment().isoWeek(), year: moment().year() });
       this.schoolingo.socketService.emit("classes:getClassService", { userId });
       this.schoolingo.socketService.emit("timetable:getClassbook", { userId, week: this.schoolingo.timetableSelectedWeek.getValue() === -1 ? moment().isoWeek() : this.schoolingo.timetableSelectedWeek.getValue() });
       this.schoolingo.socketService.emit("grades:getGrades", { userId, week: this.schoolingo.timetableSelectedWeek.getValue() === -1 ? moment().isoWeek() : this.schoolingo.timetableSelectedWeek.getValue() });
       this.schoolingo.socketService.emit('absence:getAbsence', { userId });
       this.schoolingo.socketService.emit("absence:getAllAbsence", { userId });
+      if (this.modules.checkModule(["traineeship"])) {
+        this.schoolingo.socketService.emit('traineeship:getDiaryWeeks');
+        this.schoolingo.socketService.emit('traineeship:getDiaryDays');
+      }
       
     }));
 
@@ -227,11 +230,11 @@ export class BoardComponent {
 
     if (this.modules.checkModule(["traineeship"])) {
       this.subscribers.push(this.schoolingo.socketService.addFunction("traineeship:getDiaryWeeks").subscribe((data: DiaryWeek[]) => {
-        this.schoolingo.diaryWeeks = [];
+        this.schoolingo.traineeship.diaryWeeks = [];
         data.forEach((diary: DiaryWeek) => {
-          this.schoolingo.diaryWeeks.push({ start: moment(diary.start), end: moment(diary.end) });
+          this.schoolingo.traineeship.diaryWeeks.push({ start: moment(diary.start), end: moment(diary.end) });
         })
-        this.schoolingo.refreshDiary();
+        this.schoolingo.traineeship.refreshDiary();
       }));
     }
 
@@ -239,7 +242,7 @@ export class BoardComponent {
       this.subscribers.push(this.schoolingo.socketService.addFunction("traineeship:getDiaryDays").subscribe((data: any[]) => {
 
         console.log(data)
-        this.schoolingo.refreshDiary();
+        this.schoolingo.traineeship.refreshDiary();
       }));
     }
   }
