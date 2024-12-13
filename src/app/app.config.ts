@@ -19,6 +19,7 @@ import { Dropdown } from '@Components/Dropdowns/Dropdown';
 import { MessageManager } from '@Schoolingo/Messages';
 import { MainModules } from './board/main/Modules/Modules';
 import { Modules } from '@Schoolingo/Modules';
+import { Traineeship } from '@Schoolingo/Traineeship';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -41,7 +42,8 @@ export const appConfig: ApplicationConfig = {
     Dropdown,
     MessageManager,
     Modules,
-    MainModules
+    MainModules,
+    Traineeship
   ],
   
 };

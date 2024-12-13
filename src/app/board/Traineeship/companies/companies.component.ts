@@ -12,6 +12,8 @@ import { Country } from 'country-state-city';
 import { BehaviorSubject, Subscription } from 'rxjs';
 import { AgCharts } from "ag-charts-angular";
 import { AgChartOptions } from "ag-charts-community";
+import { Modal } from '@Components/Modal/Modal';
+import { selectCompanyModal } from './selectCompanyModal/selectCompanyModal';
 
 type Scope = {
   name: string;
@@ -46,14 +48,15 @@ export class CompaniesComponent implements OnInit {
     this.schoolingo.socketService.emit('school:getScopes');
     this.schoolingo.socketService.emit('traineeship:getCompanyInfo', { companyId: id[0].id });
     this.showPage = 'detailCompany';
+    this.schoolingo.traineeship.selectedDairy = null;
+    this.schoolingo.traineeship.selectedInstructor = null;
+    this.selectedTab.next(0);
     this.router.navigate(["", "traineeship", "companies"], { queryParams: { companyId: id[0].id }});
 
   }
 
   private listeners: Subscription[] = [];
   public companies: BehaviorSubject<Data[][] | any> = new BehaviorSubject([]);
-  public selectedCompany: Record<string, any> = {};
-  public instructors: { personId: number; }[] = [];
   public search = new FormControl();
   public iframeURL = this.sanitizer.bypassSecurityTrustResourceUrl("");
 
@@ -95,8 +98,8 @@ export class CompaniesComponent implements OnInit {
   ngOnInit(): void {
 
     this.listeners.push(this.schoolingo.socketService.addFunction("traineeship:getCompanyInfo").subscribe((data: any) => {
-      this.selectedCompany = data[0];
-      this.iframeURL = this.sanitizer.bypassSecurityTrustResourceUrl('https://maps.google.com/maps?zoom=15&q=' + this.selectedCompany.street + ' ' + this.selectedCompany.houseNumber + ', ' + this.selectedCompany.cityName + '&output=embed');
+      this.schoolingo.traineeship.selectedCompany = data[0];
+      this.iframeURL = this.sanitizer.bypassSecurityTrustResourceUrl('https://maps.google.com/maps?q=' + this.schoolingo.traineeship.selectedCompany.street + ' ' + this.schoolingo.traineeship.selectedCompany.houseNumber + ', ' + this.schoolingo.traineeship.selectedCompany.cityName + '&output=embed');
     }));
 
     this.listeners.push(this.schoolingo.socketService.addFunction("school:getScopes").subscribe((data: Scope[]) => {
@@ -110,8 +113,10 @@ export class CompaniesComponent implements OnInit {
     }));
 
     this.listeners.push(this.schoolingo.socketService.addFunction("traineeship:getCompanyInstructors").subscribe((data: { personId: number }[]) => {
-      console.log(data);
-      this.instructors = data;
+      this.schoolingo.traineeship.instructors = [];
+      data.forEach((person: { personId: number }) => {
+        this.schoolingo.traineeship.instructors.push(person.personId);
+      });
     }));
 
     this.listeners.push(this.route.queryParamMap.subscribe((param: Params) => {
@@ -136,9 +141,11 @@ export class CompaniesComponent implements OnInit {
         Object.keys(this.scopes).forEach((scopeId: any) => { /* ✔✅❌ */
           row.push({ value: scopeList[scopeId] ? '✅' : '❌', isLocale: false })
         });
+
+        
         row.push(
           {value: company.web, isLocale: false},
-          {value: this.getRating(company), isLocale: company.rating ? false : true}
+          {value: this.schoolingo.traineeship.getRating(company), isLocale: company.rating ? false : true}
         );
         companiesList.push(row);
         
@@ -162,9 +169,25 @@ export class CompaniesComponent implements OnInit {
     });
     return scopeList;
   }
+  
 
-  public getRating(company: any): string {
-    return company.rating != null ? Number(company.rating).toFixed(1) : 'traineeship/noRating';
+  public modal = new Modal({
+    closeable: true,
+    title: {
+      text: "traineeship/registerToCompany"
+    },
+    size: 'size-2',
+    items: [
+      {
+        type: 'component',
+        component: selectCompanyModal,
+        data: this.schoolingo.traineeship.selectedCompany
+      }
+    ]
+  });
+
+  public showModal(): void {
+    this.modal.open();
   }
 
   ngOnDestroy(): void {

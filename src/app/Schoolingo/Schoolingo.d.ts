@@ -118,19 +118,3 @@ export type BookInfo = {
     date_has_to_be_returned: moment.Moment | Date;
     date_return: moment.Moment | Date;
 }
-
-/** Traineeship */
-export type DiaryWeek = {
-    start: moment.Moment;
-    end: moment.Moment;
-}
-
-export type DiaryDay = {
-    date: moment.Moment;
-    status: 'unlisted' | 'filed';
-    title: string;
-    hours: number;
-    gained: string;
-    description: string;
-    mark: string;
-}

@@ -4,7 +4,7 @@ import { SocketService } from "./Socket";
 import { Theme } from "./Theme";
 import { personDetails, user, UserService } from "./User";
 import { Sidebar } from "./Sidebar";
-import { Absence, BookInfo, ClassbookAPI, ClassbookLesson, DiaryDay, DiaryWeek, Mark, studentService, Substitution, TimetableAPI, TimetableHours, TimetableLesson } from './Schoolingo.d';
+import { Absence, BookInfo, ClassbookAPI, ClassbookLesson, Mark, studentService, Substitution, TimetableAPI, TimetableHours, TimetableLesson } from './Schoolingo.d';
 import { School } from "./School";
 import { Utils } from "@Schoolingo/Utils";
 import { BehaviorSubject, Subscription } from "rxjs";
@@ -14,7 +14,8 @@ import { removeDiacritics } from "./SearchFilter";
 import { degree } from "./User";
 import { MessageManager } from "./Messages";
 import { Data } from "@Components/Datalist/Datalist";
-export { TimetableAPI, ClassbookAPI, ClassbookLesson, TimetableLesson, Mark, Absence, Substitution, studentService, BookInfo, DiaryDay, DiaryWeek }
+import { Traineeship } from "./Traineeship";
+export { TimetableAPI, ClassbookAPI, ClassbookLesson, TimetableLesson, Mark, Absence, Substitution, studentService, BookInfo }
 
 @Injectable()
 export class Schoolingo {
@@ -36,9 +37,9 @@ export class Schoolingo {
         this.absence = {};
         this.absenceSubjects = {};
         this.studentService = { status: false };
-        this.diaryWeeks = [];
-        this.diaryDays = {};
-        this.diary.next([]);
+        this.traineeship.diaryWeeks = [];
+        this.traineeship.diaryDays = {};
+        this.traineeship.diary.next([]);
     }
 
     public subscribers: Subscription[] = [];
@@ -55,7 +56,8 @@ export class Schoolingo {
         public userService: UserService,
         public sidebar: Sidebar,
         public school: School,
-        public messages: MessageManager
+        public messages: MessageManager,
+        public traineeship: Traineeship
     ) {
         this.subscribers.push(this.locale.language.subscribe((value: languages) => {
             this.refreshTitle();
@@ -354,39 +356,6 @@ export class Schoolingo {
     public showBook(id: any[], type: 'book' | 'copy'): void {
         this.socketService.emit("library:getBookInfo", { type, id: id[0], loan: id[1] });
         
-    }
-
-    /** TRAINEESHIP */
-    public diaryWeeks: DiaryWeek[] = [];
-    public diaryDays: Record<string, DiaryDay> = {};
-    public diary: BehaviorSubject<Data[][]> = new BehaviorSubject<Data[][]>([]);
-    public refreshDiary(): void {
-        this.diary.next([]);
-        this.diaryWeeks.forEach((week: DiaryWeek) => {
-            let days: moment.Moment[] = [];
-            let date = week.start.clone();
-            while (date.isSameOrBefore(week.end)) {
-              if (![6,7].includes(date.isoWeekday())) {
-                days.push(date.clone());
-              }
-              date.add(1, 'day');
-            }
-
-            let diary: Data[][] = [];
-            days.forEach((day: moment.Moment, index: number) => {
-                diary.push([
-                    { value: 'traineeship/day', localePrefix: (index + 1 + '. '), isLocale: true },
-                    { value: day.format('DD.MM.YYYY'), isLocale: false },
-                    { value: 'traineeship/status/' + (this.diaryDays[day.format('YYYY-MM-DD')] ? this.diaryDays[day.format('YYYY-MM-DD')].status : 'unlisted'), isLocale: true },
-                    { value: (this.diaryDays[day.format('YYYY-MM-DD')] ? this.diaryDays[day.format('YYYY-MM-DD')].mark : 'traineeship/noMark'), isLocale: this.diaryDays[day.format('YYYY-MM-DD')] ? false : true }
-                ]);
-            });
-            diary.push([{ value: 'traineeship/finalWrite', isLocale: true },
-            { value: "---", isLocale: false },
-            { value: 'traineeship/status/' + (this.diaryDays['0000-00-00'] ? this.diaryDays['0000-00-00'].status : 'unlisted'), isLocale: true },
-            { value: (this.diaryDays['0000-00-00'] ? this.diaryDays['0000-00-00'].mark : 'traineeship/noMark'), isLocale: this.diaryDays['0000-00-00'] ? false : true }])
-            this.diary.next(diary);
-        })
     }
 
 }
