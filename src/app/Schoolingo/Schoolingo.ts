@@ -185,6 +185,7 @@ export class Schoolingo {
     public refreshTimetableLessons(): void {
 
         this.timetableLessons = [];
+        this.timetableSubjects = {};
         // Get hours
         this.refreshTimetableHours();
 
