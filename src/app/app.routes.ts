@@ -34,6 +34,16 @@ import { OrderComponent as CanteenOrder } from './board/Canteen/order/order.comp
 import { DispensingComponent as CanteenDispensing } from './board/Canteen/dispensing/dispensing.component';
 import { MealsComponent as CanteenMeals } from './board/Canteen/meals/meals.component';
 import { SettingsComponent as CanteenSettings } from './board/Canteen/settings/settings.component';
+import { ClassFundComponent as PaymentClassFund } from './board/payments/class-fund/class-fund.component';
+import { GraduateClassFundComponent as PaymentGraduateClassFund } from './board/payments/graduate-class-fund/graduate-class-fund.component';
+import { ListingComponent as PaymentListing } from './board/payments/listing/listing.component';
+import { UnaccountedDocumentsComponent as PaymentUnaccountedDocuments } from './board/payments/unaccounted-documents/unaccounted-documents.component';
+import { DocumentsComponent as PaymentDocuments } from './board/payments/documents/documents.component';
+import { RegularPaymentsComponent as PaymentRegularPayments } from './board/payments/regular-payments/regular-payments.component';
+import { NewPaymentComponent as PaymentNewPayment } from './board/payments/new-payment/new-payment.component';
+import { NewDepositComponent as PaymentNewDeposit } from './board/payments/new-deposit/new-deposit.component';
+import { AccountsComponent as PaymentAccounts } from './board/payments/accounts/accounts.component';
+import { SettingsComponent as PaymentSettings } from './board/payments/settings/settings.component';
 
 export const routes: Routes = [
     {
@@ -155,6 +165,41 @@ export const routes: Routes = [
             },
             {
               path: 'books', component: LibraryBooks
+            }
+          ]
+        },
+        {
+          path: 'payments',
+          children: [
+            {
+              path: 'classfund', component: PaymentClassFund
+            },
+            {
+              path: 'graduateclassfund', component: PaymentGraduateClassFund
+            },
+            {
+              path: 'listing', component: PaymentListing
+            },
+            {
+              path: 'unaccounteddocuments', component: PaymentUnaccountedDocuments
+            },
+            {
+              path: 'documents', component: PaymentDocuments
+            },
+            {
+              path: 'regularpayments', component: PaymentRegularPayments
+            },
+            {
+              path: 'newpayment', component: PaymentNewPayment
+            },
+            {
+              path: 'newdeposit', component: PaymentNewDeposit
+            },
+            {
+              path: 'accounts', component: PaymentAccounts
+            },
+            {
+              path: 'settings', component: PaymentSettings
             }
           ]
         },

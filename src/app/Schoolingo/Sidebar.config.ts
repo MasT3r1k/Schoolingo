@@ -100,6 +100,41 @@ let config: SidebarGroup[] = [
                 }]
             },
             {
+                item: 'sidebar/payments/main',
+                children: [
+                {
+                    item: 'sidebar/payments/classFund',
+                    url: 'payments/classfund',
+                }, {
+                    item: 'sidebar/payments/graduateClassFund',
+                    url: 'payments/graduateclassfund'
+                }, {
+                    item: 'sidebar/payments/listing',
+                    url: 'payments/listing',
+                }, {
+                    item: 'sidebar/payments/unaccountedDocuments',
+                    url: 'payments/unaccounteddocuments',
+                }, {
+                    item: 'sidebar/payments/documents',
+                    url: 'payments/documents',
+                }, {
+                    item: 'sidebar/payments/regularPayments',
+                    url: 'payments/regularpayments',
+                }, {
+                    item: 'sidebar/payments/newPayment',
+                    url: 'payments/newpayment',
+                }, {
+                    item: 'sidebar/payments/newDeposit',
+                    url: 'payments/newdeposit',
+                }, {
+                    item: 'sidebar/payments/accounts',
+                    url: 'payments/accounts',
+                }, {
+                    item: 'sidebar/payments/settings',
+                    url: 'payments/settings',
+                }]
+            },
+            {
                 item: "sidebar/traineeship/main",
                 modules: ['traineeship'],
                 children: [{
