@@ -1,9 +1,8 @@
 import { Component, OnInit, Renderer2 } from "@angular/core";
 import { Locale } from "@Schoolingo/Locale";
 import { modalOptions, modalItem } from "@Components/Modal/Modal.d";
-import { NgClass, NgStyle } from "@angular/common";
+import { NgClass, NgComponentOutlet, NgStyle } from "@angular/common";
 import { TabsComponent } from "@Components/Tabs/Tabs";
-import { Subscription } from "rxjs";
 export { modalOptions, modalItem }
 
 let modals: Modal[] = [];
@@ -12,7 +11,7 @@ let modals: Modal[] = [];
     selector: 'schoolingo-modals',
     templateUrl: './Modal.html',
     standalone: true,
-    imports: [NgClass, TabsComponent, NgStyle],
+    imports: [NgClass, TabsComponent, NgStyle, NgComponentOutlet],
     styleUrls: ['./Modal.css', '../../Styles/input.css'],
     outputs: ['modal']
 })
