@@ -9,6 +9,8 @@ import { Theme } from '@Schoolingo/Theme';
 import { ErrorMain } from './Errors';
 import { SchoolYear } from '@Schoolingo/School';
 import { Config } from '@Schoolingo/Config';
+import { polyfillCountryFlagEmojis } from "country-flag-emoji-polyfill";
+
 
 @Component({
   selector: 'app-root',
@@ -47,6 +49,8 @@ export class AppComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    polyfillCountryFlagEmojis();
+
 
     this.http.get<SchoolInfo>(Config.API_URL + 'v1/getSchoolInfo', { withCredentials: true }).subscribe((data: (SchoolInfo & { modules?: number })): void => {
       this.school.setSchoolInfo(data, data.modules ?? 0);
