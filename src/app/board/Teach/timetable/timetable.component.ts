@@ -156,6 +156,8 @@ export class TimetableComponent {
   }
 
   ngOnDestroy(): void {
+    this.selectedDate.next(moment());
+
     this.dropdown.remove(this.timetableAbsenceName);
     this.dropdown.remove(this.timetableOptionsName);
     this.dropdown.remove(this.timetableCalendarName);
