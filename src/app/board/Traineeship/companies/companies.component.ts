@@ -126,7 +126,8 @@ export class CompaniesComponent implements OnInit {
       }
     }));
 
-    this.listeners.push(this.schoolingo.socketService.addFunction("traineeship:getCompanies").subscribe((data: dataAPI) => {
+    this.listeners.push(this.schoolingo.socketService.addFunction("traineeship:getCompanies").subscribe((data: dataAPI | any) => {
+      if (!data?.data && data.error) return;
       let companiesList: Data[][] = []
       data.data.forEach((company: any) => {
         let scopeList: any = {};
