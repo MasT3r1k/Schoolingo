@@ -115,31 +115,36 @@ export class IntermComponent implements OnInit {
     return this.schoolingo.marks.filter((mark: Mark) => mark.subject == subjectId);
   }
 
-  public getAverageBySubjectId(subject: number): string {
-    let grades = this.getGradesBySubjectId(subject);
+  public getAverageBySubjectId(subject: number, addGrades: Mark[] = []): string {
+    let grades: Mark[] = this.getGradesBySubjectId(subject);
     let total = 0;
     let total_devide = 0;
-    // grades.forEach((_) => {
-    //   let mark = parseInt(_.mark);
-    //   if (_.type === 0) {
-    //     if (_.mark.length > 2) {
-    //       return;
-    //     }
-        
-    //     if (_.mark.endsWith("+")) {
-    //       total -= 0.25 * _.weight;
-    //     }
-    //     if (_.mark.endsWith("-")) {
-    //       mark = parseInt(_.mark.slice(0, -1));
-    //       total += 0.5 * _.weight;
-    //     }
-    //     total += mark * _.weight;
-    //     total_devide += _.weight;
-    //   }
-    // });
 
-    let average: string = Number(total / total_devide).toFixed(2).replace('.', ',');
-    return (average == 'NaN') ? '' : average;
+    if (addGrades.length > 0) {
+      grades.push(...addGrades);
+    }
+
+    grades.forEach((grade: Mark) => {
+      if (!this.allowedGrades.includes(grade.mark.toString())) return;
+      if (grade.type === 0) {
+        let mark = parseInt(grade.mark);
+
+        if (!mark) { return; }
+        if (String(grade.mark).endsWith("+")) {
+          total -= 0.25 * (grade.weight + 1);
+        }
+        if (String(grade.mark).endsWith("-")) {
+          total += 0.5 * (grade.weight + 1);
+        }
+
+        total += mark * (grade.weight + 1);
+        total_devide += (grade.weight + 1);
+      }
+    });
+
+    if (!total_devide) return '1.00';
+    let average: number = Number(total / total_devide);
+    return (average < 1) ? '1.00' : average.toFixed(2).replace('.', ',');
   }
 
   public getMarks(): BehaviorSubject<Data[][]> {
