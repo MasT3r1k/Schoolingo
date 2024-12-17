@@ -51,7 +51,7 @@ export class CompaniesComponent implements OnInit {
     this.schoolingo.traineeship.selectedDairy = null;
     this.schoolingo.traineeship.selectedInstructor = null;
     this.selectedTab.next(0);
-    this.router.navigate(["", "traineeship", "companies"], { queryParams: { companyId: id[0].id }});
+    this.router.navigate([], { queryParams: { companyId: id[0].id }});
 
   }
 
@@ -74,7 +74,7 @@ export class CompaniesComponent implements OnInit {
 
   public goToList(): void {
     this.showPage = 'list';
-    this.router.navigate(["", "traineeship", "companies"], { queryParams: {}});
+    this.router.navigate([], { queryParams: {}});
   }
 
   public getDisabledLocales(): boolean[] {
