@@ -9,5 +9,8 @@ export let modulesConfig: Record<modules, ModuleConfig> = {
     },
     "canteen": {
         name: "sidebar/canteen/main"
+    },
+    "payments": {
+        name: "sidebar/payments/main"
     }
 };

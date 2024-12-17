@@ -101,6 +101,7 @@ let config: SidebarGroup[] = [
             },
             {
                 item: 'sidebar/payments/main',
+                modules: ['payments'],
                 children: [
                 {
                     item: 'sidebar/payments/classFund',
