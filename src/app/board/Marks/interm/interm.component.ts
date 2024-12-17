@@ -3,7 +3,8 @@ import { Component, OnInit, Renderer2 } from '@angular/core';
 import { Data, DatalistComponent } from '@Components/Datalist/Datalist';
 import { TabsComponent } from '@Components/Tabs/Tabs';
 import { Mark, Schoolingo } from '@Schoolingo';
-import { BehaviorSubject } from 'rxjs';
+import moment from 'moment';
+import { BehaviorSubject, Subscription } from 'rxjs';
 
 type Page = {
   page: number;
@@ -14,13 +15,32 @@ type Page = {
   standalone: true,
   imports: [TabsComponent, NgClass, NgStyle, DatalistComponent],
   templateUrl: './interm.component.html',
-  styleUrls: ['./interm.component.css', '../../../Styles/card.css']
+  styleUrls: ['./interm.component.css', '../../../Styles/input.css', '../../../Styles/card.css']
 })
 export class IntermComponent implements OnInit {
+  public showSelect: 'selectSubject' | 'selectGrade' | 'selectWeight' | null = null;
+  public selectedSubject: BehaviorSubject<number> = new BehaviorSubject(0);
+  public selectedGrade: number = 0;
+  public allowedGrades: string[] = ['1+', '1', '1-', '2+', '2', '2-', '3+', '3', '3-', '4+', '4', '4-', '5+', '5','+', '-'];
+  public selectedWeight: number = 0;
+
+  public grades: Mark[] = [];
+  public predictGrades: Mark[] = [];
+  public addPredictGrade(): void {
+    this.predictGrades.push({ mark: this.allowedGrades[this.selectedGrade], weight: this.selectedWeight + 1, subject: -1, teacher: -1, topic: '<Predictor>', description: '', type: 0, created: moment() })
+  }
+
+  public getGradesToListInPredictor(): Mark[] {
+    let list = JSON.parse(JSON.stringify(this.grades));
+    list.unshift(...this.predictGrades.reverse());
+    return list;
+  }
 
   public selectedTab: BehaviorSubject<number> = new BehaviorSubject(0);
   public gradeWidth = 0;
   public pages: Page[] = [];
+
+  public listeners: Subscription[] = [];
 
   public holdPages: { id: number, page: number }[] = [];
 
@@ -52,10 +72,24 @@ export class IntermComponent implements OnInit {
         this.refreshGrades();
       }
     }, 100);
+
+    this.listeners.push(this.schoolingo.socketService.addFunction("grades:getGrades").subscribe((data: Mark[]) => {
+      this.selectedSubject.next(this.selectedSubject.getValue());
+    }));
+
+    this.listeners.push(this.selectedSubject.subscribe((subject: number) => {
+      this.predictGrades = [];
+      this.grades = this.getGradesBySubjectId(
+        this.getSubjectIdByName(
+          this.schoolingo.getSubjects()[subject]
+        )
+      );
+    }));
   }
 
   ngOnDestroy(): void {
     this.renderer.destroy();
+    this.listeners.forEach((sub: Subscription) => sub.unsubscribe());
   }
 
   public refreshGrades(): void {
@@ -151,7 +185,13 @@ export class IntermComponent implements OnInit {
     let data: Data[][] = [];
     let marks: Mark[] = this.schoolingo.marks;
     marks.forEach((mark: Mark) => {
-      data.push([{ value: this.schoolingo.subjects[mark.subject][0], isLocale: false}, { value: mark.mark, isLocale: false }, { value: mark.topic, isLocale: false }, { value: mark.weight.toString(), isLocale: false }, { value: mark.created.format('DD.MM.YYYY'), isLocale: false }]);
+      data.push([
+        { value: this.schoolingo.subjects[mark.subject][0], isLocale: false},
+        { value: mark.mark, isLocale: false },
+        { value: mark.topic, isLocale: false },
+        { value: mark.weight.toString(), isLocale: false },
+        { value: mark.created.format('DD.MM.YYYY'), isLocale: false }
+      ]);
     });
     return new BehaviorSubject(data);
   }
