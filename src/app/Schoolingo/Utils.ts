@@ -1,3 +1,4 @@
+import country from "country-state-city/lib/country";
 import moment from "moment";
 
 export namespace Utils {
@@ -43,6 +44,11 @@ export function randomstring(length: number, numbers: boolean = true): string {
   export function formatPhone(phone: string): string {
     return ((phone || "").match(/.{1,3}/g) || [])?.join(' ');
   }
+
+  export function formatAddress(address: { code2: string, street: string, houseNumber: string, city: string, postcode: string }): string {
+    return `${(country.getCountryByCode(address.code2)?.flag || "")} ${address.street} ${address.houseNumber}, ${address.city} ${address.postcode}`
+  }
+
   export function getAge(date: moment.Moment): number {
     let age = 0;
     let now = moment().subtract(1, 'year');

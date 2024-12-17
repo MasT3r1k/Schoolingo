@@ -136,7 +136,7 @@ export class CompaniesComponent implements OnInit {
         let row: Data[] = [
           { id: company.companyId },
           {value: company.name, isLocale: false},
-          {value: (this.country.getCountryByCode(company.code2)?.flag || "") + ` ${company.street} ${company.houseNumber}, ${company.cityName} ${company.postcode}`, isLocale: false}
+          { value: Utils.formatAddress({ code2: company.code2, street: company.street, houseNumber: company.houseNumber, city: company.cityName, postcode: company.postcode }), isLocale: false },
         ];
         Object.keys(this.scopes).forEach((scopeId: any) => { /* ✔✅❌ */
           row.push({ value: scopeList[scopeId] ? '✅' : '❌', isLocale: false })
