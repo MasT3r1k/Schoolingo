@@ -21,7 +21,7 @@
                                         @for (type of getMessageTypes(); track $index) {
                                                 <div class="option" (click)="showSelect = null;messageType.next(schoolingo.messages.types.indexOf(type))">{{ schoolingo.locale.getLocale('messages/types/' + type.label) }}</div>
                                         } @empty {
-                                            <div class="option">Nemáš k dispozici žádné možnosti.</div>
+                                            <div class="option">{{ schoolingo.locale.getLocale('messages/noTypesAvailable') }}</div>
                                         }
                                     </div>
                                 }
@@ -106,35 +106,35 @@
                             <div class="select-row">
                                 <div class="select-item" (click)="selectTags()">
                                     <i class="ti ti-tags"></i>
-                                    <span>Označení</span>
+                                    <span>{{ schoolingo.locale.getLocale('messages/tags') }}</span>
                                 </div>
                                 <div class="select-item" (click)="selectAttachments()">
                                     <i class="ti ti-paperclip"></i>
-                                    <span>Přílohy</span>
+                                    <span>{{ schoolingo.locale.getLocale('messages/attachments') }}</span>
                                 </div>
                             </div>
 
                             <div class="select-row">
                                 <div [ngClass]="{'select-item': true, active: requireConfirmation}" (click)="requireConfirmation = !requireConfirmation">
                                     <i class="ti ti-check"></i>
-                                    <span>Vyžaduje potvrzení</span>
+                                    <span>{{ schoolingo.locale.getLocale('messages/requireConfirmation') }}</span>
                                 </div>
 
                                 <div [ngClass]="{'select-item': true, active: copyToClassTeacher}" (click)="copyToClassTeacher = !copyToClassTeacher">
                                     <i class="ti ti-chalkboard"></i>
-                                    <span>Kopie třídnímu učiteli</span>
+                                    <span>{{ schoolingo.locale.getLocale('messages/copyToClassTeacher') }}</span>
                                 </div>
 
                                 <div [ngClass]="{'select-item': true, active: copyToParents}" (click)="copyToParents = !copyToParents">
                                     <i class="ti ti-old"></i>
-                                    <span>Kopie rodičům</span>
+                                    <span>{{ schoolingo.locale.getLocale('messages/copyToParents') }}</span>
                                 </div>
                             </div>
 
                             <div class="select-row">
                                 <div [ngClass]="{'select-item': true, active: asPrincipal}" (click)="asPrincipal = !asPrincipal">
                                     <i class="ti ti-user-screen"></i>
-                                    <span>Jako ředitel</span>
+                                    <span>{{ schoolingo.locale.getLocale('messages/asPrincipal') }}</span>
                                 </div>
                             </div>
                         </div>
@@ -152,13 +152,13 @@
                 </div>
             } @else {
                 <div class="alerts">
-                    <div class="alert red" (click)="messageType.next(0)">Nastala nějaká podivná chyba, klikni pro obnovení na základní typ</div>
+                    <div class="alert red" (click)="messageType.next(0)">{{ schoolingo.locale.getLocale('messages/susError') }}</div>
                 </div>
             }
         } @else if (selectedTab.getValue() === 1) {
         } @else {
             <div class="alerts">
-                <div class="alert red">No message types found.</div>
+                <div class="alert red">{{ schoolingo.locale.getLocale('messages/types/error') }}</div>
             </div>
         }
     </div>
