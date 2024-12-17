@@ -1,6 +1,6 @@
 import { BehaviorSubject } from 'rxjs';
-import { MessageTag, MessageType } from './Messages.d';
-export type { MessageTag, MessageType };
+import { MessageTag, MessageType, messageTypes } from './Messages.d';
+export type { MessageTag, MessageType, messageTypes };
 
 export class MessageManager {
 
