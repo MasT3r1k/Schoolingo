@@ -45,7 +45,8 @@ export function randomstring(length: number, numbers: boolean = true): string {
     return ((phone || "").match(/.{1,3}/g) || [])?.join(' ');
   }
 
-  export function formatAddress(address: { code2: string, street: string, houseNumber: string, city: string, postcode: string }): string {
+  export function formatAddress(address: { code2: string, street: string, houseNumber: string, city: string, postcode: string }): string | null {
+    if (address.city == null) return null;
     return `${(country.getCountryByCode(address.code2)?.flag || "")} ${address.street} ${address.houseNumber}, ${address.city} ${address.postcode}`
   }
 
