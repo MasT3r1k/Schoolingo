@@ -61,9 +61,12 @@ export class DatalistComponent implements OnInit {
     }
 
     public loadData(): void {
-        if (this.options.url) {
-            this.socketService.emit(this.options.url, { limit: this.dataPerPage, page: this.page, ignore: this.options.ignore ?? [], search: this.search.value ?? "" });
-        }
+        if (!this.options.url) return;
+        this.socketService.emit(this.options.url, { limit: this.dataPerPage, page: this.page, ignore: this.options.ignore ?? [], search: this.search.value ?? "" });   
+    }
+
+    public getData(): any[] {
+        return this.options.noDynamic ? this.data.getValue() : this.visibleData;
     }
 
     public goPage(page: number): void {
@@ -77,7 +80,18 @@ export class DatalistComponent implements OnInit {
     public clickEvent(index: number): void {
         if (!this.clickFc) return;
         let ids = this.data.getValue()[index].filter((_: any) => _.id);
-        this.clickFc(ids);
+        this.clickFc(ids, index);
+    }
+
+    public getColumnId(index: number): number {
+        let columnId = index;
+        if (this.data.getValue()) {
+            this.data.getValue()[0].forEach((_: any, id: number) => {
+                if (id > index) return;
+                if (_.id) columnId--;
+            });
+        }
+        return columnId;
     }
 
     ngOnInit(): void {

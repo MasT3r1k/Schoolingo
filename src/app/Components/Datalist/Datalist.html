@@ -1,36 +1,41 @@
 <div class="items">
-    @if (options.search) {
-        <div class="search mb">
-            <input type="text" name="search" placeholder="Vyhledávejte podle názvu knihy či ISBN">
-        </div>
-    }
-
-    <table>
-        <thead>
-            @for (item of head; track $index) {
-                <th [title]="options.titles?.[$index] || ''">{{ (options.disableLocales?.[$index] === true) ? item : locale.getLocale(item) }}</th>
-            }
-        </thead>
-        <tbody>
-            @for (item of options.noDynamic ? data.getValue() : visibleData; track $index) {
-                <tr (click)="clickEvent($index)">
-                    @for (info of item; track $index) {
-                        @if (!info.id && info.id !== null) {
-                            @if (info.isLocale) {
-                                <td>{{ ((info.localePrefix) ? info.localePrefix : '') + locale.getLocale(info.value) +  ((info.localeSuffix) ? info.localeSuffix : '')}}</td>
-                            } @else {
-                                <td>{{ info.value }}</td>
+    @if (getData().length > 0) {
+        <table>
+            <thead>
+                @for (item of head; track $index) {
+                    @if (!options.hideColumns?.includes($index)) {
+                        <th [title]="options.titles?.[$index] || ''">{{ (options.disableLocales?.[$index] === true) ? item : locale.getLocale(item) }}</th>
+                    }
+                }
+            </thead>
+            <tbody>
+                @for (item of getData(); track $index) {
+                    <tr [ngClass]="{ active: selectedRow == $index }" (click)="clickEvent($index)">
+                        @for (info of item; track index;let index = $index) {
+    
+                            @if (!info.id && info.id !== null && !options.hideColumns?.includes(getColumnId(index))) {
+                                @if (info.isLocale) {
+                                    <td>{{ ((info.localePrefix) ? info.localePrefix : '') + locale.getLocale(info.value) +  ((info.localeSuffix) ? info.localeSuffix : '')}}</td>
+                                } @else {
+                                    <td>{{ info.value }}</td>
+                                }
                             }
                         }
-                    }
-                </tr>
-            }
-        </tbody>
-    </table>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    } @else {
+        <div class="alerts">
+            <div class="alert red">
+                {{ locale.getLocale('components/datalist/noData') }}
+            </div>
+        </div>
+    }
     <div class="bottom">
         <div class="left">
             @if (!options.hideInfo) {
-                <p>Zobrazeno {{ (options.noDynamic ? data.getValue() : visibleData).length }} z {{ this.data.getValue().length }} (celkem {{ (options.noDynamic ? data.getValue().length : this.metadata.rows) }}), stránka {{ page }} z {{ getMaxPages() }}</p>
+                <p>Zobrazeno {{ getData().length }} z {{ this.data.getValue().length }} (celkem {{ (options.noDynamic ? data.getValue().length : this.metadata.rows) }}), stránka {{ page }} z {{ getMaxPages() }}</p>
             }
         </div>
         <div class="right">
