@@ -240,6 +240,10 @@ let config: SidebarGroup[] = [
                 item: 'sidebar/archive',
                 permission: ['principal'],
                 url: 'archive'
+            },
+            {
+                item: 'sidebar/system',
+                url: 'system'
             }
         ]
     }

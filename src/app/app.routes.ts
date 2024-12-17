@@ -44,6 +44,7 @@ import { NewPaymentComponent as PaymentNewPayment } from './board/payments/new-p
 import { NewDepositComponent as PaymentNewDeposit } from './board/payments/new-deposit/new-deposit.component';
 import { AccountsComponent as PaymentAccounts } from './board/payments/accounts/accounts.component';
 import { SettingsComponent as PaymentSettings } from './board/payments/settings/settings.component';
+import { SystemComponent } from './board/system/system.component';
 
 export const routes: Routes = [
     {
@@ -216,6 +217,10 @@ export const routes: Routes = [
               path: 'settings', component: UserSettings
             }
           ]
+        },
+        {
+          path: 'system',
+          component: SystemComponent
         },
         {
           path: '**', component: Error404Component
