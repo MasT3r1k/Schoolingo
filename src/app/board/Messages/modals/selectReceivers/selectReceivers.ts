@@ -4,7 +4,7 @@ import { Component } from '@angular/core';
   standalone: true,
   imports: [],
   templateUrl: './selectReceivers.html',
-  styleUrl: './selectReceivers.css'
+  styleUrls: ['./selectReceivers.css', '../../../../Styles/input.css']
 })
 export class ModalSelectReceivers {
 
