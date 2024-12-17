@@ -26,6 +26,7 @@ export class DatalistComponent implements OnInit {
     @Input() options: DatalistOptions = {};
     @Input() head: string[] = [];
     @Input() metadata: Metadata = { rows: 0 };
+    @Input() selectedRow: number = -1;
     @Input() data: BehaviorSubject<any> = new BehaviorSubject([]);
     @Input() search: FormControl<string> = new FormControl();
     @Input() clickFc!: Function;

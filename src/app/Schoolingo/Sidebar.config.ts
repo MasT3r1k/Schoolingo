@@ -12,8 +12,8 @@ let config: SidebarGroup[] = [
                 permission: ['all']
             },
             {
-                item: "sidebar/persons",
-                url: 'persons',
+                item: "sidebar/students",
+                url: 'students',
                 permission: ['teacher']
             },
             {

@@ -16,15 +16,20 @@ export interface DatalistOptions {
     ignore?: string[];
     titles?: string[];
     hideInfo?: boolean;
+    hideColumns?: number[];
     hidePagination?: boolean;
     disableLocales?: boolean[];
     noDynamic?: boolean;
 }
 
-export interface dataAPI {
+export type dataAPI = ({
     rows: number;
     data: any[];
+} | {
+    error: string;
+    errorCode: string;
 }
+);
 
 export interface Metadata {
     rows: number;

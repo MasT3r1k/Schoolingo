@@ -38,6 +38,11 @@ export class School {
         };
     }
 
+    public getStudentLimit(): string {
+        if (!this.schoolInfo.studentsLimit) return "";
+        return this.schoolInfo.studentsLimit === -1 ? "∞" : this.schoolInfo.studentsLimit.toString();
+    }
+
     public getIsActiveSchool(): boolean {
         return this.errorReason == -1;
     }

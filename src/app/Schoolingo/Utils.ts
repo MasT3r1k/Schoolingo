@@ -43,4 +43,13 @@ export function randomstring(length: number, numbers: boolean = true): string {
   export function formatPhone(phone: string): string {
     return ((phone || "").match(/.{1,3}/g) || [])?.join(' ');
   }
+  export function getAge(date: moment.Moment): number {
+    let age = 0;
+    let now = moment().subtract(1, 'year');
+    while(now.isSameOrAfter(date, 'day')) {
+      age++;
+      now.subtract(1, 'year');
+    }
+    return age;
+  }
 }

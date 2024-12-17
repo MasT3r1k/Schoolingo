@@ -21,7 +21,7 @@ import { NoticeboardComponent as MessagesNoticeboard } from './board/Messages/no
 import { Error404Component } from './board/Errors/error404/error404.component';
 import { IntermComponent as MarksInterm } from './board/Marks/interm/interm.component';
 import { MidtermComponent as MarksMidterm } from './board/Marks/midterm/midterm.component';
-import { PersonsComponent as Persons } from './board/persons/persons.component';
+import { studentsComponent as Students } from './board/students/students.component';
 import { DiscordConnectComponent } from './board/discord-connect/discord-connect.component';
 import { LoansComponent as LibraryLoans } from './board/library/loans/loans.component';
 import { BooksComponent as LibraryBooks } from './board/library/books/books.component';
@@ -58,7 +58,7 @@ export const routes: Routes = [
           path: 'main', component: BoardMain
         },
         {
-          path: 'persons', component: Persons
+          path: 'students', component: Students
         },
         {
           path: 'discordconnect', component: DiscordConnectComponent
