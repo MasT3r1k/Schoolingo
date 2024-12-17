@@ -43,6 +43,7 @@ export const appConfig: ApplicationConfig = {
     MessageManager,
     Modules,
     MainModules,
+    Homeworks,
     Traineeship
   ],
   

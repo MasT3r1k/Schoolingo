@@ -15,6 +15,7 @@ import { degree } from "./User";
 import { MessageManager } from "./Messages";
 import { Data } from "@Components/Datalist/Datalist";
 import { Traineeship } from "./Traineeship";
+import { Homeworks } from "./Homeworks";
 export { TimetableAPI, ClassbookAPI, ClassbookLesson, TimetableLesson, Mark, Absence, Substitution, studentService, BookInfo }
 
 @Injectable()
@@ -49,7 +50,6 @@ export class Schoolingo {
     public absence: Record<string, Absence[]> = {};
 
     constructor(
-
         public locale: Locale,
         public socketService: SocketService,
         public theme: Theme,
@@ -57,7 +57,8 @@ export class Schoolingo {
         public sidebar: Sidebar,
         public school: School,
         public messages: MessageManager,
-        public traineeship: Traineeship
+        public traineeship: Traineeship,
+        public homeworks: Homeworks
     ) {
         this.subscribers.push(this.locale.language.subscribe((value: languages) => {
             this.refreshTitle();
