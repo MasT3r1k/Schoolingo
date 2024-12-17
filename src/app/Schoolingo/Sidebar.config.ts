@@ -34,7 +34,7 @@ let config: SidebarGroup[] = [
                     permission: ['student', 'parent'],
                 }, {
                     item: 'sidebar/marks/intermRecord',
-                    url: 'marks/intermRecord',
+                    url: 'marks/intermrecord',
                     permission: ['teacher'],
                 }, {
                     item: 'sidebar/marks/midtermRecordTimesheet',

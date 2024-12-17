@@ -1,0 +1,106 @@
+<div class="card">
+    <div class="card-top"></div>
+    <div class="card-header">
+        <h2>{{ schoolingo.locale.getLocale('sidebar/marks/intermRecord') }}</h2>
+        <div class="flex-items">
+            <div class="input-select">
+                <input type="text" (click)="showSelect = showSelect == 'groupSelect' ? null : 'groupSelect'" name="inputSelect" readonly="true" [value]="getGroupText(getGroupFromId(selectedGroup.getValue()))" />
+                @if (showSelect == 'groupSelect') {
+                    <div class="options">
+                        <div class="option" (click)="showSelect = null;selectedGroup.next(-1)">‎ </div>
+                        @for (group of groups; track $index) {
+                                <div class="option" (click)="showSelect = null;selectedGroup.next(group.groupId)">{{ getGroupText(group) }}</div>
+                        } @empty {
+                            <div class="option">‎ </div>
+                        }
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+    <div class="card-body">
+        <div [ngClass]="{'card-tab': true, active: selectedGroup.getValue() === -1}">
+            <div class="alerts">
+                <div class="alert blue-info">{{ schoolingo.locale.getLocale('marks/selectGroup') }}</div>
+            </div>
+            <div class="list-groups">
+                @for (group of groups; track $index) {
+                    <div class="group" (click)="gotoGroup(group.groupId)">
+                        {{ getGroupText(group) }}
+                    </div>
+                }
+            </div>
+        </div>
+        <div [ngClass]="{'card-tab': true, active: selectedGroup.getValue() !== -1}">
+            @if (getGroupFromId(selectedGroup.getValue())) {
+
+                <div class="grades-main">
+                    
+                    <!-- <div class="grades-header">
+                        <div class="students">
+                            <p>{{ getSubject()[0] }}</p>
+                            <p>{{ getGroupText(getGroupFromId(selectedGroup.getValue())) }}</p>
+                        </div>
+                        <div class="grades">
+                            @for (column of columns; track $index) {
+                                <div class="grade-column">
+                                    <div class="gradeColumnIndex">{{ $index + 1 }}</div>
+                                    <div class="gradeColumnTopic">{{ column.topic }}</div>
+                                    <div class="gradeColumnAverage">1.00</div>
+                                </div>
+                            }
+                        </div>
+                    </div> -->
+
+                    <div class="grades-table">
+                        <div class="students">
+                            <div class="header">
+                                <p>{{ getSubject()[0] }}</p>
+                                <p>{{ getGroupText(getGroupFromId(selectedGroup.getValue())) }}</p>
+                            </div>
+                            @for (student of students; track $index) {
+                                <div class="student">
+                                    <div class="left">
+                                        <span class="studentIndex" [title]="schoolingo.locale.getLocale('marks/studentIndex')">{{ $index + 1 }}.</span>
+                                        <span class="studentName" [title]="schoolingo.locale.getLocale('marks/studentName')">{{ student.student }}</span>
+                                    </div>
+                                    <div class="right">
+                                        <div class="average" [title]="schoolingo.locale.getLocale('marks/studentAverage')">{{ getStudentAverage(student.grades) }}</div>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                        <div class="grades">
+                            <div class="header">
+                                @for (column of columns; track $index) {
+                                    <div class="grade-column">
+                                        <div class="gradeColumnIndex">{{ $index + 1 }}</div>
+                                        <div class="gradeColumnTopic">{{ column.topic }}</div>
+                                        <div class="gradeColumnAverage" [title]="schoolingo.locale.getLocale('marks/groupAverage')">{{ getColumnAverage($index) }}</div>
+                                    </div>
+                                }
+                            </div>
+                            @for (student of students; track $index) {
+                                <div class="grades-row">
+                                    @for (grade of student.grades; track $index) {
+                                        <div class="grade-column">{{ grade }}</div>
+                                    }
+                                    @if (student.grades.length < columns.length) {
+                                        @for (_ of [].constructor(columns.length - student.grades.length); track $index) {
+                                            <div class="grade-column"></div>
+                                        }
+                                    }
+                                </div>
+                            }
+                        </div>
+                    </div>
+                </div>
+
+            } @else {
+                <div class="alerts">
+                    <div class="alert red">{{ schoolingo.locale.getLocale('marks/groupNotFound') }}</div>
+                </div>
+            }
+        </div>
+    </div>
+</div>

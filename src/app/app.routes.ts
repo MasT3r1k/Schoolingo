@@ -21,6 +21,7 @@ import { NoticeboardComponent as MessagesNoticeboard } from './board/Messages/no
 import { Error404Component } from './board/Errors/error404/error404.component';
 import { IntermComponent as MarksInterm } from './board/Marks/interm/interm.component';
 import { MidtermComponent as MarksMidterm } from './board/Marks/midterm/midterm.component';
+import { IntermRecordComponent as MarksIntermRecord } from './board/Marks/interm-record/interm-record.component';
 import { studentsComponent as Students } from './board/students/students.component';
 import { DiscordConnectComponent } from './board/discord-connect/discord-connect.component';
 import { LoansComponent as LibraryLoans } from './board/library/loans/loans.component';
@@ -72,6 +73,9 @@ export const routes: Routes = [
             },
             {
               path: 'midterm', component: MarksMidterm
+            },
+            {
+              path: 'intermrecord', component: MarksIntermRecord
             }
           ]
         },
