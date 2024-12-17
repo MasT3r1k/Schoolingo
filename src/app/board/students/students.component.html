@@ -5,14 +5,14 @@
             <div class="left">
                 <h2>{{ schoolingo.locale.getLocale('sidebar/students') }}</h2>
     
-                <p class="description" [ngStyle]="{display: 'flex', color: studentCount === schoolingo.school.schoolInfo.studentsLimit ? 'red' : ''}">{{ studentCount }} z
-                    @if (schoolingo.school.schoolInfo.studentsLimit === -1) {
-                        <i class="ti ti-infinity" style="font-size: 20px;margin-inline: 4px;"></i>
-                    } @else {
-                        {{ schoolingo.school.schoolInfo.studentsLimit }}
-                    }
-                    studentů
-                </p>
+                @if (schoolingo.school.schoolInfo.studentsLimit !== -1) {
+                    <p class="description" [ngStyle]="{display: 'flex', color: studentCount === schoolingo.school.schoolInfo.studentsLimit ? 'red' : ''}" [innerHTML]="schoolingo.locale.getLocale('students/studentsLimit').replaceAll('%studentCount%', studentCount.toString())"></p>                    
+                } @else {
+                    <div class="badge blue-info">
+                        <i class="infinity-icon ti ti-infinity"></i>
+                        Neomezený počet studentů
+                    </div>
+                }
             </div>
             <div class="flex-items">
                 @if (perms.checkPermission(['manager:students:addStudent'])) {
