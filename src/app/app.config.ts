@@ -20,6 +20,7 @@ import { MessageManager } from '@Schoolingo/Messages';
 import { MainModules } from './board/main/Modules/Modules';
 import { Modules } from '@Schoolingo/Modules';
 import { Traineeship } from '@Schoolingo/Traineeship';
+import { Homeworks } from '@Schoolingo/Homeworks';
 
 export const appConfig: ApplicationConfig = {
   providers: [
