@@ -26,6 +26,7 @@ export class IntermRecordComponent implements OnInit {
   public listeners: Subscription[] = [];
   public groups: teacherGroup[] = [];
   public selectedGroup: BehaviorSubject<number> = new BehaviorSubject(-1);
+  public selectedSubject: BehaviorSubject<number> = new BehaviorSubject(-1);
 
   public columns: any = [
     {
@@ -122,18 +123,18 @@ export class IntermRecordComponent implements OnInit {
       this.groups = data;
     }));
 
-    this.listeners.push(this.selectedGroup.subscribe((groupId: number) => {
-      if (groupId === -1) {
-        this.router.navigate([]);
-        return;
-      }
-      this.router.navigate([], { queryParams: { groupId } });
-    }));
+    // this.listeners.push(this.selectedGroup.subscribe((groupId: number) => {
+    //   if (groupId === -1) {
+    //     this.router.navigate([]);
+    //     return;
+    //   }
+    //   this.router.navigate([], { queryParams: { groupId, subjectId } });
+    // }));
 
     this.listeners.push(this.route.queryParamMap.subscribe((param: Params) => {
       // Show company
-      if (param['params']['groupId'] != undefined) {
-        this.selectGroup(param['params']['groupId']);
+      if (param['params']['groupId'] != undefined && param['params']['subjectId'] != undefined) {
+        this.selectGroup(param['params']['groupId'], param['params']['subjectId']);
       }
     }));
   }
@@ -168,24 +169,31 @@ export class IntermRecordComponent implements OnInit {
     return average.toFixed(2);
   }
 
-  public gotoGroup(groupId: number | null): void {
-    if (groupId === null) {
-      this.router.navigate([]);
-      this.selectedGroup.next(-1);
+  public gotoGroup(groupId: number | null, subjectId: number | null): void {
+    if (groupId === null || groupId < 1 || subjectId === null || subjectId < 1) {
+      this.router.navigate([], { queryParams: {} });
+      return;
     }
-    this.router.navigate([], { queryParams: { groupId } });
+    this.router.navigate([], { queryParams: { groupId, subjectId } });
   }
 
-  public selectGroup(groupId: number): void {
-    this.selectedGroup.next(groupId);
+  public selectGroup(groupId: number, subjectId: number): void {
+    this.gotoGroup(groupId, subjectId);
+    if (this.getGroupFromId(groupId, subjectId)) {
+      this.selectedGroup.next(groupId);
+      this.selectedSubject.next(subjectId);
+    } else {
+      this.selectedGroup.next(-1);
+      this.selectedSubject.next(-1);
+    }
   }
 
-  public getGroupFromId(groupId: number): teacherGroup {
-    return this.groups.filter((group: teacherGroup) => group?.groupId == groupId)?.[0];
+  public getGroupFromId(groupId: number, subjectId: number): teacherGroup {
+    return this.groups.filter((group: teacherGroup) => group?.groupId == groupId && group.subjectId == subjectId)?.[0];
   }
 
   public getSubject(): string[] {
-    return this.schoolingo.subjects[this.getGroupFromId(parseInt(this.selectedGroup.getValue().toString())).subjectId];
+    return this.schoolingo.subjects[this.selectedSubject.getValue()];
   }
 
   public getGroupText(group: teacherGroup | null): string {

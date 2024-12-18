@@ -4,12 +4,12 @@
         <h2>{{ schoolingo.locale.getLocale('sidebar/marks/intermRecord') }}</h2>
         <div class="flex-items">
             <div class="input-select">
-                <input type="text" (click)="showSelect = showSelect == 'groupSelect' ? null : 'groupSelect'" name="inputSelect" readonly="true" [value]="getGroupText(getGroupFromId(selectedGroup.getValue()))" />
+                <input type="text" (click)="showSelect = showSelect == 'groupSelect' ? null : 'groupSelect'" name="inputSelect" readonly="true" [value]="getGroupText(getGroupFromId(selectedGroup.getValue(), selectedSubject.getValue()))" />
                 @if (showSelect == 'groupSelect') {
                     <div class="options">
-                        <div class="option" (click)="showSelect = null;selectedGroup.next(-1)">‎ </div>
+                        <div class="option" (click)="showSelect = null;selectGroup(-1, -1)">‎ </div>
                         @for (group of groups; track $index) {
-                                <div class="option" (click)="showSelect = null;selectedGroup.next(group.groupId)">{{ getGroupText(group) }}</div>
+                                <div class="option" (click)="showSelect = null;selectGroup(group.groupId, group.subjectId)">{{ getGroupText(group) }}</div>
                         } @empty {
                             <div class="option">‎ </div>
                         }
@@ -25,14 +25,14 @@
             </div>
             <div class="list-groups">
                 @for (group of groups; track $index) {
-                    <div class="group" (click)="gotoGroup(group.groupId)">
+                    <div class="group" (click)="gotoGroup(group.groupId, group.subjectId)">
                         {{ getGroupText(group) }}
                     </div>
                 }
             </div>
         </div>
-        <div [ngClass]="{'card-tab': true, active: selectedGroup.getValue() !== -1}">
-            @if (getGroupFromId(selectedGroup.getValue())) {
+        <div [ngClass]="{'card-tab': true, active: selectedGroup.getValue() !== -1 && selectedSubject.getValue() !== -1}">
+            @if (getGroupFromId(selectedGroup.getValue(), selectedSubject.getValue())) {
 
                 <div class="grades-main">
                     
@@ -56,7 +56,7 @@
                         <div class="students">
                             <div class="header">
                                 <p>{{ getSubject()[0] }}</p>
-                                <p>{{ getGroupText(getGroupFromId(selectedGroup.getValue())) }}</p>
+                                <p>{{ getGroupText(getGroupFromId(selectedGroup.getValue(), selectedSubject.getValue())) }}</p>
                             </div>
                             @for (student of students; track $index) {
                                 <div class="student">
