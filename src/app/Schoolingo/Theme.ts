@@ -79,6 +79,10 @@ export class Theme {
     return this.theme;
   }
 
+  public getThemeColor(): themes {
+    return this.theme == 'system' ? this.getSystemColor() : this.theme;
+  }
+
   public getThemes(): themes[] {
     return this.themes;
   }
