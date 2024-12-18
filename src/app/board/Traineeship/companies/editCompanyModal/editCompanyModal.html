@@ -1,0 +1,81 @@
+<div class="mb">
+    <schoolingo-tabs [options]="['traineeship/tabs/detailCompany/main', 'traineeship/instructors', 'settings']" [option_width]="'fit'" [value]="selectedTab"></schoolingo-tabs>
+</div>
+
+<div [ngClass]="{items: true, active: selectedTab.getValue() === 0}">
+    <div class="item">
+        <div class="label">{{ schoolingo.locale.getLocale('traineeship/companyName') }}</div>
+        <div class="value">
+            <input type="text" name="name" [value]="schoolingo.traineeship.selectedCompany.name" readonly="true">
+            <div class="edit-btn">
+                <i class="ti ti-edit"></i>
+            </div>
+        </div>
+    </div>
+    <div class="item">
+        <div class="label">{{ schoolingo.locale.getLocale('traineeship/CIN') }}</div>
+        <div class="value">
+            <input type="text" name="name" [value]="schoolingo.traineeship.selectedCompany.CIN" [placeholder]="schoolingo.locale.getLocale('traineeship/noCIN')" readonly="true">
+            <div class="edit-btn">
+                <i class="ti ti-edit"></i>
+            </div>
+        </div>
+    </div>
+    <div class="item">
+        <div class="label">{{ schoolingo.locale.getLocale('traineeship/description') }}</div>
+        <div class="value">
+            <input type="text" name="name" [value]="schoolingo.traineeship.selectedCompany.description" [placeholder]="schoolingo.locale.getLocale('traineeship/noDescription')" readonly="true">
+            <div class="edit-btn">
+                <i class="ti ti-edit"></i>
+            </div>
+        </div>
+    </div>
+    <div class="item">
+        <div class="label">{{ schoolingo.locale.getLocale('web') }}</div>
+        <div class="value">
+            <input type="text" name="name" [value]="schoolingo.traineeship.selectedCompany.web" [placeholder]="schoolingo.locale.getLocale('traineeship/noWeb')" readonly="true">
+            <div class="edit-btn">
+                <i class="ti ti-edit"></i>
+            </div>
+        </div>
+    </div>
+    <div class="item">
+        <div class="label">{{ schoolingo.locale.getLocale('traineeship/activity') }}</div>
+        <div class="value">
+            <input type="text" name="name" [value]="schoolingo.traineeship.selectedCompany.activity" [placeholder]="schoolingo.locale.getLocale('traineeship/noActivity')" readonly="true">
+            <div class="edit-btn">
+                <i class="ti ti-edit"></i>
+            </div>
+        </div>
+    </div>
+    <div class="item">
+        <div class="label">{{ schoolingo.locale.getLocale('traineeship/equipment') }}</div>
+        <div class="value">
+            <input type="text" name="name" [value]="schoolingo.traineeship.selectedCompany.equipment" [placeholder]="schoolingo.locale.getLocale('traineeship/noEquipment')" readonly="true">
+            <div class="edit-btn">
+                <i class="ti ti-edit"></i>
+            </div>
+        </div>
+    </div>
+
+    <div class="item">
+        <div class="label">{{ schoolingo.locale.getLocale('traineeship/responsiblePerson') }}</div>
+        <div class="value">
+            <div class="input-select">
+                <input type="text" (click)="showSelect = showSelect == 'responsiblePerson' ? null : 'responsiblePerson'" name="inputSelect" readonly="true" [value]="schoolingo.traineeship.selectedCompany.responsiblePerson ? schoolingo.formatPerson(schoolingo.traineeship.selectedCompany.responsiblePerson) : schoolingo.locale.getLocale('traineeship/noInstructorSelected')" />
+                @if (showSelect == 'responsiblePerson') {
+                    <div class="options">
+                        <div class="option" (click)="showSelect = null;schoolingo.traineeship.selectInstructor(null)">{{ schoolingo.locale.getLocale('traineeship/dontKnowInstructor') }}</div>
+
+                        @for (instructor of schoolingo.traineeship.instructors; track $index) {
+                            <div class="option" (click)="showSelect = null;schoolingo.traineeship.selectInstructor(instructor)">{{ schoolingo.formatPerson(instructor) }}</div>
+                        }
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+    
+
+<div class="btn submit gray" role="button" (click)="schoolingo.traineeship.activateModal.close()">{{ schoolingo.locale.getLocale("close") }}</div>

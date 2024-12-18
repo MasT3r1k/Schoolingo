@@ -1,9 +1,12 @@
 import { Data } from "@Components/Datalist/Datalist";
+import { Modal } from "@Components/Modal/Modal";
 import { DiaryWeek, DiaryDay } from "@Schoolingo/Traineeship.d";
 import { BehaviorSubject } from "rxjs";
 export { DiaryWeek, DiaryDay };
 
 export class Traineeship {
+    public activateModal!: Modal;
+
     public declare selectedCompany: any;
     public instructors: number[] = [];
     public selectedInstructor: number | null = null;
