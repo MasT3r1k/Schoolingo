@@ -36,6 +36,15 @@ export class TabsComponent implements OnInit {
         return this.gliderStyles;
     }
 
+    public getWidth(): string {
+        if (this.option_width) {
+            if (this.option_width == 'fit') {
+                return (100 / this.options.length).toFixed(2) + '%';
+            }
+            return this.option_width;
+        }
+        return '';
+    }
 
 
     ngOnInit(): void {
