@@ -13,7 +13,8 @@ import { BehaviorSubject, Subscription } from 'rxjs';
 import { AgCharts } from "ag-charts-angular";
 import { AgChartOptions } from "ag-charts-community";
 import { Modal } from '@Components/Modal/Modal';
-import { selectCompanyModal } from './selectCompanyModal/selectCompanyModal';
+import { selectCompanyModalComponent } from './selectCompanyModal/selectCompanyModal';
+import { editCompanyModalComponent } from './editCompanyModal/editCompanyModal';
 
 type Scope = {
   name: string;
@@ -172,7 +173,7 @@ export class CompaniesComponent implements OnInit {
   }
   
 
-  public modal = new Modal({
+  public selectCompanyModal = new Modal({
     closeable: true,
     title: {
       text: "traineeship/registerToCompany"
@@ -181,15 +182,26 @@ export class CompaniesComponent implements OnInit {
     items: [
       {
         type: 'component',
-        component: selectCompanyModal,
+        component: selectCompanyModalComponent,
         data: this.schoolingo.traineeship.selectedCompany
       }
     ]
   });
 
-  public showModal(): void {
-    this.modal.open();
-  }
+  public editCompanyModal = new Modal({
+    closeable: true,
+    title: {
+      text: "traineeship/editCompany"
+    },
+    size: 'size-2',
+    items: [
+      {
+        type: 'component',
+        component: editCompanyModalComponent,
+        data: this.schoolingo.traineeship.selectedCompany
+      }
+    ]
+  });
 
   ngOnDestroy(): void {
     this.listeners.forEach((sub: Subscription) => sub.unsubscribe());

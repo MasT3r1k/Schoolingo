@@ -33,12 +33,12 @@
                                 <span>{{ schoolingo.locale.getLocale('traineeship/backToList') }}</span>
                             </div>
                             @if (permissions.checkPermission(["student"])) {
-                                <div class="btn submit blue-info" role="button" (click)="this.modal.open();">
+                                <div class="btn submit blue-info" role="button" (click)="selectCompanyModal.open();schoolingo.traineeship.activateModal = selectCompanyModal">
                                     <span>{{ schoolingo.locale.getLocale('traineeship/registerToCompany') }}</span>
                                 </div>
                             }
                             @if (permissions.checkPermission(["manager:traineeship:editCompany"])) {
-                                <div class="btn submit blue" role="button">
+                                <div class="btn submit blue" role="button" (click)="editCompanyModal.open();schoolingo.traineeship.activateModal = editCompanyModal">
                                     <span>{{ schoolingo.locale.getLocale('traineeship/editCompany') }}</span>
                                 </div>
                             }

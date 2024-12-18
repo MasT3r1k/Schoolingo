@@ -8,7 +8,7 @@ import { Schoolingo } from '@Schoolingo';
   templateUrl: './selectCompanyModal.html',
   styleUrls: ['../../../../Styles/input.css', './selectCompanyModal.css']
 })
-export class selectCompanyModal {
+export class selectCompanyModalComponent {
   constructor(
     public schoolingo: Schoolingo
   ) {}
