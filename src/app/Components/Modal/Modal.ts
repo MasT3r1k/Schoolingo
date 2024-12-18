@@ -1,4 +1,4 @@
-import { Component, OnInit, Renderer2 } from "@angular/core";
+import { Component, ContentChildren, OnInit, Renderer2 } from "@angular/core";
 import { Locale } from "@Schoolingo/Locale";
 import { modalOptions, modalItem } from "@Components/Modal/Modal.d";
 import { NgClass, NgComponentOutlet, NgStyle } from "@angular/common";
@@ -6,6 +6,23 @@ import { TabsComponent } from "@Components/Tabs/Tabs";
 export { modalOptions, modalItem }
 
 let modals: Modal[] = [];
+
+export class Modal {
+    public isOpened: boolean = false;
+    public options!: modalOptions;
+    constructor(options: modalOptions) {
+        this.options = options;
+        modals.push(this);
+    }
+
+    public open(): void {
+        this.isOpened = true;
+    }
+    public close(): void {
+        this.isOpened = false;
+    }
+
+}
 
 @Component({
     selector: 'schoolingo-modals',
@@ -43,21 +60,4 @@ export class ModalComponent implements OnInit {
             return '';
         }
     }
-}
-
-export class Modal {
-    public isOpened: boolean = false;
-    public options!: modalOptions;
-    constructor(options: modalOptions) {
-        this.options = options;
-        modals.push(this);
-    }
-
-    public open(): void {
-        this.isOpened = true;
-    }
-    public close(): void {
-        this.isOpened = false;
-    }
-
 }
