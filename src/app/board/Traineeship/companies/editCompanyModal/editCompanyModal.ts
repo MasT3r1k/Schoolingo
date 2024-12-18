@@ -3,6 +3,7 @@ import { Component } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { TabsComponent } from '@Components/Tabs/Tabs';
 import { Schoolingo } from '@Schoolingo';
+import { Utils } from '@Schoolingo/Utils';
 import { BehaviorSubject } from 'rxjs';
 
 @Component({
@@ -18,4 +19,6 @@ export class editCompanyModalComponent {
   constructor(
     public schoolingo: Schoolingo
   ) {}
+
+  Utils = Utils;
 }

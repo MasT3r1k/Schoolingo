@@ -41,6 +41,10 @@ export function randomstring(length: number, numbers: boolean = true): string {
     return moment().isoWeek(week).startOf('isoWeek').add(day + 1, 'd');
   }
 
+  export function formatDate(date: Date): string {
+    return moment(date).format('hh:mm:ss DD. MM. YYYY');
+  }
+
   export function formatPhone(phone: string): string {
     return ((phone || "").match(/.{1,3}/g) || [])?.join(' ');
   }
