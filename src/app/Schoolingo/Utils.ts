@@ -50,6 +50,10 @@ export function randomstring(length: number, numbers: boolean = true): string {
     return `${(country.getCountryByCode(address.code2)?.flag || "")} ${address.street} ${address.houseNumber}, ${address.city} ${address.postcode}`
   }
 
+  export function openURL(url: string): void {
+    window.open(url, '_blank');
+  }
+
   export function getAge(date: moment.Moment): number {
     let age = 0;
     let now = moment().subtract(1, 'year');
