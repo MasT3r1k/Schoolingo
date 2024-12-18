@@ -13,7 +13,7 @@ import { BehaviorSubject } from 'rxjs';
   styleUrls: ['../../../../Styles/input.css', './editCompanyModal.css']
 })
 export class editCompanyModalComponent {
-  public showSelect: 'responsiblePerson' | null = null;
+  public showSelect: 'responsiblePerson' | 'statusCompany' | null = null;
   public selectedTab: BehaviorSubject<number> = new BehaviorSubject(0);
 
   constructor(

@@ -31,6 +31,24 @@
         </div>
     </div>
     <div class="item">
+        <div class="label">{{ schoolingo.locale.getLocale('email') }}</div>
+        <div class="value">
+            <input type="text" name="name" [value]="schoolingo.traineeship.selectedCompany.email" [placeholder]="schoolingo.locale.getLocale('traineeship/noEmail')" readonly="true">
+            <div class="edit-btn">
+                <i class="ti ti-edit"></i>
+            </div>
+        </div>
+    </div>
+    <div class="item">
+        <div class="label">{{ schoolingo.locale.getLocale('phone') }}</div>
+        <div class="value">
+            <input type="text" name="name" [value]="schoolingo.traineeship.selectedCompany.phone" [placeholder]="schoolingo.locale.getLocale('traineeship/noPhone')" readonly="true">
+            <div class="edit-btn">
+                <i class="ti ti-edit"></i>
+            </div>
+        </div>
+    </div>
+    <div class="item">
         <div class="label">{{ schoolingo.locale.getLocale('web') }}</div>
         <div class="value">
             <input type="text" name="name" [value]="schoolingo.traineeship.selectedCompany.web" [placeholder]="schoolingo.locale.getLocale('traineeship/noWeb')" readonly="true">
@@ -76,6 +94,19 @@
         </div>
     </div>
 </div>
+
+<div [ngClass]="{items: true, active: selectedTab.getValue() === 2}" style="min-height: 400px;">
+    <div class="item">
+        <div class="label">{{ schoolingo.locale.getLocale('traineeship/statusCompany/main') }}</div>
+        <div class="value">
+            <input type="text" name="name" [value]="schoolingo.locale.getLocale('traineeship/statusCompany/' + schoolingo.traineeship.selectedCompany.status)" readonly="true">
+        </div>
+    </div>
+    <div class="btn submit red mb" role="button">
+        <i class="ti ti-trash-x-filled"></i>
+        {{ schoolingo.locale.getLocale('traineeship/removeCompanyFromList') }}
+    </div>
+
     <div class="item">
         <div class="label">{{ schoolingo.locale.getLocale('traineeship/requested') }}</div>
         <div class="value">
@@ -89,6 +120,7 @@
             <input type="text" name="name" [value]="Utils.formatDate(schoolingo.traineeship.selectedCompany.created)" readonly="true">
         </div>
     </div>
+</div>
     
 
 <div class="btn submit gray" role="button" (click)="schoolingo.traineeship.activateModal.close()">{{ schoolingo.locale.getLocale("close") }}</div>
