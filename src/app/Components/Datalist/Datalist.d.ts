@@ -22,14 +22,15 @@ export interface DatalistOptions {
     noDynamic?: boolean;
 }
 
+export interface errorAPI {
+    error: string;
+    errorCode: string;
+} 
+
 export type dataAPI = ({
     rows: number;
     data: any[];
-} | {
-    error: string;
-    errorCode: string;
-}
-);
+} | errorAPI);
 
 export interface Metadata {
     rows: number;

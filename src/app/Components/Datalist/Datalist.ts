@@ -1,11 +1,11 @@
 import { Component, EventEmitter, Input, OnInit, Output } from "@angular/core";
 import { Locale } from "@Schoolingo/Locale";
-import { Data, DatalistOptions, Metadata, dataAPI } from "@Components/Datalist/Datalist.d";
+import { Data, DatalistOptions, Metadata, dataAPI, errorAPI } from "@Components/Datalist/Datalist.d";
 import { BehaviorSubject, debounceTime, Subscription } from "rxjs";
 import { NgClass } from "@angular/common";
 import { SocketService } from "@Schoolingo/Socket";
 import { FormControl, FormsModule, ReactiveFormsModule } from "@angular/forms";
-export { Data, DatalistOptions, Metadata, dataAPI }
+export { Data, DatalistOptions, Metadata, dataAPI, errorAPI }
 @Component({
     selector: 'schoolingo-datalist',
     templateUrl: './Datalist.html',
