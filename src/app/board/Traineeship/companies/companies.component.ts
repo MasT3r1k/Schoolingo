@@ -132,8 +132,8 @@ export class CompaniesComponent implements OnInit {
       this.alert = null;
       this.weeks = [];
       // Show company
-      if (param['params']['companyId'] != undefined) {
-        this.onClick([{id: param['params']['companyId']}]);
+      if (param.params['companyId'] != undefined) {
+        this.onClick([{id: param.params['companyId']}]);
       }
     }));
 

@@ -62,8 +62,8 @@ export class SettingsComponent implements OnInit {
   ngOnInit(): void {
     this.listeners.push(this.route.queryParamMap.subscribe((param: Params) => {
       // Show page
-      if (param['params']['page'] != undefined) {
-        let id = this.options.indexOf(param['params']['page']);
+      if (param.params['page'] != undefined) {
+        let id = this.options.indexOf(param.params['page']);
         if (id != -1) {
           this.selectedTab.next(id)
         }
@@ -71,7 +71,7 @@ export class SettingsComponent implements OnInit {
     }));
 
     this.listeners.push(this.selectedTab.subscribe((value: number) => {
-      this.router.navigate(["", "user", "settings"], { queryParams: { page: this.options[value] } })
+      this.router.navigate([], { queryParams: { page: this.options[value] } })
     }));
   }
 

@@ -133,8 +133,8 @@ export class IntermRecordComponent implements OnInit {
 
     this.listeners.push(this.route.queryParamMap.subscribe((param: Params) => {
       // Show company
-      if (param['params']['groupId'] != undefined && param['params']['subjectId'] != undefined) {
-        this.selectGroup(param['params']['groupId'], param['params']['subjectId']);
+      if (param.params['groupId'] != undefined && param.params['subjectId'] != undefined) {
+        this.selectGroup(param.params['groupId'], param.params['subjectId']);
       }
     }));
   }
