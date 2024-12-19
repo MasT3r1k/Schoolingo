@@ -38,7 +38,7 @@ export class Schoolingo {
         this.absence = {};
         this.absenceSubjects = {};
         this.studentService = { status: false };
-        this.traineeship.diaryWeeks = [];
+        this.traineeship.diaryWeeks.next([]);
         this.traineeship.diaryDays = {};
         this.traineeship.diary.next([]);
     }

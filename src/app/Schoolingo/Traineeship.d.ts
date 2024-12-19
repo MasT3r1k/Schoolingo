@@ -1,7 +1,12 @@
 /** Traineeship */
 export type DiaryWeek = {
+    traineeship: number;
     start: moment.Moment;
     end: moment.Moment;
+    ignoredDays: string[];
+    company: number;
+    companyName: string;
+    instructor: number | null;
 }
 
 export type DiaryDay = {

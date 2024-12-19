@@ -3,7 +3,7 @@ import { Component, OnInit } from '@angular/core';
 import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { DomSanitizer } from '@angular/platform-browser';
 import { ActivatedRoute, Params, Router } from '@angular/router';
-import { Data, dataAPI, DatalistComponent, Metadata } from '@Components/Datalist/Datalist';
+import { Data, dataAPI, DatalistComponent, errorAPI, Metadata } from '@Components/Datalist/Datalist';
 import { TabsComponent } from '@Components/Tabs/Tabs';
 import { Schoolingo } from '@Schoolingo';
 import { Permission } from '@Schoolingo/Permissions';
@@ -15,6 +15,7 @@ import { AgChartOptions } from "ag-charts-community";
 import { Modal } from '@Components/Modal/Modal';
 import { selectCompanyModalComponent } from './selectCompanyModal/selectCompanyModal';
 import { editCompanyModalComponent } from './editCompanyModal/editCompanyModal';
+import { DiaryWeek } from '@Schoolingo/Traineeship';
 
 type Scope = {
   name: string;
@@ -42,7 +43,8 @@ export class CompaniesComponent implements OnInit {
 
   public scopes: Record<number, Scope> = {};
   public showPage: 'list' | 'detailCompany' | 'requestCompany' = 'list';
-
+  public alert: 'success_selected_company' | 'success_updated_instructor' | null = null;
+  public requestDataForAlert: any = {};
   public selectedTab: BehaviorSubject<number> = new BehaviorSubject(0);
 
   onClick = (id: { id: number }[]) => {
@@ -58,6 +60,7 @@ export class CompaniesComponent implements OnInit {
 
   private listeners: Subscription[] = [];
   public companies: BehaviorSubject<Data[][] | any> = new BehaviorSubject([]);
+  public weeks: DiaryWeek[] = [];
   public search = new FormControl();
   public iframeURL = this.sanitizer.bypassSecurityTrustResourceUrl("");
 
@@ -98,9 +101,14 @@ export class CompaniesComponent implements OnInit {
 
   ngOnInit(): void {
 
-    this.listeners.push(this.schoolingo.socketService.addFunction("traineeship:getCompanyInfo").subscribe((data: any) => {
-      this.schoolingo.traineeship.selectedCompany = data[0];
+    this.listeners.push(this.schoolingo.socketService.addFunction("traineeship:getCompanyInfo").subscribe((data: companyInfoAPI) => {
+      this.schoolingo.traineeship.selectedCompany = data;
+      this.weeks = this.schoolingo.traineeship.getDiaryByCompanyId(data.companyId);
       this.iframeURL = this.sanitizer.bypassSecurityTrustResourceUrl('https://maps.google.com/maps?q=' + this.schoolingo.traineeship.selectedCompany.street + ' ' + this.schoolingo.traineeship.selectedCompany.houseNumber + ', ' + this.schoolingo.traineeship.selectedCompany.cityName + '&output=embed');
+    }));
+
+    this.listeners.push(this.schoolingo.traineeship.diaryWeeks.subscribe(() => {
+      this.weeks = this.schoolingo.traineeship.getDiaryByCompanyId(this.schoolingo.traineeship.selectedCompany.companyId);
     }));
 
     this.listeners.push(this.schoolingo.socketService.addFunction("school:getScopes").subscribe((data: Scope[]) => {
@@ -121,14 +129,16 @@ export class CompaniesComponent implements OnInit {
     }));
 
     this.listeners.push(this.route.queryParamMap.subscribe((param: Params) => {
+      this.alert = null;
+      this.weeks = [];
       // Show company
       if (param['params']['companyId'] != undefined) {
         this.onClick([{id: param['params']['companyId']}]);
       }
     }));
 
-    this.listeners.push(this.schoolingo.socketService.addFunction("traineeship:getCompanies").subscribe((data: dataAPI | any) => {
-      if (!data?.data && data.error) return;
+    this.listeners.push(this.schoolingo.socketService.addFunction("traineeship:getCompanies").subscribe((data: dataAPI | errorAPI) => {
+      if ('error' in data) return;
       let companiesList: Data[][] = []
       data.data.forEach((company: any) => {
         let scopeList: any = {};
@@ -156,6 +166,29 @@ export class CompaniesComponent implements OnInit {
       this.companies.next(companiesList);
     }));
     
+    this.listeners.push(this.schoolingo.socketService.addFunction("traineeship:selectCompany").subscribe((data: selectCompanyAPI | errorAPI) => {
+      if ('status' in data) {
+        this.requestDataForAlert = data;
+
+        let weekList = this.schoolingo.traineeship.diaryWeeks.getValue();
+        weekList.forEach((week: DiaryWeek) => {
+          if (week.traineeship === data.traineeship) {
+            week.company = data.company;
+            week.instructor = data.instructor;
+          }
+        });
+
+        this.schoolingo.traineeship.diaryWeeks.next(weekList);
+
+        if (data.status == 'success') {
+          this.alert = 'success_selected_company';
+        }
+        if (data.status == 'updated') {
+          this.alert = 'success_updated_instructor';
+        }
+      }
+    }));
+
     this.listeners.push(this.schoolingo.socketService.addFunction("connect").subscribe(() => {
       this.schoolingo.socketService.emit('school:getScopes');
     }));
@@ -244,5 +277,4 @@ export class CompaniesComponent implements OnInit {
       },
     ],
   };
-
 }

@@ -12,7 +12,21 @@
                     <div (click)="showPage = 'requestCompany'" class="btn submit blue-info" role="button">{{ schoolingo.locale.getLocale('traineeship/requestAddCompany') }}</div>
                 </div>
     
-                <schoolingo-datalist (datalist)="receivedDatalist($event)" [options]="{ search: false, url: 'traineeship:getCompanies', ignore: [], disableLocales: getDisabledLocales(), titles: getTableTitles() }" [head]="tableHead" [clickFc]="onClick" [data]="companies" [metadata]="metadata" [search]="search"></schoolingo-datalist>
+                <schoolingo-datalist
+                (datalist)="receivedDatalist($event)"
+                [options]="{
+                    search: false,
+                    url: 'traineeship:getCompanies',
+                    ignore: [],
+                    disableLocales: getDisabledLocales(),
+                    titles: getTableTitles()
+                }"
+                [head]="tableHead"
+                [clickFc]="onClick"
+                [data]="companies"
+                [metadata]="metadata"
+                [search]="search"
+                ></schoolingo-datalist>
     
             </div>
         </div>
@@ -24,7 +38,60 @@
                 <h2>{{ schoolingo.traineeship.selectedCompany.name }}</h2>
             </div>
             <div class="card">
-                <div class="card-top"></div>
+                <div class="card-top">
+                    @if (alert) {
+                        <div class="alerts">
+                            @switch (alert) {
+                                @case("success_selected_company") {
+                                    <div class="alert success">{{ 
+                                        schoolingo.locale.getLocale('traineeship/alerts/success_selected_company')
+                                        .replaceAll('%companyName%', schoolingo.traineeship.selectedCompany.name)
+                                        .replaceAll('%instructor%', schoolingo.locale.getLocale('traineeship/alerts/' +
+                                            (requestDataForAlert.instructor ? 'success_selected_company_with_instructor' : 'success_selected_company_no_instructor')
+                                        )
+                                        .replaceAll('%instructorName%', schoolingo.formatPerson(requestDataForAlert.instructor!)))
+                                    }}
+                                        <div class="close" (click)="alert = null">
+                                            <i class="ti ti-x"></i>
+                                        </div>
+                                    </div>
+                                }
+                                @case("success_updated_instructor") {
+                                    <div class="alert success">{{ 
+                                        schoolingo.locale.getLocale('traineeship/alerts/success_updated_instructor')
+                                        .replaceAll('%companyName%', schoolingo.traineeship.selectedCompany.name)
+                                        .replaceAll('%instructor%', schoolingo.locale.getLocale('traineeship/alerts/' +
+                                            (requestDataForAlert.instructor ? 'success_selected_company_with_instructor' : 'success_selected_company_no_instructor')
+                                        )
+                                        .replaceAll('%instructorName%', schoolingo.formatPerson(requestDataForAlert.instructor!)))
+                                    }}
+                                        <div class="close" (click)="alert = null">
+                                            <i class="ti ti-x"></i>
+                                        </div>
+                                    </div>
+                                }
+                            }
+                        </div>
+                    }
+
+                    @if (weeks.length) {
+                        <div class="alerts">
+                            @for (week of weeks; track $index) {
+                                <div class="alert blue-info">
+                                    {{
+                                    schoolingo.locale.getLocale('traineeship/alerts/weekInfo')
+                                    .replaceAll('%start%', week.start.format('DD. MM. YYYY'))
+                                    .replaceAll('%end%', week.end.format('DD. MM. YYYY'))
+                                    .replaceAll('%instructor%', schoolingo.locale.getLocale('traineeship/alerts/' +
+                                            (week.instructor ? 'success_selected_company_with_instructor' : 'success_selected_company_no_instructor')
+                                        )
+                                        .replaceAll('%instructorName%', schoolingo.formatPerson(week.instructor!)))
+                                    }}
+                                </div>
+                            }
+                        </div>
+                    }
+                </div>
                 <div class="card-header mb">
                     <div class="card-row">
                         <div class="left">
@@ -64,14 +131,26 @@
                                     <div class="card-table-row">
                                         <div class="card-table-item">{{ schoolingo.locale.getLocale('traineeship/officeAddress') }}</div>
                                         <div class="card-table-item">
-                                            <span>{{ Utils.formatAddress({ code2: schoolingo.traineeship.selectedCompany.code2, street: schoolingo.traineeship.selectedCompany.street, houseNumber: schoolingo.traineeship.selectedCompany.houseNumber, city: schoolingo.traineeship.selectedCompany.cityName, postcode: schoolingo.traineeship.selectedCompany.postcode }) }}</span>
+                                            <span>{{ Utils.formatAddress({
+                                                code2: schoolingo.traineeship.selectedCompany.code2,
+                                                street: schoolingo.traineeship.selectedCompany.street,
+                                                houseNumber: schoolingo.traineeship.selectedCompany.houseNumber,
+                                                city: schoolingo.traineeship.selectedCompany.cityName,
+                                                postcode: schoolingo.traineeship.selectedCompany.postcode
+                                            }) }}</span>
                                         </div>
                                     </div>
     
                                     <div class="card-table-row">
                                         <div class="card-table-item">{{ schoolingo.locale.getLocale('traineeship/traineeAddress') }}</div>
                                         <div class="card-table-item">
-                                            <span>{{ Utils.formatAddress({ code2: schoolingo.traineeship.selectedCompany.code2, street: schoolingo.traineeship.selectedCompany.street, houseNumber: schoolingo.traineeship.selectedCompany.houseNumber, city: schoolingo.traineeship.selectedCompany.cityName, postcode: schoolingo.traineeship.selectedCompany.postcode }) }}</span>
+                                            <span>{{ Utils.formatAddress({
+                                                code2: schoolingo.traineeship.selectedCompany.code2,
+                                                street: schoolingo.traineeship.selectedCompany.street,
+                                                houseNumber: schoolingo.traineeship.selectedCompany.houseNumber,
+                                                city: schoolingo.traineeship.selectedCompany.cityName,
+                                                postcode: schoolingo.traineeship.selectedCompany.postcode
+                                            }) }}</span>
                                         </div>
                                     </div>
     
@@ -85,7 +164,12 @@
                                         <div class="card-table-item">{{ schoolingo.locale.getLocale('web') }}</div>
                                         <div class="card-table-item">
                                             @if (schoolingo.traineeship.selectedCompany.web) {
-                                                <a [href]="schoolingo.traineeship.selectedCompany.web" target="_blank" (click)="Utils.openURL(schoolingo.traineeship.selectedCompany.web)">{{ schoolingo.traineeship.selectedCompany.web }}</a>
+                                                <a
+                                                [href]="schoolingo.traineeship.selectedCompany.web"
+                                                target="_blank"
+                                                (click)="Utils.openURL(schoolingo.traineeship.selectedCompany.web)">
+                                                    {{ schoolingo.traineeship.selectedCompany.web }}
+                                                </a>
                                             } @else {
                                                 {{ schoolingo.locale.getLocale("traineeship/noWeb") }}
                                             }

@@ -7,20 +7,20 @@ export { DiaryWeek, DiaryDay };
 export class Traineeship {
     public activateModal!: Modal;
 
-    public declare selectedCompany: any;
+    public selectedCompany: any;
     public instructors: number[] = [];
     public selectedInstructor: number | null = null;
 
     public ignoredDays: number[] = [6, 7];
 
-    public diaryWeeks: DiaryWeek[] = [];
+    public diaryWeeks: BehaviorSubject<DiaryWeek[]> = new BehaviorSubject([] as any);
     public selectedDairy: DiaryWeek | null = null;
     public diaryDays: Record<string, DiaryDay> = {};
 
     public diary: BehaviorSubject<Data[][]> = new BehaviorSubject<Data[][]>([]);
     public refreshDiary(): void {
         this.diary.next([]);
-        this.diaryWeeks.forEach((week: DiaryWeek) => {
+        this.diaryWeeks.getValue().forEach((week: DiaryWeek) => {
             let days: moment.Moment[] = [];
             let date = week.start.clone();
             while (date.isSameOrBefore(week.end)) {
@@ -39,12 +39,19 @@ export class Traineeship {
                     { value: (this.diaryDays[day.format('YYYY-MM-DD')] ? this.diaryDays[day.format('YYYY-MM-DD')].mark : 'traineeship/noMark'), isLocale: this.diaryDays[day.format('YYYY-MM-DD')] ? false : true }
                 ]);
             });
-            diary.push([{ value: 'traineeship/finalWrite', isLocale: true },
-            { value: "---", isLocale: false },
-            { value: 'traineeship/status/' + (this.diaryDays['0000-00-00'] ? this.diaryDays['0000-00-00'].status : 'unlisted'), isLocale: true },
-            { value: (this.diaryDays['0000-00-00'] ? this.diaryDays['0000-00-00'].mark : 'traineeship/noMark'), isLocale: this.diaryDays['0000-00-00'] ? false : true }])
+            diary.push([
+                { value: 'traineeship/finalWrite', isLocale: true },
+                { value: "---", isLocale: false },
+                { value: 'traineeship/status/' + (this.diaryDays['0000-00-00'] ? this.diaryDays['0000-00-00'].status : 'unlisted'), isLocale: true },
+                { value: (this.diaryDays['0000-00-00'] ? this.diaryDays['0000-00-00'].mark : 'traineeship/noMark'), isLocale: this.diaryDays['0000-00-00'] ? false : true }
+            ]);
             this.diary.next(diary);
         })
+    }
+
+    public getDiaryByCompanyId(companyId: number): DiaryWeek[] {
+        console.log(this.diaryWeeks.getValue())
+        return this.diaryWeeks.getValue().filter((week: DiaryWeek) => week.company === companyId)
     }
 
     public getDays(week: DiaryWeek): number {

@@ -1,4 +1,10 @@
 <div class="items">
+    @if (alert != null) {
+        <div class="alerts mb">
+            <div class="alert red">{{ schoolingo.locale.getLocale('traineeship/alerts/' + alert) }}</div>
+        </div>
+    }
+
     <div class="item">
         <div class="label">{{ schoolingo.locale.getLocale('traineeship/selectedCompany') }}</div>
         <div class="value">
@@ -13,7 +19,7 @@
                 <input type="text" (click)="showSelect = showSelect == 'selectWeek' ? null : 'selectWeek'" name="inputSelect" readonly="true" [value]="schoolingo.traineeship.selectedDairy ? schoolingo.traineeship.selectedDairy.start.format('DD.MM.YYYY') + ' až ' + schoolingo.traineeship.selectedDairy.end.format('DD.MM.YYYY') + ' ( ' + schoolingo.traineeship.getDays(schoolingo.traineeship.selectedDairy) + ' dní )' : schoolingo.locale.getLocale('traineeship/noDairySelected')" />
                 @if (showSelect == 'selectWeek') {
                     <div class="options">
-                        @for (week of schoolingo.traineeship.diaryWeeks; track $index) {
+                        @for (week of schoolingo.traineeship.diaryWeeks.getValue(); track $index) {
                             <div class="option" (click)="showSelect = null;schoolingo.traineeship.selectDairy(week)">{{ week.start.format('DD.MM.YYYY') + ' až ' + week.end.format('DD.MM.YYYY') + ' ( ' + schoolingo.traineeship.getDays(week) + ' dní )' }}</div>
                         }
                     </div>
@@ -41,7 +47,7 @@
         </div>
     </div>
 
-    <div class="description">Firma i instruktor lze kdykoliv později změnit.</div>
+    <div class="description">{{ schoolingo.locale.getLocale('traineeship/selectCompany/bottomInformation') }}</div>
 
-    <div class="btn submit" role="button">{{ schoolingo.locale.getLocale("traineeship/registerToCompany") }}</div>
+    <div class="btn submit" role="button" (click)="selectCompany()">{{ schoolingo.locale.getLocale("traineeship/registerToCompany") }}</div>
 </div>
