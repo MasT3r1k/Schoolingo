@@ -48,11 +48,8 @@ export class BoardComponent {
     public dropdown: Dropdown,
     public modules: Modules
   ) {
-
     this.router = this.routerImport;
-
   }
-
   private router: Router;
 
   ngOnInit(): void {
@@ -85,12 +82,28 @@ export class BoardComponent {
       }
 
       // Get timetable
-      this.schoolingo.socketService.emit('timetable:getLessons', { userId, week: moment().isoWeek(), year: moment().year() });
-      this.schoolingo.socketService.emit("classes:getClassService", { userId });
-      this.schoolingo.socketService.emit("timetable:getClassbook", { userId, week: this.schoolingo.timetableSelectedWeek.getValue() === -1 ? moment().isoWeek() : this.schoolingo.timetableSelectedWeek.getValue() });
-      this.schoolingo.socketService.emit("grades:getGrades", { userId, week: this.schoolingo.timetableSelectedWeek.getValue() === -1 ? moment().isoWeek() : this.schoolingo.timetableSelectedWeek.getValue() });
-      this.schoolingo.socketService.emit('absence:getAbsence', { userId });
-      this.schoolingo.socketService.emit("absence:getAllAbsence", { userId });
+      this.schoolingo.socketService.emit('timetable:getLessons', {
+        userId,
+        week: moment().isoWeek(),
+        year: moment().year()
+      });
+      this.schoolingo.socketService.emit("classes:getClassService", {
+        userId
+      });
+      this.schoolingo.socketService.emit("timetable:getClassbook", {
+        userId,
+        week: this.schoolingo.timetableSelectedWeek.getValue() === -1 ? moment().isoWeek() : this.schoolingo.timetableSelectedWeek.getValue()
+      });
+      this.schoolingo.socketService.emit("grades:getGrades", {
+        userId,
+        week: this.schoolingo.timetableSelectedWeek.getValue() === -1 ? moment().isoWeek() : this.schoolingo.timetableSelectedWeek.getValue()
+      });
+      this.schoolingo.socketService.emit('absence:getAbsence', {
+        userId
+      });
+      this.schoolingo.socketService.emit("absence:getAllAbsence", {
+        userId
+      });
       if (this.modules.checkModule(["traineeship"])) {
         this.schoolingo.socketService.emit('traineeship:getDiaryWeeks');
         this.schoolingo.socketService.emit('traineeship:getDiaryDays');
@@ -133,16 +146,23 @@ export class BoardComponent {
     this.subscribers.push(this.schoolingo.socketService.addFunction("timetable:getClassbook").subscribe((data: ClassbookAPI[]) => {
       data.forEach((info: ClassbookAPI) => {
         let date = moment(info.date).format("YYYY-MM-DD");
+
         if (!this.schoolingo.classbookLessons[date]) {
           this.schoolingo.classbookLessons[date] = [];
         }
-        this.schoolingo.classbookLessons[date][info.dayHour] = { topic: info.topic };
+
+        this.schoolingo.classbookLessons[date][info.dayHour] = {
+          topic: info.topic
+        };
       })
     }));
 
     this.subscribers.push(this.schoolingo.socketService.addFunction("absence:getAbsence").subscribe((data: AbsenceSubjectAPI[]) => {
       data.forEach((data: AbsenceSubjectAPI) => {
-        this.schoolingo.absenceSubjects[data.subject] = { absence: data.absence_count, lessons: data.total_lessons };
+        this.schoolingo.absenceSubjects[data.subject] = {
+          absence: data.absence_count,
+          lessons: data.total_lessons
+        };
       });
     }));
 
@@ -169,9 +189,11 @@ export class BoardComponent {
       let absenceList: Record<string, Absence[]> = {};
       data.forEach((info: AbsenceAPI) => {
         let date = moment(info.date);
+
         if (!absenceList[date.format('YYYY-MM-DD')]) {
           absenceList[date.format('YYYY-MM-DD')] = [];
         }
+
         absenceList[date.format('YYYY-MM-DD')][info.dayHour] = {
           type: info.type,
           subject: info.subject,
@@ -179,6 +201,7 @@ export class BoardComponent {
           minutes: info.minutes
         }
       })
+
       this.schoolingo.absence = absenceList;
     }));
 
@@ -186,6 +209,7 @@ export class BoardComponent {
       let substitutions: Record<string, Substitution[]> = {};
       data.forEach((substitution: Substitution) => {
         let date = moment(substitution.date);
+
         if (!substitutions[date.format('YYYY-MM-DD')]) {
           substitutions[date.format('YYYY-MM-DD')] = [];
         }
@@ -206,19 +230,26 @@ export class BoardComponent {
 
     this.subscribers.push(this.schoolingo.socketService.addFunction("classes:getClassService").subscribe((data: any[]) => {
       if (data.length > 0) {
-        this.schoolingo.studentService = { status: true, start: moment(data[0].start), end: moment(data[0].end) };
+        this.schoolingo.studentService = {
+          status: true,
+          start: moment(data[0].start),
+          end: moment(data[0].end)
+        };
       }
     }));
 
     this.subscribers.push(this.schoolingo.timetableSelectedWeek.subscribe((val: number) => {
       if (val === -1) return;
       let userId = this.schoolingo.getStudentId();
-      this.schoolingo.socketService.emit('timetable:getLessons', { userId, week: val, year: moment().year() });
+      this.schoolingo.socketService.emit('timetable:getLessons', {
+        userId,
+        week: val,
+        year: moment().year()
+      });
     }));
 
     if (this.modules.checkModule(["library"])) {
       this.subscribers.push(this.schoolingo.socketService.addFunction("library:getBookInfo").subscribe((data: BookInfo & {[key: string]: Date | moment.Moment} | any) => {
-        console.log(data);
         data.created = moment(data[0].created);
         data.acquisitionDate = moment(data[0].acquisitionDate);
         data.date_loan = moment(data[0].date_loan);
@@ -230,10 +261,18 @@ export class BoardComponent {
 
     if (this.modules.checkModule(["traineeship"])) {
       this.subscribers.push(this.schoolingo.socketService.addFunction("traineeship:getDiaryWeeks").subscribe((data: DiaryWeek[]) => {
-        this.schoolingo.traineeship.diaryWeeks = [];
+        this.schoolingo.traineeship.diaryWeeks.next([]);
+        let weeks: DiaryWeek[] = [];
         data.forEach((diary: DiaryWeek) => {
-          this.schoolingo.traineeship.diaryWeeks.push({ start: moment(diary.start), end: moment(diary.end) });
+          weeks.push({
+            ...diary,
+            traineeship: diary.traineeship,
+            ignoredDays: (diary.ignoredDays.toString()).split(','),
+            start: moment(diary.start),
+            end: moment(diary.end)
+          });
         })
+        this.schoolingo.traineeship.diaryWeeks.next(weeks);
         this.schoolingo.traineeship.refreshDiary();
       }));
     }
@@ -248,7 +287,6 @@ export class BoardComponent {
   }
 
   ngOnDestroy(): void {
-    // Unsubscribe all listeners
     this.subscribers.forEach((sub: Subscription) => sub.unsubscribe());
     this.schoolingo.subscribers.forEach((sub: Subscription) => sub.unsubscribe());
   }
