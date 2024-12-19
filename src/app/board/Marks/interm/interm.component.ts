@@ -21,7 +21,7 @@ export class IntermComponent implements OnInit {
   public showSelect: 'selectSubject' | 'selectGrade' | 'selectWeight' | null = null;
   public selectedSubject: BehaviorSubject<number> = new BehaviorSubject(0);
   public selectedGrade: number = 0;
-  public allowedGrades: string[] = ['1+', '1', '1-', '2+', '2', '2-', '3+', '3', '3-', '4+', '4', '4-', '5+', '5','+', '-'];
+  public allowedGrades: string[] = ['1+', '1', '1-', '2+', '2', '2-', '3+', '3', '3-', '4+', '4', '4-', '5+', '5'];
   public selectedWeight: number = 0;
 
   public grades: Mark[] = [];
