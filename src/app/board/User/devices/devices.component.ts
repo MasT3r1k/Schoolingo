@@ -41,7 +41,7 @@ export class DevicesComponent {
       this.devices.splice(index, 1);
     }));
 
-    this.subscribers.push(this.schoolingo.socketService.addFunction("connect").subscribe((data: any) => {
+    this.subscribers.push(this.schoolingo.socketService.addFunction("connect").subscribe(() => {
       this.schoolingo.socketService.emit('devices:getDevices');
     }));
   }
