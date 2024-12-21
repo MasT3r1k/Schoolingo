@@ -280,7 +280,6 @@ export class BoardComponent {
     if (this.modules.checkModule(["traineeship"])) {
       this.subscribers.push(this.schoolingo.socketService.addFunction("traineeship:getDiaryDays").subscribe((data: any[]) => {
 
-        console.log(data)
         this.schoolingo.traineeship.refreshDiary();
       }));
     }
