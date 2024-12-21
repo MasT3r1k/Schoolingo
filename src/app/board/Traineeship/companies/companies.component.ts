@@ -134,6 +134,11 @@ export class CompaniesComponent implements OnInit {
       // Show company
       if (param.params['companyId'] != undefined) {
         this.onClick([{id: param.params['companyId']}]);
+      } else {
+        this.showPage = 'list';
+        this.schoolingo.traineeship.selectedDairy = null;
+        this.schoolingo.traineeship.selectedInstructor = null;
+        this.router.navigate([], { queryParams: {}});
       }
     }));
 

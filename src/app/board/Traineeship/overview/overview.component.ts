@@ -1,21 +1,32 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
+import { RouterLink } from '@angular/router';
 import { Schoolingo } from '@Schoolingo';
 import { DiaryWeek } from '@Schoolingo/Traineeship';
 import { Utils } from '@Schoolingo/Utils';
 import moment from 'moment';
+import { writeDairyComponent } from '../writeDairy/writeDairy.component';
 
 @Component({
   standalone: true,
-  imports: [],
+  imports: [RouterLink, writeDairyComponent],
   templateUrl: './overview.component.html',
   styleUrls: ['./overview.component.css', '../../../Styles/card.css', '../../../Styles/input.css']
 })
-export class OverviewComponent {
+export class OverviewComponent implements OnInit {
   Utils = Utils;
 
   constructor(
     public schoolingo: Schoolingo
   ) {}
+
+  ngOnInit(): void {
+    
+  }
+
+  ngOnDestroy(): void {
+    this.schoolingo.traineeship.selectDay(null);
+
+  }
 
   public getNearestDiary(): DiaryWeek {
     let nearestWeek: DiaryWeek;
@@ -33,8 +44,8 @@ export class OverviewComponent {
   }
 
   public getDaysOfDairy(week: DiaryWeek): any {
-    console.log(week);
     let days: moment.Moment[] = [];
+    if (!week) return days;
     let date = week.start.clone();
     while (date.isSameOrBefore(week.end)) {
       if (!week.ignoredDays.includes(date.isoWeekday().toString())) {
