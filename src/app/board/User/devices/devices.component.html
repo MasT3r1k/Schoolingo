@@ -26,7 +26,7 @@
                         <div class="time">{{ schoolingo.locale.getLocale('devices/until') + schoolingo.userService.getExpiration().format('HH:mm:ss DD.MM.YYYY') + ' | IP: ' + schoolingo.ipManager.getMyIP() }}</div>
                     }
                     @if (schoolingo.getOfflineMode()) {
-                        <div class="time">{{ 'Nyní se nacházíte v OFFLINE MODU' }}</div>
+                        <div class="time" [innerHTML]="schoolingo.locale.getLocale('alerts/offlineMode')"></div>
                     }
                 </div>
 
@@ -35,7 +35,7 @@
         <h2 class="small mt">
             {{ schoolingo.locale.getLocale('devices/anotherDevices') }}
             @if (getAnotherDevices().length > 0) {
-                <div class="btn" (click)="removeAllDevices()">Odhlásit ze všech zařízení</div>
+                <div class="btn" (click)="removeAllDevices()">{{ schoolingo.locale.getLocale('devices/logoutAllDevices') }}</div>
 
             }
         </h2>
