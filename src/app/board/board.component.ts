@@ -112,6 +112,7 @@ export class BoardComponent {
     }));
 
     this.subscribers.push(this.schoolingo.socketService.addFunction("main:updateLocale").subscribe((data: SocketUpdateLocale) => {
+      this.schoolingo.locale.saveUserLocale(data.lng as languages);
       this.schoolingo.locale.setUserLocale(data.lng as languages);
     }));
 

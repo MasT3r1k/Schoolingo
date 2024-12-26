@@ -1,8 +1,29 @@
 @defer (when afterLoadedSchool) {
-    @if (school.getIsActiveSchool()) {
+    @if (school.getIsActiveSchool() && this.locale.getLocaleConfig().getValue() !== {}) {
         <router-outlet></router-outlet>
     } @else {
-        <error-main [error]="school.errorReason"></error-main>
+        @if (this.locale.getLocaleConfig().getValue() !== {}) {
+            <error-main [error]="school.errorReason"></error-main>
+        } @else {
+            <div class="loading">
+                <svg width="200" height="300" viewBox="0 0 40 60">
+                    <polygon
+                    class="triangle"
+                    fill="none"
+                    points="16,1 32,32 1,32"
+                    stroke="#fff"
+                    stroke-width="1"
+                    ></polygon>
+                </svg>
+            </div>
+            <div class="alerts bottom">
+                <div class="alert">
+                    <div class="text">
+                        {{ "Načítání jazyku" }}
+                    </div>
+                </div>
+            </div>
+        }
     }
 } @placeholder {
     <div class="loading">

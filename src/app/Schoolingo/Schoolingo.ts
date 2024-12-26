@@ -1,5 +1,5 @@
 import { Injectable } from "@angular/core";
-import { languages, Locale } from "./Locale";
+import { Locale } from "./Locale";
 import { SocketService } from "./Socket";
 import { Theme } from "./Theme";
 import { personDetails, user, UserService } from "./User";
@@ -62,7 +62,7 @@ export class Schoolingo {
         public homeworks: Homeworks,
         public ipManager: IPManager
     ) {
-        this.subscribers.push(this.locale.language.subscribe((value: languages) => {
+        this.subscribers.push(this.locale.language.subscribe(() => {
             this.refreshTitle();
         }));
 

@@ -58,6 +58,11 @@ export class Locale {
         return this.locale;
     }
 
+
+    public saveUserLocale(lng: languages): void {
+        this.storage.save(this.storage.settingsCacheName, {locale: lng});
+    }
+
     /**
      * Select language for system and save to memory and storage
      * @param lng user's new language
@@ -70,7 +75,6 @@ export class Locale {
                 moment.locale(lng);
             }
             this.logger.send(this.logName, 'Language ' + lng + ' was loaded and saved.');
-            this.storage.save(this.storage.settingsCacheName, {locale: lng});
         }, (err: any): void => {
             this.locale.next({});
             this.language.next("null");
