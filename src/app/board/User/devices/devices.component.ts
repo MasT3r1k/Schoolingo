@@ -102,7 +102,7 @@ export class DevicesComponent {
   }
 
 
-  public removeAllDevices(): void {   // TODO! velmi ošklivé :(, NEBEZPEČNÝ: (MOŽNÉ) přiliš mnoho requestů
+  public removeAllDevices(): void {   // TODO! velmi ošklivé :(, potencionálně přiliš mnoho requestů
     this.getAnotherDevices().forEach((device: Device) => {
       this.removeDevice(device.id);
     });
