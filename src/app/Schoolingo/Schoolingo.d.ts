@@ -2,14 +2,14 @@ import moment, { Moment } from "moment";
 import { themes } from "./Theme";
 import { AbsenceType } from "./Absence";
 
-export type Person = {
+export interface Person {
     id: number;
     firstName: string;
     lastName: string;
     gender: number;
 }
 
-export type Room = {
+export interface Room {
     roomId: number;
     label: string;
     type: string;
@@ -19,7 +19,7 @@ export type Settings = Record<string, boolean>;
 
 export type Subject = [number, string, string]; // [id, shortcut, label]
 
-export type TimetableAPI = {
+export interface TimetableAPI {
     day: number;
     hour: number;
     type: number;
@@ -33,7 +33,7 @@ export type TimetableAPI = {
     groupNum: string;
 }
 
-export type TimetableLesson = {
+export interface TimetableLesson {
     type: number;
     teacher: number;
     room: string;
@@ -45,31 +45,30 @@ export type TimetableLesson = {
     empty: boolean = false;
 }
 
-export type TimetableHours = {
+export interface TimetableHours {
     start: string;
     end: string;
 }
 
-export type ClassbookAPI = {
+export interface ClassbookAPI {
     topic: string;
     date: Date;
     dayHour: number;
     absence: number = -1;
 }
 
-export type ClassbookLesson = {
+export interface ClassbookLesson {
     topic: string;
-
 }
 
-export type Absence = {
+export interface Absence {
     type: number;
     subject: number;
     reason: string;
     minutes: number;
 }
 
-export type Mark = {
+export interface Mark {
     mark: string;
     weight: number;
     subject: number;
@@ -80,7 +79,7 @@ export type Mark = {
     created: Moment;
 }
 
-export type Substitution = {
+export interface Substitution {
     substitutionId: number;
     teacherId: number;
     subjectId: number;
@@ -98,7 +97,7 @@ export type studentService = {
     end: moment.Moment;
 }
 
-export type BookInfo = {
+export interface BookInfo {
     name: string;
     subtitle: string;
     year: number;

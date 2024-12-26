@@ -3,9 +3,9 @@ import { Injectable } from "@angular/core";
 @Injectable()
 export class Storage {
 
-    public userCacheName: string = 'user';
-    public tokenCacheName: string = 'token';
-    public settingsCacheName: string = 'settings';
+    public userCacheName = 'user';
+    public tokenCacheName = 'token';
+    public settingsCacheName = 'settings';
 
     constructor() {}
     /**
@@ -17,7 +17,7 @@ export class Storage {
     public save(key: string, value: Record<string, any>): boolean {
         let saved: string = localStorage.getItem(key)!;
         let json: Record<string, string> = JSON.parse(saved);
-        let data: Record<string, string> = json ?? {};
+        let data: Record<string, string> = json || {};
         Object.keys(value).forEach((dataKey: string) => {
             data[dataKey.toString()] = value[dataKey];
         })
@@ -41,7 +41,7 @@ export class Storage {
             try {
                 let json: Record<string, string> = JSON.parse(saved);
 
-                if (json == null) return false;
+                if (!json) return false;
                 if (!value) return json;
                 if (!json[value]) return false; 
                 return json[value];

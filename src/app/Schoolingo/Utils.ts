@@ -8,7 +8,7 @@ export namespace Utils {
  * @param len length of number
  * @returns number 128 to length 5 is set to 00128
  */
-  export function addZeros(num: number, len: number = 2): string {
+  export function addZeros(num: number, len = 2): string {
     if (num.toString().length >= len) {
       return num.toString();
     }
@@ -21,7 +21,7 @@ export function isOdd(num: number): boolean {
   return num % 2 == 0;
 }
 
-export function randomstring(length: number, numbers: boolean = true): string {
+export function randomstring(length: number, numbers = true): string {
 
   let chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
   if (numbers) {
@@ -37,7 +37,7 @@ export function randomstring(length: number, numbers: boolean = true): string {
 }
 
   // Date and Time
-  export function getDayOfWeek(week: number, day: number = 0): moment.Moment {
+  export function getDayOfWeek(week: number, day = 0): moment.Moment {
     return moment().isoWeek(week).startOf('isoWeek').add(day + 1, 'd');
   }
 
@@ -46,11 +46,11 @@ export function randomstring(length: number, numbers: boolean = true): string {
   }
 
   export function formatPhone(phone: string): string {
-    return ((phone || "").match(/.{1,3}/g) || [])?.join(' ');
+    return ((phone || "").match(/.{1,3}/g) || []).join(' ');
   }
 
   export function formatAddress(address: { code2: string, street: string, houseNumber: string, city: string, postcode: string }): string | null {
-    if (address.city == null) return null;
+    if (!address.city) return null;
     return `${(country.getCountryByCode(address.code2)?.flag || "")} ${address.street} ${address.houseNumber}, ${address.city} ${address.postcode}`
   }
 

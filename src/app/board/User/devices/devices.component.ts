@@ -5,7 +5,7 @@ import { Schoolingo } from '@Schoolingo';
 import moment, { Moment } from 'moment';
 import { Subscription } from 'rxjs';
 
-type Device = {
+interface Device {
   active: boolean;
   isSocket: boolean;
   id: number;
@@ -53,11 +53,11 @@ export class DevicesComponent {
   public getOS(userAgent: string): string {
     {
       var OSName = "???";
-      if (userAgent.indexOf("Win") != -1) OSName = "Windows";
-      if (userAgent.indexOf("Mac") != -1) OSName = "Macintosh";
-      if (userAgent.indexOf("Linux") != -1) OSName = "Linux";
-      if (userAgent.indexOf("Android") != -1) OSName = "Android";
-      if (userAgent.indexOf("like Mac") != -1) OSName = "iOS";
+      if (userAgent.includes("Win")) OSName = "Windows";
+      if (userAgent.includes("Mac")) OSName = "Macintosh";
+      if (userAgent.includes("Linux")) OSName = "Linux";
+      if (userAgent.includes("Android")) OSName = "Android";
+      if (userAgent.includes("like Mac")) OSName = "iOS";
       return OSName;
     }
   }
@@ -72,29 +72,29 @@ export class DevicesComponent {
   }
 
   public getBrowser(userAgent: string): string {
-    let browser: string = '???';
-    if ((userAgent.indexOf("Opera") || userAgent.indexOf('OPR')) != -1) {
+    let browser = '???';
+    if (userAgent.includes("Opera") || userAgent.includes('OPR')) {
       browser = "Opera";
-    } else if (userAgent.indexOf("Edg") != -1) {
+    } else if (userAgent.includes("Edg")) {
       browser = "Edge";
-    } else if (userAgent.indexOf("Chrome") != -1) {
+    } else if (userAgent.includes("Chrome")) {
       browser = "Chrome";
-    } else if (userAgent.indexOf("Safari") != -1) {
+    } else if (userAgent.includes("Safari")) {
       browser = "Safari";
-    } else if (userAgent.indexOf("Firefox") != -1) {
+    } else if (userAgent.includes("Firefox")) {
       browser = "Mozilla";
-    } else if ((userAgent.indexOf("MSIE") != -1) || (!!(document as any).documentMode == true)) {
+    } else if ((userAgent.includes("MSIE")) || (!!(document as any).documentMode == true)) {
       browser = 'IE';
     }
     return browser;
   }
 
   public getAnotherDevices(): Device[] {
-    return this.devices.filter((device: Device) => device.active == false);
+    return this.devices.filter((device: Device) => !device.active);
   }
 
   public getActiveDevice(): Device {
-    return this.devices.filter((device: Device) => device.active == true)?.[0];
+    return this.devices.filter((device: Device) => device.active)[0]!;
   }
 
   public removeDevice(id: number): void {

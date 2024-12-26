@@ -24,7 +24,7 @@ type Message = {
   type: 'system'
 })
 
-type Thread = {
+interface Thread {
   threadId: number;
   author: number;
   type: ThreadTypes;
@@ -44,8 +44,8 @@ type Thread = {
 export class ReceivedComponent implements OnInit {
   public types: string[] = ["hsl(206deg, 90%, 50%)", "hsl(94, 54%, 38%)", "hsl(25, 100%, 47%)"];
 
-  public selectedTab: BehaviorSubject<number> = new BehaviorSubject(2);
-  public selectedThread: number = -1;
+  public selectedTab = new BehaviorSubject(2);
+  public selectedThread = -1;
   constructor(public schoolingo: Schoolingo) {}
 
   ThreadTypes = ThreadTypes;

@@ -60,7 +60,7 @@ export class AppComponent implements OnInit {
 
     this.ipManager.getIP('');
 
-    this.http.get<SchoolInfo>(Config.API_URL + 'v1/getSchoolInfo', { withCredentials: true }).subscribe((data: (SchoolInfo & { modules?: number })): void => {
+    this.http.get<SchoolInfo & { modules?: number }>(Config.API_URL + 'v1/getSchoolInfo', { withCredentials: true }).subscribe((data: (SchoolInfo & { modules?: number })): void => {
       this.school.setSchoolInfo(data, data.modules ?? 0);
       this.http.get<{ user: string } & errorAPI>(Config.API_URL + 'v1/getUser', { withCredentials: true }).subscribe((data: { user: string } & errorAPI) => {
         this.afterLoadedSchool = true;

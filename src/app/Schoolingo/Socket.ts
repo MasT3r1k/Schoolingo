@@ -8,19 +8,18 @@ export { SocketUpdateLocale, SocketUpdateTheme }
 
 @NgModule()
 export class SocketService {
-  constructor(
-  ) {}
+  constructor() {}
 
   public tokenDuplicate: BehaviorSubject<string | null> = new BehaviorSubject<string | null>(null);
   public tokenStatus: BehaviorSubject<string | null> = new BehaviorSubject<string | null>(null);
-  public isConnected: boolean = false;
+  public isConnected = false;
   public socket: Socket | null = null;
 
   /**
   * Get Socket client, Socket status and Socket err msg
   * @returns socket information
   */
-  public getSocket(): Socket | null {
+  public getSocket(): typeof this.socket {
     return this.socket;
   }
 
@@ -50,10 +49,10 @@ export class SocketService {
   }
 
 
-  public socketEvents: Map<string, Function[]> = new Map<string, Function[]>();
+  public socketEvents = new Map<string, Function[]>();
   public addFunction(event: string): Observable<any> {
     return new Observable<any>(observer => {
-      const listener: Function = (data: any) => observer.next(data);
+      const listener = (data: any) => observer.next(data);
       this.socket?.on(event, listener as any);
       if (!this.socketEvents.has(event)) {
         this.socketEvents.set(event, []);

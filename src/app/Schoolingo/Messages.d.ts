@@ -8,13 +8,13 @@ export enum messageTypes {
     SYSTEM
 }
 
-export type MessageType = {
+export interface MessageType {
     label: string;
     icon?: string;
     color?: string;
     perms: UserPermissions[];
 };
   
-export type MessageTag = {
+export interface MessageTag {
     label: string;
 }

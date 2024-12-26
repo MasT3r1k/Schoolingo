@@ -24,18 +24,18 @@ export class studentsComponent implements OnInit {
     public perms: Permission
   ){}
 
-  public selectedTab: BehaviorSubject<number> = new BehaviorSubject(0);
-  public student_selectedTab: BehaviorSubject<number> = new BehaviorSubject(0);
-  public selectedStudent: number = -1;
+  public selectedTab = new BehaviorSubject(0);
+  public student_selectedTab = new BehaviorSubject(0);
+  public selectedStudent = -1;
   public loadedStudent: studentInfoAPI | 'error' | null = null;
-  public selectedRow: number = -1;
-  public maximazedWindow: boolean = false;
-  public hasAccess: boolean = true;
-  public students: BehaviorSubject<Data[][] | any> = new BehaviorSubject([]);
-  public studentCount: number = 0;
+  public selectedRow = -1;
+  public maximazedWindow = false;
+  public hasAccess = true;
+  public students = new BehaviorSubject([] as Data[][]);
+  public studentCount = 0;
   public metadata: Metadata = { rows: 0 };
   public datalist!: DatalistComponent;
-  public search: FormControl<string> = new FormControl();
+  public search = new FormControl();
 
   receivedDatalist(value: DatalistComponent): void {
     this.datalist = value;
