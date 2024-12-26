@@ -29,16 +29,63 @@
         </div>
         <div class="card-body card-row main">
             <schoolingo-datalist [ngClass]="{ small: selectedRow != -1 }" [head]="['firstName', 'lastName', 'class', 'birthday', 'address']" [options]="{ url: 'main:getStudents', ignore: [selectedTab.getValue() === 0 ? 'archive' : 'active'], hideColumns: (selectedStudent == -1 && selectedRow == -1) ? [] : [3, 4], hideInfo: true }" [data]="students" [selectedRow]="selectedRow" [metadata]="metadata" (datalist)="receivedDatalist($event)" [search]="search" [clickFc]="onClick"></schoolingo-datalist>
-            <div [ngClass]="{'student-board': true, hidden: selectedRow == -1}">
-                <div class="student-board-header">
-                    <div class="left">
-                        <div class="student-photo">
-                            <img [src]="'https://www.fakepersongenerator.com/Face/male/male20161086546113160.jpg'" draggable="false" alt="">
+            <div [ngClass]="{'student-board': true, hidden: selectedRow == -1, maximaze: maximazedWindow}">
+                @switch (loadedStudent) {
+                    @case(null) {
+                        <div class="loading" style="width: 100%;height: 100%;background-color: transparent;">
+                            <svg width="200" height="300" viewBox="0 0 40 60">
+                                <polygon
+                                class="triangle"
+                                fill="none"
+                                points="16,1 32,32 1,32"
+                                stroke="#fff"
+                                stroke-width="1"
+                                ></polygon>
+                            </svg>
                         </div>
-                    </div>
-                    <div class="right">
-                    </div>
-                </div>
+                    }
+                    @case("error") {
+                        <div class="alerts">
+                            <div class="alert red" style="margin: 0;">Nemáte přístup k informacím tohoto studenta!</div>
+                        </div>
+                    }
+                    @default {
+                        @if (selectedTab.getValue()) {
+                            <div class="alerts">
+                                <div class="alert blue-info">Tento student se již nachází v archivu, proto nelze upravovat jakýkoliv údaje o studentovi.</div>
+                            </div>
+                        }
+                        <div class="student-board-header">
+                            <div class="left center">
+                                <div class="student-photo skeleton">
+                                    <!-- <img [src]="'https://www.fakepersongenerator.com/Face/male/male20161086546113160.jpg'" draggable="false" alt=""> -->
+                                </div>
+                            </div>
+                            <div class="right">
+                                <div class="items">
+                                    <div class="item">
+                                        <div class="title value">{{ schoolingo.formatPerson(loadedStudent.studentInfo.personId) }}</div>
+                                    </div>
+                                    <div class="item">
+                                        <div class="title">{{ schoolingo.locale.getLocale('class') }}</div>
+                                        <div class="value">{{ 'B3.I' }}</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="buttons">
+                                <div [ngClass]="['btn', 'submit', 'small', selectedTab.getValue() || !false ? 'gray' : '']" role="button">Upravit</div>
+                                <div [ngClass]="{'item-btn': true, active: maximazedWindow}" (click)="toggleMaximize()">
+                                    <div class="icon">
+                                        <i [ngClass]="['ti', 'ti-window-' + (maximazedWindow ? 'minimize' : 'maximize')]"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <schoolingo-tabs [options]="['students/tabs/detailStudent/personalDetails', 'students/tabs/detailStudent/residence', 'students/tabs/detailStudent/relatives']" [option_width]="'fit'" [value]="student_selectedTab"></schoolingo-tabs>
+                        <div class="title-text">Informace o žákovi</div>
+
+                    }
+                }
             </div>
         </div>
     } @else {

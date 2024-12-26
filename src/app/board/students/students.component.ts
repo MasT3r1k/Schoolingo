@@ -1,19 +1,20 @@
 import { NgClass, NgStyle } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { Data, dataAPI, DatalistComponent, Metadata } from '@Components/Datalist/Datalist';
+import { Data, dataAPI, DatalistComponent, errorAPI, Metadata } from '@Components/Datalist/Datalist';
 import { TabsComponent } from '@Components/Tabs/Tabs';
 import { Schoolingo } from '@Schoolingo';
 import { Permission } from '@Schoolingo/Permissions';
 import { Utils } from '@Schoolingo/Utils';
 import moment from 'moment';
 import { BehaviorSubject, debounceTime, Subscription } from 'rxjs';
+import { studentInfoAPI } from './students';
 
 @Component({
   standalone: true,
   imports: [DatalistComponent, TabsComponent, FormsModule, ReactiveFormsModule, NgStyle, NgClass],
   templateUrl: './students.component.html',
-  styleUrls: ['./students.component.css', '../../Styles/card.css', '../../Styles/input.css']
+  styleUrls: ['./students.component.css', '../../Styles/card.css', '../../Styles/input.css', '../../Styles/item.css', '../../Styles/app.css']
 })
 export class studentsComponent implements OnInit {
   private listeners: Subscription[] = [];
@@ -24,8 +25,11 @@ export class studentsComponent implements OnInit {
   ){}
 
   public selectedTab: BehaviorSubject<number> = new BehaviorSubject(0);
+  public student_selectedTab: BehaviorSubject<number> = new BehaviorSubject(0);
   public selectedStudent: number = -1;
+  public loadedStudent: studentInfoAPI | 'error' | null = null;
   public selectedRow: number = -1;
+  public maximazedWindow: boolean = false;
   public hasAccess: boolean = true;
   public students: BehaviorSubject<Data[][] | any> = new BehaviorSubject([]);
   public studentCount: number = 0;
@@ -50,9 +54,9 @@ export class studentsComponent implements OnInit {
       return;
     }
 
-
     this.selectedRow = index;
     this.selectedStudent = id[0].id;
+    this.schoolingo.socketService.emit('main:getStudentInfo', { studentId: id[0].id });
   }
 
   ngOnInit(): void {
@@ -79,6 +83,15 @@ export class studentsComponent implements OnInit {
         if (this.selectedTab.getValue() === 0) this.studentCount = data.rows;
         this.students.next(studentList);
       }
+    }));
+
+    this.listeners.push(this.schoolingo.socketService.addFunction("main:getStudentInfo").subscribe((data: studentInfoAPI | errorAPI) => {
+      if ('error' in data) {
+        this.loadedStudent = 'error';
+        return;
+      }
+      this.loadedStudent = data;
+      setTimeout(() => this.student_selectedTab.next(0), 150)
     }));
 
     this.search.valueChanges.pipe(debounceTime(300)).subscribe(() => this.reset())
