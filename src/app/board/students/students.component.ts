@@ -61,13 +61,12 @@ export class studentsComponent implements OnInit {
 
   ngOnInit(): void {
 
-    this.listeners.push(this.schoolingo.socketService.addFunction("main:getStudents").subscribe((data: dataAPI | any) => {
-      console.log(data)
-      if (data.error != undefined) {
+    this.listeners.push(this.schoolingo.socketService.addFunction("main:getStudents").subscribe((data: dataAPI | errorAPI) => {
+      if ('error' in data) {
         this.hasAccess = false;
         return;
       }
-      if (data.data) {
+      if ('data' in data) {
         this.hasAccess = true;
         let studentList: Data[][] = []
         data.data.forEach((student: any) => {
