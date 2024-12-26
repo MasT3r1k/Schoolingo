@@ -14,4 +14,7 @@ export type Profile = {
     birthplace: number;
     address: number;
     GDPR: number;
+    insuranceId: number;
+    insuranceCode: string;
+    insuranceName: string;
 };
