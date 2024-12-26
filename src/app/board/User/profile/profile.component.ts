@@ -23,7 +23,7 @@ export class ProfileComponent implements OnInit {
   public profile!: Profile;
 
   constructor(
-    public schoolingo: Schoolingo
+    public schoolingo: Schoolingo,
   ) {}
 
   ngOnInit(): void {
@@ -32,13 +32,12 @@ export class ProfileComponent implements OnInit {
       this.schoolingo.socketService.emit("settings:profile");
     }));
     this.listeners.push(this.schoolingo.socketService.addFunction("settings:profile").subscribe((data: any) => {
-      console.log(data[0])
+      if (data.length == 0) return;
       data[0].birthday = moment(data[0].birthday);
       if (data[0].passwordChanged != null) {
         data[0].passwordChanged = moment(data[0].passwordChanged);
       }
       this.profile = data[0];
-      console.log(data);
     }));
   }
 
