@@ -1,14 +1,18 @@
 import { NgModule } from "@angular/core";
 import { io, Socket } from "socket.io-client";
-import { Observable } from "rxjs";
+import { BehaviorSubject, Observable } from "rxjs";
 import { Config } from "@Schoolingo/Config";
 import { SocketUpdateLocale, SocketUpdateTheme } from "./Socket.d";
+import { errorAPI } from "@Components/Datalist/Datalist";
 export { SocketUpdateLocale, SocketUpdateTheme }
 
 @NgModule()
 export class SocketService {
-  constructor() {}
+  constructor(
+  ) {}
 
+  public tokenDuplicate: BehaviorSubject<string | null> = new BehaviorSubject<string | null>(null);
+  public tokenStatus: BehaviorSubject<string | null> = new BehaviorSubject<string | null>(null);
   public isConnected: boolean = false;
   public socket: Socket | null = null;
 
@@ -24,9 +28,25 @@ export class SocketService {
     this.socket = io(Config.socketIP, {
       withCredentials: true
     });
+
+    this.socket.on('system:error', (data: errorAPI | { username:string;error:string; }) => {
+      console.log(data.error);
+      if ('error' in data) {
+        switch(data.error) {
+          default:
+            this.tokenStatus.next(data.error);
+            break;
+        }
+      }
+    });
     this.socket.onAny((event, ...args) => {
-        console.log('Event ' + event + ' got ' + args);
+      this.tokenStatus.next('refresh_token');
+      console.log('Event ' + event + ' got ' + args);
     })
+
+    this.socket.offAny((event, ...args) => {
+      console.log('Event ' + event + ' off ' + args);
+  })
   }
 
 

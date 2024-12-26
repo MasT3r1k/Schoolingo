@@ -1,6 +1,7 @@
 import { NgClass, NgStyle } from '@angular/common';
 import { Component } from '@angular/core';
 import { NavigationEnd, Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
+import { errorAPI } from '@Components/Datalist/Datalist';
 import { Dropdown } from '@Components/Dropdowns/Dropdown';
 import { ModalComponent } from '@Components/Modal/Modal';
 import { BookInfo, Substitution } from '@Schoolingo';
@@ -68,6 +69,15 @@ export class BoardComponent {
       }
     }));
 
+    this.subscribers.push(this.schoolingo.socketService.tokenStatus.subscribe((data: string | null) => {
+      if (data == null) return;
+      switch (data) {
+        case "invalid_token":
+          this.schoolingo.loginExpired();
+          break;
+      }
+    }));
+
     this.schoolingo.socketService.connect();
     this.subscribers.push(this.schoolingo.socketService.addFunction("connect").subscribe(() => {
       this.schoolingo.socketService.emit('tokens:getUser', { userId: 'myself' });
@@ -126,22 +136,14 @@ export class BoardComponent {
       this.schoolingo.theme.updateTheme(this.schoolingo.theme.getThemes()[data.theme]);
     }));
 
-    this.subscribers.push(this.schoolingo.socketService.addFunction("system:error").subscribe((data: { status: string, error: number }) => {
-      console.log(data)
-      switch (data.status) {
-        case "error":
+    this.subscribers.push(this.schoolingo.socketService.addFunction("system:error").subscribe((data: errorAPI) => {
+      if ('error' in data) {
           switch(data.error) {
-            case 101:
+            case "no_access_to_system":
               console.log("System database is not working.")
               break;
-            case 102:
-              this.schoolingo.userService.logout();
-              console.log("Invalid token");
-              break;
           }
-          break;
       } 
-      console.log('ERROR: ' + data.error);
     }));
 
     this.subscribers.push(this.schoolingo.socketService.addFunction("timetable:getLessons").subscribe((data: TimetableAPI[]) => {

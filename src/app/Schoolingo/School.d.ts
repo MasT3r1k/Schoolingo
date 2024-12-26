@@ -7,6 +7,7 @@ export type SchoolInfo = {
     warningAbsence: number;
     breaks: Record<number, number> = {};
     studentsLimit: number;
+    loginExpires: number;
 } & {
     error: number;
 }

@@ -13,6 +13,10 @@ import { Schoolingo } from '@Schoolingo';
 import { Storage } from '@Schoolingo/Storage';
 import { Subscription } from 'rxjs';
 import { Moment } from 'moment';
+import { HttpClient } from '@angular/common/http';
+import { Config } from '@Schoolingo/Config';
+import { errorAPI } from '@Components/Datalist/Datalist';
+import moment from 'moment';
 
 export type pageTypes = 'login' | 'forgotpass';
 type QRPages = 'loading' | 'error' | 'scan' | 'trylogin';
@@ -53,7 +57,8 @@ export class AuthComponent {
     private logger: Logger,
     private title: Title,
     private storage: Storage,
-    public schoolingo: Schoolingo
+    public schoolingo: Schoolingo,
+    private http: HttpClient
   ) {
     this.form = formList.getForm(this.formName) as FormManager;
   }
@@ -63,7 +68,7 @@ export class AuthComponent {
   public formName = 'Login_Form';
   public inputs: FormInput[] = [];
   public buttons: FormButton[] = [];
-  public form?: FormManager = undefined;
+  public form: FormManager;
 
 
   public selectLanguage(lng: languages): void {
@@ -125,7 +130,7 @@ export class AuthComponent {
     
     }
 
-    this.form = this.formList.getForm(this.formName);
+    this.form = this.formList.getForm(this.formName)!;
     if (this.form) {
       this.form.updateInputs(this.inputs);
       this.form.updateButtons(this.buttons);
@@ -134,63 +139,31 @@ export class AuthComponent {
   }
 
   ngOnInit(): void {
-    this.schoolingo.socketService.connect();
     this.schoolingo.resetToDefault();
+    this.schoolingo.socketService.connect();
 
-    this.form = this.formList.getForm(this.formName) as FormManager;
+    this.form = this.formList.getForm(this.formName)!;
 
     this.switch('login');
     this.Listeners.push(this.route.queryParamMap.subscribe((param: Params) => {
-      // Check if show forgot password form //* /login?forgotpass
       if (param.params['forgotpass'] != undefined) {
         this.switch('forgotpass');
       }
     }));
 
     this.title.setTitle(
-      this.schoolingo.locale.getLocale('login_title') + ' | SCHOOLINGO'
+      this.schoolingo.locale.getLocale('login_title') + ' | ' + this.App.APP_NAME
     );
     this.schoolingo.sidebar.sidebarToggled = false;
 
     this.Listeners.push(this.schoolingo.socketService.addFunction("connect").subscribe(() => {
       this.refreshQRcode()
-    }))
+    }));
 
-    this.Listeners.push(this.schoolingo.socketService.addFunction('login').subscribe(
-      (data: LoginData) => {
-        if (this.form) {
-          this.form.executing = false;
-        }
-        if (data.status == 1 && data.token && data.expires) {
-          this.logger.send('Login', 'Successful logged in.');
-          this.storage.removeAll();
-          this.userService.setToken(data.token, data.expires);
-          this.schoolingo.socketService.disconnect();
-          let nextURL = 'main';
-          this.route.queryParams.forEach((param: Params) => {
-            if (param.returnUrl) {
-              nextURL = param.returnUrl.slice(1);
-            }
-          });
-          this.router.navigate(['', nextURL]);
-        } else {
-          if (!data.message) return;
-          if (this.form) {
-            switch (data.message) {
-              case 'user_not_found':
-                this.form.addError('username', data.message);
-                break;
-              case 'wrong_password':
-                this.form.addError('password', data.message);
-                break;
-              default:
-                this.logger.send('Login', 'Error: ' + data.message);
-                break;
-            }
-          }
-        }
-      }
-    ));
+    this.Listeners.push(this.schoolingo.socketService.addFunction("disconnect").subscribe(() => {
+      this.qrCode = '';
+      this.qrCodeResult = null;
+    }))
   }
 
   ngOnDestroy(): void {
@@ -223,10 +196,40 @@ export class AuthComponent {
     }
     this.form.executing = true;
     this.logger.send('Login', 'Trying to login.');
-    this.schoolingo.socketService.emit('login', {
+    this.http.post<{ username: string;expires: string } | errorAPI>(Config.API_URL + 'login', {
       username: this.form.formData.value.username,
-      password: this.form.formData.value.password,
-    });
+      password: this.form.formData.value.password
+    }, { withCredentials: true }).subscribe((data: { username: string;expires: string } | errorAPI): any => {
+      if ('username' in data) {
+        this.logger.send('Login', 'Successful logged in.');
+        this.storage.removeAll();
+        this.userService.setToken(data.username, moment(data.expires));
+        this.schoolingo.socketService.disconnect();
+        let nextURL = 'main';
+        this.route.queryParams.forEach((param: Params) => {
+          if (param.returnUrl) {
+            nextURL = param.returnUrl.slice(1);
+          }
+        });
+        this.router.navigate(['', nextURL]);
+      }
+
+      if ('error' in data) {
+        if (this.form) {
+          switch (data.error) {
+            case 'user_not_found':
+              this.form.addError('username', data.error);
+              break;
+            case 'wrong_password':
+              this.form.addError('password', data.error);
+              break;
+            default:
+              this.logger.send('Login', 'Error: ' + data.error);
+              break;
+          }
+        }
+      }
+    })
   }
 
   public canLogin(): boolean {

@@ -35,6 +35,7 @@ export class Schoolingo {
         this.subjects = {};
         this.substitution = {};
         this.isOfflineMode = false;
+        this.isLoginExpired = false;
         this.marks = [];
         this.absence = {};
         this.absenceSubjects = {};
@@ -71,6 +72,24 @@ export class Schoolingo {
 
             this.socketService.emit('timetable:getClassbook', { week, userId: this.getStudentId() });
         }));
+
+        this.subscribers.push(this.userService.tokenExpiration.subscribe((date: moment.Moment) => {
+            if (this.isLoginExpired) return;
+            clearTimeout(this.logoutInterval)
+            this.logoutInterval = setTimeout(() => {
+                this.loginExpired();
+            }, this.school.schoolInfo.loginExpires);
+        }));
+    }
+
+    // Login expired
+    public isLoginExpired: boolean = false;
+    public logoutInterval = setTimeout(() => {
+        this.loginExpired();
+    }, this.school.schoolInfo.loginExpires);
+
+    public loginExpired(): void {
+        this.isLoginExpired = true;
     }
 
     // Offline mode
