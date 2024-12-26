@@ -16,7 +16,7 @@ export class SystemComponent {
   App = App;
 
   public libraryList: string[] = [
-    "Angular",
+    "Angular 17",
     "Tabler.io (Ikony)",
     "Moment (Správa času a datumů)",
     "Socket.io (Komunikace mezi klientem a serverem)",
