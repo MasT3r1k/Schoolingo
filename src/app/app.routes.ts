@@ -47,6 +47,8 @@ import { NewDepositComponent as PaymentNewDeposit } from './board/payments/new-d
 import { AccountsComponent as PaymentAccounts } from './board/payments/accounts/accounts.component';
 import { SettingsComponent as PaymentSettings } from './board/payments/settings/settings.component';
 import { SystemComponent } from './board/system/system.component';
+import { SettingsComponent as ToolsSettings } from './board/Tools/settings/settings.component';
+import { ManageUsersComponent as ToolsManageUsers } from './board/Tools/manage-users/manage-users.component';
 import { DocumentsComponent } from './board/documents/documents.component';
 import { CalendarComponent } from './board/calendar/calendar.component';
 import { EducationMeasuresComponent as MarksEducationMeasures } from './board/Marks/education-measures/education-measures.component';
@@ -243,6 +245,19 @@ export const routes: Routes = [
         {
           path: 'system',
           component: SystemComponent
+        },
+        {
+          path: 'tools',
+          children: [
+            {
+              path: 'settings',
+              component: ToolsSettings
+            },
+            {
+              path: 'manageusers',
+              component: ToolsManageUsers
+            }
+          ]
         },
         {
           path: '**', component: Error404Component

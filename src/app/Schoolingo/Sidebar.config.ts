@@ -17,6 +17,11 @@ let config: SidebarGroup[] = [
                 permission: ['teacher']
             },
             {
+                item: "sidebar/teachers/list",
+                url: 'teachers',
+                permission: ['student', 'teacher', 'parent']
+            },
+            {
                 item: 'sidebar/manageclass',
                 url: 'manageclass',
                 permission: ['teacher']
@@ -244,6 +249,21 @@ let config: SidebarGroup[] = [
             {
                 item: 'sidebar/system',
                 url: 'system'
+            },
+            {
+                item: 'sidebar/tools/main',
+                children: [
+                    {
+                        item: 'sidebar/tools/settings',
+                        url: "tools/settings",
+                        permission: ['manager:system:admin']
+                    },
+                    {
+                        item: 'sidebar/tools/manageUsers',
+                        url: "tools/manageusers",
+                        permission: ['manager:system:admin']
+                    }
+                ]
             }
         ]
     }
