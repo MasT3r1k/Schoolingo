@@ -1,5 +1,6 @@
 export type SchoolInfo = {
     name: string;
+    district: string;
     startHour: [number, number];
     lessonHour: number;
     breakTime: number;
