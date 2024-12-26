@@ -6,8 +6,13 @@
                 <h2>{{ schoolingo.locale.getLocale('sidebar/students') }}</h2>
     
                 @if (schoolingo.school.schoolInfo.studentsLimit !== -1) {
-                    <p class="description" [ngStyle]="{display: 'flex', color: studentCount === schoolingo.school.schoolInfo.studentsLimit ? 'red' : ''}" [innerHTML]="schoolingo.locale.getLocale('students/studentsLimit').replaceAll('%studentCount%', studentCount.toString())"></p>                    
+                    <p class="description" [ngStyle]="{display: 'flex', color: studentCount === schoolingo.school.schoolInfo.studentsLimit ? 'red' : ''}" [innerHTML]="schoolingo.locale.getLocale('students/studentsLimit').replaceAll('%studentCount%', studentCount.toString())"></p>
                 } @else {
+                    <p class="description">
+                        {{ schoolingo.locale.getLocale('students/studentsCount')
+                            .replaceAll('%studentCount%', studentCount.toString())
+                        }}
+                    </p>
                     <div class="badge blue-info">
                         <i class="infinity-icon ti ti-infinity"></i>
                         {{ schoolingo.locale.getLocale('students/infiniteLimit') }}
