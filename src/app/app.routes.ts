@@ -23,6 +23,7 @@ import { IntermComponent as MarksInterm } from './board/Marks/interm/interm.comp
 import { MidtermComponent as MarksMidterm } from './board/Marks/midterm/midterm.component';
 import { IntermRecordComponent as MarksIntermRecord } from './board/Marks/interm-record/interm-record.component';
 import { studentsComponent as Students } from './board/students/students.component';
+import { TeachersComponent as Teachers } from './board/teachers/teachers.component';
 import { DiscordConnectComponent } from './board/discord-connect/discord-connect.component';
 import { LoansComponent as LibraryLoans } from './board/library/loans/loans.component';
 import { BooksComponent as LibraryBooks } from './board/library/books/books.component';
@@ -46,6 +47,7 @@ import { NewDepositComponent as PaymentNewDeposit } from './board/payments/new-d
 import { AccountsComponent as PaymentAccounts } from './board/payments/accounts/accounts.component';
 import { SettingsComponent as PaymentSettings } from './board/payments/settings/settings.component';
 import { SystemComponent } from './board/system/system.component';
+import { EducationMeasuresComponent as MarksEducationMeasures } from './board/Marks/education-measures/education-measures.component';
 
 export const routes: Routes = [
     {
@@ -63,6 +65,9 @@ export const routes: Routes = [
           path: 'students', component: Students
         },
         {
+          path: 'teachers', component: Teachers
+        },
+        {
           path: 'discordconnect', component: DiscordConnectComponent
         },
         {
@@ -76,6 +81,9 @@ export const routes: Routes = [
             },
             {
               path: 'intermrecord', component: MarksIntermRecord
+            },
+            {
+              path: 'educationmeasures', component: MarksEducationMeasures
             }
           ]
         },
