@@ -13,10 +13,10 @@ import { AbsenceConfig, absence } from "./Absence";
 import { removeDiacritics } from "./SearchFilter";
 import { degree } from "./User";
 import { MessageManager } from "./Messages";
-import { Data } from "@Components/Datalist/Datalist";
 import { Traineeship } from "./Traineeship";
 import { Homeworks } from "./Homeworks";
 import { IPManager } from "./IPManager";
+import { AlertManagerClass } from "./Alert";
 export { TimetableAPI, ClassbookAPI, ClassbookLesson, TimetableLesson, Mark, Absence, Substitution, studentService, BookInfo }
 
 @Injectable()
@@ -52,6 +52,7 @@ export class Schoolingo {
     public absence: Record<string, Absence[]> = {};
 
     constructor(
+        public alertManager: AlertManagerClass,
         public locale: Locale,
         public socketService: SocketService,
         public theme: Theme,

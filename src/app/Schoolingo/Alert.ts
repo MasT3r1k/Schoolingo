@@ -23,13 +23,15 @@ export class AlertManagerClass {
 export class Alert {
     private parent = '';
     public text = '';
-    public settings: AlertSettings | object = {};
+    public settings: AlertSettings = {
+        closeable: false
+    };
     
     public getId(): string {
         return this.parent;
     }
 
-    constructor(parent: string, text: string, settings: AlertSettings | object = {}) {
+    constructor(parent: string, text: string, settings: AlertSettings = { closeable: false}) {
         this.parent = parent;
         this.text = text;
         this.settings = settings;
