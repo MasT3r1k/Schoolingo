@@ -49,6 +49,10 @@ let config: SidebarGroup[] = [
                     item: 'sidebar/marks/midtermRecordClass',
                     url: 'marks/midtermRecordClass',
                     permission: ['teacher'],
+                }, {
+                    item: 'sidebar/marks/educationMeasures',
+                    url: 'marks/educationmeasures',
+                    permission: ['teacher', 'student', 'parent']
                 }]
             },
             {
