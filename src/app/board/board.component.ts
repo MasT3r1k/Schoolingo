@@ -16,6 +16,8 @@ import { DiaryWeek } from '@Schoolingo/Traineeship';
 import { personDetails, user } from '@Schoolingo/User';
 import moment from 'moment';
 import { Subscription } from 'rxjs';
+import { Schoolingo as App } from '@Schoolingo/App';
+import { Permission } from '@Schoolingo/Permissions';
 
 interface AbsenceAPI {
   type: number;
@@ -36,9 +38,12 @@ interface AbsenceSubjectAPI {
   standalone: true,
   imports: [NgClass, NgStyle, RouterLink, RouterLinkActive, RouterOutlet, Dropdown, ModalComponent],
   templateUrl: './board.component.html',
-  styleUrls: ['./board.component.css', '../Styles/item.css']
+  styleUrls: ['./board.component.css', '../Styles/item.css', '../Styles/app.css']
 })
 export class BoardComponent {
+
+  App = App;
+
   public alertManager: AlertManagerClass = alertManager;
   private subscribers: Subscription[] = [];
   constructor(
@@ -46,7 +51,8 @@ export class BoardComponent {
     public schoolingo: Schoolingo,
     private routerImport: Router,
     public dropdown: Dropdown,
-    public modules: Modules
+    public modules: Modules,
+    public perms: Permission
   ) {
     this.router = this.routerImport;
   }
