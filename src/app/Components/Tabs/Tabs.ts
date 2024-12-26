@@ -20,9 +20,6 @@ export class TabsComponent implements OnInit {
         private factory: RendererFactory2
         ) {
             this.renderer = this.factory.createRenderer(window, null);
-            this.renderer.listen(window, 'resize', () => {
-                this.refreshGlider();
-            });
         }
 
     name: string = Utils.randomstring(16, false);
@@ -48,6 +45,12 @@ export class TabsComponent implements OnInit {
 
 
     ngOnInit(): void {
+
+        this.renderer.listen(window, 'resize', () => {
+            setTimeout(() => {
+                this.refreshGlider()
+            })
+        });
 
         setTimeout(() => {
             this.refreshGlider()
