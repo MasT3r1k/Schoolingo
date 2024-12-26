@@ -102,6 +102,11 @@ export class studentsComponent implements OnInit {
     });
   }
 
+  public toggleMaximize(): void {
+    this.maximazedWindow = !this.maximazedWindow;
+    setTimeout(() => this.student_selectedTab.next(this.student_selectedTab.getValue()))
+  }
+
   ngOnDestroy(): void {
     this.listeners.forEach((sub: Subscription) => sub.unsubscribe());
   }
