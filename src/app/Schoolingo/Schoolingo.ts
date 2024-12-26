@@ -16,6 +16,7 @@ import { MessageManager } from "./Messages";
 import { Data } from "@Components/Datalist/Datalist";
 import { Traineeship } from "./Traineeship";
 import { Homeworks } from "./Homeworks";
+import { IPManager } from "./IPManager";
 export { TimetableAPI, ClassbookAPI, ClassbookLesson, TimetableLesson, Mark, Absence, Substitution, studentService, BookInfo }
 
 @Injectable()
@@ -58,7 +59,8 @@ export class Schoolingo {
         public school: School,
         public messages: MessageManager,
         public traineeship: Traineeship,
-        public homeworks: Homeworks
+        public homeworks: Homeworks,
+        public ipManager: IPManager
     ) {
         this.subscribers.push(this.locale.language.subscribe((value: languages) => {
             this.refreshTitle();

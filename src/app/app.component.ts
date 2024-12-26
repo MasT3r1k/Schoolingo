@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterOutlet } from '@angular/router';
+import { Router, RouterOutlet } from '@angular/router';
 import { HttpClient, HttpClientModule, HttpErrorResponse } from '@angular/common/http';
 import { School, SchoolInfo } from '@Schoolingo/School';
 import { Locale } from '@Schoolingo/Locale';
@@ -10,6 +10,10 @@ import { ErrorMain } from './Errors';
 import { SchoolYear } from '@Schoolingo/School';
 import { Config } from '@Schoolingo/Config';
 import { polyfillCountryFlagEmojis } from "country-flag-emoji-polyfill";
+import { IPManager } from '@Schoolingo/IPManager';
+import { errorAPI } from '@Components/Datalist/Datalist';
+import { UserService } from '@Schoolingo/User';
+import moment from 'moment';
 
 
 @Component({
@@ -26,7 +30,10 @@ export class AppComponent implements OnInit {
     private http: HttpClient,
     public school: School,
     public locale: Locale,
-    public theme: Theme
+    public theme: Theme,
+    public ipManager: IPManager,
+    private userService: UserService,
+    private router: Router
     ) {}
 
   public afterLoadedSchool = false;
@@ -51,10 +58,23 @@ export class AppComponent implements OnInit {
   ngOnInit(): void {
     polyfillCountryFlagEmojis();
 
+    this.ipManager.getIP('');
 
     this.http.get<SchoolInfo>(Config.API_URL + 'v1/getSchoolInfo', { withCredentials: true }).subscribe((data: (SchoolInfo & { modules?: number })): void => {
       this.school.setSchoolInfo(data, data.modules ?? 0);
-      this.afterLoadedSchool = true;
+      this.http.get<{ user: string } & errorAPI>(Config.API_URL + 'v1/getUser', { withCredentials: true }).subscribe((data: { user: string } & errorAPI) => {
+        this.afterLoadedSchool = true;
+        if ('user' in data) {
+          this.userService.username = data.user;
+          this.userService.setExpiration(moment().add(this.school.schoolInfo.loginExpires, 'ms'));
+          if (this.router.url.startsWith('/login')) {
+            this.router.navigate(['', 'main']);          
+          }
+        }
+        if ('error' in data) {
+          this.userService.username = null;
+        }
+      });
     }, this.httpError);
 
     
