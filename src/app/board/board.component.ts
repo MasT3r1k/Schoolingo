@@ -279,10 +279,7 @@ export class BoardComponent {
     }
 
     if (this.modules.checkModule(["traineeship"])) {
-      this.subscribers.push(this.schoolingo.socketService.addFunction("traineeship:getDiaryDays").subscribe((data: any[]) => {
-
-        this.schoolingo.traineeship.refreshDiary();
-      }));
+      this.subscribers.push(this.schoolingo.socketService.addFunction("traineeship:getDiaryDays").subscribe(() => this.schoolingo.traineeship.refreshDiary()));
     }
   }
 

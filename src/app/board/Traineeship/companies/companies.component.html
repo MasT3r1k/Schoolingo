@@ -9,7 +9,12 @@
     
                 <div class="form-group search mb">
                     <input type="text" name="search" [formControl]="search" [placeholder]="schoolingo.locale.getLocale('traineeship/search')">
-                    <div (click)="showPage = 'requestCompany'" class="btn submit blue-info" role="button">{{ schoolingo.locale.getLocale('traineeship/requestAddCompany') }}</div>
+                    @if (!permissions.checkPermission(["manager:traineeship:manage"])) {
+                        <div (click)="showPage = 'requestCompany'" class="btn submit blue-info" role="button">{{ schoolingo.locale.getLocale('traineeship/requestAddCompany') }}</div>
+                    } @else {
+                        <div class="btn submit blue-info" role="button">{{ schoolingo.locale.getLocale('traineeship/addCompany') }}</div>
+
+                    }
                 </div>
     
                 <schoolingo-datalist

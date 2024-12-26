@@ -1,9 +1,9 @@
 import { Data } from "@Components/Datalist/Datalist";
 import { Modal } from "@Components/Modal/Modal";
-import { DiaryWeek, DiaryDay } from "@Schoolingo/Traineeship.d";
+import { DiaryWeek, DiaryDay, TraineeshipData } from "@Schoolingo/Traineeship.d";
 import moment from "moment";
 import { BehaviorSubject } from "rxjs";
-export { DiaryWeek, DiaryDay };
+export { DiaryWeek, DiaryDay, TraineeshipData };
 
 export class Traineeship {
     public activateModal!: Modal;
@@ -16,6 +16,8 @@ export class Traineeship {
 
     public diaryWeeks: BehaviorSubject<DiaryWeek[]> = new BehaviorSubject([] as any);
     public selectedDairy: DiaryWeek | null = null;
+
+    public boxData: TraineeshipData[] = [];
 
     public diaryDays: Record<string, DiaryDay> = {};
     public selectedDay: moment.Moment | null = null;

@@ -1,12 +1,14 @@
 import { Component } from '@angular/core';
+import { Schoolingo } from '@Schoolingo';
 
 @Component({
-  selector: 'app-manage',
   standalone: true,
   imports: [],
   templateUrl: './manage.component.html',
-  styleUrl: './manage.component.css'
+  styleUrls: ['./manage.component.css', '../../../Styles/card.css', '../../../Styles/input.css']
 })
 export class ManageComponent {
-
+  constructor(
+    public schoolingo: Schoolingo
+  ) {}
 }

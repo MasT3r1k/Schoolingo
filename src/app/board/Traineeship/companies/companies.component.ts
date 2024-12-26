@@ -108,6 +108,7 @@ export class CompaniesComponent implements OnInit {
     }));
 
     this.listeners.push(this.schoolingo.traineeship.diaryWeeks.subscribe(() => {
+      if (!this.schoolingo.traineeship.selectedCompany) return;
       this.weeks = this.schoolingo.traineeship.getDiaryByCompanyId(this.schoolingo.traineeship.selectedCompany.companyId);
     }));
 

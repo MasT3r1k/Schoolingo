@@ -18,3 +18,8 @@ export type DiaryDay = {
     description: string;
     mark: string;
 }
+
+export type TraineeshipData = {
+    data: string;
+    count: number;
+}
