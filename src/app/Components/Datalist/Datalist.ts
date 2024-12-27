@@ -26,16 +26,16 @@ export class DatalistComponent implements OnInit {
     @Input() options: DatalistOptions = {};
     @Input() head: string[] = [];
     @Input() metadata: Metadata = { rows: 0 };
-    @Input() selectedRow: number = -1;
+    @Input() selectedRow = -1;
     @Input() data: BehaviorSubject<any> = new BehaviorSubject([]);
     @Input() search: FormControl<string> = new FormControl();
     @Input() clickFc!: Function;
     @Output() datalist = new EventEmitter<this>();
 
-    public page: number = 1;
-    public dataPerPage: number = 15;
+    public page = 1;
+    public dataPerPage = 15;
     
-    public isEditingPage: boolean = false;
+    public isEditingPage = false;
 
     public editPage() {
         this.isEditingPage = true;

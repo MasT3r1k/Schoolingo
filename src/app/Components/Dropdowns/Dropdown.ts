@@ -72,14 +72,14 @@ export class Dropdown {
     }
 
     public refreshPosition(id: string): void {
-        let btn: HTMLElement = document.querySelector("[dropdown='" + id + "']")!;
-        let dropdown: HTMLElement = document.querySelector(".dropdown[id='" + id + "']")!;
-        if (!btn) return;
-        if (!dropdown) return;
+        let btn = document.querySelector("[dropdown='" + id + "']")!;
+        let dropdown = document.querySelector(".dropdown[id='" + id + "']")!;
+        if (!btn || !dropdown) return;
         let boundClientRectBtn = btn.getBoundingClientRect();
         let boundClientRectDropdown = dropdown.getBoundingClientRect();
         let maxX = document.body.clientWidth - boundClientRectDropdown.width - 16;
         let x = boundClientRectBtn.x - (boundClientRectDropdown.width - boundClientRectBtn.width) / 2;
+
         // Check borders
         if (x > maxX) {
             x = maxX;
@@ -87,22 +87,20 @@ export class Dropdown {
         if (x < 0) {
             x = 0;
         }
+
         dropdowns[id].position = [x, boundClientRectBtn.y + boundClientRectBtn.height + 2];
     }
 
     public create(id: string, data: ContextMenu): boolean {
-        if (dropdowns[id]) {
-            return false;
-        }
+        if (dropdowns[id]) { return false }
+
         dropdowns[id] = data;
         this.refreshPosition(id);
         return true;
     }
 
     public remove(id: string): boolean {
-        if (!dropdowns[id]) {
-            return false;
-        }
+        if (!dropdowns[id]) { return false }
         delete dropdowns[id];
         return true;
     }

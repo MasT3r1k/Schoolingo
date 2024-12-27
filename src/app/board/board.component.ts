@@ -258,7 +258,7 @@ export class BoardComponent {
     }));
 
     if (this.modules.checkModule(["library"])) {
-      this.subscribers.push(this.schoolingo.socketService.addFunction("library:getBookInfo").subscribe((data: BookInfo & {[key: string]: Date | moment.Moment} | any) => {
+      this.subscribers.push(this.schoolingo.socketService.addFunction("library:getBookInfo").subscribe((data: BookInfo & Record<string, Date | moment.Moment> | any) => {
         data.created = moment(data[0].created);
         data.acquisitionDate = moment(data[0].acquisitionDate);
         data.date_loan = moment(data[0].date_loan);

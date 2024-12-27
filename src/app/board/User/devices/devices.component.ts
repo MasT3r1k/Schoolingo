@@ -94,7 +94,7 @@ export class DevicesComponent {
   }
 
   public getActiveDevice(): Device {
-    return this.devices.filter((device: Device) => device.active)[0]!;
+    return this.devices.filter((device: Device) => device.active)[0];
   }
 
   public removeDevice(id: number): void {

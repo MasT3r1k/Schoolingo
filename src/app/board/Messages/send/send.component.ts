@@ -16,23 +16,23 @@ import { TabsComponent } from '@Components/Tabs/Tabs';
 })
 export class SendComponent {
   // Tab
-  public selectedTab: BehaviorSubject<number> = new BehaviorSubject(0);
+  public selectedTab = new BehaviorSubject(0);
 
   // Selecting options
   public showSelect: 'messagetype' | 'homework' | null = null;
 
   // MESSAGE TYPE
-  public messageType: BehaviorSubject<number> = new BehaviorSubject(0);
+  public messageType = new BehaviorSubject(0);
 
   // HOMEWORKS
-  public selectedHomework: BehaviorSubject<number> = new BehaviorSubject(0);
+  public selectedHomework = new BehaviorSubject(0);
 
   // Options
-  public excuseAllDay: boolean = false;
-  public asPrincipal: boolean = false;
-  public requireConfirmation: boolean = false;
-  public copyToClassTeacher: boolean = false;
-  public copyToParents: boolean = false;
+  public excuseAllDay = false;
+  public asPrincipal = false;
+  public requireConfirmation = false;
+  public copyToClassTeacher = false;
+  public copyToParents = false;
 
   // Modals
   public selectReceiversModal = new Modal({

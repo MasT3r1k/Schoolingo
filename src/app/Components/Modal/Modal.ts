@@ -53,11 +53,6 @@ export class ModalComponent implements OnInit {
     }
 
     public getDate(item: modalItem): string {
-        if (item.type == "date") {
-            let a = item.value.object.getValue()[item.value.key].format('DD.MM.YYYY');
-            return a;
-        }else {
-            return '';
-        }
+        return item.type == 'date' ? item.value.object.getValue()[item.value.key].format('DD.MM.YYYY') : '';
     }
 }

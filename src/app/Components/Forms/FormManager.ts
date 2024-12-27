@@ -90,11 +90,14 @@ export class FormManager implements OnInit {
         this.forms.addForm(this);
     }
 
-    constructor(public locale: Locale, private forms: FormList) {}
+    constructor(
+        public locale: Locale,
+        private forms: FormList
+    ) {}
 
     public formData!: FormGroup;
     public errors: FormError[] = [];
-    public executing: boolean = false;
+    public executing = false;
 
     public executeFn: Function = () => {};
     private executingTimeout!: NodeJS.Timeout;
@@ -151,7 +154,7 @@ export class FormManager implements OnInit {
         this.executing = true;
         this.errors = [];
         this.inputs.forEach((input: FormInput) => {
-            if (input.type !== 'select' && input?.required === true && this.formData.value[input.name] === '') {
+            if (input.type !== 'select' && input.required === true && this.formData.value[input.name] === '') {
                 this.addError(input.name, 'required');
             }
         });
