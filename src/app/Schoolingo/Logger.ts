@@ -2,8 +2,6 @@ import { Injectable } from "@angular/core";
 
 @Injectable()
 export class Logger {
-    constructor() {}
-
     /**
      * Send logger to console with custom style of title and message
      * @param name Title of logger

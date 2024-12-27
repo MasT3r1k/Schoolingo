@@ -9,7 +9,7 @@ export class School {
 
     constructor(
         private modules: Modules
-    ) {}
+    ) { }
     
     public schoolInfo!: SchoolInfo;
     public schoolYear!: SchoolYear;

@@ -23,7 +23,7 @@ export class MessageManager {
         icon: 'thumb-up',
         color: 'hsl(94, 54%, 38%)',
         perms: ['teacher', 'principal']
-      }, {    // 5
+      }, {    // 4
         label: 'system',
         icon: 'shield',
         color: '#608796',

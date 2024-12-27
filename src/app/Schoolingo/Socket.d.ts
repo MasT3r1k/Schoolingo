@@ -1,7 +1,7 @@
-export type SocketUpdateTheme = {
+export interface SocketUpdateTheme {
     theme: number;
 }
 
-export type SocketUpdateLocale = {
+export interface SocketUpdateLocale {
     lng: string;
 }
