@@ -23,8 +23,17 @@ export class IPManager {
         if (this.ips[ip] != null) {
             return this.ips[ip];
         }
-        if (Object.keys(this.ips).indexOf(ip) === -1) {
+        if (Object.keys(this.ips).includes(ip)) {
             this.getIP(ip);
+        }
+    }
+
+
+    public checkLocale(country: string): void {
+        if (!this.storage.get(this.storage.settingsCacheName, 'locale')) {
+            if (["CZ", "SK"].includes(country)) {
+                this.locale.setUserLocale("cs");
+            }
         }
     }
 
@@ -35,22 +44,14 @@ export class IPManager {
         this.http.get<IPInformation>('https://ipinfo.io/' + ip + '/json').subscribe((data: IPInformation): void => {
             if (!ip) {
                 this.ip = data.ip;
-                if (!this.storage.get(this.storage.settingsCacheName, 'locale')) {
-                    if (["CZ", "SK"].includes(data.country)) {
-                        this.locale.setUserLocale("cs");
-                    }
-                }
+                this.checkLocale(data.country);
             }
             this.ips[data.ip] = data;
-        }, (err: any) => {
+        }, () => {
             this.http.get<IPInformation>(Config.API_URL + 'v1/getIP/' + ip).subscribe((data: IPInformation): void => {
                 if (!ip) {
                     this.ip = data.ip;
-                    if (!this.storage.get(this.storage.settingsCacheName, 'locale')) {
-                        if (["CZ", "SK"].includes(data.country)) {
-                            this.locale.setUserLocale("cs");
-                        }
-                    }
+                    this.checkLocale(data.country);
                 }
                 this.ips[data.ip] = data;
             });
