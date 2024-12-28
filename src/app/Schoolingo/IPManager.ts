@@ -14,9 +14,9 @@ export class IPManager {
         private storage: Storage
     ) {}
 
-    private ip!: string;
+    public ip!: string;
     public getMyIP(): string {
-        return this.ip;
+        return this.ip || 'Žádná IP adresa nebyla nalezena.';
     }
     public ips: Record<string, IPInformation | null> = {};
     public getIPInfo(ip: string): IPInformation | null | void {
@@ -29,12 +29,17 @@ export class IPManager {
     }
 
 
-    public checkLocale(country: string): void {
+    private saveIP(ip: string | null, data: IPInformation): void {
+        if (!ip) {
+            this.ip = data.ip;
+        }
         if (!this.storage.get(this.storage.settingsCacheName, 'locale')) {
-            if (["CZ", "SK"].includes(country)) {
+            if (["CZ", "SK"].includes(data.country)) {
                 this.locale.setUserLocale("cs");
             }
         }
+        this.ips[data.ip] = data;
+
     }
 
     public getIP(ip: string | null): void {
@@ -42,18 +47,10 @@ export class IPManager {
             this.ips[ip] = null;
         }
         this.http.get<IPInformation>('https://ipinfo.io/' + ip + '/json').subscribe((data: IPInformation): void => {
-            if (!ip) {
-                this.ip = data.ip;
-                this.checkLocale(data.country);
-            }
-            this.ips[data.ip] = data;
+            this.saveIP(ip, data)
         }, () => {
             this.http.get<IPInformation>(Config.API_URL + 'v1/getIP/' + ip).subscribe((data: IPInformation): void => {
-                if (!ip) {
-                    this.ip = data.ip;
-                    this.checkLocale(data.country);
-                }
-                this.ips[data.ip] = data;
+                this.saveIP(ip, data)
             });
         });
     }
