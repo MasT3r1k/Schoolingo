@@ -15,7 +15,6 @@ import { errorAPI } from '@Components/Datalist/Datalist';
 import { UserService } from '@Schoolingo/User';
 import moment from 'moment';
 
-
 @Component({
   selector: 'app-root',
   standalone: true,
@@ -49,7 +48,6 @@ export class AppComponent implements OnInit {
           this.school.errorReason = 1003;
           break;
       }
-
     }
 
     this.afterLoadedSchool = true;

@@ -47,6 +47,7 @@ export class BoardComponent {
 
   public alertManager: AlertManagerClass = alertManager;
   private subscribers: Subscription[] = [];
+
   constructor(
     public school: School,
     public schoolingo: Schoolingo,
