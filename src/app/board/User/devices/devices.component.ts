@@ -2,16 +2,10 @@ import { NgClass } from '@angular/common';
 import { Component } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { Schoolingo } from '@Schoolingo';
-import moment, { Moment } from 'moment';
+import { Country } from 'country-state-city';
+import moment from 'moment';
 import { Subscription } from 'rxjs';
-
-interface Device {
-  active: boolean;
-  isSocket: boolean;
-  id: number;
-  userAgent: string;
-  expires: Moment;
-}
+import { Device } from './devices.component.d'; 
 
 @Component({
   standalone: true,
@@ -22,6 +16,7 @@ interface Device {
 export class DevicesComponent {
   private devices: Device[] = [];
   private subscribers: Subscription[] = [];
+  public country = Country;
 
   constructor(
     public schoolingo: Schoolingo
