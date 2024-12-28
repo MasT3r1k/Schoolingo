@@ -13,7 +13,7 @@ import { languages } from '@Schoolingo/Locale';
   standalone: true,
   imports: [TabsComponent, NgClass, FormManager, ThemeSelector],
   templateUrl: './settings.component.html',
-  styleUrls: ['./settings.component.css', '../../../Styles/card.css']
+  styleUrls: ['./settings.component.css', '../../../Styles/card.css', '../../../Styles/toast.css', '../../../Styles/input.css']
 })
 export class SettingsComponent implements OnInit {
 
