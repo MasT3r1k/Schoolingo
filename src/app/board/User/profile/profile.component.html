@@ -27,33 +27,40 @@
                                 </div>
                             </div>
 
-                            <div class="card-table-row">
-                                <div class="card-table-item">{{ "Třída" }}</div>
-                                <div class="card-table-item">
-                                    <span>{{ profile.className }}</span>
+                            @if (perms.checkPermission(["student"])) {
+                                <div class="card-table-row">
+                                    <div class="card-table-item">{{ "Třída" }}</div>
+                                    <div class="card-table-item">
+                                        <span>{{ profile.className }}</span>
+                                    </div>
                                 </div>
-                            </div>
-
-                            <div class="card-table-row">
-                                <div class="card-table-item">{{ "Obor" }}</div>
-                                <div class="card-table-item">
-                                    <span>{{ profile.scopeName }}</span>
+    
+                                <div class="card-table-row">
+                                    <div class="card-table-item">{{ "Obor" }}</div>
+                                    <div class="card-table-item">
+                                        <span>{{ profile.scopeName }}</span>
+                                    </div>
                                 </div>
-                            </div>
-
-                            <div class="card-table-row">
-                                <div class="card-table-item">{{ "Délka studia" }}</div>
-                                <div class="card-table-item">
-                                    <span>{{ profile.scopeYears }}</span>
+    
+                                <div class="card-table-row">
+                                    <div class="card-table-item">{{ "Délka studia" }}</div>
+                                    <div class="card-table-item">
+                                        <span>{{ profile.scopeYears }}</span>
+                                    </div>
                                 </div>
-                            </div>
-
+                            }
 
                             <div class="card-table-row">
                                 <div class="card-table-item">{{ "Kód ZP" }}</div>
-                                <div class="card-table-item" [title]="profile.insuranceName">
-                                    <span>{{ profile.insuranceId + " - " + profile.insuranceCode }}</span>
-                                </div>
+                                @if(profile.insuranceId) {
+                                    <div class="card-table-item" [title]="profile.insuranceName">
+                                        <span>{{ profile.insuranceId + " - " + profile.insuranceCode }}</span>
+                                    </div>
+                                } @else {
+                                    <div class="card-table-item">
+                                        <span>Nenastaveno žádné pojištění</span>
+                                    </div>
+                                }
                             </div>
 
                             <div class="card-table-row">
@@ -164,13 +171,15 @@
                                 </div>
                             </div>
 
-                            <div class="card-table-row">
-                                <div class="card-table-item">{{ "Studuješ od " }}</div>
-                                <div class="card-table-item">
-                                    <span>{{ "Září 1, 2021" }}</span>
+                            @if (perms.checkPermission(["student"])) {
+                                <div class="card-table-row">
+                                    <div class="card-table-item">{{ "Studuješ od " }}</div>
+                                    <div class="card-table-item">
+                                        <span>{{ "Září 1, 2021" }}</span>
+                                    </div>
                                 </div>
-                            </div>
-
+                            }
+                            
                             <div class="card-table-row">
                                 <div class="card-table-item">{{ "Naposledy přihlášen" }}</div>
                                 <div class="card-table-item">

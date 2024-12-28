@@ -7,6 +7,7 @@ import { Country } from 'country-state-city';
 import moment from 'moment';
 import { BehaviorSubject, Subscription } from 'rxjs';
 import { Profile } from './profile';
+import { Permission } from '@Schoolingo/Permissions';
 
 @Component({
   standalone: true,
@@ -24,6 +25,7 @@ export class ProfileComponent implements OnInit {
 
   constructor(
     public schoolingo: Schoolingo,
+    public perms: Permission
   ) {}
 
   ngOnInit(): void {
