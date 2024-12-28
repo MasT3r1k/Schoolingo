@@ -1,6 +1,6 @@
 import { NgStyle } from '@angular/common';
 import { Component } from '@angular/core';
-import { Schoolingo as AppConfig } from '@Schoolingo/App';
+import { AppConfig } from '@Schoolingo/App';
 import { languages } from '@Schoolingo/Locale';
 import { School } from '@Schoolingo/School';
 import { QRCodeModule } from 'angularx-qrcode';

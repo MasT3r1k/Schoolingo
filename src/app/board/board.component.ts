@@ -17,7 +17,7 @@ import { DiaryWeek } from '@Schoolingo/Traineeship';
 import { personDetails, user } from '@Schoolingo/User';
 import moment from 'moment';
 import { Subscription } from 'rxjs';
-import { Schoolingo as App } from '@Schoolingo/App';
+import { AppConfig as App } from '@Schoolingo/App';
 import { Permission } from '@Schoolingo/Permissions';
 
 interface AbsenceAPI {

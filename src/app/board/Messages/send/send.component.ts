@@ -7,6 +7,7 @@ import { BehaviorSubject } from 'rxjs';
 import { ModalSelectReceivers } from '../modals/selectReceivers/selectReceivers';
 import { Modal } from '@Components/Modal/Modal';
 import { TabsComponent } from '@Components/Tabs/Tabs';
+import { AppConfig } from '@Schoolingo/App';
 
 @Component({
   standalone: true,
@@ -15,6 +16,9 @@ import { TabsComponent } from '@Components/Tabs/Tabs';
   styleUrls: ['./send.component.css', '../../../Styles/card.css', '../../../Styles/input.css']
 })
 export class SendComponent {
+
+  AppConfig = AppConfig;
+
   // Tab
   public selectedTab = new BehaviorSubject(0);
 

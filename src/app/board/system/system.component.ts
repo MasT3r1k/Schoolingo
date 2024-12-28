@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { Schoolingo } from '@Schoolingo';
-import { Schoolingo as App } from '@Schoolingo/App';
+import { AppConfig as App } from '@Schoolingo/App';
 
 @Component({
   standalone: true,
