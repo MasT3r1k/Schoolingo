@@ -8,7 +8,6 @@ export { SocketUpdateLocale, SocketUpdateTheme }
 
 @NgModule()
 export class SocketService {
-  public tokenDuplicate: BehaviorSubject<string | null> = new BehaviorSubject<string | null>(null);
   public tokenStatus: BehaviorSubject<string | null> = new BehaviorSubject<string | null>(null);
   public isConnected = false;
   public socket: Socket | null = null;

@@ -66,7 +66,10 @@ export class AppComponent implements OnInit {
           this.userService.username = data.user;
           this.userService.setExpiration(moment().add(this.school.schoolInfo.loginExpires, 'ms'));
           if (this.router.url.startsWith('/login')) {
-            this.router.navigate(['', 'main']);          
+            let returnUrl = this.router.getCurrentNavigation()?.extractedUrl.queryParams.returnUrl;
+            returnUrl
+            ? this.router.navigate(['', returnUrl])
+            : this.router.navigate(['', 'main']);
           }
         }
         if ('error' in data) {

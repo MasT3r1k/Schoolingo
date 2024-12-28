@@ -33,7 +33,7 @@ export class UserService {
         if (tokenStatus == 'invalid_token' && this.user == null && !this.router.url.startsWith('/login')) {
           this.username = '';
           this.setExpiration(moment());
-          this.router.navigate(['', 'login'])
+          this.router.navigate(['', 'login'], { queryParams: { returnUrl: this.router.url } })
         }
 
         if (tokenStatus == 'has_token' && this.router.url.startsWith('/login')) {
@@ -90,16 +90,7 @@ export class UserService {
   }
 
   //* Tokens
-  private token: string = '';
   public tokenExpiration: BehaviorSubject<Moment> = new BehaviorSubject(moment());
-
-  /**
- * Get Token string to access server
- * @returns token string
- */
-  public getToken(): string | null {
-    return this.token;
-  }
 
   public setExpiration(date: moment.Moment): void {
     this.tokenExpiration.next(date);
@@ -113,13 +104,12 @@ export class UserService {
   /**
    * Set token to User Service and save it to the storage
    *
-   * @param token Token received from server, to future access to the server
+   * @param useranem Login username from server, to future access to the server
    * @param expiration Date of token
    *
    */
-  public setToken(token: string, expiration: Moment): void {
-    this.token = token;
-    this.socketService.tokenDuplicate.next(token);
+  public setToken(username: string, expiration: Moment): void {
+    this.username = username;
     this.setExpiration(expiration);
     this.storage.save(this.storage.tokenCacheName, { expiration });
   }

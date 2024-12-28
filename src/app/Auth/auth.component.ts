@@ -211,7 +211,7 @@ export class AuthComponent {
             nextURL = param.returnUrl.slice(1);
           }
         });
-        this.router.navigate(['', nextURL]);
+        this.router.navigate(['', ...nextURL.split('/')]);
       }
 
       if ('error' in data) {
