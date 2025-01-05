@@ -32,7 +32,7 @@ export class CookieService {
       value +
       '; ' +
       expires +
-      '; path=/; HttpOnly=true; ' +
+      '; path=/; ' +
       ' Secure; SameSite=Lax; ';
     document.cookie = cookie;
   }
