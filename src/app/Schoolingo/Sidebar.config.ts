@@ -27,6 +27,11 @@ let config: SidebarGroup[] = [
                 permission: ['teacher']
             },
             {
+                item: 'sidebar/manageUsers',
+                url: 'users',
+                permission: ['manager:system:admin']
+            },
+            {
                 item: 'sidebar/marks/main',
                 permission: ['teacher', 'student', 'parent'],
                 children: [{

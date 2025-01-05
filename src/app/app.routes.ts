@@ -24,6 +24,7 @@ import { MidtermComponent as MarksMidterm } from './board/Marks/midterm/midterm.
 import { IntermRecordComponent as MarksIntermRecord } from './board/Marks/interm-record/interm-record.component';
 import { studentsComponent as Students } from './board/students/students.component';
 import { TeachersComponent as Teachers } from './board/teachers/teachers.component';
+import { ManageUsersComponent as Users } from './board/manage-users/manage-users.component';
 import { DiscordConnectComponent } from './board/discord-connect/discord-connect.component';
 import { LoansComponent as LibraryLoans } from './board/library/loans/loans.component';
 import { BooksComponent as LibraryBooks } from './board/library/books/books.component';
@@ -70,6 +71,9 @@ export const routes: Routes = [
         },
         {
           path: 'teachers', component: Teachers
+        },
+        {
+          path: 'users', component: Users
         },
         {
           path: 'discordconnect', component: DiscordConnectComponent
