@@ -15,7 +15,7 @@ export type { FormInput, FormButton, FormError };
     @for (input of this.inputs; track input.name) {
         <div class="form-group">
             @if(input.label) {
-                <label [attr.for]="input.name" [ngClass]="{ error: this.getError(input.name) != null }">
+                <label [attr.for]="input.name" [ngClass]="{ 'error-color': this.getError(input.name) != null }">
                     {{ locale.getLocale(input.label) }}
                     <span
                         class="label-error"
@@ -75,7 +75,7 @@ export type { FormInput, FormButton, FormError };
 
     @for (button of this.buttons;track button) {
         <div class="form-group">
-            <div [ngClass]="{btn: true, submit: true, disabled: !canExecute()}" role="button" (click)="(button?.func) ? button?.func(this) : this.execute()" [innerHTML]="this.executing ? '<div class=btn-loader></div> ' + locale.getLocale(button.executed) : locale.getLocale(button.label)"></div>
+            <div [ngClass]="{btn: true, submit: true, disabled: !canExecute()}" role="button" (click)="(button?.func) ? button?.func(this.inputs) : this.execute()" [innerHTML]="this.executing ? '<div class=btn-loader></div> ' + locale.getLocale(button.executed) : locale.getLocale(button.label)"></div>
         </div>
     }
 
@@ -131,6 +131,7 @@ export class FormManager implements OnInit {
             });
         }
         this.errors.push({ input, locale: error });
+        this.executing = false;
     }
 
     getError(input: string): string | null {
@@ -141,8 +142,9 @@ export class FormManager implements OnInit {
     public canExecute(): boolean {
         let canExecuted: boolean = true;
         this.inputs.forEach((input: FormInput) => {
+            if (!canExecuted) return;
             if (input.type !== 'select' && input.required === true && this.formData.value[input.name] === '' ) {
-                canExecuted = true;
+                canExecuted = false;
             }
         });
 
