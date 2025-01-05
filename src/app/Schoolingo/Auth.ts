@@ -35,8 +35,7 @@ export class Authentication {
 
     public isExecuting = false;
     public getLoginButtonText(): string {
-      return this.isExecuting ? "<div class='btn-loader'></div> " +
-          this.locale.getLocale('logining_btn') : this.locale.getLocale('login_btn');
+      return this.isExecuting ? "<div class='btn-loader'></div> " + this.locale.getLocale('logining_btn') : this.locale.getLocale('login_btn');
     }
 
     public username = '';
