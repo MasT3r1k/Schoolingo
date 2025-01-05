@@ -1,64 +1,70 @@
 <main>
 
     <h1>{{ App.APP_NAME.toUpperCase() }}</h1>
-    <div class="card">
-        @if (schoolingo.socketService.socket?.connected == false) {
+    <div class="card" [ngStyle]="{ minWidth: school.schoolInfo.fastLogin ? '784px' : '480px' }">
             <div class="card-top">
                 <div class="alerts">
-                    <div class="alert red">
-                        Nejste připojení k serverům Schoolinga
-                    </div>
+                    @if (false) {
+                        <div class="alert red">
+                            Nejste připojení k serverům Schoolinga
+                        </div>
+                    }
+                    @if(schoolingo.auth.errors['auth'] != null) {
+                        <div class="alert red">
+                            {{ schoolingo.locale.getLocale(schoolingo.auth.errors['auth']) }}
+                        </div>
+                    }
                 </div>
                 <!-- <div class="btn">Offline mode</div -->
             </div>
-        }
         <div class="card-row">
-            <div class="left">
+            <div class="left" [ngStyle]="{ width: school.schoolInfo.fastLogin ? '50%' : '100%' }">
                 <h2 class="title">{{ schoolingo.locale.getLocale("login_formTitle") }}</h2>
                 @if (school.schoolInfo.name == '') {
                     <h3 class="school skeleton" style="width: 225px;height: 24px;margin: 0 auto 1rem;"></h3>
                 } @else {
                     <p class="school">{{ school.schoolInfo.name }}</p>
                 }
-                <schoolingo-form [inputs]="inputs" [buttons]="buttons" [form]="formName"></schoolingo-form>
+                <ng-container [ngComponentOutlet]="component"></ng-container>
             </div>
-            <div class="splitter">
-                {{ schoolingo.locale.getLocale('or') }}
-            </div>
-            <div class="right qrcode">
-                <div class="qrcode">
-                    <div class="title" style="margin-bottom: 1rem">
-                        {{ schoolingo.locale.getLocale("login_qrcodeTitle") }}
+            @if(school.schoolInfo.fastLogin) {
+                <div class="splitter">
+                    {{ schoolingo.locale.getLocale('or') }}
+                </div>
+                <div class="right qrcode">
+                    <div class="qrcode">
+                        <div class="title" style="margin-bottom: 1rem">
+                            {{ schoolingo.locale.getLocale("login_qrcodeTitle") }}
+                        </div>
+                        @if (qrStatus.code == '' || qrStatus.code == null) {
+                            <div
+                            class="skeleton"
+                            [ngStyle]="{ width: 'var(--qrcode-size)', height: 'var(--qrcode-size)' }"></div>
+                        } @else {
+                            <qrcode
+                            [allowEmptyString]="false"
+                            [width]="160"
+                            [margin]="0"
+                            [elementType]="'canvas'"
+                            [errorCorrectionLevel]="'M'"
+                            [title]="'SCHOOLINGO QR Fastlogin'"
+                            [imageSrc]="'./assets/logo.webp'"
+                            [imageHeight]="56"
+                            [imageWidth]="56"
+                            [qrdata]="qrStatus.code"
+                            [colorDark]="schoolingo.theme.getTheme() == 'light' ? '#000000' : '#ffffff'"
+                            [colorLight]="schoolingo.theme.getTheme() == 'light' ? '#ffffff' : '#000000'"
+                            ></qrcode>
+                        }
                     </div>
-                    @if (qrStatus.code == '' || qrStatus.code == null) {
+                    @if (qrStatus.whatIsVisible != 'trylogin') {
                         <div
-                        class="skeleton"
-                        [ngStyle]="{ width: 'var(--qrcode-size)', height: 'var(--qrcode-size)' }"></div>
-                    } @else {
-                        <qrcode
-                        [allowEmptyString]="false"
-                        [width]="160"
-                        [margin]="0"
-                        [elementType]="'canvas'"
-                        [errorCorrectionLevel]="'M'"
-                        [title]="'SCHOOLINGO QR Fastlogin'"
-                        [imageSrc]="'./assets/logo.webp'"
-                        [imageHeight]="56"
-                        [imageWidth]="56"
-                        [qrdata]="qrStatus.code"
-                        [colorDark]="schoolingo.theme.getTheme() == 'light' ? '#000000' : '#ffffff'"
-                        [colorLight]="schoolingo.theme.getTheme() == 'light' ? '#ffffff' : '#000000'"
-                        ></qrcode>
+                        style="margin-top: 1rem; text-align: center"
+                        [innerHTML]="schoolingo.locale.getLocale('scan_qrcode')"
+                        ></div>
                     }
                 </div>
-                @if (qrStatus.whatIsVisible != 'trylogin') {
-                    <div
-                    style="margin-top: 1rem; text-align: center"
-                    [innerHTML]="schoolingo.locale.getLocale('scan_qrcode')"
-                    ></div>
-                }
-            </div>
-
+            }
         </div>
     </div>
     <p>{{ schoolingo.locale.getLocale('tryOnAnotherDevice') }}</p>

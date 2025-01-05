@@ -4,7 +4,6 @@ import { SocketService } from "./Socket";
 import { Theme } from "./Theme";
 import { personDetails, user, UserService } from "./User";
 import { Sidebar } from "./Sidebar";
-import { Absence, BookInfo, ClassbookAPI, ClassbookLesson, Mark, studentService, Substitution, TimetableAPI, TimetableHours, TimetableLesson } from './Schoolingo.d';
 import { School } from "./School";
 import { Utils } from "@Schoolingo/Utils";
 import { BehaviorSubject, Subscription } from "rxjs";
@@ -17,7 +16,22 @@ import { Traineeship } from "./Traineeship";
 import { Homeworks } from "./Homeworks";
 import { IPManager } from "./IPManager";
 import { AlertManagerClass } from "./Alert";
-export { TimetableAPI, ClassbookAPI, ClassbookLesson, TimetableLesson, Mark, Absence, Substitution, studentService, BookInfo }
+import { Authentication } from "./Auth";
+
+import { Absence, BookInfo, ClassbookAPI, ClassbookLesson, Mark, studentService, Substitution, TimetableAPI, TimetableHours, TimetableLesson } from './Schoolingo.d';
+import { Modal } from "@Components/Modal/Modal";
+import { AuthLogin } from "../Auth/Tabs/Login/Login";
+export {
+    TimetableAPI,
+    ClassbookAPI,
+    ClassbookLesson,
+    TimetableLesson,
+    Mark,
+    Absence,
+    Substitution,
+    studentService,
+    BookInfo
+}
 
 @Injectable()
 export class Schoolingo {
@@ -36,6 +50,11 @@ export class Schoolingo {
         this.substitution = {};
         this.isOfflineMode = false;
         this.isLoginExpired = false;
+        clearTimeout(this.logoutInterval);
+        this.logoutInterval = setTimeout(() => {
+            this.loginExpired();
+        }, this.school.schoolInfo.loginExpires);
+        this.loginModal.close();
         this.marks = [];
         this.absence = {};
         this.absenceSubjects = {};
@@ -62,7 +81,8 @@ export class Schoolingo {
         public messages: MessageManager,
         public traineeship: Traineeship,
         public homeworks: Homeworks,
-        public ipManager: IPManager
+        public ipManager: IPManager,
+        public auth: Authentication,
     ) {
         this.subscribers.push(this.locale.language.subscribe(() => {
             this.refreshTitle();
@@ -81,16 +101,30 @@ export class Schoolingo {
                 this.loginExpired();
             }, this.school.schoolInfo.loginExpires);
         }));
+
+        this.subscribers.push(this.auth.loginStatus.subscribe((status: boolean) => {
+            if (status) {
+                this.resetToDefault();
+                this.auth.loginStatus.next(false);
+            }
+        }));
     }
 
     // Login expired
     public isLoginExpired: boolean = false;
-    public logoutInterval = setTimeout(() => {
-        this.loginExpired();
-    }, this.school.schoolInfo.loginExpires);
+    public logoutInterval = setTimeout(() => {}, 1);
+    public loginModal: Modal = new Modal({ title: { text: 'login_title' }, size: 'size-2', items: [
+        {
+            type: "component",
+            component: AuthLogin,
+            data: {}
+        }
+    ] });
 
     public loginExpired(): void {
         this.isLoginExpired = true;
+        this.modal = 'login';
+        this.loginModal.open();
     }
 
     // Offline mode

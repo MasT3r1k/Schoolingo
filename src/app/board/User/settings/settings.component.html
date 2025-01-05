@@ -1,8 +1,10 @@
 <div class="card">
     <div class="card-top">
-        <!-- <div class="alert error">
-            helo
-        </div> -->
+        @if (alert == '2FAEnabled') {
+            <div class="alert success">
+                {{ schoolingo.locale.getLocale('userSettings/2FAEnabled') }}
+            </div>
+        }
     </div>
     <div class="card-header">
         <h2>{{ schoolingo.locale.getLocale('settings') }}</h2>
@@ -39,6 +41,24 @@
         <div [ngClass]="{'card-tab': true, active: options.indexOf('theme') == selectedTab.getValue()}" id="theme">
             <h2 class="small mb">{{ schoolingo.locale.getLocale('theme') }}</h2>
             <theme-selector></theme-selector>
+        </div>
+        <div [ngClass]="{'card-tab': true, active: options.indexOf('security') == selectedTab.getValue()}" id="theme">
+            <h2 class="small mb">{{ schoolingo.locale.getLocale('userSettings/2fa') }}</h2>
+            <div class="items">
+                <div class="item" style="justify-content: space-between;">
+                    <div class="left">
+                        <p class="title">Dvoufazové ověření</p>
+                        <p class="description"></p>
+                    </div>
+                    <div class="right">
+                        @if (schoolingo.userService.tfaSecret == '') {
+                            <div class="btn small" (click)="allow2FA()">
+                                Zapnout 2FA
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 </div>

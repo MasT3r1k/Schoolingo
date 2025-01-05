@@ -28,7 +28,8 @@ export class SystemComponent {
     "mysql (Databáze)",
     "Express (Backend)",
     "Node-Cache (Ukládání dočasných dat pro rychlejší načítání)",
-    "Undici (URL žádosti pro komunikaci s discord botem)"
+    "Undici (URL žádosti pro komunikaci s discord botem)",
+    "otpAuth (Generování 2fa kódů)",
   ];
   
 }

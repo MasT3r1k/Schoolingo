@@ -7,11 +7,14 @@ import { Schoolingo } from '@Schoolingo';
 import { BehaviorSubject, Subscription } from 'rxjs';
 import { ThemeSelector } from './theme/theme';
 import { languages } from '@Schoolingo/Locale';
+import { QRCodeModule } from 'angularx-qrcode';
+import { Modal } from '@Components/Modal/Modal';
+import { TFAComponent } from './2fa/2fa.component';
 
 @Component({
   selector: 'app-settings',
   standalone: true,
-  imports: [TabsComponent, NgClass, FormManager, ThemeSelector],
+  imports: [TabsComponent, NgClass, FormManager, ThemeSelector, QRCodeModule],
   templateUrl: './settings.component.html',
   styleUrls: ['./settings.component.css', '../../../Styles/card.css', '../../../Styles/toast.css', '../../../Styles/input.css']
 })
@@ -19,7 +22,17 @@ export class SettingsComponent implements OnInit {
 
   public listeners: Subscription[] = [];
   public selectedTab: BehaviorSubject<number> = new BehaviorSubject(0);
-  public options: string[] = ['changepassword', 'language', 'theme'];
+  public options: string[] = ['changepassword', 'language', 'theme', 'security'];
+
+  public alert: '2FAEnabled' | '' = '';
+
+  public TFAModal = new Modal({ title: { text: 'userSettings/2faVerify' }, size: 'size-1', items: [
+    {
+      type: 'component',
+      component: TFAComponent,
+      data: []
+    }
+  ] })
 
   public inputs: FormInput[] = [
       {
@@ -73,6 +86,31 @@ export class SettingsComponent implements OnInit {
     this.listeners.push(this.selectedTab.subscribe((value: number) => {
       this.router.navigate([], { queryParams: { page: this.options[value] } })
     }));
+
+    this.listeners.push(this.schoolingo.socketService.addFunction("main:update2fa").subscribe((data: any) => {
+      console.log(data);
+      if ('error' in data) {
+        switch(data.error) {
+          case "no_2fa_set":
+            break;
+        }
+      }
+      if ('secret' in data && 'qr' in data) {
+        this.schoolingo.userService.set2fa(data.secret, data.qr);
+        this.TFAModal.open();
+      }
+
+      if ('status' in data) {
+        switch(data.status) {
+          case("success"):
+            this.TFAModal.close();
+            this.alert = '2FAEnabled';
+            break;
+          case("failed"):
+            break;
+        }
+      }
+    }));
   }
 
   ngOnDestroy(): void {
@@ -88,5 +126,11 @@ export class SettingsComponent implements OnInit {
     this.schoolingo.socketService.emit('main:updateUser', { type: 'locale', lng })
   }
 
+  public allow2FA(): void {
+    if (this.schoolingo.getOfflineMode()) {
+      return;
+    }
+    this.schoolingo.socketService.emit('main:updateUser', { type: '2fa', enabled: true });
+  }
 
 }

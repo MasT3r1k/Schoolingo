@@ -22,6 +22,7 @@ import { Modules } from '@Schoolingo/Modules';
 import { Traineeship } from '@Schoolingo/Traineeship';
 import { Homeworks } from '@Schoolingo/Homeworks';
 import { IPManager } from '@Schoolingo/IPManager';
+import { Authentication } from '@Schoolingo/Auth';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -47,7 +48,8 @@ export const appConfig: ApplicationConfig = {
     MainModules,
     Homeworks,
     IPManager,
-    Traineeship
+    Traineeship,
+    Authentication
   ],
   
 };

@@ -54,6 +54,13 @@ export class UserService {
       }
   }
 
+  public tfaSecret = '';
+  public tfaQR = '';
+  public set2fa(secret: string, qr: string): void {
+    this.tfaSecret = secret;
+    this.tfaQR = qr;
+  }
+
   /** Children (only parents) */
   public selectedChild: number = 0;
   public children: child[] = [];
