@@ -43,17 +43,7 @@ export class AuthComponent {
     private title: Title,
     private route: ActivatedRoute,
     public schoolingo: Schoolingo,
-  ) {
-    this.form = formList.getForm(this.formName) as FormManager;
-  }
-
-
-  // Form
-  public formName = 'Login_Form';
-  public inputs: FormInput[] = [];
-  public buttons: FormButton[] = [];
-  public form: FormManager;
-
+  ) {}
 
   public selectLanguage(lng: languages): void {
     if (this.schoolingo.locale.getUserLocale() == lng) {return;}
@@ -62,73 +52,9 @@ export class AuthComponent {
 
   public component: Type<any> = AuthLogin;
 
-  // // Switch forms
-  // public switch(type: pageTypes): void {
-  //   switch (type) {
-  //     case 'login':
-  //       this.inputs = [
-  //         {
-  //           type: 'text',
-  //           name: 'username',
-  //           placeholder: 'username',
-  //           label: 'username',
-  //         },
-  //         {
-  //           type: 'password',
-  //           name: 'password',
-  //           placeholder: 'password',
-  //           label: 'password',
-  //           notes: [
-  //             {
-  //               note: 'forgot_pass',
-  //               func: () => {
-  //                 window.history.pushState(100, "Forgot password", "/login?forgotpass")
-  //                 this.switch('forgotpass');
-  //               },
-  //             },
-  //           ],
-  //         },
-  //       ];
-
-  //       this.buttons = [{ label: 'login_btn', executed: 'logining_btn', func: (inputs: FormInput[]) => { console.log(inputs);this.auth.login(this.auth.getValue(inputs[0].value), this.auth.getValue(inputs[1].value)) }}];
-  //       break;
-  //     case 'forgotpass':
-  //       this.inputs = [
-  //           {
-  //             type: 'text',
-  //             name: 'username',
-  //             placeholder: 'username',
-  //             label: 'username',
-  //             notes: [
-  //               {
-  //                 note: 'remembered_pass',
-  //                 func: () => {
-  //                   window.history.pushState(100, "Login", "/login")
-  //                   this.switch('login');
-  //                 },
-  //               },
-  //             ],
-  //           },
-  //         ];
-
-  //         this.buttons = [{ label: 'reset_pass', executed: 'reseting_pass', func: () => {this.auth.login(this.form.formData.value.username, this.form.formData.value.password)} }];
-  //       break;
-    
-  //   }
-
-  //   this.form = this.formList.getForm(this.formName)!;
-  //   if (this.form) {
-  //     this.form.updateInputs(this.inputs);
-  //     this.form.updateButtons(this.buttons);
-  //     this.form.refreshFormGroup()
-  //   }
-  // }
-
   ngOnInit(): void {
     this.schoolingo.resetToDefault();
     this.schoolingo.socketService.connect();
-
-    this.form = this.formList.getForm(this.formName)!;
 
     this.schoolingo.auth.page = 'login';
     this.Listeners.push(this.route.queryParamMap.subscribe((param: Params) => {
@@ -155,7 +81,6 @@ export class AuthComponent {
 
   ngOnDestroy(): void {
     if (this.routerSocket) this.routerSocket.unsubscribe();
-    if (this.form) this.form.removeMe();
     this.schoolingo.socketService.disconnect();
     this.Listeners.forEach((listen: Subscription) => listen.unsubscribe());
     this.QRListeners.forEach((listen: Subscription) => listen.unsubscribe());
@@ -205,15 +130,6 @@ export class AuthComponent {
       this.qrCodeResult = null;
       this.qrStatus = this.getQRcodeStatus();
     }, 5000);
-  }
-
-  public getLoginButtonText(): string {
-    if (this.form && this.form.executing == true)
-      return (
-        "<div class='btn-loader'></div> " +
-        this.schoolingo.locale.getLocale('logining_btn')
-      );
-    return this.schoolingo.locale.getLocale('login_btn');
   }
 
   public getQRcodeStatus(): QRStatus {

@@ -1,6 +1,6 @@
 import { NgClass } from "@angular/common";
 import { Component } from "@angular/core";
-import { FormControl, FormsModule, ReactiveFormsModule } from "@angular/forms";
+import { FormsModule, ReactiveFormsModule } from "@angular/forms";
 import { Schoolingo } from "@Schoolingo";
 
 @Component({

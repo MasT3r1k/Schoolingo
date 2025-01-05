@@ -8,6 +8,7 @@ import { Injectable } from "@angular/core";
 import { UserService } from "./User";
 import { SocketService } from "./Socket";
 import { BehaviorSubject } from "rxjs";
+import { Locale } from "./Locale";
 
 @Injectable({ providedIn: 'root' })
 export class Authentication {
@@ -19,7 +20,8 @@ export class Authentication {
         private http: HttpClient,
         private route: ActivatedRoute,
         private userService: UserService,
-        private socketService: SocketService
+        private socketService: SocketService,
+        private locale: Locale
     ) {}
 
     public page: 'login' | '2fa' | 'forgot' = 'login';
@@ -29,6 +31,12 @@ export class Authentication {
             if (['2fa'].includes(page)) return;
             this.router.navigate([''], { queryParams: { page: page } });
         }
+    }
+
+    public isExecuting = false;
+    public getLoginButtonText(): string {
+      return this.isExecuting ? "<div class='btn-loader'></div> " +
+          this.locale.getLocale('logining_btn') : this.locale.getLocale('login_btn');
     }
 
     public username = '';
@@ -56,9 +64,13 @@ export class Authentication {
     }
 
     public login(): void {
+        this.isExecuting = true;
         this.errors = {};
         let canLogin = this.canLogin();
-        if (!canLogin) return;
+        if (!canLogin) {
+            this.isExecuting = false;
+            return;
+        }
 
         this.http.post<LoginData | errorAPI>(Config.API_URL + 'login', {
             username: this.username,
@@ -78,6 +90,7 @@ export class Authentication {
                 this.password = '';
                 this.token2FA = '';
                 this.router.navigate(['', ...nextURL.split('/')]);
+                this.isExecuting = false;
             }
     
             if ('error' in data) {
@@ -102,6 +115,7 @@ export class Authentication {
                         console.log('Error: ' + data.error);
                     break;
                 }
+                this.isExecuting = false;
             }
         });
     }
