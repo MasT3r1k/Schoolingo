@@ -9,8 +9,10 @@ export class Logger {
      */
     public send(name: string, log: string): void {
         console.log(
-            `%c${name}%c ${log}`,
-            "background: #3a6df0;color: #fff;padding: 4px 8px;font-size:11px;font-weight:500;border-radius:16px 16px;margin-right: 4px", "color: #cdcdcd;"
+            `%c${name}%c ${log}%c`,
+            "background: hsl(206deg, 84%, 55%);color: #fff;padding: 4px 8px;font-size:11px;font-weight:500;margin-right: 4px;",
+            "color: #fff;",
+            "color: hsl(206deg, 84%, 55%);"
             );
     }
 

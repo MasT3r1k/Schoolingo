@@ -55,7 +55,7 @@ export class Theme {
    * @param theme theme for website
    */
   public updateTheme(theme: themes, update: boolean = true): void {
-    this.logger.send(this.logName, 'Theme set to ' + theme.toUpperCase() + '.');
+    this.logger.send(this.logName, 'Theme set to %c' + theme.toUpperCase());
     let obj: Record<string, string> = {};
     obj[this.themeCache[1]] = theme;
     this.storage.save(this.themeCache[0], obj);
