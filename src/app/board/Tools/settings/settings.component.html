@@ -31,8 +31,8 @@
             <div class="main-content">
                 <h2>{{ schoolingo.locale.getLocale(selectedItem.split(':')[1]) }}</h2>
 
-                <schoolingo-form [inputs]="inputs" [buttons]="[]" [form]="'NUMAX JE HOMOKLÁDA OBECNÁ'"></schoolingo-form>
-                <!-- @for (item of items[selectedItem.split(':')[0]][selectedItem.split(':')[1]]; track $index) {
+                <!-- <schoolingo-form [inputs]="inputs" [buttons]="[]" [form]="'NUMAX JE HOMOKLÁDA OBECNÁ'"></schoolingo-form> -->
+                @for (item of items[selectedItem.split(':')[0]][selectedItem.split(':')[1]]; track $index) {
 
                     @switch(item.type) {
                         @case("checkbox") {
@@ -60,7 +60,7 @@
                                     }
                                 </div>
                                 <div class="bottom">
-                                    <input type="text">
+                                    <input type="text" [readOnly]="item.readOnly ?? false" [value]="schoolingo.auth.getValue(item.value)" />
                                 </div>
                             </div>
                         }
@@ -74,7 +74,7 @@
                                 </div>
                             </div>
                         }
-                    } -->
+                    }
                     <!-- <div class="content-item">
                         <div class="left">
                             <p>{{ schoolingo.locale.getLocale(item.label) }}</p>
@@ -97,7 +97,7 @@
                         </div>
                     </div> -->
 
-                <!-- } -->
+                }
 
             </div>
         </div>

@@ -18,6 +18,7 @@ export class SettingsComponent {
   ) {}
 
   public selectedItem: string = Object.keys(sidebar)[0] + ':' + Object.values(sidebar)[0][0].label;
+
   public options: Record<string, Record<string, BehaviorSubject<string | boolean | any>>> = {
     "login_title": {
       "allowForgotPassword": new BehaviorSubject(true)
@@ -30,12 +31,20 @@ export class SettingsComponent {
   public items: Record<string, Record<string, SettingsItem[]>> = {
     "": {
       "system/settings/system": [{
-        label: "Nastavení nějaké random",
-        type: "checkbox"
+        label: "Výchozí jazyk",
+        type: "input"
+      }, {
+        label: "URL školy",
+        type: "input"
+      }, {
+        label: "Nastavení správy dat",
+        type: "input"
       }],
       "sidebar/school/main": [{
         label: "school/code",
-        type: "input"
+        type: "input",
+        value: () => { return this.schoolingo.school.schoolInfo.code },
+        readOnly: true
       },
       {
         label: "school/wannaOwnCode",
@@ -43,7 +52,54 @@ export class SettingsComponent {
       },
       {
         label: "school/name",
+        type: "input",
+        value: () => { return this.schoolingo.school.schoolInfo.name }
+      },
+      {
+        label: "school/startHours",
+        type: "input",
+        value: () => { return this.schoolingo.school.schoolInfo.startHour.join(':') }
+        
+      }],
+      "login_title": [{
+        label: "Povolit přihlášení pomocí QR kódu",
+        type: "checkbox"
+      }, {
+        label: "Povolit obnovení hesla pomocí emailu",
+        type: "checkbox"
+      }, {
+        label: "Maximální počet pokusů o přihlášení",
         type: "input"
+      }, {
+        label: "Maximální počet přihlášení na jedné IP adrese",
+        type: "input"
+      }, {
+        label: "Potřeba pravidelné změny hesla",
+        type: "checkbox"
+      }, {
+        label: "Interval změny hesla",
+        type: "input"
+      }, {
+        label: "Povolení dvoufaktorové autentizace",
+        type: "checkbox"
+      }, {
+        label: "Povolení přihlášení bývalím studentům",
+        type: "checkbox"
+      }, {
+        label: "Zobrazit počet předchozích pokusů o přihlášení",
+        type: "checkbox"
+      }, {
+        label: "Formát nového přihlášení pro učitele",
+        type: "input",
+        value: () => { return "BezDiakrit(lastName)" }
+      }, {
+        label: "Formát nového přihlášení pro studenty",
+        type: "input",
+        value: () => { return "BezDiakrit(left(lastName,7)+left(firstName,1))+subs(schoolYear,3,2)+'Z'" }
+      }, {
+        label: "Formát nového přihlášení pro rodiče",
+        type: "input",
+        value: () => { return "BezDiakrit(left(lastName,7)+left(firstName,1))+right(yearOfBirth,2)" }
       }]
     },
     "system/settings/otherModules": {
@@ -62,6 +118,7 @@ export class SettingsComponent {
       placeholder: 'school/code',
       label: 'school/code',
       readonly: true,
+      value: () => { return this.schoolingo.school.schoolInfo.code },
       notes: [
         {
           note: 'school/wannaOwnCode'
