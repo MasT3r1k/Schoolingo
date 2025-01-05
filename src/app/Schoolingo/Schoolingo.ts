@@ -111,9 +111,9 @@ export class Schoolingo {
     }
 
     // Login expired
-    public isLoginExpired: boolean = false;
-    public logoutInterval = setTimeout(() => {}, 1);
-    public loginModal: Modal = new Modal({ title: { text: 'login_title' }, size: 'size-2', items: [
+    public isLoginExpired = false;
+    public logoutInterval = setTimeout(() => {});
+    public loginModal = new Modal({ title: { text: 'login_title' }, size: 'size-2', items: [
         {
             type: "component",
             component: AuthLogin,
@@ -139,7 +139,7 @@ export class Schoolingo {
     }
 
     // Today's data
-    public todayWeek: number = moment().isoWeek();
+    public todayWeek = moment().isoWeek();
 
     public modal = '';
 
@@ -216,9 +216,9 @@ export class Schoolingo {
         * @default: 0
         */
         let maxHours = 0;
-        for(let i = 0;i < this.timetableAPI.length;i++) {
-            if (this.timetableAPI[i].hour > maxHours) {
-                maxHours = this.timetableAPI[i].hour;
+        for(const x of this.timetableAPI) {
+            if (x.hour > maxHours) {
+                maxHours = x.hour;
             }
         }
 
@@ -362,14 +362,14 @@ export class Schoolingo {
             return '';
         }
 
-        let person: personDetails = this.getPerson(personId)!;
+        let person = this.getPerson(personId)!;
 
         if (person == null) {
             return '';
         }
 
         let text = '';
-        let degrees: degree[] = person.degrees.sort((a, b) => a.weight - b.weight);
+        let degrees = person.degrees.sort((a, b) => a.weight - b.weight);
         degrees.forEach((degree: degree): void => {
             if (degree.isBefore) {
                 text += `${degree.shortcut} `;
@@ -387,7 +387,7 @@ export class Schoolingo {
     }
 
     public getStudentId(): number {
-        let user: user = this.userService.getUser()!;
+        let user = this.userService.getUser()!;
         let userId = user?.id;
     
         if (user && user.type == 'parent') {
@@ -410,7 +410,7 @@ export class Schoolingo {
     public studentService: studentService = { status: false };
 
     /** LIBRARY */
-    public bookInfo: BehaviorSubject<BookInfo | null> = new BehaviorSubject<BookInfo | null>(null);
+    public bookInfo = new BehaviorSubject<BookInfo | null>(null);
     public showBook(id: any[], type: 'book' | 'copy'): void {
         this.socketService.emit("library:getBookInfo", { type, id: id[0], loan: id[1] });
         

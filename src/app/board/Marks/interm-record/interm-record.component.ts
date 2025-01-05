@@ -25,8 +25,8 @@ export class IntermRecordComponent implements OnInit {
   public showSelect: 'groupSelect' | null = null;
   public listeners: Subscription[] = [];
   public groups: teacherGroup[] = [];
-  public selectedGroup: BehaviorSubject<number> = new BehaviorSubject(-1);
-  public selectedSubject: BehaviorSubject<number> = new BehaviorSubject(-1);
+  public selectedGroup = new BehaviorSubject(-1);
+  public selectedSubject = new BehaviorSubject(-1);
 
   public columns: any = [
     {
@@ -133,8 +133,8 @@ export class IntermRecordComponent implements OnInit {
 
     this.listeners.push(this.route.queryParamMap.subscribe((param: Params) => {
       // Show company
-      if (param.params['groupId'] != undefined && param.params['subjectId'] != undefined) {
-        this.selectGroup(param.params['groupId'], param.params['subjectId']);
+      if (param.params.groupId != undefined && param.params.subjectId != undefined) {
+        this.selectGroup(param.params.groupId, param.params.subjectId);
       }
     }));
   }

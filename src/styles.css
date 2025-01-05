@@ -50,7 +50,7 @@ a {
     --background-hover: color-mix( in oklab, hsl(222.857 calc(1 * 5.833%) 52.941% / 0.08) 100%, hsl(0 0% 0% / 0.08) 0% );
     --background-active: color-mix( in oklab, hsl(222.857 calc(1 * 5.833%) 52.941% / 0.16) 100%, hsl(0 0% 0% / 0.16) 0% );
     --calendar-background: hsl(240deg, 6%, 87%);
-    --navbar-shadow: rgba(6, 6, 7, 0.1) 0px 1px 0px 0px, rgba(2, 2, 2, 0.025) 0px 1.5px 0px 0px, rgba(6, 6, 7, 0.025) 0px 2px 0px 0px;
+    --navbar-shadow: rgba(6, 6, 7, 0.1) 0 1px 0 0, rgba(2, 2, 2, 0.025) 0 1.5px 0 0, rgba(6, 6, 7, 0.025) 0 2px 0 0;
     --dark-border: hsl(0deg, 0%, 13%);
     --color: hsl(0deg, 0%, 0%);
     --color-darker: hsl(0deg, 0%, 15%);
@@ -64,7 +64,7 @@ a {
     --error-color: hsl(0deg, 0%, 100%);
     --info-start-bg: hsl(206deg, 84%, 55%);
     --info-end-bg: hsl(206deg, 88%, 38%);
-    --header-shadow: rgba(2, 2, 2, 0.2) 0px 1px 0px 0px, rgba(6, 6, 7, 0.05) 0px 1.5px 0px 0px, rgba(2, 2, 2, 0.05) 0px 2px 0px 0px;
+    --header-shadow: rgba(2, 2, 2, 0.2) 0 1px 0 0, rgba(6, 6, 7, 0.05) 0 1.5px 0 0, rgba(2, 2, 2, 0.05) 0 2 0 0;
     --ag-background-color: #fff!important;
 }
 
@@ -77,7 +77,7 @@ a {
     --background-active: hsl(228deg 6% 32.5% / 24%);
     --background-tertiary: rgb(70,70,70,.12);
     --calendar-background: hsl(240deg, 6%, 13%);
-    --navbar-shadow: rgba(6, 6, 7, 0.1) 0px 1px 0px 0px, rgba(2, 2, 2, 0.025) 0px 1.5px 0px 0px, rgba(6, 6, 7, 0.025) 0px 2px 0px 0px;
+    --navbar-shadow: rgba(6, 6, 7, 0.1) 0 1px 0 0, rgba(2, 2, 2, 0.025) 0 1.5px 0 0, rgba(6, 6, 7, 0.025) 0 2px 0 0;
     --dark-border: hsla(0deg, 0%, 93%, 13.3%);
     --color: hsl(0deg, 0%, 100%);
     --color-darker: rgb(179, 179, 179);
@@ -91,7 +91,7 @@ a {
     --error-color: hsl(338deg, 82%, 69%);
     --info-start-bg: hsl(206deg, 84%, 35%);
     --info-end-bg: hsl(206deg, 88%, 18%);
-    --header-shadow: rgba(2, 2, 2, 0.2) 0px 1px 0px 0px, rgba(6, 6, 7, 0.05) 0px 1.5px 0px 0px, rgba(2, 2, 2, 0.05) 0px 2px 0px 0px;
+    --header-shadow: rgba(2, 2, 2, 0.2) 0 1px 0 0, rgba(6, 6, 7, 0.05) 0 1.5px 0 0, rgba(2, 2, 2, 0.05) 0 2px 0 0;
     --ag-background-color: #000!important;
 }
 
@@ -136,7 +136,7 @@ body {
     height: 100vh;
     max-width: 100vw;
     margin: 0;
-    font-family: "Twemoji Country Flags", "Roboto", sans-serif;
+    font-family: "Twemoji Country Flags", "Roboto", "sans-serif";
     background-color: var(--background-header);
     color: var(--color);
     overflow: hidden;
@@ -150,7 +150,11 @@ body {
 .mt { margin-top: 1rem!important; }
 .mb { margin-bottom: 1rem!important; }
 .mb-2 { margin-bottom: 2rem!important; }
-.center { display: flex;justify-content: center;align-items: center; }
+.center {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
 
 /* Loader */
 .loader {
@@ -176,13 +180,9 @@ body {
     animation: rotate 1s infinite linear;
 }
 
-.btn-loader.mr {
-    margin-right: 4px!important;
-}
+.btn-loader.mr { margin-right: 4px!important }
 
-.spin {
-    animation: rotate 1s infinite linear;
-}
+.spin { animation: rotate 1s infinite linear }
 
 @keyframes rotate {
     0% {
@@ -208,7 +208,7 @@ body {
     width: 100%;
     height: 100%;
     transform: translateX(-100%);
-    background-image: linear-gradient(to right, rgba(0, 0, 0, 0), rgba(228, 228, 231, 0.05), rgba(228, 228, 231, 0));
+    background-image: linear-gradient(to right, rgba(0, 0, 0, 0%), rgba(228, 228, 231, 0.05), rgba(228, 228, 231, 0%));
 }
 
 @keyframes shimmer {
@@ -276,18 +276,12 @@ schoolingo-dropdowns {
     background-color: var(--background-active);
 }
 
-.clickable {
-    cursor: pointer;
-}
+.clickable { cursor: pointer; }
 
 /* Flex */
-.flex {
-    display: flex;
-}
+.flex { display: flex }
 
-.align-items-center {
-    align-items: center;
-}
+.align-items-center { align-items: center }
 
 /* Flex Items */
 .flex-items {
@@ -296,9 +290,7 @@ schoolingo-dropdowns {
     align-items: center;
 }
 
-.flex-items > div {
-    margin: 0 8px;
-}
+.flex-items > div { margin: 0 8px; }
 
 
 .ab-absence { --absence-color: var(--primary); }
