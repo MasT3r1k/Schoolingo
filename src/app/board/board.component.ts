@@ -144,7 +144,7 @@ export class BoardComponent {
               console.log("System database is not working.")
               break;
           }
-      } 
+      }
     }));
 
     this.subscribers.push(this.schoolingo.socketService.addFunction("timetable:getLessons").subscribe((data: TimetableAPI[]) => {
