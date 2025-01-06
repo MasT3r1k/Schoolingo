@@ -16,7 +16,7 @@ export class IPManager {
 
     public ip!: string;
     public getMyIP(): string {
-        return this.ip || 'Žádná IP adresa nebyla nalezena.';
+        return this.ip || this.locale.getLocale('errors/noIP');
     }
     public ips: Record<string, IPInformation | null> = {};
     public getIPInfo(ip: string): IPInformation | null | void {
