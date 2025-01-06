@@ -42,3 +42,6 @@
 * Upraven systém vzhledu
 * Upraveno zapisování známek
 * Přidána kontrola pro modules a manager perms (+ nastavení oprávnění)
+* Upravené druhy zpráv a seznam zpráv
+* V přihlášených zařízení se nyní zobrazuje IP adresa
+* Možnost u rozvrhu schovat/zobrazit skupinu, učitele nebo místnost
