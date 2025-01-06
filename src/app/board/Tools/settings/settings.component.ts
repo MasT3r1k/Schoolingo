@@ -4,11 +4,11 @@ import sidebar from './sidebar';
 import { NgClass } from '@angular/common';
 import { BehaviorSubject } from 'rxjs';
 import { SettingsItem } from './sidebar.d';
-import { FormInput, FormManager } from '@Components/Forms/FormManager';
+import { FormInput } from '@Components/Forms/FormManager';
 
 @Component({
   standalone: true,
-  imports: [NgClass, FormManager],
+  imports: [NgClass],
   templateUrl: './settings.component.html',
   styleUrls: ['./settings.component.css', '../../../Styles/card.css', '../../../Styles/input.css']
 })
