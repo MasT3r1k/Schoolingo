@@ -45,3 +45,52 @@
 * Upravené druhy zpráv a seznam zpráv
 * V přihlášených zařízení se nyní zobrazuje IP adresa
 * Možnost u rozvrhu schovat/zobrazit skupinu, učitele nebo místnost
+
+## Nové funkce v přípravě (TODO)
+
+* Dokončit propojení s discordem
+* Propojení s hlavním systémem
+* Dokončit třídní knihu, správu domácích úkolů, správa známek
+* Správa suplování
+* Správa doučování
+* Přidat podporu pro zákonné zástupce v profilu
+* Přidat stránku pro historii přihlášení
+* Na stránku O systému zobrazit modal se stavem služeb
+* Upload systém
+
+### Přihlášení
+* Možnost nastavit jazyk a vzhled u přihlášení
+* Zprovoznit Zapomenuté heslo
+
+### Praxe
+* Tisk smlouvy
+* Tisk průvodky
+* Aktivita u firem
+* Hodnocení u firem
+* U seznamu deníků a v mém přehledu u studenta zprovoznit tlačítko "Vybrat instruktora"
+* Zápis deníku
+
+### Jídelna
+* Zprovoznit kompletně modul jídelny
+
+### Knihovna
+* Seznam knih
+* Podrobnosti o knize, počtu dostupných kopií
+* Přidat možnost pokut (propojení s platbama)
+
+### Platby
+* Zprovoznit kompletně modul platby
+
+### Zprávy
+* Odeslání zprávy
+* Vytvoření zprávy na nástěnku
+* Modal s označeními
+* Modal s přiloženými soubory
+* U omluvenky možnost vybrat dny pro omluvení (u rodičů)
+* Načítání zpráv + počet nepřečtených zpráv
+* To samé z přijatých zpráv i do odeslaných zpráv
+* Správa skupiny (společný chat pro třída s učitelem)
+* Zobrazení zpráv na nástěnce
+
+### Wiki
+- Připravit Wiki s popisem o funkcích, možnostech nastavení, vysvětlit jaké nastavení co nastavuje 
