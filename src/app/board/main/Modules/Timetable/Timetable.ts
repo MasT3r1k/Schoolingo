@@ -1,7 +1,6 @@
 import { NgClass } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { Schoolingo, TimetableLesson } from '@Schoolingo';
-import { user } from '@Schoolingo/User';
 import moment from 'moment';
 import { BehaviorSubject, Subscription } from 'rxjs';
 
@@ -41,7 +40,10 @@ export class TimetableComponent implements OnInit {
     if (!lessons) {
       return [];
     }
-    while (lessons[lessons.length - 1][0].empty) {
+    if (lessons.length === 0 || lessons[lessons.length - 1].length === 0) {
+      return [];
+    }
+    while (lessons[lessons.length - 1]?.[0]?.empty) {
       lessons.splice(lessons.length - 1, 1);
     }
 
