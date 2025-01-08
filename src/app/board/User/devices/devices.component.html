@@ -10,12 +10,12 @@
         <div class="select select-column">
             <div class="select-option only-value">
                 <div class="icon">
-                    <i [ngClass]="{ti: true, 'ti-device-desktop': !getMobile(getOwnUserAgent()), 'ti-device-mobile': getMobile(getOwnUserAgent())}"></i>
+                    <i [ngClass]="{ti: true, 'ti-device-desktop': !Utils.getMobile(Utils.getOwnUserAgent()), 'ti-device-mobile': Utils.getMobile(Utils.getOwnUserAgent())}"></i>
                 </div>
 
                 <div class="information">
                     <div class="device">
-                        {{ getOS(getOwnUserAgent()).toUpperCase() + ' - ' + getBrowser(getOwnUserAgent()).toUpperCase() }}
+                        {{ Utils.getOS(Utils.getOwnUserAgent()).toUpperCase() + ' - ' + Utils.getBrowser(Utils.getOwnUserAgent()).toUpperCase() }}
                         <div class="badges">
                             @if (schoolingo.getOfflineMode()) {
                                 <div class="badge">Offline Mod</div>
@@ -50,11 +50,11 @@
                 @for (device of getAnotherDevices(); track $index) {
                     <div class="select-option only-value">
                         <div class="icon">
-                            <i [ngClass]="{ti: true, 'ti-device-desktop': !getMobile(device.userAgent), 'ti-device-mobile': getMobile(device.userAgent)}"></i>
+                            <i [ngClass]="{ti: true, 'ti-device-desktop': !Utils.getMobile(device.userAgent), 'ti-device-mobile': Utils.getMobile(device.userAgent)}"></i>
                         </div>
         
                         <div class="information">
-                            <div class="device">{{ getOS(device.userAgent).toUpperCase() + ' - ' + getBrowser(device.userAgent).toUpperCase() }}
+                            <div class="device">{{ Utils.getOS(device.userAgent).toUpperCase() + ' - ' + Utils.getBrowser(device.userAgent).toUpperCase() }}
                             </div>
                             @if (device.expires) {
                                 <div class="time">{{ schoolingo.locale.getLocale('devices/until') + moment(device.expires).format('HH:mm:ss DD.MM.YYYY') + ' | IP: ' + country.getCountryByCode(schoolingo.ipManager.getIPInfo(device.ip)!.country)?.flag + ' ' + device.ip }}</div>

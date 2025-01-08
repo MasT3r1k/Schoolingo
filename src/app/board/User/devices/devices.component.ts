@@ -6,6 +6,7 @@ import { Country } from 'country-state-city';
 import moment from 'moment';
 import { Subscription } from 'rxjs';
 import { Device } from './devices.component.d'; 
+import { Utils } from '@Schoolingo/Utils';
 
 @Component({
   standalone: true,
@@ -23,6 +24,7 @@ export class DevicesComponent {
   ) {}
 
   moment = moment;
+  Utils = Utils;
 
   ngOnInit(): void {
     this.schoolingo.socketService.emit('devices:getDevices');
@@ -45,44 +47,6 @@ export class DevicesComponent {
     this.subscribers.forEach((subscribe: Subscription) => subscribe.unsubscribe());
   }
 
-  public getOS(userAgent: string): string {
-    {
-      var OSName = "???";
-      if (userAgent.includes("Win")) OSName = "Windows";
-      if (userAgent.includes("Mac")) OSName = "Macintosh";
-      if (userAgent.includes("Linux")) OSName = "Linux";
-      if (userAgent.includes("Android")) OSName = "Android";
-      if (userAgent.includes("like Mac")) OSName = "iOS";
-      return OSName;
-    }
-  }
-
-  public getOwnUserAgent(): string {
-    return window.navigator.userAgent;
-  }
-  
-
-  public getMobile(userAgent: string): boolean {
-    return /Mobi|Fennec|mini|Mobile|Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini|iP(ad|od|hone)/i.test(userAgent);
-  }
-
-  public getBrowser(userAgent: string): string {
-    let browser = '???';
-    if (userAgent.includes("Opera") || userAgent.includes('OPR')) {
-      browser = "Opera";
-    } else if (userAgent.includes("Edg")) {
-      browser = "Edge";
-    } else if (userAgent.includes("Chrome")) {
-      browser = "Chrome";
-    } else if (userAgent.includes("Safari")) {
-      browser = "Safari";
-    } else if (userAgent.includes("Firefox")) {
-      browser = "Mozilla";
-    } else if ((userAgent.includes("MSIE")) || (!!(document as any).documentMode == true)) {
-      browser = 'IE';
-    }
-    return browser;
-  }
 
   public getAnotherDevices(): Device[] {
     return this.devices.filter((device: Device) => !device.active);

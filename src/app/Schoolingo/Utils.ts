@@ -67,4 +67,43 @@ export function randomstring(length: number, numbers = true): string {
     }
     return age;
   }
+
+  export function getOS(userAgent: string): string {
+    {
+      var OSName = "???";
+      if (userAgent.includes("Win")) OSName = "Windows";
+      if (userAgent.includes("Mac")) OSName = "Macintosh";
+      if (userAgent.includes("Linux")) OSName = "Linux";
+      if (userAgent.includes("Android")) OSName = "Android";
+      if (userAgent.includes("like Mac")) OSName = "iOS";
+      return OSName;
+    }
+  }
+
+  export function getOwnUserAgent(): string {
+    return window.navigator.userAgent;
+  }
+  
+
+  export function getMobile(userAgent: string): boolean {
+    return /Mobi|Fennec|mini|Mobile|Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini|iP(ad|od|hone)/i.test(userAgent);
+  }
+
+  export function getBrowser(userAgent: string): string {
+    let browser = '???';
+    if (userAgent.includes("Opera") || userAgent.includes('OPR')) {
+      browser = "Opera";
+    } else if (userAgent.includes("Edg")) {
+      browser = "Edge";
+    } else if (userAgent.includes("Chrome")) {
+      browser = "Chrome";
+    } else if (userAgent.includes("Safari")) {
+      browser = "Safari";
+    } else if (userAgent.includes("Firefox")) {
+      browser = "Mozilla";
+    } else if ((userAgent.includes("MSIE")) || (!!(document as any).documentMode == true)) {
+      browser = 'IE';
+    }
+    return browser;
+  }
 }
