@@ -53,11 +53,11 @@ export class DatalistComponent implements OnInit {
     public visibleData: any[] = [];
 
     public getMaxPages(): number {
-        return Math.ceil(this.data.getValue().length / this.dataPerPage);
+        return Math.ceil(this.metadata.rows / this.dataPerPage);
     }
 
     public refreshData(): void {
-        this.visibleData = this.data.getValue().slice((this.page - 1) * this.dataPerPage, this.page * this.dataPerPage);
+        this.visibleData = this.data.getValue().slice(0, this.page * this.dataPerPage);
     }
 
     public loadData(): void {
@@ -71,9 +71,8 @@ export class DatalistComponent implements OnInit {
 
     public goPage(page: number): void {
         if (page <= 0 || page > this.getMaxPages()) return;
-        this.loadData();
-
         this.page = page;
+        this.loadData();
         this.refreshData();
     }
 
@@ -104,6 +103,7 @@ export class DatalistComponent implements OnInit {
         this.listeners.push(this.data.subscribe(() => {
             this.refreshData();
         }));
+
         if (this.options.url) {
             this.listeners.push(this.socketService.addFunction(this.options.url).subscribe(() => this.refreshData()));
         }
