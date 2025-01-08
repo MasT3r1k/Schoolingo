@@ -171,11 +171,6 @@ let config: SidebarGroup[] = [
                     item: "sidebar/traineeship/manage",
                     url: "traineeship/manage",
                     permission: ['manager:traineeship:manage']
-                },
-                {
-                    item: "sidebar/traineeship/settings",
-                    url: "traineeship/settings",
-                    permission: ['manager:traineeship:settings']
                 }]
             },
             {

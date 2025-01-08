@@ -32,7 +32,6 @@ import { OverviewComponent as TraineeshipOverview } from './board/Traineeship/ov
 import { DiaryComponent as TraineeshipDiary } from './board/Traineeship/diary/diary.component';
 import { CompaniesComponent as TraineeshipCompanies } from './board/Traineeship/companies/companies.component';
 import { ManageComponent as TraineeshipManage } from './board/Traineeship/manage/manage.component';
-import { SettingsComponent as TraineeshipSettings } from './board/Traineeship/settings/settings.component';
 import { OrderComponent as CanteenOrder } from './board/Canteen/order/order.component';
 import { DispensingComponent as CanteenDispensing } from './board/Canteen/dispensing/dispensing.component';
 import { MealsComponent as CanteenMeals } from './board/Canteen/meals/meals.component';
@@ -155,9 +154,6 @@ export const routes: Routes = [
             },
             {
               path: 'manage', component: TraineeshipManage
-            },
-            {
-              path: 'settings', component: TraineeshipSettings
             }
           ]
         },
