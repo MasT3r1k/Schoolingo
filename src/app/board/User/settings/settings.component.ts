@@ -7,16 +7,15 @@ import { Schoolingo } from '@Schoolingo';
 import { BehaviorSubject, Subscription } from 'rxjs';
 import { ThemeSelector } from './theme/theme';
 import { languages } from '@Schoolingo/Locale';
-import { QRCodeModule } from 'angularx-qrcode';
 import { Modal } from '@Components/Modal/Modal';
 import { TFAComponent } from './2fa/2fa.component';
 
 @Component({
-  selector: 'app-settings',
-  standalone: true,
-  imports: [TabsComponent, NgClass, FormManager, ThemeSelector, QRCodeModule],
-  templateUrl: './settings.component.html',
-  styleUrls: ['./settings.component.css', '../../../Styles/card.css', '../../../Styles/toast.css', '../../../Styles/input.css']
+    selector: 'app-settings',
+    standalone: true,
+    imports: [TabsComponent, NgClass, FormManager, ThemeSelector],
+    templateUrl: './settings.component.html',
+    styleUrls: ['./settings.component.css', '../../../Styles/card.css', '../../../Styles/toast.css', '../../../Styles/input.css']
 })
 export class SettingsComponent implements OnInit {
 

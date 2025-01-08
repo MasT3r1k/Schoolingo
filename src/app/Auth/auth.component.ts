@@ -4,7 +4,7 @@ import { AppConfig } from '@Schoolingo/App';
 import { languages } from '@Schoolingo/Locale';
 import { School } from '@Schoolingo/School';
 import { QRCodeComponent } from 'angularx-qrcode';
-import { FormButton, FormInput, FormList, FormManager } from '@Components/Forms/FormManager';
+import { FormList } from '@Components/Forms/FormManager';
 import { ActivatedRoute, Params } from '@angular/router';
 import { Logger } from '@Schoolingo/Logger';
 import { Title } from '@angular/platform-browser';
@@ -38,7 +38,6 @@ export class AuthComponent {
 
   constructor(
     public school: School,
-    private formList: FormList,
     private logger: Logger,
     private title: Title,
     private route: ActivatedRoute,
