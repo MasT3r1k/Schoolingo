@@ -7,7 +7,6 @@ import { Config } from "./Config";
 import { HttpClient } from "@angular/common/http";
 import { Moment } from "moment";
 import moment from "moment";
-import { CookieService } from "./Cookie";
 import { School } from "./School";
 import { BehaviorSubject } from "rxjs";
 export { user, child, personDetails, degree }
@@ -19,7 +18,6 @@ export class UserService {
         private storage: Storage,
         private router: Router,
         private socketService: SocketService,
-        private cookieService: CookieService,
         private http: HttpClient,
         private school: School
     ) {
