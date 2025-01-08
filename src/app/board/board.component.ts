@@ -47,15 +47,7 @@ interface AbsenceSubjectAPI {
 
 @Component({
   standalone: true,
-  imports: [NgClass, NgStyle, RouterLink, RouterLinkActive, RouterOutlet, Dropdown, ModalComponent, TablerIconsModule.pick({
-    IconMenu2,
-    IconChalkboard,
-    IconTimeDuration5,
-    IconBrandDiscord,
-    IconSettings,
-    IconUsers,
-    IconLogout
-  }), TablerIconComponent, ],
+  imports: [NgClass, NgStyle, RouterLink, RouterLinkActive, RouterOutlet, Dropdown, ModalComponent, TablerIconComponent],
   providers: [provideTablerIcons({
     IconMenu2,
     IconChalkboard,
