@@ -238,6 +238,9 @@ let config: SidebarGroup[] = [
                     item: 'sidebar/user/profile',
                     url: 'user/profile'
                 }, {
+                    item: 'sidebar/user/loginHistory',
+                    url: 'user/loginhistory'
+                }, {
                     item: 'sidebar/user/devices',
                     url: 'user/devices'
                 }, {

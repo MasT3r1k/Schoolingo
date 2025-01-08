@@ -11,6 +11,7 @@ import { TutoringComponent as TeachTutoring } from './board/Teach/tutoring/tutor
 import { ClassbookComponent as TeachClassbook } from './board/Teach/classbook/classbook.component';
 import { SubjectsComponent as TeachSubjects } from './board/Teach/subjects/subjects.component';
 import { ProfileComponent as UserProfile } from './board/User/profile/profile.component';
+import { LoginHistoryComponent as UserLoginHistory } from './board/User/login-history/login-history.component';
 import { DevicesComponent as UserDevices } from './board/User/devices/devices.component';
 import { SettingsComponent as UserSettings } from './board/User/settings/settings.component';
 import { SendComponent as MessagesSend } from './board/Messages/send/send.component';
@@ -225,6 +226,9 @@ export const routes: Routes = [
           children: [
             {
               path: 'profile', component: UserProfile
+            },
+            {
+              path: 'loginhistory', component: UserLoginHistory
             },
             {
               path: 'devices', component: UserDevices
