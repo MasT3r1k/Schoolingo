@@ -10,7 +10,11 @@
         <div class="select select-column">
             <div class="select-option only-value">
                 <div class="icon">
-                    <i [ngClass]="{ti: true, 'ti-device-desktop': !Utils.getMobile(Utils.getOwnUserAgent()), 'ti-device-mobile': Utils.getMobile(Utils.getOwnUserAgent())}"></i>
+                    @if (Utils.getMobile(Utils.getOwnUserAgent())) {
+                        <i-tabler name="device-mobile"></i-tabler>
+                    } @else {
+                        <i-tabler name="device-desktop"></i-tabler>
+                    }
                 </div>
 
                 <div class="information">
@@ -50,7 +54,11 @@
                 @for (device of getAnotherDevices(); track $index) {
                     <div class="select-option only-value">
                         <div class="icon">
-                            <i [ngClass]="{ti: true, 'ti-device-desktop': !Utils.getMobile(device.userAgent), 'ti-device-mobile': Utils.getMobile(device.userAgent)}"></i>
+                            @if (Utils.getMobile(device.userAgent)) {
+                                <i-tabler name="device-mobile"></i-tabler>
+                            } @else {
+                                <i-tabler name="device-desktop"></i-tabler>
+                            }
                         </div>
         
                         <div class="information">
@@ -62,7 +70,7 @@
                         </div>
         
                         <div class="logout" (click)="removeDevice(device.id)">
-                            <i class="ti ti-x"></i>
+                            <i-tabler name="x"></i-tabler>
                         </div>
                     </div>
                 } @empty {

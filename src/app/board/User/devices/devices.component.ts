@@ -7,10 +7,19 @@ import moment from 'moment';
 import { Subscription } from 'rxjs';
 import { Device } from './devices.component.d'; 
 import { Utils } from '@Schoolingo/Utils';
+import { provideTablerIcons, TablerIconComponent } from 'angular-tabler-icons';
+import { IconDeviceDesktop, IconDeviceMobile, IconX } from 'angular-tabler-icons/icons';
 
 @Component({
   standalone: true,
-  imports: [RouterLink, NgClass],
+  imports: [RouterLink, TablerIconComponent],
+  providers: [
+    provideTablerIcons({
+      IconDeviceDesktop,
+      IconDeviceMobile,
+      IconX
+    })
+  ],
   templateUrl: './devices.component.html',
   styleUrls: ['./devices.component.css', '../../../Styles/card.css', '../../../Styles/select.css']
 })
