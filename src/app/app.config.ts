@@ -1,5 +1,5 @@
 import { ApplicationConfig } from '@angular/core';
-import { provideRouter } from '@angular/router';
+import { PreloadAllModules, provideRouter, withPreloading } from '@angular/router';
 import { routes } from './app.routes';
 import { UserService } from '@Schoolingo/User';
 import { Storage } from '@Schoolingo/Storage';
@@ -26,7 +26,10 @@ import { Authentication } from '@Schoolingo/Auth';
 
 export const appConfig: ApplicationConfig = {
   providers: [
-    provideRouter(routes),
+    provideRouter(
+      routes,
+      withPreloading(PreloadAllModules)
+    ),
     provideHttpClient(),
     UserService,
     Storage,
