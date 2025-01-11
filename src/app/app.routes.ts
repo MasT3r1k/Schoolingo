@@ -53,6 +53,7 @@ import { ManageUsersComponent as ToolsManageUsers } from './board/Tools/manage-u
 import { DocumentsComponent } from './board/documents/documents.component';
 import { CalendarComponent } from './board/calendar/calendar.component';
 import { EducationMeasuresComponent as MarksEducationMeasures } from './board/Marks/education-measures/education-measures.component';
+import { VehiclesComponent as FleetVehiclesVehicles } from './board/fleetVehicles/vehicles/vehicles.component';
 
 export const routes: Routes = [
     {
@@ -64,34 +65,43 @@ export const routes: Routes = [
     {
       path: '', canActivate: [UserGuard], component: BoardComponent, children: [
         {
-          path: 'main', component: BoardMain
+          path: 'main',
+          loadComponent: () => import('./board/main/main.component').then(m => m.MainComponent)
         },
         {
-          path: 'students', component: Students
+          path: 'students',
+          loadComponent: () => import('./board/students/students.component').then(m => m.studentsComponent)
         },
         {
-          path: 'teachers', component: Teachers
+          path: 'teachers',
+          loadComponent: () => import('./board/teachers/teachers.component').then(m => m.TeachersComponent)
         },
         {
-          path: 'users', component: Users
+          path: 'users',
+          loadComponent: () => import('./board/manage-users/manage-users.component').then(m => m.ManageUsersComponent)
         },
         {
-          path: 'discordconnect', component: DiscordConnectComponent
+          path: 'discordconnect',
+          loadComponent: () => import('./board/discord-connect/discord-connect.component').then(m => m.DiscordConnectComponent)
         },
         {
           path: 'marks',
           children: [
             {
-              path: 'interm', component: MarksInterm
+              path: 'interm',
+              loadComponent: () => import('./board/Marks/interm/interm.component').then(m => m.IntermComponent)
             },
             {
-              path: 'midterm', component: MarksMidterm
+              path: 'midterm',
+              loadComponent: () => import('./board/Marks/midterm/midterm.component').then(m => m.MidtermComponent)
             },
             {
-              path: 'intermrecord', component: MarksIntermRecord
+              path: 'intermrecord',
+              loadComponent: () => import('./board/Marks/interm-record/interm-record.component').then(m => m.IntermRecordComponent)
             },
             {
-              path: 'educationmeasures', component: MarksEducationMeasures
+              path: 'educationmeasures',
+              loadComponent: () => import('./board/Marks/education-measures/education-measures.component').then(m => m.EducationMeasuresComponent)
             }
           ]
         },
@@ -99,25 +109,32 @@ export const routes: Routes = [
           path: 'teach',
           children: [
             {
-              path: 'timetable', component: TeachTimetable
+              path: 'timetable',
+              loadComponent: () => import('./board/Teach/timetable/timetable.component').then(m => m.TimetableComponent)
             },
             {
-              path: 'homeworks', component: TeachHomeworks
+              path: 'homeworks',
+              loadComponent: () => import('./board/Teach/homeworks/homeworks.component').then(m => m.HomeworksComponent)
             },
             {
-              path: 'absence', component: TeachAbsence
+              path: 'absence',
+              loadComponent: () => import('./board/Teach/absence/absence.component').then(m => m.AbsenceComponent)
             },
             {
-              path: 'substitution', component: TeachSubstitution
+              path: 'substitution',
+              loadComponent: () => import('./board/Teach/substitution/substitution.component').then(m => m.SubstitutionComponent)
             },
             {
-              path: 'tutoring', component: TeachTutoring
+              path: 'tutoring',
+              loadComponent: () => import('./board/Teach/tutoring/tutoring.component').then(m => m.TutoringComponent)
             },
             {
-              path: 'classbook', component: TeachClassbook
+              path: 'classbook',
+              loadComponent: () => import('./board/Teach/classbook/classbook.component').then(m => m.ClassbookComponent)
             },
             {
-              path: 'subjects', component: TeachSubjects
+              path: 'subjects',
+              loadComponent: () => import('./board/Teach/subjects/subjects.component').then(m => m.SubjectsComponent)
             }
           ]
         },
@@ -142,36 +159,48 @@ export const routes: Routes = [
           ]
         },
         {
-          path: 'traineeship',
+          path: 'messages',
           children: [
             {
-              path: 'overview', component: TraineeshipOverview
+              path: 'send',
+              loadComponent: () => import('./board/Messages/send/send.component').then(m => m.SendComponent)
             },
             {
-              path: 'diary', component: TraineeshipDiary
+              path: 'received',
+              loadComponent: () => import('./board/Messages/received/received.component').then(m => m.ReceivedComponent)
             },
             {
-              path: 'companies', component: TraineeshipCompanies
+              path: 'sent',
+              loadComponent: () => import('./board/Messages/sent/sent.component').then(m => m.SentComponent)
             },
             {
-              path: 'manage', component: TraineeshipManage
+              path: 'groups',
+              loadComponent: () => import('./board/Messages/groups/groups.component').then(m => m.GroupsComponent)
+            },
+            {
+              path: 'noticeboard',
+              loadComponent: () => import('./board/Messages/noticeboard/noticeboard.component').then(m => m.NoticeboardComponent)
             }
           ]
         },
         {
-          path: 'canteen',
+          path: 'traineeship',
           children: [
             {
-              path: 'order', component: CanteenOrder
+              path: 'overview',
+              loadComponent: () => import('./board/Traineeship/overview/overview.component').then(m => m.OverviewComponent)
             },
             {
-              path: 'dispensing', component: CanteenDispensing
+              path: 'diary',
+              loadComponent: () => import('./board/Traineeship/diary/diary.component').then(m => m.DiaryComponent)
             },
             {
-              path: 'meals', component: CanteenMeals
+              path: 'companies',
+              loadComponent: () => import('./board/Traineeship/companies/companies.component').then(m => m.CompaniesComponent)
             },
             {
-              path: 'settings', component: CanteenSettings
+              path: 'manage',
+              loadComponent: () => import('./board/Traineeship/manage/manage.component').then(m => m.ManageComponent)
             }
           ]
         },
