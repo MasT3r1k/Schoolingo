@@ -4,6 +4,7 @@ import { TabsComponent } from '@Components/Tabs/Tabs';
 import { Schoolingo } from '@Schoolingo';
 import moment from 'moment';
 import { BehaviorSubject } from 'rxjs';
+import { IconsModule } from '../../../Modules/Icons.module';
 
 enum ThreadTypes {
   MESSAGE,
@@ -37,7 +38,7 @@ interface Thread {
 
 @Component({
   standalone: true,
-  imports: [TabsComponent, NgClass, NgStyle],
+  imports: [TabsComponent, NgClass, NgStyle, IconsModule],
   templateUrl: './received.component.html',
   styleUrls: ['./received.component.css', '../../../Styles/card.css', '../../../Styles/input.css', '../../../Styles/item.css']
 })

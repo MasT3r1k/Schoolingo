@@ -9,10 +9,11 @@ import moment from 'moment';
 import { ContextButton } from '@Components/Dropdowns/Dropdown';
 import { absence } from '@Schoolingo/Absence';
 import { Modal } from '@Components/Modal/Modal';
+import { IconsModule } from '../../../Modules/Icons.module';
 
 @Component({
   standalone: true,
-  imports: [NgClass, TabsComponent],
+  imports: [NgClass, TabsComponent, IconsModule],
   templateUrl: './timetable.component.html',
   styleUrls: ['./timetable.component.css', '../../../Styles/card.css', '../../../Styles/item.css']
 })
@@ -23,7 +24,7 @@ export class TimetableComponent {
     public dropdown: Dropdown,
     private factory: RendererFactory2
     ) {
-        this.renderer = this.factory.createRenderer(window, null);
+      this.renderer = this.factory.createRenderer(window, null);
     }
 
   // Imports

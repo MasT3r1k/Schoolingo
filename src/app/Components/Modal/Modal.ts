@@ -3,6 +3,7 @@ import { Locale } from "@Schoolingo/Locale";
 import { modalOptions, modalItem } from "@Components/Modal/Modal.d";
 import { NgClass, NgComponentOutlet, NgStyle } from "@angular/common";
 import { TabsComponent } from "@Components/Tabs/Tabs";
+import { IconsModule } from "../../Modules/Icons.module";
 export { modalOptions, modalItem }
 
 let modals: Modal[] = [];
@@ -28,7 +29,7 @@ export class Modal {
     selector: 'schoolingo-modals',
     templateUrl: './Modal.html',
     standalone: true,
-    imports: [NgClass, TabsComponent, NgStyle, NgComponentOutlet],
+    imports: [NgClass, TabsComponent, NgStyle, NgComponentOutlet, IconsModule],
     styleUrls: ['./Modal.css', '../../Styles/input.css'],
     outputs: ['modal']
 })

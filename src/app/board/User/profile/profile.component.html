@@ -16,12 +16,16 @@
                             <div class="card-table-row">
                                 <div class="card-table-item">{{ "Celé jméno" }}</div>
                                 <div class="card-table-item">
-                                    <span>{{ schoolingo.formatPerson(schoolingo.userService.getUser()?.id ) }}</span>
+                                    <span>
+                                        {{ schoolingo.formatPerson(schoolingo.userService.getUser()?.id ) }}
+                                    </span>
                                 </div>
                             </div>
 
                             <div class="card-table-row">
-                                <div class="card-table-item">{{ schoolingo.locale.getLocale('birthday') }}</div>
+                                <div class="card-table-item">
+                                    {{ schoolingo.locale.getLocale('birthday') }}
+                                </div>
                                 <div class="card-table-item">
                                     <span>{{ profile.birthday.format("DD. MM. YYYY") }}</span>
                                 </div>
@@ -45,7 +49,7 @@
                                 <div class="card-table-row">
                                     <div class="card-table-item">{{ "Délka studia" }}</div>
                                     <div class="card-table-item">
-                                        <span>{{ profile.scopeYears }}</span>
+                                        <span>{{ profile.scopeYears + ' ' + schoolingo.locale.getLocale('ageUnit') }}</span>
                                     </div>
                                 </div>
                             }
@@ -66,7 +70,9 @@
                             <div class="card-table-row">
                                 <div class="card-table-item">{{ schoolingo.locale.getLocale('address') }}</div>
                                 <div class="card-table-item">
-                                    <span>{{ country.getCountryByCode("CZ")?.flag + " Šumavská 77, Strakonice 386 01" }}</span>
+                                    <span>
+                                        {{ country.getCountryByCode("CZ")?.flag + " Šumavská 77, Strakonice 386 01" }}
+                                    </span>
                                 </div>
                             </div>
 
@@ -115,12 +121,12 @@
                                 <div class="card-table-item">
                                     @if (profile.twofa) {
                                         <div class="badge activated">
-                                            <i class="ti ti-check"></i>
+                                            <i-tabler name="check"></i-tabler>
                                             <span>Aktivní</span>
                                         </div>
                                     } @else {
                                         <div class="badge notActivated">
-                                            <i class="ti ti-x"></i>
+                                            <i-tabler name="x"></i-tabler>
                                             <span>Neaktivní</span>
                                         </div>
                                     }
@@ -132,12 +138,12 @@
                                 <div class="card-table-item">
                                     @if (profile.fastlogin) {
                                         <div class="badge activated">
-                                            <i class="ti ti-check"></i>
+                                            <i-tabler name="check"></i-tabler>
                                             <span>Aktivní</span>
                                         </div>
                                     } @else {
                                         <div class="badge notActivated">
-                                            <i class="ti ti-x"></i>
+                                            <i-tabler name="x"></i-tabler>
                                             <span>Neaktivní</span>
                                         </div>
                                     }
@@ -190,7 +196,9 @@
                             <div class="card-table-row">
                                 <div class="card-table-item">{{ "Preferovaný jazyk" }}</div>
                                 <div class="card-table-item">
-                                    <span>{{ schoolingo.locale.locales[schoolingo.locale.getUserLocale()].name }}</span>
+                                    <span>
+                                        {{ schoolingo.locale.locales[schoolingo.locale.getUserLocale()].name }}
+                                    </span>
                                 </div>
                             </div>
 
@@ -198,14 +206,18 @@
                             <div class="card-table-row">
                                 <div class="card-table-item">{{ "Preferovaný vzhled" }}</div>
                                 <div class="card-table-item">
-                                    <span>{{ schoolingo.locale.getLocale('themes/' + schoolingo.theme.getTheme()) }}</span>
+                                    <span>
+                                        {{ schoolingo.locale.getLocale('themes/' + schoolingo.theme.getTheme()) }}
+                                    </span>
                                 </div>
                             </div>
 
                             <div class="card-table-row">
                                 <div class="card-table-item">{{ schoolingo.locale.getLocale('roles/main') }}</div>
                                 <div class="card-table-item">
-                                    <span>{{ schoolingo.locale.getLocale('roles/' + schoolingo.userService.getUser()?.type) }}</span>
+                                    <span>
+                                        {{ schoolingo.locale.getLocale('roles/' + schoolingo.userService.getUser()?.type) }}
+                                    </span>
                                 </div>
                             </div>
                         </div>
@@ -217,18 +229,20 @@
                             <div class="card-table-row">
                                 <div class="card-table-item">{{ "Emailové oznámení" }}</div>
                                 <div class="card-table-item">
-                                    <div class="badge notActivated">
-                                        <i class="ti ti-x"></i>
-                                        <span>Neaktivní</span>
+                                    <div class="badge activated">
+                                        <i-tabler name="check"></i-tabler>
+                                        <span>Aktivní</span>
                                     </div>
                                 </div>
                             </div>
 
                             <div class="card-table-row">
-                                <div class="card-table-item">{{ "Oznámení v mobilní aplikaci" }}</div>
+                                <div class="card-table-item">
+                                    {{ "Oznámení v mobilní aplikaci" }}
+                                </div>
                                 <div class="card-table-item">
                                     <div class="badge notActivated">
-                                        <i class="ti ti-x"></i>
+                                        <i-tabler name="x"></i-tabler>
                                         <span>Žádné mobilní zařízení nenalezeno</span>
                                     </div>
                                 </div>
@@ -238,8 +252,8 @@
                                 <div class="card-table-item">{{ "Oznámění o novém přihlášení" }}</div>
                                 <div class="card-table-item">
                                     <div class="badge activated">
-                                        <i class="ti ti-check"></i>
-                                        <span>Aktivní</span>
+                                        <i-tabler name="x"></i-tabler>
+                                        <span>Neaktivní</span>
                                     </div>
                                 </div>
                             </div>
@@ -248,7 +262,7 @@
                                 <div class="card-table-item">{{ "Povolené GDPR" }}</div>
                                 <div class="card-table-item">
                                     <div class="badge activated">
-                                        <i class="ti ti-check"></i>
+                                        <i-tabler name="check"></i-tabler>
                                         <span>Aktivní</span>
                                     </div>
                                 </div>
@@ -258,7 +272,7 @@
                                 <div class="card-table-item">{{ "Automaticky zobrazit další týden" }}</div>
                                 <div class="card-table-item">
                                     <div class="badge activated">
-                                        <i class="ti ti-check"></i>
+                                        <i-tabler name="check"></i-tabler>
                                         <span>Aktivní</span>
                                     </div>
                                 </div>

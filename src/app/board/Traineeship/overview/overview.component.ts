@@ -7,7 +7,7 @@ import moment from 'moment';
 import { writeDairyComponent } from '../writeDairy/writeDairy.component';
 import { Permission } from '@Schoolingo/Permissions';
 import { Subscription } from 'rxjs';
-import { NgClass } from '@angular/common';
+import { IconsModule } from '../../../Modules/Icons.module';
 
 type Box = {
   icon: string;
@@ -15,7 +15,7 @@ type Box = {
 
 @Component({
   standalone: true,
-  imports: [RouterLink, writeDairyComponent, NgClass],
+  imports: [RouterLink, writeDairyComponent, IconsModule],
   templateUrl: './overview.component.html',
   styleUrls: ['./overview.component.css', '../../../Styles/card.css', '../../../Styles/input.css']
 })
@@ -30,7 +30,7 @@ export class OverviewComponent implements OnInit {
 
   public boxes: Record<string, Box> = {
     companies: {
-      icon: "buildings"
+      icon: "building"
     },
     weeks: {
       icon: "calendar-week"

@@ -8,10 +8,11 @@ import moment from 'moment';
 import { BehaviorSubject, Subscription } from 'rxjs';
 import { Profile } from './profile';
 import { Permission } from '@Schoolingo/Permissions';
+import { IconsModule } from '../../../Modules/Icons.module';
 
 @Component({
   standalone: true,
-  imports: [TabsComponent, NgClass],
+  imports: [TabsComponent, NgClass, IconsModule],
   templateUrl: './profile.component.html',
   styleUrls: ['./profile.component.css', '../../../Styles/card.css']
 })

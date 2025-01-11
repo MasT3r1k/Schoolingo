@@ -8,11 +8,12 @@ import { BehaviorSubject } from 'rxjs';
 import { Module, MainModules } from './Modules/Modules';
 import { ModuleTitle } from './Modules/Modules';
 import { Permission } from '@Schoolingo/Permissions';
+import { IconsModule } from '../../Modules/Icons.module';
 
 @Component({
   selector: 'app-main',
   standalone: true,
-  imports: [RouterLink, TabsComponent, NgClass, NgComponentOutlet],
+  imports: [RouterLink, TabsComponent, NgClass, NgComponentOutlet, IconsModule],
   templateUrl: './main.component.html',
   styleUrls: ['./main.component.css', '../../Styles/item.css']
 })

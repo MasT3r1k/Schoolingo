@@ -3,11 +3,12 @@ import { TimetableLesson } from '@Schoolingo';
 import { Schoolingo } from '@Schoolingo';
 import moment from 'moment';
 import { BehaviorSubject, Subscription } from 'rxjs';
+import { IconsModule } from '../../../../Modules/Icons.module';
 
 @Component({
   host: {'module': 'Backpack'},
   standalone: true,
-  imports: [],
+  imports: [IconsModule],
   templateUrl: './Backpack.html',
   styleUrls: ['./Backpack.css', '../Modules.css']
 })

@@ -5,10 +5,11 @@ import { NgClass } from '@angular/common';
 import { BehaviorSubject } from 'rxjs';
 import { SettingsItem } from './sidebar.d';
 import { FormInput } from '@Components/Forms/FormManager';
+import { IconsModule } from '../../../Modules/Icons.module';
 
 @Component({
   standalone: true,
-  imports: [NgClass],
+  imports: [NgClass, IconsModule],
   templateUrl: './settings.component.html',
   styleUrls: ['./settings.component.css', '../../../Styles/card.css', '../../../Styles/input.css']
 })

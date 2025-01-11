@@ -11,8 +11,12 @@
             <div class="card-tab active">
                 <table class="table-subjects">
                     <thead>
-                        <th>{{ schoolingo.locale.getLocale('subject') }}</th>
-                        <th style="min-width: 100px;">{{ schoolingo.locale.getLocale('sidebar/absence') }}</th>
+                        <th>
+                            {{ schoolingo.locale.getLocale('subject') }}
+                        </th>
+                        <th style="min-width: 100px;">
+                            {{ schoolingo.locale.getLocale('sidebar/absence') }}
+                        </th>
                         <th style="min-width: 100px;">%</th>
                     </thead>
                     <tbody>
@@ -46,7 +50,7 @@
                             <th class="table-item absence-item">
                                 <div [ngClass]="['absence-block', 'ab-' + absence.locale]" [title]="schoolingo.locale.getLocale('absence/' + absence.locale)">
                                     @if (absence.icon) {
-                                        <i [ngClass]="['ti', 'ti-' + absence.icon]"></i>
+                                        <i-tabler [name]="absence.icon"></i-tabler>
                                     } @else {
                                         {{ schoolingo.locale.getLocale('absence/' + absence.locale).charAt(0).toUpperCase() }}
                                     }
@@ -99,7 +103,9 @@
                                         <span style="color: var(--color-darker);white-space: pre;">celkem za </span> {{ this.schoolingo.school.schoolYear.start.clone().add(month, 'month').startOf('month').format('MMMM YYYY') }}
                                     </td>
                                     @for (absence of absenceConfig; track [];let index2 = $index) {
-                                        <td class="table-item absence-item">{{ getCountMonth(month)[index2] }}</td>
+                                        <td class="table-item absence-item">
+                                            {{ getCountMonth(month)[index2] }}
+                                        </td>
                                     }
                                     <td class="table-item">
                                         {{ getCountAbsenceInMonth(month) || "" }}
@@ -113,12 +119,14 @@
 
             @if (tableHeader.active) {
                 <thead class="table-row" id="tableHeader" [ngStyle]="{ position: 'absolute', top: '-32px', left: '50%', width: tableHeader.width + 'px', transform: 'translate(-50%, ' + tableHeader.top + 'px)' }">
-                    <th class="table-item">{{ schoolingo.locale.getLocale('date') }}</th>
+                    <th class="table-item">
+                        {{ schoolingo.locale.getLocale('date') }}
+                    </th>
                     @for (absence of absenceConfig; track $index) {
                         <th class="table-item absence-item">
                             <div [ngClass]="['absence-block', 'ab-' + absence.locale]" [title]="schoolingo.locale.getLocale('absence/' + absence.locale)">
                                 @if (absence.icon) {
-                                    <i [ngClass]="['ti', 'ti-' + absence.icon]"></i>
+                                    <i-tabler [name]="absence.icon"></i-tabler>
                                 } @else {
                                     {{ schoolingo.locale.getLocale('absence/' + absence.locale).charAt(0).toUpperCase() }}
                                 }

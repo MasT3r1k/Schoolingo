@@ -19,16 +19,7 @@ import moment from 'moment';
 import { Subscription } from 'rxjs';
 import { AppConfig as App } from '@Schoolingo/App';
 import { Permission } from '@Schoolingo/Permissions';
-import { provideTablerIcons, TablerIconComponent, TablerIconsModule } from 'angular-tabler-icons';
-import {
-  IconMenu2,
-  IconChalkboard,
-  IconTimeDuration5,
-  IconBrandDiscord,
-  IconSettings,
-  IconUsers,
-  IconLogout
-} from 'angular-tabler-icons/icons';
+import { IconsModule } from '../Modules/Icons.module';
 
 interface AbsenceAPI {
   type: number;
@@ -47,16 +38,8 @@ interface AbsenceSubjectAPI {
 
 @Component({
   standalone: true,
-  imports: [NgClass, NgStyle, RouterLink, RouterLinkActive, RouterOutlet, Dropdown, ModalComponent, TablerIconComponent],
-  providers: [provideTablerIcons({
-    IconMenu2,
-    IconChalkboard,
-    IconTimeDuration5,
-    IconBrandDiscord,
-    IconSettings,
-    IconUsers,
-    IconLogout
-  })],
+  imports: [NgClass, NgStyle, RouterLink, RouterLinkActive, RouterOutlet, Dropdown, ModalComponent, IconsModule],
+  providers: [],
   templateUrl: './board.component.html',
   styleUrls: ['./board.component.css', '../Styles/item.css', '../Styles/app.css']
 })

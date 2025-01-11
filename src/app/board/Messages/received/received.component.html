@@ -5,7 +5,7 @@
         <div class="flex-items">
             <div class="item-btn text">
                 <div class="text">
-                    <i class="ti ti-filter"></i>
+                    <i-tabler name="filter"></i-tabler>
                     {{ schoolingo.locale.getLocale('filter') }}
                 </div>
             </div>
@@ -30,15 +30,15 @@
                                 <div class="type">
                                     <div class="icon">
                                         @if (thread.messages.length > 1) {
-                                            <i class="ti ti-messages"></i>
+                                            <i-tabler name="messages"></i-tabler>
                                         } @else {
-                                            <i class="ti ti-mail"></i>
+                                            <i-tabler name="mail"></i-tabler>
                                         }
                                     </div>
                                     <span>{{ thread.messages.length > 1 ? 'Vlákno (' + thread.messages.length + ' zprávy)' : 'Přímá zpráva' }}</span>
                                     <div class="tag" [ngStyle]="{ backgroundColor: schoolingo.messages.types[thread.type].color || ''}">
                                         @if (schoolingo.messages.types[thread.type].icon) {
-                                            <i [ngClass]="['ti', 'ti-' + schoolingo.messages.types[thread.type].icon]"></i>
+                                            <i-tabler [name]="schoolingo.messages.types[thread.type].icon || ''"></i-tabler>
                                         }
                                         {{ schoolingo.locale.getLocale('messages/types/' + schoolingo.messages.types[thread.type].label) }}
                                     </div>
@@ -46,11 +46,13 @@
                             </div>
                             <div class="right">
                                 <div class="time">
-                                    <span>{{ thread.messages[thread.messages.length - 1].date.calendar() }}</span>
+                                    <span>
+                                        {{ thread.messages[thread.messages.length - 1].date.calendar() }}
+                                    </span>
                                 </div>
                                 <div class="tags">
                                     <div class="tag">
-                                        <i class="ti ti-paperclip"></i>
+                                        <i-tabler name="paperclip"></i-tabler>
                                         Obsahuje přílohy
                                     </div>                                
                                     <div class="tag red">{{ schoolingo.locale.getLocale('messages/tags/requireConfirmation') }}</div>
@@ -82,7 +84,7 @@
                             @for(message of schoolingo.messages.types;track $index) {
                                 <div class="tag" [ngStyle]="{ backgroundColor: message.color || ''}">
                                     @if (message.icon) {
-                                        <i [ngClass]="['ti', 'ti-' + message.icon]"></i>
+                                        <i-tabler [name]="message.icon"></i-tabler>
                                     }
                                     {{ schoolingo.locale.getLocale('messages/types/' + message.label) }}
                                 </div>
@@ -99,19 +101,23 @@
                         <div class="left">
                             <div class="item-btn">
                                 <div class="icon">
-                                    <i class="ti ti-corner-up-left"></i>
+                                    <i-tabler name="corner-up-left"></i-tabler>
                                 </div>
-                                <div class="name">{{ schoolingo.locale.getLocale('buttons/reply') }}</div>
+                                <div class="name">
+                                    {{ schoolingo.locale.getLocale('buttons/reply') }}
+                                </div>
                             </div>
                             <div class="item-btn">
                                 <div class="icon">
-                                    <i class="ti ti-arrow-big-right"></i>
+                                    <i-tabler name="arrow-big-right"></i-tabler>
                                 </div>
-                                <div class="name">{{ schoolingo.locale.getLocale('buttons/forward') }}</div>
+                                <div class="name">
+                                    {{ schoolingo.locale.getLocale('buttons/forward') }}
+                                </div>
                             </div>
                             <div class="item-btn text">
                                 <div class="text green">
-                                    <i class="ti ti-check" style="font-size: 20px;"></i>
+                                    <i-tabler name="check" style="width:20px;height:20px;"></i-tabler>
                                     <span>Potvrdit přečtení</span>
                                 </div>
                             </div>
@@ -119,9 +125,11 @@
                         <div class="right">
                             <div class="item-btn">
                                 <div class="icon">
-                                    <i class="ti ti-square-forbid"></i>
+                                    <i-tabler name="square-forbid"></i-tabler>
                                 </div>
-                                <div class="name">{{ schoolingo.locale.getLocale('messages/suppress') }}</div>
+                                <div class="name">
+                                    {{ schoolingo.locale.getLocale('messages/suppress') }}
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -132,15 +140,15 @@
                                 <div class="type">
                                     <div class="icon">
                                         @if (threads[selectedThread].messages.length > 1) {
-                                            <i class="ti ti-messages"></i>
+                                            <i-tabler name="messages"></i-tabler>
                                         } @else {
-                                            <i class="ti ti-mail"></i>
+                                            <i-tabler name="mail"></i-tabler>
                                         }
                                     </div>
                                     <span>{{ threads[selectedThread].messages.length > 1 ? 'Vlákno (' + threads[selectedThread].messages.length + ' zprávy)' : 'Přímá zpráva' }}</span>
                                     <div class="tag" [ngStyle]="{ backgroundColor: schoolingo.messages.types[threads[selectedThread].type].color || ''}">
                                         @if (schoolingo.messages.types[threads[selectedThread].type].icon) {
-                                            <i [ngClass]="['ti', 'ti-' + schoolingo.messages.types[threads[selectedThread].type].icon]"></i>
+                                            <i-tabler [name]="schoolingo.messages.types[threads[selectedThread].type].icon || ''"></i-tabler>
                                         }
                                         {{ schoolingo.locale.getLocale('messages/types/' + schoolingo.messages.types[threads[selectedThread].type].label) }}
                                     </div>
@@ -158,11 +166,11 @@
                             <div class="card-row">
                                 <div class="left">
                                     <div>
-                                        <i class="ti ti-calendar-month"></i>
+                                        <i-tabler name="calendar-month"></i-tabler>
                                         <span>Od: xx.xx.xxxx</span>
                                     </div>
                                     <div>
-                                        <i class="ti ti-calendar-month"></i>
+                                        <i-tabler name="calendar-month"></i-tabler>
                                         <span>Do: xx.xx.xxxx</span>
                                     </div>
                                 </div>

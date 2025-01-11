@@ -4,10 +4,11 @@ import { TabsComponent } from '@Components/Tabs/Tabs';
 import { Absence, Schoolingo } from '@Schoolingo';
 import { BehaviorSubject, Subscription } from 'rxjs';
 import * as AbsenceConfig from "@Schoolingo/Absence";
+import { IconsModule } from '../../../Modules/Icons.module';
 
 @Component({
   standalone: true,
-  imports: [TabsComponent, NgClass, NgStyle],
+  imports: [TabsComponent, NgClass, NgStyle, IconsModule],
   templateUrl: './absence.component.html',
   styleUrls: ['./absence.component.css', '../../../Styles/card.css']
 })

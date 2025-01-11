@@ -8,10 +8,11 @@ import { ModalSelectReceivers } from '../modals/selectReceivers/selectReceivers'
 import { Modal } from '@Components/Modal/Modal';
 import { TabsComponent } from '@Components/Tabs/Tabs';
 import { AppConfig } from '@Schoolingo/App';
+import { IconsModule } from '../../../Modules/Icons.module';
 
 @Component({
   standalone: true,
-  imports: [NgClass, TabsComponent],
+  imports: [NgClass, TabsComponent, IconsModule],
   templateUrl: './send.component.html',
   styleUrls: ['./send.component.css', '../../../Styles/card.css', '../../../Styles/input.css']
 })

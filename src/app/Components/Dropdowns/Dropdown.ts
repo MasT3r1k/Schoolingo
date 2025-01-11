@@ -5,6 +5,7 @@ import { Locale } from "@Schoolingo/Locale";
 import { SafeHtml } from "@angular/platform-browser";
 import moment from "moment";
 import { Logger } from "@Schoolingo/Logger";
+import { IconsModule } from "../../Modules/Icons.module";
 export { ContextButton, ContextButtonRightText, ContextMenu }
 
 //! DON'T IMPORT THIS INTO SPECIFIC COMPONENTS, ITS ALREADY IN THE MAIN COMPONENT
@@ -15,7 +16,7 @@ let dropdowns: Record<string, ContextMenu> = {};
     selector: 'schoolingo-dropdowns',
     templateUrl: './Dropdown.html',
     standalone: true,
-    imports: [NgClass, NgStyle],
+    imports: [NgClass, NgStyle, IconsModule],
     styleUrls: ['./Dropdown.css']
 })
 

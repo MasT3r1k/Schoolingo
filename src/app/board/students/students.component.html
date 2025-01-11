@@ -14,7 +14,7 @@
                         }}
                     </p>
                     <div class="badge blue-info">
-                        <i class="infinity-icon ti ti-infinity"></i>
+                        <i-tabler name="infinity" class="infinity-icon"></i-tabler>
                         {{ schoolingo.locale.getLocale('students/infiniteLimit') }}
                     </div>
                 }
@@ -53,7 +53,9 @@
                     }
                     @case("error") {
                         <div class="alerts">
-                            <div class="alert red" style="margin: 0;">{{ schoolingo.locale.getLocale('students/noAccessToStudent') }}</div>
+                            <div class="alert red" style="margin: 0;">
+                                {{ schoolingo.locale.getLocale('students/noAccessToStudent') }}
+                            </div>
                         </div>
                     }
                     @default {
@@ -71,11 +73,17 @@
                             <div class="right">
                                 <div class="items">
                                     <div class="item">
-                                        <div class="title value">{{ schoolingo.formatPerson(loadedStudent.studentInfo.personId) }}</div>
+                                        <div class="title value">
+                                            {{ schoolingo.formatPerson(loadedStudent.studentInfo.personId) }}
+                                        </div>
                                     </div>
                                     <div class="item">
-                                        <div class="title">{{ schoolingo.locale.getLocale('class') }}</div>
-                                        <div class="value">{{ 'B3.I' }}</div>
+                                        <div class="title">
+                                            {{ schoolingo.locale.getLocale('class') }}
+                                        </div>
+                                        <div class="value">
+                                            {{ 'B3.I' }}
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -83,7 +91,11 @@
                                 <div [ngClass]="['btn', 'submit', 'small', selectedTab.getValue() || !false ? 'gray' : '']" role="button">Upravit</div>
                                 <div [ngClass]="{'item-btn': true, active: maximazedWindow}" (click)="toggleMaximize()">
                                     <div class="icon">
-                                        <i [ngClass]="['ti', 'ti-window-' + (maximazedWindow ? 'minimize' : 'maximize')]"></i>
+                                        @if (maximazedWindow) {
+                                            <i-tabler name="window-minimize"></i-tabler>
+                                        } @else {
+                                            <i-tabler name="window-maximize"></i-tabler>
+                                        }
                                     </div>
                                 </div>
                             </div>

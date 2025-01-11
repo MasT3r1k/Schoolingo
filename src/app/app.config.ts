@@ -23,6 +23,7 @@ import { Traineeship } from '@Schoolingo/Traineeship';
 import { Homeworks } from '@Schoolingo/Homeworks';
 import { IPManager } from '@Schoolingo/IPManager';
 import { Authentication } from '@Schoolingo/Auth';
+import { IconsModule } from './Modules/Icons.module';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -49,7 +50,8 @@ export const appConfig: ApplicationConfig = {
     Homeworks,
     IPManager,
     Traineeship,
-    Authentication
+    Authentication,
+    IconsModule
   ],
   
 };

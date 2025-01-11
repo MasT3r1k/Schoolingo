@@ -5,10 +5,11 @@ import { TabsComponent } from '@Components/Tabs/Tabs';
 import { Schoolingo } from '@Schoolingo';
 import { Utils } from '@Schoolingo/Utils';
 import { BehaviorSubject } from 'rxjs';
+import { IconsModule } from '../../../../Modules/Icons.module';
 
 @Component({
   standalone: true,
-  imports: [FormsModule, ReactiveFormsModule, TabsComponent, NgClass],
+  imports: [FormsModule, ReactiveFormsModule, TabsComponent, NgClass, IconsModule],
   templateUrl: './editCompanyModal.html',
   styleUrls: ['../../../../Styles/input.css', './editCompanyModal.css']
 })

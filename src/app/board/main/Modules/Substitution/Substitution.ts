@@ -3,11 +3,12 @@ import { Component, OnInit } from '@angular/core';
 import { Schoolingo, Substitution, TimetableLesson } from '@Schoolingo';
 import moment from 'moment';
 import { BehaviorSubject, Subscription } from 'rxjs';
+import { IconsModule } from '../../../../Modules/Icons.module';
 
 @Component({
   host: {'module': 'Substitution'},
   standalone: true,
-  imports: [NgClass],
+  imports: [NgClass, IconsModule],
   templateUrl: './Substitution.html',
   styleUrls: ['./Substitution.css', '../Modules.css']
 })

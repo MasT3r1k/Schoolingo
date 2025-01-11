@@ -19,7 +19,11 @@
                                     <div class="item-label">{{ schoolingo.locale.getLocale(item.label) }}</div>
                                     @if (item.active != undefined) {
                                         <div [ngClass]="['dropdown-icon', item?.active ? 'active' : '']">
-                                            <i [ngClass]="['ti', 'ti-' + (item?.active ? 'check' : 'x')]"></i>
+                                            @if (item?.active) {
+                                                <i-tabler name="check"></i-tabler>
+                                            } @else {
+                                                <i-tabler name="x"></i-tabler>
+                                            }
                                         </div>
                                     }
                                 </div>
@@ -40,12 +44,20 @@
                                 <div class="left">
                                     <p>{{ schoolingo.locale.getLocale(item.label) }}</p>
                                     @if (item.description) {
-                                        <p>{{ schoolingo.locale.getLocale(item.description) }}</p>
+                                        <p>
+                                            {{ schoolingo.locale.getLocale(item.description) }}
+                                        </p>
                                     }
                                 </div>
                                 <div class="right">
-                                    <div [ngClass]="{checkbox: true}">
-                                        <div class="knob"></div>
+                                    <div [ngClass]="{checkbox: true, checked: !true}">
+                                        <div class="knob">
+                                            @if (!true) {
+                                                <i-tabler name="check"></i-tabler>
+                                            } @else {
+                                                <i-tabler name="x"></i-tabler>
+                                            }
+                                        </div>
                                         <div class="btn-bg"></div>
                                     </div>
                                 </div>

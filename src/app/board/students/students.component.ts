@@ -9,10 +9,11 @@ import { Utils } from '@Schoolingo/Utils';
 import moment from 'moment';
 import { BehaviorSubject, debounceTime, Subscription } from 'rxjs';
 import { studentInfoAPI } from './students';
+import { IconsModule } from '../../Modules/Icons.module';
 
 @Component({
   standalone: true,
-  imports: [DatalistComponent, TabsComponent, FormsModule, ReactiveFormsModule, NgStyle, NgClass],
+  imports: [DatalistComponent, TabsComponent, FormsModule, ReactiveFormsModule, NgStyle, NgClass, IconsModule],
   templateUrl: './students.component.html',
   styleUrls: ['./students.component.css', '../../Styles/card.css', '../../Styles/input.css', '../../Styles/item.css', '../../Styles/app.css']
 })

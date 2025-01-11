@@ -3,11 +3,12 @@ import { Component, OnInit } from '@angular/core';
 import { Schoolingo, TimetableLesson } from '@Schoolingo';
 import moment from 'moment';
 import { BehaviorSubject, Subscription } from 'rxjs';
+import { IconsModule } from '../../../../Modules/Icons.module';
 
 @Component({
   host: {'module': 'timetable'},
   standalone: true,
-  imports: [NgClass],
+  imports: [NgClass, IconsModule],
   templateUrl: './Timetable.html',
   styleUrls: ['./Timetable.css', '../Modules.css']
 })

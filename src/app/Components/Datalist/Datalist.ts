@@ -5,12 +5,13 @@ import { BehaviorSubject, debounceTime, Subscription } from "rxjs";
 import { NgClass } from "@angular/common";
 import { SocketService } from "@Schoolingo/Socket";
 import { FormControl, FormsModule, ReactiveFormsModule } from "@angular/forms";
+import { IconsModule } from "../../Modules/Icons.module";
 export { Data, DatalistOptions, Metadata, dataAPI, errorAPI }
 @Component({
     selector: 'schoolingo-datalist',
     templateUrl: './Datalist.html',
     standalone: true,
-    imports: [NgClass, FormsModule, ReactiveFormsModule],
+    imports: [NgClass, FormsModule, ReactiveFormsModule, IconsModule],
     styleUrls: ['./Datalist.css', '../../Styles/input.css'],
     outputs: ['datalist']
 })
