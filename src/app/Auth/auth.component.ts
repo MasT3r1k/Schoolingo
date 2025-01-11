@@ -3,8 +3,7 @@ import { Component, Type } from '@angular/core';
 import { AppConfig } from '@Schoolingo/App';
 import { languages } from '@Schoolingo/Locale';
 import { School } from '@Schoolingo/School';
-import { QRCodeComponent } from 'angularx-qrcode';
-import { FormList } from '@Components/Forms/FormManager';
+import { QRCodeModule } from 'angularx-qrcode';
 import { ActivatedRoute, Params } from '@angular/router';
 import { Logger } from '@Schoolingo/Logger';
 import { Title } from '@angular/platform-browser';
@@ -24,7 +23,7 @@ interface QRStatus {
 
 @Component({
   standalone: true,
-  imports: [QRCodeComponent , NgStyle, NgComponentOutlet],
+  imports: [QRCodeModule, NgStyle, NgComponentOutlet],
   providers: [Storage],
   templateUrl: './auth.component.html',
   styleUrls: ['./auth.component.css', '../Styles/card.css', '../Styles/select.css']

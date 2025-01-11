@@ -26,10 +26,7 @@ import { Authentication } from '@Schoolingo/Auth';
 
 export const appConfig: ApplicationConfig = {
   providers: [
-    provideRouter(
-      routes,
-      withPreloading(PreloadAllModules)
-    ),
+    provideRouter(routes),
     provideHttpClient(),
     UserService,
     Storage,

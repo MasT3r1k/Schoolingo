@@ -1,11 +1,11 @@
 import { Component } from "@angular/core";
 import { FormsModule, ReactiveFormsModule } from "@angular/forms";
 import { Schoolingo } from "@Schoolingo";
-import { QRCodeComponent } from "angularx-qrcode";
+import { QRCodeModule } from "angularx-qrcode";
 
 @Component({
     standalone: true,
-    imports: [QRCodeComponent, FormsModule, ReactiveFormsModule],
+    imports: [QRCodeModule, FormsModule, ReactiveFormsModule],
     templateUrl: './2fa.component.html',
     styleUrls: ['./2fa.component.css', '../../../../Styles/card.css', '../../../../Styles/input.css']
 })

@@ -15,10 +15,6 @@ import { errorAPI } from '@Components/Datalist/Datalist';
 import { UserService } from '@Schoolingo/User';
 import moment from 'moment';
 
-// TODO: `HttpClientModule` should not be imported into a component directly.
-// Please refactor the code to add `provideHttpClient()` call to the provider list in the
-// application bootstrap logic and remove the `HttpClientModule` import from this component.
-
 @Component({
   selector: 'app-root',
   standalone: true,
@@ -26,6 +22,7 @@ import moment from 'moment';
   templateUrl: './app.component.html',
   styleUrls: ['Styles/app.css']
 })
+
 export class AppComponent implements OnInit {
   private localeLanguageSubscribe!: Subscription;
 
