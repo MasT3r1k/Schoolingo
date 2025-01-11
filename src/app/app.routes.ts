@@ -216,7 +216,7 @@ export const routes: Routes = [
           ]
         },
         {
-          path: 'fleetVehicles',
+          path: 'fleetvehicles',
           children: [
             {
               path: 'vehicles', component: FleetVehiclesVehicles

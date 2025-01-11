@@ -178,12 +178,12 @@ let config: SidebarGroup[] = [
                 modules: ['fleetVehicles'],
                 children: [{
                     item: "sidebar/fleetVehicles/overview",
-                    url: "fleetVehicles/overview",
+                    url: "fleetvehicles/overview",
                     permission: ['teacher']
                 },
                 {
                     item: "sidebar/fleetVehicles/vehicles",
-                    url: "fleetVehicles/vehicles",
+                    url: "fleetvehicles/vehicles",
                     permission: ['teacher']
                 }]
             },
