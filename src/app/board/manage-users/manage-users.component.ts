@@ -2,13 +2,10 @@ import { NgStyle, NgClass } from '@angular/common';
 import { Component } from '@angular/core';
 import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { Data, dataAPI, DatalistComponent, errorAPI, Metadata } from '@Components/Datalist/Datalist';
-import { TabsComponent } from '@Components/Tabs/Tabs';
 import { Schoolingo } from '@Schoolingo';
 import { Permission } from '@Schoolingo/Permissions';
 import { BehaviorSubject, Subscription } from 'rxjs';
 import { studentInfoAPI } from '../students/students';
-import moment from 'moment';
-import { Utils } from '@Schoolingo/Utils';
 
 function getUserRole(studentInfO: { studentId: number, teacherId: number, parentId: number }): string {
   if (studentInfO.studentId !== null) return "student";
