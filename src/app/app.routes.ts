@@ -187,6 +187,14 @@ export const routes: Routes = [
           ]
         },
         {
+          path: 'fleetVehicles',
+          children: [
+            {
+              path: 'vehicles', component: FleetVehiclesVehicles
+            }
+          ]
+        },
+        {
           path: 'payments',
           children: [
             {

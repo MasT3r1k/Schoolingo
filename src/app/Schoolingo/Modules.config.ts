@@ -12,5 +12,8 @@ export let modulesConfig: Record<modules, ModuleConfig> = {
     },
     "payments": {
         name: "sidebar/payments/main"
+    },
+    "fleetVehicles": {
+        name: "sidebar/fleetVehicles/main"
     }
 };

@@ -174,6 +174,20 @@ let config: SidebarGroup[] = [
                 }]
             },
             {
+                item: "sidebar/fleetVehicles/main",
+                modules: ['fleetVehicles'],
+                children: [{
+                    item: "sidebar/fleetVehicles/overview",
+                    url: "fleetVehicles/overview",
+                    permission: ['teacher']
+                },
+                {
+                    item: "sidebar/fleetVehicles/vehicles",
+                    url: "fleetVehicles/vehicles",
+                    permission: ['teacher']
+                }]
+            },
+            {
                 item: 'sidebar/library/main',
                 permission: ['all'],
                 modules: ['library'],
