@@ -16,9 +16,9 @@ export enum AbsenceType {
 export const absence: AbsenceConfig[] = [
     { locale: 'absence', icon: 'slash' },
     { locale: 'excused', icon: 'x' },
-    { locale: 'unexcused' },
+    { locale: 'unexcused', icon: 'letter-n' },
     { locale: 'non_count', icon: 'minus' },
-    { locale: 'late' },
-    { locale: 'early' },
-    { locale: 'distance' },
+    { locale: 'late', icon: 'letter-p' },
+    { locale: 'early', icon: 'letter-o' },
+    { locale: 'distance', icon: 'letter-d' },
 ];
