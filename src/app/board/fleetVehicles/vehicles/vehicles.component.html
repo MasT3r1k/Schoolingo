@@ -1,10 +1,42 @@
-<div class="card">
-    <div class="card-top"></div>
-    <div class="card-header mb">
-        <div class="left">
-            <h2>{{ schoolingo.locale.getLocale('sidebar/fleetVehicles/vehicles') }}</h2>
+@switch (page) {
+    @case("list") {
+        <div class="card">
+            <div class="card-top"></div>
+            <div class="card-header mb">
+                <div class="left">
+                    <h2>
+                        {{ schoolingo.locale.getLocale('sidebar/fleetVehicles/vehicles') }}
+                    </h2>
+                </div>
+                <div class="flex-items"></div>
+            </div>
+            <div class="card-body">
+                <div class="form-group mb">
+                    <input type="text" name="search" [formControl]="search" [placeholder]="schoolingo.locale.getLocale('fleetVehicles/searchPlaceholder')" />
+                </div>
+        
+                <schoolingo-datalist [head]="['fleetVehicles/vehicleInfo/manufacture', 'fleetVehicles/vehicleInfo/model', 'fleetVehicles/vehicleInfo/year_manufacture', 'fleetVehicles/vehicleInfo/plate', 'fleetVehicles/vehicleInfo/mileage']" [options]="{ url: 'fleetVehicles:getVehicles' }" [data]="vehicles" [metadata]="metadata" (datalist)="receivedDatalist($event)" [search]="search" [clickFc]="onClick"></schoolingo-datalist>
+        
+                <div class="btn" (click)="getVehicleInfo()">Získat VIN informace</div>
+            </div>
         </div>
-        <div class="flex-items"></div>
-    </div>
-    <div class="card-body"></div>
-</div>
+    }
+    @case("detail") {
+        <div class="card">
+            <div class="card-top"></div>
+            <div class="card-header mb">
+                <div class="left">
+                    <h2 (click)="page = 'list'">
+                        {{ schoolingo.locale.getLocale('sidebar/fleetVehicles/vehicles') }}
+                        >
+                        {{ selectedVehicle[1].value + ' ' + selectedVehicle[2].value }}
+                    </h2>
+                </div>
+                <div class="flex-items"></div>
+            </div>
+            <div class="card-body">
+
+            </div>
+        </div>
+    }
+}
