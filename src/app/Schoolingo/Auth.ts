@@ -88,7 +88,11 @@ export class Authentication {
                 this.page = 'login';
                 this.password = '';
                 this.token2FA = '';
-                this.router.navigate(['', ...nextURL.split('/')]);
+                if (this.router.url.startsWith('/login')) {
+                    this.router.navigate(['', ...nextURL.split('/')]);                    
+                } else {
+                    this.socketService.connect();
+                }
                 this.isExecuting = false;
             }
     
