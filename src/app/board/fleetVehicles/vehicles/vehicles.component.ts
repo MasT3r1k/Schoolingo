@@ -54,6 +54,15 @@ export class VehiclesComponent implements OnInit {
         this.vehicles.next(vehicleList);
       }
     }));
+
+    this.listeners.push(this.schoolingo.socketService.addFunction("fleetVehicles:getVehicleInfo").subscribe((vehicleInfo: any | errorAPI) => {
+      console.log(vehicleInfo)
+      this.selectedVehicle = vehicleInfo[0];
+    }));
+  }
+
+  ngOnDestroy(): void {
+    this.listeners.forEach((sub: Subscription) => sub.unsubscribe());
   }
 
   public getVehicleInfo(): void {
@@ -65,9 +74,7 @@ export class VehiclesComponent implements OnInit {
   }
 
   onClick = (id: any, index: number): void => {
-    console.log('ID: ' + id[0].id);
-    console.log('Index: ' + index);
-    this.selectedVehicle = this.vehicles.getValue()[index];
+    this.schoolingo.socketService.emit('fleetVehicles:getVehicleInfo', { vehicleId: id[0].id });
     this.page = 'detail';
   }
 

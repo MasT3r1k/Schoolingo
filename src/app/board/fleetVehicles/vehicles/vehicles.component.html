@@ -26,10 +26,20 @@
             <div class="card-top"></div>
             <div class="card-header mb">
                 <div class="left">
-                    <h2 (click)="page = 'list'">
-                        {{ schoolingo.locale.getLocale('sidebar/fleetVehicles/vehicles') }}
-                        >
-                        {{ selectedVehicle[1].value + ' ' + selectedVehicle[2].value }}
+                    <h2>
+                        <span class="clickable" (click)="page = 'list'">
+                            {{ schoolingo.locale.getLocale('sidebar/fleetVehicles/vehicles') }}
+                        </span>
+                        @if (selectedVehicle) {
+                            >
+                            {{
+                                schoolingo.locale.getLocale('fleetVehicles/vehicleInfo/title')
+                                .replaceAll('%manufacture%', selectedVehicle.manufacture)
+                                .replaceAll('%model%', selectedVehicle.model)
+                                .replaceAll('%plate%', selectedVehicle.plate)                        
+                            }}
+
+                        }
                     </h2>
                 </div>
                 <div class="flex-items"></div>
