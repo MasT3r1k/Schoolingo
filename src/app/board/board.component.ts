@@ -1,6 +1,6 @@
 import { NgClass, NgStyle } from '@angular/common';
-import { Component } from '@angular/core';
-import { NavigationEnd, Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
+import { AfterViewInit, Component, OnInit } from '@angular/core';
+import { NavigationCancel, NavigationEnd, NavigationStart, Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { errorAPI } from '@Components/Datalist/Datalist';
 import { Dropdown } from '@Components/Dropdowns/Dropdown';
 import { ModalComponent } from '@Components/Modal/Modal';
@@ -43,7 +43,8 @@ interface AbsenceSubjectAPI {
   templateUrl: './board.component.html',
   styleUrls: ['./board.component.css', '../Styles/item.css', '../Styles/app.css']
 })
-export class BoardComponent {
+export class BoardComponent implements OnInit, AfterViewInit {
+  pageLoading = false;
 
   App = App;
 
@@ -59,8 +60,24 @@ export class BoardComponent {
     public perms: Permission
   ) {
     this.router = this.routerImport;
+    this.pageLoading;
   }
   private router: Router;
+
+  ngAfterViewInit() {
+    this.router.events
+        .subscribe((event) => {
+            if(event instanceof NavigationStart) {
+                this.pageLoading = true;
+            }
+            else if (
+                event instanceof NavigationEnd || 
+                event instanceof NavigationCancel
+                ) {
+                this.pageLoading = false;
+            }
+        });
+  }
 
   ngOnInit(): void {
     this.schoolingo.refreshTitle();

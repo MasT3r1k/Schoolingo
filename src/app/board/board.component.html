@@ -135,7 +135,22 @@
                         </div>
                     </div>
                 }
-                <div style="padding: 2rem">
+                @if (pageLoading) {
+                    <div style="display: flex;height:100%">
+                        <div class="loading" style="height: auto">
+                            <svg width="200" height="300" viewBox="0 0 40 60">
+                                <polygon
+                                class="triangle"
+                                fill="none"
+                                points="16,1 32,32 1,32"
+                                stroke="#fff"
+                                stroke-width="1"
+                                ></polygon>
+                            </svg>
+                        </div>
+                    </div>
+                }
+                <div [ngStyle]="{padding: '2rem', display: pageLoading ? 'none' : 'block'}">
                     <router-outlet></router-outlet>
                 </div>
             </div>
