@@ -42,7 +42,7 @@ export function randomstring(length: number, numbers = true): string {
   }
 
   export function formatDate(date: Date): string {
-    return moment(date).format('hh:mm:ss DD. MM. YYYY');
+    return moment(date).format('HH:mm:ss DD. MM. YYYY');
   }
 
   export function formatPhone(phone: string): string {
