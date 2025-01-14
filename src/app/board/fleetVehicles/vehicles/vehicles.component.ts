@@ -83,6 +83,7 @@ export class VehiclesComponent implements OnInit {
   }
 
   onClick = (id: any, index: number): void => {
+    this.selectedVehicle = undefined;
     this.schoolingo.socketService.emit('fleetVehicles:getVehicleInfo', { vehicleId: id[0].id });
     this.page = 'detail';
   }
