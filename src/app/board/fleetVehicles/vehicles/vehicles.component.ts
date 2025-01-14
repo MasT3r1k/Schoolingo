@@ -1,18 +1,22 @@
 import { Component, OnInit } from '@angular/core';
 import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { Data, dataAPI, DatalistComponent, errorAPI, Metadata } from '@Components/Datalist/Datalist';
+import { TabsComponent } from '@Components/Tabs/Tabs';
 import { Schoolingo } from '@Schoolingo';
+import { Utils } from '@Schoolingo/Utils';
 import { Vehicle } from '@Schoolingo/Vehicles';
 import { Country } from 'country-state-city';
 import { BehaviorSubject, Subscription } from 'rxjs';
 
 @Component({
-  imports: [FormsModule, ReactiveFormsModule, DatalistComponent],
+  imports: [FormsModule, ReactiveFormsModule, DatalistComponent, TabsComponent],
   standalone: true,
   templateUrl: './vehicles.component.html',
   styleUrls: ['./vehicles.component.css', '../../../Styles/card.css']
 })
 export class VehiclesComponent implements OnInit {
+  Utils = Utils;
+  Country = Country;
   constructor(
     public schoolingo: Schoolingo
   ) {}
@@ -22,6 +26,7 @@ export class VehiclesComponent implements OnInit {
   private listeners: Subscription[] = [];
   public vehicles: BehaviorSubject<Data[][]> = new BehaviorSubject<Data[][]>([]);
   public selectedVehicle: any = null;
+  public selectedTab = new BehaviorSubject(0);
   public metadata: Metadata = { rows: 0 }
   public search = new FormControl();
   public datalist!: DatalistComponent;
@@ -57,8 +62,12 @@ export class VehiclesComponent implements OnInit {
 
     this.listeners.push(this.schoolingo.socketService.addFunction("fleetVehicles:getVehicleInfo").subscribe((vehicleInfo: any | errorAPI) => {
       console.log(vehicleInfo)
-      this.selectedVehicle = vehicleInfo[0];
+      this.selectedVehicle = vehicleInfo;
     }));
+  }
+
+  public getVignette(): any {
+    return Object.entries(this.selectedVehicle.vignette);
   }
 
   ngOnDestroy(): void {
