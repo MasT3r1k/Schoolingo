@@ -283,6 +283,11 @@ let config: SidebarGroup[] = [
                         item: 'sidebar/tools/manageUsers',
                         url: "tools/manageusers",
                         permission: ['manager:system:admin']
+                    },
+                    {
+                        item: 'sidebar/tools/auditlog',
+                        url: "tools/auditlog",
+                        permission: ['manager:system:admin']
                     }
                 ]
             }

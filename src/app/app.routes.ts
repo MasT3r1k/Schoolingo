@@ -285,6 +285,11 @@ export const routes: Routes = [
               path: 'manageusers',
               loadComponent: () => import('./board/Tools/manage-users/manage-users.component')
                                     .then(m => m.ManageUsersComponent)
+            },
+            {
+              path: 'auditlog',
+              loadComponent: () => import('./board/Tools/auditlog/auditlog.component')
+                                    .then(m => m.AuditlogComponent)
             }
           ]
         },
