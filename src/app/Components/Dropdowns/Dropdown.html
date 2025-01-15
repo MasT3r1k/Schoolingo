@@ -33,7 +33,7 @@
                             </div>
                             <div class="calendar-row">
                                 @for (day of getCalendar(item.selectedMonth); track $index) {
-                                    <div [ngClass]="{'calendar-day': true, active: day.date.isoWeek() === item.date.getValue().isoWeek()}" (click)="item.date.next(day.date);dropdown[1].isOpen = false">
+                                    <div [ngClass]="{'calendar-day': true, active: day.date.startOf('day').isSame(item.date.getValue().startOf('day'))}" (click)="item.date.next(day.date);dropdown[1].isOpen = false">
                                         <span [ngClass]="{gray: day.gray}">
                                             {{ day.date.date() }}
                                         </span>

@@ -6,6 +6,7 @@ import { SafeHtml } from "@angular/platform-browser";
 import moment from "moment";
 import { Logger } from "@Schoolingo/Logger";
 import { IconsModule } from "../../Modules/Icons.module";
+import { Utils } from "@Schoolingo/Utils";
 export { ContextButton, ContextButtonRightText, ContextMenu }
 
 //! DON'T IMPORT THIS INTO SPECIFIC COMPONENTS, ITS ALREADY IN THE MAIN COMPONENT
@@ -22,7 +23,7 @@ let dropdowns: Record<string, ContextMenu> = {};
 
 @Injectable()
 export class Dropdown {
-
+    Utils = Utils;
     public renderer;
 
     constructor(
