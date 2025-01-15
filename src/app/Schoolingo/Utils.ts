@@ -41,8 +41,12 @@ export function randomstring(length: number, numbers = true): string {
     return moment().isoWeek(week).startOf('isoWeek').add(day + 1, 'd');
   }
 
-  export function formatDate(date: Date): string {
-    return moment(date).format('HH:mm:ss DD. MM. YYYY');
+  export function formatDate(date: Date | moment.Moment): string {
+    return ((date instanceof Date) ? moment(date) : date).format('HH:mm:ss DD. MM. YYYY');
+  }
+
+  export function getNow(): moment.Moment {
+    return moment();
   }
 
   export function formatPhone(phone: string): string {
