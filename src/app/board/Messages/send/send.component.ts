@@ -90,7 +90,7 @@ export class SendComponent {
   }
 
   public getMessageTypes(): MessageType[] {
-    return this.schoolingo.messages.types.filter((type: MessageType) => this.perms.checkPermission(type.perms));
+    return this.messageManager.types.filter((type: MessageType) => this.perms.checkPermission(type.perms));
   }
 
   public checkMessageType(types: messageTypes[]): boolean {

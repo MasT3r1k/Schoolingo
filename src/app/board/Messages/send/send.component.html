@@ -23,13 +23,13 @@
                         </div>
                         <div class="value">
                             <div class="input-select">
-                                <input type="text" (click)="showSelect = showSelect == 'messagetype' ? null : 'messagetype'" name="inputSelect" readonly="true" [value]="schoolingo.locale.getLocale('messages/types/' + schoolingo.messages.types[messageManager.messageType.getValue()].label)" />
+                                <input type="text" (click)="showSelect = showSelect == 'messagetype' ? null : 'messagetype'" name="inputSelect" readonly="true" [value]="schoolingo.locale.getLocale('messages/types/' + messageManager.types[messageManager.messageType.getValue()].label)" />
 
                                 @if (showSelect == 'messagetype') {
                                     <div class="options">
                                         @for (type of getMessageTypes(); track $index) {
-                                                <div class="option" (click)="showSelect = null;messageManager.messageType.next(schoolingo.messages.types.indexOf(type))">
-                                                    {{ schoolingo.locale.getLocale('messages/types/' + type.label) }}
+                                                <div class="option" (click)="showSelect = null;messageManager.messageType.next(messageManager.types.indexOf(type))">
+                                                    {{ schoolingo.locale.getLocale('messages/types/' + type.label) }} ({{ type.label }})
                                                 </div>
                                         } @empty {
                                             <div class="option">
