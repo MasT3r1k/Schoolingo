@@ -55,6 +55,7 @@ export class AppComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    // Enable flags Windows 11
     polyfillCountryFlagEmojis();
 
     this.ipManager.getIP('');
