@@ -1,13 +1,5 @@
 import { UserPermissions } from './User';
 
-export enum messageTypes {
-    MESSAGE,
-    HOMEWORK,
-    EXCUSESTUDENT,
-    RATESTUDENT,
-    SYSTEM
-}
-
 export interface MessageType {
     label: string;
     icon?: string;
@@ -18,3 +10,5 @@ export interface MessageType {
 export interface MessageTag {
     label: string;
 }
+
+export type MessageOptions = 'asPrincipal' | 'requireConfirmation' | 'copyToClassTeacher' | 'copyToParents';

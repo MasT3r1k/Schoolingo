@@ -1,5 +1,11 @@
 <div class="card">
-    <div class="card-top"></div>
+    <div class="card-top">
+        @if (alerts['main']) {
+            <div [ngClass]="{alert: true, red: alerts['main'].type == 'error', success: alerts['main'].type == 'success'}">
+                {{ schoolingo.locale.getLocale(alerts['main'].text) }}
+            </div>
+        }
+    </div>
     <div class="card-header mb">
         <h2>{{ schoolingo.locale.getLocale(['sidebar/messages/send', 'messages/writeMessageOnNoticeboard'][selectedTab.getValue()]) }}</h2>
         <div class="flex-items">
@@ -9,7 +15,7 @@
 
     <div class="card-body" style="min-height: 300px;">
         @if (schoolingo.messages.types && schoolingo.messages.types.length > 0 && selectedTab.getValue() === 0) {
-            @if (schoolingo.messages.types[messageType.getValue()]) {
+            @if (schoolingo.messages.types[messageManager.messageType.getValue()]) {
                 <div class="items">
                     <div class="item">
                         <div class="label">
@@ -17,12 +23,12 @@
                         </div>
                         <div class="value">
                             <div class="input-select">
-                                <input type="text" (click)="showSelect = showSelect == 'messagetype' ? null : 'messagetype'" name="inputSelect" readonly="true" [value]="schoolingo.locale.getLocale('messages/types/' + schoolingo.messages.types[messageType.getValue()].label)" />
+                                <input type="text" (click)="showSelect = showSelect == 'messagetype' ? null : 'messagetype'" name="inputSelect" readonly="true" [value]="schoolingo.locale.getLocale('messages/types/' + schoolingo.messages.types[messageManager.messageType.getValue()].label)" />
 
                                 @if (showSelect == 'messagetype') {
                                     <div class="options">
                                         @for (type of getMessageTypes(); track $index) {
-                                                <div class="option" (click)="showSelect = null;messageType.next(schoolingo.messages.types.indexOf(type))">
+                                                <div class="option" (click)="showSelect = null;messageManager.messageType.next(schoolingo.messages.types.indexOf(type))">
                                                     {{ schoolingo.locale.getLocale('messages/types/' + type.label) }}
                                                 </div>
                                         } @empty {
@@ -37,7 +43,7 @@
                         </div>
                     </div>
     
-                    @if (checkMessageType([0])) {
+                    @if (checkMessageType([messageTypes.MESSAGE])) {
                         <div class="item">
                             <div class="label">
                                 {{ schoolingo.locale.getLocale('messages/receiver') }}
@@ -48,18 +54,25 @@
                         </div>
     
                         <div class="item">
-                            <div class="label">
+                            <label for="topic" [ngClass]="{ 'error-color': alerts['topic'] != null }">
                                 {{ schoolingo.locale.getLocale('messages/topic') }}
-                            </div>
+                                @if (alerts['topic'] != null) {
+                                    <span class="label-error">
+                                        - {{ schoolingo.locale.getLocale(alerts['topic'].text) }}
+                                    </span>
+                                }
+                            </label>
                             <div class="value">
-                                <input type="text" name="topic" [placeholder]="schoolingo.locale.getLocale('messages/topic')">
+                                <input type="text" name="topic" [(ngModel)]="messageManager.topic" [placeholder]="schoolingo.locale.getLocale('messages/topic')">
                             </div>
                         </div>
                     }
     
-                    @if (checkMessageType([1])) {
+                    @if (checkMessageType([messageTypes.HOMEWORK])) {
                         <div class="item">
-                            <div class="label">{{ schoolingo.locale.getLocale('homeworks/homework') }}</div>
+                            <div class="label">
+                                {{ schoolingo.locale.getLocale('homeworks/homework') }}
+                            </div>
                             <div class="value">
                                 @if (schoolingo.homeworks.list.length > 0) {
                                     <div class="input-select">
@@ -86,7 +99,7 @@
                         </div>
                     }
 
-                    @if (checkMessageType([2])) {
+                    @if (checkMessageType([messageTypes.EXCUSESTUDENT])) {
                         <div class="item">
                             <div class="label">
                                 {{ schoolingo.locale.getLocale('messages/student') }}
@@ -124,7 +137,7 @@
                         </div>
                     }
     
-                    @if (checkMessageType([0]) || (checkMessageType([1]) && schoolingo.homeworks.list.length > 0)) {
+                    @if (checkMessageType([messageTypes.MESSAGE]) || (checkMessageType([messageTypes.HOMEWORK]) && schoolingo.homeworks.list.length > 0)) {
                         <div class="row-selectors mb">
                             <div class="select-row">
                                 <div class="select-item" (click)="selectTags()">
@@ -142,7 +155,7 @@
                             </div>
 
                             <div class="select-row">
-                                <div [ngClass]="{'select-item': true, active: requireConfirmation}" (click)="requireConfirmation = !requireConfirmation">
+                                <div [ngClass]="{'select-item': true, active: messageManager.options.requireConfirmation}" (click)="messageManager.options.requireConfirmation = !messageManager.options.requireConfirmation">
                                     <i-tabler name="check"></i-tabler>
                                     <span>
                                         {{ schoolingo.locale.getLocale('messages/tags/requireConfirmation') }}
@@ -150,14 +163,14 @@
                                 </div>
 
                                 @if (perms.checkPermission(["teacher"])) {
-                                    <div [ngClass]="{'select-item': true, active: copyToClassTeacher}" (click)="copyToClassTeacher = !copyToClassTeacher">
+                                    <div [ngClass]="{'select-item': true, active: messageManager.options.copyToClassTeacher}" (click)="messageManager.options.copyToClassTeacher = !messageManager.options.copyToClassTeacher">
                                         <i-tabler name="chalkboard"></i-tabler>
                                         <span>
                                             {{ schoolingo.locale.getLocale('messages/copyToClassTeacher') }}
                                         </span>
                                     </div>
 
-                                    <div [ngClass]="{'select-item': true, active: copyToParents}" (click)="copyToParents = !copyToParents">
+                                    <div [ngClass]="{'select-item': true, active: messageManager.options.copyToParents}" (click)="messageManager.options.copyToParents = !messageManager.options.copyToParents">
                                         <i-tabler name="old"></i-tabler>
                                         <span>
                                             {{ schoolingo.locale.getLocale('messages/copyToParents') }}
@@ -166,9 +179,9 @@
                                 }
                             </div>
 
-                            @if (schoolingo.userService.getUser()?.isPrincipal && checkMessageType([0])) {
+                            @if (schoolingo.userService.getUser()?.isPrincipal && checkMessageType([messageTypes.MESSAGE])) {
                                 <div class="select-row">
-                                    <div [ngClass]="{'select-item': true, active: asPrincipal}" (click)="asPrincipal = !asPrincipal">
+                                    <div [ngClass]="{'select-item': true, active: messageManager.options.asPrincipal}" (click)="messageManager.options.asPrincipal = !messageManager.options.asPrincipal">
                                         <i-tabler name="user-screen"></i-tabler>
                                         <span>
                                             {{ schoolingo.locale.getLocale('messages/asPrincipal') }}
@@ -177,28 +190,11 @@
                                 </div>
                             }
                         </div>
-                        <div class="item">
-                            <div class="label">
-                                {{ schoolingo.locale.getLocale('messages/message') }}
-                            </div>
-                            <textarea name="message" id="message" style="min-height: 15rem;" [placeholder]="schoolingo.locale.getLocale('messages/messagePlaceholder')" (resize)="('horizontal')"></textarea>
-                        </div>
-                        <div class="alerts mb">
-                            <div class="alert blue-info">
-                                {{
-                                    schoolingo.locale.getLocale('messages/privacy')
-                                    .replaceAll('%app%', AppConfig.APP_NAME)
-                                }}
-                            </div>
-                        </div>
-                        <div class="btn submit" role="button">
-                            {{ schoolingo.locale.getLocale('buttons/send') }}
-                        </div>
                     }
                 </div>
             } @else {
                 <div class="alerts mb">
-                    <div class="alert red" (click)="messageType.next(0)">
+                    <div class="alert red" (click)="messageManager.messageType.next(0)">
                         {{ schoolingo.locale.getLocale('messages/susError') }}
                     </div>
                 </div>
@@ -222,24 +218,6 @@
                         <input type="text" name="topic" [placeholder]="schoolingo.locale.getLocale('messages/topic')">
                     </div>
                 </div>
-
-                <div class="item">
-                    <div class="label">
-                        {{ schoolingo.locale.getLocale('messages/message') }}
-                    </div>
-                    <textarea name="message" id="message" style="min-height: 15rem;" [placeholder]="schoolingo.locale.getLocale('messages/messagePlaceholder')" (resize)="('horizontal')"></textarea>
-                </div>
-                <div class="alerts mb">
-                    <div class="alert blue-info">
-                        {{
-                            schoolingo.locale.getLocale('messages/privacy')
-                            .replaceAll('%app%', AppConfig.APP_NAME)
-                        }}
-                    </div>
-                </div>
-                <div class="btn submit" role="button">
-                    {{ schoolingo.locale.getLocale('buttons/send') }}
-                </div>
             </div>
         } @else {
             <div class="alerts mb">
@@ -248,5 +226,31 @@
                 </div>
             </div>
         }
+        <div class="items">
+            <div class="item">
+                <label for="message" [ngClass]="{ 'error-color': alerts['message'] != null }">
+                    {{ schoolingo.locale.getLocale('messages/message') }}
+                    @if (alerts['message'] != null) {
+                        <span class="label-error">
+                            - {{ schoolingo.locale.getLocale(alerts['message'].text) }}
+                        </span>
+                    }
+                </label>
+                <textarea name="message" id="message" [(ngModel)]="messageManager.message" style="min-height: 15rem;" [placeholder]="schoolingo.locale.getLocale('messages/messagePlaceholder')" (resize)="('horizontal')"></textarea>
+            </div>
+
+            <div class="alerts mb">
+                <div class="alert blue-info">
+                    {{
+                        schoolingo.locale.getLocale('messages/privacy')
+                        .replaceAll('%app%', AppConfig.APP_NAME)
+                    }}
+                </div>
+            </div>
+
+            <div class="btn submit" role="button" (click)="sendMessage()">
+                {{ schoolingo.locale.getLocale('buttons/send') }}
+            </div>
+        </div>
     </div>
 </div>
