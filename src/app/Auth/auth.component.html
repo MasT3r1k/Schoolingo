@@ -4,18 +4,12 @@
     <div class="card" [ngStyle]="{ minWidth: school.schoolInfo.fastLogin ? '784px' : '480px' }">
             <div class="card-top">
                 <div class="alerts">
-                    @if (false) {
-                        <div class="alert red">
-                            Nejste připojení k serverům Schoolinga
-                        </div>
-                    }
                     @if(schoolingo.auth.errors['auth'] != null) {
-                        <div [ngClass]="{alert: true, red: schoolingo.auth.errors['auth'].type == 'error', green: schoolingo.auth.errors['auth'].type == 'success'}">
+                        <div [ngClass]="{alert: true, red: schoolingo.auth.errors['auth'].type == 'error', success: schoolingo.auth.errors['auth'].type == 'success'}">
                             {{ schoolingo.locale.getLocale(schoolingo.auth.errors['auth'].text) }}
                         </div>
                     }
                 </div>
-                <!-- <div class="btn">Offline mode</div -->
             </div>
         <div class="card-row">
             <div class="left" [ngStyle]="{ width: school.schoolInfo.fastLogin ? '50%' : '100%' }">
