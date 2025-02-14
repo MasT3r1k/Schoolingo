@@ -42,6 +42,8 @@ export class Permission {
                     if (user.isPrincipal) {
                         permCount++;
                     }
+                } else if (permission == "all") {
+                    permCount++;
                 } else if (permission.startsWith("manager:")) {
                     if (user.manager == -1) {
                         permCount++;
@@ -57,7 +59,7 @@ export class Permission {
                         permCount++;
                     }
                 }
-                if (permCount == perms.length - 1) {
+                if (permCount == perms.length) {
                     count++;
                 }
             });
