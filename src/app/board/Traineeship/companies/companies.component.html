@@ -4,6 +4,12 @@
             <div class="card-top"></div>
             <div class="card-header mb">
                 <h2>{{ schoolingo.locale.getLocale('sidebar/traineeship/companies') }}</h2>
+                <div class="flex-items">
+                    @if (permissions.checkPermission(["manager:traineeship:manage"])) {
+                        <schoolingo-tabs [options]="['traineeship/statusCompany/approved', 'traineeship/statusCompany/request', 'traineeship/statusCompany/deleted']"></schoolingo-tabs>
+
+                    }
+                </div>
             </div>
             <div class="card-body">
     

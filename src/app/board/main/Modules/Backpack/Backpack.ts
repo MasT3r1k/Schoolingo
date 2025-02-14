@@ -23,12 +23,12 @@ export class BackpackComponent implements OnInit {
 
   ngOnInit(): void {
     this.listeners.push(this.day.subscribe((val: moment.Moment) => {
-      if (this.schoolingo.timetableSelectedWeek.getValue() === val.isoWeek()) return;
-      this.schoolingo.timetableSelectedWeek.next(val.isoWeek());
+      if (this.schoolingo.timetableSelectedWeek.getValue().isoWeek() === val.isoWeek()) return;
+      this.schoolingo.timetableSelectedWeek.next(val);
     }));
 
-    this.listeners.push(this.schoolingo.timetableSelectedWeek.subscribe((week: number): void => {
-      this.day.next(this.day.getValue().set('isoWeeks', week));
+    this.listeners.push(this.schoolingo.timetableSelectedWeek.subscribe((week: moment.Moment): void => {
+      this.day.next(this.day.getValue().set('isoWeeks', week.isoWeek()));
     }));
   }
 

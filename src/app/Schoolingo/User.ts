@@ -9,6 +9,7 @@ import { Moment } from "moment";
 import moment from "moment";
 import { School } from "./School";
 import { BehaviorSubject } from "rxjs";
+import { Alert } from "./Alert";
 export { user, child, personDetails, degree }
 
 @NgModule()
@@ -24,20 +25,25 @@ export class UserService {
 
       this.socketService.tokenStatus.subscribe((tokenStatus: string | null): void => {
         if (tokenStatus == null) return;
-        if (tokenStatus == 'refresh_token') {
-          this.setExpiration(moment().add(this.school.schoolInfo.loginExpires, 'ms'));
+        switch(tokenStatus) {
+          case "refresh_token":
+            this.setExpiration(moment().add(this.school.schoolInfo.loginExpires, 'ms'));
+            break;
+          case "invalid_token":
+            if (this.user == null && !this.router.url.startsWith('/login')) {
+              this.username = '';
+              this.setExpiration(moment());
+              this.router.navigate(['', 'login'], { queryParams: { returnUrl: this.router.url } })
+            }
+            break;
+          case "has_token":
+            if (this.router.url.startsWith('/login')) {
+              this.setExpiration(moment().add(this.school.schoolInfo.loginExpires, 'ms'));
+              this.router.navigate(['', 'main']);
+            }
+            break;
         }
 
-        if (tokenStatus == 'invalid_token' && this.user == null && !this.router.url.startsWith('/login')) {
-          this.username = '';
-          this.setExpiration(moment());
-          this.router.navigate(['', 'login'], { queryParams: { returnUrl: this.router.url } })
-        }
-
-        if (tokenStatus == 'has_token' && this.router.url.startsWith('/login')) {
-          this.setExpiration(moment().add(this.school.schoolInfo.loginExpires, 'ms'));
-          this.router.navigate(['', 'main']);
-        }
         this.socketService.tokenStatus.next(null);
       });
 
@@ -52,6 +58,9 @@ export class UserService {
       }
   }
 
+  public alert = new BehaviorSubject<Alert | null>(null);
+
+
   public tfaSecret = '';
   public tfaQR = '';
   public set2fa(secret: string, qr: string): void {
@@ -62,7 +71,6 @@ export class UserService {
   /** Children (only parents) */
   public selectedChild: number = 0;
   public children: child[] = [];
-
 
   //** Users
   private user: user | null = null;
@@ -81,16 +89,13 @@ export class UserService {
    * @param user user data from server
    */
   public setUser(user: user | null) {
-    user
-      ? () => {
-        try {
-          this.storage.save(this.storage.userCacheName, user);
-        } catch(e) {
-          this.setUser(null);
-          return;
-        }
-      }
-      : this.storage.remove(this.storage.userCacheName);
+    if (user == null) {
+      this.storage.remove(this.storage.userCacheName);
+      this.user = null;
+      return;
+    }
+
+    this.storage.save(this.storage.userCacheName, user!);
     this.user = user;
   }
 
@@ -98,6 +103,7 @@ export class UserService {
   public tokenExpiration: BehaviorSubject<Moment> = new BehaviorSubject(moment());
 
   public setExpiration(date: moment.Moment): void {
+    console.log(date)
     this.tokenExpiration.next(date);
   }
 
@@ -122,16 +128,17 @@ export class UserService {
   /**
    * Disconnect from socket, remove user from memory, remove token from memory and storage and redirect to login page
    */
-  public logout(): void {
+  public logout(showAlert: boolean = false): void {
+    if (!this.user) return;
     this.http.get<{ status: 'success' }>(Config.API_URL + 'logout', { withCredentials: true }).subscribe((data: { status: 'success' }) => {
-      if ('status' in data) {
-        this.username = "";
-        this.socketService.emit('logout');
-        this.socketService.socketEvents = new Map<string, Function[]>();
-        this.setUser(null);
-        this.setExpiration(moment());
-        this.router.navigate(['login']);
-      }
+      if (!('status' in data)) return;
+      this.username = "";
+      if (showAlert) this.alert.next({type: 'success', text: 'auth/login/logoutSuccess'});
+      this.socketService.emit('logout');
+      this.socketService.socketEvents = new Map<string, Function[]>();
+      this.setUser(null);
+      this.setExpiration(moment());
+      this.router.navigate(['login']);
     });
   }
 

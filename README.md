@@ -54,9 +54,17 @@
 * Správa suplování
 * Správa doučování
 * Přidat podporu pro zákonné zástupce v profilu
-* Přidat stránku pro historii přihlášení
+* Přidat stránku pro historii přihlášení ✅
 * Na stránku O systému zobrazit modal se stavem služeb
 * Upload systém
+
+### Můj přehled
+* U batohu ignorovat prázdné dny
+* U batohu podporovat pátek - pondělí (další týden)
+* U oken přidat možnost schovat
+* Dokončit zbylé okna
+* V nastavení oken možnost zobrazit schované okna
+* V nastavení oken možnost nastavit velikost okna
 
 ### Přihlášení
 * Možnost nastavit jazyk a vzhled u přihlášení
@@ -69,6 +77,13 @@
 * Hodnocení u firem
 * U seznamu deníků a v mém přehledu u studenta zprovoznit tlačítko "Vybrat instruktora"
 * Zápis deníku
+* Když už je praxe aktivní (praxe již probíhá / proběhla), nelze změnit firmu, ale změnu instruktora nechat
+* Možnost upravit popis u praxe (v přehledu)
+
+### Rozvrh
+* Po rozkliknutí hodiny zobrazit informace, domácí úkoly
+* Po rozkliknutí hodiny, pokud žák/student dosáhl 18 let, možnost omluvit si hodinu sám
+* Jako učitel po rozkliknutí možnost zapsat hodinu, napsat domácí úkol, přidat poznámku k hodině
 
 ### Jídelna
 * Zprovoznit kompletně modul jídelny
@@ -91,6 +106,7 @@
 * To samé z přijatých zpráv i do odeslaných zpráv
 * Správa skupiny (společný chat pro třída s učitelem)
 * Zobrazení zpráv na nástěnce
+* Přidat možnost napsat omluvenku po dosažení žáka/studenta 18 let
 
 ### Wiki
 - Připravit Wiki s popisem o funkcích, možnostech nastavení, vysvětlit jaké nastavení co nastavuje 

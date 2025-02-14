@@ -44,6 +44,14 @@ export class ProfileComponent implements OnInit {
     }));
   }
 
+  public getOptions(): string[] {
+    let arr = ["user/tabs/profile/main"];
+    if (this.perms.checkPermission(["student"])) {
+      arr.push("user/tabs/profile/parents");
+    }
+    return arr;
+  }
+
   ngOnDestroy(): void {
     this.listeners.forEach((sub: Subscription) => sub.unsubscribe());
   }

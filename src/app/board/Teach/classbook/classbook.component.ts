@@ -5,6 +5,7 @@ import { Schoolingo } from '@Schoolingo';
 import { IconsModule } from '../../../Modules/Icons.module';
 import { BehaviorSubject } from 'rxjs';
 import moment from 'moment';
+import { Permission } from '@Schoolingo/Permissions';
 
 @Component({
   standalone: true,
@@ -18,24 +19,32 @@ export class ClassbookComponent implements OnInit {
 
   constructor(
     public schoolingo: Schoolingo,
-    public dropdown: Dropdown
+    public dropdown: Dropdown,
+    public perms: Permission
   ) {}
 
   ngOnInit(): void {
-    // Calendar
-    this.dropdown.create(this.calendarCalendarName, { title: '', isOpen: false, items: [{
-      type: 'calendar',
-      date: this.selectedDate,
-      selectedMonth: this.selectedDate.getValue().clone(),
-      isActive: true
-    }] });
+    if (!this.perms.checkPermission(['teacher'])) {
+      this.schoolingo.hasAccessToPage = false;
+    }
 
-    this.selectedDate.next(moment());
+    // Calendar
+    this.dropdown.create(this.calendarCalendarName,
+      {
+        title: '',
+        isOpen: false,
+        items: [{
+          type: 'calendar',
+          date: this.selectedDate,
+          selectedMonth: this.selectedDate.getValue().clone(),
+          isActive: true
+        }]
+      }
+    );
   }
 
     ngOnDestroy(): void {
       this.selectedDate.next(moment());
-  
       this.dropdown.remove(this.calendarCalendarName);
     }
 

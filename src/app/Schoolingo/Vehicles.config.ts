@@ -519,3 +519,5 @@ export const yearMap: { [key: string]: number } = {
   'L': 2020,
   'M': 2021,
 };
+
+export const fuelTypes: string[] = ['petrol', 'diesel', 'electro', 'hybrid(petrol)', 'hybrid(diesel)', 'CNG', 'LNG', 'LPG', 'H2'];

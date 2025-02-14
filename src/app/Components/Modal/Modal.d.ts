@@ -20,7 +20,7 @@ export type modalItem = {
 } | {
     type: 'component';
     component: Type<any>;
-    data: any;
+    data?: any;
 };
 
 export type modalOptions = {

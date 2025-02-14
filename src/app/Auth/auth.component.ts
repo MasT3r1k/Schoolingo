@@ -1,4 +1,4 @@
-import { NgComponentOutlet, NgStyle } from '@angular/common';
+import { NgClass, NgComponentOutlet, NgStyle } from '@angular/common';
 import { Component, Type } from '@angular/core';
 import { AppConfig } from '@Schoolingo/App';
 import { languages } from '@Schoolingo/Locale';
@@ -23,7 +23,7 @@ interface QRStatus {
 
 @Component({
   standalone: true,
-  imports: [QRCodeModule, NgStyle, NgComponentOutlet],
+  imports: [QRCodeModule, NgStyle, NgComponentOutlet, NgClass],
   providers: [Storage],
   templateUrl: './auth.component.html',
   styleUrls: ['./auth.component.css', '../Styles/card.css', '../Styles/select.css']

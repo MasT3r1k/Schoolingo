@@ -19,7 +19,7 @@ export class SubstitutionComponent implements OnInit {
     public schoolingo: Schoolingo
   ) {}
 
-  public date: BehaviorSubject<moment.Moment> = new BehaviorSubject(moment().set('isoWeeks', this.schoolingo.timetableSelectedWeek.getValue()).startOf('isoWeek'));
+  public date: BehaviorSubject<moment.Moment> = new BehaviorSubject(moment().startOf('isoWeek'));
 
   public getDescription(substitution: Substitution): string {
     let date: moment.Moment = substitution.date;
@@ -38,8 +38,8 @@ export class SubstitutionComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.listeners.push(this.schoolingo.timetableSelectedWeek.subscribe((week: number) => {
-      this.date.next(moment().set('isoWeeks', week).startOf('isoWeek'));
+    this.listeners.push(this.schoolingo.timetableSelectedWeek.subscribe((week: moment.Moment) => {
+      this.date.next(week.clone().startOf('isoWeek'));
     }));
   }
 

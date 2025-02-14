@@ -23,7 +23,9 @@
                                     [title]="schoolingo.locale.getLocale('absence/' + schoolingo.absenceConfig[schoolingo.getAbsence(day.getValue().day() - 2, $index)].locale)">A</div>
                                 }
                                 @if (schoolingo.substitution[day.getValue().format('YYYY-MM-DD')] && schoolingo.substitution[day.getValue().format('YYYY-MM-DD')][$index + 1]) {
-                                    <div class="tag red" [title]="schoolingo.locale.getLocale('sidebar/teach/substitution')">{{ schoolingo.locale.getLocale('sidebar/teach/substitution').charAt(0).toUpperCase() }}</div>
+                                    <div class="tag red" [title]="schoolingo.locale.getLocale('sidebar/teach/substitution')">
+                                        {{ schoolingo.locale.getLocale('sidebar/teach/substitution').charAt(0).toUpperCase() }}
+                                    </div>
                                 }
                                 @if (false) {
                                     <div class="tag orange" [title]="schoolingo.locale.getLocale('homeworks/homework')">D</div>
@@ -33,19 +35,29 @@
                     </div>
                     @if (schoolingo.getTimetableHours()[$index]) {
                         <span style="position: absolute;right: 8px;font-size: 12px;line-height: 18px;width: 70px;">
-                            {{ schoolingo.getTimetableHours()[$index].start + ' - ' + schoolingo.getTimetableHours()[$index].end }}
+                            {{
+                            schoolingo.getTimetableHours()[$index].start
+                            + ' - ' + 
+                            schoolingo.getTimetableHours()[$index].end
+                            }}
                         </span>
                     }
                 </div>
             } @empty {
-                <div class="center">{{ schoolingo.locale.getLocale('timetable/notStudyDay') }}</div>
+                <div class="center">
+                    {{ schoolingo.locale.getLocale('timetable/notStudyDay') }}
+                </div>
             }
             @if (getHours().length > 0) {
                 <div class="subject freetime">
-                    <span class="subjectIndex">{{ getHours().length + 1 }}</span>
+                    <span class="subjectIndex">
+                        {{ getHours().length + 1 }}
+                    </span>
                     
                     <div class="subjectName" [title]="schoolingo.locale.getLocale('timetable/endOfClass')">
-                        <span>{{ schoolingo.locale.getLocale('timetable/endOfClass') }}</span>
+                        <span>
+                            {{ schoolingo.locale.getLocale('timetable/endOfClass') }}
+                        </span>
                     </div>
                     @if (schoolingo.getTimetableHours()[getHours().length - 1]) {
                         <span style="position: absolute;right: 8px;font-size: 12px;line-height: 18px;width: 70px;">
@@ -60,12 +72,14 @@
     <div class="shadow"></div>
     
     <div class="bottom">
-        <div class="icon">
-            <i-tabler name="chevron-left" (click)="day.next(day.getValue().subtract(1, 'day'))"></i-tabler>
+        <div class="icon" (click)="day.next(day.getValue().subtract(1, 'day'))">
+            <i-tabler name="chevron-left"></i-tabler>
         </div>
-        <div class="label">{{ day.getValue().format("dddd, DD. MM.") }}</div>
-        <div class="icon">
-            <i-tabler name="chevron-right" (click)="day.next(day.getValue().add(1, 'day'))"></i-tabler>
+        <div class="label">
+            {{ day.getValue().format("dddd, DD. MM.") }}
+        </div>
+        <div class="icon" (click)="day.next(day.getValue().add(1, 'day'))">
+            <i-tabler name="chevron-right"></i-tabler>
         </div>
     </div>
 </main>

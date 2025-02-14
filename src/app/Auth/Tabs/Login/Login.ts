@@ -15,4 +15,8 @@ export class AuthLogin {
         public schoolingo: Schoolingo
     ) {}
 
+
+    public checkURL(): string {
+      return window.location.pathname;
+    }
 }

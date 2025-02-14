@@ -1,4 +1,6 @@
-export interface IPInformation {
+export type IPInformation =
+| {
+    status: true,
     ip: string;
     city: string;
     region: string;
@@ -7,4 +9,9 @@ export interface IPInformation {
     org: string;
     postal: string;
     timezone: string;
+}
+| {
+    status: false;
+    error: string;
+    country: '';
 }

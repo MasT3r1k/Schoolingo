@@ -10,8 +10,8 @@
                         </div>
                     }
                     @if(schoolingo.auth.errors['auth'] != null) {
-                        <div class="alert red">
-                            {{ schoolingo.locale.getLocale(schoolingo.auth.errors['auth']) }}
+                        <div [ngClass]="{alert: true, red: schoolingo.auth.errors['auth'].type == 'error', green: schoolingo.auth.errors['auth'].type == 'success'}">
+                            {{ schoolingo.locale.getLocale(schoolingo.auth.errors['auth'].text) }}
                         </div>
                     }
                 </div>

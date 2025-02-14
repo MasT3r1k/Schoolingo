@@ -27,11 +27,17 @@
                         </div>
                     </div>
                     @if (!schoolingo.getOfflineMode() && !schoolingo.isLoginExpired && schoolingo.userService.getExpiration()) {
-                        <div class="time">{{ schoolingo.locale.getLocale('devices/until') + schoolingo.userService.getExpiration().format('HH:mm:ss DD.MM.YYYY') + ' | IP: ' + country.getCountryByCode(schoolingo.ipManager.getIPInfo(schoolingo.ipManager.getMyIP())!.country)?.flag + ' ' + schoolingo.ipManager.getMyIP() }}</div>
+                        <div class="time">
+                            {{ schoolingo.locale.getLocale('devices/until')
+                            + schoolingo.userService.getExpiration().format('HH:mm:ss DD.MM.YYYY')
+                             + (schoolingo.ipManager.getIPInfo(schoolingo.ipManager.getMyIP())?.status ? (' | IP: ' + Utils.getFlagFromCountry(schoolingo.ipManager.getIPInfo(schoolingo.ipManager.getMyIP())!.country) + ' ' + schoolingo.ipManager.getMyIP()) : '')
+                            }}</div>
                     } @else if (schoolingo.isLoginExpired) {
                         <div class="time">
                             <div class="alerts">
-                                <div class="alert red" style="padding: 4px 16px;">{{ schoolingo.locale.getLocale('devices/youAreOffline') }}</div>
+                                <div class="alert red" style="padding: 4px 16px;">
+                                    {{ schoolingo.locale.getLocale('devices/youAreOffline') }}
+                                </div>
                             </div>
                         </div>
                     }
@@ -65,7 +71,7 @@
                             <div class="device">{{ Utils.getOS(device.userAgent).toUpperCase() + ' - ' + Utils.getBrowser(device.userAgent).toUpperCase() }}
                             </div>
                             @if (device.expires) {
-                                <div class="time">{{ schoolingo.locale.getLocale('devices/until') + moment(device.expires).format('HH:mm:ss DD.MM.YYYY') + ' | IP: ' + country.getCountryByCode(schoolingo.ipManager.getIPInfo(device.ip)!.country)?.flag + ' ' + device.ip }}</div>
+                                <div class="time">{{ schoolingo.locale.getLocale('devices/until') + moment(device.expires).format('HH:mm:ss DD.MM.YYYY') + (schoolingo.ipManager.getIPInfo(device.ip)?.status ? (' | IP: ' + Utils.getFlagFromCountry(schoolingo.ipManager.getIPInfo(device.ip)!.country) + ' ' + device.ip) : '') }}</div>
                             }
                         </div>
         

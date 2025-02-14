@@ -55,6 +55,16 @@ export class Storage {
     }
 
     /**
+     * Check if storage item exists
+     * @param key Name of storage item
+     * @returns if storage item exists
+    */
+        public has(key: string): boolean {
+            let saved: string | null = localStorage.getItem(key);
+            return saved ? true : false;
+        }
+
+    /**
      * Remove storage item from storage
      * @param key Name of storage item
      * @returns if remove was successful

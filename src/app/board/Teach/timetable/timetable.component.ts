@@ -1,4 +1,4 @@
-import { NgClass } from '@angular/common';
+import { NgClass, NgStyle } from '@angular/common';
 import { Component, Renderer2, RendererFactory2 } from '@angular/core';
 import { Schoolingo, TimetableLesson } from '@Schoolingo';
 import { TabsComponent } from '@Components/Tabs/Tabs';
@@ -10,10 +10,12 @@ import { ContextButton } from '@Components/Dropdowns/Dropdown';
 import { absence } from '@Schoolingo/Absence';
 import { Modal } from '@Components/Modal/Modal';
 import { IconsModule } from '../../../Modules/Icons.module';
+import { ShowLessonComponent } from './show-lesson/show-lesson.component';
+import { Permission } from '@Schoolingo/Permissions';
 
 @Component({
   standalone: true,
-  imports: [NgClass, TabsComponent, IconsModule],
+  imports: [NgClass, TabsComponent, IconsModule, NgStyle],
   templateUrl: './timetable.component.html',
   styleUrls: ['./timetable.component.css', '../../../Styles/card.css', '../../../Styles/item.css']
 })
@@ -22,7 +24,8 @@ export class TimetableComponent {
   constructor(
     public schoolingo: Schoolingo,
     public dropdown: Dropdown,
-    private factory: RendererFactory2
+    private factory: RendererFactory2,
+    public perms: Permission
     ) {
       this.renderer = this.factory.createRenderer(window, null);
     }
@@ -40,11 +43,15 @@ export class TimetableComponent {
     size: 'size-1',
     items: [
       {
-        type: 'tabs',
-        items: ['timetable/dropdown/showLesson/basicInfo', 'sidebar/teach/homeworks', 'timetable/dropdown/showLesson/absence', 'timetable/dropdown/showLesson/other']
+        type: 'component',
+        component: ShowLessonComponent,
+        data: {}
       }
     ]
   });
+
+  // Is active mass excuse option
+  public massExcuse = false;
 
   // Select Week Tab
   public selectedTab = new BehaviorSubject<number>(0);
@@ -75,17 +82,35 @@ export class TimetableComponent {
 
     // Select Week Tab
     this.selectedTab.subscribe((id: number) => {
-      let arrayWeek: number[] = [moment().isoWeek(), moment().isoWeek() + 1, -1, this.schoolingo.todayWeek];
-      let userId = this.schoolingo.getStudentId();
+      let arrayWeek: (moment.Moment)[] = [
+        moment(),                     // current week
+        moment().add(1, 'week'),      // next week
+        moment("fake date"),          // Permanent
+        this.selectedDate.getValue()  // Calendar
+      ];
+
+      this.schoolingo.timetableSelectedWeek.next(arrayWeek[id]);
 
       if (this.selectedDate.getValue().format("DD-MM-YYYY") !== moment().format("DD-MM-YYYY")) {
-        if (id !== 3) {
-          this.selectedDate.next(moment())
-        }
-        this.schoolingo.socketService.emit('timetable:getLessons', { userId, week: (arrayWeek[id] == -1) ? moment().isoWeek() : arrayWeek[id], year: moment().year() });
+
+        // this.schoolingo.socketService.emit('timetable:getLessons', {
+        //   userId,
+        //   week,
+        //   year: this.selectedDate.getValue().year()
+        // });
+
+        // this.schoolingo.socketService.emit('classes:getClassService',
+        //   {
+        //     week,
+        //     year: this.selectedDate.getValue().year()
+        //   })
+
+        // this.schoolingo.timetableSelectedWeek.next(this.selectedDate.getValue());
+
       }
-      this.schoolingo.timetableSelectedWeek.next(arrayWeek[id]);
+
     })
+
 
     let dropdownAbsence: ContextButton[] = [];
     for(let i = 0;i < absence.length;i++) {
@@ -139,10 +164,14 @@ export class TimetableComponent {
     }] });
 
     this.selectedDate.subscribe((date: moment.Moment) => {
-      let userId = this.schoolingo.getStudentId();
-;
-      this.schoolingo.socketService.emit('timetable:getLessons', { userId, week: date.isoWeek(), year: date.year() });
-      this.schoolingo.timetableSelectedWeek.next(date.isoWeek());
+//       let userId = this.schoolingo.getStudentId();
+// ;
+//       this.schoolingo.socketService.emit('timetable:getLessons', {
+//         userId,
+//         week: date.isoWeek(),
+//         year: date.year()
+//       });
+      this.schoolingo.timetableSelectedWeek.next(date);
     })
 
 
@@ -170,7 +199,27 @@ export class TimetableComponent {
     if (!this.modal) {
       console.error('NO MODAL')
     }
+    this.schoolingo.timetableSelectedLesson.next(lesson);
     this.modal?.open();
     // this.schoolingo.modal = 'timetable:showLesson';
+  }
+
+  public getLessonClasses(index: number, index2: number, lesson: TimetableLesson): string[] {
+    let classes = ['sub-lesson-hour', 'lesson-count-' + this.schoolingo.getTimetableLessons()[index][index2].length];
+    if (lesson.empty) {
+      classes.push('empty');
+    }
+
+    if (this.schoolingo.isClassbook(index - 1, index2)) {
+      classes.push('classbook');
+    }
+
+    let day = this.schoolingo.substitution[Utils.getDayOfWeek(this.schoolingo.timetableSelectedWeek.getValue().isoWeek(), index - 1).format('YYYY-MM-DD')];
+
+    if (day && day[index2 + 1]) {
+      classes.push('substitution');
+    }
+
+    return classes;
   }
 }

@@ -29,12 +29,16 @@
     <div class="shadow"></div>
     
     <div class="bottom">
-        <div class="icon">
-            <i-tabler name="chevron-left" (click)="schoolingo.timetableSelectedWeek.next(schoolingo.timetableSelectedWeek.getValue() - 1)"></i-tabler>
+        <div class="icon" (click)="schoolingo.timetableSelectedWeek.next(schoolingo.timetableSelectedWeek.getValue().clone().subtract(1, 'week'))">
+            <i-tabler name="chevron-left"></i-tabler>
         </div>
-        <div class="label dontCapitalize">{{ 'Týden od ' + date.getValue().format("DD. MM.") + ' do ' + date.getValue().clone().endOf('isoWeek').format('DD. MM.') }}</div>
-        <div class="icon">
-            <i-tabler name="chevron-right" (click)="schoolingo.timetableSelectedWeek.next(schoolingo.timetableSelectedWeek.getValue() + 1)"></i-tabler>
+
+        <div class="label dontCapitalize">
+            {{ 'Týden od ' + date.getValue().format("DD. MM.") + ' do ' + date.getValue().clone().endOf('isoWeek').format('DD. MM.') }}
+        </div>
+
+        <div class="icon"  (click)="schoolingo.timetableSelectedWeek.next(schoolingo.timetableSelectedWeek.getValue().clone().add(1, 'week'))">
+            <i-tabler name="chevron-right"></i-tabler>
         </div>
     </div>
 </main>

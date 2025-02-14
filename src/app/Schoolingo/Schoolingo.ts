@@ -2,7 +2,7 @@ import { Injectable } from "@angular/core";
 import { Locale } from "./Locale";
 import { SocketService } from "./Socket";
 import { Theme } from "./Theme";
-import { personDetails, user, UserService } from "./User";
+import { personDetails, UserService } from "./User";
 import { Sidebar } from "./Sidebar";
 import { School } from "./School";
 import { Utils } from "@Schoolingo/Utils";
@@ -15,12 +15,13 @@ import { MessageManager } from "./Messages";
 import { Traineeship } from "./Traineeship";
 import { Homeworks } from "./Homeworks";
 import { IPManager } from "./IPManager";
-import { AlertManagerClass } from "./Alert";
+import { Alert } from "./Alert";
 import { Authentication } from "./Auth";
 
 import { Absence, BookInfo, ClassbookAPI, ClassbookLesson, Mark, studentService, Substitution, TimetableAPI, TimetableHours, TimetableLesson } from './Schoolingo.d';
 import { Modal } from "@Components/Modal/Modal";
-import { AuthLogin } from "../Auth/Tabs/Login/Login";
+import { LoginExpiredComponent } from "../board/modals/loginExpired/loginExpired.component";
+import { AppConfig } from "./App";
 export {
     TimetableAPI,
     ClassbookAPI,
@@ -39,7 +40,7 @@ export class Schoolingo {
     public resetToDefault(): void {
         this.modal = '';
         this.timetableAPI = [];
-        this.timetableSelectedWeek.next(moment().isoWeek());
+        this.timetableSelectedWeek.next(moment());
         this.timetableLessons = [];
         this.timetableSubjects = {};
         this.timetableHours = [];
@@ -50,10 +51,11 @@ export class Schoolingo {
         this.substitution = {};
         this.isOfflineMode = false;
         this.isLoginExpired = false;
-        clearTimeout(this.logoutInterval);
-        this.logoutInterval = setTimeout(() => {
-            this.loginExpired();
-        }, this.school.schoolInfo.loginExpires);
+        clearTimeout(this.warnlogoutInterval)
+        this.warnlogoutInterval = setTimeout(() => {
+            this.loginModal.open();
+            this.logoutTime = moment().add(AppConfig.WARN_BEFORE_LOGOUT_MINUTES, 'minutes');
+        }, this.school.schoolInfo.loginExpires - (AppConfig.WARN_BEFORE_LOGOUT_MINUTES * 60000));
         this.loginModal.close();
         this.marks = [];
         this.absence = {};
@@ -62,6 +64,7 @@ export class Schoolingo {
         this.traineeship.diaryWeeks.next([]);
         this.traineeship.diaryDays = {};
         this.traineeship.diary.next([]);
+        this.auth.isExecuting = false;
     }
 
     public subscribers: Subscription[] = [];
@@ -69,9 +72,9 @@ export class Schoolingo {
 
     public absenceSubjects: Record<string, { absence: number, lessons: number }> = {};
     public absence: Record<string, Absence[]> = {};
+    public hasAccessToPage: boolean = true;
 
     constructor(
-        public alertManager: AlertManagerClass,
         public locale: Locale,
         public socketService: SocketService,
         public theme: Theme,
@@ -88,43 +91,57 @@ export class Schoolingo {
             this.refreshTitle();
         }));
 
-        this.subscribers.push(this.timetableSelectedWeek.subscribe((week: number) => {
+        this.subscribers.push(this.timetableSelectedWeek.subscribe((week: moment.Moment) => {
+            console.log(week);
             this.refreshTimetableLessons();
 
             this.socketService.emit('timetable:getClassbook', { week, userId: this.getStudentId() });
         }));
 
+        this.subscribers.push(this.userService.alert.subscribe((alert: Alert | null) => {
+            if (alert === null) return;
+            this.auth.errors['auth'] = alert;
+        }));
+
         this.subscribers.push(this.userService.tokenExpiration.subscribe((date: moment.Moment) => {
             if (this.isLoginExpired) return;
-            clearTimeout(this.logoutInterval)
-            this.logoutInterval = setTimeout(() => {
-                this.loginExpired();
-            }, this.school.schoolInfo.loginExpires);
+            if (date.isAfter(moment())) {
+                this.loginModal.close();
+                clearTimeout(this.warnlogoutInterval)
+                this.warnlogoutInterval = setTimeout(() => {
+                    this.loginModal.open();
+                    this.logoutTime = moment().add(AppConfig.WARN_BEFORE_LOGOUT_MINUTES, 'minutes');
+                }, this.school.schoolInfo.loginExpires - (AppConfig.WARN_BEFORE_LOGOUT_MINUTES * 60000));
+                // x minutes before because of option to stay logged in
+                // Make modal change to autologout
+            } else {
+                this.userService.logout();
+            }
         }));
 
         this.subscribers.push(this.auth.loginStatus.subscribe((status: boolean) => {
-            if (status) {
-                this.resetToDefault();
-                this.auth.loginStatus.next(false);
-            }
+            if (!status) return;
+
+            this.resetToDefault();
+            this.auth.loginStatus.next(false);
         }));
     }
 
     // Login expired
     public isLoginExpired = false;
-    public logoutInterval = setTimeout(() => {});
-    public loginModal = new Modal({ title: { text: 'login_title' }, size: 'size-2', items: [
+    public warnlogoutInterval = setTimeout(() => {});
+    public logoutTime: moment.Moment = moment();
+    public loginModal = new Modal({ title: { text: 'modals/loginExpire/title' }, closeable: false, size: 'size-2', items: [
         {
             type: "component",
-            component: AuthLogin,
-            data: {}
+            component: LoginExpiredComponent,
         }
     ] });
 
     public loginExpired(): void {
-        this.isLoginExpired = true;
-        this.modal = 'login';
-        this.loginModal.open();
+        // this.isLoginExpired = true;
+        // this.modal = 'login';
+        // this.loginModal.open();
     }
 
     // Offline mode
@@ -150,16 +167,21 @@ export class Schoolingo {
             return "";
         }
 
+        let text = this.locale.getLocale('roles/' + user.type);
         switch(user.type) {
             case "student":
-                return this.locale.getLocale('roles/' + user.type) + ' - ' + user.class;
+                text += ' - ' + user.class;
+                break;
             default:
-                let text = this.locale.getLocale('roles/' + user.type);
                 if (user.manager === -1) {
                     text += " - " + this.locale.getLocale('roles/manager');
                 }
-                return text;
+                if (user.isPrincipal) {
+                    text += " - " + this.locale.getLocale('roles/principal');
+                }
+                break;
         }
+        return text;
     }
 
     public refreshTitle(): void {
@@ -169,7 +191,8 @@ export class Schoolingo {
 
     // Timetable
     public timetableAPI: TimetableAPI[] = [];
-    public timetableSelectedWeek = new BehaviorSubject(moment().isoWeek());
+    public timetableSelectedLesson = new BehaviorSubject<{ lesson: TimetableLesson, day: number, hour: number, sub: number } | null>(null);
+    public timetableSelectedWeek = new BehaviorSubject<moment.Moment>(moment());
     private timetableLessons: TimetableLesson[][][] = [];
     private timetableSubjects: Record<string, number[]> = {};
 
@@ -187,7 +210,7 @@ export class Schoolingo {
 
     // Absence
     public getAbsence(day: number, hour: number): number {
-        let date = Utils.getDayOfWeek(this.timetableSelectedWeek.getValue(), day).format('YYYY-MM-DD');
+        let date = Utils.getDayOfWeek(this.timetableSelectedWeek.getValue().isoWeek(), day).format('YYYY-MM-DD');
         if (!this.absence[date] || !this.absence[date][hour]) {
             return -1
         }
@@ -196,7 +219,7 @@ export class Schoolingo {
     }
 
     public isClassbook(day: number, hour: number): boolean {
-        let date = Utils.getDayOfWeek(this.timetableSelectedWeek.getValue(), day).format('YYYY-MM-DD');
+        let date = Utils.getDayOfWeek(this.timetableSelectedWeek.getValue().isoWeek(), day).format('YYYY-MM-DD');
         if (!this.classbookLessons[date]) return false;
         return this.classbookLessons[date][hour] !== undefined;
     }
@@ -223,12 +246,19 @@ export class Schoolingo {
         }
 
         let hours: TimetableHours[] = [];
-        let time: moment.Moment = moment().set('hours', this.school.schoolInfo.startHour[0]).set('minutes', this.school.schoolInfo.startHour[1]);
+        let time: moment.Moment = moment()
+        .set('hours', this.school.schoolInfo.startHour[0])
+        .set('minutes', this.school.schoolInfo.startHour[1]);
 
         for(let i = 1;i <= maxHours;i++) {
             let startHour = time.clone();
             time.add(this.school.schoolInfo.lessonHour, 'minutes');
-            hours.push({ start: startHour.format('HH:mm'), end: time.format('HH:mm') })
+            hours.push(
+                {
+                    start: startHour.format('HH:mm'),
+                    end: time.format('HH:mm')
+                }
+            );
             time.add(this.school.schoolInfo.breaks[i + 1] || this.school.schoolInfo.breakTime, 'minutes');
         }
 
@@ -240,7 +270,6 @@ export class Schoolingo {
     }
 
     public refreshTimetableLessons(): void {
-
         this.timetableLessons = [];
         this.timetableSubjects = {};
         // Get hours
@@ -271,13 +300,17 @@ export class Schoolingo {
                 }
             }
 
-            if (lesson.type !== 0 && this.timetableSelectedWeek.getValue() !== -1) {
-                if (lesson.type === 1 && Utils.isOdd(this.timetableSelectedWeek.getValue()) || lesson.type === 2 && !Utils.isOdd(this.timetableSelectedWeek.getValue())) {
+            if (lesson.type !== 0 && this.timetableSelectedWeek.getValue().isValid()) {
+                if (lesson.type === 1 && Utils.isOdd(this.timetableSelectedWeek.getValue().isoWeek()) || lesson.type === 2 && !Utils.isOdd(this.timetableSelectedWeek.getValue().isoWeek())) {
                     return;
                 }
             }
 
-            let date = moment().set('isoWeeks', this.timetableSelectedWeek.getValue()).startOf('isoWeek').add(lesson.day, 'day');
+            let date = moment()
+            .set('isoWeeks', this.timetableSelectedWeek.getValue().isoWeek())
+            .startOf('isoWeek')
+            .add(lesson.day, 'day');
+
             let subjectName: string = lesson.subjectName;
             let subjectShortcut: string = lesson.subjectShortcut;
             let teacher: number = lesson.teacher;
@@ -357,12 +390,11 @@ export class Schoolingo {
     }
 
     public formatPerson(personId: number | undefined): string {
-
         if (personId == -1 || personId == undefined) {
             return '';
         }
 
-        let person = this.getPerson(personId)!;
+        let person = this.getPerson(personId);
 
         if (person == null) {
             return '';
@@ -403,6 +435,7 @@ export class Schoolingo {
             this.subjects[parseInt(value[0])] = value[1];
         });
     }
+
     public marks: Mark[] = [];
 
     public substitution: Record<string, Substitution[]> = {};

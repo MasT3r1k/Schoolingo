@@ -165,7 +165,7 @@ let config: SidebarGroup[] = [
                 {
                     item: "sidebar/traineeship/companies",
                     url: "traineeship/companies",
-                    permission: ['all']
+                    permission: ['student', 'teacher']
                 },
                 {
                     item: "sidebar/traineeship/manage",

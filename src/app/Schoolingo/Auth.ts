@@ -9,11 +9,12 @@ import { UserService } from "./User";
 import { SocketService } from "./Socket";
 import { BehaviorSubject } from "rxjs";
 import { Locale } from "./Locale";
+import { Alert } from "./Alert";
 
 @Injectable({ providedIn: 'root' })
 export class Authentication {
-    public errors: { [key: string]: string } = {};
-    public loginStatus: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
+    public errors: { [key: string]: Alert } = {};
+    public loginStatus = new BehaviorSubject<boolean>(false);
 
     constructor(
         private router: Router,
@@ -29,7 +30,7 @@ export class Authentication {
         this.page = page;
         if (this.router.url.startsWith('/login')) {
             if (['2fa'].includes(page)) return;
-            this.router.navigate([''], { queryParams: { page: page } });
+            this.router.navigate([''], { queryParams: { page } });
         }
     }
 
@@ -45,13 +46,13 @@ export class Authentication {
 
     public canLogin(): boolean {
         if (this.username === '') {
-            this.errors['username'] = 'required';
+            this.errors['username'] = {type:'error', text:'required'};
         }
         if (this.password === '') {
-            this.errors['password'] = 'required';
+            this.errors['password'] = {type:'error', text:'required'};
         }
         if (this.token2FA == '' && this.page == '2fa') {
-            this.errors['token'] = 'required';
+            this.errors['token'] = {type:'error', text:'required'};
         }
 
         return (Object.keys(this.errors).length === 0);
@@ -89,30 +90,30 @@ export class Authentication {
                 this.password = '';
                 this.token2FA = '';
                 if (this.router.url.startsWith('/login')) {
-                    this.router.navigate(['', ...nextURL.split('/')]);                    
+                    this.router.navigate(['', ...nextURL.split('/')]);
                 } else {
                     this.socketService.connect();
                 }
-                this.isExecuting = false;
+                // this.isExecuting = false;
             }
     
             if ('error' in data) {
                 switch (data.error) {
                     case 'user_not_found':
-                        this.errors['username'] = data.error;
+                        this.errors['username'] = {type:'error', text:data.error};
                         break;
                     case 'wrong_pass':
-                        this.errors['password'] = data.error;
+                        this.errors['password'] = {type:'error', text:data.error};
                         break;
                     case 'max_login_attempts':
-                        this.errors['auth'] = data.error;
+                        this.errors['auth'] = {type:'error', text:data.error};
                         break;
                     case '2fa_required':
                         this.token2FA = '';
                         this.goPage('2fa');
                         break;
                     case 'wrong_2fa':
-                        this.errors['token'] = 'userSettings/wrong_2fa';
+                        this.errors['token'] = {type:'error', text:'userSettings/wrong_2fa'};
                         break;
                     default:
                         console.log('Error: ' + data.error);

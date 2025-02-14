@@ -50,7 +50,9 @@ export class ModalComponent implements OnInit {
     }
 
     public closeAllModals(): void {
-        this.getModals().forEach((modal: Modal) => modal.close());
+        this.getModals().forEach((modal: Modal) => {
+            if (modal.options.closeable) modal.close()
+        });
     }
 
     public getDate(item: modalItem): string {

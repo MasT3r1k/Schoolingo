@@ -7,7 +7,6 @@ import { ModalComponent } from '@Components/Modal/Modal';
 import { BookInfo, Substitution } from '@Schoolingo';
 import { Absence, ClassbookAPI, Mark } from '@Schoolingo';
 import { Schoolingo, TimetableAPI } from '@Schoolingo';
-import { alertManager, AlertManagerClass } from '@Schoolingo/Alert';
 import { languages } from '@Schoolingo/Locale';
 import { Modules } from '@Schoolingo/Modules';
 import { School } from '@Schoolingo/School';
@@ -48,7 +47,6 @@ export class BoardComponent implements OnInit, AfterViewInit {
 
   App = App;
 
-  public alertManager: AlertManagerClass = alertManager;
   private subscribers: Subscription[] = [];
 
   constructor(
@@ -67,6 +65,7 @@ export class BoardComponent implements OnInit, AfterViewInit {
   ngAfterViewInit() {
     this.router.events
         .subscribe((event) => {
+          this.schoolingo.hasAccessToPage = true;
             if(event instanceof NavigationStart) {
                 this.pageLoading = true;
             }
@@ -75,17 +74,17 @@ export class BoardComponent implements OnInit, AfterViewInit {
                 event instanceof NavigationCancel
                 ) {
                 this.pageLoading = false;
+
             }
         });
   }
 
   ngOnInit(): void {
     this.schoolingo.refreshTitle();
-    this.subscribers.push(this.router.events.subscribe((url: any): void => {
-      if (url instanceof NavigationEnd) {
-        if (url.url) {
-          this.schoolingo.refreshTitle();
-        }
+    this.subscribers.push(this.router.events.subscribe((event: any): void => {
+      if (event instanceof NavigationEnd) {
+        if (!event.url) return
+        this.schoolingo.refreshTitle();
       }
     }));
 
@@ -99,14 +98,26 @@ export class BoardComponent implements OnInit, AfterViewInit {
     }));
 
     this.schoolingo.socketService.connect();
+
     this.subscribers.push(this.schoolingo.socketService.addFunction("connect").subscribe(() => {
       this.schoolingo.socketService.emit('tokens:getUser', { userId: 'myself' });
+      this.schoolingo.socketService.emit('tokens:refreshToken');
+    }));
+
+    this.subscribers.push(this.schoolingo.socketService.addFunction("tokens:getUser").subscribe((data: errorAPI) => {
+      if ('error' in data) {
+        if (['invalid_token', 'no_token', 'user_not_found'].includes(data.error)) {
+          this.schoolingo.userService.logout();
+        }
+      }
     }));
 
     this.subscribers.push(this.schoolingo.socketService.addFunction("main:updateUser").subscribe((data: user) => {
       if (data.type == "parent" && data.children.length > 0) {
         this.schoolingo.userService.children = data.children;
       }
+
+      data.birthday = moment(data.birthday);
 
       this.schoolingo.userService.setUser(data);
       this.schoolingo.sidebar.build();
@@ -123,28 +134,33 @@ export class BoardComponent implements OnInit, AfterViewInit {
         week: moment().isoWeek(),
         year: moment().year()
       });
+      
       this.schoolingo.socketService.emit("classes:getClassService", {
         userId
       });
+      
       this.schoolingo.socketService.emit("timetable:getClassbook", {
         userId,
-        week: this.schoolingo.timetableSelectedWeek.getValue() === -1 ? moment().isoWeek() : this.schoolingo.timetableSelectedWeek.getValue()
+        week: this.schoolingo.timetableSelectedWeek.getValue().isoWeek()
       });
+      
       this.schoolingo.socketService.emit("grades:getGrades", {
         userId,
-        week: this.schoolingo.timetableSelectedWeek.getValue() === -1 ? moment().isoWeek() : this.schoolingo.timetableSelectedWeek.getValue()
+        week: this.schoolingo.timetableSelectedWeek.getValue().isoWeek()
       });
+      
       this.schoolingo.socketService.emit('absence:getAbsence', {
         userId
       });
+      
       this.schoolingo.socketService.emit("absence:getAllAbsence", {
         userId
       });
+
       if (this.modules.checkModule(["traineeship"])) {
         this.schoolingo.socketService.emit('traineeship:getDiaryWeeks');
         this.schoolingo.socketService.emit('traineeship:getDiaryDays');
       }
-      
     }));
 
     this.subscribers.push(this.schoolingo.socketService.addFunction("main:updateLocale").subscribe((data: SocketUpdateLocale) => {
@@ -164,6 +180,11 @@ export class BoardComponent implements OnInit, AfterViewInit {
               break;
           }
       }
+    }));
+
+    this.subscribers.push(this.schoolingo.socketService.addFunction("tokens:refreshToken").subscribe((data: { expires: Date }) => {
+      this.schoolingo.loginModal.close();
+      this.schoolingo.userService.setExpiration(moment(data.expires));
     }));
 
     this.subscribers.push(this.schoolingo.socketService.addFunction("timetable:getLessons").subscribe((data: TimetableAPI[]) => {
@@ -264,17 +285,24 @@ export class BoardComponent implements OnInit, AfterViewInit {
           start: moment(data[0].start),
           end: moment(data[0].end)
         };
+      } else {
+        this.schoolingo.studentService = { status: false };
       }
     }));
 
-    this.subscribers.push(this.schoolingo.timetableSelectedWeek.subscribe((val: number) => {
-      if (val === -1) return;
+    this.subscribers.push(this.schoolingo.timetableSelectedWeek.subscribe((val: moment.Moment) => {
       let userId = this.schoolingo.getStudentId();
       this.schoolingo.socketService.emit('timetable:getLessons', {
         userId,
-        week: val,
-        year: moment().year()
+        week: val.isoWeek(),
+        year: val.year()
       });
+
+      this.schoolingo.socketService.emit('classes:getClassService',
+        {
+          week: this.schoolingo.timetableSelectedWeek.getValue().isoWeek(),
+          year: this.schoolingo.timetableSelectedWeek.getValue().year()
+        })
     }));
 
     if (this.modules.checkModule(["library"])) {
@@ -304,9 +332,7 @@ export class BoardComponent implements OnInit, AfterViewInit {
         this.schoolingo.traineeship.diaryWeeks.next(weeks);
         this.schoolingo.traineeship.refreshDiary();
       }));
-    }
 
-    if (this.modules.checkModule(["traineeship"])) {
       this.subscribers.push(this.schoolingo.socketService.addFunction("traineeship:getDiaryDays").subscribe(() => this.schoolingo.traineeship.refreshDiary()));
     }
   }

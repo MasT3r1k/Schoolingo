@@ -28,12 +28,12 @@ export class Locale {
             if (!lng) {
                 lng = this.defaultLanguage;
             }
-            this.setUserLocale(lng ?? this.defaultLanguage);
+            this.setUserLocale(lng);
         }
     private logName = 'Locale';
 
     // Big future problem with more languages and locales :(
-    public locales: Record<languages, { name: string;flag: string;file: string } | {} | any> = {
+    public locales: Record<languages, typeof CzechLanguage | {} | any> = {
         cs: CzechLanguage,
         'en-gb': EnglishLanguage,
         null: {}
@@ -113,7 +113,7 @@ export class Locale {
      * @returns Translate of path
      */
     public getLocale(path: string): string {
-        if (!path) return '[unknown]';
+        if (!path) return '[no path]';
         if (!this.getUserLocale()) {
             this.setDefaultLocale();
         }

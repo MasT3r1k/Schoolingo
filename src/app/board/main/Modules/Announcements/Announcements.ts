@@ -1,13 +1,14 @@
 import { Component, OnInit } from '@angular/core';
 import { Schoolingo, Absence } from '@Schoolingo';
 import { AbsenceType } from '@Schoolingo/Absence';
+import { IconsModule } from '../../../../Modules/Icons.module';
 
 type alerts = "unexcusedAbsence" | "unreadMessages" | "studentService";
 
 @Component({
   host: {'module': 'Announcements'},
   standalone: true,
-  imports: [],
+  imports: [IconsModule],
   templateUrl: './Announcements.html',
   styleUrls: ['./Announcements.css', '../Modules.css']
 })
@@ -36,10 +37,10 @@ export class AnnouncementsComponent implements OnInit {
     switch(type) {
       case "unexcusedAbsence":
         return this.schoolingo.locale.getLocale('annoucementModule/unexcusedAlert')
-        .replaceAll('%unexcused%', this.getUnexcusedAbsence().toString());
+          .replaceAll('%unexcused%', this.getUnexcusedAbsence().toString());
       case "unreadMessages":
         return this.schoolingo.locale.getLocale('annoucementModule/unreadMessages')
-        .replaceAll('%unread%', this.schoolingo.messages.unreadMessage.getValue().toString());
+          .replaceAll('%unread%', this.schoolingo.messages.unreadMessage.getValue().toString());
       case "studentService":
         if (this.schoolingo.studentService.status === true) {
           return this.schoolingo.locale.getLocale('annoucementModule/studentService')

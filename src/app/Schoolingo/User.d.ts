@@ -1,3 +1,4 @@
+import moment from "moment";
 import { UserRoles } from "./Permissions";
 
 export interface degree {
@@ -31,6 +32,8 @@ export type user = ({
     type: UserRoles;
     id: number;
     manager: number;
+    isPrincipal: boolean;
+    birthday: moment.Moment;
 }
 
 export type child = (personDetails & { class: string });

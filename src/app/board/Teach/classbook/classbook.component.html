@@ -11,9 +11,18 @@
     </div>
     <div class="card-body card-row">
         <div class="left hours">
-            <div class="hour">
-
-            </div>
+            @for (hour of schoolingo.getTimetableHours(); track hourIndex;let hourIndex = $index) {
+                @if (schoolingo.getTimetableLessons()[selectedDate.getValue().isoWeekday() - 1]) {
+                    @for (lesson of schoolingo.getTimetableLessons()[selectedDate.getValue().isoWeekday() - 1][hourIndex]; track $index) {
+                        {{ 'Hodina: ' + (hourIndex + 1) }}
+                        @if (lesson) {
+                            <div class="hour">
+                                {{ lesson.subjectName }}
+                            </div>
+                        }
+                    }
+                }
+            }
         </div>
 
         <div class="right">

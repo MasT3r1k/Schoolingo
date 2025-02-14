@@ -32,8 +32,9 @@ interface Thread {
   memberTypes: number[];
   members: number[];
   tags: [];
+  date: moment.Moment;
   newMessage: boolean;
-  messages: Message[];
+  message: string;
 }
 
 @Component({
@@ -60,21 +61,8 @@ export class ReceivedComponent implements OnInit {
       type: ThreadTypes.MESSAGE,
       tags: [],
       newMessage: true,
-      messages: [
-        {
-          messageId: 1,
-          author: 1,
-          type: 'member',
-          message: "aaabbbccc",
-          date: moment()
-        },
-        {
-          messageId: 2,
-          type: 'system',
-          message: "Uživatel xxx přidal do skupiny uživatele xxx",
-          date: moment(),
-        }
-      ]
+      date: moment(),
+      message: "aaabbbccc"
     },
     {
       threadId: 1,
@@ -84,15 +72,9 @@ export class ReceivedComponent implements OnInit {
       type: ThreadTypes.MESSAGE,
       tags: [],
       newMessage: true,
-      messages: [
-        {
-          messageId: 1,
-          author: 1,
-          type: 'member',
-          message: "aaabbbccc",
-          date: moment()
-        }
-      ]
+      date: moment(),
+      message: "aaabbbccc"
+
     },
     {
       threadId: 1,
@@ -102,34 +84,8 @@ export class ReceivedComponent implements OnInit {
       members: [1],
       tags: [],
       newMessage: false,
-      messages: [
-        {
-          messageId: 1,
-          author: 1,
-          type: 'member',
-          message: "aaabbbccc",
-          date: moment()
-        },
-        {
-          messageId: 2,
-          type: 'system',
-          message: "Uživatel xxx přidal do skupiny uživatele xxx",
-          date: moment(),
-        },
-        {
-          messageId: 1,
-          author: 1,
-          type: 'member',
-          message: "aaabbbccc",
-          date: moment()
-        },
-        {
-          messageId: 2,
-          type: 'system',
-          message: "Uživatel xxx přidal do skupiny uživatele xxx",
-          date: moment(),
-        }
-      ]
+      date: moment(),
+      message: "aaaabbbccccxsss"
     },
     {
       threadId: 1,
@@ -139,21 +95,8 @@ export class ReceivedComponent implements OnInit {
       memberTypes: [0],
       tags: [],
       newMessage: false,
-      messages: [
-        {
-          messageId: 1,
-          author: 1,
-          type: 'member',
-          message: "aaabbbccc",
-          date: moment()
-        },
-        {
-          messageId: 2,
-          type: 'system',
-          message: "Uživatel xxx přidal do skupiny uživatele xxx",
-          date: moment(),
-        }
-      ]
+      date: moment(),
+      message: "Poslední zpráva, kterou jste přečetla, byla smazána"
     },
     {
       threadId: 1,
@@ -163,15 +106,8 @@ export class ReceivedComponent implements OnInit {
       memberTypes: [0],
       tags: [],
       newMessage: false,
-      messages: [
-        {
-          messageId: 1,
-          author: 1,
-          type: 'member',
-          message: "Prosím o omluvení syna ",
-          date: moment()
-        }
-      ]
+      date: moment(),
+      message: "Prosím o omluvení syna z dnešního vyučování"
     },
     {
       threadId: 1,
@@ -181,21 +117,8 @@ export class ReceivedComponent implements OnInit {
       memberTypes: [0],
       tags: [],
       newMessage: false,
-      messages: [
-        {
-          messageId: 1,
-          author: 1,
-          type: 'member',
-          message: "aaabbbccc",
-          date: moment()
-        },
-        {
-          messageId: 2,
-          type: 'system',
-          message: "Uživatel xxx přidal do skupiny uživatele xxx",
-          date: moment(),
-        }
-      ]
+      date: moment(),
+      message: "aaabbbccc"
     },
   ];
 

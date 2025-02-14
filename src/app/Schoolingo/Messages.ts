@@ -7,6 +7,7 @@ export class MessageManager {
     public types: MessageType[] = [
       {       // 0
         label: 'message',
+        icon: 'mail',
         perms: ['all']
       }, {    // 1
         label: 'homework',
@@ -17,7 +18,7 @@ export class MessageManager {
         label: 'excusestudent',
         icon: 'file-report',
         color: 'hsl(356, 87%, 41%)',
-        perms: ['parent']
+        perms: ['parent', 'older:18']
       }, {    // 3
         label: 'ratestudent',
         icon: 'thumb-up',
@@ -33,10 +34,10 @@ export class MessageManager {
 
     public tags: MessageTag[] = [
       {
-        label: "Vyžaduje potvrzení"
+        label: "messages/tags/requireConfirmation"
       },
       {
-        label: "Důležité"
+        label: "messages/tags/important"
       }
     ];
 

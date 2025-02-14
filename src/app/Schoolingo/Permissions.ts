@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { UserRoles, modulePerm, UserPerms, permType } from './Permissions.d';
 import { UserService } from './User';
 import { PermissionsConfig } from './Permissions.config';
+import { Utils } from './Utils';
 export type { UserRoles, modulePerm, UserPerms, permType };
 
 @Injectable()
@@ -24,8 +25,18 @@ export class Permission {
         }
 
         required.forEach((perm: permType) => {
-            if (perm.startsWith("manager:")) {
-
+            if (perm.startsWith("older:")) {
+                let age = parseInt(perm.slice(6));
+                if (Utils.getAge(user.birthday) >= age) {
+                    count++;
+                    return;
+                }
+            } else if (perm == "principal") {
+                if (user.isPrincipal) {
+                    count++;
+                    return;
+                }
+            } else if (perm.startsWith("manager:")) {
                 if (user.manager == -1) {
                     count++;
                 }

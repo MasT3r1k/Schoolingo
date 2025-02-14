@@ -50,7 +50,9 @@
             @if (selectedVehicle) {
                 @if (selectedTab.getValue() === 0) {
                     <div class="card-body">
-                        <h2>Dalníční známky</h2>
+                        <h2>
+                            {{ schoolingo.locale.getLocale('fleetVehicles/vehicleInfo/vignettes/main') }}
+                        </h2>
                         @if (selectedVehicle.vignette) {
                             @for (vignette of getVignette(); track $index) {
                                 @if (vignette[1].status) {
@@ -58,15 +60,21 @@
                                         <span style="margin-right: .5rem;">
                                             {{ Country.getCountryByCode(vignette[0])?.flag }}
                                         </span>
-                                        Má platnou dalniční známku do {{ Utils.formatDate(vignette[1].duration[1]) }}
+                                        
+                                        {{
+                                            schoolingo.locale.getLocale('fleetVehicles/vehicleInfo/vignettes/valid')
+                                            .replaceAll('%date%', Utils.formatDate(vignette[1].duration[1]))
+                                        }}
                                     </div>
                                 } @else {
-                                    <div class="badge red">Nemá platnou dalniční známku</div>
+                                    <div class="badge red mb">
+                                        {{ schoolingo.locale.getLocale('fleetVehicles/vehicleInfo/vignettes/invalid') }}
+                                    </div>
                                 }
                             }
                         }
                         <h2>
-                            Informace o vozidle
+                            {{ schoolingo.locale.getLocale('fleetVehicles/vehicleInfo/info') }}
                         </h2>
                         <div class="items">
                             <div class="item">
@@ -124,7 +132,7 @@
                     </div>
                 }
             } @else {
-                Načítání údajů auta
+                {{ schoolingo.locale.getLocale('fleetVehicles/loading') }}
             }
         </div>
     }

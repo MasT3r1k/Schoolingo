@@ -4,6 +4,14 @@
         <h2>{{ schoolingo.locale.getLocale('sidebar/teach/timetable') }}</h2>
         <div class="flex-items">
 
+            @if (perms.checkPermission(["older:18", "student"]) || perms.checkPermission(["parent"])) {
+                <div [ngClass]="{'item-btn': true, text: true, 'blue-info': massExcuse}" (click)="massExcuse = !massExcuse">
+                    <div class="text">
+                        {{ schoolingo.locale.getLocale('timetable/excuse') }}
+                    </div>
+                </div>
+            }
+
             <div [ngClass]="{'item-btn': true, text: true, active: dropdown.isOpen(timetableAbsenceName)}" [attr.dropdown]="timetableAbsenceName" (click)="$event.stopPropagation();dropdown.toggle(timetableAbsenceName)">
                 <div class="text">
                     {{ schoolingo.locale.getLocale('sidebar/absence') }}
@@ -17,7 +25,13 @@
             @if (selectedTab.getValue() === 3) {
                 <div [ngClass]="{button: true, active: dropdown.isOpen(timetableCalendarName)}" [attr.dropdown]="timetableCalendarName" (click)="$event.stopPropagation();dropdown.toggle(timetableCalendarName)">
                     <i-tabler name="calendar-month"></i-tabler>
-                    {{ selectedDate.getValue().format('DD. MM. YYYY') }}
+                    {{
+                        selectedDate.getValue().clone().startOf('isoWeek')
+                        .format('DD. MM. YYYY')
+                         + ' - ' + 
+                         selectedDate.getValue().clone().endOf('isoWeek')
+                         .format('DD. MM. YYYY')
+                    }}
                 </div>
             }
 
@@ -28,15 +42,28 @@
             </div>
         </div>
     </div>
+    <div class="alerts">
+        @if (schoolingo.studentService.status) {
+            <div class="alert blue-info" [ngStyle]="{ maxWidth: (schoolingo.getTimetableHours().length + 1) * 128 + 'px' }">
+                {{ schoolingo.locale.getLocale('timetable/classService')
+                    .replaceAll('%start%', schoolingo.studentService.start.format('DD. MM. YYYY'))
+                    .replaceAll('%end%',   schoolingo.studentService.end  .format('DD. MM. YYYY'))
+                }}
+            </div>
+        }
+    </div>
     <div class="card-body center">
         <div class="timetable">
             <div class="hours">
                 <div class="week-type">
                     @if ([0, 1, 3].includes(selectedTab.getValue())) {
                         <!-- TODO design -->
-                        {{ schoolingo.locale.getLocale('weeks/' + ((schoolingo.timetableSelectedWeek.getValue() % 2) ? 'odd' : 'even')) }}
+                        {{
+                            schoolingo.locale.getLocale('weeks/' + ((schoolingo.timetableSelectedWeek.getValue().isoWeek() % 2) ? 'odd' : 'even'))
+                        }}
                     }
                 </div>
+
                 @for (hour of schoolingo.getTimetableHours(); track $index) {
                     <div class="hour-info">
                         <div class="hour-id">
@@ -48,47 +75,68 @@
                     </div>
                 }
             </div>
+
             <div class="days">
                 @for (day of [].constructor(schoolingo.getTimetableLessons().length > 5 ? schoolingo.getTimetableLessons().length : 5); track index;let index = $index) {
                     <div class="day">
                         <div class="name">
-                            {{ Utils.getDayOfWeek(schoolingo.timetableSelectedWeek.getValue(), index - 1).format('dddd') }}
-                            @if (schoolingo.timetableSelectedWeek.getValue() !== -1) {
+                            {{
+                                Utils
+                                .getDayOfWeek(selectedTab.getValue() !== 2 ? schoolingo.timetableSelectedWeek.getValue() : Utils.getNow(), index - 1)
+                                .format('dddd')
+                            }}
+
+                            @if (selectedTab.getValue() !== 2) {
                                 <div class="time">
-                                    {{ Utils.getDayOfWeek(schoolingo.timetableSelectedWeek.getValue(), index - 1).format('D. M.') }}
+                                    {{
+                                        Utils
+                                        .getDayOfWeek(schoolingo.timetableSelectedWeek.getValue(), index - 1)
+                                        .format('D. M.')
+                                    }}
                                 </div>
                             }
                         </div>
+
                         @if (false) {
                             <div class="item all-day"></div>
                         }
+
                         @for (hour of [].constructor(schoolingo.getTimetableHours().length); track index2;let index2 = $index) {
 
-                            <div [ngClass]="{item: true, 'lesson-hour': true}">
+                            <div class="item lesson-hour">
                                 @if (schoolingo.getTimetableLessons()[index]) {
                                     @for (lesson of schoolingo.getTimetableLessons()[index][index2]; track $index) {
-                                        <div [ngClass]="['sub-lesson-hour', 'lesson-count-' + schoolingo.getTimetableLessons()[index][index2].length, (lesson.empty) ? 'empty' : '', schoolingo.isClassbook(index - 1, index2) ? 'classbook' : '', (schoolingo.substitution[Utils.getDayOfWeek(schoolingo.timetableSelectedWeek.getValue(), index - 1).format('YYYY-MM-DD')] && schoolingo.substitution[Utils.getDayOfWeek(schoolingo.timetableSelectedWeek.getValue(), index - 1).format('YYYY-MM-DD')][index2 + 1]) ? 'substitution' : '']" (click)="openLesson({lesson, day: index, hour: index2, sub: $index})">
+                                        <div [ngClass]="getLessonClasses(index, index2, lesson)" (click)="openLesson({lesson, day: index, hour: index2, sub: $index})">
+
                                             @if (options.groups.getValue() === true) {
                                                 <div class="group">
                                                     @if (lesson.group.text != '') {
                                                         <span>{{ lesson.group.text }}</span>
                                                     }
+                                                    
                                                     @if (lesson.group.num != '') {
                                                         <span>{{ lesson.group.num }}</span>
                                                     }
                                                 </div>
                                             }
+
                                             @if (options.rooms.getValue() === true) {
                                                 <div class="room">{{ lesson.room }}</div>
                                             }
+
                                             <div class="subject">
-                                                @if (schoolingo.timetableSelectedWeek.getValue() == -1 && lesson.type !== 0) {
-                                                    {{ lesson.type == 1 ? 'L: ' : 'S: ' }}
+                                                @if (selectedTab.getValue() === 2 && lesson.type !== 0) {
+                                                    {{ schoolingo.locale.getLocale('weeks/' + (lesson.type == 1 ? 'odd' : 'even')).charAt(0) + ': ' }}
                                                 }
-                                                {{ lesson.subjectShortcut }}</div>
+                                                {{ lesson.subjectShortcut }}
+                                            </div>
+
                                             @if (options.teachers.getValue() === true && lesson.teacher != -1) {
-                                                <div class="teacher">{{ schoolingo.getPerson(lesson.teacher)?.lastName }}</div>
+                                                <div class="teacher">
+                                                    {{ schoolingo.getPerson(lesson.teacher)?.lastName }}
+                                                </div>
                                             }
+
                                             @if (schoolingo.getAbsence(index - 1, index2) != -1) {
                                                 <div [ngClass]="['absence', 'ab-' + schoolingo.absenceConfig[schoolingo.getAbsence(index - 1, index2)].locale]"></div>
                                             }

@@ -37,12 +37,12 @@ export function randomstring(length: number, numbers = true): string {
 }
 
   // Date and Time
-  export function getDayOfWeek(week: number, day = 0): moment.Moment {
-    return moment().isoWeek(week).startOf('isoWeek').add(day + 1, 'd');
+  export function getDayOfWeek(week: number | moment.Moment, day = 0): moment.Moment {
+    return (moment.isMoment(week) ? week : moment().isoWeek(week)).startOf('isoWeek').add(day + 1, 'd');
   }
 
   export function formatDate(date: Date | moment.Moment): string {
-    return ((date instanceof Date) ? moment(date) : date).format('HH:mm:ss DD. MM. YYYY');
+    return (moment.isMoment(date) ? date : moment(date)).format('HH:mm:ss DD. MM. YYYY');
   }
 
   export function getNow(): moment.Moment {
@@ -88,6 +88,9 @@ export function randomstring(length: number, numbers = true): string {
     return window.navigator.userAgent;
   }
   
+  export function getFlagFromCountry(countryCode: string): string {
+    return country.getCountryByCode(countryCode)?.flag || "";
+  }
 
   export function getMobile(userAgent: string): boolean {
     return /Mobi|Fennec|mini|Mobile|Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini|iP(ad|od|hone)/i.test(userAgent);

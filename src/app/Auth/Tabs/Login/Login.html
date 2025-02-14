@@ -1,5 +1,7 @@
 @switch (schoolingo.auth.page) {
     @case("login") {
+        {{ checkURL() }}
+
         <form (submit)="schoolingo.auth.login()">
             <input type="submit" value="" style="display: none" />
 
@@ -8,12 +10,12 @@
                     {{ schoolingo.locale.getLocale('username') }}
                     @if (schoolingo.auth.errors['username'] != null) {
                         <span class="label-error">
-                            - {{ schoolingo.locale.getLocale(schoolingo.auth.errors['username']) }}
+                            - {{ schoolingo.locale.getLocale(schoolingo.auth.errors['username'].text) }}
                         </span>
                     }
                 </label>
                 <div class="value">
-                    <input type="username" [placeholder]="schoolingo.locale.getLocale('username')" name="username" [(ngModel)]="schoolingo.auth.username" required />
+                    <input type="username" [placeholder]="schoolingo.locale.getLocale('username')" name="username" [(ngModel)]="schoolingo.auth.username" required [readOnly]="!checkURL().startsWith('/login')" />
                 </div>
             </div>
             <div class="form-group">
@@ -21,7 +23,7 @@
                     {{ schoolingo.locale.getLocale('password') }}
                     @if (schoolingo.auth.errors['password'] != null) {
                         <span class="label-error">
-                            - {{ schoolingo.locale.getLocale(schoolingo.auth.errors['password']) }}
+                            - {{ schoolingo.locale.getLocale(schoolingo.auth.errors['password'].text) }}
                         </span>
                     }
                 </label>
@@ -51,7 +53,7 @@
                     {{ schoolingo.locale.getLocale('userSettings/2faToken') }}
                     @if (schoolingo.auth.errors['token'] != null) {
                         <span class="label-error">
-                            - {{ schoolingo.locale.getLocale(schoolingo.auth.errors['token']) }}
+                            - {{ schoolingo.locale.getLocale(schoolingo.auth.errors['token'].text) }}
                         </span>
                     }
                 </label>
@@ -74,12 +76,12 @@
                     {{ schoolingo.locale.getLocale('username') }}
                     @if (schoolingo.auth.errors['username'] != null) {
                         <span class="label-error">
-                            - {{ schoolingo.locale.getLocale(schoolingo.auth.errors['username']) }}
+                            - {{ schoolingo.locale.getLocale(schoolingo.auth.errors['username'].text) }}
                         </span>
                     }
                 </label>
                 <div class="value">
-                    <input type="username" [placeholder]="schoolingo.locale.getLocale('username')" name="username" [(ngModel)]="schoolingo.auth.username" required />
+                    <input type="username" [placeholder]="schoolingo.locale.getLocale('username')" name="username" [(ngModel)]="schoolingo.auth.username" [readOnly]="!checkURL().startsWith('/login')" required />
                 </div>
             </div>
 

@@ -63,16 +63,16 @@ export class AppComponent implements OnInit {
       this.school.setSchoolInfo(data, data.modules ?? 0);
       this.http.get<({ user: string } & errorAPI)>(Config.API_URL + 'v1/getUser', { withCredentials: true }).subscribe((data: { user: string } & errorAPI) => {
         this.afterLoadedSchool = true;
+        
         if ('user' in data) {
           this.userService.username = data.user;
           this.userService.setExpiration(moment().add(this.school.schoolInfo.loginExpires, 'ms'));
           if (this.router.url.startsWith('/login')) {
             let returnUrl = this.router.getCurrentNavigation()?.extractedUrl.queryParams.returnUrl;
-            returnUrl
-            ? this.router.navigate(['', returnUrl])
-            : this.router.navigate(['', 'main']);
+            this.router.navigate(['', returnUrl ? returnUrl : 'main'])
           }
         }
+
         if ('error' in data) {
           this.userService.username = null;
         }

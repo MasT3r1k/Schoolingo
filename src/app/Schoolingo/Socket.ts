@@ -25,6 +25,13 @@ export class SocketService {
       withCredentials: true
     });
 
+    this.socketEvents.forEach((value: Function[], event: string) => {
+      value.forEach((listener: Function) => {
+        this.socket?.on(event, listener as any);
+      });
+    });
+    console.log(this.socketEvents)
+
     this.socket.on('system:error', (data: errorAPI | { username:string;error:string; }) => {
       console.log(data.error);
       if ('error' in data) {
@@ -35,9 +42,10 @@ export class SocketService {
         }
       }
     });
+    
     this.socket.onAny((event, ...args) => {
       this.tokenStatus.next('refresh_token');
-      console.log('Event ' + event + ' got ' + args);
+      console.log(`Event ${event} got: `, args);
     })
 
     this.socket.offAny((event, ...args) => {

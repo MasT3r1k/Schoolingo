@@ -17,7 +17,9 @@
                         <div class="icon">
                             <i-tabler name="menu-2"></i-tabler>
                         </div>
-                        <div class="name">{{ schoolingo.locale.getLocale('sidebar/main') }}</div>
+                        <div class="name">
+                            {{ schoolingo.locale.getLocale('sidebar/main') }}
+                        </div>
                     </div>
 
                         @if (perms.checkPermission(["teacher"])) {
@@ -25,14 +27,18 @@
                                 <div class="icon">
                                     <i-tabler name="chalkboard"></i-tabler>
                                 </div>
-                                <div class="name">{{ schoolingo.locale.getLocale('sidebar/teach/classbook') }}</div>
+                                <div class="name">
+                                    {{ schoolingo.locale.getLocale('sidebar/teach/classbook') }}
+                                </div>
                             </div>
 
                             <div class="item-btn" [routerLink]="['', 'marks', 'intermrecord']" [routerLinkActive]="'active'">
                                 <div class="icon">
                                     <i-tabler name="time-duration-5"></i-tabler>
                                 </div>
-                                <div class="name">{{ schoolingo.locale.getLocale('sidebar/marks/intermRecord') }}</div>
+                                <div class="name">
+                                    {{ schoolingo.locale.getLocale('sidebar/marks/intermRecord') }}
+                                </div>
                             </div>
                         }
                 </div>
@@ -45,14 +51,18 @@
                         <div class="icon icon-alert">
                             <i-tabler name="brand-discord"></i-tabler>
                         </div>
-                        <div class="name">{{ schoolingo.locale.getLocale('dropdowns/discord/main') }}</div>
+                        <div class="name">
+                            {{ schoolingo.locale.getLocale('dropdowns/discord/main') }}
+                        </div>
                     </div>
     
                     <div class="item-btn" [routerLink]="['', 'user', 'settings']" [routerLinkActive]="'active'">
                         <div class="icon icon-alert">
                             <i-tabler name="settings"></i-tabler>
                         </div>
-                        <div class="name">{{ schoolingo.locale.getLocale('settings') }}</div>
+                        <div class="name">
+                            {{ schoolingo.locale.getLocale('settings') }}
+                        </div>
                     </div>
     
                     @if (schoolingo.userService.getUser()?.type == 'parent') {
@@ -60,19 +70,25 @@
                             <div class="icon">
                                 <i-tabler name="users"></i-tabler>
                             </div>
-                            <div class="name">{{ schoolingo.locale.getLocale('dropdowns/switchChildren/title') }}</div>
+                            <div class="name">
+                                {{ schoolingo.locale.getLocale('dropdowns/switchChildren/title') }}
+                            </div>
                         </div>
                     }
                 </div>
     
-                <div class="user" [routerLink]="['', 'user', 'profile']">
+                <div [ngClass]="{user: true, skeleton: !schoolingo.userService.getUser()}" [routerLink]="['', 'user', 'profile']">
                     @if (schoolingo.userService.getUser()) {
-                        <p class="name">{{ schoolingo.formatPerson(schoolingo.userService.getUser()?.person?.personId) }}</p>
-                        <p class="role">{{ schoolingo.getUserRole() }}</p>
+                        <p class="name">
+                            {{ schoolingo.formatPerson(schoolingo.userService.getUser()?.person?.personId) }}
+                        </p>
+                        <p class="role">
+                            {{ schoolingo.getUserRole() }}
+                        </p>
                     }
                 </div>
                 
-                <div class="btn red logout" (click)="schoolingo.userService.logout()">
+                <div class="btn red logout" (click)="schoolingo.userService.logout(true)">
                     <i-tabler name="logout"></i-tabler>
                     {{ schoolingo.locale.getLocale('logout') }}
                 </div>
@@ -123,18 +139,6 @@
                 }
             </div>
             <div class="main-content" (click)="schoolingo.sidebar.sidebarToggled = false;">
-                @if (schoolingo.isLoginExpired) {
-                    <div class="alerts">
-                        <div class="alert error">
-                            <div class="text">
-                                {{ "Z důvodu ochrany Vašeho účtu jste byli automaticky odhlášeni. Web je nyní v režimu bez připojení a data se neaktualizují." }}
-                            </div>
-                            <div class="actions">
-                                <div class="btn" (click)="schoolingo.loginModal.open()">{{ schoolingo.locale.getLocale('login_btn') }}</div>
-                            </div>
-                        </div>
-                    </div>
-                }
                 @if (pageLoading) {
                     <div style="display: flex;height:100%">
                         <div class="loading" style="height: auto">
@@ -150,9 +154,20 @@
                         </div>
                     </div>
                 }
-                <div [ngStyle]="{padding: '2rem', display: pageLoading ? 'none' : 'block'}">
-                    <router-outlet></router-outlet>
-                </div>
+
+                @if (schoolingo.hasAccessToPage) {
+                    <div [ngStyle]="{padding: '2rem', display: pageLoading ? 'none' : 'block'}">
+                        <router-outlet></router-outlet>
+                    </div>
+                } @else {
+                    <div class="alerts">
+                        <div class="alert error">
+                            <div class="text">
+                                {{ schoolingo.locale.getLocale('alerts/noAccess') }}
+                            </div>
+                        </div>
+                    </div>
+                }
             </div>
         </div>
     </div>
