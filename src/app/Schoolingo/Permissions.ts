@@ -25,34 +25,42 @@ export class Permission {
         }
 
         required.forEach((perm: permType) => {
-            if (perm.startsWith("older:")) {
-                let age = parseInt(perm.slice(6));
-                if (Utils.getAge(user.birthday) >= age) {
-                    count++;
-                    return;
-                }
-            } else if (perm == "principal") {
-                if (user.isPrincipal) {
-                    count++;
-                    return;
-                }
-            } else if (perm.startsWith("manager:")) {
-                if (user.manager == -1) {
-                    count++;
-                }
-                let manPerm = perm.slice(8);
-                let id = PermissionsConfig.Managers.indexOf(manPerm);
-                let bin = (user.manager >>> 0).toString(2).split('').reverse();
-                if (id !== -1 && bin[id] && bin[id].toString() == "1") {
-                    count++;
-                    return;
-                }
+            let perms: string[] = [];
+            if (!Array.isArray(perm)) {
+                perms = [perm];
             } else {
-                if (perm == user.type) {
-                    count++;
-                    return;
-                }
+                perms = perm;
             }
+            perms.forEach((permission: string) => {
+                let permCount = 0;
+                if (permission.startsWith("older:")) {
+                    let age = parseInt(permission.slice(6));
+                    if (Utils.getAge(user.birthday) >= age) {
+                        permCount++;
+                    }
+                } else if (permission == "principal") {
+                    if (user.isPrincipal) {
+                        permCount++;
+                    }
+                } else if (permission.startsWith("manager:")) {
+                    if (user.manager == -1) {
+                        permCount++;
+                    }
+                    let manPerm = permission.slice(8);
+                    let id = PermissionsConfig.Managers.indexOf(manPerm);
+                    let bin = (user.manager >>> 0).toString(2).split('').reverse();
+                    if (id !== -1 && bin[id] && bin[id].toString() == "1") {
+                        permCount++;
+                    }
+                } else {
+                    if (permission == user.type) {
+                        permCount++;
+                    }
+                }
+                if (permCount == perms.length - 1) {
+                    count++;
+                }
+            });
         });
         return count > 0;
     }
