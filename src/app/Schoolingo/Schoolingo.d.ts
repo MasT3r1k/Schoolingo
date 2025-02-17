@@ -31,16 +31,19 @@ export interface TimetableAPI {
     groupId: number;
     groupName: string;
     groupNum: string;
+    className: string;
 }
 
 export interface TimetableLesson {
     type: number;
     teacher: number;
     room: string;
+    subject: number;
     subjectName: string;
     subjectShortcut: string;
     oldTeacher: number;
     oldSubject: string[];
+    className: string;
     group: { id: number, text: string, num: string };
     empty: boolean = false;
 }

@@ -69,7 +69,7 @@ export class UserService {
   }
 
   /** Children (only parents) */
-  public selectedChild: number = 0;
+  public selectedChild: number | null = null;
   public children: child[] = [];
 
   //** Users
@@ -133,7 +133,7 @@ export class UserService {
     this.http.get<{ status: 'success' }>(Config.API_URL + 'logout', { withCredentials: true }).subscribe((data: { status: 'success' }) => {
       if (!('status' in data)) return;
       this.username = "";
-      if (showAlert) this.alert.next({type: 'success', text: 'auth/login/logoutSuccess'});
+      if (showAlert) this.alert.next(new Alert('success', 'auth/login/logoutSuccess'));
       this.socketService.emit('logout');
       this.socketService.socketEvents = new Map<string, Function[]>();
       this.setUser(null);

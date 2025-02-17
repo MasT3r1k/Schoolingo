@@ -3,7 +3,7 @@ import { Component } from '@angular/core';
 import { Schoolingo } from '@Schoolingo';
 import { MessageManager, MessageType, messageTypes } from '@Schoolingo/Messages';
 import { Permission } from '@Schoolingo/Permissions';
-import { BehaviorSubject } from 'rxjs';
+import { BehaviorSubject, Subscription } from 'rxjs';
 import { ModalSelectReceivers } from '../modals/selectReceivers/selectReceivers';
 import { Modal } from '@Components/Modal/Modal';
 import { TabsComponent } from '@Components/Tabs/Tabs';
@@ -11,10 +11,11 @@ import { AppConfig } from '@Schoolingo/App';
 import { IconsModule } from '../../../Modules/Icons.module';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { Alert } from '@Schoolingo/Alert';
+import { AlertComponent } from '@Components/Alert/Alert';
 
 @Component({
   standalone: true,
-  imports: [NgClass, TabsComponent, IconsModule, FormsModule, ReactiveFormsModule],
+  imports: [NgClass, TabsComponent, IconsModule, FormsModule, ReactiveFormsModule, AlertComponent],
   templateUrl: './send.component.html',
   styleUrls: ['./send.component.css', '../../../Styles/card.css', '../../../Styles/input.css']
 })
@@ -22,6 +23,7 @@ export class SendComponent {
 
   AppConfig = AppConfig;
   messageTypes = messageTypes;
+  subscribers: Subscription[] = [];
 
   public alerts: { [key: string]: Alert } = {};
 
@@ -29,10 +31,7 @@ export class SendComponent {
   public selectedTab = new BehaviorSubject(0);
 
   // Selecting options
-  public showSelect: 'messagetype' | 'homework' | null = null;
-
-  // HOMEWORKS
-  public selectedHomework = new BehaviorSubject(0);
+  public showSelect: 'messagetype' | 'homework' | 'children' | null = null;
 
   // Options
   public excuseAllDay = false;
@@ -59,25 +58,37 @@ export class SendComponent {
     public messageManager: MessageManager
   ){}
 
+  ngOnInit(): void {
+    this.subscribers.push(this.selectedTab.subscribe((tab: number) => {
+      this.alerts = {};
+    }));
+  }
+
   public sendMessage(): void {
     this.alerts = {};
     let type = this.messageManager.messageType.getValue();
     if (!this.perms.checkPermission(this.messageManager.types[type].perms)) {
-      this.alerts['main'] = {type: 'error', text: 'messages/noTypeAccess'};
+      this.alerts['main'] = new Alert('error', 'messages/noTypeAccess');
 
       return;
     }
     let message = this.messageManager.message;
     if (message == '') {
-      this.alerts['message'] = {type: 'error', text: 'required'};
+      this.alerts['message'] = new Alert('error', 'required');
     }
     switch(type) {
       case messageTypes.MESSAGE:
         if (this.messageManager.topic == '') {
-          this.alerts['topic'] = {type: 'error', text: 'required'};
+          this.alerts['topic'] = new Alert('error', 'required');
         }
         break;
       case messageTypes.HOMEWORK:
+        if (this.schoolingo.homeworks.list.length == 0) {
+          this.alerts['main'] = new Alert('error', 'messages/homeworks/empty');
+        }
+        if (this.messageManager.selectedHomework.getValue() == null) {
+          this.alerts['homework'] = new Alert('error', 'required');
+        }
         break;
       case messageTypes.EXCUSESTUDENT:
         break;

@@ -22,6 +22,7 @@ import { Absence, BookInfo, ClassbookAPI, ClassbookLesson, Mark, studentService,
 import { Modal } from "@Components/Modal/Modal";
 import { LoginExpiredComponent } from "../board/modals/loginExpired/loginExpired.component";
 import { AppConfig } from "./App";
+import { childrenSwitchComponent } from "../board/modals/childrenSwitch/childrenSwitch.component";
 export {
     TimetableAPI,
     ClassbookAPI,
@@ -87,56 +88,86 @@ export class Schoolingo {
         public ipManager: IPManager,
         public auth: Authentication,
     ) {
-        this.subscribers.push(this.locale.language.subscribe(() => {
-            this.refreshTitle();
-        }));
+        this.subscribers.push(
+            this.locale.language.subscribe(() => {
+                this.refreshTitle();
+            })
+        );
 
-        this.subscribers.push(this.timetableSelectedWeek.subscribe((week: moment.Moment) => {
-            console.log(week);
-            this.refreshTimetableLessons();
+        this.subscribers.push(
+            this.timetableSelectedWeek.subscribe((week: moment.Moment) => {
+                this.refreshTimetableLessons();
+                this.socketService.emit('timetable:getClassbook', { week, userId: this.getStudentId() });
+            })
+        );
 
-            this.socketService.emit('timetable:getClassbook', { week, userId: this.getStudentId() });
-        }));
+        this.subscribers.push(
+            this.userService.alert.subscribe((alert: Alert | null) => {
+                if (alert === null) return;
+                this.auth.errors['auth'] = alert;
+            })
+        );
 
-        this.subscribers.push(this.userService.alert.subscribe((alert: Alert | null) => {
-            if (alert === null) return;
-            this.auth.errors['auth'] = alert;
-        }));
+        this.subscribers.push(
+            this.userService.tokenExpiration.subscribe((date: moment.Moment) => {
+                if (this.isLoginExpired) return;
+                if (date.isAfter(moment())) {
+                    this.loginModal.close();
+                    clearTimeout(this.warnlogoutInterval)
+                    this.warnlogoutInterval = setTimeout(() => {
+                        this.loginModal.open();
+                        this.logoutTime = moment().add(AppConfig.WARN_BEFORE_LOGOUT_MINUTES, 'minutes');
+                    }, this.school.schoolInfo.loginExpires - (AppConfig.WARN_BEFORE_LOGOUT_MINUTES * 60000));
+                    // x minutes before because of option to stay logged in
+                    // Make modal change to autologout
+                } else {
+                    this.userService.logout();
+                }
+            })
+        );
 
-        this.subscribers.push(this.userService.tokenExpiration.subscribe((date: moment.Moment) => {
-            if (this.isLoginExpired) return;
-            if (date.isAfter(moment())) {
-                this.loginModal.close();
-                clearTimeout(this.warnlogoutInterval)
-                this.warnlogoutInterval = setTimeout(() => {
-                    this.loginModal.open();
-                    this.logoutTime = moment().add(AppConfig.WARN_BEFORE_LOGOUT_MINUTES, 'minutes');
-                }, this.school.schoolInfo.loginExpires - (AppConfig.WARN_BEFORE_LOGOUT_MINUTES * 60000));
-                // x minutes before because of option to stay logged in
-                // Make modal change to autologout
-            } else {
-                this.userService.logout();
-            }
-        }));
+        this.subscribers.push(
+            this.auth.loginStatus.subscribe((status: boolean) => {
+                if (!status) return;
 
-        this.subscribers.push(this.auth.loginStatus.subscribe((status: boolean) => {
-            if (!status) return;
-
-            this.resetToDefault();
-            this.auth.loginStatus.next(false);
-        }));
+                this.resetToDefault();
+                this.auth.loginStatus.next(false);
+            })
+        );
     }
 
     // Login expired
     public isLoginExpired = false;
     public warnlogoutInterval = setTimeout(() => {});
     public logoutTime: moment.Moment = moment();
-    public loginModal = new Modal({ title: { text: 'modals/loginExpire/title' }, closeable: false, size: 'size-2', items: [
+    public loginModal = new Modal({
+        title: {
+            text: 'modals/loginExpire/title'
+        },
+        closeable: false,
+        size: 'size-2',
+        items: [
         {
             type: "component",
             component: LoginExpiredComponent,
         }
-    ] });
+        ]
+    });
+
+    public childrenSwitchModal = new Modal({
+        title: {
+            icon: 'users',
+            text: 'dropdowns/switchChildren/title'
+        },
+        closeable: true,
+        size: 'size-2',
+        items: [
+        {
+            type: "component",
+            component: childrenSwitchComponent
+        }
+        ]
+    });
 
     public loginExpired(): void {
         // this.isLoginExpired = true;
@@ -306,8 +337,7 @@ export class Schoolingo {
                 }
             }
 
-            let date = moment()
-            .set('isoWeeks', this.timetableSelectedWeek.getValue().isoWeek())
+            let date = this.timetableSelectedWeek.getValue()
             .startOf('isoWeek')
             .add(lesson.day, 'day');
 
@@ -315,10 +345,22 @@ export class Schoolingo {
             let subjectShortcut: string = lesson.subjectShortcut;
             let teacher: number = lesson.teacher;
             let substitution = this.substitution?.[date.format('YYYY-MM-DD')];
-            if (substitution?.[lesson.hour]) {
-                subjectName = this.subjects?.[substitution[lesson.hour].subjectId]?.[0];
-                subjectShortcut = this.subjects?.[substitution[lesson.hour].subjectId]?.[1];
-                teacher = substitution[lesson.hour].teacherId;
+            console.log(date.format('YYYY-MM-DD'))
+            console.log(substitution)
+            if (substitution?.[lesson.hour - 1]) {
+                if (substitution[lesson.hour - 1].subjectId == -1) {
+                    subjectName = "";
+                    subjectShortcut = "";
+                } else {
+                    subjectName = this.subjects?.[substitution[lesson.hour - 1].subjectId]?.[0];
+                    subjectShortcut = this.subjects?.[substitution[lesson.hour - 1].subjectId]?.[1];
+                }
+                teacher = substitution[lesson.hour - 1].teacherId;
+                if (substitution[lesson.hour - 1].subjectId == -1 && teacher == -1) {
+                    lesson.groupName = "";
+                    lesson.groupNum = "";
+                    lesson.room = "";
+                }
             }
 
             this.timetableLessons[lesson.day][lesson.hour - 1].push(
@@ -330,6 +372,8 @@ export class Schoolingo {
                     teacher: teacher,
                     room: lesson.room,
                     type: lesson.type,
+                    subject: lesson.subject,
+                    className: lesson.className,
                     group: {
                         id: lesson.groupId,
                         text: lesson.groupName,
@@ -362,6 +406,8 @@ export class Schoolingo {
                         oldTeacher: -1,
                         room: "",
                         type: 0,
+                        subject: -1,
+                        className: "",
                         group: {
                             id: 0,
                             text: '',
@@ -389,12 +435,17 @@ export class Schoolingo {
         return this.persons[personId];
     }
 
-    public formatPerson(personId: number | undefined): string {
+    public formatPerson(personId: number | undefined | personDetails): string {
         if (personId == -1 || personId == undefined) {
             return '';
         }
 
-        let person = this.getPerson(personId);
+        let person!: personDetails;
+        if (typeof personId == 'number') {
+            person = this.getPerson(personId)!;
+        } else {
+            person = personId;
+        }
 
         if (person == null) {
             return '';
@@ -422,7 +473,7 @@ export class Schoolingo {
         let user = this.userService.getUser()!;
         let userId = user?.id;
     
-        if (user && user.type == 'parent') {
+        if (user && user.type == 'parent' && this.userService.selectedChild !== null) {
           userId = this.userService.children[this.userService.selectedChild].personId;
         }
         
@@ -446,7 +497,6 @@ export class Schoolingo {
     public bookInfo = new BehaviorSubject<BookInfo | null>(null);
     public showBook(id: any[], type: 'book' | 'copy'): void {
         this.socketService.emit("library:getBookInfo", { type, id: id[0], loan: id[1] });
-        
     }
 
 }

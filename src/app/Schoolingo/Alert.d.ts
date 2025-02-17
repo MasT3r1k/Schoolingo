@@ -1,4 +1,1 @@
-export interface Alert {
-    type: 'success' | 'info' | 'warning' | 'error';
-    text: string;
-}
+export type AlertTypes = 'success' | 'info' | 'warning' | 'error';

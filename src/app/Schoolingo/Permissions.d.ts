@@ -1,5 +1,5 @@
 export type UserRoles = 'admin' | 'principal' | 'teacher' | 'parent' | 'student';
-export type permType = (UserRoles | 'all' | string) | (UserRoles | 'all' | string)[];
+export type permType = string | string[];
 
 export interface modulePerm {
     name: string;

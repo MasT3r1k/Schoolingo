@@ -53,14 +53,19 @@ export class MessageManager {
     asPrincipal: false,
     requireConfirmation: false,
     copyToClassTeacher: false,
-    copyToParents: false
+    copyToParents: false,
+    toAll: false
   };
 
   public unreadMessage = new BehaviorSubject(12);
+  public selectedChild: number | null = null;
   public messageType = new BehaviorSubject<messageTypes>(messageTypes.MESSAGE);
   public message = "";
   public topic = "";
-    
+  
+  // Homeworks
+  public selectedHomework = new BehaviorSubject(null);
+
 
 
 }

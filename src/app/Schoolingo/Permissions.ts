@@ -31,8 +31,9 @@ export class Permission {
             } else {
                 perms = perm;
             }
+
+            let permCount = 0;
             perms.forEach((permission: string) => {
-                let permCount = 0;
                 if (permission.startsWith("older:")) {
                     let age = parseInt(permission.slice(6));
                     if (Utils.getAge(user.birthday) >= age) {
@@ -47,22 +48,22 @@ export class Permission {
                 } else if (permission.startsWith("manager:")) {
                     if (user.manager == -1) {
                         permCount++;
+                    } else {
+                        let manPerm = permission.slice(8);
+                        let id = PermissionsConfig.Managers.indexOf(manPerm);
+                        let bin = (user.manager >>> 0).toString(2).split('').reverse();
+                        if (id !== -1 && bin[id] && bin[id].toString() == "1") {
+                            permCount++;
+                        }
                     }
-                    let manPerm = permission.slice(8);
-                    let id = PermissionsConfig.Managers.indexOf(manPerm);
-                    let bin = (user.manager >>> 0).toString(2).split('').reverse();
-                    if (id !== -1 && bin[id] && bin[id].toString() == "1") {
-                        permCount++;
-                    }
-                } else {
-                    if (permission == user.type) {
-                        permCount++;
-                    }
-                }
-                if (permCount == perms.length) {
-                    count++;
+                } else if (permission == user.type) {
+                    permCount++;
                 }
             });
+
+            if (permCount == perms.length) {
+                count++;
+            }
         });
         return count > 0;
     }

@@ -11,4 +11,4 @@ export interface MessageTag {
     label: string;
 }
 
-export type MessageOptions = 'asPrincipal' | 'requireConfirmation' | 'copyToClassTeacher' | 'copyToParents';
+export type MessageOptions = 'asPrincipal' | 'requireConfirmation' | 'copyToClassTeacher' | 'copyToParents' | 'toAll';

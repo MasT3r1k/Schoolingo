@@ -214,9 +214,9 @@ export class TimetableComponent {
       classes.push('classbook');
     }
 
-    let day = this.schoolingo.substitution[Utils.getDayOfWeek(this.schoolingo.timetableSelectedWeek.getValue().isoWeek(), index - 1).format('YYYY-MM-DD')];
+    let day = this.schoolingo.substitution[Utils.getDayOfWeek(this.schoolingo.timetableSelectedWeek.getValue(), index - 1).format('YYYY-MM-DD')];
 
-    if (day && day[index2 + 1]) {
+    if (day && day[index2]) {
       classes.push('substitution');
     }
 

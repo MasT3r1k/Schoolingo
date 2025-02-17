@@ -11,6 +11,7 @@ import { Schoolingo } from '@Schoolingo';
 import { Storage } from '@Schoolingo/Storage';
 import { Subscription } from 'rxjs';
 import { AuthLogin } from './Tabs/Login/Login';
+import { AlertComponent } from '@Components/Alert/Alert';
 
 export type pageTypes = 'login' | 'forgotpass';
 type QRPages = 'loading' | 'error' | 'scan' | 'trylogin';
@@ -23,7 +24,7 @@ interface QRStatus {
 
 @Component({
   standalone: true,
-  imports: [QRCodeModule, NgStyle, NgComponentOutlet, NgClass],
+  imports: [QRCodeModule, NgStyle, NgComponentOutlet, AlertComponent],
   providers: [Storage],
   templateUrl: './auth.component.html',
   styleUrls: ['./auth.component.css', '../Styles/card.css', '../Styles/select.css']

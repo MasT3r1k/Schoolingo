@@ -66,7 +66,7 @@
                     </div>
     
                     @if (schoolingo.userService.getUser()?.type == 'parent') {
-                        <div class="item-btn" (click)="schoolingo.modal = 'main:switchChildren'">
+                        <div class="item-btn" (click)="schoolingo.childrenSwitchModal.open()">
                             <div class="icon">
                                 <i-tabler name="users"></i-tabler>
                             </div>
@@ -147,7 +147,7 @@
                                 class="triangle"
                                 fill="none"
                                 points="16,1 32,32 1,32"
-                                stroke="#fff"
+                                [attr.stroke]="(schoolingo.theme.getThemeColor() == 'dark') ? '#fff' : '#000'"
                                 stroke-width="1"
                                 ></polygon>
                             </svg>
@@ -236,7 +236,7 @@
             class="triangle"
             fill="none"
             points="16,1 32,32 1,32"
-            stroke="#fff"
+            [attr.stroke]="(schoolingo.theme.getThemeColor() == 'dark') ? '#fff' : '#000'"
             stroke-width="1"
             ></polygon>
         </svg>

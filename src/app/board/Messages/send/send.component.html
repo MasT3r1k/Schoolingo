@@ -1,13 +1,13 @@
 <div class="card">
     <div class="card-top">
         @if (alerts['main']) {
-            <div [ngClass]="{alert: true, red: alerts['main'].type == 'error', success: alerts['main'].type == 'success'}">
-                {{ schoolingo.locale.getLocale(alerts['main'].text) }}
-            </div>
+            <alert [alert]="alerts['main']" class="mb"></alert>
         }
     </div>
     <div class="card-header mb">
-        <h2>{{ schoolingo.locale.getLocale(['sidebar/messages/send', 'messages/writeMessageOnNoticeboard'][selectedTab.getValue()]) }}</h2>
+        <h2>
+            {{ schoolingo.locale.getLocale(['sidebar/messages/send', 'messages/writeMessageOnNoticeboard'][selectedTab.getValue()]) }}
+        </h2>
         <div class="flex-items">
             <schoolingo-tabs [options]="['messages/classicMessage', 'sidebar/messages/noticeboard']" [value]="selectedTab"></schoolingo-tabs>
         </div>
@@ -18,9 +18,9 @@
             @if (schoolingo.messages.types[messageManager.messageType.getValue()]) {
                 <div class="items">
                     <div class="item">
-                        <div class="label">
+                        <label for="inputSelect">
                             {{ schoolingo.locale.getLocale('messages/type') }}
-                        </div>
+                        </label>
                         <div class="value">
                             <div class="input-select">
                                 <input type="text" (click)="showSelect = showSelect == 'messagetype' ? null : 'messagetype'" name="inputSelect" readonly="true" [value]="schoolingo.locale.getLocale('messages/types/' + messageManager.types[messageManager.messageType.getValue()].label)" />
@@ -45,9 +45,9 @@
     
                     @if (checkMessageType([messageTypes.MESSAGE])) {
                         <div class="item">
-                            <div class="label">
+                            <label for="selectReceiver">
                                 {{ schoolingo.locale.getLocale('messages/receiver') }}
-                            </div>
+                            </label>
                             <div class="value">
                                 <input type="text" style="cursor: pointer;" [value]="schoolingo.locale.getLocale('messages/noSelected')" name="selectReceiver" readonly (click)="selectReceivers()">
                             </div>
@@ -70,13 +70,13 @@
     
                     @if (checkMessageType([messageTypes.HOMEWORK])) {
                         <div class="item">
-                            <div class="label">
+                            <label for="homework">
                                 {{ schoolingo.locale.getLocale('homeworks/homework') }}
-                            </div>
+                            </label>
                             <div class="value">
                                 @if (schoolingo.homeworks.list.length > 0) {
                                     <div class="input-select">
-                                        <input type="text" (click)="showSelect = showSelect == 'homework' ? null : 'homework'" name="inputSelect" readonly="true" [value]="selectedHomework.getValue()" />
+                                        <input type="text" (click)="showSelect = showSelect == 'homework' ? null : 'homework'" name="inputSelect" readonly="true" [value]="messageManager.selectedHomework.getValue()" />
                                         @if (showSelect == 'homework') {
                                             <div class="options">        
                                                 @for (type of []; track $index) {
@@ -101,36 +101,47 @@
 
                     @if (checkMessageType([messageTypes.EXCUSESTUDENT])) {
                         <div class="item">
-                            <div class="label">
+                            <label for="selectReceiver">
                                 {{ schoolingo.locale.getLocale('messages/student') }}
-                            </div>
+                            </label>
                             <div class="value">
-                                @if (perms.checkPermission(['parent'])) {
-                                    <input type="text" style="cursor: pointer;" [value]="schoolingo.locale.getLocale('messages/noSelected')" name="selectReceiver" readonly (click)="selectReceivers()">
+                                @if (perms.checkPermission(['parent']) && schoolingo.userService.children.length > 0) {
+                                    <div class="input-select">
+                                        <input type="text" style="cursor: pointer;user-select: none;" [value]="messageManager.selectedChild != null ? schoolingo.formatPerson(schoolingo.userService.children[messageManager.selectedChild].personId) : schoolingo.locale.getLocale('messages/noChildSelected')" name="selectReceiver" readonly (click)="showSelect = showSelect == 'children' ? null : 'children'">
+                                        @if (showSelect == 'children') {
+                                            <div class="options">
+                                                @for (child of schoolingo.userService.children; track $index) {
+                                                    <div class="option" (click)="showSelect = null;messageManager.selectedChild = $index">
+                                                        {{ schoolingo.formatPerson(child.personId) }}
+                                                    </div>
+                                                }
+                                            </div>
+                                        }
+                                    </div>
                                 }
-                                @if (perms.checkPermission(['student']) && perms.checkPermission(['older:18'])) {
-                                    <input type="text" style="cursor: pointer;" [value]="schoolingo.locale.getLocale('messages/excuseMyself')" name="selectReceiver" readonly>
+                                @if (perms.checkPermission([['student', 'older:18']])) {
+                                    <input type="text" style="cursor: pointer;" class="disabled" [value]="schoolingo.locale.getLocale('messages/excuseMyself')" name="selectReceiver" readonly>
                                 }
                             </div>
                         </div>
     
                         <div class="item">
-                            <div class="label">
+                            <label>
                                 {{ schoolingo.locale.getLocale('messages/excuseLabel') }}
-                            </div>
+                            </label>
 
                             <div class="value">
                                 <div style="width: 50%;">
-                                    <div class="label">
+                                    <label for="from">
                                         {{ schoolingo.locale.getLocale('messages/from') }}
-                                    </div>
+                                    </label>
                                     <input type="text" name="from" [placeholder]="schoolingo.locale.getLocale('messages/from')">
                                 </div>
 
                                 <div style="width: 50%;">
-                                    <div class="label">
+                                    <label for="to">
                                         {{ schoolingo.locale.getLocale('messages/to') }}
-                                    </div>
+                                    </label>
                                     <input type="text" name="to" [placeholder]="schoolingo.locale.getLocale('messages/to')">
                                 </div>
                             </div>
@@ -202,20 +213,30 @@
         } @else if (selectedTab.getValue() === 1) {
             <div class="items">
                 <div class="item">
-                    <div class="label">
+                    <label for="selectReceiver">
                         {{ schoolingo.locale.getLocale('messages/receiver') }}
-                    </div>
+                    </label>
                     <div class="value">
-                        <input type="text" style="cursor: pointer;" [value]="schoolingo.locale.getLocale('messages/noSelected')" name="selectReceiver" readonly (click)="selectReceivers()">
+                        <input type="text" [ngClass]="{ clickable: !messageManager.options.toAll, disabled: messageManager.options.toAll }" [value]="schoolingo.locale.getLocale(messageManager.options.toAll ? 'messages/receivers/allSelectedNoticeboard' : 'messages/noSelected')" name="selectReceiver" readonly (click)="selectReceivers()">
+
+                        <div [ngClass]="['btn', 'flex', 'last-margin', messageManager.options.toAll ? 'blue-info' : 'gray']" (click)="messageManager.options.toAll = !messageManager.options.toAll">
+                            <i-tabler name="users" class="first-margin"></i-tabler>
+                            {{ schoolingo.locale.getLocale('messages/toAll') }}
+                        </div>
                     </div>
                 </div>
 
                 <div class="item">
-                    <div class="label">
+                    <label for="topic" [ngClass]="{ 'error-color': alerts['topic'] != null }">
                         {{ schoolingo.locale.getLocale('messages/topic') }}
-                    </div>
+                        @if (alerts['topic'] != null) {
+                            <span class="label-error">
+                                - {{ schoolingo.locale.getLocale(alerts['topic'].text) }}
+                            </span>
+                        }
+                    </label>
                     <div class="value">
-                        <input type="text" name="topic" [placeholder]="schoolingo.locale.getLocale('messages/topic')">
+                        <input type="text" name="topic" [(ngModel)]="messageManager.topic" [placeholder]="schoolingo.locale.getLocale('messages/topic')">
                     </div>
                 </div>
             </div>

@@ -10,6 +10,7 @@ import { SocketService } from "./Socket";
 import { BehaviorSubject } from "rxjs";
 import { Locale } from "./Locale";
 import { Alert } from "./Alert";
+import { School } from "./School";
 
 @Injectable({ providedIn: 'root' })
 export class Authentication {
@@ -22,16 +23,13 @@ export class Authentication {
         private route: ActivatedRoute,
         private userService: UserService,
         private socketService: SocketService,
-        private locale: Locale
+        private locale: Locale,
+        private school: School
     ) {}
 
     public page: 'login' | '2fa' | 'forgot' = 'login';
     public goPage(page: typeof this.page): void {
         this.page = page;
-        if (this.router.url.startsWith('/login')) {
-            if (['2fa'].includes(page)) return;
-            this.router.navigate([''], { queryParams: { page } });
-        }
     }
 
     public isExecuting = false;
@@ -46,13 +44,15 @@ export class Authentication {
 
     public canLogin(): boolean {
         if (this.username === '') {
-            this.errors['username'] = {type:'error', text:'required'};
+            this.errors['username'] = new Alert('error', 'required');
         }
+
         if (this.password === '') {
-            this.errors['password'] = {type:'error', text:'required'};
+            this.errors['password'] = new Alert('error', 'required');
         }
+
         if (this.token2FA == '' && this.page == '2fa') {
-            this.errors['token'] = {type:'error', text:'required'};
+            this.errors['token'] = new Alert('error', 'required');
         }
 
         return (Object.keys(this.errors).length === 0);
@@ -100,20 +100,20 @@ export class Authentication {
             if ('error' in data) {
                 switch (data.error) {
                     case 'user_not_found':
-                        this.errors['username'] = {type:'error', text:data.error};
+                        this.errors['username'] = new Alert('error', data.error);
                         break;
                     case 'wrong_pass':
-                        this.errors['password'] = {type:'error', text:data.error};
+                        this.errors['password'] = new Alert('error', data.error);
                         break;
                     case 'max_login_attempts':
-                        this.errors['auth'] = {type:'error', text:data.error};
+                        this.errors['auth'] = new Alert('error', data.error);
                         break;
                     case '2fa_required':
                         this.token2FA = '';
                         this.goPage('2fa');
                         break;
                     case 'wrong_2fa':
-                        this.errors['token'] = {type:'error', text:'userSettings/wrong_2fa'};
+                        this.errors['token'] = new Alert('error', 'userSettings/wrong_2fa');
                         break;
                     default:
                         console.log('Error: ' + data.error);
@@ -121,6 +121,47 @@ export class Authentication {
                 }
                 this.isExecuting = false;
             }
+        });
+    }
+
+    public goBackToLogin(): void {
+        this.username = '';
+        this.password = '';
+        this.page = 'login';
+    }
+
+    public forgotPassword(): void {
+        this.errors = {};
+
+        if (!this.school.schoolInfo.resetPasswordWithEmail) {
+            this.errors['auth'] = new Alert('info', 'auth/forgotpass/notAvailable', true);
+            return;
+        }
+        if (!this.username || this.username == '') {
+            this.errors['username'] = new Alert('error', 'required');
+            return;
+        }
+        this.http.post<errorAPI>(Config.API_URL + 'forgotpass', { username: this.username }, { withCredentials: true }).subscribe((data: errorAPI) => {
+            if ('error' in data) {
+                switch (data.error) {
+                    case 'user_not_found':
+                        this.errors['username'] = new Alert('error', 'user_not_found');
+                        break;
+                    case 'email_not_found':
+                        this.errors['auth'] = new Alert('error', 'auth/forgotpass/emailNotFound');
+                        break;
+                    case 'multiple_email':
+                        break;
+                    case 'email_error':
+                        this.errors['auth'] = new Alert('error', 'auth/forgotpass/emailError');
+                        break;
+                    default:
+                        console.log('Error: ' + data.error);
+                    break;
+                }
+            }
+        }, () => {
+            this.errors['auth'] = new Alert('error', 'auth/forgotpass/httpError');
         });
     }
 }

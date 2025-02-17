@@ -26,14 +26,189 @@
     height: 15px;
 }
 
-.hours {
+.hours.left {
     display: flex;
     flex-direction: column;
-    width: 250px;
-    max-width: 250px;
+    width: 400px;
+    min-width: 400px;
+    max-width: 400px;
 }
 
-.hours > .hour {
+.hours.left > .hour {
     margin: 8px 0;
     padding: 8px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    transition: all .3s;
+    position: relative;
+    cursor: pointer;
+}
+
+.hours.left > .hour:hover {
+    background-color: var(--background-hover);
+}
+
+.hours.left > .hour.active {
+    background-color: var(--background-active);
+}
+
+.hours.left > .hour:not(:last-child)::after {
+    content: '';
+    position: absolute;
+    bottom: -8px;
+    left: 0;
+    width: 100%;
+    height: 1px;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.hours.left > .hour > .hour-index {
+    width: 42px;
+    height: 100%;
+    font-size: 24px;
+    margin-right: 8px;
+}
+
+.hours.left > .hour .hour-lesson {
+    font-size: 16px;
+    font-weight: bold;
+}
+
+.hours.left > .hour .hour-time {
+    font-size: 16px;
+    color: var(--color);
+    opacity: .7;
+}
+
+.hours.left > .hour .hour-time > span:first-child { margin-right: 8px }
+.hours.left > .hour .hour-time > span:last-child { margin-left: 8px }
+
+.right {
+    width: 100%;
+    max-width: calc(100% - 400px);
+    padding-inline: 2rem;
+}
+
+.help {
+    display: flex;
+    flex-direction: column;
+}
+
+.help > .help-title {
+    text-align: center;
+    font-size: 24px;
+    font-weight: bold;
+}
+
+.items {
+    display: flex;
+    flex-direction: column;
+}
+
+.items > .item {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 1rem;
+    padding: 2px;
+}
+
+.items > .item > .value {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+
+.absence-selector {
+    justify-content: center;
+
+}
+
+.absence-selector, .absence-student {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+
+.absence-selector > .absence {
+    margin: 0 8px;
+}
+
+.item.absence {
+    user-select: none;
+    width: 22px;
+    height: 22px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: #fff;
+    background-color: var(--absence-color);
+}
+
+.item.absence i-tabler {
+    width: 18px;
+    height: 18px;
+}
+
+.absence-selector > .absence {
+    cursor: pointer;
+
+}
+
+.absence-selector > .absence.active {
+    box-shadow: 0px 0px 1px 2.5px var(--absence-color);
+}
+
+.absence-selector > .absence.trash.active {
+    color: var(--primary);
+}
+
+.absence-student .name {
+    width: 200px;
+    margin-right: 8px;
+}
+
+.absence-student .hours {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+
+.absence-student .hours .hour {
+    width: 22px;
+    height: 22px;
+    margin: 0 2px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+}
+
+.absence-student .hours .hour {
+    border: 1px solid var(--color);
+}
+
+.absence-student .hours .hour.active {
+    width: 32px;
+    height: 32px;
+    cursor: pointer;
+}
+
+.absence-student:first-of-type .hours .hour::after {
+    content: attr(lessoncount);
+    position: absolute;
+    top: -8px;
+    transform: translateX(-50%) translateY(-100%);
+    color: var(--color);
+    left: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.absence-student:first-of-type .hours .hour.active::after {
+    color: var(--primary);
+    font-size: 18px;
+    font-weight: bold;
+    top: -4px;
 }
