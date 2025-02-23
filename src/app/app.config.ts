@@ -24,6 +24,7 @@ import { Homeworks } from '@Schoolingo/Homeworks';
 import { IPManager } from '@Schoolingo/IPManager';
 import { Authentication } from '@Schoolingo/Auth';
 import { IconsModule } from './Modules/Icons.module';
+import { Discord } from '@Schoolingo/Discord';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -51,7 +52,8 @@ export const appConfig: ApplicationConfig = {
     IPManager,
     Traineeship,
     Authentication,
-    IconsModule
+    IconsModule,
+    Discord
   ],
   
 };

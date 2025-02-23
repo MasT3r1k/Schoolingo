@@ -64,6 +64,8 @@ a {
     --error-color: hsl(0deg, 0%, 100%);
     --info-start-bg: hsl(206deg, 84%, 55%);
     --info-end-bg: hsl(206deg, 88%, 38%);
+    --blue-bg: #f2fefe;
+    --blue-color: #2c6b8d;
     --header-shadow: rgba(2, 2, 2, 0.2) 0 1px 0 0, rgba(6, 6, 7, 0.05) 0 1.5px 0 0, rgba(2, 2, 2, 0.05) 0 2 0 0;
     --ag-background-color: #fff!important;
 }
@@ -91,6 +93,8 @@ a {
     --error-color: hsl(338deg, 82%, 69%);
     --info-start-bg: hsl(206deg, 84%, 35%);
     --info-end-bg: hsl(206deg, 88%, 18%);
+    --blue-bg: #010304;
+    --blue-color: #2999ed;
     --header-shadow: rgba(2, 2, 2, 0.2) 0 1px 0 0, rgba(6, 6, 7, 0.05) 0 1.5px 0 0, rgba(2, 2, 2, 0.05) 0 2px 0 0;
     --ag-background-color: #000!important;
 }
@@ -124,6 +128,11 @@ a {
     background-image: linear-gradient(90deg, var(--info-start-bg), var(--info-end-bg));
     background-color: var(--info-start-bg) !important;
     color: #fff !important;
+}
+
+.blue {
+    background-color: var(--blue-bg);
+    color: var(--blue-color);
 }
 
 h1, h2, h3, h4, h5, h6, p {
@@ -333,5 +342,46 @@ schoolingo-dropdowns {
     height: 16px;
     border-radius: 8px;
     background-color: var(--absence-color);
+    margin-right: .5rem;
+}
+
+/* Tooltip */
+[tooltip] {
+    position: relative;
+}
+[tooltip]:not([tooltip='']):hover::after {
+    position: absolute;
+    bottom: 0;
+    transform: translateX(-50%) translateY(calc(100% + 8px));
+    background-color: var(--background-header);
+    color: var(--color);
+    width: max-content;
+    padding: 4px;
+    left: 50%;
+    z-index: 9999999;
+    font-size: 14px;
+    box-shadow: 0px 0px 2px rgba(6, 6, 7, 0.1);
+    content: attr(tooltip);
+}
+
+
+/* Badges */
+.badges > .badge {
+    padding: .35rem .75rem;
+    line-height: 16px;
+    font-size: 14px;
+    border-radius: 99rem;
+    width: fit-content;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+
+.badges > .badge i-tabler {
+    width: 16px;
+    height: 16px;
+    min-height: 16px;
+    min-width: 16px;
+    font-weight: 500;
     margin-right: .5rem;
 }

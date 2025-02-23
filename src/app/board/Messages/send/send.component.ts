@@ -31,7 +31,7 @@ export class SendComponent {
   public selectedTab = new BehaviorSubject(0);
 
   // Selecting options
-  public showSelect: 'messagetype' | 'homework' | 'children' | null = null;
+  public showSelect: 'messagetype' | 'homework' | 'children' | 'rating' | null = null;
 
   // Options
   public excuseAllDay = false;

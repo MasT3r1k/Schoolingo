@@ -1,4 +1,4 @@
-<div class="card">
+<div class="card" (click)="showSelect = null">
     <div class="card-top">
         @if (alerts['main']) {
             <alert [alert]="alerts['main']" class="mb"></alert>
@@ -23,13 +23,13 @@
                         </label>
                         <div class="value">
                             <div class="input-select">
-                                <input type="text" (click)="showSelect = showSelect == 'messagetype' ? null : 'messagetype'" name="inputSelect" readonly="true" [value]="schoolingo.locale.getLocale('messages/types/' + messageManager.types[messageManager.messageType.getValue()].label)" />
+                                <input type="text" (click)="$event.stopPropagation();showSelect = showSelect == 'messagetype' ? null : 'messagetype'" name="inputSelect" readOnly [value]="schoolingo.locale.getLocale('messages/types/' + messageManager.types[messageManager.messageType.getValue()].label)" />
 
                                 @if (showSelect == 'messagetype') {
                                     <div class="options">
                                         @for (type of getMessageTypes(); track $index) {
                                                 <div class="option" (click)="showSelect = null;messageManager.messageType.next(messageManager.types.indexOf(type))">
-                                                    {{ schoolingo.locale.getLocale('messages/types/' + type.label) }} ({{ type.label }})
+                                                    {{ schoolingo.locale.getLocale('messages/types/' + type.label) }}
                                                 </div>
                                         } @empty {
                                             <div class="option">
@@ -49,7 +49,7 @@
                                 {{ schoolingo.locale.getLocale('messages/receiver') }}
                             </label>
                             <div class="value">
-                                <input type="text" style="cursor: pointer;" [value]="schoolingo.locale.getLocale('messages/noSelected')" name="selectReceiver" readonly (click)="selectReceivers()">
+                                <input type="text" style="cursor: pointer;" [value]="schoolingo.locale.getLocale('messages/noSelected')" name="selectReceiver" readOnly (click)="selectReceivers()">
                             </div>
                         </div>
     
@@ -76,7 +76,7 @@
                             <div class="value">
                                 @if (schoolingo.homeworks.list.length > 0) {
                                     <div class="input-select">
-                                        <input type="text" (click)="showSelect = showSelect == 'homework' ? null : 'homework'" name="inputSelect" readonly="true" [value]="messageManager.selectedHomework.getValue()" />
+                                        <input type="text" (click)="$event.stopPropagation();showSelect = showSelect == 'homework' ? null : 'homework'" name="inputSelect" readOnly="true" [value]="messageManager.selectedHomework.getValue()" />
                                         @if (showSelect == 'homework') {
                                             <div class="options">        
                                                 @for (type of []; track $index) {
@@ -107,7 +107,7 @@
                             <div class="value">
                                 @if (perms.checkPermission(['parent']) && schoolingo.userService.children.length > 0) {
                                     <div class="input-select">
-                                        <input type="text" style="cursor: pointer;user-select: none;" [value]="messageManager.selectedChild != null ? schoolingo.formatPerson(schoolingo.userService.children[messageManager.selectedChild].personId) : schoolingo.locale.getLocale('messages/noChildSelected')" name="selectReceiver" readonly (click)="showSelect = showSelect == 'children' ? null : 'children'">
+                                        <input type="text" style="cursor: pointer;user-select: none;" [value]="messageManager.selectedChild != null ? schoolingo.formatPerson(schoolingo.userService.children[messageManager.selectedChild].personId) : schoolingo.locale.getLocale('messages/noChildSelected')" name="selectReceiver" readOnly (click)="$event.stopPropagation();showSelect = showSelect == 'children' ? null : 'children'">
                                         @if (showSelect == 'children') {
                                             <div class="options">
                                                 @for (child of schoolingo.userService.children; track $index) {
@@ -120,7 +120,7 @@
                                     </div>
                                 }
                                 @if (perms.checkPermission([['student', 'older:18']])) {
-                                    <input type="text" style="cursor: pointer;" class="disabled" [value]="schoolingo.locale.getLocale('messages/excuseMyself')" name="selectReceiver" readonly>
+                                    <input type="text" style="cursor: pointer;" class="disabled" [value]="schoolingo.locale.getLocale('messages/excuseMyself')" name="selectReceiver" readOnly>
                                 }
                             </div>
                         </div>
@@ -202,6 +202,38 @@
                             }
                         </div>
                     }
+
+                    
+                    @if (checkMessageType([messageTypes.RATESTUDENT])) {
+                        <div class="item">
+                            <label for="selectReceiver">
+                                {{ schoolingo.locale.getLocale('messages/student') }}
+                            </label>
+
+                        </div>
+
+                        <div class="item">
+                            <label for="selectReceiver">
+                                {{ schoolingo.locale.getLocale('messages/rating/main') }}
+                            </label>
+                            <div class="value">
+                                <div class="input-select">
+                                    <input type="text" (click)="$event.stopPropagation();showSelect = showSelect == 'rating' ? null : 'rating'" name="inputSelect" readOnly="true" [value]="messageManager.selectedHomework.getValue()" />
+                                    @if (showSelect == 'rating') {
+                                        <div class="options">        
+                                            <div class="option" (click)="showSelect = null;">
+                                                {{ schoolingo.locale.getLocale('messages/rating/positive') }}
+                                            </div>
+                                            <div class="option" (click)="showSelect = null;">
+                                                {{ schoolingo.locale.getLocale('messages/rating/negative') }}
+                                            </div>
+                                        </div>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                    }
+
                 </div>
             } @else {
                 <div class="alerts mb">
@@ -217,7 +249,7 @@
                         {{ schoolingo.locale.getLocale('messages/receiver') }}
                     </label>
                     <div class="value">
-                        <input type="text" [ngClass]="{ clickable: !messageManager.options.toAll, disabled: messageManager.options.toAll }" [value]="schoolingo.locale.getLocale(messageManager.options.toAll ? 'messages/receivers/allSelectedNoticeboard' : 'messages/noSelected')" name="selectReceiver" readonly (click)="selectReceivers()">
+                        <input type="text" [ngClass]="{ clickable: !messageManager.options.toAll, disabled: messageManager.options.toAll }" [value]="schoolingo.locale.getLocale(messageManager.options.toAll ? 'messages/receivers/allSelectedNoticeboard' : 'messages/noSelected')" name="selectReceiver" readOnly (click)="selectReceivers()">
 
                         <div [ngClass]="['btn', 'flex', 'last-margin', messageManager.options.toAll ? 'blue-info' : 'gray']" (click)="messageManager.options.toAll = !messageManager.options.toAll">
                             <i-tabler name="users" class="first-margin"></i-tabler>

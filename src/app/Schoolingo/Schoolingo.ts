@@ -260,7 +260,7 @@ export class Schoolingo {
     }
 
     private timetableHours: TimetableHours[] = [];
-    public refreshTimetableHours(): void {
+    public refreshTimetableHours(hourMax: number = 0): void {
         // School is not set
         if (!this.school.schoolInfo) {
             return;
@@ -269,7 +269,7 @@ export class Schoolingo {
         /*
         * @default: 0
         */
-        let maxHours = 0;
+        let maxHours = hourMax;
         for(const x of this.timetableAPI) {
             if (x.hour > maxHours) {
                 maxHours = x.hour;
@@ -298,6 +298,14 @@ export class Schoolingo {
 
     public getTimetableHours(): TimetableHours[] {
         return this.timetableHours;
+    }
+
+    public getTimetableHour(hour: number): string {
+        if (this.timetableHours[hour]) {
+            return this.timetableHours[hour].start + ':' + this.timetableHours[hour].end;
+        } 
+        this.refreshTimetableHours(hour);
+        return '';
     }
 
     public refreshTimetableLessons(): void {
@@ -345,8 +353,6 @@ export class Schoolingo {
             let subjectShortcut: string = lesson.subjectShortcut;
             let teacher: number = lesson.teacher;
             let substitution = this.substitution?.[date.format('YYYY-MM-DD')];
-            console.log(date.format('YYYY-MM-DD'))
-            console.log(substitution)
             if (substitution?.[lesson.hour - 1]) {
                 if (substitution[lesson.hour - 1].subjectId == -1) {
                     subjectName = "";

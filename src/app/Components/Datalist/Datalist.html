@@ -16,8 +16,10 @@
                             @if (!info.id && info.id !== null && !options.hideColumns?.includes(getColumnId(index))) {
                                 @if (info.isLocale) {
                                     <td>{{ ((info.localePrefix) ? info.localePrefix : '') + locale.getLocale(info.value) +  ((info.localeSuffix) ? info.localeSuffix : '')}}</td>
-                                } @else {
+                                } @else if (info.value) {
                                     <td>{{ info.value }}</td>
+                                } @else if (info.html) {
+                                    <td [innerHTML]="info.html"></td>
                                 }
                             }
                         }

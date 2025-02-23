@@ -12,10 +12,26 @@ import { TabsComponent } from '@Components/Tabs/Tabs';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { personDetails } from '@Schoolingo/User';
 import { AbsenceType } from '@Schoolingo/Absence';
+import { Utils } from '@Schoolingo/Utils';
 
 interface Absence {
   hour: number;
   type: number;
+}
+
+interface lastLesson {
+  cbId: number;
+  number: number;
+  date: string;
+  dayHour: number;
+  subject: number;
+  teacher: number;
+  groupId: number;
+  room: number;
+  topic: string;
+  note: string;
+  internalNote: string;
+  absence: number;
 }
 
 @Component({
@@ -26,6 +42,8 @@ interface Absence {
 })
 
 export class ClassbookComponent implements OnInit {
+  Utils = Utils;
+
   private subscribers: Subscription[] = [];
   public calendarCalendarName = 'classbookCalendar';
   public selectedDate = new BehaviorSubject<moment.Moment>(moment());
@@ -34,12 +52,15 @@ export class ClassbookComponent implements OnInit {
   public selectedAbsence = new BehaviorSubject<number>(0);
   public alerts: { [key: string]: Alert } = {
     "noLessons": new Alert('error', 'timetable/notStudyDay'),
-    "firstLesson": new Alert('error', 'classbook/firstLesson')
+    "firstLesson": new Alert('error', 'classbook/firstLesson'),
+    "emptyLesson": new Alert('info', 'classbook/emptyLesson'),
+    "notWrittenLesson": new Alert('error', 'classbook/notWrittenLesson')
   }
 
   // Lesson Data
   public students: personDetails[] = [];
   public lesson: any = {};
+  public lastLesson: lastLesson[] = [];
   public absence: number[][] = [];
 
   /** Write lesson */
@@ -74,15 +95,35 @@ export class ClassbookComponent implements OnInit {
 
   }
 
-  public applyAbsence(studentId: number, hour: number): void {
+  public applyAbsence(studentId: number): void {
+    let date = this.selectedDate.getValue();
+    let hour = this.selectedHour.getValue();
+    let selectedAbsence = this.selectedAbsence.getValue();
+    if (!date.isValid()
+      || hour == null
+      || selectedAbsence == null
+    ) {
+      this.alerts["absence"] = new Alert("error", "classbook/absence/unknownError");
+      return;
+    }
+
     this.resetAlerts();
 
     let isClassTeacher = this.schoolingo.userService.getUser()!.id === this.lesson.classInfo.teacher;
     let absence = this.getAbsence(studentId, hour);
-    if ([AbsenceType.EXCUSED, AbsenceType.NON_COUNT].includes(absence) && !isClassTeacher) {
-      this.alerts["absence"] = new Alert("error", "classbook/absence/noPerm")
+
+    if (absence === selectedAbsence &&
+       [AbsenceType.ABSENCE, AbsenceType.UNEXCUSED, AbsenceType.DISTANCE].includes(absence)) {
+      this.alerts["absence"] = new Alert("error", "classbook/absence/alreadySet");
       return;
     }
+
+    if ([AbsenceType.EXCUSED, AbsenceType.NON_COUNT].includes(absence) && !isClassTeacher) {
+      this.alerts["absence"] = new Alert("error", "classbook/absence/noPerm");
+      return;
+    }
+
+
   }
 
   public addAbsence(studentId: number, absence: Absence[]): void {
@@ -101,6 +142,18 @@ export class ClassbookComponent implements OnInit {
     return this.absence[studentId][hour];
   }
 
+  public getMissingStudents(): number {
+    if (this.selectedHour.getValue() === null || !this.absence || this.absence.length == 0) return 0;
+    let count = 0;
+    for (let i = 0;i < this.absence.length;i++) {
+      let absence = this.absence[i]?.[this.selectedHour.getValue()!];
+      if (absence != undefined) {
+        count++;
+      }
+    }
+    return count;
+  }
+
   ngOnInit(): void {
     if (!this.perms.checkPermission(['teacher'])) {
       this.schoolingo.hasAccessToPage = false;
@@ -108,9 +161,21 @@ export class ClassbookComponent implements OnInit {
 
     this.subscribers.push(
       this.schoolingo.socketService.addFunction('classbook:getStudentsList').subscribe((students: personDetails[]) => {
-        this.students = students;
+        this.students = students
       })
     );
+
+    this.subscribers.push(
+      this.schoolingo.socketService.addFunction('classbook:getLastLesson').subscribe((lastLesson) => {
+        if (!lastLesson) {
+          this.lastLesson = [];
+          return;
+        }
+        console.log(lastLesson);
+        this.lastLesson = lastLesson;
+      })
+    );
+
 
     this.subscribers.push(
       this.schoolingo.socketService.addFunction('classbook:getLesson').subscribe((data) => {
@@ -142,6 +207,7 @@ export class ClassbookComponent implements OnInit {
     this.subscribers.push(
       this.selectedDate.subscribe(() => {
         this.selectedHour.next(null);
+        this.absence = [];
       })
     );
 
@@ -150,13 +216,18 @@ export class ClassbookComponent implements OnInit {
         this.selectedTab.next(0);
         this.selectedAbsence.next(0);
         this.resetAlerts();
+        this.lastLesson = [];
+        this.lessonNumber = 0;
+        this.lessonTopic = '';
+        this.lessonNote = '';
+        this.lessonInternalNote = '';
 
         let lesson = this.schoolingo.getTimetableLessons()?.[this.selectedDate.getValue().isoWeekday() - 1]?.[this.selectedHour.getValue()!]?.[0];
         if (!lesson || lesson.empty) return;
         
         this.schoolingo.socketService.emit('classbook:getLesson', {
           date: this.selectedDate.getValue().format("YYYY-MM-DD"),
-          hour: this.selectedHour.getValue(),
+          hour: this.selectedHour.getValue()! + 1,
           groupId: lesson.group.id,
           subject: lesson.subject
         });

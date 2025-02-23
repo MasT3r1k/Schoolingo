@@ -1,39 +1,47 @@
-<div class="card">
-    <div class="card-top"></div>
-    <div class="card-body">
-        <div class="card-column">
-            <h2 class="center">{{ schoolingo.locale.getLocale('dropdowns/discord/main') }}</h2>
-            <div class="item">Propojte svůj discord účet se školou, dostávejte oznámení o změnách ve škole, domácích úkolech nebo přehled týdenní nabídky školních obědů.</div>
-            <div class="buttons">
-                <div class="btn blue-info submit" role="button">Zapnout propojení s discordem</div>
-                <div class="btn gray submit" role="button">Zobrazit více info</div>
-            </div>
-        </div>
-        <div class="card-row" style="margin-top: 2rem">
-            <div class="item-icon">
-                <div class="icon">
-                    <i-tabler name="notes"></i-tabler>
+@if (discord.isLoading) {
+    Probíhá načítání dat toho negra
+} @else if (!discord.checkData()) {
+    <div class="card">
+        <div class="card-top"></div>
+        <div class="card-body">
+            <div class="card-column">
+                <h2 class="center">{{ schoolingo.locale.getLocale('dropdowns/discord/main') }}</h2>
+                <div class="item">Propojte svůj discord účet se školou, dostávejte oznámení o změnách ve škole, domácích úkolech nebo přehled týdenní nabídky školních obědů.</div>
+                <div class="buttons">
+                    <div class="btn blue-info submit" role="button">Zapnout propojení s discordem</div>
+                    <div class="btn gray submit" role="button">Zobrazit více info</div>
                 </div>
-                <div class="text">Oznámení o testech</div>
             </div>
-            <div class="item-icon">
-                <div class="icon">
-                    <i-tabler name="table"></i-tabler>
+            <div class="card-row" style="margin-top: 2rem">
+                <div class="item-icon">
+                    <div class="icon">
+                        <i-tabler name="question-mark"></i-tabler>
+                    </div>
+                    <div class="text">Oznámení o plánové klasifikaci</div>
                 </div>
-                <div class="text">Změny v rozvrhu</div>
-            </div>
-            <div class="item-icon">
-                <div class="icon">
-                    <i-tabler name="chalkboard"></i-tabler>
+                <div class="item-icon">
+                    <div class="icon">
+                        <i-tabler name="table"></i-tabler>
+                    </div>
+                    <div class="text">Změny v rozvrhu</div>
                 </div>
-                <div class="text">Aktuální službě</div>
-            </div>
-            <div class="item-icon">
-                <div class="icon">
-                    <i-tabler name="meat"></i-tabler>
+                <div class="item-icon">
+                    <div class="icon">
+                        <i-tabler name="chalkboard"></i-tabler>
+                    </div>
+                    <div class="text">Aktuální službě</div>
                 </div>
-                <div class="text">Nabídka obědů</div>
+                @if (modules.checkModule(['canteen'])) {
+                    <div class="item-icon">
+                        <div class="icon">
+                            <i-tabler name="meat"></i-tabler>
+                        </div>
+                        <div class="text">Nabídka obědů</div>
+                    </div>
+                }
             </div>
         </div>
     </div>
-</div>
+} @else {
+    Tak prý už něco má, to je alkáč jeden
+}

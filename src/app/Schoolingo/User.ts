@@ -30,7 +30,7 @@ export class UserService {
             this.setExpiration(moment().add(this.school.schoolInfo.loginExpires, 'ms'));
             break;
           case "invalid_token":
-            if (this.user == null && !this.router.url.startsWith('/login')) {
+            if (!this.router.url.startsWith('/login')) {
               this.username = '';
               this.setExpiration(moment());
               this.router.navigate(['', 'login'], { queryParams: { returnUrl: this.router.url } })

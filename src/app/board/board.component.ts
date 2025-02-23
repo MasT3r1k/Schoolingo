@@ -19,6 +19,8 @@ import { Subscription } from 'rxjs';
 import { AppConfig as App } from '@Schoolingo/App';
 import { Permission } from '@Schoolingo/Permissions';
 import { IconsModule } from '../Modules/Icons.module';
+import { Alert } from '@Schoolingo/Alert';
+import { AlertComponent } from '@Components/Alert/Alert';
 
 interface AbsenceAPI {
   type: number;
@@ -37,16 +39,16 @@ interface AbsenceSubjectAPI {
 
 @Component({
   standalone: true,
-  imports: [NgClass, NgStyle, RouterLink, RouterLinkActive, RouterOutlet, Dropdown, ModalComponent, IconsModule],
+  imports: [NgClass, NgStyle, RouterLink, RouterLinkActive, RouterOutlet, Dropdown, ModalComponent, IconsModule, AlertComponent],
   providers: [],
   templateUrl: './board.component.html',
   styleUrls: ['./board.component.css', '../Styles/item.css', '../Styles/app.css']
 })
 export class BoardComponent implements OnInit, AfterViewInit {
   pageLoading = false;
-
+  pageLoadingAlert: Alert | undefined;
   App = App;
-
+  private loadingPageTimeout!: NodeJS.Timeout;
   private subscribers: Subscription[] = [];
 
   constructor(
@@ -68,13 +70,17 @@ export class BoardComponent implements OnInit, AfterViewInit {
           this.schoolingo.hasAccessToPage = true;
             if(event instanceof NavigationStart) {
                 this.pageLoading = true;
+                this.loadingPageTimeout = setTimeout(() => {
+                  this.pageLoadingAlert = new Alert('error', 'pageTooLongLoading')
+                }, 7500)
             }
             else if (
                 event instanceof NavigationEnd || 
                 event instanceof NavigationCancel
                 ) {
                 this.pageLoading = false;
-
+                this.pageLoadingAlert = undefined
+                clearTimeout(this.loadingPageTimeout);
             }
         });
   }

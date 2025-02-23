@@ -20,14 +20,17 @@
                             </div>
                             <div class="hour-info">
                                 <div class="hour-lesson">
-                                    {{ lesson.subjectName }}
+                                    {{ (lesson.empty) ? schoolingo.locale.getLocale('timetable/freetime') : lesson.subjectName }}
                                 </div>
                                 <div class="hour-time">
                                     <span>
                                         {{ schoolingo.getTimetableHours()[hourIndex].start + ' - ' + schoolingo.getTimetableHours()[hourIndex].end }}
-                                    </span> | <span>
-                                        {{ lesson.className }}
                                     </span>
+                                    @if (!lesson.empty) {
+                                        | <span>
+                                            {{ lesson.className }}
+                                        </span>
+                                    }
                                 </div>
                             </div>
                         </div>
@@ -49,7 +52,10 @@ Nezapsané hodiny jsou zvýrazněny světlejším pozadím než zapsané hodiny.
                             </p>
                         </div>
                     </div>
+                } @else if (schoolingo.getTimetableLessons()[selectedDate.getValue().isoWeekday() - 1][selectedHour.getValue()!][0].empty) {
+                    <alert [alert]="alerts['emptyLesson']"></alert>
                 } @else {
+
                     <div style="display: flex;justify-content: flex-end;">
                         <schoolingo-tabs [options]="['classbook/lessonNotation', 'classbook/attendance', 'sidebar/teach/homeworks', 'classbook/notes']" [value]="selectedTab"></schoolingo-tabs>
                     </div>
@@ -73,7 +79,7 @@ Nezapsané hodiny jsou zvýrazněny světlejším pozadím než zapsané hodiny.
                                         {{ schoolingo.locale.getLocale('classbook/writeLesson/number') }}
                                     </label>
                                     <div class="value">
-                                        <input type="text" name="lessonNumber" [value]="lesson.lessonNumber" readonly>
+                                        <input type="text" name="lessonNumber" class="disabled" [value]="lesson.lessonNumber" readonly>
                                     </div>
                                 </div>
 
@@ -118,20 +124,103 @@ Nezapsané hodiny jsou zvýrazněny světlejším pozadím než zapsané hodiny.
                                     </div>
                                 </div>
                                 <div class="item">
-                                    <div class="btn">Zapsat hodiny</div>
+                                    <div class="btn">
+                                        {{ schoolingo.locale.getLocale('classbook/writeLesson/button') }}
+                                    </div>
                                 </div>
                             </div>
 
-                            <h2>Minulá hodina</h2>
                             @if (lesson.lessonNumber == 1) {
                                 <alert [alert]="alerts['firstLesson']" class="mt"></alert>
+                            } @else {
+                                <div class="lastLessons">
+                                    <h2 class="mb">
+                                        {{ schoolingo.locale.getLocale('classbook/writeLesson/lastLesson') }}
+                                    </h2>
+                                    @for (previousLesson of lastLesson;track $index) {
+                                        <div class="lastLesson">
+                                            @if (previousLesson.cbId == -1) {
+                                                <alert [alert]="alerts['notWrittenLesson']" class="mb"></alert>
+                                            }
+                                            <h2 class="mb">
+                                                {{
+                                                schoolingo.locale.getLocale('classbook/lastLesson/title')
+                                                .replaceAll('%date%', Utils.makeMoment(previousLesson.date).format('DD. MM. YYYY'))
+                                                .replaceAll('%day%', Utils.makeMoment(previousLesson.date).format('dddd'))
+                                                .replaceAll('%hour%', (previousLesson.dayHour).toString())
+                                                .replaceAll('%start%', schoolingo.getTimetableHours()[previousLesson.dayHour - 1].start)
+                                                .replaceAll('%end%', schoolingo.getTimetableHours()[previousLesson.dayHour - 1].end)
+                                                }}
+                                            </h2>
+    
+                                            <div class="item mb">
+                                                <label for="lessonNumber">
+                                                    {{ schoolingo.locale.getLocale('classbook/writeLesson/number') }}
+                                                </label>
+                                                <div class="value">
+                                                    {{ previousLesson.number || schoolingo.locale.getLocale('classbook/noNumber') }}
+                                                </div>
+                                            </div>
+    
+                                            <div class="item mb">
+                                                <label for="lessonTopic">
+                                                    {{ schoolingo.locale.getLocale('classbook/writeLesson/topic') }}
+                                                </label>
+                                                <div class="value">
+                                                    {{ previousLesson.topic || schoolingo.locale.getLocale('classbook/noTopic') }}
+                                                </div>
+                                            </div>
+        
+                                            <div class="item mb">
+                                                <label for="lessonNote">
+                                                    {{ schoolingo.locale.getLocale('classbook/writeLesson/note') }}
+                                                </label>
+                                                <div class="value">
+                                                    {{ previousLesson.note || schoolingo.locale.getLocale('classbook/noNote') }}
+                                                </div>
+                                            </div>
+        
+                                            <div class="item mb">
+                                                <label for="lessonInternalNote">
+                                                    {{ schoolingo.locale.getLocale('classbook/writeLesson/internalNote') }}
+                                                </label>
+                                                <div class="value">
+                                                    {{ previousLesson.internalNote || schoolingo.locale.getLocale('classbook/noInternalNote') }}
+                                                </div>
+                                            </div>
+    
+                                            <div class="item mb">
+                                                <label for="absence">
+                                                    {{ schoolingo.locale.getLocale('sidebar/absence') }}
+                                                </label>
+                                                <div class="value">
+                                                    {{ previousLesson.absence ? previousLesson.absence : schoolingo.locale.getLocale('classbook/lastLesson/noAbsence') }}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    }
+                                </div>
                             }
                         }
 
                         @case (1) {
-                            @if (alerts["absence"]) {
-                                <alert [alert]="alerts['absence']" class="mt"></alert>
-                            }
+                            <p>
+                                Celkem: {{ students.length }}
+                            </p>
+                            <p>
+                                Přítomni: {{ students.length - getMissingStudents() }}
+                            </p>
+                            <p>
+                                Chybí: {{ getMissingStudents() }}
+                            </p>
+
+                            <hr>
+
+                            <div style="height:50px">
+                                @if (alerts["absence"]) {
+                                    <alert [alert]="alerts['absence']" class="mt"></alert>
+                                }
+                            </div>
 
                             <div class="absence-selector mt mb-2">
                                 @if (selectedHour.getValue()! > 0) {
@@ -156,7 +245,9 @@ Nezapsané hodiny jsou zvýrazněny světlejším pozadím než zapsané hodiny.
                                 }
 
                                 <div
-                                [ngClass]="{item: true, absence: true, trash: true, active: selectedAbsence.getValue() === -1}" (click)="selectedAbsence.next(-1)">
+                                [ngClass]="{item: true, absence: true, trash: true, active: selectedAbsence.getValue() === -1}"
+                                [attr.tooltip]="schoolingo.locale.getLocale('absence/trash')"
+                                (click)="selectedAbsence.next(-1)">
                                     <i-tabler style="width: 24px;height: 24px;" name="trash-x-filled"></i-tabler>
                                 </div>
                             </div>
@@ -174,7 +265,7 @@ Nezapsané hodiny jsou zvýrazněny světlejším pozadím než zapsané hodiny.
                                                 <div
                                                 [ngClass]="{hour: true, active: selectedHour.getValue() === $index}"
                                                 [attr.lessonCount]="$index + 1"
-                                                (click)="(selectedHour.getValue() === $index) ? applyAbsence(student.personId, $index) : ''"
+                                                (click)="(selectedHour.getValue() === $index) ? applyAbsence(student.personId) : ''"
                                                 >
                                                     @if(getAbsence(student.personId, $index) !== -1) {
                                                         <div

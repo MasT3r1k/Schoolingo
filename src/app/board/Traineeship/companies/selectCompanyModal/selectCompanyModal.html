@@ -44,7 +44,9 @@
                 <input type="text" (click)="showSelect = showSelect == 'selectInstructor' ? null : 'selectInstructor'" name="inputSelect" readonly="true" [value]="schoolingo.traineeship.selectedInstructor ? schoolingo.formatPerson(schoolingo.traineeship.selectedInstructor) : schoolingo.locale.getLocale('traineeship/noInstructorSelected')" />
                 @if (showSelect == 'selectInstructor') {
                     <div class="options">
-                        <div class="option" (click)="showSelect = null;schoolingo.traineeship.selectInstructor(null)">{{ schoolingo.locale.getLocale('traineeship/dontKnowInstructor') }}</div>
+                        <div class="option" (click)="showSelect = null;schoolingo.traineeship.selectInstructor(null)">
+                            {{ schoolingo.locale.getLocale('traineeship/dontKnowInstructor') }}
+                        </div>
 
                         @for (instructor of schoolingo.traineeship.instructors; track $index) {
                             <div class="option" (click)="showSelect = null;schoolingo.traineeship.selectInstructor(instructor)">{{ schoolingo.formatPerson(instructor) }}</div>
@@ -55,7 +57,11 @@
         </div>
     </div>
 
-    <div class="description">{{ schoolingo.locale.getLocale('traineeship/selectCompany/bottomInformation') }}</div>
+    <div class="description">
+        {{ schoolingo.locale.getLocale('traineeship/selectCompany/bottomInformation') }}
+    </div>
 
-    <div class="btn submit" role="button" (click)="selectCompany()">{{ schoolingo.locale.getLocale("traineeship/registerToCompany") }}</div>
+    <div class="btn submit" role="button" (click)="selectCompany()">
+        {{ schoolingo.locale.getLocale("traineeship/registerToCompany") }}
+    </div>
 </div>

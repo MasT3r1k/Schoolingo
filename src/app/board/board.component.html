@@ -48,7 +48,7 @@
                 <div class="options">
     
                     <div class="item-btn" [routerLink]="['', 'discordconnect']" [routerLinkActive]="'active'">
-                        <div class="icon icon-alert">
+                        <div class="icon">
                             <i-tabler name="brand-discord"></i-tabler>
                         </div>
                         <div class="name">
@@ -57,7 +57,7 @@
                     </div>
     
                     <div class="item-btn" [routerLink]="['', 'user', 'settings']" [routerLinkActive]="'active'">
-                        <div class="icon icon-alert">
+                        <div class="icon">
                             <i-tabler name="settings"></i-tabler>
                         </div>
                         <div class="name">
@@ -140,6 +140,10 @@
             </div>
             <div class="main-content" (click)="schoolingo.sidebar.sidebarToggled = false;">
                 @if (pageLoading) {
+                    @if (pageLoadingAlert) {
+                        <alert [alert]="pageLoadingAlert"></alert>
+                    }
+
                     <div style="display: flex;height:100%">
                         <div class="loading" style="height: auto">
                             <svg width="200" height="300" viewBox="0 0 40 60">

@@ -1,16 +1,28 @@
 <div class="card">
     <div class="card-top"></div>
     <div class="card-header">
-        <h2>{{ schoolingo.locale.getLocale('sidebar/teach/timetable') }}</h2>
+        <h2>
+            {{ schoolingo.locale.getLocale('sidebar/teach/timetable') }}
+        </h2>
         <div class="flex-items">
 
-            @if (perms.checkPermission(["older:18", "student"]) || perms.checkPermission(["parent"])) {
+            @if (perms.checkPermission([["teacher", "classTeacher"]])) {
+                <!-- <div [ngClass]="{'item-btn': true, text: true, 'blue-info': massExcuse}" (click)="massExcuse = !massExcuse">
+                    <div class="text">
+                        {{ "rozvrh mé třídy" }}
+                    </div>
+                </div> -->
+                <schoolingo-tabs [value]="selectedTimetable" [options]="['timetable/dropdown/selectTimetable/myTimetable', 'timetable/dropdown/selectTimetable/classTimetable']"></schoolingo-tabs>
+
+            }
+
+            <!-- @if (perms.checkPermission(["older:18", "student"]) || perms.checkPermission(["parent"])) {
                 <div [ngClass]="{'item-btn': true, text: true, 'blue-info': massExcuse}" (click)="massExcuse = !massExcuse">
                     <div class="text">
                         {{ schoolingo.locale.getLocale('timetable/excuse') }}
                     </div>
                 </div>
-            }
+            } -->
 
             <div [ngClass]="{'item-btn': true, text: true, active: dropdown.isOpen(timetableAbsenceName)}" [attr.dropdown]="timetableAbsenceName" (click)="$event.stopPropagation();dropdown.toggle(timetableAbsenceName)">
                 <div class="text">
@@ -29,7 +41,7 @@
                         selectedDate.getValue().clone().startOf('isoWeek')
                         .format('DD. MM. YYYY')
                          + ' - ' + 
-                         selectedDate.getValue().clone().endOf('isoWeek')
+                        selectedDate.getValue().clone().endOf('isoWeek')
                          .format('DD. MM. YYYY')
                     }}
                 </div>
@@ -59,7 +71,7 @@
                     @if ([0, 1, 3].includes(selectedTab.getValue())) {
                         <!-- TODO design -->
                         {{
-                            schoolingo.locale.getLocale('weeks/' + ((schoolingo.timetableSelectedWeek.getValue().isoWeek() % 2) ? 'odd' : 'even'))
+                            schoolingo.locale.getLocale('weeks/' + (Utils.isOdd(schoolingo.timetableSelectedWeek.getValue().isoWeek()) ? 'odd' : 'even'))
                         }}
                     }
                 </div>

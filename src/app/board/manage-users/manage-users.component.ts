@@ -48,12 +48,27 @@ export class ManageUsersComponent {
   onClick = (id: { id: number }[], index: number) => {
   }
 
+  public getTags(user: any): string {
+    let tags = [];
+    if (user.manager == -1) {
+      tags.push("<div class='badge blue'>Správce</div>");
+    }
+    if (user.principal) {
+      tags.push("<div class='badge blue'>Ředitelství</div>");
+    }
+    return `
+    <div class='flex-items badges'>
+    ${tags.join('')}
+    </div>`;
+  }
+
   ngOnInit(): void {
       this.listeners.push(this.schoolingo.socketService.addFunction("users:getUsers").subscribe((data: dataAPI | errorAPI) => {
         if ('error' in data) {
           this.hasAccess = false;
           return;
         }
+
         if ('data' in data) {
           this.hasAccess = true;
           let userList: Data[][] = []
@@ -64,9 +79,10 @@ export class ManageUsersComponent {
               {value: user.firstName, isLocale: false},
               {value: user.lastName, isLocale: false},
               {value: 'roles/' + getUserRole(user), isLocale: true},
-              {value: "", isLocale: false},
-              {value: "", isLocale: false}])
+              {html: this.getTags(user)}
+            ]);
           });
+
           this.metadata.rows = data.rows;
           if (this.selectedTab.getValue() === 0) this.studentCount = data.rows;
           this.users.next(userList);

@@ -55,6 +55,10 @@ export class TimetableComponent {
 
   // Select Week Tab
   public selectedTab = new BehaviorSubject<number>(0);
+
+  // Select timetable
+  public selectedTimetable = new BehaviorSubject<number>(0);
+  
   
   // Calendar
   public selectedDate = new BehaviorSubject<moment.Moment>(moment());

@@ -45,6 +45,10 @@ export class Permission {
                     }
                 } else if (permission == "all") {
                     permCount++;
+                } else if (permission == "classTeacher") {
+                    if (user.type == 'teacher' && user.class.length > 0) {
+                        permCount++;
+                    }
                 } else if (permission.startsWith("manager:")) {
                     if (user.manager == -1) {
                         permCount++;

@@ -15,26 +15,30 @@ export namespace Utils {
     return (
       new Array(len - num.toString().length).fill('0').join('') + num.toString()
     );
-}
-
-export function isOdd(num: number): boolean {
-  return num % 2 == 0;
-}
-
-export function randomstring(length: number, numbers = true): string {
-
-  let chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
-  if (numbers) {
-    chars += "0123456789";
   }
-  let text = '';
 
-    for (let i = 0; i < length; i++) {
-      text += chars.charAt(Math.floor(Math.random() * chars.length));
+  export function isOdd(num: number): boolean {
+    return num % 2 == 1;
+  }
+
+  export function randomstring(length: number, numbers = true): string {
+
+    let chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+    if (numbers) {
+      chars += "0123456789";
     }
+    let text = '';
 
-  return text;
-}
+      for (let i = 0; i < length; i++) {
+        text += chars.charAt(Math.floor(Math.random() * chars.length));
+      }
+
+    return text;
+  }
+
+  export function makeMoment(date: string): moment.Moment {
+    return moment(date);
+  }
 
   // Date and Time
   export function getDayOfWeek(week: number | moment.Moment, day = 0): moment.Moment {

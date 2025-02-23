@@ -8,6 +8,8 @@ export type Data = {
     isLocale: false;
 }) | {
     id: number;
+} | {
+    html: string;
 };
 
 export interface DatalistOptions {

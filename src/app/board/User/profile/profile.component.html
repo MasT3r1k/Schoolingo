@@ -11,10 +11,14 @@
             <div [ngClass]="{'card-tab': true, 'card-row': true, active: selectedTab.getValue() === 0}">
                 <div class="left">
                     <div class="card-table">
-                        <div class="card-table-header">{{ "Osobní údaje" }}</div>
+                        <div class="card-table-header">
+                            {{ schoolingo.locale.getLocale('user/personalInformation') }}
+                        </div>
                         <div class="card-table-body">
                             <div class="card-table-row">
-                                <div class="card-table-item">{{ "Celé jméno" }}</div>
+                                <div class="card-table-item">
+                                    {{ schoolingo.locale.getLocale('fullName') }}
+                                </div>
                                 <div class="card-table-item">
                                     <span>
                                         {{ schoolingo.formatPerson(schoolingo.userService.getUser()?.id ) }}
@@ -27,27 +31,36 @@
                                     {{ schoolingo.locale.getLocale('birthday') }}
                                 </div>
                                 <div class="card-table-item">
-                                    <span>{{ profile.birthday.format("DD. MM. YYYY") }}</span>
+                                    <span>
+                                        {{ profile.birthday.format("DD. MM. YYYY") }}
+                                    </span>
                                 </div>
                             </div>
 
                             @if (perms.checkPermission(["student"])) {
                                 <div class="card-table-row">
-                                    <div class="card-table-item">{{ "Třída" }}</div>
+                                    <div class="card-table-item">
+                                        {{ schoolingo.locale.getLocale('class') }}
+
+                                    </div>
                                     <div class="card-table-item">
                                         <span>{{ profile.className }}</span>
                                     </div>
                                 </div>
     
                                 <div class="card-table-row">
-                                    <div class="card-table-item">{{ "Obor" }}</div>
+                                    <div class="card-table-item">
+                                        {{ schoolingo.locale.getLocale('user/scope') }}
+                                    </div>
                                     <div class="card-table-item">
                                         <span>{{ profile.scopeName }}</span>
                                     </div>
                                 </div>
     
                                 <div class="card-table-row">
-                                    <div class="card-table-item">{{ "Délka studia" }}</div>
+                                    <div class="card-table-item">
+                                        {{ schoolingo.locale.getLocale('user/scopeYears') }}
+                                    </div>
                                     <div class="card-table-item">
                                         <span>{{ profile.scopeYears + ' ' + schoolingo.locale.getLocale('ageUnit') }}</span>
                                     </div>
@@ -55,20 +68,26 @@
                             }
 
                             <div class="card-table-row">
-                                <div class="card-table-item">{{ "Kód ZP" }}</div>
+                                <div class="card-table-item">
+                                    {{ schoolingo.locale.getLocale('user/insuranceCode') }}
+                                </div>
                                 @if(profile.insuranceId) {
                                     <div class="card-table-item" [title]="profile.insuranceName">
                                         <span>{{ profile.insuranceId + " - " + profile.insuranceCode }}</span>
                                     </div>
                                 } @else {
                                     <div class="card-table-item">
-                                        <span>Nenastaveno žádné pojištění</span>
+                                        <span>
+                                            {{ schoolingo.locale.getLocale('user/noInsuranceSet') }}
+                                        </span>
                                     </div>
                                 }
                             </div>
 
                             <div class="card-table-row">
-                                <div class="card-table-item">{{ schoolingo.locale.getLocale('address') }}</div>
+                                <div class="card-table-item">
+                                    {{ schoolingo.locale.getLocale('address') }}
+                                </div>
                                 <div class="card-table-item">
                                     <span>
                                         {{ country.getCountryByCode("CZ")?.flag + " Šumavská 77, Strakonice 386 01" }}
@@ -77,29 +96,48 @@
                             </div>
 
                             <div class="card-table-row">
-                                <div class="card-table-item">{{ schoolingo.locale.getLocale('nationality') }}</div>
                                 <div class="card-table-item">
-                                    <span>{{ country.getCountryByCode("CZ")?.flag + ' ' + country.getCountryByCode("CZ")?.name }}</span>
+                                    {{ schoolingo.locale.getLocale('nationality') }}
+                                </div>
+                                <div class="card-table-item">
+                                    <span>
+                                        {{ country.getCountryByCode("CZ")?.flag + ' ' + country.getCountryByCode("CZ")?.name }}
+                                    </span>
                                 </div>
                             </div>
 
                             <div class="card-table-row">
-                                <div class="card-table-item">{{ schoolingo.locale.getLocale('sex') }}</div>
                                 <div class="card-table-item">
-                                    <span>{{ schoolingo.locale.getLocale('genders/' + schoolingo.userService.getUser()?.person?.sex) }}</span>
+                                    {{ schoolingo.locale.getLocale('sex') }}
+                                </div>
+                                <div class="card-table-item">
+                                    <div class="gender-icon">
+                                        @if (schoolingo.userService.getUser()?.person?.sex) {
+                                            <i-tabler style="color: #FFC0CB;" name="gender-female"></i-tabler>
+                                        } @else {
+                                            <i-tabler style="color: #90D5FF;" name="gender-male"></i-tabler>
+                                        }
+                                    </div>
+                                    <span>
+                                        {{ schoolingo.locale.getLocale('genders/' + schoolingo.userService.getUser()?.person?.sex) }}
+                                    </span>
                                 </div>
                             </div>
 
                             <div class="card-table-row">
-                                <div class="card-table-item">{{ schoolingo.locale.getLocale('phone') }}</div>
                                 <div class="card-table-item">
+                                    {{ schoolingo.locale.getLocale('phone') }}
+                                </div>
+                                <div class="card-table-item multi">
                                     <span>{{ Utils.formatPhone("445566778") }}</span>
                                 </div>
                             </div>
 
                             <div class="card-table-row">
-                                <div class="card-table-item">{{ schoolingo.locale.getLocale('email') }}</div>
                                 <div class="card-table-item">
+                                    {{ schoolingo.locale.getLocale('email') }}
+                                </div>
+                                <div class="card-table-item multi">
                                     <span>{{ "jkosik@sps-pi.cz" }}</span>
                                 </div>
                             </div>
@@ -107,60 +145,78 @@
                     </div>
 
                     <div class="card-table">
-                        <div class="card-table-header">{{ "Bezpečnostní nastavení" }}</div>
+                        <div class="card-table-header">
+                            {{ schoolingo.locale.getLocale('user/securitySettings') }}
+                        </div>
                         <div class="card-table-body">
                             <div class="card-table-row">
-                                <div class="card-table-item">{{ "Heslo naposledy změněné" }}</div>
                                 <div class="card-table-item">
-                                    <span>{{ profile.passwordChanged?.format("DD. MM. YYYY") || "Nikdy" }}</span>
+                                    {{ schoolingo.locale.getLocale('user/passwordLastChanged') }}
+                                </div>
+                                <div class="card-table-item">
+                                    <span>
+                                        {{ profile.passwordChanged?.format("DD. MM. YYYY") || schoolingo.locale.getLocale('never') }}
+                                    </span>
                                 </div>
                             </div>
 
                             <div class="card-table-row">
-                                <div class="card-table-item">{{ "Dvoufázové ověření" }}</div>
                                 <div class="card-table-item">
-                                    @if (profile.twofa) {
-                                        <div class="badge activated">
-                                            <i-tabler name="check"></i-tabler>
-                                            <span>Aktivní</span>
-                                        </div>
-                                    } @else {
-                                        <div class="badge notActivated">
-                                            <i-tabler name="x"></i-tabler>
-                                            <span>Neaktivní</span>
-                                        </div>
-                                    }
+                                    {{ schoolingo.locale.getLocale('userSettings/2faTitle') }}
+                                </div>
+                                <div class="card-table-item">
+                                    <div class="badges">
+                                        @if (profile.twofa) {
+                                            <div class="badge activated">
+                                                <i-tabler name="check"></i-tabler>
+                                                <span>Aktivní</span>
+                                            </div>
+                                        } @else {
+                                            <div class="badge notActivated">
+                                                <i-tabler name="x"></i-tabler>
+                                                <span>Neaktivní</span>
+                                            </div>
+                                        }
+                                    </div>
                                 </div>
                             </div>
 
                             <div class="card-table-row">
-                                <div class="card-table-item">{{ "Povolení rychlého přihlášení (QR kód)" }}</div>
                                 <div class="card-table-item">
-                                    @if (profile.fastlogin) {
-                                        <div class="badge activated">
-                                            <i-tabler name="check"></i-tabler>
-                                            <span>Aktivní</span>
-                                        </div>
-                                    } @else {
-                                        <div class="badge notActivated">
-                                            <i-tabler name="x"></i-tabler>
-                                            <span>Neaktivní</span>
-                                        </div>
-                                    }
+                                    {{ schoolingo.locale.getLocale('user/allowFastlogin') }}
+                                </div>
+                                <div class="card-table-item">
+                                    <div class="badges">
+                                        @if (profile.fastlogin) {
+                                            <div class="badge activated">
+                                                <i-tabler name="check"></i-tabler>
+                                                <span>Aktivní</span>
+                                            </div>
+                                        } @else {
+                                            <div class="badge notActivated">
+                                                <i-tabler name="x"></i-tabler>
+                                                <span>Neaktivní</span>
+                                            </div>
+                                        }
+                                    </div>
                                 </div>
                             </div>
 
                             <div class="card-table-row">
-                                <div class="card-table-item">{{ "Přihlášené zařízení" }}</div>
+                                <div class="card-table-item">
+                                    {{ schoolingo.locale.getLocale('sidebar/user/devices') }}
+                                </div>
                                 <div class="card-table-item">
                                     <span>{{ "3 Zařízení" }}</span>
                                 </div>
                             </div>
 
                             <div class="card-table-row">
-                                <div class="card-table-item">{{ "Nedávná aktivita na účtě" }}</div>
                                 <div class="card-table-item">
-                                    <span>{{ "Žádná podezřelá aktivita na účtě" }}</span>
+                                    {{ schoolingo.locale.getLocale('user/recentActivity') }}
+                                </div>
+                                <div class="card-table-item">
+                                    <span>{{ schoolingo.locale.getLocale('user/noSusActivity') }}</span>
                                 </div>
                             </div>
                         </div>
@@ -168,10 +224,14 @@
                 </div>
                 <div class="right">
                     <div class="card-table">
-                        <div class="card-table-header">{{ "Podrobnosti o účtu" }}</div>
+                        <div class="card-table-header">
+                            {{ schoolingo.locale.getLocale('user/accountDetails') }}
+                        </div>
                         <div class="card-table-body">
                             <div class="card-table-row">
-                                <div class="card-table-item">{{ "Přihlašovací jméno" }}</div>
+                                <div class="card-table-item">
+                                    {{ schoolingo.locale.getLocale('username') }}
+                                </div>
                                 <div class="card-table-item">
                                     <span>{{ profile.username }}</span>
                                 </div>
@@ -179,7 +239,9 @@
 
                             @if (perms.checkPermission(["student"])) {
                                 <div class="card-table-row">
-                                    <div class="card-table-item">{{ "Studuješ od " }}</div>
+                                    <div class="card-table-item">
+                                        {{ schoolingo.locale.getLocale('user/studySince') }}
+                                    </div>
                                     <div class="card-table-item">
                                         <span>{{ "Září 1, 2021" }}</span>
                                     </div>
@@ -187,14 +249,18 @@
                             }
                             
                             <div class="card-table-row">
-                                <div class="card-table-item">{{ "Naposledy přihlášen" }}</div>
+                                <div class="card-table-item">
+                                    {{ schoolingo.locale.getLocale('user/lastLogin') }}
+                                </div>
                                 <div class="card-table-item">
                                     <span>{{ "Prosinec 7, 2024" }}</span>
                                 </div>
                             </div>
 
                             <div class="card-table-row">
-                                <div class="card-table-item">{{ "Preferovaný jazyk" }}</div>
+                                <div class="card-table-item">
+                                    {{ schoolingo.locale.getLocale('user/selectedLanguage') }}
+                                </div>
                                 <div class="card-table-item">
                                     <span>
                                         {{ schoolingo.locale.locales[schoolingo.locale.getUserLocale()].name }}
@@ -204,7 +270,9 @@
 
                             
                             <div class="card-table-row">
-                                <div class="card-table-item">{{ "Preferovaný vzhled" }}</div>
+                                <div class="card-table-item">
+                                    {{ schoolingo.locale.getLocale('user/selectedTheme') }}
+                                </div>
                                 <div class="card-table-item">
                                     <span>
                                         {{ schoolingo.locale.getLocale('themes/' + schoolingo.theme.getTheme()) }}
@@ -227,53 +295,71 @@
                         <div class="card-table-header">{{ "Preference" }}</div>
                         <div class="card-table-body">
                             <div class="card-table-row">
-                                <div class="card-table-item">{{ "Emailové oznámení" }}</div>
                                 <div class="card-table-item">
-                                    <div class="badge activated">
-                                        <i-tabler name="check"></i-tabler>
-                                        <span>Aktivní</span>
+                                    {{ schoolingo.locale.getLocale('user/emailNotifications') }}
+                                </div>
+                                <div class="card-table-item">
+                                    <div class="badges">
+                                        <div class="badge activated">
+                                            <i-tabler name="check"></i-tabler>
+                                            <span>Aktivní</span>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
 
                             <div class="card-table-row">
                                 <div class="card-table-item">
-                                    {{ "Oznámení v mobilní aplikaci" }}
+                                    {{ schoolingo.locale.getLocale('user/mobileNotifications') }}
                                 </div>
                                 <div class="card-table-item">
-                                    <div class="badge notActivated">
-                                        <i-tabler name="x"></i-tabler>
-                                        <span>Žádné mobilní zařízení nenalezeno</span>
+                                    <div class="badges">
+                                        <div class="badge notActivated">
+                                            <i-tabler name="x"></i-tabler>
+                                            <span>{{ schoolingo.locale.getLocale('user/noMobileFound') }}</span>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
 
                             <div class="card-table-row">
-                                <div class="card-table-item">{{ "Oznámění o novém přihlášení" }}</div>
                                 <div class="card-table-item">
-                                    <div class="badge activated">
-                                        <i-tabler name="x"></i-tabler>
-                                        <span>Neaktivní</span>
+                                    {{ schoolingo.locale.getLocale('user/loginNotifications') }}
+                                </div>
+                                <div class="card-table-item">
+                                    <div class="badges">
+                                        <div class="badge notActivated">
+                                            <i-tabler name="x"></i-tabler>
+                                            <span>Neaktivní</span>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
 
                             <div class="card-table-row">
-                                <div class="card-table-item">{{ "Povolené GDPR" }}</div>
                                 <div class="card-table-item">
-                                    <div class="badge activated">
-                                        <i-tabler name="check"></i-tabler>
-                                        <span>Aktivní</span>
+                                    {{ schoolingo.locale.getLocale('user/allowGDPR') }}
+                                </div>
+                                <div class="card-table-item">
+                                    <div class="badges">
+                                        <div class="badge activated">
+                                            <i-tabler name="check"></i-tabler>
+                                            <span>Aktivní</span>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
 
                             <div class="card-table-row">
-                                <div class="card-table-item">{{ "Automaticky zobrazit další týden" }}</div>
                                 <div class="card-table-item">
-                                    <div class="badge activated">
-                                        <i-tabler name="check"></i-tabler>
-                                        <span>Aktivní</span>
+                                    {{ schoolingo.locale.getLocale('user/showNextWeek') }}
+                                </div>
+                                <div class="card-table-item">
+                                    <div class="badges">
+                                        <div class="badge activated">
+                                            <i-tabler name="check"></i-tabler>
+                                            <span>Aktivní</span>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
