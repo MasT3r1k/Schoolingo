@@ -66,6 +66,8 @@ export class MessageManager {
   // Homeworks
   public selectedHomework = new BehaviorSubject(null);
 
+  // Rate student
+  public messageRating: 'positive' | 'negative' = 'positive';
 
 
 }

@@ -218,13 +218,13 @@
                             </label>
                             <div class="value">
                                 <div class="input-select">
-                                    <input type="text" (click)="$event.stopPropagation();showSelect = showSelect == 'rating' ? null : 'rating'" name="inputSelect" readOnly="true" [value]="messageManager.selectedHomework.getValue()" />
+                                    <input type="text" (click)="$event.stopPropagation();showSelect = showSelect == 'rating' ? null : 'rating'" name="inputSelect" readonly [value]="schoolingo.locale.getLocale('messages/rating/' + messageManager.messageRating)" />
                                     @if (showSelect == 'rating') {
                                         <div class="options">        
-                                            <div class="option" (click)="showSelect = null;">
+                                            <div class="option" (click)="messageManager.messageRating = 'positive';showSelect = null;">
                                                 {{ schoolingo.locale.getLocale('messages/rating/positive') }}
                                             </div>
-                                            <div class="option" (click)="showSelect = null;">
+                                            <div class="option" (click)="messageManager.messageRating = 'negative';showSelect = null;">
                                                 {{ schoolingo.locale.getLocale('messages/rating/negative') }}
                                             </div>
                                         </div>
