@@ -36,7 +36,7 @@ export class MessageManager {
       label: 'system',
       icon: 'shield',
       color: '#608796',
-      perms: ['principal']
+      perms: ['system']
     }
   ];
 
