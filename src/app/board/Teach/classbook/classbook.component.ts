@@ -11,7 +11,7 @@ import { AlertComponent } from '@Components/Alert/Alert';
 import { TabsComponent } from '@Components/Tabs/Tabs';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { personDetails } from '@Schoolingo/User';
-import { AbsenceType } from '@Schoolingo/Absence';
+import { AbsenceConfig, AbsenceType } from '@Schoolingo/Absence';
 import { Utils } from '@Schoolingo/Utils';
 
 interface Absence {
@@ -76,6 +76,19 @@ export class ClassbookComponent implements OnInit {
     public perms: Permission
   ) {}
 
+  public getAbsenceList(): AbsenceConfig[] {
+    let config = this.schoolingo.absenceConfig;
+    let isClassTeacher = this.schoolingo.userService.getUser()!.id === this.lesson.classInfo.teacher;
+    let list: AbsenceConfig[] = [];
+    for(let i = 0;i < config.length;i++) {
+      if ([AbsenceType.EXCUSED, AbsenceType.DISTANCE, AbsenceType.UNEXCUSED, AbsenceType.NON_COUNT].includes(i) && !isClassTeacher) {
+        continue;
+      }
+      list.push(config[i]);
+    }
+    return list;
+  }
+
   public checkDay(): boolean {
     let checkDay = this.schoolingo.getTimetableLessons()[this.selectedDate.getValue().isoWeekday() - 1];
     if (!checkDay) return false;
@@ -119,7 +132,7 @@ export class ClassbookComponent implements OnInit {
     }
 
     if ([AbsenceType.EXCUSED, AbsenceType.NON_COUNT].includes(absence) && !isClassTeacher) {
-      this.alerts["absence"] = new Alert("error", "classbook/absence/noPerm");
+      this.alerts["absence"] = new Alert("error", this.selectedAbsence.getValue() == -1 ? "classbook/absence/noDeletePerm" : "classbook/absence/noPerm");
       return;
     }
 
