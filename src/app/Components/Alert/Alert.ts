@@ -1,5 +1,5 @@
 import { NgClass, NgStyle } from "@angular/common";
-import { Component, Input, OnInit, RendererFactory2 } from "@angular/core";
+import { Component, Input } from "@angular/core";
 import { Alert } from "@Schoolingo/Alert";
 import { Locale } from "@Schoolingo/Locale";
 import { IconsModule } from "../../Modules/Icons.module";
@@ -8,27 +8,13 @@ import { IconsModule } from "../../Modules/Icons.module";
     selector: 'alert',
     templateUrl: './Alert.html',
     standalone: true,
-    imports: [NgClass, IconsModule],
+    imports: [NgClass, NgStyle, IconsModule],
     styleUrl: './Alert.css'
 })
-export class AlertComponent implements OnInit {
-    
-    public renderer;
+export class AlertComponent {
 
-    constructor(
-        public locale: Locale,
-        private factory: RendererFactory2
-        ) {
-            this.renderer = this.factory.createRenderer(window, null);
-        }
+    constructor(public locale: Locale) {}
 
     @Input() alert!: Alert;
 
-    ngOnInit(): void {
-
-    }
-
-    ngOnDestroy(): void {
-        this.renderer.destroy();
-    }
 }
