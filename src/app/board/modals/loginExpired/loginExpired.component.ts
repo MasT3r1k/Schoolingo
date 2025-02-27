@@ -23,18 +23,22 @@ export class LoginExpiredComponent implements OnInit {
     public schoolingo: Schoolingo
   ) {}
 
+  public refreshLogoutTime(): void {
+    this.time = this.schoolingo.logoutTime.diff(Utils.getNow(), 'seconds');
+    if (this.time <= 0) {
+      this.schoolingo.isLoginExpired = true;
+      clearInterval(this.interval);
+      return;
+    }
+    this.logoutPercents = (this.time / (AppConfig.WARN_BEFORE_LOGOUT_MINUTES * 60)) * 100;
+    let minutes = Math.floor(this.time / 60);
+    let seconds = this.time % 60;
+    this.logoutTime = `${minutes}:${Utils.addZeros(seconds, 2)}`;
+  }
+
   ngOnInit(): void {
     this.interval = setInterval(() => {
-      this.time = this.schoolingo.logoutTime.diff(Utils.getNow(), 'seconds');
-      if (this.time <= 0) {
-        this.schoolingo.isLoginExpired = true;
-        clearInterval(this.interval);
-        return;
-      }
-      this.logoutPercents = (this.time / (AppConfig.WARN_BEFORE_LOGOUT_MINUTES * 60)) * 100;
-      let minutes = Math.floor(this.time / 60);
-      let seconds = this.time % 60;
-      this.logoutTime = `${minutes}:${Utils.addZeros(seconds, 2)}`;
+      this.refreshLogoutTime();
     }, 1000);
   }
 
