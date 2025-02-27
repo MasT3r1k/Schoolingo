@@ -232,10 +232,9 @@ Nezapsané hodiny jsou zvýrazněny světlejším pozadím než zapsané hodiny.
                                 }
                                 @for (absence of getAbsenceList();track $index) {
                                     <div
-                                    [ngClass]="['item', 'absence', 'ab-' + absence.locale, (selectedAbsence.getValue() == $index) ? 'active' : '']"
+                                    [ngClass]="['item', 'absence', 'ab-' + absence.locale, (selectedAbsence.getValue() == this.schoolingo.absenceConfig.indexOf(absence)) ? 'active' : '']"
                                     [attr.tooltip]="schoolingo.locale.getLocale('absence/' + absence.locale)"
-                                    (click)="selectedAbsence.next($index)"
-                                    >
+                                    (click)="selectedAbsence.next(this.schoolingo.absenceConfig.indexOf(absence))">
                                         @if(absence.icon) {
                                             <i-tabler [name]="absence.icon"></i-tabler>
                                         } @else {

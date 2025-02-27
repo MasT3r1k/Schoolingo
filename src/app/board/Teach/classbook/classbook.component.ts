@@ -126,8 +126,7 @@ export class ClassbookComponent implements OnInit {
     let isClassTeacher = this.schoolingo.userService.getUser()!.id === this.lesson.classInfo.teacher;
     let absence = this.getAbsence(studentId, hour);
 
-    if (absence === selectedAbsence &&
-       [AbsenceType.ABSENCE, AbsenceType.UNEXCUSED, AbsenceType.DISTANCE].includes(absence)) {
+    if (absence === selectedAbsence && selectedAbsence != -1) {
       this.alerts["absence"] = new Alert("error", "classbook/absence/alreadySet");
       return;
     }
@@ -137,6 +136,10 @@ export class ClassbookComponent implements OnInit {
       return;
     }
 
+    if (selectedAbsence == -1) {
+      if (absence == -1) return;
+    }
+    this.addAbsence(studentId, [{ hour: hour, type: selectedAbsence }]);
 
   }
 
@@ -146,6 +149,10 @@ export class ClassbookComponent implements OnInit {
     }
 
     absence.forEach((ab: Absence) => {
+      if (ab.type == -1) {
+        delete this.absence[studentId][ab.hour];
+        return;
+      }
       this.absence[studentId][ab.hour] = ab.type;
     });
   }
@@ -161,7 +168,7 @@ export class ClassbookComponent implements OnInit {
     let count = 0;
     for (let i = 0;i < this.absence.length;i++) {
       let absence = this.absence[i]?.[this.selectedHour.getValue()!];
-      if (absence != undefined) {
+      if (absence != undefined && ![AbsenceType.LATE, AbsenceType.EARLY, -1].includes(absence)) {
         count++;
       }
     }
@@ -192,7 +199,6 @@ export class ClassbookComponent implements OnInit {
           this.lastLesson = [];
           return;
         }
-        console.log(lastLesson);
         this.lastLesson = lastLesson;
       })
     );
