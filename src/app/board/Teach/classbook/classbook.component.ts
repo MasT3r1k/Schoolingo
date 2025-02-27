@@ -46,6 +46,7 @@ export class ClassbookComponent implements OnInit {
 
   private subscribers: Subscription[] = [];
   public calendarCalendarName = 'classbookCalendar';
+  private isChangingLesson = false;
   public selectedDate = new BehaviorSubject<moment.Moment>(moment());
   public selectedHour = new BehaviorSubject<number | null>(null);
   public selectedTab = new BehaviorSubject(0);
@@ -168,6 +169,13 @@ export class ClassbookComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    // Add buttons to the alert
+    this.alerts.notWrittenLesson.addButton("classbook/writeLesson/editLastLesson", () => {
+      this.isChangingLesson = true;
+      this.selectedDate.next(moment(this.lastLesson[0].date));
+      this.selectedHour.next(this.lastLesson[0].dayHour - 1);
+    });
+
     if (!this.perms.checkPermission(['teacher'])) {
       this.schoolingo.hasAccessToPage = false;
     }
@@ -219,16 +227,17 @@ export class ClassbookComponent implements OnInit {
 
     this.subscribers.push(
       this.selectedDate.subscribe(() => {
-        this.selectedHour.next(null);
-        this.absence = [];
+        if (!this.isChangingLesson) this.selectedHour.next(null);
       })
     );
 
     this.subscribers.push(
       this.selectedHour.subscribe(() => {
+        this.isChangingLesson = false;
         this.selectedTab.next(0);
         this.selectedAbsence.next(0);
         this.resetAlerts();
+        this.absence = [];
         this.lastLesson = [];
         this.lessonNumber = 0;
         this.lessonTopic = '';

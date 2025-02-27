@@ -1,9 +1,18 @@
 <div class="alerts">
 @if (alert.visible) {
     <div [ngClass]="{alert: true, red: alert.type == 'error', success: alert.type == 'success', 'blue-info': alert.type == 'info'}">
-        <div class="text">
+        <div class="text" [ngStyle]="{ width: !alert.buttons.length ? '100%' : '' }">
             {{ locale.getLocale(alert.text) }}
         </div>
+        @if (alert.buttons.length) {
+            <div class="actions">
+                @for (btn of alert.buttons;track $index) {
+                    <div class="btn" (click)="btn.callback()">
+                        {{ locale.getLocale(btn.text) }}
+                    </div>
+                }
+            </div>
+        }
         @if (alert.closeable) {
             <div class="close" (click)="alert.close()">
                 <i-tabler name="x"></i-tabler>
