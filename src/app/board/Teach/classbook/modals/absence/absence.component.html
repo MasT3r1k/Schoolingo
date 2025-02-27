@@ -1,0 +1,65 @@
+<div class="mt mb" style="padding: 1rem" (click)="showSelect = null">
+    <div class="items">
+        <div class="item">
+            <label for="topic" [ngClass]="{ 'error-color': errors['student'] != null }">
+                {{ schoolingo.locale.getLocale('roles/student') }}
+            </label>
+            <div class="value">
+                <input type="text" class="disabled" name="topic" readonly [value]="schoolingo.formatPerson(schoolingo.classbook.selectedStudent.getValue()!)">
+            </div>
+        </div>
+
+        <div class="item">
+            <label for="type" [ngClass]="{ 'error-color': errors['type'] != null }">
+                {{ schoolingo.locale.getLocale('classbook/absence/type') }}
+            </label>
+            <div class="value">
+                <input type="text" class="disabled" name="type" readonly [value]="schoolingo.locale.getLocale('absence/' + schoolingo.absenceConfig[schoolingo.classbook.selectedAbsence.getValue()!].locale)">
+            </div>
+        </div>
+
+        <div class="item">
+            <label for="minutes" [ngClass]="{ 'error-color': errors['minutes'] != null }">
+                {{ schoolingo.locale.getLocale('classbook/absence/minutes') }}
+            </label>
+            <div class="value">
+                <input type="text" name="minutes" [(ngModel)]="schoolingo.classbook.absenceMinutes" [placeholder]="schoolingo.locale.getLocale('classbook/absence/minutes')">
+            </div>
+        </div>
+
+        <div class="item">
+            <label for="reason" [ngClass]="{ 'error-color': errors['reason'] != null }">
+                {{ schoolingo.locale.getLocale('classbook/absence/reason') }}
+            </label>
+            <div class="value">
+                <div class="input-select">
+                    <input type="text" (click)="$event.stopPropagation();showSelect = showSelect == 'reason' ? null : 'reason'" name="inputSelect" readOnly="true" [value]="schoolingo.classbook.absenceReason ? schoolingo.locale.getLocale('classbook/absence/reasons/' + schoolingo.classbook.absenceReason) : ''" [placeholder]="schoolingo.locale.getLocale('classbook/absence/reasons/unknown')" />
+                    @if (showSelect == 'reason') {
+                        <div class="options">        
+                            @for (reason of schoolingo.absenceReasons; track $index) {
+                                <div class="option" (click)="showSelect = null;schoolingo.classbook.absenceReason = reason;">
+                                    {{ schoolingo.locale.getLocale('classbook/absence/reasons/' + reason) }}
+                                </div>
+                            }
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <div class="item">
+            <label for="note" [ngClass]="{ 'error-color': errors['note'] != null }">
+                {{ schoolingo.locale.getLocale('classbook/writeLesson/note') }}
+            </label>
+            <div class="value">
+                <input type="text" name="note" [(ngModel)]="schoolingo.classbook.absenceNote" [placeholder]="schoolingo.locale.getLocale('classbook/writeLesson/note')">
+            </div>
+        </div>
+
+        <div class="item">
+            <div class="btn">
+                {{ schoolingo.locale.getLocale('absence/writeAbsenceBtn') }}
+            </div>
+        </div>
+    </div>
+</div>

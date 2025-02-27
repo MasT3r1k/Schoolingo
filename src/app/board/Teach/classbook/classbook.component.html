@@ -5,7 +5,7 @@
         <div class="flex-items">
             <div [ngClass]="{button: true, active: dropdown.isOpen(calendarCalendarName)}" [attr.dropdown]="calendarCalendarName" (click)="$event.stopPropagation();dropdown.toggle(calendarCalendarName)">
                 <i-tabler name="calendar-month"></i-tabler>
-                {{ selectedDate.getValue().format('DD. MM. YYYY') }}
+                {{ schoolingo.classbook.selectedDate.getValue().format('DD. MM. YYYY') }}
             </div>
         </div>
     </div>
@@ -13,8 +13,8 @@
         <div class="card-body card-row">
             <div class="left hours">
                 @for (hour of schoolingo.getTimetableHours(); track hourIndex;let hourIndex = $index) {
-                    @for (lesson of schoolingo.getTimetableLessons()[selectedDate.getValue().isoWeekday() - 1][hourIndex]; track $index) {
-                        <div [ngClass]="{hour: true, active: selectedHour.getValue() == hourIndex}" (click)="selectedHour.next(hourIndex)">
+                    @for (lesson of schoolingo.getTimetableLessons()[schoolingo.classbook.selectedDate.getValue().isoWeekday() - 1][hourIndex]; track $index) {
+                        <div [ngClass]="{hour: true, active: schoolingo.classbook.selectedHour.getValue() == hourIndex}" (click)="schoolingo.classbook.selectedHour.next(hourIndex)">
                             <div class="hour-index center">
                                 {{ hourIndex + 1 }}
                             </div>
@@ -39,7 +39,7 @@
             </div>
 
             <div class="right">
-                @if (selectedHour.getValue() == null) {
+                @if (schoolingo.classbook.selectedHour.getValue() == null) {
                     <div class="help">
                         <div class="help-title">
                             {{ schoolingo.locale.getLocale('sidebar/teach/classbook') }}
@@ -52,24 +52,24 @@ Nezapsané hodiny jsou zvýrazněny světlejším pozadím než zapsané hodiny.
                             </p>
                         </div>
                     </div>
-                } @else if (schoolingo.getTimetableLessons()[selectedDate.getValue().isoWeekday() - 1][selectedHour.getValue()!][0].empty) {
+                } @else if (schoolingo.getTimetableLessons()[schoolingo.classbook.selectedDate.getValue().isoWeekday() - 1][schoolingo.classbook.selectedHour.getValue()!][0].empty) {
                     <alert [alert]="alerts['emptyLesson']"></alert>
                 } @else {
 
                     <div style="display: flex;justify-content: flex-end;">
-                        <schoolingo-tabs [options]="['classbook/lessonNotation', 'classbook/attendance', 'sidebar/teach/homeworks', 'classbook/notes']" [value]="selectedTab"></schoolingo-tabs>
+                        <schoolingo-tabs [options]="['classbook/lessonNotation', 'classbook/attendance', 'sidebar/teach/homeworks', 'classbook/notes']" [value]="schoolingo.classbook.selectedTab"></schoolingo-tabs>
                     </div>
-                    @switch(selectedTab.getValue()) {
+                    @switch(schoolingo.classbook.selectedTab.getValue()) {
                         @case (0) {
                             <div class="header mb">
                                 <div>
-                                    {{ schoolingo.getTimetableLessons()[selectedDate.getValue().isoWeekday() - 1][selectedHour.getValue()!][0].subjectName }}
+                                    {{ schoolingo.getTimetableLessons()[schoolingo.classbook.selectedDate.getValue().isoWeekday() - 1][schoolingo.classbook.selectedHour.getValue()!][0].subjectName }}
                                 </div>
                                 <div>
-                                    {{ schoolingo.getTimetableHours()[selectedHour.getValue()!].start + ' - ' + schoolingo.getTimetableHours()[selectedHour.getValue()!].end }}
+                                    {{ schoolingo.getTimetableHours()[schoolingo.classbook.selectedHour.getValue()!].start + ' - ' + schoolingo.getTimetableHours()[schoolingo.classbook.selectedHour.getValue()!].end }}
                                 </div>
                                 <div>
-                                    {{ schoolingo.getTimetableLessons()[selectedDate.getValue().isoWeekday() - 1][selectedHour.getValue()!][0].className }}
+                                    {{ schoolingo.getTimetableLessons()[schoolingo.classbook.selectedDate.getValue().isoWeekday() - 1][schoolingo.classbook.selectedHour.getValue()!][0].className }}
                                 </div>
                             </div>
 
@@ -205,10 +205,10 @@ Nezapsané hodiny jsou zvýrazněny světlejším pozadím než zapsané hodiny.
 
                         @case (1) {
                             <p>
-                                Celkem: {{ students.length }}
+                                Celkem: {{ schoolingo.classbook.students.length }}
                             </p>
                             <p>
-                                Přítomni: {{ students.length - getMissingStudents() }}
+                                Přítomni: {{ schoolingo.classbook.students.length - getMissingStudents() }}
                             </p>
                             <p>
                                 Chybí: {{ getMissingStudents() }}
@@ -223,7 +223,7 @@ Nezapsané hodiny jsou zvýrazněny světlejším pozadím než zapsané hodiny.
                             </div>
 
                             <div class="absence-selector mt mb-2">
-                                @if (selectedHour.getValue()! > 0) {
+                                @if (schoolingo.classbook.selectedHour.getValue()! > 0) {
                                     <div class="item-btn text">
                                         <div class="text">
                                             {{ schoolingo.locale.getLocale('absence/copyFromLastLesson') }}
@@ -232,9 +232,9 @@ Nezapsané hodiny jsou zvýrazněny světlejším pozadím než zapsané hodiny.
                                 }
                                 @for (absence of getAbsenceList();track $index) {
                                     <div
-                                    [ngClass]="['item', 'absence', 'ab-' + absence.locale, (selectedAbsence.getValue() == this.schoolingo.absenceConfig.indexOf(absence)) ? 'active' : '']"
+                                    [ngClass]="['item', 'absence', 'ab-' + absence.locale, (schoolingo.classbook.selectedAbsence.getValue() == this.schoolingo.absenceConfig.indexOf(absence)) ? 'active' : '']"
                                     [attr.tooltip]="schoolingo.locale.getLocale('absence/' + absence.locale)"
-                                    (click)="selectedAbsence.next(this.schoolingo.absenceConfig.indexOf(absence))">
+                                    (click)="schoolingo.classbook.selectedAbsence.next(this.schoolingo.absenceConfig.indexOf(absence))">
                                         @if(absence.icon) {
                                             <i-tabler [name]="absence.icon"></i-tabler>
                                         } @else {
@@ -244,15 +244,15 @@ Nezapsané hodiny jsou zvýrazněny světlejším pozadím než zapsané hodiny.
                                 }
 
                                 <div
-                                [ngClass]="{item: true, absence: true, trash: true, active: selectedAbsence.getValue() === -1}"
+                                [ngClass]="{item: true, absence: true, trash: true, active: schoolingo.classbook.selectedAbsence.getValue() === -1}"
                                 [attr.tooltip]="schoolingo.locale.getLocale('absence/trash')"
-                                (click)="selectedAbsence.next(-1)">
+                                (click)="schoolingo.classbook.selectedAbsence.next(-1)">
                                     <i-tabler style="width: 24px;height: 24px;" name="trash-x-filled"></i-tabler>
                                 </div>
                             </div>
 
                             <div class="students">
-                                @for (student of students; track $index) {
+                                @for (student of schoolingo.classbook.students; track $index) {
                                     <div class="absence-student">
                                         <div class="name">
                                             <b>{{ ($index + 1) + '. ' }}</b>
@@ -262,9 +262,9 @@ Nezapsané hodiny jsou zvýrazněny světlejším pozadím než zapsané hodiny.
                                         <div class="hours">
                                             @for (_ of [].constructor(lesson.maxHours.maxHours || 0);track $index) {
                                                 <div
-                                                [ngClass]="{hour: true, active: selectedHour.getValue() === $index}"
+                                                [ngClass]="{hour: true, active: schoolingo.classbook.selectedHour.getValue() === $index}"
                                                 [attr.lessonCount]="$index + 1"
-                                                (click)="(selectedHour.getValue() === $index) ? applyAbsence(student.personId) : ''"
+                                                (click)="(schoolingo.classbook.selectedHour.getValue() === $index) ? applyAbsence(student.personId) : ''"
                                                 >
                                                     @if(getAbsence(student.personId, $index) !== -1) {
                                                         <div

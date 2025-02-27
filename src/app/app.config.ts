@@ -25,6 +25,7 @@ import { IPManager } from '@Schoolingo/IPManager';
 import { Authentication } from '@Schoolingo/Auth';
 import { IconsModule } from './Modules/Icons.module';
 import { Discord } from '@Schoolingo/Discord';
+import { Classbook } from '@Schoolingo/Classbook';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -53,7 +54,8 @@ export const appConfig: ApplicationConfig = {
     Traineeship,
     Authentication,
     IconsModule,
-    Discord
+    Discord,
+    Classbook
   ],
   
 };

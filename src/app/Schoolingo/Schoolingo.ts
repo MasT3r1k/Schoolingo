@@ -8,7 +8,7 @@ import { School } from "./School";
 import { Utils } from "@Schoolingo/Utils";
 import { BehaviorSubject, Subscription } from "rxjs";
 import moment from "moment";
-import { AbsenceConfig, absence } from "./Absence";
+import { AbsenceConfig, absence, absenceReasons } from "./Absence";
 import { removeDiacritics } from "./SearchFilter";
 import { degree } from "./User";
 import { MessageManager } from "./Messages";
@@ -23,6 +23,7 @@ import { Modal } from "@Components/Modal/Modal";
 import { LoginExpiredComponent } from "../board/modals/loginExpired/loginExpired.component";
 import { AppConfig } from "./App";
 import { childrenSwitchComponent } from "../board/modals/childrenSwitch/childrenSwitch.component";
+import { Classbook } from "./Classbook";
 export {
     TimetableAPI,
     ClassbookAPI,
@@ -70,6 +71,7 @@ export class Schoolingo {
 
     public subscribers: Subscription[] = [];
     public absenceConfig: AbsenceConfig[] = absence;
+    public absenceReasons: string[] = absenceReasons;
 
     public absenceSubjects: Record<string, { absence: number, lessons: number }> = {};
     public absence: Record<string, Absence[]> = {};
@@ -87,6 +89,7 @@ export class Schoolingo {
         public homeworks: Homeworks,
         public ipManager: IPManager,
         public auth: Authentication,
+        public classbook: Classbook
     ) {
         this.subscribers.push(
             this.locale.language.subscribe(() => {

@@ -22,3 +22,10 @@ export const absence: AbsenceConfig[] = [
     { locale: 'early', icon: 'letter-o' },
     { locale: 'distance', icon: 'letter-d' },
 ];
+
+export const absenceReasons = [
+    'illness',
+    'family',
+    'doctor',
+    'other'
+]
