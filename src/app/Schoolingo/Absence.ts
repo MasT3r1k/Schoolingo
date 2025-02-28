@@ -1,6 +1,7 @@
 export interface AbsenceConfig {
     locale: string;
     icon?: string;
+    reasons: string[];
 }
 
 export enum AbsenceType {
@@ -14,18 +15,11 @@ export enum AbsenceType {
 }
 
 export const absence: AbsenceConfig[] = [
-    { locale: 'absence', icon: 'slash' },
-    { locale: 'excused', icon: 'x' },
-    { locale: 'unexcused', icon: 'letter-n' },
-    { locale: 'non_count', icon: 'minus' },
-    { locale: 'late', icon: 'letter-p' },
-    { locale: 'early', icon: 'letter-o' },
-    { locale: 'distance', icon: 'letter-d' },
+    { locale: 'absence',    icon: 'slash',      reasons: [] },
+    { locale: 'excused',    icon: 'x',          reasons: ['illness', 'family', 'doctor', 'oversleep', 'connection', 'hospitalization'] },
+    { locale: 'unexcused',  icon: 'letter-n',   reasons: [] },
+    { locale: 'non_count',  icon: 'minus',      reasons: ['schoolEvent'] }, 
+    { locale: 'late',       icon: 'letter-p',   reasons: ['oversleep', 'connection'] },
+    { locale: 'early',      icon: 'letter-o',   reasons: ['connection'] },
+    { locale: 'distance',   icon: 'letter-d',   reasons: [] },
 ];
-
-export const absenceReasons = [
-    'illness',
-    'family',
-    'doctor',
-    'other'
-]

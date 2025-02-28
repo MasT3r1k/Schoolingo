@@ -36,7 +36,7 @@
                     <input type="text" (click)="$event.stopPropagation();showSelect = showSelect == 'reason' ? null : 'reason'" name="inputSelect" readOnly="true" [value]="schoolingo.classbook.absenceReason ? schoolingo.locale.getLocale('classbook/absence/reasons/' + schoolingo.classbook.absenceReason) : ''" [placeholder]="schoolingo.locale.getLocale('classbook/absence/reasons/unknown')" />
                     @if (showSelect == 'reason') {
                         <div class="options">        
-                            @for (reason of schoolingo.absenceReasons; track $index) {
+                            @for (reason of getAbsenceReasons(); track $index) {
                                 <div class="option" (click)="showSelect = null;schoolingo.classbook.absenceReason = reason;">
                                     {{ schoolingo.locale.getLocale('classbook/absence/reasons/' + reason) }}
                                 </div>

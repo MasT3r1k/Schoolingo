@@ -8,7 +8,7 @@ import { School } from "./School";
 import { Utils } from "@Schoolingo/Utils";
 import { BehaviorSubject, Subscription } from "rxjs";
 import moment from "moment";
-import { AbsenceConfig, absence, absenceReasons } from "./Absence";
+import { AbsenceConfig, absence } from "./Absence";
 import { removeDiacritics } from "./SearchFilter";
 import { degree } from "./User";
 import { MessageManager } from "./Messages";
@@ -71,7 +71,6 @@ export class Schoolingo {
 
     public subscribers: Subscription[] = [];
     public absenceConfig: AbsenceConfig[] = absence;
-    public absenceReasons: string[] = absenceReasons;
 
     public absenceSubjects: Record<string, { absence: number, lessons: number }> = {};
     public absence: Record<string, Absence[]> = {};

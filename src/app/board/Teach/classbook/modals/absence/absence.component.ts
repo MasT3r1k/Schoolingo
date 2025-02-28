@@ -25,6 +25,15 @@ export class ClassbookAbsenceComponent {
     this.schoolingo.timetableSelectedLesson.subscribe((lesson) => {
       this.lesson = lesson;
     });
+    this.schoolingo.classbook.absenceReason = '';
+    this.schoolingo.classbook.absenceMinutes = 0;
+    this.schoolingo.classbook.absenceNote = '';
+  }
+
+  public getAbsenceReasons(): string[] {
+    let arr = JSON.parse(JSON.stringify(this.schoolingo.absenceConfig[this.schoolingo.classbook.selectedAbsence.getValue()!].reasons));
+    arr.push('other')
+    return arr;
   }
 
   public submitAbsence(): void {
