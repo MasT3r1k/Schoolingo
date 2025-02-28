@@ -8,12 +8,19 @@ export { modalOptions, modalItem }
 
 let modals: Modal[] = [];
 
+export function forceCloseAllModals(): void {
+    modals = [];
+}
+
 export class Modal {
     public isOpened: boolean = false;
     public options!: modalOptions;
+    public zIndex: number = 500;
+
     constructor(options: modalOptions) {
         this.options = options;
         modals.push(this);
+
     }
 
     public open(): void {

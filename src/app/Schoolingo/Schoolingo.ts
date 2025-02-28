@@ -19,7 +19,7 @@ import { Alert } from "./Alert";
 import { Authentication } from "./Auth";
 
 import { Absence, BookInfo, ClassbookAPI, ClassbookLesson, Mark, studentService, Substitution, TimetableAPI, TimetableHours, TimetableLesson } from './Schoolingo.d';
-import { Modal } from "@Components/Modal/Modal";
+import { forceCloseAllModals, Modal } from "@Components/Modal/Modal";
 import { LoginExpiredComponent } from "../board/modals/loginExpired/loginExpired.component";
 import { AppConfig } from "./App";
 import { childrenSwitchComponent } from "../board/modals/childrenSwitch/childrenSwitch.component";
@@ -38,7 +38,6 @@ export {
 
 @Injectable()
 export class Schoolingo {
-
     public resetToDefault(): void {
         this.modal = '';
         this.timetableAPI = [];
@@ -59,6 +58,7 @@ export class Schoolingo {
             this.logoutTime = moment().add(AppConfig.WARN_BEFORE_LOGOUT_MINUTES, 'minutes');
         }, this.school.schoolInfo.loginExpires - (AppConfig.WARN_BEFORE_LOGOUT_MINUTES * 60000));
         this.loginModal.close();
+        forceCloseAllModals();
         this.marks = [];
         this.absence = {};
         this.absenceSubjects = {};
@@ -136,6 +136,8 @@ export class Schoolingo {
                 this.auth.loginStatus.next(false);
             })
         );
+
+        this.loginModal.zIndex = 999999; // To show above all modals
     }
 
     // Login expired
