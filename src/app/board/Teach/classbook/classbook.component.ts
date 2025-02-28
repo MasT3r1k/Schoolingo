@@ -15,6 +15,7 @@ import { AbsenceConfig, AbsenceType } from '@Schoolingo/Absence';
 import { Utils } from '@Schoolingo/Utils';
 import { Modal } from '@Components/Modal/Modal';
 import { ClassbookAbsenceComponent } from './modals/absence/absence.component';
+import { errorAPI } from '@Components/Datalist/Datalist';
 
 interface Absence {
   hour: number;
@@ -155,8 +156,8 @@ export class ClassbookComponent implements OnInit {
       this.absenceModal.open();
       return;
     }
-
-    this.addAbsence(studentId, [{ hour: hour, type: selectedAbsence }]);
+    this.schoolingo.classbook.applyAbsence.next(true);
+    // this.addAbsence(studentId, [{ hour: hour, type: selectedAbsence }]);
 
   }
 
@@ -203,6 +204,27 @@ export class ClassbookComponent implements OnInit {
     if (!this.perms.checkPermission(['teacher'])) {
       this.schoolingo.hasAccessToPage = false;
     }
+
+    this.subscribers.push(
+      this.schoolingo.classbook.applyAbsence.subscribe((status: boolean) => {
+        if (!status) return;
+        status = false;
+        this.schoolingo.socketService.emit('classbook:addAbsence', {
+          classbookId: this.lesson.cbId,
+          studentId: this.schoolingo.classbook.selectedStudent.getValue()?.personId,
+          absence: this.schoolingo.classbook.selectedAbsence.getValue(),
+          minutes: this.schoolingo.classbook.absenceMinutes,
+          reason: this.schoolingo.classbook.absenceReason,
+          note: this.schoolingo.classbook.absenceNote
+        })
+      })
+    )
+
+    this.subscribers.push(
+      this.schoolingo.socketService.addFunction('classbook:addAbsence').subscribe((absence: errorAPI | any) => {
+        console.log(absence);
+      })
+    );
 
     this.subscribers.push(
       this.schoolingo.socketService.addFunction('classbook:getStudentsList').subscribe((students: personDetails[]) => {

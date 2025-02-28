@@ -26,4 +26,8 @@ export class ClassbookAbsenceComponent {
       this.lesson = lesson;
     });
   }
+
+  public submitAbsence(): void {
+    this.schoolingo.classbook.applyAbsence.next(true);
+  }
 }

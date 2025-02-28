@@ -11,6 +11,8 @@ export class Classbook {
     public selectedAbsence = new BehaviorSubject<number>(0);
     public selectedStudent = new BehaviorSubject<personDetails | null>(null);
 
+    public applyAbsence = new BehaviorSubject<boolean>(false)
+
     // Settings for the absence
     public absenceMinutes = 0;
     public absenceReason = '';
