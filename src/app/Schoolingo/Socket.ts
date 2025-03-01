@@ -45,11 +45,15 @@ export class SocketService {
     
     this.socket.onAny((event, ...args) => {
       this.tokenStatus.next('refresh_token');
-      console.log(`Event ${event} got: `, args);
+      if (Config.DEV_MOD) {
+        console.log(`Event ${event} got: `, args);
+      }
     })
 
     this.socket.offAny((event, ...args) => {
-      console.log('Event ' + event + ' off ' + args);
+      if (Config.DEV_MOD) {
+        console.log('Event ' + event + ' off ' + args);
+      }
   })
   }
 
