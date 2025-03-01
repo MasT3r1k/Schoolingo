@@ -15,6 +15,7 @@ export type languages = 'cs' | 'en-gb' | "null";
 @Injectable()
 export class Locale {
 
+    public isLoadedLanguage = new BehaviorSubject<boolean>(false);
     public defaultLanguage: languages = 'en-gb';
     public language: BehaviorSubject<languages> = new BehaviorSubject("null" as languages);
 
@@ -53,8 +54,8 @@ export class Locale {
     }
 
 
-    private locale: BehaviorSubject<any> = new BehaviorSubject({});
-    public getLocaleConfig(): BehaviorSubject<any> {
+    private locale = new BehaviorSubject<any>({});
+    public getLocaleConfig(): typeof this.locale {
         return this.locale;
     }
 
@@ -67,8 +68,9 @@ export class Locale {
      * Select language for system and save to memory and storage
      * @param lng user's new language
      */
-    public setUserLocale(lng: languages) {
+    public setUserLocale(lng: languages): void {
         this.http.get(Config.localeURL + this.locales[lng].file).subscribe((data: any) => {
+            this.isLoadedLanguage.next(true);
             this.locale.next(data);
             this.language.next(lng);
             if (lng != "null") {
@@ -76,7 +78,8 @@ export class Locale {
             }
             this.logger.send(this.logName, 'Language ' + lng + ' was loaded and saved.');
         }, (err: any): void => {
-            this.locale.next({});
+            // this.locale.next({});
+            this.isLoadedLanguage.next(false);
             this.language.next("null");
             this.logger.send(this.logName, 'Language ' + lng + ' failed to load.');
             console.error(err);

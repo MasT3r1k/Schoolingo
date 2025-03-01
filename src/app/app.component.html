@@ -1,8 +1,8 @@
 @defer (when afterLoadedSchool) {
-    @if (school.getIsActiveSchool() && this.locale.getLocaleConfig().getValue() !== {}) {
+    @if (school.getIsActiveSchool() && this.locale.isLoadedLanguage.getValue()) {
         <router-outlet></router-outlet>
     } @else {
-        @if (this.locale.getLocaleConfig().getValue() !== {}) {
+        @if (this.locale.isLoadedLanguage.getValue()) {
             <error-main [error]="school.errorReason"></error-main>
         } @else {
             <div class="loading">
