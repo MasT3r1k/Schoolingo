@@ -74,7 +74,7 @@ export class UserService {
 
   //** Users
   private user: user | null = null;
-  public username: string = "";
+  public username = "";
 
   /**
    * Get user's information if set or null
