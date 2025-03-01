@@ -6,11 +6,12 @@ import { Schoolingo } from '@Schoolingo';
 import { Permission } from '@Schoolingo/Permissions';
 import { BehaviorSubject, Subscription } from 'rxjs';
 import { studentInfoAPI } from '../students/students';
+import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 
-function getUserRole(studentInfO: { studentId: number, teacherId: number, parentId: number }): string {
-  if (studentInfO.studentId !== null) return "student";
-  if (studentInfO.teacherId !== null) return "teacher";
-  if (studentInfO.parentId !== null) return "parent";
+function getUserRole(studentInfo: { studentId: number | null, teacherId: number | null, parentId: number | null }): string {
+  if (studentInfo.studentId !== null) return "student";
+  else if (studentInfo.teacherId !== null) return "teacher";
+  else if (studentInfo.parentId !== null) return "parent";
   return "unknown";
 }
 
@@ -23,7 +24,8 @@ function getUserRole(studentInfO: { studentId: number, teacherId: number, parent
 export class ManageUsersComponent {
   constructor(
     public schoolingo: Schoolingo,
-    public perms: Permission
+    public perms: Permission,
+    private sanitizer: DomSanitizer
   ) {}
 
   private listeners: Subscription[] = [];
@@ -46,20 +48,21 @@ export class ManageUsersComponent {
   }
 
   onClick = (id: { id: number }[], index: number) => {
+    console.log(id);
   }
 
-  public getTags(user: any): string {
+  public getTags(user: any): SafeHtml {
     let tags = [];
     if (user.manager == -1) {
-      tags.push("<div class='badge blue'>Správce</div>");
+      tags.push("<div class='badge blue'>" + this.schoolingo.locale.getLocale('roles/manager') + "</div>");
     }
     if (user.principal) {
-      tags.push("<div class='badge blue'>Ředitelství</div>");
+      tags.push("<div class='badge blue'>" + this.schoolingo.locale.getLocale('roles/principal') + "</div>");
     }
-    return `
+    return this.sanitizer.bypassSecurityTrustHtml(`
     <div class='flex-items badges'>
     ${tags.join('')}
-    </div>`;
+    </div>`);
   }
 
   ngOnInit(): void {
@@ -75,11 +78,11 @@ export class ManageUsersComponent {
           data.data.forEach((user: any) => {
             userList.push([
               { id: user.userId },
-              {value: user.username, isLocale: false},
-              {value: user.firstName, isLocale: false},
-              {value: user.lastName, isLocale: false},
-              {value: 'roles/' + getUserRole(user), isLocale: true},
-              {html: this.getTags(user)}
+              { value: user.username, isLocale: false },
+              { value: user.firstName, isLocale: false },
+              { value: user.lastName, isLocale: false },
+              { value: 'roles/' + getUserRole(user), isLocale: true },
+              { html: this.getTags(user) }
             ]);
           });
 

@@ -1,3 +1,5 @@
+import { SafeHtml } from "@angular/platform-browser";
+
 export type Data = {
     value: string;
 } & ({
@@ -9,7 +11,7 @@ export type Data = {
 }) | {
     id: number;
 } | {
-    html: string;
+    html: string | SafeHtml;
 };
 
 export interface DatalistOptions {
