@@ -151,8 +151,9 @@ export class ClassbookComponent implements OnInit {
       return;
     }
 
+    this.schoolingo.classbook.selectedStudent.next(this.schoolingo.classbook.students.find((student) => student.personId === studentId)!);
+
     if ([AbsenceType.EXCUSED, AbsenceType.NON_COUNT, AbsenceType.EARLY, AbsenceType.LATE].includes(selectedAbsence)) {
-      this.schoolingo.classbook.selectedStudent.next(this.schoolingo.classbook.students.find((student) => student.personId === studentId)!);
       this.absenceModal.open();
       return;
     }
@@ -210,9 +211,9 @@ export class ClassbookComponent implements OnInit {
         if (!status) return;
         status = false;
         this.schoolingo.socketService.emit('classbook:addAbsence', {
-          classbookId: this.lesson.cbId,
-          studentId: this.schoolingo.classbook.selectedStudent.getValue()?.personId,
-          absence: this.schoolingo.classbook.selectedAbsence.getValue(),
+          classbookId: this.lesson.lesson.cbId,
+          studentId: this.schoolingo.classbook.selectedStudent.getValue()!.personId,
+          absence: this.schoolingo.classbook.selectedAbsence.getValue()!,
           minutes: this.schoolingo.classbook.absenceMinutes,
           reason: this.schoolingo.classbook.absenceReason,
           note: this.schoolingo.classbook.absenceNote
@@ -222,6 +223,42 @@ export class ClassbookComponent implements OnInit {
 
     this.subscribers.push(
       this.schoolingo.socketService.addFunction('classbook:addAbsence').subscribe((absence: errorAPI | any) => {
+        this.resetAlerts();
+        this.absenceModal.close();
+        if ('error' in absence) {
+          let locale = absence.error;
+          switch(absence.error) {
+            case 'no_token':
+              locale = 'NO ACCEESSS';
+              break;
+            case 'no_permission':
+              locale = 'classbook/absence/noPerm';
+              break;
+            case 'minutes_cant_be_smaller_than_1':
+              locale = 'classbook/absence/minutesCantBeSmallerThan1';
+              break;
+            case 'no_classbook_found':
+              locale = 'classbook/absence/noClassbookFound';
+              break;
+            case 'absence_is_same':
+              locale = 'classbook/absence/isSame';
+              break;
+            case 'student_not_found':
+              locale = 'classbook/absence/studentNotFound';
+              break;
+          }
+          this.alerts["absence"] = new Alert("error", locale);
+          return;
+        }
+
+        if ('status' in absence && absence.status == 'success') {
+          if (this.lesson.lesson.cbId !== absence.data.classbookId) {
+            return;
+          }
+          this.addAbsence(absence.data.studentId, [
+            { type: absence.data.absence, hour: this.schoolingo.classbook.selectedHour.getValue()! }
+          ])
+        }
         console.log(absence);
       })
     );
@@ -277,7 +314,8 @@ export class ClassbookComponent implements OnInit {
     );
 
     this.subscribers.push(
-      this.schoolingo.classbook.selectedHour.subscribe(() => {
+      this.schoolingo.classbook.selectedHour.subscribe((hour: number | null) => {
+        console.log(hour)
         this.isChangingLesson = false;
         this.schoolingo.classbook.selectedTab.next(0);
         this.schoolingo.classbook.selectedAbsence.next(0);
@@ -294,7 +332,7 @@ export class ClassbookComponent implements OnInit {
         
         this.schoolingo.socketService.emit('classbook:getLesson', {
           date: this.schoolingo.classbook.selectedDate.getValue().format("YYYY-MM-DD"),
-          hour: this.schoolingo.classbook.selectedHour.getValue()! + 1,
+          hour: this.schoolingo.classbook.selectedHour.getValue()!,
           groupId: lesson.group.id,
           subject: lesson.subject
         });

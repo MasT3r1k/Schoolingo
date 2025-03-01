@@ -49,7 +49,9 @@ export interface TimetableLesson {
 }
 
 export interface TimetableHours {
+    startMoment: moment.Moment;
     start: string;
+    endMoment: moment.Moment;
     end: string;
 }
 

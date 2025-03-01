@@ -290,7 +290,9 @@ export class Schoolingo {
             time.add(this.school.schoolInfo.lessonHour, 'minutes');
             hours.push(
                 {
+                    startMoment: startHour.clone(),
                     start: startHour.format('HH:mm'),
+                    endMoment: time.clone(),
                     end: time.format('HH:mm')
                 }
             );
