@@ -24,7 +24,7 @@ export class VehiclesComponent implements OnInit {
   public page: 'list' | 'detail' = 'list';
 
   private listeners: Subscription[] = [];
-  public vehicles: BehaviorSubject<Data[][]> = new BehaviorSubject<Data[][]>([]);
+  public vehicles = new BehaviorSubject<Data[][]>([]);
   public selectedVehicle: any = null;
   public selectedTab = new BehaviorSubject(0);
   public metadata: Metadata = { rows: 0 }

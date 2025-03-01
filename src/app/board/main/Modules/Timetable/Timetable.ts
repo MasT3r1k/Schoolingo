@@ -18,17 +18,21 @@ export class TimetableComponent implements OnInit {
   ) {}
 
   private listeners: Subscription[] = [];
-  public day = new BehaviorSubject<moment.Moment>(moment());
+  public day = new BehaviorSubject(moment());
 
   ngOnInit(): void {
-    this.listeners.push(this.day.subscribe((val: moment.Moment) => {
-      if (this.schoolingo.timetableSelectedWeek.getValue() === val) return;
-      this.schoolingo.timetableSelectedWeek.next(val);
-    }));
+    this.listeners.push(
+      this.day.subscribe((val: moment.Moment) => {
+        if (this.schoolingo.timetableSelectedWeek.getValue() === val) return;
+        this.schoolingo.timetableSelectedWeek.next(val);
+      })
+    );
 
-    this.listeners.push(this.schoolingo.timetableSelectedWeek.subscribe((week: moment.Moment): void => {
-      this.day.next(this.day.getValue().set('isoWeeks', week.isoWeek()));
-    }));
+    this.listeners.push(
+      this.schoolingo.timetableSelectedWeek.subscribe((week: moment.Moment): void => {
+        this.day.next(this.day.getValue().set('isoWeeks', week.isoWeek()));
+      })
+    );
   }
 
   ngOnDestroy(): void {

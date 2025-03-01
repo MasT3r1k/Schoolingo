@@ -28,8 +28,8 @@ export class LoansComponent implements OnInit {
     public schoolingo: Schoolingo
   ) {}
 
-  public tabValue: BehaviorSubject<number> = new BehaviorSubject(0);
-  public loans: BehaviorSubject<Data[][] | any> = new BehaviorSubject([]);
+  public tabValue = new BehaviorSubject<number>(0);
+  public loans = new BehaviorSubject<Data[][]>([]);
   public search = new FormControl();
 
   public metadata: Metadata = {

@@ -15,7 +15,7 @@ export class BooksComponent implements OnInit {
     public schoolingo: Schoolingo
   ) {}
 
-  public books: BehaviorSubject<Data[][] | any> = new BehaviorSubject([]);
+  public books = new BehaviorSubject<Data[][]>([]);
   public search = new FormControl();
 
   public onClick(id: number[]): void {

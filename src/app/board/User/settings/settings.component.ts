@@ -81,7 +81,7 @@ export class SettingsComponent implements OnInit {
     this.listeners.push(this.route.queryParamMap.subscribe((param: Params) => {
       // Show page
       if (param.params['page'] != undefined) {
-        let id = this.options.indexOf(param.params['page']);
+        let id = this.options.indexOf(param.params.page);
         if (id != -1) {
           this.selectedTab.next(id)
         }

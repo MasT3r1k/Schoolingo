@@ -19,17 +19,21 @@ export class BackpackComponent implements OnInit {
   ) {}
 
   private listeners: Subscription[] = [];
-  public day: BehaviorSubject<moment.Moment> = new BehaviorSubject<moment.Moment>(moment());
+  public day = new BehaviorSubject(moment());
 
   ngOnInit(): void {
-    this.listeners.push(this.day.subscribe((val: moment.Moment) => {
-      if (this.schoolingo.timetableSelectedWeek.getValue().isoWeek() === val.isoWeek()) return;
-      this.schoolingo.timetableSelectedWeek.next(val);
-    }));
+    this.listeners.push(
+      this.day.subscribe((val: moment.Moment) => {
+        if (this.schoolingo.timetableSelectedWeek.getValue().isoWeek() === val.isoWeek()) return;
+        this.schoolingo.timetableSelectedWeek.next(val);
+      })
+    );
 
-    this.listeners.push(this.schoolingo.timetableSelectedWeek.subscribe((week: moment.Moment): void => {
-      this.day.next(this.day.getValue().set('isoWeeks', week.isoWeek()));
-    }));
+    this.listeners.push(
+      this.schoolingo.timetableSelectedWeek.subscribe((week: moment.Moment): void => {
+        this.day.next(this.day.getValue().set('isoWeeks', week.isoWeek()));
+      })
+    );
   }
 
   ngOnDestroy(): void {
@@ -53,7 +57,7 @@ export class BackpackComponent implements OnInit {
     }
   
     let subjects: string[] = [];
-    let id: number = type === 'give' ? 1 : 0;
+    let id = type === 'give' ? 1 : 0;
     for(let i = 0;i < listSubjects[id].length;i++) {
       if (!subjects.includes(listSubjects[id][i]) && !listSubjects[id ? 0 : 1].includes(listSubjects[id][i]) && listSubjects[id][i] != undefined) {
         subjects.push(listSubjects[id][i]);

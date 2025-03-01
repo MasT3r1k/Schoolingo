@@ -6,7 +6,6 @@ import { TabsComponent } from '@Components/Tabs/Tabs';
 import { Schoolingo } from '@Schoolingo';
 import { Permission } from '@Schoolingo/Permissions';
 import { Utils } from '@Schoolingo/Utils';
-import moment from 'moment';
 import { BehaviorSubject, debounceTime, Subscription } from 'rxjs';
 import { studentInfoAPI } from './students';
 import { IconsModule } from '../../Modules/Icons.module';
@@ -38,7 +37,7 @@ export class studentsComponent implements OnInit {
   public datalist!: DatalistComponent;
   public search = new FormControl();
 
-  receivedDatalist(value: DatalistComponent): void {
+  receivedDatalist(value: typeof this.datalist): void {
     this.datalist = value;
   }
 
@@ -73,11 +72,11 @@ export class studentsComponent implements OnInit {
         data.data.forEach((student: any) => {
           studentList.push([
             { id: student.personId },
-            {value: student.firstName, isLocale: false},
-            {value: student.lastName, isLocale: false},
-            {value: student.className, isLocale: false},
-            {value: moment(student.birthday).format("D. MMMM YYYY") + ' (' + Utils.getAge(moment(student.birthday)) + ' ' + this.schoolingo.locale.getLocale('ageUnit') + ')', isLocale: false},
-            {value: Utils.formatAddress({ code2: student.code2, street: student.street, houseNumber: student.houseNumber, city: student.cityName, postcode: student.postcode }), isLocale: false}])
+            { value: student.firstName, isLocale: false },
+            { value: student.lastName, isLocale: false },
+            { value: student.className, isLocale: false} ,
+            { value: Utils.makeMoment(student.birthday).format("D. MMMM YYYY") + ' (' + Utils.getAge(Utils.makeMoment(student.birthday)) + ' ' + this.schoolingo.locale.getLocale('ageUnit') + ')', isLocale: false },
+            { value: Utils.formatAddress({ code2: student.code2, street: student.street, houseNumber: student.houseNumber, city: student.cityName, postcode: student.postcode }), isLocale: false }])
         });
         this.metadata.rows = data.rows;
         if (this.selectedTab.getValue() === 0) this.studentCount = data.rows;

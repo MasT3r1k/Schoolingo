@@ -37,6 +37,7 @@ export class LoginExpiredComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    this.refreshLogoutTime();
     this.interval = setInterval(() => {
       this.refreshLogoutTime();
     }, 1000);

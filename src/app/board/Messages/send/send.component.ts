@@ -28,7 +28,7 @@ export class SendComponent {
   public alerts: { [key: string]: Alert } = {};
 
   // Tab
-  public selectedTab = new BehaviorSubject(0);
+  public selectedTab = new BehaviorSubject<number>(0);
 
   // Selecting options
   public showSelect: 'messagetype' | 'homework' | 'children' | 'rating' | null = null;
@@ -68,26 +68,26 @@ export class SendComponent {
     this.alerts = {};
     let type = this.messageManager.messageType.getValue();
     if (!this.perms.checkPermission(this.messageManager.types[type].perms)) {
-      this.alerts['main'] = new Alert('error', 'messages/noTypeAccess');
+      this.alerts.main = new Alert('error', 'messages/noTypeAccess');
 
       return;
     }
     let message = this.messageManager.message;
     if (message == '') {
-      this.alerts['message'] = new Alert('error', 'required');
+      this.alerts.message = new Alert('error', 'required');
     }
     switch(type) {
       case messageTypes.MESSAGE:
         if (this.messageManager.topic == '') {
-          this.alerts['topic'] = new Alert('error', 'required');
+          this.alerts.topic = new Alert('error', 'required');
         }
         break;
       case messageTypes.HOMEWORK:
-        if (this.schoolingo.homeworks.list.length == 0) {
-          this.alerts['main'] = new Alert('error', 'messages/homeworks/empty');
+        if (!this.schoolingo.homeworks.list.length) {
+          this.alerts.main = new Alert('error', 'messages/homeworks/empty');
         }
         if (this.messageManager.selectedHomework.getValue() == null) {
-          this.alerts['homework'] = new Alert('error', 'required');
+          this.alerts.homework = new Alert('error', 'required');
         }
         break;
       case messageTypes.EXCUSESTUDENT:

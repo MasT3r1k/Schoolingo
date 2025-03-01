@@ -25,7 +25,7 @@ export class AnnouncementsComponent implements OnInit {
     let count = 0;
     Object.values(this.schoolingo.absence).forEach((day: Absence[]) => {
       day.forEach((absence: Absence) => {
-        if (absence.type === AbsenceType.UNEXCUSED) {
+        if ([AbsenceType.UNEXCUSED].includes(absence.type)) {
           count++;
         }
       })
@@ -38,9 +38,11 @@ export class AnnouncementsComponent implements OnInit {
       case "unexcusedAbsence":
         return this.schoolingo.locale.getLocale('annoucementModule/unexcusedAlert')
           .replaceAll('%unexcused%', this.getUnexcusedAbsence().toString());
+
       case "unreadMessages":
         return this.schoolingo.locale.getLocale('annoucementModule/unreadMessages')
           .replaceAll('%unread%', this.schoolingo.messages.unreadMessage.getValue().toString());
+          
       case "studentService":
         if (this.schoolingo.studentService.status === true) {
           return this.schoolingo.locale.getLocale('annoucementModule/studentService')

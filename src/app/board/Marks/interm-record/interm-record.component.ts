@@ -25,8 +25,8 @@ export class IntermRecordComponent implements OnInit {
   public showSelect: 'groupSelect' | null = null;
   public listeners: Subscription[] = [];
   public groups: teacherGroup[] = [];
-  public selectedGroup = new BehaviorSubject(-1);
-  public selectedSubject = new BehaviorSubject(-1);
+  public selectedGroup = new BehaviorSubject<number>(-1);
+  public selectedSubject = new BehaviorSubject<number>(-1);
 
   public columns: any = [
     {

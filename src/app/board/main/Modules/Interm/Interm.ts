@@ -18,7 +18,7 @@ export class IntermComponent implements OnInit {
 
   ngOnInit(): void {}
 
-  public sortMarks(): Mark[] {
+  public sortMarks(): typeof this.schoolingo.marks {
     return this.schoolingo.marks.sort((a: any, b: any) => a.created - b.created).slice(0, 5);
   }
 

@@ -1,7 +1,6 @@
 import { Component } from '@angular/core';
 
 @Component({
-  selector: 'app-dispensing',
   standalone: true,
   imports: [],
   templateUrl: './dispensing.component.html',

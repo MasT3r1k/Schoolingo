@@ -19,7 +19,7 @@ export class AbsenceComponent implements OnInit {
   ) {}
 
   public absenceConfig = AbsenceConfig.absence;
-  public selectedTab: BehaviorSubject<number> = new BehaviorSubject<number>(0);
+  public selectedTab = new BehaviorSubject<number>(0);
   private listeners: Subscription[] = [];
   public monthStatus: boolean[] = [];
   public ignoredAbsence: AbsenceConfig.AbsenceType[] = [AbsenceConfig.AbsenceType.NON_COUNT];

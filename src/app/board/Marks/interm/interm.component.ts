@@ -19,8 +19,8 @@ type Page = {
 })
 export class IntermComponent implements OnInit {
   public showSelect: 'selectSubject' | 'selectGrade' | 'selectWeight' | null = null;
-  public selectedSubject: BehaviorSubject<number> = new BehaviorSubject(0);
-  public selectedGrade: number = 0;
+  public selectedSubject = new BehaviorSubject<number>(0);
+  public selectedGrade = 0;
   public allowedGrades: string[] = ['1+', '1', '1-', '2+', '2', '2-', '3+', '3', '3-', '4+', '4', '4-', '5+', '5'];
   public selectedWeight: number = 0;
 
@@ -36,7 +36,7 @@ export class IntermComponent implements OnInit {
     return list;
   }
 
-  public selectedTab: BehaviorSubject<number> = new BehaviorSubject(0);
+  public selectedTab = new BehaviorSubject<number>(0);
   public gradeWidth = 0;
   public pages: Page[] = [];
 
@@ -145,12 +145,12 @@ export class IntermComponent implements OnInit {
     return this.getPage(id) * Math.floor(this.gradeWidth / 56 / 2) * -56;
   }
 
-  public getGradesBySubjectId(subjectId: number): Mark[] {
+  public getGradesBySubjectId(subjectId: number): typeof this.schoolingo.marks {
     return this.schoolingo.marks.filter((mark: Mark) => mark.subject == subjectId);
   }
 
   public getAverageBySubjectId(subject: number, addGrades: Mark[] = []): string {
-    let grades: Mark[] = this.getGradesBySubjectId(subject);
+    let grades = this.getGradesBySubjectId(subject);
     let total = 0;
     let total_devide = 0;
 
@@ -177,13 +177,13 @@ export class IntermComponent implements OnInit {
     });
 
     if (!total_devide) return '1.00';
-    let average: number = Number(total / total_devide);
+    let average = Number(total / total_devide);
     return (average < 1) ? '1.00' : average.toFixed(2).replace('.', ',');
   }
 
   public getMarks(): BehaviorSubject<Data[][]> {
     let data: Data[][] = [];
-    let marks: Mark[] = this.schoolingo.marks;
+    let marks = this.schoolingo.marks;
     marks.forEach((mark: Mark) => {
       data.push([
         { value: this.schoolingo.subjects[mark.subject][0], isLocale: false},

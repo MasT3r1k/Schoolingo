@@ -10,7 +10,7 @@ import { BehaviorSubject } from 'rxjs';
   styleUrls: ['./homeworks.component.css', '../../../Styles/card.css']
 })
 export class HomeworksComponent {
-  public selectedTab: BehaviorSubject<number> = new BehaviorSubject(0);
+  public selectedTab = new BehaviorSubject<number>(0);
   constructor(
     public schoolingo: Schoolingo
   ) {}

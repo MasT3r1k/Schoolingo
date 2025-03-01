@@ -116,7 +116,7 @@ export class ClassbookComponent implements OnInit {
   }
 
   public resetAlerts(): void {
-    delete this.alerts["absence"];
+    delete this.alerts.absence;
 
   }
 
@@ -128,7 +128,7 @@ export class ClassbookComponent implements OnInit {
       || hour == null
       || selectedAbsence == null
     ) {
-      this.alerts["absence"] = new Alert("error", "classbook/absence/unknownError");
+      this.alerts.absence = new Alert("error", "classbook/absence/unknownError");
       return;
     }
 
@@ -142,12 +142,12 @@ export class ClassbookComponent implements OnInit {
     }
 
     if (absence === selectedAbsence) {
-      this.alerts["absence"] = new Alert("error", "classbook/absence/alreadySet");
+      this.alerts.absence = new Alert("error", "classbook/absence/alreadySet");
       return;
     }
 
     if ([AbsenceType.EXCUSED, AbsenceType.NON_COUNT].includes(absence) && !isClassTeacher) {
-      this.alerts["absence"] = new Alert("error", this.schoolingo.classbook.selectedAbsence.getValue() == -1 ? "classbook/absence/noDeletePerm" : "classbook/absence/noPerm");
+      this.alerts.absence = new Alert("error", this.schoolingo.classbook.selectedAbsence.getValue() == -1 ? "classbook/absence/noDeletePerm" : "classbook/absence/noPerm");
       return;
     }
 
@@ -247,7 +247,7 @@ export class ClassbookComponent implements OnInit {
               locale = 'classbook/absence/studentNotFound';
               break;
           }
-          this.alerts["absence"] = new Alert("error", locale);
+          this.alerts.absence = new Alert("error", locale);
           return;
         }
 
@@ -315,7 +315,6 @@ export class ClassbookComponent implements OnInit {
 
     this.subscribers.push(
       this.schoolingo.classbook.selectedHour.subscribe((hour: number | null) => {
-        console.log(hour)
         this.isChangingLesson = false;
         this.schoolingo.classbook.selectedTab.next(0);
         this.schoolingo.classbook.selectedAbsence.next(0);

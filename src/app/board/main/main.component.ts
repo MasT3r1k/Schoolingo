@@ -41,6 +41,6 @@ export class MainComponent {
   }
 
   // Timetable module
-  public timetableSelectedTab = new BehaviorSubject(0);
+  public timetableSelectedTab = new BehaviorSubject<number>(0);
   public timetableOptionsName = 'timetableOptions';
 }

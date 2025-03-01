@@ -36,7 +36,7 @@ export class ClassbookAbsenceComponent {
 
   public getTime(type: 'arrival' | 'departure'): moment.Moment {
     let hour = this.schoolingo.getTimetableHours()[this.schoolingo.classbook.selectedHour.getValue()!];
-    let time: moment.Moment = moment();
+    let time = moment();
     if (type == 'arrival') {
       time = hour.startMoment.clone().add(this.schoolingo.classbook.absenceMinutes, 'minutes')
     }

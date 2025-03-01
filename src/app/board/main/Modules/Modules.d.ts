@@ -9,7 +9,7 @@ export type ModuleTitle = {
 }
 
 export type Module = {
-    selectedTab?: BehaviorSubject<number> = new BehaviorSubject(0);
+    selectedTab: BehaviorSubject<number> = new BehaviorSubject<number>(0);
     titles: ModuleTitle[];
     perms?: permType[] = [];
     modules?: modules[] = [];

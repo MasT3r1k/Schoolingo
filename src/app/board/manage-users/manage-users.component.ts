@@ -30,14 +30,14 @@ export class ManageUsersComponent {
 
   private listeners: Subscription[] = [];
 
-  public selectedTab = new BehaviorSubject(0);
-  public user_selectedTab = new BehaviorSubject(0);
+  public selectedTab = new BehaviorSubject<number>(0);
+  public user_selectedTab = new BehaviorSubject<number>(0);
   public selectedUser = -1;
   public loadedUser: studentInfoAPI | 'error' | null = null;
   public selectedRow = -1;
   public maximazedWindow = false;
   public hasAccess = true;
-  public users = new BehaviorSubject([] as Data[][]);
+  public users = new BehaviorSubject<Data[][]>([]);
   public userCount = 0;
   public metadata: Metadata = { rows: 0 };
   public datalist!: DatalistComponent;
