@@ -44,7 +44,7 @@ export class Theme {
     this.renderer.destroy();
   }
 
-  public getSystemColor(): themes {
+  public getSystemColor(): typeof this.theme {
     return window.matchMedia('(prefers-color-scheme: dark)').matches
       ? 'dark'
       : 'light';
@@ -75,15 +75,15 @@ export class Theme {
     }
   }
 
-  public getTheme(): themes {
+  public getTheme(): typeof this.theme {
     return this.theme;
   }
 
-  public getThemeColor(): themes {
+  public getThemeColor(): typeof this.theme {
     return this.theme == 'system' ? this.getSystemColor() : this.theme;
   }
 
-  public getThemes(): themes[] {
+  public getThemes(): typeof this.theme[] {
     return this.themes;
   }
 }

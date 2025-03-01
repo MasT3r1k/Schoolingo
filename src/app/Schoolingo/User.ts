@@ -48,7 +48,7 @@ export class UserService {
       });
 
       try {
-        let user: user = this.storage.get(this.storage.userCacheName) as user;
+        let user = this.storage.get(this.storage.userCacheName) as user;
         if (user) {
           this.setUser(user);
         }
@@ -74,13 +74,13 @@ export class UserService {
 
   //** Users
   private user: user | null = null;
-  public username: string | null = "";
+  public username: string = "";
 
   /**
    * Get user's information if set or null
    * @returns user information or null
    */
-  public getUser(): user | null {
+  public getUser(): typeof this.user {
     return this.user;
   }
 
@@ -88,7 +88,7 @@ export class UserService {
    * Set User's data from server and save to storage
    * @param user user data from server
    */
-  public setUser(user: user | null) {
+  public setUser(user: typeof this.user) {
     if (user == null) {
       this.storage.remove(this.storage.userCacheName);
       this.user = null;
@@ -100,10 +100,9 @@ export class UserService {
   }
 
   //* Tokens
-  public tokenExpiration: BehaviorSubject<Moment> = new BehaviorSubject(moment());
+  public tokenExpiration = new BehaviorSubject<moment.Moment>(moment());
 
   public setExpiration(date: moment.Moment): void {
-    console.log(date)
     this.tokenExpiration.next(date);
   }
 
@@ -119,7 +118,7 @@ export class UserService {
    * @param expiration Date of token
    *
    */
-  public setToken(username: string, expiration: Moment): void {
+  public setToken(username: typeof this.username, expiration: moment.Moment): void {
     this.username = username;
     this.setExpiration(expiration);
     this.storage.save(this.storage.tokenCacheName, { expiration });

@@ -17,7 +17,7 @@ export class Locale {
 
     public isLoadedLanguage = new BehaviorSubject<boolean>(false);
     public defaultLanguage: languages = 'en-gb';
-    public language: BehaviorSubject<languages> = new BehaviorSubject("null" as languages);
+    public language = new BehaviorSubject<languages>("null" as languages);
 
     constructor(
         // Imports

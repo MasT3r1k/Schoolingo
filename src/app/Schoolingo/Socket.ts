@@ -8,7 +8,7 @@ export { SocketUpdateLocale, SocketUpdateTheme }
 
 @NgModule()
 export class SocketService {
-  public tokenStatus: BehaviorSubject<string | null> = new BehaviorSubject<string | null>(null);
+  public tokenStatus = new BehaviorSubject<string | null>(null);
   public isConnected = false;
   public socket: Socket | null = null;
 
@@ -30,7 +30,6 @@ export class SocketService {
         this.socket?.on(event, listener as any);
       });
     });
-    console.log(this.socketEvents)
 
     this.socket.on('system:error', (data: errorAPI | { username:string;error:string; }) => {
       console.log(data.error);
@@ -43,14 +42,14 @@ export class SocketService {
       }
     });
     
-    this.socket.onAny((event, ...args) => {
+    this.socket.onAny((event, ...args): void => {
       this.tokenStatus.next('refresh_token');
       if (Config.DEV_MOD) {
         console.log(`Event ${event} got: `, args);
       }
     })
 
-    this.socket.offAny((event, ...args) => {
+    this.socket.offAny((event, ...args): void => {
       if (Config.DEV_MOD) {
         console.log('Event ' + event + ' off ' + args);
       }

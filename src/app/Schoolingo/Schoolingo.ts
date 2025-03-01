@@ -74,7 +74,7 @@ export class Schoolingo {
 
     public absenceSubjects: Record<string, { absence: number, lessons: number }> = {};
     public absence: Record<string, Absence[]> = {};
-    public hasAccessToPage: boolean = true;
+    public hasAccessToPage = true;
 
     constructor(
         public locale: Locale,
@@ -143,7 +143,7 @@ export class Schoolingo {
     // Login expired
     public isLoginExpired = false;
     public warnlogoutInterval = setTimeout(() => {});
-    public logoutTime: moment.Moment = moment();
+    public logoutTime = moment();
     public loginModal = new Modal({
         title: {
             text: 'modals/loginExpire/title'
@@ -246,7 +246,7 @@ export class Schoolingo {
     // Absence
     public getAbsence(day: number, hour: number): number {
         let date = Utils.getDayOfWeek(this.timetableSelectedWeek.getValue().isoWeek(), day).format('YYYY-MM-DD');
-        if (!this.absence[date] || !this.absence[date][hour]) {
+        if (!this.absence[date]?.[hour]) {
             return -1
         }
         let absence: number = this.absence[date][hour].type;
@@ -259,7 +259,7 @@ export class Schoolingo {
         return this.classbookLessons[date][hour] !== undefined;
     }
 
-    public getTimetableLessons(): TimetableLesson[][][] {
+    public getTimetableLessons(): typeof this.timetableLessons {
         return this.timetableLessons;
     }
 
@@ -281,7 +281,7 @@ export class Schoolingo {
         }
 
         let hours: TimetableHours[] = [];
-        let time: moment.Moment = moment()
+        let time = moment()
         .set('hours', this.school.schoolInfo.startHour[0])
         .set('minutes', this.school.schoolInfo.startHour[1]);
 
@@ -302,7 +302,7 @@ export class Schoolingo {
         this.timetableHours = hours;
     }
 
-    public getTimetableHours(): TimetableHours[] {
+    public getTimetableHours(): typeof this.timetableHours {
         return this.timetableHours;
     }
 
@@ -355,9 +355,9 @@ export class Schoolingo {
             .startOf('isoWeek')
             .add(lesson.day, 'day');
 
-            let subjectName: string = lesson.subjectName;
-            let subjectShortcut: string = lesson.subjectShortcut;
-            let teacher: number = lesson.teacher;
+            let subjectName = lesson.subjectName;
+            let subjectShortcut = lesson.subjectShortcut;
+            let teacher = lesson.teacher;
             let substitution = this.substitution?.[date.format('YYYY-MM-DD')];
             if (substitution?.[lesson.hour - 1]) {
                 if (substitution[lesson.hour - 1].subjectId == -1) {

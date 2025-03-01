@@ -44,7 +44,7 @@ export class Dropdown {
 
     // Item format
     public formatRightText(text: ContextButtonRightText): SafeHtml {
-        let html: SafeHtml = "";
+        let html = "";
         if (text == "arrow") { }
         text.split(' ').forEach((word: string) => {
             if (word.startsWith("[key:") && word.endsWith(']')) {
@@ -52,11 +52,11 @@ export class Dropdown {
                 html = html + "<div class='key'>" + this.formatHtmlText(key) + "</div>";
             }
         })
-        return html;
+        return this.formatHtmlText(html);
     }
 
     public formatHtmlText(text: string): SafeHtml {
-        let html: string = "";
+        let html = "";
         if (text == "arrow") { }
         text.split(' ').forEach((word: string) => {
             if (word.startsWith("[l:") && word.endsWith(']')) {

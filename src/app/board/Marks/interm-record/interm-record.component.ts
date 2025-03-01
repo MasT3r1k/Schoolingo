@@ -189,7 +189,7 @@ export class IntermRecordComponent implements OnInit {
   }
 
   public getGroupFromId(groupId: number, subjectId: number): teacherGroup {
-    return this.groups.filter((group: teacherGroup) => group?.groupId == groupId && group.subjectId == subjectId)?.[0];
+    return this.groups.filter((group: teacherGroup) => group.groupId == groupId && group.subjectId == subjectId)?.[0];
   }
 
   public getSubject(): string[] {

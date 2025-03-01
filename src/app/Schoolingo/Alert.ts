@@ -2,7 +2,7 @@ import { AlertTypes } from './Alert.d';
 export { AlertTypes }
 
 export class AlertButton {
-    public text: string = '';
+    public text = '';
     public callback: Function = () => { };
 
     constructor(text: string, callback: Function) {
@@ -12,11 +12,11 @@ export class AlertButton {
 }
 
 export class Alert {
-    public visible: boolean = true;
+    public visible = true;
 
     public type: AlertTypes = 'success';
-    public text: string = '';
-    public closeable: boolean = false;
+    public text = '';
+    public closeable = false;
 
     public buttons: AlertButton[] = [];
 

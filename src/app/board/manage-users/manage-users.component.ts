@@ -17,7 +17,7 @@ function getUserRole(studentInfo: { studentId: number | null, teacherId: number 
 
 @Component({
   standalone: true,
-  imports: [DatalistComponent, FormsModule, ReactiveFormsModule, NgStyle, NgClass],
+  imports: [DatalistComponent, FormsModule, ReactiveFormsModule, NgClass],
   templateUrl: './manage-users.component.html',
   styleUrls: ['./manage-users.component.css', '../../Styles/card.css', '../../Styles/input.css', '../../Styles/item.css', '../../Styles/app.css']
 })
@@ -31,14 +31,14 @@ export class ManageUsersComponent {
   private listeners: Subscription[] = [];
 
   public selectedTab = new BehaviorSubject(0);
-  public student_selectedTab = new BehaviorSubject(0);
-  public selectedStudent = -1;
-  public loadedStudent: studentInfoAPI | 'error' | null = null;
+  public user_selectedTab = new BehaviorSubject(0);
+  public selectedUser = -1;
+  public loadedUser: studentInfoAPI | 'error' | null = null;
   public selectedRow = -1;
   public maximazedWindow = false;
   public hasAccess = true;
   public users = new BehaviorSubject([] as Data[][]);
-  public studentCount = 0;
+  public userCount = 0;
   public metadata: Metadata = { rows: 0 };
   public datalist!: DatalistComponent;
   public search = new FormControl();
@@ -54,10 +54,10 @@ export class ManageUsersComponent {
   public getTags(user: any): SafeHtml {
     let tags = [];
     if (user.manager == -1) {
-      tags.push("<div class='badge blue'>" + this.schoolingo.locale.getLocale('roles/manager') + "</div>");
+      tags.push(this.sanitizer.bypassSecurityTrustHtml("<div class='badge blue'>" + this.schoolingo.locale.getLocale('roles/manager') + "</div>"));
     }
     if (user.principal) {
-      tags.push("<div class='badge blue'>" + this.schoolingo.locale.getLocale('roles/principal') + "</div>");
+      tags.push(this.sanitizer.bypassSecurityTrustHtml("<div class='badge blue'>" + this.schoolingo.locale.getLocale('roles/principal') + "</div>"));
     }
     return this.sanitizer.bypassSecurityTrustHtml(`
     <div class='flex-items badges'>
@@ -87,7 +87,7 @@ export class ManageUsersComponent {
           });
 
           this.metadata.rows = data.rows;
-          if (this.selectedTab.getValue() === 0) this.studentCount = data.rows;
+          if (this.selectedTab.getValue() === 0) this.userCount = data.rows;
           this.users.next(userList);
         }
       }));

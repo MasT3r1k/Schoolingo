@@ -27,11 +27,11 @@ export namespace Utils {
     if (numbers) {
       chars += "0123456789";
     }
-    let text = '';
 
-      for (let i = 0; i < length; i++) {
-        text += chars.charAt(Math.floor(Math.random() * chars.length));
-      }
+    let text = '';
+    for (let i = 0; i < length; i++) {
+      text += chars.charAt(Math.floor(Math.random() * chars.length));
+    }
 
     return text;
   }
@@ -68,27 +68,27 @@ export namespace Utils {
 
   export function getAge(date: moment.Moment): number {
     let age = 0;
+
     let now = moment().subtract(1, 'year');
     while(now.isSameOrAfter(date, 'day')) {
       age++;
       now.subtract(1, 'year');
     }
+
     return age;
   }
 
   export function getOS(userAgent: string): string {
-    {
-      var OSName = "???";
-      if (userAgent.includes("Win")) OSName = "Windows";
-      if (userAgent.includes("Mac")) OSName = "Macintosh";
-      if (userAgent.includes("Linux")) OSName = "Linux";
-      if (userAgent.includes("Android")) OSName = "Android";
-      if (userAgent.includes("like Mac")) OSName = "iOS";
-      return OSName;
-    }
+    var OSName = "Unknown";
+    if (userAgent.includes("Win"))      OSName = "Windows";
+    if (userAgent.includes("Mac"))      OSName = "Macintosh";
+    if (userAgent.includes("Linux"))    OSName = "Linux";
+    if (userAgent.includes("Android"))  OSName = "Android";
+    if (userAgent.includes("like Mac")) OSName = "iOS";
+    return OSName;
   }
 
-  export function getOwnUserAgent(): string {
+  export function getOwnUserAgent(): typeof window.navigator.userAgent {
     return window.navigator.userAgent;
   }
   
@@ -101,7 +101,7 @@ export namespace Utils {
   }
 
   export function getBrowser(userAgent: string): string {
-    let browser = '???';
+    let browser = 'Unknown';
     if (userAgent.includes("Opera") || userAgent.includes('OPR')) {
       browser = "Opera";
     } else if (userAgent.includes("Edg")) {

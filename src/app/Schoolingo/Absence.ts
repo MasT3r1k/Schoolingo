@@ -1,8 +1,5 @@
-export interface AbsenceConfig {
-    locale: string;
-    icon?: string;
-    reasons: string[];
-}
+import { AbsenceConfig } from './Absence.d';
+export { AbsenceConfig };
 
 export enum AbsenceType {
     ABSENCE,

@@ -14,7 +14,7 @@ export class Traineeship {
 
     public ignoredDays: number[] = [6, 7];
 
-    public diaryWeeks: BehaviorSubject<DiaryWeek[]> = new BehaviorSubject([] as any);
+    public diaryWeeks = new BehaviorSubject<DiaryWeek[]>([]);
     public selectedDairy: DiaryWeek | null = null;
 
     public boxData: TraineeshipData[] = [];
@@ -25,7 +25,7 @@ export class Traineeship {
         this.selectedDay = day;
     }
 
-    public diary: BehaviorSubject<Data[][]> = new BehaviorSubject<Data[][]>([]);
+    public diary = new BehaviorSubject<Data[][]>([]);
     public refreshDiary(): void {
         this.diary.next([]);
         let week = this.selectedDairy;
