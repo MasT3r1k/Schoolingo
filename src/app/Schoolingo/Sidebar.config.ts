@@ -90,6 +90,10 @@ let config: SidebarGroup[] = [
                     item: 'sidebar/teach/subjects',
                     url: 'teach/subjects',
                     permission: ['student', 'parent']
+                }, {
+                    item: 'sidebar/teach/rewards',
+                    url: 'teach/rewards',
+                    permission: ['student', 'teacher']
                 }]
             },
             {

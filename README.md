@@ -33,12 +33,12 @@
 * Přidána stránka O systému s veškerými informacemi o aplikaci včetně použitých balíčků
 * Komunikace s Core systémem (který zpracovává data z vladních API, kontrola aktualizace, kontrola license)
 * Přidána predikce u známek
+* Přidány odměny pro studenty
 * Přidán limit pro studenty
 * Přidán seznam učitelů
 * Přidán seznam uživatelů
 * Přidány vlajky k IP adresám a správa IP adres
-* Přidána podpora vlajek i na Windows 11 (Kvalitní systém ehm)
-* Přidány vykřičníky u ikonek v navbaru
+* Přidána podpora vlajek i na Windows 11 (Kvalitní systém ehm ehm)
 * Upraven systém vzhledu
 * Upraveno zapisování známek
 * Přidána kontrola pro modules a manager perms (+ nastavení oprávnění)
@@ -84,6 +84,7 @@
 * Po rozkliknutí hodiny zobrazit informace, domácí úkoly
 * Po rozkliknutí hodiny, pokud žák/student dosáhl 18 let, možnost omluvit si hodinu sám
 * Jako učitel po rozkliknutí možnost zapsat hodinu, napsat domácí úkol, přidat poznámku k hodině
+* Pro učitele zobrazení rozvrhu třídy (+ výběr třídy)
 
 ### Jídelna
 * Zprovoznit kompletně modul jídelny

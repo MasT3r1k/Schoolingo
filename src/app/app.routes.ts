@@ -100,6 +100,11 @@ export const routes: Routes = [
               path: 'subjects',
               loadComponent: () => import('./board/Teach/subjects/subjects.component')
                                     .then(m => m.SubjectsComponent)
+            },
+            {
+              path: 'rewards',
+              loadComponent: () => import('./board/Teach/rewards/rewards.component')
+                                    .then(m => m.RewardsComponent)
             }
           ]
         },
