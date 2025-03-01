@@ -28,8 +28,8 @@ export class DatalistComponent implements OnInit {
     @Input() head: string[] = [];
     @Input() metadata: Metadata = { rows: 0 };
     @Input() selectedRow = -1;
-    @Input() data: BehaviorSubject<any> = new BehaviorSubject([]);
-    @Input() search: FormControl<string> = new FormControl();
+    @Input() data = new BehaviorSubject<any>([]);
+    @Input() search = new FormControl<string>("");
     @Input() clickFc!: Function;
     @Output() datalist = new EventEmitter<this>();
 
@@ -99,17 +99,31 @@ export class DatalistComponent implements OnInit {
         this.refreshData();
         this.loadData();
 
-        this.listeners.push(this.socketService.addFunction("connect").subscribe(() => this.loadData()));
+        this.listeners.push(
+            this.socketService.addFunction("connect").subscribe(
+                () => this.loadData()
+            )
+        );
 
-        this.listeners.push(this.data.subscribe(() => {
-            this.refreshData();
-        }));
+        this.listeners.push(
+            this.data.subscribe(() => {
+                this.refreshData();
+            })
+        );
 
         if (this.options.url) {
-            this.listeners.push(this.socketService.addFunction(this.options.url).subscribe(() => this.refreshData()));
+            this.listeners.push(
+                this.socketService.addFunction(this.options.url).subscribe(
+                    () => this.refreshData()
+                )
+            );
         }
 
-        this.listeners.push(this.search.valueChanges.pipe(debounceTime(300)).subscribe(() => this.loadData()));
+        this.listeners.push(
+            this.search.valueChanges.pipe(
+                debounceTime(300))
+                .subscribe(() => this.loadData())
+        );
         
     }
 

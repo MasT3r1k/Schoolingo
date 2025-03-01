@@ -1,5 +1,5 @@
 import { CommonModule } from "@angular/common";
-import { Component, OnInit } from "@angular/core";
+import { Component } from "@angular/core";
 
 @Component({
     host: {'error': 'domain-not-found'},
@@ -9,10 +9,5 @@ import { Component, OnInit } from "@angular/core";
     styleUrls: ['./domainNotFound.css']
 })
 
-export class domainNotFoundError implements OnInit {
-
-    constructor() {}
-
-    ngOnInit(): void {}
-
+export class domainNotFoundError {
 }

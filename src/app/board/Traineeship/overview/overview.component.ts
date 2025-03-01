@@ -45,12 +45,16 @@ export class OverviewComponent implements OnInit {
 
   ngOnInit(): void {
     this.schoolingo.socketService.emit('traineeship:getOverview');
-    this.listeners.push(this.schoolingo.socketService.addFunction("connect").subscribe(() => {
-      this.schoolingo.socketService.emit('traineeship:getOverview');
-    }))
-    this.listeners.push(this.schoolingo.socketService.addFunction("traineeship:getOverview").subscribe((data: TraineeshipData[]) => {
-      this.schoolingo.traineeship.boxData = data;
-    }));
+    this.listeners.push(
+      this.schoolingo.socketService.addFunction("connect").subscribe(() => {
+        this.schoolingo.socketService.emit('traineeship:getOverview');
+      })
+    )
+    this.listeners.push(
+      this.schoolingo.socketService.addFunction("traineeship:getOverview").subscribe((data: TraineeshipData[]) => {
+        this.schoolingo.traineeship.boxData = data;
+      })
+    );
 
   }
 
@@ -74,7 +78,7 @@ export class OverviewComponent implements OnInit {
     return nearestWeek!;
   }
 
-  public getDaysOfDairy(week: DiaryWeek): any {
+  public getDaysOfDairy(week: DiaryWeek): moment.Moment[] {
     let days: moment.Moment[] = [];
     if (!week) return days;
     let date = week.start.clone();

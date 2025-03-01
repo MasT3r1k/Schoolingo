@@ -1,5 +1,5 @@
 import { CommonModule } from "@angular/common";
-import { Component, OnInit } from "@angular/core";
+import { Component } from "@angular/core";
 
 @Component({
     host: {'error': 'outdated-system'},
@@ -9,10 +9,5 @@ import { Component, OnInit } from "@angular/core";
     styleUrls: ['./outdatedSystem.css']
 })
 
-export class outdatedSystemError implements OnInit {
-
-    constructor() {}
-
-    ngOnInit(): void {}
-
+export class outdatedSystemError {
 }

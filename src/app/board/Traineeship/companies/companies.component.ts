@@ -45,7 +45,7 @@ export class CompaniesComponent implements OnInit {
   public showPage: 'list' | 'detailCompany' | 'requestCompany' = 'list';
   public alert: 'success_selected_company' | 'success_updated_instructor' | null = null;
   public requestDataForAlert: any = {};
-  public selectedTab: BehaviorSubject<number> = new BehaviorSubject(0);
+  public selectedTab = new BehaviorSubject<number>(0);
 
   onClick = (id: { id: number }[]) => {
     this.schoolingo.socketService.emit('school:getScopes');
@@ -59,7 +59,7 @@ export class CompaniesComponent implements OnInit {
   }
 
   private listeners: Subscription[] = [];
-  public companies: BehaviorSubject<Data[][] | any> = new BehaviorSubject([]);
+  public companies = new BehaviorSubject<Data[][] | any>([]);
   public weeks: DiaryWeek[] = [];
   public search = new FormControl();
   public iframeURL = this.sanitizer.bypassSecurityTrustResourceUrl("");
@@ -101,103 +101,119 @@ export class CompaniesComponent implements OnInit {
 
   ngOnInit(): void {
 
-    this.listeners.push(this.schoolingo.socketService.addFunction("traineeship:getCompanyInfo").subscribe((data: companyInfoAPI) => {
-      this.schoolingo.traineeship.selectedCompany = data;
-      this.weeks = this.schoolingo.traineeship.getDiaryByCompanyId(data.companyId);
-      this.iframeURL = this.sanitizer.bypassSecurityTrustResourceUrl('https://maps.google.com/maps?q=' + this.schoolingo.traineeship.selectedCompany.street + ' ' + this.schoolingo.traineeship.selectedCompany.houseNumber + ', ' + this.schoolingo.traineeship.selectedCompany.cityName + '&output=embed');
-    }));
-
-    this.listeners.push(this.schoolingo.traineeship.diaryWeeks.subscribe(() => {
-      if (!this.schoolingo.traineeship.selectedCompany) return;
-      this.weeks = this.schoolingo.traineeship.getDiaryByCompanyId(this.schoolingo.traineeship.selectedCompany.companyId);
-    }));
-
-    this.listeners.push(this.schoolingo.socketService.addFunction("school:getScopes").subscribe((data: Scope[]) => {
-      this.tableHead = [];
-      this.tableHead.push('traineeship/companyName', 'traineeship/officeAddress');
-      this.scopes = data;
-      data.forEach((scope: Scope) => {
-        this.tableHead.push(scope.shortcut);
-      });
-      this.tableHead.push('web', 'rate');
-    }));
-
-    this.listeners.push(this.schoolingo.socketService.addFunction("traineeship:getCompanyInstructors").subscribe((data: { personId: number }[]) => {
-      this.schoolingo.traineeship.instructors = [];
-      data.forEach((person: { personId: number }) => {
-        this.schoolingo.traineeship.instructors.push(person.personId);
-      });
-    }));
-
-    this.listeners.push(this.route.queryParamMap.subscribe((param: Params) => {
-      this.alert = null;
-      this.weeks = [];
-      // Show company
-      if (param.params['companyId'] != undefined) {
-        this.onClick([{id: param.params['companyId']}]);
-      } else {
-        this.showPage = 'list';
-        this.schoolingo.traineeship.selectedDairy = null;
-        this.schoolingo.traineeship.selectedInstructor = null;
-        this.router.navigate([], { queryParams: {}});
-      }
-    }));
-
-    this.listeners.push(this.schoolingo.socketService.addFunction("traineeship:getCompanies").subscribe((data: dataAPI | errorAPI) => {
-      if ('error' in data) return;
-      let companiesList: Data[][] = []
-      data.data.forEach((company: any) => {
-        let scopeList: any = {};
-        Object.values(JSON.parse(company.scopes)).forEach((value: Scope | any) => {
-          scopeList[value.scopeId - 1] = value.status;
-        });
-        let row: Data[] = [
-          { id: company.companyId },
-          {value: company.name, isLocale: false},
-          { value: Utils.formatAddress({ code2: company.code2, street: company.street, houseNumber: company.houseNumber, city: company.cityName, postcode: company.postcode }), isLocale: false },
-        ];
-        Object.keys(this.scopes).forEach((scopeId: any) => { /* ✔✅❌ */
-          row.push({ value: scopeList[scopeId] ? '✅' : '❌', isLocale: false })
-        });
-
-        
-        row.push(
-          {value: company.web, isLocale: false},
-          {value: this.schoolingo.traineeship.getRating(company), isLocale: company.rating ? false : true}
-        );
-        companiesList.push(row);
-        
+    this.listeners.push(
+      this.schoolingo.socketService.addFunction("traineeship:getCompanyInfo").subscribe((data: companyInfoAPI) => {
+        this.schoolingo.traineeship.selectedCompany = data;
+        this.weeks = this.schoolingo.traineeship.getDiaryByCompanyId(data.companyId);
+        this.iframeURL = this.sanitizer.bypassSecurityTrustResourceUrl('https://maps.google.com/maps?q=' + this.schoolingo.traineeship.selectedCompany.street + ' ' + this.schoolingo.traineeship.selectedCompany.houseNumber + ', ' + this.schoolingo.traineeship.selectedCompany.cityName + '&output=embed');
       })
-      this.metadata.rows = data.rows;
-      this.companies.next(companiesList);
-    }));
-    
-    this.listeners.push(this.schoolingo.socketService.addFunction("traineeship:selectCompany").subscribe((data: selectCompanyAPI | errorAPI) => {
-      if ('status' in data) {
-        this.requestDataForAlert = data;
+    );
 
-        let weekList = this.schoolingo.traineeship.diaryWeeks.getValue();
-        weekList.forEach((week: DiaryWeek) => {
-          if (week.traineeship === data.traineeship) {
-            week.company = data.company;
-            week.instructor = data.instructor;
-          }
+    this.listeners.push(
+      this.schoolingo.traineeship.diaryWeeks.subscribe(() => {
+        if (!this.schoolingo.traineeship.selectedCompany) return;
+        this.weeks = this.schoolingo.traineeship.getDiaryByCompanyId(this.schoolingo.traineeship.selectedCompany.companyId);
+      })
+    );
+
+    this.listeners.push(
+      this.schoolingo.socketService.addFunction("school:getScopes").subscribe((data: Scope[]) => {
+        this.tableHead = [];
+        this.tableHead.push('traineeship/companyName', 'traineeship/officeAddress');
+        this.scopes = data;
+        data.forEach((scope: Scope) => {
+          this.tableHead.push(scope.shortcut);
         });
+        this.tableHead.push('web', 'rate');
+      })
+    );
 
-        this.schoolingo.traineeship.diaryWeeks.next(weekList);
+    this.listeners.push(
+      this.schoolingo.socketService.addFunction("traineeship:getCompanyInstructors").subscribe((data: { personId: number }[]) => {
+        this.schoolingo.traineeship.instructors = [];
+        data.forEach((person: { personId: number }) => {
+          this.schoolingo.traineeship.instructors.push(person.personId);
+        });
+      })
+    );
 
-        if (data.status == 'success') {
-          this.alert = 'success_selected_company';
+    this.listeners.push(
+      this.route.queryParamMap.subscribe((param: Params) => {
+        this.alert = null;
+        this.weeks = [];
+        // Show company
+        if (param.params.companyId != undefined) {
+          this.onClick([{ id: param.params.companyId }]);
+        } else {
+          this.showPage = 'list';
+          this.schoolingo.traineeship.selectedDairy = null;
+          this.schoolingo.traineeship.selectedInstructor = null;
+          this.router.navigate([], { queryParams: {}});
         }
-        if (data.status == 'updated') {
-          this.alert = 'success_updated_instructor';
-        }
-      }
-    }));
+      })
+    );
 
-    this.listeners.push(this.schoolingo.socketService.addFunction("connect").subscribe(() => {
-      this.schoolingo.socketService.emit('school:getScopes');
-    }));
+    this.listeners.push(
+      this.schoolingo.socketService.addFunction("traineeship:getCompanies").subscribe((data: dataAPI | errorAPI) => {
+        if ('error' in data) return;
+        let companiesList: Data[][] = []
+        data.data.forEach((company: any) => {
+          let scopeList: any = {};
+          Object.values(JSON.parse(company.scopes)).forEach((value: Scope | any) => {
+            scopeList[value.scopeId - 1] = value.status;
+          });
+          let row: Data[] = [
+            { id: company.companyId },
+            { value: company.name, isLocale: false },
+            { value: Utils.formatAddress({ code2: company.code2, street: company.street, houseNumber: company.houseNumber, city: company.cityName, postcode: company.postcode }), isLocale: false },
+          ];
+          Object.keys(this.scopes).forEach((scopeId: any) => { /* ✔✅❌ */
+            row.push({ value: scopeList[scopeId] ? '✅' : '❌', isLocale: false })
+          });
+
+          
+          row.push(
+            { value: company.web, isLocale: false },
+            { value: this.schoolingo.traineeship.getRating(company), isLocale: company.rating ? false : true }
+          );
+          companiesList.push(row);
+          
+        })
+        this.metadata.rows = data.rows;
+        this.companies.next(companiesList);
+      })
+    );
+    
+    this.listeners.push(
+      this.schoolingo.socketService.addFunction("traineeship:selectCompany").subscribe((data: selectCompanyAPI | errorAPI) => {
+        if ('status' in data) {
+          this.requestDataForAlert = data;
+
+          let weekList = this.schoolingo.traineeship.diaryWeeks.getValue();
+          weekList.forEach((week: DiaryWeek) => {
+            if (week.traineeship === data.traineeship) {
+              week.company = data.company;
+              week.instructor = data.instructor;
+            }
+          });
+
+          this.schoolingo.traineeship.diaryWeeks.next(weekList);
+
+          if (data.status == 'success') {
+            this.alert = 'success_selected_company';
+          }
+          if (data.status == 'updated') {
+            this.alert = 'success_updated_instructor';
+          }
+        }
+      })
+    );
+
+    this.listeners.push(
+      this.schoolingo.socketService.addFunction("connect").subscribe(() => {
+        this.schoolingo.socketService.emit('school:getScopes');
+      })
+    );
   }
 
   public getScopes(company: any): string[] {

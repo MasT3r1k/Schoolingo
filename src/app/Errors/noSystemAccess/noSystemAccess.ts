@@ -1,5 +1,5 @@
 import { CommonModule } from "@angular/common";
-import { Component, OnInit } from "@angular/core";
+import { Component } from "@angular/core";
 
 @Component({
     host: {'error': 'no-system-access'},
@@ -9,10 +9,5 @@ import { Component, OnInit } from "@angular/core";
     styleUrls: ['./noSystemAccess.css']
 })
 
-export class noSystemAccessError implements OnInit {
-
-    constructor() {}
-
-    ngOnInit(): void {}
-
+export class noSystemAccessError {
 }

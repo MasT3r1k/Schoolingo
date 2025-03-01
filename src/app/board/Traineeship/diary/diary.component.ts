@@ -23,17 +23,23 @@ export class DiaryComponent implements OnInit {
   constructor(public schoolingo: Schoolingo) {}
   ngOnInit(): void {
 
-    if (this.schoolingo.traineeship.diaryWeeks.getValue().length == 1) {
+    if (this.schoolingo.traineeship.diaryWeeks.getValue().length) {
       this.selectWeek(this.schoolingo.traineeship.diaryWeeks.getValue()[0]);
     }
 
-    this.listeners.push(this.schoolingo.traineeship.diary.subscribe(() => this.datalist?.refreshData()));
+    this.listeners.push(
+      this.schoolingo.traineeship.diary.subscribe(
+        () => this.datalist?.refreshData()
+      )
+    );
 
-    this.listeners.push(this.schoolingo.traineeship.diaryWeeks.subscribe((weeks: DiaryWeek[]) => {
-      if (weeks.length == 1) {
-        this.schoolingo.traineeship.selectDairy(weeks[0]);
-      }
-    }));
+    this.listeners.push(
+      this.schoolingo.traineeship.diaryWeeks.subscribe((weeks: DiaryWeek[]) => {
+        if (weeks.length) {
+          this.schoolingo.traineeship.selectDairy(weeks[0]);
+        }
+      })
+    );
     
   }
 

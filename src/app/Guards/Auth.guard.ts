@@ -11,7 +11,6 @@ export class UserGuard implements CanActivate {
         this.router.navigate(['', 'login'], { queryParams: { returnUrl: state.url } });
         return false;
     }
-
 }
 
 @Injectable({ providedIn: 'root' })

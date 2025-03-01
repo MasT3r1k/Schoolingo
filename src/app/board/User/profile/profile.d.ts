@@ -1,6 +1,6 @@
 import moment from "moment";
 
-export type Profile = {
+export interface Profile {
     username: string;
     autoSelectNextWeek: boolean;
     birthday: moment.Moment;

@@ -15,7 +15,7 @@ import { IconsModule } from '../../../../Modules/Icons.module';
 })
 export class editCompanyModalComponent {
   public showSelect: 'responsiblePerson' | 'statusCompany' | null = null;
-  public selectedTab: BehaviorSubject<number> = new BehaviorSubject(0);
+  public selectedTab = new BehaviorSubject<number>(0);
 
   constructor(
     public schoolingo: Schoolingo

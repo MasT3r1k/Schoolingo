@@ -1,5 +1,5 @@
 import { CommonModule } from "@angular/common";
-import { Component, OnInit } from "@angular/core";
+import { Component } from "@angular/core";
 
 @Component({
     host: {'error': 'failed-load-app'},
@@ -9,10 +9,5 @@ import { Component, OnInit } from "@angular/core";
     styleUrls: ['./failedLoadApp.css']
 })
 
-export class failedLoadAppError implements OnInit {
-
-    constructor() {}
-
-    ngOnInit(): void {}
-
+export class failedLoadAppError {
 }

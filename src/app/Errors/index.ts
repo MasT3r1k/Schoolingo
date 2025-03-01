@@ -1,5 +1,5 @@
 import { CommonModule, NgComponentOutlet } from "@angular/common";
-import { Component, Input, OnInit, Type } from "@angular/core";
+import { Component, Input, Type } from "@angular/core";
 import { Schoolingo } from "@Schoolingo";
 import { domainNotFoundError } from "./DomainNotFound/domainNotFound";
 import { noSystemAccessError } from "./noSystemAccess/noSystemAccess";
@@ -14,7 +14,7 @@ import { failedLoadAppError } from "./failedLoadApp/failedLoadApp";
     styleUrls: ['./error.css', '../Styles/card.css']
 })
 
-export class ErrorMain implements OnInit {
+export class ErrorMain {
 
     @Input() error!: number;
     public errors: Record<number | string, Type<any> | string> = {
@@ -35,7 +35,5 @@ export class ErrorMain implements OnInit {
     constructor(
         public schoolingo: Schoolingo
     ) {}
-
-    ngOnInit(): void {}
 
 }

@@ -30,18 +30,24 @@ export class DevicesComponent {
   ngOnInit(): void {
     this.schoolingo.socketService.emit('devices:getDevices');
 
-    this.subscribers.push(this.schoolingo.socketService.addFunction("devices:getDevices").subscribe((data: Device[]) => {
-      this.devices = data;
-    }));
+    this.subscribers.push(
+      this.schoolingo.socketService.addFunction("devices:getDevices").subscribe((data: Device[]) => {
+        this.devices = data;
+      })
+    );
 
-    this.subscribers.push(this.schoolingo.socketService.addFunction("devices:removeDevice").subscribe((data: any) => {
-      let index = this.devices.findIndex((device: Device) => device.id == data.id);
-      this.devices.splice(index, 1);
-    }));
+    this.subscribers.push(
+      this.schoolingo.socketService.addFunction("devices:removeDevice").subscribe((data: any) => {
+        let index = this.devices.findIndex((device: Device) => device.id == data.id);
+        this.devices.splice(index, 1);
+      })
+    );
 
-    this.subscribers.push(this.schoolingo.socketService.addFunction("connect").subscribe(() => {
-      this.schoolingo.socketService.emit('devices:getDevices');
-    }));
+    this.subscribers.push(
+      this.schoolingo.socketService.addFunction("connect").subscribe(() => {
+        this.schoolingo.socketService.emit('devices:getDevices');
+      })
+    );
   }
 
   ngOnDestroy(): void {
