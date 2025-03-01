@@ -80,7 +80,7 @@ export class TabsComponent implements OnInit {
 
     public refreshGlider(): void {
         try {
-            let tab: HTMLElement = document.querySelectorAll(".tabs#" + this.name + " .options .tab")[this.value.getValue() || 0] as HTMLElement;
+            let tab = document.querySelectorAll(".tabs#" + this.name + " .options .tab")[this.value.getValue() || 0] as HTMLElement;
             if (!tab) return;
             this.gliderStyles.width = tab.clientWidth;
             this.gliderStyles.height = tab.clientHeight;

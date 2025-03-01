@@ -12,6 +12,7 @@ import { Modal } from '@Components/Modal/Modal';
 import { IconsModule } from '../../../Modules/Icons.module';
 import { ShowLessonComponent } from './show-lesson/show-lesson.component';
 import { Permission } from '@Schoolingo/Permissions';
+import { DomSanitizer } from '@angular/platform-browser';
 
 @Component({
   standalone: true,
@@ -25,7 +26,8 @@ export class TimetableComponent {
     public schoolingo: Schoolingo,
     public dropdown: Dropdown,
     private factory: RendererFactory2,
-    public perms: Permission
+    public perms: Permission,
+    private sanitizer: DomSanitizer
     ) {
       this.renderer = this.factory.createRenderer(window, null);
     }
@@ -120,7 +122,11 @@ export class TimetableComponent {
     for(let i = 0;i < absence.length;i++) {
       dropdownAbsence.push({ 
         type: 'custom',
-        html: '<div class="flex align-items-center absence-item"><div class="absence ab-' + absence[i].locale + '"></div> [l:absence/' + absence[i].locale + ']' + ' </div>',
+        html: '\
+        <div class="flex align-items-center absence-item">\
+          <div class="absence ab-' + this.sanitizer.bypassSecurityTrustHtml(absence[i].locale) + '"></div> \
+          [l:absence/' + this.sanitizer.bypassSecurityTrustHtml(absence[i].locale) + ']' + '\
+        </div>',
         isActive: true
       });
     }

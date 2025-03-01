@@ -2,7 +2,7 @@ import { NgClass, NgStyle } from "@angular/common";
 import { Component, Injectable, RendererFactory2 } from "@angular/core";
 import { Calendar, ContextButton, ContextButtonRightText, ContextMenu } from "./Dropdown.d";
 import { Locale } from "@Schoolingo/Locale";
-import { SafeHtml } from "@angular/platform-browser";
+import { DomSanitizer, SafeHtml } from "@angular/platform-browser";
 import moment from "moment";
 import { Logger } from "@Schoolingo/Logger";
 import { IconsModule } from "../../Modules/Icons.module";
@@ -29,7 +29,8 @@ export class Dropdown {
     constructor(
         public locale: Locale,
         private factory: RendererFactory2,
-        private logger: Logger
+        private logger: Logger,
+        private sanitizer: DomSanitizer
     ) {
         this.renderer = this.factory.createRenderer(window, null);
         this.renderer.listen(window, 'resize', () => {
@@ -48,14 +49,14 @@ export class Dropdown {
         text.split(' ').forEach((word: string) => {
             if (word.startsWith("[key:") && word.endsWith(']')) {
                 let key = word.slice(5, -1);
-                html = html + "<div class='key'>" + key + "</div>";
+                html = html + "<div class='key'>" + this.formatHtmlText(key) + "</div>";
             }
         })
         return html;
     }
 
     public formatHtmlText(text: string): SafeHtml {
-        let html: SafeHtml = "";
+        let html: string = "";
         if (text == "arrow") { }
         text.split(' ').forEach((word: string) => {
             if (word.startsWith("[l:") && word.endsWith(']')) {
@@ -65,7 +66,7 @@ export class Dropdown {
                 html += word + " ";
             }
         })
-        return html;
+        return this.sanitizer.bypassSecurityTrustHtml(html);
     }
 
     //
