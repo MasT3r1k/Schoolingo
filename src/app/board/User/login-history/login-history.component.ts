@@ -12,7 +12,7 @@ import { BehaviorSubject } from 'rxjs';
   styleUrls: ['./login-history.component.css', '../../../Styles/card.css']
 })
 export class LoginHistoryComponent implements OnInit {
-  public history: BehaviorSubject<Data[][] | any> = new BehaviorSubject([]);
+  public history = new BehaviorSubject<Data[][] | any>([]);
   public metadata: Metadata = { rows: 0 };
 
   constructor(

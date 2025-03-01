@@ -18,7 +18,7 @@ import { IconsModule } from '../../../Modules/Icons.module';
 })
 export class ProfileComponent implements OnInit {
   public listeners: Subscription[] = [];
-  public selectedTab: BehaviorSubject<number> = new BehaviorSubject(0);
+  public selectedTab = new BehaviorSubject<number>(0);
   country = Country;
   Utils = Utils;
 

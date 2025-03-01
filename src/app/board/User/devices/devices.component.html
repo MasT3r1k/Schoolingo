@@ -53,7 +53,9 @@
             <h2 class="small mt">
                 {{ schoolingo.locale.getLocale('devices/anotherDevices') }}
                 @if (getAnotherDevices().length > 0) {
-                    <div class="btn" (click)="removeAllDevices()">{{ schoolingo.locale.getLocale('devices/logoutAllDevices') }}</div>
+                    <div class="btn" (click)="removeAllDevices()">
+                        {{ schoolingo.locale.getLocale('devices/logoutAllDevices') }}
+                    </div>
                 }
             </h2>
             <div class="select select-column">
@@ -68,10 +70,11 @@
                         </div>
         
                         <div class="information">
-                            <div class="device">{{ Utils.getOS(device.userAgent).toUpperCase() + ' - ' + Utils.getBrowser(device.userAgent).toUpperCase() }}
+                            <div class="device">
+                                {{ Utils.getOS(device.userAgent).toUpperCase() + ' - ' + Utils.getBrowser(device.userAgent).toUpperCase() }}
                             </div>
                             @if (device.expires) {
-                                <div class="time">{{ schoolingo.locale.getLocale('devices/until') + moment(device.expires).format('HH:mm:ss DD.MM.YYYY') + (schoolingo.ipManager.getIPInfo(device.ip)?.status ? (' | IP: ' + Utils.getFlagFromCountry(schoolingo.ipManager.getIPInfo(device.ip)!.country) + ' ' + device.ip) : '') }}</div>
+                                <div class="time">{{ schoolingo.locale.getLocale('devices/until') + Utils.makeMoment(device.expires).format('HH:mm:ss DD.MM.YYYY') + (schoolingo.ipManager.getIPInfo(device.ip)?.status ? (' | IP: ' + Utils.getFlagFromCountry(schoolingo.ipManager.getIPInfo(device.ip)!.country) + ' ' + device.ip) : '') }}</div>
                             }
                         </div>
         

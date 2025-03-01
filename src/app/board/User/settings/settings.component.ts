@@ -20,18 +20,24 @@ import { TFAComponent } from './2fa/2fa.component';
 export class SettingsComponent implements OnInit {
 
   public listeners: Subscription[] = [];
-  public selectedTab: BehaviorSubject<number> = new BehaviorSubject(0);
+  public selectedTab = new BehaviorSubject<number>(0);
   public options: string[] = ['changepassword', 'language', 'theme', 'security'];
 
   public alert: '2FAEnabled' | '' = '';
 
-  public TFAModal = new Modal({ title: { text: 'userSettings/2faVerify' }, size: 'size-1', items: [
-    {
-      type: 'component',
-      component: TFAComponent,
-      data: []
-    }
-  ] })
+  public TFAModal = new Modal(
+    { title: {
+      text: 'userSettings/2faVerify'
+    },
+    size: 'size-1',
+      items: [
+        {
+          type: 'component',
+          component: TFAComponent,
+          data: []
+        }
+      ]
+    });
 
   public inputs: FormInput[] = [
       {

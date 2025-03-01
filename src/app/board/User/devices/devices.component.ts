@@ -25,7 +25,6 @@ export class DevicesComponent {
     public schoolingo: Schoolingo
   ) {}
 
-  moment = moment;
   Utils = Utils;
 
   ngOnInit(): void {
