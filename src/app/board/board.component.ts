@@ -304,28 +304,22 @@ export class BoardComponent implements OnInit, AfterViewInit {
             substitutions[date.format('YYYY-MM-DD')] = [];
           }
 
+          let subDefault = {
+            substitutionId: substitution.substitutionId,
+            teacherId: substitution.teacherId ?? -1,
+            subjectId: substitution.subjectId ?? -1,
+            groupId: substitution.groupId,
+            hour: substitution.hour,
+            date: moment(substitution.date),
+            created: moment(substitution.created)
+          };
+
           if (substitution.hour == -1) {
             for(let i = 0;i < this.schoolingo.getTimetableHours().length;i++) {
-              substitutions[date.format('YYYY-MM-DD')][i] = {
-                substitutionId: substitution.substitutionId,
-                teacherId: substitution.teacherId ?? -1,
-                subjectId: substitution.subjectId ?? -1,
-                groupId: substitution.groupId,
-                hour: substitution.hour,
-                date: moment(substitution.date),
-                created: moment(substitution.created)
-              };
+              substitutions[date.format('YYYY-MM-DD')][i] = subDefault;
             }
           } else {
-            substitutions[date.format('YYYY-MM-DD')][substitution.hour - 1] = {
-              substitutionId: substitution.substitutionId,
-              teacherId: substitution.teacherId ?? -1,
-              subjectId: substitution.subjectId ?? -1,
-              groupId: substitution.groupId,
-              hour: substitution.hour,
-              date: moment(substitution.date),
-              created: moment(substitution.created)
-            };
+            substitutions[date.format('YYYY-MM-DD')][substitution.hour - 1] = subDefault;
           }
         });
         this.schoolingo.substitution = substitutions;
