@@ -56,26 +56,33 @@ export class AuthComponent {
     this.schoolingo.socketService.connect();
 
     this.schoolingo.auth.page = 'login';
-    this.Listeners.push(this.route.queryParamMap.subscribe((param: Params) => {
-      if (param.params['forgotpass'] != undefined) {
-        this.schoolingo.auth.page = 'forgot';
+    this.Listeners.push(
+      this.route.queryParamMap.subscribe((param: Params) => {
+        if (param.params['forgotpass'] != undefined) {
+          this.schoolingo.auth.page = 'forgot';
+        }
+      })
+    );
 
-      }
-    }));
+
 
     this.title.setTitle(
       this.schoolingo.locale.getLocale('login_title') + ' | ' + this.App.APP_NAME
     );
     this.schoolingo.sidebar.sidebarToggled = false;
 
-    this.Listeners.push(this.schoolingo.socketService.addFunction("connect").subscribe(() => {
-      this.refreshQRcode()
-    }));
+    this.Listeners.push(
+      this.schoolingo.socketService.addFunction("connect").subscribe(() => {
+        this.refreshQRcode()
+      })
+    );
 
-    this.Listeners.push(this.schoolingo.socketService.addFunction("disconnect").subscribe(() => {
-      this.qrCode = '';
-      this.qrCodeResult = null;
-    }))
+    this.Listeners.push(
+      this.schoolingo.socketService.addFunction("disconnect").subscribe(() => {
+        this.qrCode = '';
+        this.qrCodeResult = null;
+      })
+    )
   }
 
   ngOnDestroy(): void {
@@ -109,17 +116,21 @@ export class AuthComponent {
     
     this.schoolingo.socketService.emit("generate-qrcode");
 
-    this.QRListeners.push(this.schoolingo.socketService.addFunction('login-qrcode').subscribe((data: string) => {
-      this.logger.send('QRCode', 'QR code loaded.');
-      this.qrCode = data;
-      this.qrCodeError = false;
-      this.qrStatus = this.getQRcodeStatus();
-    }));
+    this.QRListeners.push(
+      this.schoolingo.socketService.addFunction('login-qrcode').subscribe((data: string) => {
+        this.logger.send('QRCode', 'QR code loaded.');
+        this.qrCode = data;
+        this.qrCodeError = false;
+        this.qrStatus = this.getQRcodeStatus();
+      })
+    );
 
-    this.QRListeners.push(this.schoolingo.socketService.addFunction('qrScanCode').subscribe((data: unknown) => {
-      this.qrCodeResult = data;
-      this.qrStatus = this.getQRcodeStatus();
-    }));
+    this.QRListeners.push(
+      this.schoolingo.socketService.addFunction('qrScanCode').subscribe((data: unknown) => {
+        this.qrCodeResult = data;
+        this.qrStatus = this.getQRcodeStatus();
+      })
+    );
 
     clearTimeout(this.qrTimeout);
     this.qrTimeout = setTimeout(() => {
