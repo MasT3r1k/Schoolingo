@@ -41,6 +41,11 @@ export class Authentication {
     public password = '';
 
     public token2FA = '';
+    public check2FA(): void {
+        if (this.token2FA.length == 6) {
+            this.login();
+        }
+    }
 
     public canLogin(): boolean {
         if (this.username === '') {
