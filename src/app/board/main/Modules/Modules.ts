@@ -31,6 +31,7 @@ export class MainModules {
             component: [TimetableComponent, BackpackComponent]
         },
         {
+            selectedTab: new BehaviorSubject(0),
             titles: [
                 {
                     title: "sidebar/teach/homeworks",
@@ -41,6 +42,7 @@ export class MainModules {
             component: null
         },
         {
+            selectedTab: new BehaviorSubject(0),
             titles: [
                 {
                     title: "announcements",
@@ -49,6 +51,7 @@ export class MainModules {
             component: AnnouncementsComponent
         },
         {
+            selectedTab: new BehaviorSubject(0),
             titles: [
                 {
                     title: "sidebar/marks/interm",
@@ -59,6 +62,7 @@ export class MainModules {
             component: IntermComponent
         },
         {
+            selectedTab: new BehaviorSubject(0),
             titles: [
                 {
                     title: "sidebar/teach/substitution",
@@ -68,6 +72,7 @@ export class MainModules {
             component: SubstitutionComponent
         },
         {
+            selectedTab: new BehaviorSubject(0),
             titles: [
                 {
                     title: "sidebar/traineeship/main",
@@ -79,6 +84,7 @@ export class MainModules {
             component: null
         },
         {
+            selectedTab: new BehaviorSubject(0),
             titles: [
                 {
                     title: "sidebar/canteen/menu",
@@ -90,6 +96,7 @@ export class MainModules {
             component: null
         },
         {
+            selectedTab: new BehaviorSubject(0),
             titles: [
                 {
                     title: "sidebar/library/main",
@@ -100,6 +107,7 @@ export class MainModules {
             component: null
         },
         {
+            selectedTab: new BehaviorSubject(0),
             titles: [
                 {
                     title: "sidebar/actionPlan",
