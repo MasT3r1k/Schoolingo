@@ -75,7 +75,7 @@ export class AppComponent implements OnInit {
         }
 
         if ('error' in data) {
-          this.userService.username = null;
+          this.userService.username = "";
         }
       });
     }, this.httpError);
