@@ -19,10 +19,12 @@ export class Sidebar {
         private title: Title,
         private modules: Modules
     ) {
-        this.build();
-        this.listeners.push(this.locale.language.subscribe(() => {
+      this.build();
+      this.listeners.push(
+        this.locale.language.subscribe(() => {
           this.updateTitle(window.location.pathname);
-        }));
+        })
+      );
     }
 
     public sidebarToggled = false;
@@ -41,7 +43,7 @@ export class Sidebar {
       return this.toggledDropdowns.includes(id);
     }
     public build(): void {
-        let boardSidebar = JSON.parse(JSON.stringify(SidebarConfig.default));
+        let boardSidebar = SidebarConfig.config;
         let newSidebar: SidebarGroup[] = [];
     
         boardSidebar.forEach((section: SidebarGroup): void => {
@@ -49,22 +51,35 @@ export class Sidebar {
 
           let items: SidebarItem[] = [];
           section.items.forEach((item: SidebarItem): void => {
-            if (item.permission && !this.Permissions.checkPermission(item.permission) || (item.modules && !this.modules.checkModule(item.modules))) return;
-            if (item.children) {
-              let delC = 0;
-              let children = JSON.parse(JSON.stringify(item.children)) as SidebarItem[];
-              children.forEach((child: SidebarItem, index: number) => {
-                if (!(child.permission && !this.Permissions.checkPermission(child.permission)) || (child.modules && !this.modules.checkModule(child.modules)))
+            let newItem: SidebarItem = {
+              item: item.item,
+              url: item.url,
+              badge: item.badge
+            };
+            if ((item.permission && !this.Permissions.checkPermission(item.permission)) || (item.modules && !this.modules.checkModule(item.modules))) return;
+            
+
+            if (item.children && item.children.length) {
+              newItem.children = [];
+              // let delC = 0;
+              item.children.forEach((child: SidebarItem, index: number) => {
+                if ((child.permission && !this.Permissions.checkPermission(child.permission)) || (child.modules && !this.modules.checkModule(child.modules))) {
                   return;
-                item.children?.splice(index - delC, 1);
-                delC++;
+                }
+
+                newItem.children?.push(child)
+
+                // newItem.children?.splice(index - delC, 1);
+                // delC++;
               });
             }
-            if (!item.children || item.children && item.children.length != 0) {
-              items.push(item);
+
+            if (!newItem.children || newItem.children && newItem.children.length != 0) {
+              items.push(newItem);
             }
           });
-          newSidebar.push({ label: section.label, items: items });
+
+          newSidebar.push({ label: section.label, items });
         });
 
         this.data = newSidebar;

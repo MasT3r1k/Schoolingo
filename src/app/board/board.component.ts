@@ -402,13 +402,18 @@ export class BoardComponent implements OnInit, AfterViewInit {
   }
 
   public getSidebarBadge(item: SidebarItem): any {
-    let a = eval(item.badge)?.(this.schoolingo)?.getValue();
-    if (!a)
+    if (!item.badge) {
       return "";
-    if (a > 9) {
-      return "9+";
     }
-    return a || "";
+    
+    if (typeof item.badge === 'string') {
+      return item.badge;
+    }
+
+    if (typeof item.badge === 'function') {
+      let badgeValue = item.badge(this.schoolingo).getValue();
+      return badgeValue > 9 ? '9+' : badgeValue;
+    }
   }
 
 }

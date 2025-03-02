@@ -1,7 +1,7 @@
 import { Schoolingo } from "@Schoolingo";
 import { SidebarGroup } from "./Sidebar";
 
-let config: SidebarGroup[] = [
+export const config: SidebarGroup[] = [
     {
         label: "sidebar/main",
         permission: ["all"],
@@ -105,7 +105,7 @@ let config: SidebarGroup[] = [
                 }, {
                     item: 'sidebar/messages/received',
                     url: 'messages/received',
-                    badge: ((schoolingo: Schoolingo) => schoolingo.messages.unreadMessage).toString()
+                    badge: (schoolingo: Schoolingo) => schoolingo.messages.unreadMessage
                 }, {
                     item: 'sidebar/messages/sent',
                     url: 'messages/sent',
@@ -298,5 +298,3 @@ let config: SidebarGroup[] = [
         ]
     }
 ];
-
-export default config as SidebarGroup[];
