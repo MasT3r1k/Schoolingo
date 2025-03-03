@@ -1,9 +1,11 @@
 <main>
     <div class="subjects">
-        @if (schoolingo.getTimetableLessons()) {
+        @if (schoolingo.getTimetableLessons().length) {
             @for (lesson of schoolingo.getTimetableLessons()[day.getValue().isoWeekday() - 1]; track $index) {
                 <div [ngClass]="{subject: true, freetime: !lesson[0].subjectName && (schoolingo.substitution[day.getValue().format('YYYY-MM-DD')] && !schoolingo.substitution[day.getValue().format('YYYY-MM-DD')][$index + 1] || !schoolingo.substitution[day.getValue().format('YYYY-MM-DD')])}">
-                    <span [ngClass]="{subjectIndex: true, error: !lesson[0].subjectName && schoolingo.substitution[day.getValue().format('YYYY-MM-DD')] && schoolingo.substitution[day.getValue().format('YYYY-MM-DD')][$index + 1]}">{{ $index + 1 }}</span>
+                    <span [ngClass]="{subjectIndex: true, error: !lesson[0].subjectName && schoolingo.substitution[day.getValue().format('YYYY-MM-DD')] && schoolingo.substitution[day.getValue().format('YYYY-MM-DD')][$index + 1]}">
+                        {{ $index + 1 }}
+                    </span>
                     
                     <div [ngClass]="{subjectName: true, classbook: schoolingo.isClassbook(day.getValue().day() - 2, $index), error: !lesson[0].subjectName && schoolingo.substitution[day.getValue().format('YYYY-MM-DD')] && schoolingo.substitution[day.getValue().format('YYYY-MM-DD')][$index + 1]}" [title]="(!lesson[0].subjectName) ? schoolingo.locale.getLocale('timetable/freetime') : (lesson[0].subjectName)">
                         <span>

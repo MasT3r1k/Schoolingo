@@ -27,7 +27,7 @@ export class MainComponent {
 
   public getComponent(module: Module): Type<any> | null {
     if (Array.isArray(module.component)) {
-      return module.component[module.selectedTab?.getValue() ?? 0];
+      return module.component[module.selectedTab.getValue()];
     }
     return module.component;
   }
