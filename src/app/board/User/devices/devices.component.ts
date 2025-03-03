@@ -37,9 +37,11 @@ export class DevicesComponent {
     );
 
     this.subscribers.push(
-      this.schoolingo.socketService.addFunction("devices:removeDevice").subscribe((data: any) => {
-        let index = this.devices.findIndex((device: Device) => device.id == data.id);
-        this.devices.splice(index, 1);
+      this.schoolingo.socketService.addFunction("devices:removeDevice").subscribe((data: { id: number[] }) => {
+        for (let id of data.id) {
+          let index = this.devices.findIndex((device: Device) => device.id == id);
+          this.devices.splice(index, 1);
+        }
       })
     );
 
@@ -63,14 +65,18 @@ export class DevicesComponent {
     return this.devices.filter((device: Device) => device.active)[0];
   }
 
-  public removeDevice(id: number): void {
+  public removeDevice(id: number[]): void {
     this.schoolingo.socketService.emit('devices:removeDevice', { id });
   }
 
 
-  public removeAllDevices(): void {   // TODO! velmi ošklivé :(, potencionálně přiliš mnoho requestů
+  public removeAllDevices(): void {
+    if (!this.getAnotherDevices().length) return;
+
+    let deviceIds: number[] = [];
     this.getAnotherDevices().forEach((device: Device) => {
-      this.removeDevice(device.id);
+      deviceIds.push(device.id);
     });
+    this.removeDevice(deviceIds);
   }
 }
