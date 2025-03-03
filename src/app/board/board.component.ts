@@ -137,7 +137,7 @@ export class BoardComponent implements OnInit, AfterViewInit {
 
     this.subscribers.push(
       this.schoolingo.socketService.addFunction("main:updateUser").subscribe((data: user) => {
-        if (data.type == "parent" && data.children.length > 0) {
+        if (data.type == "parent" && data.children.length) {
           this.schoolingo.userService.selectedChild = 0;
           this.schoolingo.userService.children = data.children;
         }
@@ -313,6 +313,7 @@ export class BoardComponent implements OnInit, AfterViewInit {
 
     this.subscribers.push(
       this.schoolingo.socketService.addFunction("timetable:timetableChanges").subscribe((data: Substitution[]) => {
+        if (!data) return;
         let substitutions: Record<string, Substitution[]> = {};
         data.forEach((substitution: Substitution) => {
           let date = moment(substitution.date);
