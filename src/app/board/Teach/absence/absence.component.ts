@@ -19,6 +19,7 @@ export class AbsenceComponent implements OnInit {
   ) {}
 
   public absenceConfig = AbsenceConfig.absence;
+  public selectedPeriod = new BehaviorSubject<number>(0);
   public selectedTab = new BehaviorSubject<number>(0);
   private listeners: Subscription[] = [];
   public monthStatus: boolean[] = [];
@@ -27,27 +28,40 @@ export class AbsenceComponent implements OnInit {
   public tableHeader: { active: boolean;top: number;width: number } = { active: false, top: 0, width: 0 };
 
   ngOnInit(): void {
-    this.renderer.listen(document.querySelector(".main-content"), "scroll", (ev: any) => {
-      let el: HTMLElement = ev.target!;
-      if (el.scrollTop > 160) {
-        this.tableHeader.active = true;
-      } else {
-        this.tableHeader.active = false
-      }
-      let oldEl = document.querySelector("thead.table-row") as any;
-      if (!oldEl) return;
-      this.tableHeader.width = oldEl.clientWidth;
-      this.tableHeader.top = el.scrollTop;
-    })
+    this.listeners.push(
+      this.selectedPeriod.subscribe((type: number) => {
+        this.schoolingo.socketService.emit('absence:getAbsence', {
+          userId: this.schoolingo.userService.getUser()!.id,
+          type
+        });
+      })
+    );
 
-    this.renderer.listen("window", "resize", () => {
-      this.tableHeader.width = document.querySelector("thead.table-row")?.clientWidth!;
-      setTimeout(() => this.tableHeader.width = document.querySelector("thead.table-row")?.clientWidth!, 300)
-    })
+    // this.renderer.listen(document.querySelector(".main-content"), "scroll", (ev: any) => {
+    //   let el: HTMLElement = ev.target!;
+    //   if (el.scrollTop > 160) {
+    //     this.tableHeader.active = true;
+    //   } else {
+    //     this.tableHeader.active = false
+    //   }
+    //   let oldEl = document.querySelector("thead.table-row") as any;
+    //   if (!oldEl) return;
+    //   this.tableHeader.width = oldEl.clientWidth;
+    //   this.tableHeader.top = el.scrollTop;
+    // })
+
+    // this.renderer.listen("window", "resize", () => {
+    //   this.tableHeader.width = document.querySelector("thead.table-row")?.clientWidth!;
+    //   setTimeout(() => this.tableHeader.width = document.querySelector("thead.table-row")?.clientWidth!, 300)
+    // })
   }
 
   ngOnDestroy(): void {
     this.listeners.forEach((subscribe: Subscription) => subscribe.unsubscribe());
+    this.schoolingo.socketService.emit('absence:getAbsence', {
+      userId: this.schoolingo.userService.getUser()!.id,
+      type: 3
+    });
     this.renderer.destroy();
   }
 
@@ -109,5 +123,10 @@ export class AbsenceComponent implements OnInit {
       count += ab;
     });
     return count;
+  }
+
+  public getMonthText(month: number): string {
+    let date = this.schoolingo.school.schoolYear.start.clone().add(month, 'month')
+    return this.schoolingo.locale.getLocale('months/' + date.month()) + ' ' + date.year();
   }
 }

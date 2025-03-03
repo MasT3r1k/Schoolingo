@@ -7,7 +7,7 @@ import { Sidebar } from "./Sidebar";
 import { School } from "./School";
 import { Utils } from "@Schoolingo/Utils";
 import { BehaviorSubject, Subscription } from "rxjs";
-import moment from "moment";
+import moment, { Moment } from "moment";
 import { AbsenceConfig, absence } from "./Absence";
 import { removeDiacritics } from "./SearchFilter";
 import { degree } from "./User";
@@ -73,6 +73,7 @@ export class Schoolingo {
     public absenceConfig: AbsenceConfig[] = absence;
 
     public absenceSubjects: Record<string, { absence: number, lessons: number }> = {};
+    public absenceDate: { start: moment.Moment, end: moment.Moment } = { start: moment(), end: moment() };
     public absence: Record<string, Absence[]> = {};
     public hasAccessToPage = true;
 

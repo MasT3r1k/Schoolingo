@@ -39,9 +39,11 @@ export class Sidebar {
         }
         localStorage.setItem('sidebar', JSON.stringify(this.toggledDropdowns));
     }
+
     public isToggled(id: number): boolean {
       return this.toggledDropdowns.includes(id);
     }
+    
     public build(): void {
         let boardSidebar = SidebarConfig.config;
         let newSidebar: SidebarGroup[] = [];
@@ -61,16 +63,12 @@ export class Sidebar {
 
             if (item.children && item.children.length) {
               newItem.children = [];
-              // let delC = 0;
               item.children.forEach((child: SidebarItem, index: number) => {
                 if ((child.permission && !this.Permissions.checkPermission(child.permission)) || (child.modules && !this.modules.checkModule(child.modules))) {
                   return;
                 }
 
                 newItem.children?.push(child)
-
-                // newItem.children?.splice(index - delC, 1);
-                // delC++;
               });
             }
 

@@ -34,6 +34,7 @@ export class School {
         this.schoolYear = {
             start: moment(data.start),
             end: moment(data.end),
+            midterm: moment(data.midterm),
             error: -1
         };
     }

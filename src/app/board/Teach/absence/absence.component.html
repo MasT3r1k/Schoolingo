@@ -1,8 +1,19 @@
 <div class="card">
     <div class="card-top"></div>
     <div class="card-header">
-        <h2>{{ schoolingo.locale.getLocale('sidebar/absence') }}</h2>
+        <h2 class="flex" style="align-items: center;">
+            {{ schoolingo.locale.getLocale('sidebar/absence') }}
+            <span style="width: 11px;
+            background: var(--color-darker);
+            height: 2px;
+            margin-inline: 10px;"></span>
+            {{ schoolingo.absenceDate.start.format('DD. MM. YYYY') + ' - ' + schoolingo.absenceDate.end.format('DD. MM. YYYY') }}
+        </h2>
         <div class="flex-items">
+            @if (selectedTab.getValue() === 0) {
+                <schoolingo-tabs [value]="selectedPeriod" class="first-margin" [options]="['time/toToday', 'time/firstTerm', 'time/secondTerm', 'time/schoolYear']"></schoolingo-tabs>
+            }
+
             <schoolingo-tabs [value]="selectedTab" [options]="['sidebar/teach/subjects', 'absence/overviewAbsence']"></schoolingo-tabs>
         </div>
     </div>
@@ -24,7 +35,7 @@
                             <tr [ngClass]="{ error: (schoolingo.school.schoolInfo && schoolingo.absenceSubjects[subject] && schoolingo.absenceSubjects[subject].absence / schoolingo.absenceSubjects[subject].lessons * 100) >= schoolingo.school.schoolInfo.warningAbsence }">
                                 <td style="width: 100%;">{{ subject }}</td>
                                 <td>
-                                    {{ schoolingo.absenceSubjects[subject] ? schoolingo.absenceSubjects[subject].absence + '/' + schoolingo.absenceSubjects[subject].lessons : "0/0" }}
+                                    {{ schoolingo.absenceSubjects[subject] ? schoolingo.absenceSubjects[subject].absence + ' / ' + schoolingo.absenceSubjects[subject].lessons : "0/0" }}
                                 </td>
                                 @if (schoolingo.school.schoolInfo && schoolingo.absenceSubjects[subject]) {
                                     <td style="min-width: 100px;">
@@ -66,10 +77,12 @@
                             @if (!monthStatus[month]) {
                                 <tr class="table-row">
                                     <td class="table-item clickable" style="justify-content: flex-start" (click)="monthStatus[month] = true">
-                                        {{ this.schoolingo.school.schoolYear.start.clone().add(month, 'month').startOf('month').format('MMMM YYYY') }}
+                                        {{ getMonthText(month) }}
                                     </td>
                                     @for (absence of absenceConfig; track [];let index2 = $index) {
-                                        <td class="table-item absence-item">{{ getCountMonth(month)[index2] }}</td>
+                                        <td class="table-item absence-item">
+                                            {{ getCountMonth(month)[index2] }}
+                                        </td>
                                     }
                                     <td class="table-item">
                                         {{ getCountAbsenceInMonth(month) || "" }}
@@ -82,7 +95,7 @@
                                         <td class="table-item clickable" style="justify-content: space-between" (click)="monthStatus[month] = false">
                                             <div>
                                             @if (isFirst) {
-                                                {{ this.schoolingo.school.schoolYear.start.clone().add(month, 'month').format('MMMM YYYY') }}
+                                                {{ getMonthText(month) }}
                                             }
                                             </div>
 
@@ -100,7 +113,8 @@
                                 }
                                 <tr class="table-row" style="background-color: rgba(0,0,0,.24);">
                                     <td class="table-item" style="justify-content: flex-start" (click)="monthStatus[month] = true">
-                                        <span style="color: var(--color-darker);white-space: pre;">celkem za </span> {{ this.schoolingo.school.schoolYear.start.clone().add(month, 'month').startOf('month').format('MMMM YYYY') }}
+                                        <span style="color: var(--color-darker);white-space: pre;">
+                                            celkem za </span>{{ getMonthText(month) }}
                                     </td>
                                     @for (absence of absenceConfig; track [];let index2 = $index) {
                                         <td class="table-item absence-item">

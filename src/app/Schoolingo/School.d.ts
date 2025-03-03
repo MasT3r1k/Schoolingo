@@ -18,6 +18,7 @@ export type SchoolInfo = {
 export type SchoolYear = {
     start: moment.Moment;
     end: moment.Moment;
+    midterm: moment.Moment;
 } & {
     error: number;
 }

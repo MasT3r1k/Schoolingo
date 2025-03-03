@@ -45,6 +45,7 @@
 * Upravené druhy zpráv a seznam zpráv
 * V přihlášených zařízení se nyní zobrazuje IP adresa
 * Možnost u rozvrhu schovat/zobrazit skupinu, učitele nebo místnost
+* U přehledu předmětů možnost zobrazit dle období (K dnešku od začátku školního roku, 1. pololetí, 2. pololetí, celý školní rok)
 
 ## Nové funkce v přípravě (TODO)
 

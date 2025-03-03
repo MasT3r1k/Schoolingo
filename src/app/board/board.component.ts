@@ -31,9 +31,18 @@ interface AbsenceAPI {
   date: moment.Moment;
 }
 
+interface AbsenceDataAPI {
+  lessons: Record<number, AbsenceSubjectAPI>;
+  date: {
+    start: string;
+    end: string;
+  }
+}
+
 interface AbsenceSubjectAPI {
+  subjectId: number;
   subject: string;
-  absence_count: number;
+  absence: number;
   total_lessons: number;
 }
 
@@ -166,7 +175,8 @@ export class BoardComponent implements OnInit, AfterViewInit {
         });
         
         this.schoolingo.socketService.emit('absence:getAbsence', {
-          userId
+          userId,
+          type: 3
         });
         
         this.schoolingo.socketService.emit("absence:getAllAbsence", {
@@ -237,13 +247,20 @@ export class BoardComponent implements OnInit, AfterViewInit {
     );
 
     this.subscribers.push(
-      this.schoolingo.socketService.addFunction("absence:getAbsence").subscribe((data: AbsenceSubjectAPI[]) => {
-        data.forEach((data: AbsenceSubjectAPI) => {
-          this.schoolingo.absenceSubjects[data.subject] = {
-            absence: data.absence_count,
-            lessons: data.total_lessons
-          };
-        });
+      this.schoolingo.socketService.addFunction("absence:getAbsence").subscribe((data: AbsenceDataAPI) => {
+        console.log(data);
+        if ('lessons' in data) {
+          Object.values(data.lessons).forEach((absenceSubject: AbsenceSubjectAPI) => {
+            this.schoolingo.absenceSubjects[absenceSubject.subject] = {
+              absence: absenceSubject.absence,
+              lessons: absenceSubject.total_lessons
+            };
+          });
+        }
+        this.schoolingo.absenceDate = {
+          start: moment(data.date.start),
+          end: moment(data.date.end)
+        }
       })
     );
 
