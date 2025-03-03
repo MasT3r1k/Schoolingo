@@ -5,23 +5,25 @@
             <div class="left">
                 <h2>{{ schoolingo.locale.getLocale('sidebar/students') }}</h2>
     
-                @if (schoolingo.school.schoolInfo.studentsLimit !== -1) {
-                    <p class="description" [ngStyle]="{display: 'flex', color: studentCount === schoolingo.school.schoolInfo.studentsLimit ? 'red' : ''}" [innerHTML]="schoolingo.locale.getLocale('students/studentsLimit').replaceAll('%studentCount%', studentCount.toString())"></p>
-                } @else {
-                    <p class="description">
-                        {{ schoolingo.locale.getLocale('students/studentsCount')
-                            .replaceAll('%studentCount%', studentCount.toString())
-                        }}
-                    </p>
-                    <div class="badge blue-info">
-                        <i-tabler name="infinity" class="infinity-icon"></i-tabler>
-                        {{ schoolingo.locale.getLocale('students/infiniteLimit') }}
-                    </div>
+                @if (perms.checkPermission(['manager:students:addStudent'])) {
+                    @if (schoolingo.school.schoolInfo.studentsLimit !== -1) {
+                        <p class="description" [ngStyle]="{display: 'flex', color: studentCount === schoolingo.school.schoolInfo.studentsLimit ? 'red' : ''}" [innerHTML]="schoolingo.locale.getLocale('students/studentsLimit').replaceAll('%studentCount%', studentCount.toString())"></p>
+                    } @else {
+                        <p class="description">
+                            {{ schoolingo.locale.getLocale('students/studentsCount')
+                                .replaceAll('%studentCount%', studentCount.toString())
+                            }}
+                        </p>
+                        <div class="badge blue-info">
+                            <i-tabler name="infinity" class="infinity-icon"></i-tabler>
+                            {{ schoolingo.locale.getLocale('students/infiniteLimit') }}
+                        </div>
+                    }
                 }
             </div>
             <div class="flex-items">
                 @if (perms.checkPermission(['manager:students:addStudent'])) {
-                    <div [ngClass]="['btn', 'submit', 'small', perms.checkPermission(['manager:students:addStudent']) ? 'blue-info' : 'gray']" role="button">
+                    <div [ngClass]="['btn', 'submit', 'small', 'blue-info']" role="button">
                         {{ schoolingo.locale.getLocale('students/buttons/addStudents') }}
                     </div>
                 }
