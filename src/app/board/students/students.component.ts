@@ -74,9 +74,10 @@ export class studentsComponent implements OnInit {
             { id: student.personId },
             { value: student.firstName, isLocale: false },
             { value: student.lastName, isLocale: false },
-            { value: student.className, isLocale: false} ,
+            { value: this.selectedTab.getValue() ? this.schoolingo.locale.getLocale('students/inArchive') : student.className, isLocale: false } ,
             { value: Utils.makeMoment(student.birthday).format("D. MMMM YYYY") + ' (' + Utils.getAge(Utils.makeMoment(student.birthday)) + ' ' + this.schoolingo.locale.getLocale('ageUnit') + ')', isLocale: false },
-            { value: Utils.formatAddress({ code2: student.code2, street: student.street, houseNumber: student.houseNumber, city: student.cityName, postcode: student.postcode }), isLocale: false }])
+            { value: Utils.formatAddress({ code2: student.code2, street: student.street, houseNumber: student.houseNumber, city: student.cityName, postcode: student.postcode }) || this.schoolingo.locale.getLocale('addressNotSet'), isLocale: false }
+          ])
         });
         this.metadata.rows = data.rows;
         if (this.selectedTab.getValue() === 0) this.studentCount = data.rows;

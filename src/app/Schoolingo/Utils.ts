@@ -58,7 +58,7 @@ export namespace Utils {
   }
 
   export function formatAddress(address: { code2: string, street: string, houseNumber: string, city: string, postcode: string }): string | null {
-    if (!address.city) return null;
+    if (!address.city) return '';
     return `${(country.getCountryByCode(address.code2)?.flag || "")} ${address.street} ${address.houseNumber}, ${address.city} ${address.postcode}`
   }
 
