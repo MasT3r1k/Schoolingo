@@ -21,12 +21,13 @@ export class SettingsComponent implements OnInit {
 
   public listeners: Subscription[] = [];
   public selectedTab = new BehaviorSubject<number>(0);
-  public options: string[] = ['changepassword', 'language', 'theme', 'security'];
+  public options = ['changepassword', 'language', 'theme', 'security'];
 
   public alert: '2FAEnabled' | '' = '';
 
-  public TFAModal = new Modal(
-    { title: {
+  public TFAModal = new Modal({
+    closeable: true,
+    title: {
       text: 'userSettings/2faVerify'
     },
     size: 'size-1',

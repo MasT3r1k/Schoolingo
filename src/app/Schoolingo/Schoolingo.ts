@@ -38,6 +38,18 @@ export {
 
 @Injectable()
 export class Schoolingo {
+    public resetWarnLogoutInterval(): void {
+        clearInterval(this.warnlogoutInterval);
+        this.warnlogoutInterval = setInterval(() => {
+            if (this.userService.tokenExpiration.getValue().isAfter(moment()) && this.userService.tokenExpiration.getValue().diff(moment(), 'seconds') <= AppConfig.WARN_BEFORE_LOGOUT_MINUTES * 60) {
+                this.loginModal.open();
+                this.logoutTime = moment().add(AppConfig.WARN_BEFORE_LOGOUT_MINUTES, 'minutes');
+                // x minutes before because of option to stay logged in
+                // Make modal change to autologout
+            }
+        }, 5000)
+    }
+
     public resetToDefault(): void {
         this.modal = '';
         this.timetableAPI = [];
@@ -52,12 +64,7 @@ export class Schoolingo {
         this.substitution = {};
         this.isOfflineMode = false;
         this.isLoginExpired = false;
-        clearTimeout(this.warnlogoutInterval)
-        this.warnlogoutInterval = setTimeout(() => {
-            this.loginModal.open();
-            this.logoutTime = moment().add(AppConfig.WARN_BEFORE_LOGOUT_MINUTES, 'minutes');
-        }, this.school.schoolInfo.loginExpires - (AppConfig.WARN_BEFORE_LOGOUT_MINUTES * 60000));
-        this.loginModal.close();
+        this.resetWarnLogoutInterval();
         forceCloseAllModals();
         this.marks = [];
         this.absence = {};
@@ -107,24 +114,26 @@ export class Schoolingo {
         this.subscribers.push(
             this.userService.alert.subscribe((alert: Alert | null) => {
                 if (alert === null) return;
-                this.auth.errors['auth'] = alert;
+                this.auth.errors.auth = alert;
             })
         );
 
         this.subscribers.push(
             this.userService.tokenExpiration.subscribe((date: moment.Moment) => {
                 if (this.isLoginExpired) return;
-                if (date.isAfter(moment())) {
-                    this.loginModal.close();
-                    clearTimeout(this.warnlogoutInterval)
-                    this.warnlogoutInterval = setTimeout(() => {
-                        this.loginModal.open();
-                        this.logoutTime = moment().add(AppConfig.WARN_BEFORE_LOGOUT_MINUTES, 'minutes');
-                    }, this.school.schoolInfo.loginExpires - (AppConfig.WARN_BEFORE_LOGOUT_MINUTES * 60000));
-                    // x minutes before because of option to stay logged in
+                if (date.isSameOrBefore(moment())) {
+                    this.userService.logout();
+
+
+                    // this.loginModal.close();
+                    // clearTimeout(this.warnlogoutInterval)
+                    // this.warnlogoutInterval = setTimeout(() => {
+                    //     this.loginModal.open();
+                    //     this.logoutTime = moment().add(AppConfig.WARN_BEFORE_LOGOUT_MINUTES, 'minutes');
+                    // }, this.school.schoolInfo.loginExpires - (AppConfig.WARN_BEFORE_LOGOUT_MINUTES * 60000));
+                    // // x minutes before because of option to stay logged in
                     // Make modal change to autologout
                 } else {
-                    this.userService.logout();
                 }
             })
         );
@@ -138,16 +147,18 @@ export class Schoolingo {
             })
         );
 
+        this.resetWarnLogoutInterval();
+
         this.loginModal.zIndex = 999999; // To show above all modals
     }
 
     // Login expired
     public isLoginExpired = false;
-    public warnlogoutInterval = setTimeout(() => {});
+    public warnlogoutInterval = setInterval(() => {}, 150000);
     public logoutTime = moment();
     public loginModal = new Modal({
         title: {
-            text: 'modals/loginExpire/title'
+            text: 'modals/loginExpire/' + (this.isLoginExpired ? 'titleLoggedOut' : 'titleWarning'),
         },
         closeable: false,
         size: 'size-2',
