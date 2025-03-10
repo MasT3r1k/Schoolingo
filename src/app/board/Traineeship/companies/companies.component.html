@@ -16,9 +16,13 @@
                 <div class="form-group search mb">
                     <input type="text" name="search" [formControl]="search" [placeholder]="schoolingo.locale.getLocale('traineeship/search')">
                     @if (!permissions.checkPermission(["manager:traineeship:manage"])) {
-                        <div (click)="showPage = 'requestCompany'" class="btn submit blue-info" role="button">{{ schoolingo.locale.getLocale('traineeship/requestAddCompany') }}</div>
+                        <div (click)="showPage = 'requestCompany'" class="btn submit blue-info" role="button">
+                            {{ schoolingo.locale.getLocale('traineeship/requestAddCompany') }}
+                        </div>
                     } @else {
-                        <div class="btn submit blue-info" role="button">{{ schoolingo.locale.getLocale('traineeship/addCompany') }}</div>
+                        <div class="btn submit blue-info" role="button">
+                            {{ schoolingo.locale.getLocale('traineeship/addCompany') }}
+                        </div>
 
                     }
                 </div>
@@ -75,6 +79,15 @@
                                             (requestDataForAlert.instructor ? 'success_selected_company_with_instructor' : 'success_selected_company_no_instructor')
                                         )
                                         .replaceAll('%instructorName%', schoolingo.formatPerson(requestDataForAlert.instructor!)))
+                                    }}
+                                        <div class="close" (click)="alert = null">
+                                            <i class="ti ti-x"></i>
+                                        </div>
+                                    </div>
+                                }
+                                @case("too_many_students_in_company") {
+                                    <div class="alert error">{{ 
+                                        schoolingo.locale.getLocale('traineeship/alerts/too_many_students_in_company')
                                     }}
                                         <div class="close" (click)="alert = null">
                                             <i class="ti ti-x"></i>
@@ -176,13 +189,17 @@
                                     </div>
     
                                     <div class="card-table-row">
-                                        <div class="card-table-item">{{ schoolingo.locale.getLocale('traineeship/CIN') }}</div>
+                                        <div class="card-table-item">
+                                            {{ schoolingo.locale.getLocale('traineeship/CIN') }}
+                                        </div>
                                         <div class="card-table-item">
                                             {{ schoolingo.traineeship.selectedCompany.CIN }}</div>
                                     </div>
     
                                     <div class="card-table-row">
-                                        <div class="card-table-item">{{ schoolingo.locale.getLocale('web') }}</div>
+                                        <div class="card-table-item">
+                                            {{ schoolingo.locale.getLocale('web') }}
+                                        </div>
                                         <div class="card-table-item">
                                             @if (schoolingo.traineeship.selectedCompany.web) {
                                                 <a
@@ -198,8 +215,12 @@
                                     </div>
     
                                     <div class="card-table-row">
-                                        <div class="card-table-item">{{ schoolingo.locale.getLocale('traineeship/averageRate') }}</div>
-                                        <div class="card-table-item">{{ schoolingo.traineeship.selectedCompany.rating != null ? schoolingo.traineeship.getRating(schoolingo.traineeship.selectedCompany) : schoolingo.locale.getLocale(schoolingo.traineeship.getRating(schoolingo.traineeship.selectedCompany)) }}</div>
+                                        <div class="card-table-item">
+                                            {{ schoolingo.locale.getLocale('traineeship/averageRate') }}
+                                        </div>
+                                        <div class="card-table-item">
+                                            {{ schoolingo.traineeship.selectedCompany.rating != null ? schoolingo.traineeship.getRating(schoolingo.traineeship.selectedCompany) : schoolingo.locale.getLocale(schoolingo.traineeship.getRating(schoolingo.traineeship.selectedCompany)) }}
+                                        </div>
                                     </div>
     
                                     <div class="card-table-row">

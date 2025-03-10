@@ -43,7 +43,7 @@ export class CompaniesComponent implements OnInit {
 
   public scopes: Record<number, Scope> = {};
   public showPage: 'list' | 'detailCompany' | 'requestCompany' = 'list';
-  public alert: 'success_selected_company' | 'success_updated_instructor' | null = null;
+  public alert: 'success_selected_company' | 'success_updated_instructor' | 'too_many_students_in_company' | null = null;
   public requestDataForAlert: any = {};
   public selectedTab = new BehaviorSubject<number>(0);
 
@@ -183,9 +183,18 @@ export class CompaniesComponent implements OnInit {
         this.companies.next(companiesList);
       })
     );
-    
+
     this.listeners.push(
       this.schoolingo.socketService.addFunction("traineeship:selectCompany").subscribe((data: selectCompanyAPI | errorAPI) => {
+        if ('error' in data) {
+          switch(data.error) {
+            case "too_many_students_in_company":
+              this.alert = 'too_many_students_in_company';
+              break;
+          }
+          return;
+        }
+
         if ('status' in data) {
           this.requestDataForAlert = data;
 
