@@ -6,6 +6,8 @@ import { Schoolingo } from '@Schoolingo';
 import { DiaryWeek } from '@Schoolingo/Traineeship';
 import { Subscription } from 'rxjs';
 import { writeDairyComponent } from '../writeDairy/writeDairy.component';
+import { Modal } from '@Components/Modal/Modal';
+import { selectInstructorModalComponent } from './selectInstructor/selectInstructor';
 
 @Component({
   standalone: true,
@@ -16,6 +18,22 @@ import { writeDairyComponent } from '../writeDairy/writeDairy.component';
 export class DiaryComponent implements OnInit {
   private listeners: Subscription[] = [];
   datalist: DatalistComponent | null = null;
+
+  public selectInstructorModal = new Modal({
+    title: {
+      text: "traineeship/buttons/selectInstructor"
+    },
+    size: "size-2",
+    closeable: true,
+    items: [
+      {
+        type: 'component',
+        component: selectInstructorModalComponent,
+        data: {}
+      }
+    ]
+  })
+
   receivedDatalist(value: DatalistComponent): void {
     this.datalist = value;
   }
@@ -23,7 +41,7 @@ export class DiaryComponent implements OnInit {
   constructor(public schoolingo: Schoolingo) {}
   ngOnInit(): void {
 
-    if (this.schoolingo.traineeship.diaryWeeks.getValue().length) {
+    if (this.schoolingo.traineeship.diaryWeeks.getValue().length == 1) {
       this.selectWeek(this.schoolingo.traineeship.diaryWeeks.getValue()[0]);
     }
 
@@ -35,7 +53,7 @@ export class DiaryComponent implements OnInit {
 
     this.listeners.push(
       this.schoolingo.traineeship.diaryWeeks.subscribe((weeks: DiaryWeek[]) => {
-        if (weeks.length) {
+        if (weeks.length == 1) {
           this.schoolingo.traineeship.selectDairy(weeks[0]);
         }
       })
@@ -50,7 +68,11 @@ export class DiaryComponent implements OnInit {
 
   public selectWeek(week: DiaryWeek | null): void {
     this.schoolingo.traineeship.selectDairy(week);
-
   }
+
+  public selectInstructor(): void {
+    this.selectInstructorModal.open()
+  }
+
 
 }

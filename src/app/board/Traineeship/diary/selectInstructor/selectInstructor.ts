@@ -1,0 +1,55 @@
+import { NgClass } from '@angular/common';
+import { Component, OnInit } from '@angular/core';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { errorAPI } from '@Components/Datalist/Datalist';
+import { Schoolingo } from '@Schoolingo';
+import { Subscription } from 'rxjs';
+
+@Component({
+  standalone: true,
+  imports: [FormsModule, ReactiveFormsModule, NgClass],
+  templateUrl: './selectInstructor.html',
+  styleUrls: ['../../../../Styles/select.css', './selectInstructor.css']
+})
+export class selectInstructorModalComponent implements OnInit {
+  private listeners: Subscription[] = [];
+  public selectedInstructor: number | null = null;
+
+  constructor(
+    public schoolingo: Schoolingo
+  ) {}
+
+  public alert: 'noCompany' | 'noTraineeship' | null = null;
+
+  ngOnInit(): void {
+    if (this.schoolingo.traineeship.selectedDairy) {
+      this.schoolingo.socketService.emit('traineeship:getCompanyInfo', { companyId: this.schoolingo.traineeship.selectedDairy?.company });
+    }
+
+    this.listeners.push(
+      this.schoolingo.socketService.addFunction("traineeship:selectCompany").subscribe((data: selectCompanyAPI | errorAPI) => {
+        if ('status' in data && data.status) {
+          this.schoolingo.traineeship.activateModal.close();
+          return;
+        }
+        if ('error' in data) {
+          this.alert = data.error as typeof this.alert;
+        }
+      })
+    );
+
+    this.listeners.push(
+      this.schoolingo.socketService.addFunction("traineeship:getCompanyInstructors").subscribe((data: { personId: number }[]) => {
+        this.schoolingo.traineeship.instructors = [];
+        data.forEach((person: { personId: number }) => {
+          this.schoolingo.traineeship.instructors.push(person.personId);
+        });
+      })
+    );
+  }
+
+  public selectInstructor(): void {
+  }
+
+
+}

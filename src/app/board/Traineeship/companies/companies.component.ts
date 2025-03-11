@@ -55,7 +55,6 @@ export class CompaniesComponent implements OnInit {
     this.schoolingo.traineeship.selectedInstructor = null;
     this.selectedTab.next(0);
     this.router.navigate([], { queryParams: { companyId: id[0].id }});
-
   }
 
   private listeners: Subscription[] = [];
@@ -211,6 +210,7 @@ export class CompaniesComponent implements OnInit {
           if (data.status == 'success') {
             this.alert = 'success_selected_company';
           }
+
           if (data.status == 'updated') {
             this.alert = 'success_updated_instructor';
           }

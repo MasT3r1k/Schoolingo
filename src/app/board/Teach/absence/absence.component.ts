@@ -5,6 +5,7 @@ import { Absence, Schoolingo } from '@Schoolingo';
 import { BehaviorSubject, Subscription } from 'rxjs';
 import * as AbsenceConfig from "@Schoolingo/Absence";
 import { IconsModule } from '../../../Modules/Icons.module';
+import moment from 'moment';
 
 @Component({
   standalone: true,
@@ -73,7 +74,7 @@ export class AbsenceComponent implements OnInit {
     do {
       count++;
       date.add(1, 'month');
-    } while (date.isBefore(end))
+    } while (date.isBefore(end) && date.isSameOrBefore(moment()))
     return count;
   }
 
@@ -85,9 +86,11 @@ export class AbsenceComponent implements OnInit {
 
   public getCountMonthInDay(month: number, day: number, countAbsence: number[] = []): number[] {
     let date = this.schoolingo.school.schoolYear.start.clone().add(month, 'month').startOf('month').add(day, 'day');
-    if (!this.schoolingo.absence?.[date.format('YYYY-MM-DD')]) {
+
+    if (!this.schoolingo.absence[date.format('YYYY-MM-DD')]) {
       return countAbsence;
     }
+    
     this.schoolingo.absence[date.format('YYYY-MM-DD')].forEach((absence: Absence) => {
       if (!countAbsence[absence.type]) {
         countAbsence[absence.type] = 0;

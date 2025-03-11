@@ -124,8 +124,8 @@ export class TimetableComponent {
         type: 'custom',
         html: '\
         <div class="flex align-items-center absence-item">\
-          <div class="absence ab-' + this.sanitizer.bypassSecurityTrustHtml(absence[i].locale) + '"></div> \
-          [l:absence/' + this.sanitizer.bypassSecurityTrustHtml(absence[i].locale) + ']' + '\
+          <div class="absence ab-' + absence[i].locale + '"></div> \
+          [l:absence/' + absence[i].locale + ']' + '\
         </div>',
         isActive: true
       });

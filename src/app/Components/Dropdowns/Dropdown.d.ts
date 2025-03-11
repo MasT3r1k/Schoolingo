@@ -26,7 +26,7 @@ export type ContextButton = {
     selectedMonth: moment.Moment = moment();
 } | {
     type: 'custom';
-    html: SafeHtml;
+    html: string;
 });
 
 export type ContextMenu = {

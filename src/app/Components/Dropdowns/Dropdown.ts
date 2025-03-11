@@ -43,7 +43,7 @@ export class Dropdown {
     }
 
     // Item format
-    public formatRightText(text: ContextButtonRightText): SafeHtml {
+    public formatRightText(text: string): string {
         let html = "";
         if (text == "arrow") { }
         text.split(' ').forEach((word: string) => {
@@ -55,7 +55,7 @@ export class Dropdown {
         return this.formatHtmlText(html);
     }
 
-    public formatHtmlText(text: string): SafeHtml {
+    public formatHtmlText(text: string): string {
         let html = "";
         if (text == "arrow") { }
         text.split(' ').forEach((word: string) => {
@@ -66,7 +66,7 @@ export class Dropdown {
                 html += word + " ";
             }
         })
-        return this.sanitizer.bypassSecurityTrustHtml(html);
+        return html;
     }
 
     //
