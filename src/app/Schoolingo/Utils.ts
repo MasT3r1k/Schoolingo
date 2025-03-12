@@ -63,6 +63,10 @@ export namespace Utils {
   }
 
   export function openURL(url: string): void {
+    if (url.startsWith('mailto:')) {
+      window.open(url, '_top');
+      return;
+    }
     window.open(url, '_blank');
   }
 
