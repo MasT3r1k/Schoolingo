@@ -1,7 +1,7 @@
 import { NgClass } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { RouterLink } from '@angular/router';
-import { DatalistComponent } from '@Components/Datalist/Datalist';
+import { DatalistComponent, errorAPI } from '@Components/Datalist/Datalist';
 import { Schoolingo } from '@Schoolingo';
 import { DiaryWeek } from '@Schoolingo/Traineeship';
 import { Subscription } from 'rxjs';
@@ -59,6 +59,32 @@ export class DiaryComponent implements OnInit {
       })
     );
     
+    this.listeners.push(
+      this.schoolingo.socketService.addFunction("traineeship:selectCompany").subscribe((data: selectCompanyAPI | errorAPI) => {
+        if ('status' in data) {
+          switch(data.status) {
+            case 'updated':
+              let weeks = this.schoolingo.traineeship.diaryWeeks.getValue();
+              weeks.forEach((week: DiaryWeek) => {
+                if (week.traineeship == data.traineeship) {
+                  week.company = data.company;
+                  week.instructor = data.instructor;
+                  this.schoolingo.traineeship.selectedDairy = week;
+                }
+              });
+              this.schoolingo.traineeship.diaryWeeks.next(weeks);
+              break;
+          }
+          this.selectInstructorModal.close();
+          // Update data in diary
+          console.log(data)
+          return;
+        }
+        if ('error' in data) {
+        }
+      })
+    );
+
   }
 
   ngOnDestroy(): void {
