@@ -51,18 +51,18 @@ export class ManageUsersComponent {
     console.log(id);
   }
 
-  public getTags(user: any): SafeHtml {
+  public getTags(user: any): string {
     let tags = [];
     if (user.manager == -1) {
-      tags.push(this.sanitizer.bypassSecurityTrustHtml("<div class='badge blue'>" + this.schoolingo.locale.getLocale('roles/manager') + "</div>"));
+      tags.push("<div class='badge blue'>" + this.schoolingo.locale.getLocale('roles/manager') + "</div>");
     }
     if (user.principal) {
-      tags.push(this.sanitizer.bypassSecurityTrustHtml("<div class='badge blue'>" + this.schoolingo.locale.getLocale('roles/principal') + "</div>"));
+      tags.push("<div class='badge blue'>" + this.schoolingo.locale.getLocale('roles/principal') + "</div>");
     }
-    return this.sanitizer.bypassSecurityTrustHtml(`
+    return `
     <div class='flex-items badges'>
     ${tags.join('')}
-    </div>`);
+    </div>`;
   }
 
   ngOnInit(): void {

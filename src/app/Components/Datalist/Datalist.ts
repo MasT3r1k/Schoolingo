@@ -127,6 +127,20 @@ export class DatalistComponent implements OnInit {
         
     }
 
+    public formatHtmlText(text: string): string {
+        let html = "";
+        if (text == "arrow") { }
+        text.split(' ').forEach((word: string) => {
+            if (word.startsWith("[l:") && word.endsWith(']')) {
+                let key = word.slice(3, -1);
+                html += this.locale.getLocale(key);
+            } else {
+                html += word + " ";
+            }
+        })
+        return html;
+    }
+
     ngOnDestroy(): void {
         this.listeners.forEach((sub: Subscription) => sub.unsubscribe());
     }

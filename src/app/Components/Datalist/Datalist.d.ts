@@ -11,7 +11,7 @@ export type Data = {
 }) | {
     id: number;
 } | {
-    html: string | SafeHtml;
+    html: string;
 };
 
 export interface DatalistOptions {
