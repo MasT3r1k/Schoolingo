@@ -80,7 +80,10 @@ export class BoardComponent implements OnInit, AfterViewInit {
             if(event instanceof NavigationStart) {
                 this.pageLoading = true;
                 this.loadingPageTimeout = setTimeout(() => {
-                  this.pageLoadingAlert = new Alert('error', 'pageTooLongLoading')
+                  this.pageLoadingAlert = new Alert('error', 'pageTooLongLoading');
+                  this.pageLoadingAlert.addButton("refresh", () => {
+                    window.location.reload();
+                  })
                 }, 7500)
             }
             else if (
@@ -98,6 +101,10 @@ export class BoardComponent implements OnInit, AfterViewInit {
     this.schoolingo.refreshTitle();
     this.subscribers.push(
       this.router.events.subscribe((event: any): void => {
+        if (event instanceof NavigationStart) {
+          if (!event.url) return
+          window.history.replaceState(null, document.title, event.url);
+        }
         if (event instanceof NavigationEnd) {
           if (!event.url) return
           this.schoolingo.refreshTitle();
