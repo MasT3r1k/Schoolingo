@@ -1,4 +1,4 @@
-import { NgStyle, NgClass } from '@angular/common';
+import { NgClass } from '@angular/common';
 import { Component } from '@angular/core';
 import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { Data, dataAPI, DatalistComponent, errorAPI, Metadata } from '@Components/Datalist/Datalist';
@@ -6,7 +6,6 @@ import { Schoolingo } from '@Schoolingo';
 import { Permission } from '@Schoolingo/Permissions';
 import { BehaviorSubject, Subscription } from 'rxjs';
 import { studentInfoAPI } from '../students/students';
-import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 
 function getUserRole(studentInfo: { studentId: number | null, teacherId: number | null, parentId: number | null }): string {
   if (studentInfo.studentId !== null) return "student";
@@ -24,8 +23,7 @@ function getUserRole(studentInfo: { studentId: number | null, teacherId: number 
 export class ManageUsersComponent {
   constructor(
     public schoolingo: Schoolingo,
-    public perms: Permission,
-    private sanitizer: DomSanitizer
+    public perms: Permission
   ) {}
 
   private listeners: Subscription[] = [];
