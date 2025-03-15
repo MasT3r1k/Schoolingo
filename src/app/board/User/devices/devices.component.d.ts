@@ -3,6 +3,7 @@ export interface Device {
     isSocket: boolean;
     id: number;
     ip: string;
+    ipShow: boolean = false;
     userAgent: string;
     expires: Moment;
 }

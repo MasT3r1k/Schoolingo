@@ -26,12 +26,25 @@
                             }
                         </div>
                     </div>
-                    @if (!schoolingo.getOfflineMode() && !schoolingo.isLoginExpired && schoolingo.userService.getExpiration()) {
-                        <div class="time">
+                    @if (!schoolingo.getOfflineMode() && !schoolingo.isLoginExpired && schoolingo.userService.getExpiration() && getActiveDevice()) {
+                        <div class="time flex align-items-center">
                             {{ schoolingo.locale.getLocale('devices/until')
                             + schoolingo.userService.getExpiration().format('HH:mm:ss DD.MM.YYYY')
-                             + (schoolingo.ipManager.getIPInfo(schoolingo.ipManager.getMyIP())?.status ? (' | IP: ' + Utils.getFlagFromCountry(schoolingo.ipManager.getIPInfo(schoolingo.ipManager.getMyIP())!.country) + ' ' + schoolingo.ipManager.getMyIP()) : '')
-                            }}</div>
+                             + (schoolingo.ipManager.getIPInfo(schoolingo.ipManager.getMyIP())?.status ? (' | IP: ' + Utils.getFlagFromCountry(schoolingo.ipManager.getIPInfo(schoolingo.ipManager.getMyIP())!.country)) : '')
+                            }}
+                            @if (!getActiveDevice().ipShow) {
+                                <span class="ip blur">
+                                    {{ Utils.blurIPAddress(schoolingo.ipManager.getMyIP()) }}
+                                </span>
+                            } @else {
+                                <span class="ip">
+                                    {{ schoolingo.ipManager.getMyIP() }}
+                                </span>
+                            }
+                            <div class="btn small gray" style="padding: 4px 8px;" (click)="getActiveDevice().ipShow = !getActiveDevice().ipShow">
+                                {{ schoolingo.locale.getLocale("devices/buttons/" + (getActiveDevice().ipShow ? "hideIP" : "showIP")) }}
+                            </div>
+                        </div>
                     } @else if (schoolingo.isLoginExpired) {
                         <div class="time">
                             <div class="alerts">
@@ -74,7 +87,21 @@
                                 {{ Utils.getOS(device.userAgent).toUpperCase() + ' - ' + Utils.getBrowser(device.userAgent).toUpperCase() }}
                             </div>
                             @if (device.expires) {
-                                <div class="time">{{ schoolingo.locale.getLocale('devices/until') + Utils.makeMoment(device.expires).format('HH:mm:ss DD.MM.YYYY') + (schoolingo.ipManager.getIPInfo(device.ip)?.status ? (' | IP: ' + Utils.getFlagFromCountry(schoolingo.ipManager.getIPInfo(device.ip)!.country) + ' ' + device.ip) : '') }}</div>
+                                <div class="time flex align-items-center">
+                                    {{ schoolingo.locale.getLocale('devices/until') + Utils.makeMoment(device.expires).format('HH:mm:ss DD.MM.YYYY') + (schoolingo.ipManager.getIPInfo(device.ip)?.status ? (' | IP: ' + Utils.getFlagFromCountry(schoolingo.ipManager.getIPInfo(device.ip)!.country)) : '') }}
+                                    @if (!device.ipShow) {
+                                        <span class="ip blur">
+                                            {{ Utils.blurIPAddress(device.ip) }}
+                                        </span>
+                                    } @else {
+                                        <span class="ip">
+                                            {{ device.ip }}
+                                        </span>
+                                    }
+                                    <div class="btn small gray" style="padding: 4px 8px;" (click)="device.ipShow = !device.ipShow">
+                                        {{ (device.ipShow) ? 'Schovat IP' : "Zobraz IP" }}
+                                    </div>
+                                </div>
                             }
                         </div>
         

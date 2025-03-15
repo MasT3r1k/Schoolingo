@@ -1,9 +1,7 @@
-import { NgClass } from '@angular/common';
 import { Component } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { Schoolingo } from '@Schoolingo';
 import { Country } from 'country-state-city';
-import moment from 'moment';
 import { Subscription } from 'rxjs';
 import { Device } from './devices.component.d'; 
 import { Utils } from '@Schoolingo/Utils';
@@ -14,7 +12,7 @@ import { IconsModule } from '../../../Modules/Icons.module';
   imports: [RouterLink, IconsModule],
   providers: [],
   templateUrl: './devices.component.html',
-  styleUrls: ['./devices.component.css', '../../../Styles/card.css', '../../../Styles/select.css']
+  styleUrls: ['./devices.component.css', '../../../Styles/card.css', '../../../Styles/select.css', '../../../Styles/input.css']
 })
 export class DevicesComponent {
   private devices: Device[] = [];

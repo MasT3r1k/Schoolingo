@@ -53,6 +53,16 @@ export namespace Utils {
     return moment();
   }
 
+  export function blurIPAddress(ip: string, blur = true): string {
+    let parts = ip.split('.');
+    if (blur) {
+      for(let i = 1; i < parts.length; i++) {
+        parts[i] = parts[i].replace(/\d/g, "X")
+      }
+    }
+    return parts.join('.');
+  }
+
   export function formatPhone(phone: string): string {
     return ((phone || "").match(/.{1,3}/g) || []).join(' ');
   }
