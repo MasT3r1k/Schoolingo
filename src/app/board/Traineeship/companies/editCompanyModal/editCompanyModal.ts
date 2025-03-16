@@ -11,7 +11,7 @@ import { IconsModule } from '../../../../Modules/Icons.module';
   standalone: true,
   imports: [FormsModule, ReactiveFormsModule, TabsComponent, NgClass, IconsModule],
   templateUrl: './editCompanyModal.html',
-  styleUrls: ['../../../../Styles/input.css', './editCompanyModal.css']
+  styleUrls: ['../../../../Styles/input.css', './editCompanyModal.css', '../../../../Components/Modal/Modal.css']
 })
 export class editCompanyModalComponent {
   public showSelect: 'responsiblePerson' | 'statusCompany' | null = null;

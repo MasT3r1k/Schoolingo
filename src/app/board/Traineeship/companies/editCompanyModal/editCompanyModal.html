@@ -117,12 +117,49 @@
 
 <div [ngClass]="{items: true, active: selectedTab.getValue() === 1}" style="min-height: 400px;">
     <div class="item">
-        <div class="label">{{ schoolingo.locale.getLocale('traineeship/instructors') }}</div>
-        <div class="value">
-            <input type="text" name="name" [value]="schoolingo.locale.getLocale('traineeship/statusCompany/' + schoolingo.traineeship.selectedCompany.status)" readonly="true">
+        <div class="label">
+            {{ schoolingo.locale.getLocale('traineeship/instructors') }}
+        </div>
+        <div class="modal-body-external">
+            <div class="options">
+                @for(instructor of schoolingo.traineeship.instructors;track $index) {
+                    <div class="option instructor-info align-items-center">
+                        <div class="left">
+                            <div>
+                                <b>{{ schoolingo.formatPerson(instructor) }}</b>
+                            </div>
+
+                            <div class="flex align-items-center">
+                                <i-tabler name="clock-hour-4" class="first-margin"></i-tabler>
+                                <span>Přidáno do seznamu: 10. 4. 98</span>
+                            </div>
+
+                            <div class="flex align-items-center">
+                                <i-tabler name="mail" class="first-margin"></i-tabler>
+                                <span>{{ "ivanovic@luptak.cz" }}</span>
+                            </div>
+
+                            <div class="flex align-items-center">
+                                <i-tabler name="phone" class="first-margin"></i-tabler>
+                                <span>{{ Utils.formatPhone("666777888") }}</span>
+                            </div>
+                        </div>
+                        <div class="right">
+                            <div class="flex">
+                                <div>
+                                    <i-tabler name="pencil" class="first-margin"></i-tabler>
+                                </div>
+                                <div>
+                                    <i-tabler name="trash-x-filled"></i-tabler>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
         </div>
     </div>
-    <div class="btn submit red mb" role="button">
+    <div class="btn submit mb" role="button">
         {{ schoolingo.locale.getLocale('traineeship/addInstructor') }}
     </div>
 </div>
