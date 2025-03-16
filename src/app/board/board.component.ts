@@ -16,7 +16,7 @@ import { DiaryWeek } from '@Schoolingo/Traineeship';
 import { personDetails, user } from '@Schoolingo/User';
 import moment from 'moment';
 import { Subscription } from 'rxjs';
-import { AppConfig as App } from '@Schoolingo/App';
+import { AppConfig as App, AppConfig } from '@Schoolingo/App';
 import { Permission } from '@Schoolingo/Permissions';
 import { IconsModule } from '../Modules/Icons.module';
 import { Alert } from '@Schoolingo/Alert';
@@ -58,6 +58,7 @@ export class BoardComponent implements OnInit, AfterViewInit {
   pageLoadingAlert: Alert | undefined;
   App = App;
   private loadingPageTimeout!: NodeJS.Timeout;
+  private warnlogoutInterval!: NodeJS.Timeout;
   private subscribers: Subscription[] = [];
 
   constructor(
@@ -91,10 +92,24 @@ export class BoardComponent implements OnInit, AfterViewInit {
                 event instanceof NavigationCancel
                 ) {
                 this.pageLoading = false;
-                this.pageLoadingAlert = undefined
+                this.pageLoadingAlert = undefined;
+                this.schoolingo.socketService.emit('tokens:refreshToken');
                 clearTimeout(this.loadingPageTimeout);
             }
         });
+  }
+
+  public resetWarnLogoutInterval(): void {
+      clearInterval(this.warnlogoutInterval);
+      this.warnlogoutInterval = setInterval(() => {
+          if (this.schoolingo.userService.tokenExpiration.getValue().isAfter(moment()) && this.schoolingo.userService.tokenExpiration.getValue().diff(moment(), 'seconds') <= AppConfig.WARN_BEFORE_LOGOUT_MINUTES * 60) {
+            this.schoolingo.logoutTime = moment().add(AppConfig.WARN_BEFORE_LOGOUT_MINUTES, 'minutes');
+            this.schoolingo.loginModal.open();
+            // x minutes before because of option to stay logged in
+            // Make modal change to autologout
+            clearInterval(this.warnlogoutInterval);
+          }
+      }, 5000)
   }
 
   ngOnInit(): void {
@@ -224,6 +239,7 @@ export class BoardComponent implements OnInit, AfterViewInit {
 
     this.subscribers.push(
       this.schoolingo.socketService.addFunction("tokens:refreshToken").subscribe((data: { expires: Date }) => {
+        this.resetWarnLogoutInterval();
         this.schoolingo.loginModal.close();
         this.schoolingo.userService.setExpiration(moment(data.expires));
       })
