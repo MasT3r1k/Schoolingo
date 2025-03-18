@@ -205,13 +205,13 @@ Nezapsané hodiny jsou zvýrazněny světlejším pozadím než zapsané hodiny.
 
                         @case (1) {
                             <p>
-                                Celkem: {{ schoolingo.classbook.students.length }}
+                                {{ schoolingo.locale.getLocale('total') }}: {{ schoolingo.classbook.students.length }}
                             </p>
                             <p>
-                                Přítomni: {{ schoolingo.classbook.students.length - getMissingStudents() }}
+                                {{ schoolingo.locale.getLocale('classbook/absence/atSchool') }}: {{ schoolingo.classbook.students.length - getMissingStudents() }}
                             </p>
                             <p>
-                                Chybí: {{ getMissingStudents() }}
+                                {{ schoolingo.locale.getLocale('classbook/absence/missing') }}: {{ getMissingStudents() }}
                             </p>
 
                             <hr>
@@ -286,6 +286,6 @@ Nezapsané hodiny jsou zvýrazněny světlejším pozadím než zapsané hodiny.
             </div>
         </div>
     } @else {
-        <alert [alert]="alerts['noLessons']"></alert>
+        <alert [alert]="alerts.noLessons"></alert>
     }
 </div>
