@@ -91,10 +91,9 @@ export class ClassbookComponent implements OnInit {
 
   public getAbsenceList(): AbsenceConfig[] {
     let config = this.schoolingo.absenceConfig;
-    let isClassTeacher = this.schoolingo.userService.getUser()!.id === this.lesson.classInfo.teacher;
     let list: AbsenceConfig[] = [];
     for(let i = 0;i < config.length;i++) {
-      if ([AbsenceType.EXCUSED, AbsenceType.DISTANCE, AbsenceType.UNEXCUSED, AbsenceType.NON_COUNT].includes(i) && !isClassTeacher) {
+      if (!this.perms.checkPermission(config[i].perms)) {
         continue;
       }
       list.push(config[i]);
