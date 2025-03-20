@@ -140,7 +140,7 @@ Nezapsané hodiny jsou zvýrazněny světlejším pozadím než zapsané hodiny.
                                     @for (previousLesson of lastLesson;track $index) {
                                         <div class="lastLesson">
                                             @if (previousLesson.cbId == -1) {
-                                                <alert [alert]="alerts['notWrittenLesson']" class="mb"></alert>
+                                                <alert [alert]="alerts.notWrittenLesson" class="mb"></alert>
                                             }
                                             <h2 class="mb">
                                                 {{
@@ -205,13 +205,16 @@ Nezapsané hodiny jsou zvýrazněny světlejším pozadím než zapsané hodiny.
 
                         @case (1) {
                             <p>
-                                {{ schoolingo.locale.getLocale('total') }}: {{ schoolingo.classbook.students.length }}
+                                {{ schoolingo.locale.getLocale('total') }}:
+                                {{ schoolingo.classbook.students.length }}
                             </p>
                             <p>
-                                {{ schoolingo.locale.getLocale('classbook/absence/atSchool') }}: {{ schoolingo.classbook.students.length - getMissingStudents() }}
+                                {{ schoolingo.locale.getLocale('classbook/absence/atSchool') }}:
+                                {{ schoolingo.classbook.students.length - getMissingStudents() }}
                             </p>
                             <p>
-                                {{ schoolingo.locale.getLocale('classbook/absence/missing') }}: {{ getMissingStudents() }}
+                                {{ schoolingo.locale.getLocale('classbook/absence/missing') }}:
+                                {{ getMissingStudents() }}
                             </p>
 
                             <hr>
