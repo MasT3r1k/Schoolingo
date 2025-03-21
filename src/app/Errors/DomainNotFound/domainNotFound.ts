@@ -9,5 +9,5 @@ import { Component } from "@angular/core";
     styleUrls: ['./domainNotFound.css']
 })
 
-export class domainNotFoundError { 
+export class domainNotFoundError {
 }
