@@ -7,7 +7,6 @@ export class Discord {
     }
 
     public checkData(): boolean {
-        console.log(Object.keys(this.data).length)
         return Object.keys(this.data).length > 0
     }
 

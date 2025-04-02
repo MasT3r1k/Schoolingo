@@ -49,6 +49,8 @@ export class AppComponent implements OnInit {
           this.school.errorReason = 1003;
           break;
       }
+
+      setTimeout(() => this.loadSchool(), 5000);
     }
 
     this.afterLoadedSchool = true;
@@ -59,6 +61,17 @@ export class AppComponent implements OnInit {
     polyfillCountryFlagEmojis();
 
     this.ipManager.getIP('');
+
+    this.loadSchool();
+  }
+
+  ngOnDestroy(): void {
+    this.localeLanguageSubscribe.unsubscribe();
+  }
+
+  public loadSchool(): void {
+    this.afterLoadedSchool = false;
+    this.school.errorReason = -1;
 
     this.http.get<(SchoolInfo & { modules?: number })>(Config.API_URL + 'v1/getSchoolInfo', { withCredentials: true }).subscribe((data: (SchoolInfo & { modules?: number })): void => {
       this.school.setSchoolInfo(data, data.modules ?? 0);
@@ -80,14 +93,8 @@ export class AppComponent implements OnInit {
       });
     }, this.httpError);
 
-    
     this.http.get<SchoolYear>(Config.API_URL + 'v1/getSchoolYear', { withCredentials: true }).subscribe((data: SchoolYear): void => {
       this.school.setSchoolYear(data)
     }, this.httpError);
   }
-
-  ngOnDestroy(): void {
-    this.localeLanguageSubscribe.unsubscribe();
-  }
-
 }

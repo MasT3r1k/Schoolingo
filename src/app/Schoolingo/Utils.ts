@@ -1,6 +1,8 @@
+import { Injectable } from "@angular/core";
 import country from "country-state-city/lib/country";
 import moment from "moment";
 
+Injectable()
 export namespace Utils {
 /**
  * Adds zeros in front of number based on length
@@ -46,7 +48,7 @@ export namespace Utils {
   }
 
   export function formatDate(date: Date | moment.Moment): string {
-    return (moment.isMoment(date) ? date : moment(date)).format('HH:mm:ss DD. MM. YYYY');
+    return (moment.isMoment(date) ? date : moment(date)).format('H:mm:ss DD. MM. YYYY');
   }
 
   export function getNow(): moment.Moment {

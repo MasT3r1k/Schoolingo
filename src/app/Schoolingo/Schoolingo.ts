@@ -443,7 +443,7 @@ export class Schoolingo {
         return this.persons[personId];
     }
 
-    public formatPerson(personId: number | undefined | personDetails): string {
+    public formatPerson(personId: number | undefined | personDetails | any): string {
         if (personId == -1 || personId == undefined) {
             return '';
         }

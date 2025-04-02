@@ -22,6 +22,8 @@ interface teacherGroup {
   styleUrls: ['./interm-record.component.css', '../../../Styles/card.css', '../../../Styles/input.css']
 })
 export class IntermRecordComponent implements OnInit {
+  private readonly ignoreGrade: any[] = ['+', '-', 'A', 'N', '?', null, undefined];
+
   public showSelect: 'groupSelect' | null = null;
   public listeners: Subscription[] = [];
   public groups: teacherGroup[] = [];
@@ -149,7 +151,7 @@ export class IntermRecordComponent implements OnInit {
     let gradeTotal = 0;
     let gradeCount = 0;
     this.students.forEach((student: any) => {
-      if (['+', '-', 'A', 'N', '?', null, undefined].includes(student.grades[columnIndex])) return;
+      if (this.ignoreGrade.includes(student.grades[columnIndex])) return;
       gradeTotal += student.grades[columnIndex];
       gradeCount++;
     })
@@ -162,7 +164,7 @@ export class IntermRecordComponent implements OnInit {
     let gradeTotal = 0;
     let gradeCount = 0;
     grades.forEach((grade: any) => {
-      if (['+', '-', 'A', 'N', '?', null].includes(grade)) return;
+      if (this.ignoreGrade.includes(grade)) return;
       gradeTotal += grade;
       gradeCount++;
     })

@@ -21,21 +21,31 @@
                 </div>
             </div>
             <div class="list-messages">
-                @for (thread of threads; track $index) {
-                    <div [ngClass]="{message: true, isNew: thread.newMessage, active: $index === selectedThread}" (click)="selectedThread = $index">
-                        <div class="border-type" [ngStyle]="{backgroundImage: getBackground(thread)}"></div>
+                @if (!messages.length) {
+                    <div class="alert error">
+                        Žádné zprávy nejsou k dispozici.
+                    </div>
+                }
+
+                @for (message of messages; track $index) {
+                    <div [ngClass]="{message: true, isNew: message.isRead, active: $index === selectedMessage}" (click)="selectedMessage = $index">
+                        <div class="border-type" [ngStyle]="{backgroundImage: getBackground(message)}"></div>
                         <div class="message-header">
                             <div class="left">
-                                <div class="author">{{ schoolingo.formatPerson(thread.author) }}</div>
+                                <div class="author">
+                                    @if (message.type == messageTypes.MESSAGE && message.author) {
+                                        {{ schoolingo.formatPerson(message.author) }}
+                                    }
+                                </div>
                                 <div class="type">
                                     <div class="icon">
                                         <!-- <i-tabler name="mail"></i-tabler> -->
-                                        @if (schoolingo.messages.types[thread.type].icon) {
-                                            <i-tabler [name]="schoolingo.messages.types[thread.type].icon || ''"></i-tabler>
+                                        @if (schoolingo.messages.types[message.type].icon) {
+                                            <i-tabler [name]="schoolingo.messages.types[message.type].icon || ''"></i-tabler>
                                         }
                                     </div>
                                     <span>
-                                        {{ schoolingo.locale.getLocale('messages/types/' + schoolingo.messages.types[thread.type].label) }}
+                                        {{ schoolingo.locale.getLocale('messages/types/' + schoolingo.messages.types[message.type].label) }}
                                     </span>
                                     <!-- <span>
                                         {{ schoolingo.locale.getLocale('messages/classicMessage') }}
@@ -51,22 +61,24 @@
                             <div class="right">
                                 <div class="time">
                                     <span>
-                                        {{ thread.date.calendar() }}
+                                        {{ Utils.formatDate(message.sent) }}
                                     </span>
                                 </div>
                                 <div class="tags">
                                     <div class="tag">
                                         <i-tabler name="paperclip"></i-tabler>
                                         Obsahuje přílohy
-                                    </div>                                
-                                    <div class="tag red">
-                                        {{ schoolingo.locale.getLocale('messages/tags/requireConfirmation') }}
-                                    </div>
+                                    </div>                               
+                                    @if (message.requireConfirm) {
+                                        <div class="tag red">
+                                            {{ schoolingo.locale.getLocale('messages/tags/requireConfirmation') }}
+                                        </div>
+                                    } 
                                 </div>
                             </div>
                         </div>
                         <div class="message-body">
-                            {{ thread.message }}
+                            {{ message.message }}
                         </div>
                     </div>
                 }
@@ -75,7 +87,7 @@
 
         <div class="right">           
             <div class="message-box">
-                @if (selectedThread == -1) {
+                @if (selectedMessage == -1) {
                     <div class="help">
                         <h2 class="mb">{{ "Vaše zprávy" }}</h2>
                         <p>Nyní čtete okno "Detail zprávy" a vlevo od tohoto okna se nachází seznam zpráv. Kliknutím na zprávu v tom okně, se změní obsah tohoto okna. Nad seznamem zpráv se nachází vyhledávání zpráv podle odesílatele. Nad tímto oknem můžete dále najít filtrování zpráv.</p>
@@ -121,14 +133,16 @@
                                     {{ schoolingo.locale.getLocale('buttons/forward') }}
                                 </div>
                             </div>
-                            <div class="item-btn text">
-                                <div class="text green">
-                                    <i-tabler name="check" style="width:20px;height:20px;"></i-tabler>
-                                    <span>
-                                        {{ schoolingo.locale.getLocale('messages/confirmRead') }}
-                                    </span>
+                            @if (messages[selectedMessage].requireConfirm) {
+                                <div class="item-btn text">
+                                    <div class="text green">
+                                        <i-tabler name="check" style="width:20px;height:20px;"></i-tabler>
+                                        <span>
+                                            {{ schoolingo.locale.getLocale('messages/confirmRead') }}
+                                        </span>
+                                    </div>
                                 </div>
-                            </div>
+                            }
                         </div>
                         <div class="right">
                             <div class="item-btn">
@@ -145,32 +159,26 @@
                         <div class="card-row">
                             <div class="left">
                                 <div class="author">
-                                    {{ schoolingo.formatPerson(threads[selectedThread].author) }}
+                                    {{ getAuthor() }}
                                 </div>
                                 <div class="type">
-                                    <div class="icon">
-                                        <i-tabler name="mail"></i-tabler>
-                                    </div>
-                                    <span>
-                                        {{ schoolingo.locale.getLocale('messages/classicMessage') }}
-                                    </span>
-                                    <div class="tag" [ngStyle]="{ backgroundColor: schoolingo.messages.types[threads[selectedThread].type].color || ''}">
-                                        @if (schoolingo.messages.types[threads[selectedThread].type].icon) {
-                                            <i-tabler [name]="schoolingo.messages.types[threads[selectedThread].type].icon || ''"></i-tabler>
+                                    <div class="tag" [ngStyle]="{ backgroundColor: schoolingo.messages.types[messages[selectedMessage].type].color || ''}">
+                                        @if (schoolingo.messages.types[messages[selectedMessage].type].icon) {
+                                            <i-tabler [name]="schoolingo.messages.types[messages[selectedMessage].type].icon || ''"></i-tabler>
                                         }
-                                        {{ schoolingo.locale.getLocale('messages/types/' + schoolingo.messages.types[threads[selectedThread].type].label) }}
+                                        {{ schoolingo.locale.getLocale('messages/types/' + schoolingo.messages.types[messages[selectedMessage].type].label) }}
                                     </div>
                                 </div>
                             </div>
     
                             <div class="right">
                                 <div class="time">
-                                    <span>{{ threads[selectedThread].date.calendar() }}</span>
+                                    <span>{{ Utils.formatDate(messages[selectedMessage].sent) }}</span>
                                 </div>
                             </div>
                         </div>
 
-                        @if (threads[selectedThread].type === ThreadTypes.EXCUSESTUDENT) {
+                        @if (messages[selectedMessage].type == messageTypes.EXCUSESTUDENT) {
                             <div class="card-row">
                                 <div class="left">
                                     <div>
@@ -196,7 +204,7 @@
 
                     </div>
                     <div class="message-body">
-                        {{ threads[selectedThread].message }}
+                        {{ messages[selectedMessage].message }}
                     </div>
                 }
             </div>

@@ -79,7 +79,7 @@ export class Theme {
     return this.theme;
   }
 
-  public getThemeColor(): typeof this.theme {
+  public getThemeColor(): Omit<typeof this.theme, "system"> {
     return this.theme == 'system' ? this.getSystemColor() : this.theme;
   }
 

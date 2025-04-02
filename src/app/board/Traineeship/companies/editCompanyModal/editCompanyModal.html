@@ -101,7 +101,9 @@
                 <input type="text" (click)="showSelect = showSelect == 'responsiblePerson' ? null : 'responsiblePerson'" name="inputSelect" readonly="true" [value]="schoolingo.traineeship.selectedCompany.responsiblePerson ? schoolingo.formatPerson(schoolingo.traineeship.selectedCompany.responsiblePerson) : schoolingo.locale.getLocale('traineeship/noInstructorSelected')" />
                 @if (showSelect == 'responsiblePerson') {
                     <div class="options">
-                        <div class="option" (click)="showSelect = null;schoolingo.traineeship.selectInstructor(null)">{{ schoolingo.locale.getLocale('traineeship/dontKnowInstructor') }}</div>
+                        <div class="option" (click)="showSelect = null;schoolingo.traineeship.selectInstructor(null)">
+                            {{ schoolingo.locale.getLocale('traineeship/dontKnowInstructor') }}
+                        </div>
 
                         @for (instructor of schoolingo.traineeship.instructors; track $index) {
                             <div class="option" (click)="showSelect = null;schoolingo.traineeship.selectInstructor(instructor)">
@@ -167,7 +169,9 @@
 
 <div [ngClass]="{items: true, active: selectedTab.getValue() === 2}" style="min-height: 400px;">
     <div class="item">
-        <div class="label">{{ schoolingo.locale.getLocale('traineeship/statusCompany/main') }}</div>
+        <div class="label">
+            {{ schoolingo.locale.getLocale('traineeship/statusCompany/main') }}
+        </div>
         <div class="value">
             <input type="text" name="name" [value]="schoolingo.locale.getLocale('traineeship/statusCompany/' + schoolingo.traineeship.selectedCompany.status)" readonly="true">
         </div>
@@ -179,14 +183,18 @@
     </div>
 
     <div class="item">
-        <div class="label">{{ schoolingo.locale.getLocale('traineeship/requested') }}</div>
+        <div class="label">
+            {{ schoolingo.locale.getLocale('traineeship/requested') }}
+        </div>
         <div class="value">
             <input type="text" name="name" [value]="Utils.formatDate(schoolingo.traineeship.selectedCompany.requested) || schoolingo.locale.getLocale('traineeship/notRequestedFromStudent')" readonly="true">
         </div>
     </div>
     
     <div class="item">
-        <div class="label">{{ schoolingo.locale.getLocale('traineeship/created') }}</div>
+        <div class="label">
+            {{ schoolingo.locale.getLocale('traineeship/created') }}
+        </div>
         <div class="value">
             <input type="text" name="name" [value]="Utils.formatDate(schoolingo.traineeship.selectedCompany.created)" readonly="true">
         </div>
