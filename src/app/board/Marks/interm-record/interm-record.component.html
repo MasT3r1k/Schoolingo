@@ -9,7 +9,9 @@
                     <div class="options">
                         <div class="option" (click)="showSelect = null;selectGroup(-1, -1)">‎ </div>
                         @for (group of groups; track $index) {
-                                <div class="option" (click)="showSelect = null;selectGroup(group.groupId, group.subjectId)">{{ getGroupText(group) }}</div>
+                                <div class="option" (click)="showSelect = null;selectGroup(group.groupId, group.subjectId)">
+                                    {{ getGroupText(group) }}
+                                </div>
                         } @empty {
                             <div class="option">‎ </div>
                         }
@@ -21,7 +23,9 @@
     <div class="card-body">
         <div [ngClass]="{'card-tab': true, active: selectedGroup.getValue() === -1}">
             <div class="alerts">
-                <div class="alert blue-info">{{ schoolingo.locale.getLocale('marks/selectGroup') }}</div>
+                <div class="alert blue-info mb">
+                    {{ schoolingo.locale.getLocale('marks/selectGroup') }}
+                </div>
             </div>
             <div class="list-groups">
                 @for (group of groups; track $index) {
