@@ -18,6 +18,7 @@ export interface personDetails {
 
 export type user = ({
     type: 'student';
+    scopeId: number;
     person: personDetails;
     class: string;
 } | {
