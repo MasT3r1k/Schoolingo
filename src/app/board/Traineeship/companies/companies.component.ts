@@ -18,6 +18,7 @@ import { editCompanyModalComponent } from './editCompanyModal/editCompanyModal';
 import { DiaryWeek } from '@Schoolingo/Traineeship';
 
 type Scope = {
+  scopeId: number;
   name: string;
   shortcut: string;
 }
@@ -228,12 +229,23 @@ export class CompaniesComponent implements OnInit {
   public getScopes(company: any): string[] {
     let scopeList: string[] = [];
     if (!company || !company.scopes) return [];
-    Object.values(JSON.parse(company.scopes)).forEach((value: Scope | any) => {
-      if (value.status === 1 && this.scopes?.[value.scopeId - 1]) {
+    Object.values<Scope>(JSON.parse(company.scopes)).forEach((value) => {
+      if (this.scopes?.[value.scopeId - 1]) {
         scopeList.push(this.scopes?.[value.scopeId - 1]?.name)
       }
     });
     return scopeList;
+  }
+
+  public checkIfCompanyIsSuitableForMe(): boolean {
+    let company = this.schoolingo.traineeship.selectedCompany;
+    if (!company || !company.scopes) return false;
+    let user = this.schoolingo.userService.getUser()!;
+    if (!user || user.type != "student" || user?.scopeId == null || !user.scopeId) return false;
+    let scopeId = user.scopeId;
+    let scopes = Object.values<Scope>(JSON.parse(company.scopes)).filter((value: Scope) => value.scopeId === scopeId);
+    if (scopes.length == 0) return false;
+    return true;
   }
   
 
