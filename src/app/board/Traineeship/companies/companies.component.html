@@ -16,7 +16,7 @@
                 <div class="form-group search mb">
                     <input type="text" name="search" [formControl]="search" [placeholder]="schoolingo.locale.getLocale('traineeship/search')">
                     @if (!permissions.checkPermission(["manager:traineeship:manage"])) {
-                        <div (click)="showPage = 'requestCompany'" class="btn submit blue-info" role="button">
+                        <div (click)="requestCompany()" class="btn submit blue-info" role="button">
                             {{ schoolingo.locale.getLocale('traineeship/requestAddCompany') }}
                         </div>
                     } @else {
@@ -201,7 +201,8 @@
                                             {{ schoolingo.locale.getLocale('traineeship/CIN') }}
                                         </div>
                                         <div class="card-table-item">
-                                            {{ schoolingo.traineeship.selectedCompany.CIN }}</div>
+                                            {{ schoolingo.traineeship.selectedCompany.CIN }}
+                                        </div>
                                     </div>
     
                                     <div class="card-table-row">
@@ -245,24 +246,42 @@
                                     </div>
     
                                     <div class="card-table-row">
-                                        <div class="card-table-item">{{ schoolingo.locale.getLocale('phone') }}</div>
-                                        <div class="card-table-item">{{ Utils.formatPhone(schoolingo.traineeship.selectedCompany.phone) || schoolingo.locale.getLocale("traineeship/noPhone") }}</div>
+                                        <div class="card-table-item">
+                                            {{ schoolingo.locale.getLocale('phone') }}
+                                        </div>
+                                        <div class="card-table-item">
+                                            {{ Utils.formatPhone(schoolingo.traineeship.selectedCompany.phone) || schoolingo.locale.getLocale("traineeship/noPhone") }}
+                                        </div>
                                     </div>
     
                                     <div class="card-table-row">
-                                        <div class="card-table-item">{{ schoolingo.locale.getLocale('traineeship/description') }}</div>
-                                        <div class="card-table-item">{{ schoolingo.traineeship.selectedCompany.description || schoolingo.locale.getLocale('traineeship/noDescription') }}</div>
+                                        <div class="card-table-item">
+                                            {{ schoolingo.locale.getLocale('traineeship/description') }}
+                                        </div>
+                                        <div class="card-table-item">
+                                            {{ schoolingo.traineeship.selectedCompany.description || schoolingo.locale.getLocale('traineeship/noDescription') }}
+                                        </div>
                                     </div>
                                     <div class="card-table-row">
-                                        <div class="card-table-item">{{ schoolingo.locale.getLocale('traineeship/activity') }}</div>
-                                        <div class="card-table-item">{{ schoolingo.traineeship.selectedCompany.activity || schoolingo.locale.getLocale('traineeship/noActivity') }}</div>
+                                        <div class="card-table-item">
+                                            {{ schoolingo.locale.getLocale('traineeship/activity') }}
+                                        </div>
+                                        <div class="card-table-item">
+                                            {{ schoolingo.traineeship.selectedCompany.activity || schoolingo.locale.getLocale('traineeship/noActivity') }}
+                                        </div>
                                     </div>
                                     <div class="card-table-row">
-                                        <div class="card-table-item">{{ schoolingo.locale.getLocale('traineeship/equipment') }}</div>
-                                        <div class="card-table-item">{{ schoolingo.traineeship.selectedCompany.equipment || schoolingo.locale.getLocale('traineeship/noEquipment') }}</div>
+                                        <div class="card-table-item">
+                                            {{ schoolingo.locale.getLocale('traineeship/equipment') }}
+                                        </div>
+                                        <div class="card-table-item">
+                                            {{ schoolingo.traineeship.selectedCompany.equipment || schoolingo.locale.getLocale('traineeship/noEquipment') }}
+                                        </div>
                                     </div>
                                     <div class="card-table-row">
-                                        <div class="card-table-item">{{ schoolingo.locale.getLocale('traineeship/scopes') }}</div>
+                                        <div class="card-table-item">
+                                            {{ schoolingo.locale.getLocale('traineeship/scopes') }}
+                                        </div>
                                         <div class="card-table-item">
                                             @for (scope of getScopes(schoolingo.traineeship.selectedCompany); track $index) {
                                                 <p>{{ scope }}</p>
@@ -272,11 +291,17 @@
                                         </div>
                                     </div>
                                     <div class="card-table-row">
-                                        <div class="card-table-item">{{ schoolingo.locale.getLocale('traineeship/responsiblePerson') }}</div>
-                                        <div class="card-table-item">{{ schoolingo.formatPerson(schoolingo.traineeship.selectedCompany.responsiblePerson) }}</div>
+                                        <div class="card-table-item">
+                                            {{ schoolingo.locale.getLocale('traineeship/responsiblePerson') }}
+                                        </div>
+                                        <div class="card-table-item">
+                                            {{ schoolingo.formatPerson(schoolingo.traineeship.selectedCompany.responsiblePerson) }}
+                                        </div>
                                     </div>
                                     <div class="card-table-row">
-                                        <div class="card-table-item">{{ schoolingo.locale.getLocale('traineeship/instructors') }}</div>
+                                        <div class="card-table-item">
+                                            {{ schoolingo.locale.getLocale('traineeship/instructors') }}
+                                        </div>
                                         <div class="card-table-item">
                                             @for (instructor of schoolingo.traineeship.instructors; track $index) {
                                                 {{ schoolingo.formatPerson(instructor) }}
@@ -313,14 +338,125 @@
 
     @case ("requestCompany") {
         <div class="card">
-            <div class="card-top"></div>
-            <div class="card-header mb">
-                <h2>
-                    <i (click)="goToList()" class="icon ti ti-arrow-narrow-left"></i>
-                    {{ schoolingo.locale.getLocale('traineeship/requestCompany') }}</h2>
+            <div class="card-top">
+                <div class="alert mb blue-info">
+                    Doporučujeme řešit alespoň měsíc před začátkem praxe
+                </div>
             </div>
-            <div class="card-body">
+            
+            <div class="card-header mb">
+                <div class="row">
+                    <div class="btn gray first-margin" (click)="goToList()">
+                        {{ schoolingo.locale.getLocale('back') }}
+                    </div>
+                    <h2>
+                        {{ schoolingo.locale.getLocale('traineeship/requestCompany') }}
+                    </h2>
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label for="name">
+                    {{ schoolingo.locale.getLocale('traineeship/companyName') }}
+                </label>
+                <input type="text" name="name" [placeholder]="schoolingo.locale.getLocale('traineeship/companyName')">
+            </div>
+            
+            <div class="form-group">
+                <label for="street">
+                    {{ schoolingo.locale.getLocale('street') }}
+                </label>
+                <input type="text" name="street" [placeholder]="schoolingo.locale.getLocale('street')">
+            </div>
+            
+            <div class="form-group">
+                <label for="houseNumber">
+                    {{ schoolingo.locale.getLocale('houseNumber') }}
+                </label>
+                <input type="text" name="houseNumber" [placeholder]="schoolingo.locale.getLocale('houseNumber')">
+            </div>
+            
+            <div class="form-group">
+                <label for="city">
+                    {{ schoolingo.locale.getLocale('city') }}
+                </label>
+                <input type="text" name="city" [placeholder]="schoolingo.locale.getLocale('city')">
+            </div>
+            
+            <div class="form-group">
+                <label for="postcode">
+                    {{ schoolingo.locale.getLocale('postcode') }}
+                </label>
+                <input type="text" name="postcode" [placeholder]="schoolingo.locale.getLocale('postcode')">
+            </div>
+            
+            <div class="form-group">
+                <label for="CIN">
+                    {{ schoolingo.locale.getLocale('traineeship/CIN') }}
+                </label>
+                <input type="text" name="CIN" [placeholder]="schoolingo.locale.getLocale('traineeship/CIN')">
+            </div>
 
+            <div class="form-group">
+                <label for="web">
+                    {{ schoolingo.locale.getLocale('web') }}
+                </label>
+                <input type="text" name="web" [placeholder]="schoolingo.locale.getLocale('web')">
+            </div>
+
+            <div class="form-group">
+                <label for="scope">
+                    {{ schoolingo.locale.getLocale('traineeship/scopes') }}
+                </label>
+                <div>
+                    @for (scope of getAllScopes(); track $index) {
+                        <div class="row">
+                            <p>{{ scope.name }}</p>
+                            <div class="btn">Vybrat</div>
+                        </div>
+                    }
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="contact">
+                    {{ schoolingo.locale.getLocale('contact') }}
+                </label>
+                <input type="text" name="contact" [placeholder]="schoolingo.locale.getLocale('contact')">
+            </div>
+
+            <div class="form-group">
+                <label for="description">
+                    {{ schoolingo.locale.getLocale('description') }}
+                </label>
+                <input type="text" name="description" [placeholder]="schoolingo.locale.getLocale('description')">
+            </div>
+
+            <div class="form-group">
+                <label for="activity">
+                    {{ schoolingo.locale.getLocale('traineeship/activity') }}
+                </label>
+                <input type="text" name="activity" [placeholder]="schoolingo.locale.getLocale('traineeship/activity')">
+            </div>
+            
+            <div class="form-group">
+                <label for="equipment">
+                    {{ schoolingo.locale.getLocale('traineeship/equipment') }}
+                </label>
+                <input type="text" name="equipment" [placeholder]="schoolingo.locale.getLocale('traineeship/equipment')">
+            </div>
+
+            <div class="form-group">
+                <label for="note">
+                    {{ schoolingo.locale.getLocale('traineeship/note') }}
+                </label>
+                <input type="text" name="note" [placeholder]="schoolingo.locale.getLocale('traineeship/note')">
+            </div>
+
+            <div class="form-group">
+                <div class="btn center">
+                    {{ schoolingo.locale.getLocale('traineeship/requestAddCompany') }}
+                </div>
             </div>
         </div>
     }

@@ -157,6 +157,11 @@ export const routes: Routes = [
                                     .then(m => m.CompaniesComponent)
             },
             {
+              path: 'companies/:id',
+              loadComponent: () => import('./board/Traineeship/companies/companies.component')
+                                    .then(m => m.CompaniesComponent)
+            },
+            {
               path: 'manage',
               loadComponent: () => import('./board/Traineeship/manage/manage.component')
                                     .then(m => m.ManageComponent)

@@ -55,7 +55,7 @@ export class CompaniesComponent implements OnInit {
     this.schoolingo.traineeship.selectedDairy = null;
     this.schoolingo.traineeship.selectedInstructor = null;
     this.selectedTab.next(0);
-    this.router.navigate([], { queryParams: { companyId: id[0].id }});
+    this.router.navigate(['/traineeship/companies/', id[0].id]);
   }
 
   private listeners: Subscription[] = [];
@@ -78,7 +78,11 @@ export class CompaniesComponent implements OnInit {
 
   public goToList(): void {
     this.showPage = 'list';
-    this.router.navigate([], { queryParams: {}});
+    this.router.navigate(['/traineeship/companies']);
+  }
+
+  public requestCompany(): void {
+    this.router.navigate(['/traineeship/companies/new']);
   }
 
   public getDisabledLocales(): boolean[] {
@@ -97,6 +101,25 @@ export class CompaniesComponent implements OnInit {
       arr[id + 2] = this.scopes[id].name || "";
     })
     return arr;
+  }
+
+  public refreshSelectedCompany(): void {
+    let idFromUrl = this.route.snapshot.paramMap.get("id");
+    if (idFromUrl == "new") {
+      this.showPage = "requestCompany";
+      this.schoolingo.traineeship.selectedCompany = "new";
+      return;
+    }
+
+    if (idFromUrl == undefined) {
+      this.showPage = 'list';
+      this.schoolingo.traineeship.selectedCompany = null;
+      this.schoolingo.traineeship.selectedDairy = null;
+      this.schoolingo.traineeship.selectedInstructor = null;
+      return;
+    }
+
+    this.onClick([{ id: parseInt(idFromUrl) }]);
   }
 
   ngOnInit(): void {
@@ -138,18 +161,8 @@ export class CompaniesComponent implements OnInit {
     );
 
     this.listeners.push(
-      this.route.queryParamMap.subscribe((param: Params) => {
-        this.alert = null;
-        this.weeks = [];
-        // Show company
-        if (param.params.companyId != undefined) {
-          this.onClick([{ id: param.params.companyId }]);
-        } else {
-          this.showPage = 'list';
-          this.schoolingo.traineeship.selectedDairy = null;
-          this.schoolingo.traineeship.selectedInstructor = null;
-          this.router.navigate([], { queryParams: {}});
-        }
+      this.route.params.subscribe(() => {
+        this.refreshSelectedCompany()
       })
     );
 
@@ -224,6 +237,10 @@ export class CompaniesComponent implements OnInit {
         this.schoolingo.socketService.emit('school:getScopes');
       })
     );
+  }
+
+  public getAllScopes(): Scope[] {
+    return Object.values(this.scopes);
   }
 
   public getScopes(company: any): string[] {

@@ -19,16 +19,7 @@
     <div [ngClass]="{card: true, active: schoolingo.traineeship.selectedDairy}">
         <div class="card-top">
             @if (!schoolingo.traineeship.selectedDairy?.company) {
-                <div class="alerts mb">
-                    <div class="alert error" style="justify-content: center;">
-                        {{ schoolingo.locale.getLocale('traineeship/alerts/noCompany') }}
-                        <div class="actions">
-                            <div class="btn submit small" [routerLink]="['', 'traineeship', 'companies']" role="button">
-                                {{ schoolingo.locale.getLocale('traineeship/buttons/selectCompany') }}
-                            </div>
-                        </div>
-                    </div>
-                </div>
+                <alert [alert]="alerts['noCompanySelected']"></alert>
             }
             @if (schoolingo.traineeship.selectedDairy?.company) {
                 <div class="alerts mb">
@@ -49,6 +40,11 @@
                     </div>
                 </div>
             }
+            @if (alert) {
+                <div class="alerts mb">
+                    <alert [alert]="alert"></alert>
+                </div>
+            }
         </div>
         <div class="card-header mb">
             @if (schoolingo.traineeship.selectedDairy) {
@@ -65,7 +61,7 @@
                     </p>
                 </div>
                 <div class="flex-items">
-                    <div class="btn submit small blue-info" role="button">
+                    <div class="btn submit small blue-info" role="button" (click)="printContract()">
                         {{ schoolingo.locale.getLocale('traineeship/buttons/printContract') }}
                     </div>
                     <div class="btn submit small blue-info" role="button">
