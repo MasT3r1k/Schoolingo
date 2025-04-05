@@ -82,14 +82,15 @@ export class CompaniesComponent implements OnInit {
   }
 
   public requestCompany(): void {
+    this.schoolingo.socketService.emit('school:getScopes');
     this.router.navigate(['/traineeship/companies/new']);
   }
 
   public getDisabledLocales(): boolean[] {
     let arr: boolean[] = [];
     Object.keys(this.scopes).forEach((value: string) => {
-      let id = parseInt(value);
-      arr[id + 2] = this.scopes[id] ? true : false;
+      let id = parseInt(JSON.parse(JSON.stringify(value)));
+      arr[id + 1] = this.scopes[id] ? true : false;
     })
     return arr;
   }
@@ -97,7 +98,7 @@ export class CompaniesComponent implements OnInit {
   public getTableTitles(): string[] {
     let arr: string[] = [];
     Object.keys(this.scopes).forEach((value: string) => {
-      let id = parseInt(value);
+      let id = parseInt(JSON.parse(JSON.stringify(value)));
       arr[id + 2] = this.scopes[id].name || "";
     })
     return arr;
@@ -141,9 +142,12 @@ export class CompaniesComponent implements OnInit {
 
     this.listeners.push(
       this.schoolingo.socketService.addFunction("school:getScopes").subscribe((data: Scope[]) => {
+        data.forEach((scope: Scope) => {
+          console.log(scope)
+          this.scopes[scope.scopeId] = scope;
+        })
         this.tableHead = [];
         this.tableHead.push('traineeship/companyName', 'traineeship/officeAddress');
-        this.scopes = data;
         data.forEach((scope: Scope) => {
           this.tableHead.push(scope.shortcut);
         });
@@ -180,7 +184,7 @@ export class CompaniesComponent implements OnInit {
             { value: company.name, isLocale: false },
             { value: Utils.formatAddress({ code2: company.code2, street: company.street, houseNumber: company.houseNumber, city: company.cityName, postcode: company.postcode }), isLocale: false },
           ];
-          Object.keys(this.scopes).forEach((scopeId: any) => { /* ✔✅❌ */
+          Object.keys(this.scopes).forEach((scopeId: string) => { /* ✔✅❌ */
             row.push({ value: scopeList[scopeId] ? '✅' : '❌', isLocale: false })
           });
 
@@ -240,6 +244,7 @@ export class CompaniesComponent implements OnInit {
   }
 
   public getAllScopes(): Scope[] {
+    console.log(this.scopes)
     return Object.values(this.scopes);
   }
 

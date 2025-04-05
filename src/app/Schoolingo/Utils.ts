@@ -65,6 +65,14 @@ export namespace Utils {
     return parts.join('.');
   }
 
+  export function formatWeb(web: string): string {
+    if (web.startsWith('http://') || web.startsWith('https://')) {
+      return web;
+    }
+
+    return 'https://' + web;
+  }
+
   export function formatPhone(phone: string): string {
     return ((phone || "").match(/.{1,3}/g) || []).join(' ');
   }
