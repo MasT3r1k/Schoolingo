@@ -16,6 +16,7 @@ import { Modal } from '@Components/Modal/Modal';
 import { selectCompanyModalComponent } from './selectCompanyModal/selectCompanyModal';
 import { editCompanyModalComponent } from './editCompanyModal/editCompanyModal';
 import { DiaryWeek } from '@Schoolingo/Traineeship';
+import { Config } from '@Schoolingo/Config';
 
 type Scope = {
   scopeId: number;
@@ -40,6 +41,7 @@ export class CompaniesComponent implements OnInit {
   ) {}
 
   country = Country;
+  Config = Config;
 
   public scopes: Record<number, Scope> = {};
   public showPage: 'list' | 'detailCompany' | 'requestCompany' = 'list';
@@ -195,7 +197,7 @@ export class CompaniesComponent implements OnInit {
 
           
           row.push(
-            { value: company.web, isLocale: false },
+            { value: Utils.formatWeb(company.web), isLocale: false },
             { value: this.schoolingo.traineeship.getRating(company), isLocale: company.rating ? false : true }
           );
           companiesList.push(row);

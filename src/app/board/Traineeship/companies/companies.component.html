@@ -49,7 +49,6 @@
     @case ("detailCompany") {
         @if (schoolingo.traineeship.selectedCompany) {
             <div class="companyName mb">
-                <img src="https://napicu.eu/favicon.png" alt="Logo">
                 <h2>{{ schoolingo.traineeship.selectedCompany.name }}</h2>
             </div>
             <div class="card">
@@ -212,10 +211,10 @@
                                         <div class="card-table-item">
                                             @if (schoolingo.traineeship.selectedCompany.web) {
                                                 <a
-                                                [href]="schoolingo.traineeship.selectedCompany.web"
+                                                [href]="Utils.formatWeb(schoolingo.traineeship.selectedCompany.web)"
                                                 target="_blank"
-                                                (click)="Utils.openURL(schoolingo.traineeship.selectedCompany.web)">
-                                                    {{ schoolingo.traineeship.selectedCompany.web }}
+                                                (click)="Utils.openURL(Utils.formatWeb(schoolingo.traineeship.selectedCompany.web))">
+                                                    {{ Utils.formatWeb(schoolingo.traineeship.selectedCompany.web) }}
                                                 </a>
                                             } @else {
                                                 {{ schoolingo.locale.getLocale("traineeship/noWeb") }}
@@ -402,6 +401,7 @@
                     {{ schoolingo.locale.getLocale('web') }}
                 </label>
                 <input type="text" name="web" [placeholder]="schoolingo.locale.getLocale('web')">
+                <p class="note">Zobrazí jako {{ Utils.formatWeb("") }}</p>
             </div>
 
             <div class="form-group">

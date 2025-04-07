@@ -1,4 +1,4 @@
-import { NgClass } from '@angular/common';
+import { NgClass, NgStyle } from '@angular/common';
 import { Component } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { TabsComponent } from '@Components/Tabs/Tabs';
@@ -9,7 +9,7 @@ import { IconsModule } from '../../../../Modules/Icons.module';
 
 @Component({
   standalone: true,
-  imports: [FormsModule, ReactiveFormsModule, TabsComponent, NgClass, IconsModule],
+  imports: [FormsModule, ReactiveFormsModule, TabsComponent, NgClass, IconsModule, NgStyle],
   templateUrl: './editCompanyModal.html',
   styleUrls: ['../../../../Styles/input.css', './editCompanyModal.css', '../../../../Components/Modal/Modal.css']
 })
@@ -22,4 +22,6 @@ export class editCompanyModalComponent {
   ) {}
 
   Utils = Utils;
+
+  public page: 'main' | 'responsiblePerson' = 'main';
 }

@@ -21,7 +21,7 @@
     box-shadow: rgba(2, 2, 2, 0.5) 0px 0px 3px;
     padding: 2rem;
     max-height: 100vh;
-    overflow-y: auto;
+    overflow: hidden auto;
 }
 
 .modals > .modal::after {
@@ -34,6 +34,7 @@
     background-color: var(--primary);
     transform: translateX(-50%);
     left: 50%;
+    z-index: 99999999;
 }
 
 .modals > .modal > .modal-close {
@@ -44,21 +45,30 @@
     cursor: pointer;
     color: var(--color-darker);
     transition: color .3s;
+    z-index: 99999999;
 }
 
 .modals > .modal > .modal-close:hover {
     color: var(--color);
 }
 
-.modals > .modal > .modal-header {
+.modal > .modal-header {
     padding: 1rem 0;
-    text-transform: uppercase;
-    font-size: 24px;
-    font-weight: 600;
+    min-height: 60px;
     display: flex;
     flex-direction: row;
     justify-content: center;
     align-items: center;
+    position: relative;
+}
+
+.modal > .modal-header span {
+    font-size: 24px;
+    font-weight: 600;
+    text-transform: uppercase;
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
 }
 
 .modals > .modal > .modal-header i-tabler {

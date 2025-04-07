@@ -36,7 +36,7 @@ export class TabsComponent implements OnInit {
     public getWidth(): string {
         if (this.option_width) {
             if (this.option_width == 'fit') {
-                return (100 / this.options.length).toFixed(2) + '%';
+                return (100 / this.options.length) + '%';
             }
             return this.option_width;
         }
