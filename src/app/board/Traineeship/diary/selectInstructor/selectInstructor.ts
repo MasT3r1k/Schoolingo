@@ -1,13 +1,15 @@
 import { NgClass } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { AlertComponent } from '@Components/Alert/Alert';
 import { errorAPI } from '@Components/Datalist/Datalist';
 import { Schoolingo } from '@Schoolingo';
+import { Alert } from '@Schoolingo/Alert';
 import { Subscription } from 'rxjs';
 
 @Component({
   standalone: true,
-  imports: [FormsModule, ReactiveFormsModule, NgClass],
+  imports: [FormsModule, ReactiveFormsModule, NgClass, AlertComponent],
   templateUrl: './selectInstructor.html',
   styleUrls: ['../../../../Styles/select.css', './selectInstructor.css']
 })
@@ -20,6 +22,10 @@ export class selectInstructorModalComponent implements OnInit {
   ) {}
 
   public alert: 'noCompany' | 'noTraineeship' | 'noInstructor' | null = null;
+
+  public alerts: Record<string, Alert> = {
+    "noInstructors": new Alert("error", "traineeship/noInstructors")
+  };
 
   ngOnInit(): void {
     if (this.schoolingo.traineeship.selectedDairy) {

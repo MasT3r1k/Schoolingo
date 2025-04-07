@@ -152,6 +152,11 @@ export const routes: Routes = [
                                     .then(m => m.DiaryComponent)
             },
             {
+              path: 'diary/:id',
+              loadComponent: () => import('./board/Traineeship/diary/diary.component')
+                                    .then(m => m.DiaryComponent)
+            },
+            {
               path: 'companies',
               loadComponent: () => import('./board/Traineeship/companies/companies.component')
                                     .then(m => m.CompaniesComponent)

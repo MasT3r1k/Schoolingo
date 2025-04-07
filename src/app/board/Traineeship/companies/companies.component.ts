@@ -1,5 +1,5 @@
 import { NgClass, NgStyle } from '@angular/common';
-import { Component, OnInit } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { DomSanitizer } from '@angular/platform-browser';
 import { ActivatedRoute, Params, Router } from '@angular/router';
@@ -36,7 +36,6 @@ export class CompaniesComponent implements OnInit {
     public schoolingo: Schoolingo,
     public sanitizer: DomSanitizer,
     private router: Router,
-    private route: ActivatedRoute,
     public permissions: Permission
   ) {}
 
@@ -57,6 +56,8 @@ export class CompaniesComponent implements OnInit {
     this.selectedTab.next(0);
     this.router.navigate(['/traineeship/companies/', id[0].id]);
   }
+
+  private route = inject(ActivatedRoute);
 
   private listeners: Subscription[] = [];
   public companies = new BehaviorSubject<Data[][] | any>([]);
@@ -124,9 +125,9 @@ export class CompaniesComponent implements OnInit {
   }
 
   ngOnInit(): void {
-
     this.listeners.push(
-      this.schoolingo.socketService.addFunction("traineeship:getCompanyInfo").subscribe((data: companyInfoAPI) => {
+      this.schoolingo.socketService.addFunction("traineeship:getCompanyInfo")
+      .subscribe((data: companyInfoAPI) => {
         this.schoolingo.traineeship.selectedCompany = data;
         this.weeks = this.schoolingo.traineeship.getDiaryByCompanyId(data.companyId);
         this.iframeURL = this.sanitizer.bypassSecurityTrustResourceUrl('https://maps.google.com/maps?q=' + this.schoolingo.traineeship.selectedCompany.street + ' ' + this.schoolingo.traineeship.selectedCompany.houseNumber + ', ' + this.schoolingo.traineeship.selectedCompany.cityName + '&output=embed');
@@ -134,14 +135,16 @@ export class CompaniesComponent implements OnInit {
     );
 
     this.listeners.push(
-      this.schoolingo.traineeship.diaryWeeks.subscribe(() => {
+      this.schoolingo.traineeship.diaryWeeks
+      .subscribe(() => {
         if (!this.schoolingo.traineeship.selectedCompany) return;
         this.weeks = this.schoolingo.traineeship.getDiaryByCompanyId(this.schoolingo.traineeship.selectedCompany.companyId);
       })
     );
 
     this.listeners.push(
-      this.schoolingo.socketService.addFunction("school:getScopes").subscribe((data: Scope[]) => {
+      this.schoolingo.socketService.addFunction("school:getScopes")
+      .subscribe((data: Scope[]) => {
         data.forEach((scope: Scope) => {
           console.log(scope)
           this.scopes[scope.scopeId] = scope;
@@ -156,7 +159,8 @@ export class CompaniesComponent implements OnInit {
     );
 
     this.listeners.push(
-      this.schoolingo.socketService.addFunction("traineeship:getCompanyInstructors").subscribe((data: { personId: number }[]) => {
+      this.schoolingo.socketService.addFunction("traineeship:getCompanyInstructors")
+      .subscribe((data: { personId: number }[]) => {
         this.schoolingo.traineeship.instructors = [];
         data.forEach((person: { personId: number }) => {
           this.schoolingo.traineeship.instructors.push(person.personId);
@@ -171,7 +175,8 @@ export class CompaniesComponent implements OnInit {
     );
 
     this.listeners.push(
-      this.schoolingo.socketService.addFunction("traineeship:getCompanies").subscribe((data: dataAPI | errorAPI) => {
+      this.schoolingo.socketService.addFunction("traineeship:getCompanies")
+      .subscribe((data: dataAPI | errorAPI) => {
         if ('error' in data) return;
         let companiesList: Data[][] = []
         data.data.forEach((company: any) => {
@@ -202,7 +207,8 @@ export class CompaniesComponent implements OnInit {
     );
 
     this.listeners.push(
-      this.schoolingo.socketService.addFunction("traineeship:selectCompany").subscribe((data: selectCompanyAPI | errorAPI) => {
+      this.schoolingo.socketService.addFunction("traineeship:selectCompany")
+      .subscribe((data: selectCompanyAPI | errorAPI) => {
         if ('error' in data) {
           switch(data.error) {
             case "too_many_students_in_company":
@@ -237,7 +243,8 @@ export class CompaniesComponent implements OnInit {
     );
 
     this.listeners.push(
-      this.schoolingo.socketService.addFunction("connect").subscribe(() => {
+      this.schoolingo.socketService.addFunction("connect")
+      .subscribe(() => {
         this.schoolingo.socketService.emit('school:getScopes');
       })
     );

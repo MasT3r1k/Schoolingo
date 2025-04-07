@@ -1,6 +1,6 @@
 import { NgClass } from '@angular/common';
 import { Component, inject, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { DatalistComponent, errorAPI } from '@Components/Datalist/Datalist';
 import { Schoolingo } from '@Schoolingo';
 import { DiaryWeek } from '@Schoolingo/Traineeship';
@@ -24,6 +24,7 @@ export class DiaryComponent implements OnInit {
 
   private router = inject(Router);
   private http = inject(HttpClient);
+  private route = inject(ActivatedRoute);
   private listeners: Subscription[] = [];
   datalist: DatalistComponent | null = null;
   public alert: Alert | null = null;
@@ -88,6 +89,28 @@ export class DiaryComponent implements OnInit {
     }
   }
   
+  public refreshSelectedWeek(): void {
+    let idFromUrl = this.route.snapshot.paramMap.get("id");
+    // if (idFromUrl == "new") {
+    //   this.showPage = "requestCompany";
+    //   this.schoolingo.traineeship.selectedCompany = "new";
+    //   return;
+    // }
+
+    if (idFromUrl == undefined || idFromUrl == null) {
+      // this.showPage = 'list';
+      this.schoolingo.traineeship.selectDairy(null)
+      return;
+    }
+
+    let week = this.schoolingo.traineeship.diaryWeeks.getValue().find((week: DiaryWeek) => week.traineeship === parseInt(idFromUrl!));
+    if (!week) {
+      this.alert = new Alert("error", "traineeship/alerts/noTraineeshipFound", true);
+      return;
+    }
+    this.schoolingo.traineeship.selectDairy(week);
+  }
+
   ngOnInit(): void {
 
     if (this.schoolingo.traineeship.diaryWeeks.getValue().length == 1) {
