@@ -44,7 +44,9 @@
 
                                     </div>
                                     <div class="card-table-item">
-                                        <span>{{ profile.className }}</span>
+                                        <span>
+                                            {{ profile.className }}
+                                        </span>
                                     </div>
                                 </div>
     
@@ -53,7 +55,9 @@
                                         {{ schoolingo.locale.getLocale('user/scope') }}
                                     </div>
                                     <div class="card-table-item">
-                                        <span>{{ profile.scopeName }}</span>
+                                        <span>
+                                            {{ profile.scopeName }}
+                                        </span>
                                     </div>
                                 </div>
     
@@ -62,7 +66,9 @@
                                         {{ schoolingo.locale.getLocale('user/scopeYears') }}
                                     </div>
                                     <div class="card-table-item">
-                                        <span>{{ profile.scopeYears + ' ' + schoolingo.locale.getLocale('ageUnit') }}</span>
+                                        <span>
+                                            {{ profile.scopeYears + ' ' + schoolingo.locale.getLocale('ageUnit') }}
+                                        </span>
                                     </div>
                                 </div>
                             }
@@ -129,7 +135,11 @@
                                     {{ schoolingo.locale.getLocale('phone') }}
                                 </div>
                                 <div class="card-table-item multi">
-                                    <span>{{ Utils.formatPhone("445566778") }}</span>
+                                    @for(phone of profile.phones;track $index) {
+                                        <span>{{ Utils.formatPhone(phone.number) }}</span>
+                                    } @empty {
+                                        <span>{{ schoolingo.locale.getLocale('userSettings/noPhoneSet') }}</span>
+                                    }
                                 </div>
                             </div>
 
@@ -138,7 +148,11 @@
                                     {{ schoolingo.locale.getLocale('email') }}
                                 </div>
                                 <div class="card-table-item multi">
-                                    <span>{{ "jkosik@sps-pi.cz" }}</span>
+                                    @for(email of profile.emails;track $index) {
+                                        <span>{{ email.email }}</span>
+                                    } @empty {
+                                        <span>{{ schoolingo.locale.getLocale('userSettings/noEmailSet') }}</span>
+                                    }
                                 </div>
                             </div>
                         </div>
@@ -155,7 +169,8 @@
                                 </div>
                                 <div class="card-table-item">
                                     <span>
-                                        {{ profile.passwordChanged?.format("DD. MM. YYYY") || schoolingo.locale.getLocale('never') }}
+                                        {{ profile.passwordChanged?.format("DD. MM. YYYY")
+                                        || schoolingo.locale.getLocale('never') }}
                                     </span>
                                 </div>
                             </div>
