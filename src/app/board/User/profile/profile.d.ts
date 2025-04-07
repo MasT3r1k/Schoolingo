@@ -17,4 +17,6 @@ export interface Profile {
     insuranceId: number;
     insuranceCode: string;
     insuranceName: string;
+    emails: { email: string;description: string }[];
+    phones: { code: number;number: string;description: string }[];
 };
