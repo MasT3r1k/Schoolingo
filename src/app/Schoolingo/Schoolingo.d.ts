@@ -31,6 +31,7 @@ export interface TimetableAPI {
     groupId: number;
     groupName: string;
     groupNum: string;
+    classId: number;
     className: string;
 }
 

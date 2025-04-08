@@ -37,6 +37,12 @@
             </div>
             <input type="text" class="no-left-radius" name="web" [value]="Utils.formatWeb(schoolingo.traineeship.selectedCompany.web, true)" [placeholder]="schoolingo.locale.getLocale('traineeship/noWeb')" readonly="true">
         </div>
+        <div class="note">
+            <span>Klikatelný odkaz: </span> 
+            <a [href]="Utils.formatWeb(schoolingo.traineeship.selectedCompany.web, false)" target="_blank">
+                {{ Utils.formatWeb(schoolingo.traineeship.selectedCompany.web, false) }}
+            </a>
+        </div>
     </div>
     <div class="item">
         <div class="label">
@@ -60,7 +66,7 @@
             {{ schoolingo.locale.getLocale('traineeship/responsiblePerson') }}
         </div>
         <div class="value">
-            <input type="text" class="nextPage" name="inputSelect" readonly="true" [value]="schoolingo.traineeship.selectedCompany.responsiblePerson ? schoolingo.formatPerson(schoolingo.traineeship.selectedCompany.responsiblePerson) : schoolingo.locale.getLocale('traineeship/noInstructorSelected')" />
+            <input type="text" class="nextPage" name="inputSelect" readonly="true" [value]="schoolingo.traineeship.selectedCompany.rp_firstName + ' ' + schoolingo.traineeship.selectedCompany.rp_lastName" />
             <div class="arrow-right">
                 <i-tabler name="chevron-right"></i-tabler>
             </div>
@@ -169,7 +175,7 @@
                     {{ schoolingo.locale.getLocale('firstName') }}
                 </div>
                 <div class="value">
-                    <input type="text" name="firstname" [value]="" [placeholder]="schoolingo.locale.getLocale('firstName')">
+                    <input type="text" name="firstname" [value]="schoolingo.traineeship.selectedCompany.rp_firstName" [placeholder]="schoolingo.locale.getLocale('firstName')">
                 </div>
             </div>
 
@@ -178,7 +184,7 @@
                     {{ schoolingo.locale.getLocale('lastName') }}
                 </div>
                 <div class="value">
-                    <input type="text" name="lastname" [value]="" [placeholder]="schoolingo.locale.getLocale('lastName')">
+                    <input type="text" name="lastname" [value]="schoolingo.traineeship.selectedCompany.rp_lastName" [placeholder]="schoolingo.locale.getLocale('lastName')">
                 </div>
             </div>
 

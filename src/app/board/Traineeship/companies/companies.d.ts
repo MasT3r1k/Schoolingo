@@ -12,7 +12,8 @@ interface companyInfoAPI {
     addressTrainee: number;
     CIN: string;
     web: string;
-    responsiblePerson: number;
+    rp_firstName: string;
+    rp_lastName: string;
     phone: string;
     email: string;
     status: 'request' | 'approved' | 'deleted';
