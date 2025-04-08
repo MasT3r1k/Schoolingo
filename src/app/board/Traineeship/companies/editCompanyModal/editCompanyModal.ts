@@ -23,5 +23,5 @@ export class editCompanyModalComponent {
 
   Utils = Utils;
 
-  public page: 'main' | 'responsiblePerson' = 'main';
+  public page: 'main' | 'responsiblePerson' | 'newInstructor' = 'main';
 }

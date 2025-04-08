@@ -65,12 +65,26 @@ export namespace Utils {
     return parts.join('.');
   }
 
-  export function formatWeb(web: string): string {
+  export function webProtocol(web: string): 'http' | 'https' {
+    if (web.startsWith('http://')) {
+      return 'http';
+    }
+    return 'https';
+  }
+
+  export function formatWeb(web: string, hideProtocol: boolean = false): string {
     if (web.startsWith('http://') || web.startsWith('https://')) {
+      if (hideProtocol) {
+        if (web.startsWith('http://')) {
+          web = web.slice(7);
+        } else {
+          web = web.slice(8)
+        }
+      }
       return web;
     }
 
-    return 'https://' + web;
+    return ((!hideProtocol) ? 'https://' : '') + web;
   }
 
   export function formatPhone(phone: string): string {

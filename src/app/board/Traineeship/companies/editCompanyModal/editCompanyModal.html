@@ -32,8 +32,10 @@
             {{ schoolingo.locale.getLocale('web') }}
         </div>
         <div class="value">
-            <div class="input-text">https://</div>
-            <input type="text" class="no-left-radius" name="name" [value]="Utils.formatWeb(schoolingo.traineeship.selectedCompany.web).slice(8)" [placeholder]="schoolingo.locale.getLocale('traineeship/noWeb')" readonly="true">
+            <div class="input-text">
+                {{ Utils.webProtocol(schoolingo.traineeship.selectedCompany.web) }}://
+            </div>
+            <input type="text" class="no-left-radius" name="web" [value]="Utils.formatWeb(schoolingo.traineeship.selectedCompany.web, true)" [placeholder]="schoolingo.locale.getLocale('traineeship/noWeb')" readonly="true">
         </div>
     </div>
     <div class="item">
@@ -110,7 +112,7 @@
             </div>
         </div>
     </div>
-    <div class="btn submit mb" role="button">
+    <div class="btn submit mb" role="button" (click)="page = 'newInstructor'">
         {{ schoolingo.locale.getLocale('traineeship/addInstructor') }}
     </div>
 </div>
@@ -200,5 +202,62 @@
         </div>
     </div>
 
-    <div class="btn blue-info">Uložit</div>
+    <div class="btn blue-info">
+        {{ schoolingo.locale.getLocale('traineeship/buttons/saveChanges') }}
+    </div>
+</div>
+
+<div [ngStyle]="{position: 'absolute', top:0, left:0, transform: page == 'newInstructor' ? 'translateX(0%)' : 'translateX(100%)', width: '100%',height:'100%', 'max-height': '100vh', 'visibility': page == 'newInstructor' ? 'visible' : 'hidden', backgroundColor: 'var(--background-body)', transition: 'all .5s', zIndex: '50', padding: '2rem'}" class="modal">
+    <div class="modal-header" style="justify-content: space-between;">
+        <div>
+            <div class="btn small gray" style="display: flex;align-items: center;" (click)="page = 'main'">
+                <i-tabler name="chevron-left" style="margin-right: 4px;width: 20px;height: 20px;"></i-tabler>
+                {{ schoolingo.locale.getLocale('back') }}
+            </div>
+        </div>
+        <span>{{ schoolingo.locale.getLocale('traineeship/newInstructor') }}</span>
+    </div>
+    <div class="modal-body">
+        <div class="items active">
+            <div class="item">
+                <div class="label">
+                    {{ schoolingo.locale.getLocale('firstName') }}
+                </div>
+                <div class="value">
+                    <input type="text" name="firstname" [value]="" [placeholder]="schoolingo.locale.getLocale('firstName')">
+                </div>
+            </div>
+
+            <div class="item">
+                <div class="label">
+                    {{ schoolingo.locale.getLocale('lastName') }}
+                </div>
+                <div class="value">
+                    <input type="text" name="lastname" [value]="" [placeholder]="schoolingo.locale.getLocale('lastName')">
+                </div>
+            </div>
+
+            <div class="item">
+                <div class="label">
+                    {{ schoolingo.locale.getLocale('email') }}
+                </div>
+                <div class="value">
+                    <input type="text" name="email" [value]="schoolingo.traineeship.selectedCompany.email" [placeholder]="schoolingo.locale.getLocale('traineeship/noEmail')">
+                </div>
+            </div>
+            
+            <div class="item">
+                <div class="label">
+                    {{ schoolingo.locale.getLocale('phone') }}
+                </div>
+                <div class="value">
+                    <input type="text" name="phone" [value]="schoolingo.traineeship.selectedCompany.phone" [placeholder]="schoolingo.locale.getLocale('traineeship/noPhone')">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="btn blue-info">
+        {{ schoolingo.locale.getLocale('traineeship/buttons/saveChanges') }}
+    </div>
 </div>
