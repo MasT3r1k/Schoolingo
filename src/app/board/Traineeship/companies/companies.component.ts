@@ -9,7 +9,7 @@ import { Schoolingo } from '@Schoolingo';
 import { Permission } from '@Schoolingo/Permissions';
 import { Utils } from '@Schoolingo/Utils';
 import { Country } from 'country-state-city';
-import { BehaviorSubject, Subscription } from 'rxjs';
+import { BehaviorSubject, debounceTime, distinctUntilChanged, Subscription } from 'rxjs';
 import { AgCharts } from "ag-charts-angular";
 import { AgChartOptions } from "ag-charts-community";
 import { Modal } from '@Components/Modal/Modal';
@@ -17,6 +17,8 @@ import { selectCompanyModalComponent } from './selectCompanyModal/selectCompanyM
 import { editCompanyModalComponent } from './editCompanyModal/editCompanyModal';
 import { DiaryWeek } from '@Schoolingo/Traineeship';
 import { Config } from '@Schoolingo/Config';
+import { HttpClient } from '@angular/common/http';
+import Swal from 'sweetalert2';
 
 type Scope = {
   scopeId: number;
@@ -37,7 +39,7 @@ export class CompaniesComponent implements OnInit {
     public schoolingo: Schoolingo,
     public sanitizer: DomSanitizer,
     private router: Router,
-    public permissions: Permission
+    public permissions: Permission,
   ) {}
 
   country = Country;
@@ -60,11 +62,26 @@ export class CompaniesComponent implements OnInit {
   }
 
   private route = inject(ActivatedRoute);
+  private http = inject(HttpClient);
+
+  public creatingCompany: {[key: string]: string} = {
+    name: "",
+    dic: "",
+    street: "",
+    houseNumber: "",
+    city: "",
+    postcode: "",
+    web: ""
+  };
+
+  public countryCodes: string[] = ['CZ'];
+  public countryCode: string = 'CZ';
 
   private listeners: Subscription[] = [];
   public companies = new BehaviorSubject<Data[][] | any>([]);
   public weeks: DiaryWeek[] = [];
   public search = new FormControl();
+  public dic = new FormControl();
   public iframeURL = this.sanitizer.bypassSecurityTrustResourceUrl("");
 
   public metadata: Metadata = {
@@ -84,9 +101,27 @@ export class CompaniesComponent implements OnInit {
     this.router.navigate(['/traineeship/companies']);
   }
 
+  public checkDIC(): void {
+
+  }
+
   public requestCompany(): void {
     this.schoolingo.socketService.emit('school:getScopes');
     this.router.navigate(['/traineeship/companies/new']);
+  }
+  public selectedCompanyListOption = new BehaviorSubject<number>(0);
+  public getCompanyListOptions(): string[] {
+    let arr: string[] = [
+      'traineeship/statusCompany/approved',
+      'traineeship/statusCompany/acceptable',
+      'traineeship/statusCompany/request'
+    ];
+    
+    if (this.permissions.checkPermission(["manager:traineeship:manage"])) {
+      arr.push('traineeship/statusCompany/deleted');
+    }
+    
+    return arr;
   }
 
   public getDisabledLocales(): boolean[] {
@@ -126,7 +161,68 @@ export class CompaniesComponent implements OnInit {
     this.onClick([{ id: parseInt(idFromUrl) }]);
   }
 
+  public isValidVAT(dic: string, countryCode: string): boolean {
+    const cleanDic = countryCode + dic.trim().toUpperCase();
+    const validators: Record<string, (vat: string) => boolean> = {
+      CZ: (vat) => /^CZ\d{8,10}$/.test(vat),
+      SK: (vat) => /^SK\d{10}$/.test(vat),
+      DE: (vat) => /^DE\d{9}$/.test(vat),
+      FR: (vat) => /^FR[A-Z0-9]{2}\d{9}$/.test(vat),
+      IT: (vat) => /^IT\d{11}$/.test(vat),
+      // přidej další státy dle potřeby
+    };
+
+    return !!validators[countryCode]?.(cleanDic);
+  }
+
   ngOnInit(): void {
+    this.listeners.push(
+      this.dic.valueChanges
+      .pipe(debounceTime(400), distinctUntilChanged())
+      .subscribe((value) => {
+        if (this.isValidVAT(value, this.countryCode)) {
+          switch (this.countryCode) {
+            case 'CZ':
+              const ico = this.dic.value.replace(/^CZ/, '');
+
+              this.http.get(`https://ares.gov.cz/ekonomicke-subjekty-v-be/rest/ekonomicke-subjekty/${ico}`)
+                .subscribe({
+                  next: (data: any) => {
+                    Swal.fire({
+                      title: "Firma byla nalezena",
+                      text: "Firma %companyName% byla nalezena. Přejete si vyplnit údaje do formuláře?".replaceAll('%companyName%', data.obchodniJmeno),
+                      icon: "success",
+                      showCancelButton: true,
+                      confirmButtonColor: "var(--primary)",
+                      cancelButtonColor: "var(--red)",
+                      confirmButtonText: "Ano, doplnit",
+                      cancelButtonText: "Ne, doplním ručně",
+                      reverseButtons: true
+                    }).then((result) => {
+                      if (result.isConfirmed) {
+                        this.creatingCompany.name = data.obchodniJmeno;
+                        this.creatingCompany.street = data.sidlo.nazevUlice	|| "";
+                        this.creatingCompany.houseNumber = data.sidlo.cisloDomovni || "";
+                        this.creatingCompany.city = data.sidlo.nazevObce || "";
+                        this.creatingCompany.postcode = data.sidlo.psc || "";
+                      }
+                    });
+                    console.log('Firmní údaje:', data);
+                  },
+                  error: (err) => {
+                    Swal.fire({
+                      title: "Firma nebyla nalezena",
+                      icon: 'error'
+                    })
+                  }
+              });
+            break;
+                
+          }
+        }
+      })
+    );
+
     this.listeners.push(
       this.schoolingo.socketService.addFunction("traineeship:getCompanyInfo")
       .subscribe((data: companyInfoAPI) => {
@@ -253,7 +349,6 @@ export class CompaniesComponent implements OnInit {
   }
 
   public getAllScopes(): Scope[] {
-    console.log(this.scopes)
     return Object.values(this.scopes);
   }
 

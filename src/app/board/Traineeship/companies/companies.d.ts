@@ -10,7 +10,7 @@ interface companyInfoAPI {
     name: string;
     addressOffice: number;
     addressTrainee: number;
-    CIN: string;
+    ico: string;
     web: string;
     rp_firstName: string;
     rp_lastName: string;
