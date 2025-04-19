@@ -53,6 +53,25 @@ export class DatalistComponent implements OnInit {
 
     public visibleData: any[] = [];
 
+    public getPageList(): number[] {
+        let pages = [-4, -3, -2, -1, 0, 1, 2, 3, 4];
+        let list: number[] = [];
+        pages.forEach((page: number) => {
+            list.push(page + this.page);
+        })
+
+        let startSlice = 0;
+        if (this.page == 4 || this.page == this.getMaxPages() - 1) {
+            startSlice = 1;
+        }
+        
+        else if (this.page > 3 && this.page <= this.getMaxPages() - 2) {
+            startSlice = 2;
+        }
+
+        return list.filter((page) => page > 0 && page <= this.getMaxPages()).slice(startSlice).slice(0,5);
+    }
+
     public getMaxPages(): number {
         return Math.ceil(this.metadata.rows / this.dataPerPage);
     }

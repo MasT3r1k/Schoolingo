@@ -45,8 +45,10 @@
                 <div [ngClass]="{page: true, center: true, previous: true, disabled: page == 1}" (click)="goPage(page - 1)">
                     <i-tabler name="chevron-left" style="width:18px;height:18px;"></i-tabler>
                 </div>
-                @for (_ of [].constructor(getMaxPages()); track index;let index = $index;) {
-                    <div [ngClass]="{page: true, center: true, active: page === index + 1}" [id]="(page == (index + 1)) ? 'currentPage' : ''" [attr.contenteditable]="(page == (index + 1)) ? isEditingPage : false" (click)="goPage(index + 1)" (keydown.enter)="savePage()">{{ index + 1 }}</div>
+                @for (_ of getPageList(); track index;let index = $index;) {
+                    <div [ngClass]="{page: true, center: true, active: page === _}" [id]="(page == _) ? 'currentPage' : ''" [attr.contenteditable]="(page == _) ? isEditingPage : false" (click)="goPage(_)" (keydown.enter)="savePage()">
+                        {{ _ }}
+                    </div>
                 }
                 <div [ngClass]="{page: true, center: true, next: true, disabled: page == getMaxPages() }" (click)="goPage(page + 1)">
                     <i-tabler name="chevron-right" style="width:18px;height:18px;"></i-tabler>
