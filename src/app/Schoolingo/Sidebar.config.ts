@@ -240,6 +240,11 @@ export const config: SidebarGroup[] = [
                 url: 'calendar',
             },
             {
+                item: 'sidebar/leaderboard',
+                permission: ['student'],
+                url: 'leaderboard',
+            },
+            {
                 item: 'sidebar/documents',
                 permission: ['all'],
                 url: 'documents',

@@ -51,7 +51,7 @@ interface AbsenceSubjectAPI {
   imports: [NgClass, NgStyle, RouterLink, RouterLinkActive, RouterOutlet, Dropdown, ModalComponent, IconsModule, AlertComponent],
   providers: [],
   templateUrl: './board.component.html',
-  styleUrls: ['./board.component.css', '../Styles/item.css', '../Styles/app.css']
+  styleUrls: ['./board.component.css', '../Styles/item.css', '../Styles/app.css', '../Styles/sidebar.css']
 })
 export class BoardComponent implements OnInit, AfterViewInit {
   pageLoading = false;
@@ -151,6 +151,7 @@ export class BoardComponent implements OnInit, AfterViewInit {
       this.schoolingo.socketService.addFunction("tokens:getUser").subscribe((data: errorAPI) => {
         if ('error' in data) {
           if (['invalid_token', 'no_token', 'user_not_found'].includes(data.error)) {
+            console.error('GET USER !!')
             this.schoolingo.userService.logout();
           }
         }
@@ -173,6 +174,11 @@ export class BoardComponent implements OnInit, AfterViewInit {
         let userId = user.id;
         if (user.type == "parent") {
           userId = this.schoolingo.getStudentId();
+        }
+
+        if (user.type == "student") {
+          this.schoolingo.socketService.emit('students:getLevel', {});
+          this.schoolingo.socketService.emit('avatars:getAvatar', {});
         }
 
         // Get timetable
@@ -224,6 +230,29 @@ export class BoardComponent implements OnInit, AfterViewInit {
         this.schoolingo.theme.updateTheme(this.schoolingo.theme.getThemes()[data.theme]);
       })
     );
+
+    this.subscribers.push(
+      this.schoolingo.socketService.addFunction("students:getLevel").subscribe((data: {
+        level: number,
+        xp: {
+            start: number,
+            current: number,
+            max: number }
+        } | errorAPI) => {
+          console.log(data)
+
+          if ('error' in data) {
+            return;
+          }
+          this.schoolingo.level.setLevelInfo(data.level, data.xp.start, data.xp.current, data.xp.max);
+      })
+    )
+
+    this.subscribers.push(
+      this.schoolingo.socketService.addFunction('avatars:getAvatar').subscribe((data: {avatar: string} | errorAPI) => {
+        console.log(data);
+      })
+    )
 
     this.subscribers.push(
       this.schoolingo.socketService.addFunction("system:error").subscribe((data: errorAPI) => {

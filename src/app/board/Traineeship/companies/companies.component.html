@@ -29,7 +29,7 @@
                 [options]="{
                     search: false,
                     url: 'traineeship:getCompanies',
-                    ignore: [getCompanyListOptions()[selectedCompanyListOption.getValue()]],
+                    ignore: [getCompanyListOptions(true)[selectedCompanyListOption.getValue()]],
                     disableLocales: getDisabledLocales(),
                     titles: getTableTitles()
                 }"
@@ -420,8 +420,7 @@
                 <label for="web">
                     {{ schoolingo.locale.getLocale('web') }}
                 </label>
-                <input type="text" name="web" [placeholder]="schoolingo.locale.getLocale('web')">
-                <p class="note">Zobrazí jako {{ Utils.formatWeb("") }}</p>
+                <input type="text" name="web" [value]="creatingCompany.web" [placeholder]="schoolingo.locale.getLocale('web')">
             </div>
 
             <div class="form-group">
@@ -433,8 +432,12 @@
                         <div class="row">
                             <p>{{ scope.name }}</p>
                             <div class="last-margin yesOrNo row">
-                                <div class="yes">Ano</div>
-                                <div class="ne">Ne</div>
+                                <div [ngClass]="{'blue-info': true}">
+                                    {{ schoolingo.locale.getLocale('yes') }}
+                                </div>
+                                <div [ngClass]="{'blue-info': false}">
+                                    {{ schoolingo.locale.getLocale('no') }}
+                                </div>
                             </div>
                         </div>
                     }

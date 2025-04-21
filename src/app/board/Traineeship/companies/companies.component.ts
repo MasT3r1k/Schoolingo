@@ -74,8 +74,8 @@ export class CompaniesComponent implements OnInit {
     web: ""
   };
 
-  public countryCodes: string[] = ['CZ'];
-  public countryCode: string = 'CZ';
+  public countryCodes = ['CZ'];
+  public countryCode = 'CZ';
 
   private listeners: Subscription[] = [];
   public companies = new BehaviorSubject<Data[][] | any>([]);
@@ -101,24 +101,20 @@ export class CompaniesComponent implements OnInit {
     this.router.navigate(['/traineeship/companies']);
   }
 
-  public checkDIC(): void {
-
-  }
-
   public requestCompany(): void {
     this.schoolingo.socketService.emit('school:getScopes');
     this.router.navigate(['/traineeship/companies/new']);
   }
   public selectedCompanyListOption = new BehaviorSubject<number>(0);
-  public getCompanyListOptions(): string[] {
+  public getCompanyListOptions(hideLocale: boolean = false): string[] {
     let arr: string[] = [
-      'traineeship/statusCompany/approved',
-      'traineeship/statusCompany/acceptable',
-      'traineeship/statusCompany/request'
+      (!hideLocale ? 'traineeship/statusCompany/' : '') + 'approved',
+      (!hideLocale ? 'traineeship/statusCompany/' : '') + 'acceptable',
+      (!hideLocale ? 'traineeship/statusCompany/' : '') + 'request'
     ];
     
     if (this.permissions.checkPermission(["manager:traineeship:manage"])) {
-      arr.push('traineeship/statusCompany/deleted');
+      arr.push((hideLocale ? 'traineeship/statusCompany/' : '') + 'deleted');
     }
     
     return arr;
@@ -273,6 +269,13 @@ export class CompaniesComponent implements OnInit {
     );
 
     this.listeners.push(
+      this.selectedCompanyListOption.subscribe(() => {
+        if (!this.datalist) return;
+        setTimeout(() => this.datalist?.loadData(), 100);
+      })
+    );
+
+    this.listeners.push(
       this.schoolingo.socketService.addFunction("traineeship:getCompanies")
       .subscribe((data: dataAPI | errorAPI) => {
         if ('error' in data) return;
@@ -285,7 +288,13 @@ export class CompaniesComponent implements OnInit {
           let row: Data[] = [
             { id: company.companyId },
             { value: company.name, isLocale: false },
-            { value: Utils.formatAddress({ code2: company.code2, street: company.street, houseNumber: company.houseNumber, city: company.cityName, postcode: company.postcode }), isLocale: false },
+            { value: Utils.formatAddress({
+              code2: company.code2,
+              street: company.street,
+              houseNumber: company.houseNumber,
+              city: company.cityName,
+              postcode: company.postcode
+            }), isLocale: false },
           ];
           Object.keys(this.scopes).forEach((scopeId: string) => { /* ✔✅❌ */
             row.push({ value: scopeList[scopeId] ? '✅' : '❌', isLocale: false })

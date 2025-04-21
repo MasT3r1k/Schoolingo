@@ -86,14 +86,29 @@
                     }
                 </div>
     
-                <div [ngClass]="{user: true, skeleton: !schoolingo.userService.getUser()}" [routerLink]="['', 'user', 'profile']">
+                <div class="user" [routerLink]="['', 'user', 'profile']">
+                    <div class="avatar golden center">
+                        <div class="hexagon">
+                            <img [src]="schoolingo.avatar.getAvatar()" alt="Avatar">
+                        </div>
+                        <div class="level">
+                            {{ schoolingo.level.getLevel() }}                            
+                        </div>
+                    </div>
+
+                    <div class="xp-bar">
+                        <div class="progress" [ngStyle]="{width: schoolingo.level.getProgress() + '%'}"></div>
+                    </div>
+
                     @if (schoolingo.userService.getUser()) {
-                        <p class="name">
-                            {{ schoolingo.formatPerson(schoolingo.userService.getUser()?.person?.personId) }}
-                        </p>
-                        <p class="role">
-                            {{ schoolingo.getUserRole() }}
-                        </p>
+                        <div class="info">
+                            <p class="name">
+                                {{ schoolingo.formatPerson(schoolingo.userService.getUser()?.person?.personId) }}
+                            </p>
+                            <p class="role">
+                                {{ schoolingo.getUserRole() }}
+                            </p>
+                        </div>
                     }
                 </div>
                 

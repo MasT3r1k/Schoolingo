@@ -1,17 +1,20 @@
 <main>
-
-    <h1 class="APP_Logo">{{ App.APP_NAME.toUpperCase() }}</h1>
+    <h1 class="APP_Logo">
+        {{ App.APP_NAME.toUpperCase() }}
+    </h1>
     <div class="card" [ngStyle]="{ minWidth: school.schoolInfo.fastLogin ? '784px' : '480px' }">
         <div class="card-top">
             <div class="alerts">
                 @if(schoolingo.auth.errors['auth'] != null) {
-                    <alert [alert]="schoolingo.auth.errors['auth']"></alert>
+                    <alert [alert]="schoolingo.auth.errors.auth"></alert>
                 }
             </div>
         </div>
         <div class="card-row">
             <div class="left" [ngStyle]="{ width: school.schoolInfo.fastLogin ? '50%' : '100%' }">
-                <h2 class="title">{{ schoolingo.locale.getLocale("login_formTitle") }}</h2>
+                <h2 class="title">
+                    {{ schoolingo.locale.getLocale("login_formTitle") }}
+                </h2>
                 @if (school.schoolInfo.name == '') {
                     <h3 class="school skeleton"></h3>
                 } @else {

@@ -53,7 +53,7 @@ export class AppComponent implements OnInit {
       setTimeout(() => this.loadSchool(), 5000);
     }
 
-    this.afterLoadedSchool = true;
+    this.afterLoadedSchool = false;
   }
 
   ngOnInit(): void {
@@ -70,15 +70,14 @@ export class AppComponent implements OnInit {
   }
 
   public loadSchool(): void {
-    this.afterLoadedSchool = false;
-    this.school.errorReason = -1;
-
-    this.http.get<(SchoolInfo & { modules?: number })>(Config.API_URL + 'v1/getSchoolInfo', { withCredentials: true }).subscribe((data: (SchoolInfo & { modules?: number })): void => {
+    this.http.get<(SchoolInfo & { modules?: number })>(Config.API_URL + 'v1/getSchoolInfo', { withCredentials: true })
+    .subscribe((data: (SchoolInfo & { modules?: number })): void => {
       this.school.setSchoolInfo(data, data.modules ?? 0);
       this.http.get<({ user: string } & errorAPI)>(Config.API_URL + 'v1/getUser', { withCredentials: true }).subscribe((data: { user: string } & errorAPI) => {
         this.afterLoadedSchool = true;
         
         if ('user' in data) {
+          this.school.errorReason = -1;
           this.userService.username = data.user;
           this.userService.setExpiration(moment().add(this.school.schoolInfo.loginExpires, 'ms'));
           if (this.router.url.startsWith('/login')) {
@@ -93,7 +92,10 @@ export class AppComponent implements OnInit {
       });
     }, this.httpError);
 
-    this.http.get<SchoolYear>(Config.API_URL + 'v1/getSchoolYear', { withCredentials: true }).subscribe((data: SchoolYear): void => {
+    this.http.get<SchoolYear>(Config.API_URL + 'v1/getSchoolYear', { withCredentials: true })
+    .subscribe((data: SchoolYear): void => {
+      this.school.errorReason = -1;
+      this.afterLoadedSchool = true;
       this.school.setSchoolYear(data)
     }, this.httpError);
   }

@@ -24,6 +24,8 @@ import { LoginExpiredComponent } from "../board/modals/loginExpired/loginExpired
 import { AppConfig } from "./App";
 import { childrenSwitchComponent } from "../board/modals/childrenSwitch/childrenSwitch.component";
 import { Classbook } from "./Classbook";
+import { LevelSystem } from "./LevelSystem";
+import { Avatar } from "./Avatar";
 export {
     TimetableAPI,
     ClassbookAPI,
@@ -71,6 +73,7 @@ export class Schoolingo {
     public absence: Record<string, Absence[]> = {};
     public hasAccessToPage = true;
 
+
     constructor(
         public locale: Locale,
         public socketService: SocketService,
@@ -83,7 +86,9 @@ export class Schoolingo {
         public homeworks: Homeworks,
         public ipManager: IPManager,
         public auth: Authentication,
-        public classbook: Classbook
+        public classbook: Classbook,
+        public level: LevelSystem,
+        public avatar: Avatar
     ) {
         this.subscribers.push(
             this.locale.language.subscribe(() => {
@@ -107,8 +112,11 @@ export class Schoolingo {
 
         this.subscribers.push(
             this.userService.tokenExpiration.subscribe((date: moment.Moment) => {
-                if (this.isLoginExpired) return;
-                if (date.isSameOrBefore(moment())) {
+                console.log(moment().format('DD.MM.YYYY - HH:mm:ss'))
+                console.log(date.format('DD.MM.YYYY - HH:mm:ss'))
+                if (this.isLoginExpired || moment().format('DD.MM.YYYY - HH:mm:ss') == date.format('DD.MM.YYYY - HH:mm:ss')) return;
+                if (date.isBefore(moment())) {
+                    console.error('TOKEN EXPIRED! ' + date.format('DD.MM.YYYY - HH:mm:ss'));
                     this.userService.logout();
 
 
@@ -120,7 +128,6 @@ export class Schoolingo {
                     // }, this.school.schoolInfo.loginExpires - (AppConfig.WARN_BEFORE_LOGOUT_MINUTES * 60000));
                     // // x minutes before because of option to stay logged in
                     // Make modal change to autologout
-                } else {
                 }
             })
         );
@@ -342,7 +349,7 @@ export class Schoolingo {
             }
 
             if (lesson.type !== 0 && this.timetableSelectedWeek.getValue().isValid()) {
-                if (lesson.type === 1 && Utils.isOdd(this.timetableSelectedWeek.getValue().isoWeek()) || lesson.type === 2 && !Utils.isOdd(this.timetableSelectedWeek.getValue().isoWeek())) {
+                if (lesson.type === 1 && !Utils.isOdd(this.timetableSelectedWeek.getValue().isoWeek()) || lesson.type === 2 && Utils.isOdd(this.timetableSelectedWeek.getValue().isoWeek())) {
                     return;
                 }
             }

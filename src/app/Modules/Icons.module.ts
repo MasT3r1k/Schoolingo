@@ -2,7 +2,7 @@ import { NgModule } from '@angular/core';
 
 import { TablerIconsModule } from 'angular-tabler-icons';
 // import { IconMenu2, IconBrandDiscord, IconSettings, IconUsers } from 'angular-tabler-icons/icons';
-import { IconAlertTriangle, IconArrowBigRight, IconBaselineDensityMedium, IconBrandDiscord, IconBriefcase2, IconBuilding, IconCalendarMonth, IconCalendarWeek, IconCaretLeft, IconCaretLeftFilled, IconChalkboard, IconCheck, IconChevronLeft, IconChevronRight, IconClockHour4, IconCornerUpLeft, IconDeviceDesktop, IconDeviceMobile, IconDotsVertical, IconEdit, IconExclamationMark, IconFileReport, IconFilter, IconGenderFemale, IconGenderMale, IconInfinity, IconInfoCircle, IconLetterD, IconLetterN, IconLetterO, IconLetterP, IconLogout, IconMail, IconMeat, IconMenu2, IconMessages, IconMinus, IconNotes, IconOld, IconPaperclip, IconPencil, IconPhone, IconPlus, IconQuestionMark, IconSchool, IconSettings, IconShield, IconSlash, IconSquareForbid, IconTable, IconTags, IconThumbUp, IconTimeDuration5, IconTrashXFilled, IconUsers, IconUserScreen, IconUserX, IconWindowMaximize, IconWindowMinimize, IconX } from 'angular-tabler-icons/icons';
+import { IconAlertTriangle, IconArrowBigRight, IconBaselineDensityMedium, IconBox, IconBrandDiscord, IconBriefcase2, IconBuilding, IconCalendarMonth, IconCalendarWeek, IconCaretLeft, IconCaretLeftFilled, IconChalkboard, IconCheck, IconChevronLeft, IconChevronRight, IconClockHour4, IconCornerUpLeft, IconDeviceDesktop, IconDeviceMobile, IconDotsVertical, IconEdit, IconExclamationMark, IconFileReport, IconFilter, IconFlag3Filled, IconGenderFemale, IconGenderMale, IconInfinity, IconInfoCircle, IconLetterD, IconLetterN, IconLetterO, IconLetterP, IconLogout, IconMail, IconMeat, IconMenu2, IconMessages, IconMinus, IconNotes, IconOld, IconPaperclip, IconPencil, IconPhone, IconPlus, IconQuestionMark, IconSchool, IconSettings, IconShield, IconSlash, IconSquareForbid, IconTable, IconTags, IconThumbUp, IconTimeDuration5, IconTrashXFilled, IconTrophy, IconUsers, IconUserScreen, IconUserX, IconWindowMaximize, IconWindowMinimize, IconX } from 'angular-tabler-icons/icons';
 
 // Select some icons (use an object, not an array)
 const icons = {
@@ -64,7 +64,10 @@ const icons = {
   IconPencil,
   IconClockHour4,
   IconPhone,
-  IconCaretLeftFilled
+  IconCaretLeftFilled,
+  IconBox,
+  IconFlag3Filled,
+  IconTrophy
 };
 
 @NgModule({

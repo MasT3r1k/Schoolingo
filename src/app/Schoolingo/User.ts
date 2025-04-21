@@ -1,5 +1,5 @@
 import { NgModule } from "@angular/core";
-import { Router } from "@angular/router";
+import { ActivatedRoute, Router } from "@angular/router";
 import { child, degree, personDetails, user } from "@Schoolingo/User.d";
 import { SocketService } from "./Socket";
 import { Storage } from "./Storage";
@@ -20,14 +20,20 @@ export class UserService {
         private router: Router,
         private socketService: SocketService,
         private http: HttpClient,
-        private school: School
+        private school: School,
+        private route: ActivatedRoute
     ) {
 
       this.socketService.tokenStatus.subscribe((tokenStatus: string | null): void => {
         if (tokenStatus == null) return;
+        console.log(tokenStatus);
         switch(tokenStatus) {
           case "refresh_token":
-            this.setExpiration(moment().add(this.school.schoolInfo.loginExpires, 'ms'));
+            if (!this.school.schoolInfo) {
+              this.setExpiration(moment().add(5, 'minutes'));
+            } else {
+              this.setExpiration(moment().add(this.school.schoolInfo.loginExpires, 'ms'));
+            }
             break;
           case "invalid_token":
             if (!this.router.url.startsWith('/login')) {
@@ -37,9 +43,14 @@ export class UserService {
             }
             break;
           case "has_token":
-            if (this.router.url.startsWith('/login')) {
+            if (!this.school.schoolInfo) {
+              this.setExpiration(moment().add(5, 'minutes'));
+            } else {
               this.setExpiration(moment().add(this.school.schoolInfo.loginExpires, 'ms'));
-              this.router.navigate(['', 'main']);
+            }
+            if (this.router.url.startsWith('/login')) {
+              let route = this.route.snapshot.queryParamMap.get('returnUrl')
+              this.router.navigate(['', route]);
             }
             break;
         }
@@ -120,6 +131,7 @@ export class UserService {
    */
   public setToken(username: typeof this.username, expiration: moment.Moment): void {
     this.username = username;
+    console.log(expiration);
     this.setExpiration(expiration);
     this.storage.save(this.storage.tokenCacheName, { expiration });
   }

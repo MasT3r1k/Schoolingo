@@ -1,3 +1,4 @@
+import { personDetails } from "@Schoolingo/User";
 import moment from "moment";
 
 export interface Profile {
@@ -17,6 +18,12 @@ export interface Profile {
     insuranceId: number;
     insuranceCode: string;
     insuranceName: string;
+    teacher: personDetails;
     emails: { email: string;description: string }[];
     phones: { code: number;number: string;description: string }[];
 };
+
+export interface SidebarItem {
+  label: string;
+  perms: string[];
+}
