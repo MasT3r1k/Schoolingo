@@ -176,10 +176,8 @@ export class BoardComponent implements OnInit, AfterViewInit {
           userId = this.schoolingo.getStudentId();
         }
 
-        if (user.type == "student") {
-          this.schoolingo.socketService.emit('students:getLevel', {});
-          this.schoolingo.socketService.emit('avatars:getAvatar', {});
-        }
+        this.schoolingo.socketService.emit('students:getLevel', {});
+        this.schoolingo.socketService.emit('avatars:getAvatar', {});
 
         // Get timetable
         this.schoolingo.socketService.emit('timetable:getLessons', {
@@ -244,7 +242,7 @@ export class BoardComponent implements OnInit, AfterViewInit {
           if ('error' in data) {
             return;
           }
-          this.schoolingo.level.setLevelInfo(data.level, data.xp.start, data.xp.current, data.xp.max);
+          this.schoolingo.level.setLevelInfo(data.level, data.xp.current, data.xp.max);
       })
     )
 

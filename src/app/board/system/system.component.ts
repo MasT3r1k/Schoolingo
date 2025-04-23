@@ -30,6 +30,9 @@ export class SystemComponent {
     "Node-Cache (Ukládání dočasných dat pro rychlejší načítání)",
     "Undici (URL žádosti pro komunikaci s discord botem)",
     "otpAuth (Generování 2fa kódů)",
+    "Dicebear (vlastní avatary)",
+    "SweetAlerts2 (hezčí Alerty)",
+    "pdfkit (tvorba pdf souborů)"
   ];
   
 }
