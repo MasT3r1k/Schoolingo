@@ -511,7 +511,7 @@
         
                     <hr />
         
-                    <div class="items mt mb">
+                    <div class="items mt">
                         <div class="item">
                             <label for="phone">
                                 {{ schoolingo.locale.getLocale('phone') }}
@@ -590,62 +590,70 @@
                             </div>
                         </div>
 
-                        <div class="item">
-                            <label for="sex">
-                                {{ schoolingo.locale.getLocale('sex') }}
-                            </label>
-                            <div class="value">
-                                <div class="input">
-                                    <div class="gender-icon">
-                                        @if (schoolingo.userService.getUser()?.person?.sex) {
-                                            <i-tabler style="color: #FFC0CB;" name="gender-female"></i-tabler>
-                                        } @else {
-                                            <i-tabler style="color: #90D5FF;" name="gender-male"></i-tabler>
-                                        }
+                        <div class="row">
+                            <div class="item">
+                                <label for="sex">
+                                    {{ schoolingo.locale.getLocale('sex') }}
+                                </label>
+                                <div class="value">
+                                    <div class="input">
+                                        <div class="gender-icon">
+                                            @if (schoolingo.userService.getUser()?.person?.sex) {
+                                                <i-tabler style="color: #FFC0CB;" name="gender-female"></i-tabler>
+                                            } @else {
+                                                <i-tabler style="color: #90D5FF;" name="gender-male"></i-tabler>
+                                            }
+                                        </div>
+                                        <span>
+                                            {{ schoolingo.locale.getLocale('genders/' + schoolingo.userService.getUser()?.person?.sex) }}
+                                        </span>
                                     </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="item">
+                                <label for="birthday">
+                                    {{ schoolingo.locale.getLocale('birthday') }}
+                                </label>
+                                <div class="input">
                                     <span>
-                                        {{ schoolingo.locale.getLocale('genders/' + schoolingo.userService.getUser()?.person?.sex) }}
+                                        {{ profile.birthday.format("DD. MM. YYYY") }}
                                     </span>
                                 </div>
                             </div>
                         </div>
 
-                        <div class="item">
-                            <label for="birthday">
-                                {{ schoolingo.locale.getLocale('birthday') }}
-                            </label>
-                            <div class="input">
-                                <span>
-                                    {{ profile.birthday.format("DD. MM. YYYY") }}
-                                </span>
+                        <div class="row">
+                            <div class="item">
+                                <label for="address">
+                                    {{ schoolingo.locale.getLocale('address') }}
+                                </label>
+                                <div class="input">
+                                    <span style="margin-right: .5rem">
+                                        {{ country.getCountryByCode("CZ")?.flag }}
+                                    </span>
+                                    <span>
+                                    {{ " Šumavská 77, Strakonice 386 01" }}
+                                    </span>
+                                </div>
                             </div>
                         </div>
 
-                        <div class="item">
-                            <label for="address">
-                                {{ schoolingo.locale.getLocale('address') }}
-                            </label>
-                            <div class="input">
-                                <span style="margin-right: .5rem">
-                                    {{ country.getCountryByCode("CZ")?.flag }}
-                                </span>
-                                <span>
-                                {{ " Šumavská 77, Strakonice 386 01" }}
-                                </span>
-                            </div>
-                        </div>
-
-                        <div class="item">
-                            <label for="nationality">
-                                {{ schoolingo.locale.getLocale('nationality') }}
-                            </label>
-                            <div class="input">
-                                <span style="margin-right: .5rem">
-                                    {{ country.getCountryByCode("CZ")?.flag }}
-                                </span>
-                                <span>
-                                    {{ country.getCountryByCode("CZ")?.name }}
-                                </span>
+                        <div class="row">
+                            <div class="item">
+                                <label for="nationality">
+                                    {{ schoolingo.locale.getLocale('nationality') }}
+                                </label>
+                                <div class="input">
+                                    <span style="margin-right: .5rem">
+                                        {{ country.getCountryByCode("CZ")?.flag }}
+                                    </span>
+                                    <span>
+                                        {{ country.getCountryByCode("CZ")?.name }}
+                                    </span>
+                                </div>
                             </div>
                         </div>
 
@@ -701,23 +709,25 @@
                             </div>
                         }
 
-                        <div class="item">
-                            <label for="insuranceCode">
-                                {{ schoolingo.locale.getLocale('user/insuranceCode') }}
-                            </label>
-                            @if(profile.insuranceId) {
-                                <div class="input" [title]="profile.insuranceName">
-                                    <span>
-                                        {{ profile.insuranceId + " - " + profile.insuranceCode }}
-                                    </span>
-                                </div>
-                            } @else {
-                                <div class="input">
-                                    <span>
-                                        {{ schoolingo.locale.getLocale('user/noInsuranceSet') }}
-                                    </span>
-                                </div>
-                            }
+                        <div class="row">
+                            <div class="item">
+                                <label for="insuranceCode">
+                                    {{ schoolingo.locale.getLocale('user/insuranceCode') }}
+                                </label>
+                                @if(profile.insuranceId) {
+                                    <div class="input" [title]="profile.insuranceName">
+                                        <span>
+                                            {{ profile.insuranceId + " - " + profile.insuranceCode }}
+                                        </span>
+                                    </div>
+                                } @else {
+                                    <div class="input">
+                                        <span>
+                                            {{ schoolingo.locale.getLocale('user/noInsuranceSet') }}
+                                        </span>
+                                    </div>
+                                }
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -725,7 +735,24 @@
 
             @case(2) {
                 <div class="profile-content">
-                    <h2>{{ schoolingo.locale.getLocale('user/tabs/profile/parents') }}</h2>
+                    <h2 class="mb">{{ schoolingo.locale.getLocale('user/tabs/profile/parents') }}</h2>
+                    <div class="profile-title mb">
+                        <div style="width: 150px;">
+                            <span>Otec</span>
+                        </div>
+                    </div>
+                    <div class="items mb-2">
+                        <div class="alert error">Osoba nebyla nalezena</div>
+                    </div>
+
+                    <div class="profile-title mb">
+                        <div style="width: 150px;">
+                            <span>Matka</span>
+                        </div>
+                    </div>
+                    <div class="items mb-2">
+                        <div class="alert error">Osoba nebyla nalezena</div>
+                    </div>
                 </div>
             }
 
@@ -738,12 +765,89 @@
             @case(4) {
                 <div class="profile-content">
                     <h2>{{ schoolingo.locale.getLocale('user/connections') }}</h2>
+                    <div class="items mt">
+                        <div class="alert error">Nemáte žádné propojené účty</div>
+                    </div>
                 </div>
             }
 
             @case(5) {
                 <div class="profile-content">
                     <h2>{{ schoolingo.locale.getLocale('sidebar/gdpr') }}</h2>
+                    <div class="items">
+                        <div class="row">
+                            <div class="item">
+                                <label>
+                                    {{ schoolingo.locale.getLocale('fullName') }}
+                                </label>
+                                <div class="input">
+                                    <span>
+                                        {{ "" }}
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="item">
+                                <label>
+                                    {{ schoolingo.locale.getLocale('phone') }}
+                                </label>
+                                <div class="input">
+                                    <span>
+                                        {{ "" }}
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="item">
+                                <label>
+                                    {{ schoolingo.locale.getLocale('email') }}
+                                </label>
+                                <div class="input">
+                                    <span>
+                                        {{ "" }}
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="item">
+                                <label>
+                                    {{ schoolingo.locale.getLocale('databox') }}
+                                </label>
+                                <div class="input">
+                                    <span>
+                                        {{ "" }}
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="item">
+                                <label>
+                                    {{ schoolingo.locale.getLocale('mobile') }}
+                                </label>
+                                <div class="input">
+                                    <span>
+                                        {{ "" }}
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="item">
+                                <label>
+                                    {{ schoolingo.locale.getLocale('web') }}
+                                </label>
+                                <div class="input">
+                                    <span>
+                                        {{ "" }}
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             }
 
