@@ -42,7 +42,7 @@ export class SendComponent {
     title: {
       text: "messages/receiver"
     },
-    size: 'size-1',
+    size: 'size-2',
     items: [
       {
         type: 'component',
