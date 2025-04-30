@@ -185,14 +185,14 @@ export class CompaniesComponent implements OnInit {
                 .subscribe({
                   next: (data: any) => {
                     Swal.fire({
-                      title: "Firma byla nalezena",
-                      text: "Firma %companyName% byla nalezena. Přejete si vyplnit údaje do formuláře?".replaceAll('%companyName%', data.obchodniJmeno),
+                      title: this.schoolingo.locale.getLocale("traineeship/alerts/companyFound_title"),
+                      text: this.schoolingo.locale.getLocale("traineeship/alerts/companyFound_description").replaceAll('%companyName%', data.obchodniJmeno),
                       icon: "success",
                       showCancelButton: true,
                       confirmButtonColor: "var(--primary)",
                       cancelButtonColor: "var(--red)",
-                      confirmButtonText: "Ano, doplnit",
-                      cancelButtonText: "Ne, doplním ručně",
+                      confirmButtonText: this.schoolingo.locale.getLocale("traineeship/alerts/companyFound_agree"),
+                      cancelButtonText: this.schoolingo.locale.getLocale("traineeship/alerts/companyFound_cancel"),
                       reverseButtons: true
                     }).then((result) => {
                       if (result.isConfirmed) {
@@ -203,11 +203,10 @@ export class CompaniesComponent implements OnInit {
                         this.creatingCompany.postcode = data.sidlo.psc || "";
                       }
                     });
-                    console.log('Firmní údaje:', data);
                   },
                   error: (err) => {
                     Swal.fire({
-                      title: "Firma nebyla nalezena",
+                      title: this.schoolingo.locale.getLocale("traineeship/alerts/companyFound_notFound"),
                       icon: 'error'
                     })
                   }
