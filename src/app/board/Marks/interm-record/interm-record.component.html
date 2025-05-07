@@ -60,16 +60,24 @@
                         <div class="students">
                             <div class="header">
                                 <p class="lesson">{{ getSubject()[0] }}</p>
-                                <p>{{ getGroupText(getGroupFromId(selectedGroup.getValue(), selectedSubject.getValue())) }}</p>
+                                <p>{{
+                                getGroupText(getGroupFromId(selectedGroup.getValue(), selectedSubject.getValue()))
+                                }}</p>
                             </div>
                             @for (student of students; track $index) {
                                 <div class="student">
                                     <div class="left">
-                                        <span class="studentIndex" [title]="schoolingo.locale.getLocale('marks/studentIndex')">{{ $index + 1 }}.</span>
-                                        <span class="studentName" [title]="schoolingo.locale.getLocale('marks/studentName')">{{ student.student }}</span>
+                                        <span class="studentIndex" [title]="schoolingo.locale.getLocale('marks/studentIndex')">
+                                            {{ $index + 1 }}.
+                                        </span>
+                                        <span class="studentName" [title]="schoolingo.locale.getLocale('marks/studentName')">
+                                            {{ schoolingo.formatPerson(student.student) }}
+                                        </span>
                                     </div>
                                     <div class="right">
-                                        <div class="average" [title]="schoolingo.locale.getLocale('marks/studentAverage')">{{ getStudentAverage(student.grades) }}</div>
+                                        <div class="average" [title]="schoolingo.locale.getLocale('marks/studentAverage')">
+                                            {{ getStudentAverage(student.grades) }}
+                                        </div>
                                     </div>
                                 </div>
                             }
@@ -80,7 +88,9 @@
                                     <div class="grade-column">
                                         <div class="gradeColumnIndex">{{ $index + 1 }}</div>
                                         <div class="gradeColumnTopic">{{ column.topic }}</div>
-                                        <div class="gradeColumnAverage" [title]="schoolingo.locale.getLocale('marks/groupAverage')">{{ getColumnAverage($index) }}</div>
+                                        <div class="gradeColumnAverage" [title]="schoolingo.locale.getLocale('marks/groupAverage')">
+                                            {{ getColumnAverage($index) }}
+                                        </div>
                                     </div>
                                 }
                             </div>

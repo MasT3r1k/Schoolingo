@@ -3,6 +3,7 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Params, Router } from '@angular/router';
 import { dataAPI } from '@Components/Datalist/Datalist';
 import { Schoolingo } from '@Schoolingo';
+import { personDetails } from '@Schoolingo/User';
 import { BehaviorSubject, Subscription } from 'rxjs';
 
 interface teacherGroup {
@@ -30,83 +31,9 @@ export class IntermRecordComponent implements OnInit {
   public selectedGroup = new BehaviorSubject<number>(-1);
   public selectedSubject = new BehaviorSubject<number>(-1);
 
-  public columns: any = [
-    {
-      topic: "Průběžný test"
-    },
-    {
-      topic: "Zkouška zdatnosti"
-    },
-    {
-      topic: "Zkoušení u tabule"
-    },
-    {
-      topic: "Aktivita v hodině"
-    },
-    {
-      topic: "Průběžný test"
-    },
-    {
-      topic: "Zkouška zdatnosti"
-    },
-    {
-      topic: "Zkouška zdatnosti"
-    },
-    {
-      topic: ""
-    },
-    {
-      topic: ""
-    },
-    {
-      topic: ""
-    },
-    {
-      topic: ""
-    },
-    {
-      topic: ""
-    },
-    {
-      topic: ""
-    },
-    {
-      topic: ""
-    },
-    {
-      topic: ""
-    },
-    {
-      topic: ""
-    },
-    {
-      topic: ""
-    },
-    {
-      topic: ""
-    },
-    {
-      topic: ""
-    },
-    {
-      topic: ""
-    }
-  ]
+  public columns: any = []
 
-  public students: {student: string, grades: (string | number | null)[]}[] = [
-    {
-      student: "Numax Marcelos",
-      grades: [1,2,3,4,null,5,'+']
-    },
-    {
-      student: "Marcel Obecný",
-      grades: [3,4,1,1,null,2,'-']
-    },
-    {
-      student: "Marcel Divočák",
-      grades: [1,1,1,1,1,1,'N']
-    }
-  ];
+  public students: {student: personDetails, grades: (string | number | null)[]}[] = [];
 
   constructor(
     public schoolingo: Schoolingo,
@@ -115,15 +42,40 @@ export class IntermRecordComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.schoolingo.socketService.emit("grades:getTeacherGroups");
-    this.listeners.push(this.schoolingo.socketService.addFunction("connect").subscribe(() => {
-      this.schoolingo.socketService.emit("grades:getTeacherGroups");
-    }));
+    setTimeout(() => {
+      const url = new URLSearchParams(window.location.search);
+      let groupId = +url.get("groupId")!;
+      let subjectId = +url.get("subjectId")!;
+      if (groupId && subjectId) {
+        this.selectGroup(groupId, subjectId);
+      }
+    }, 500)
 
-    this.listeners.push(this.schoolingo.socketService.addFunction("grades:getTeacherGroups").subscribe((data: dataAPI | any) => {
-      if (data.error) return;
-      this.groups = data;
-    }));
+    this.schoolingo.socketService.emit("grades:getTeacherGroups");
+    this.listeners.push(
+      this.schoolingo.socketService.addFunction("connect").subscribe(() => {
+        this.schoolingo.socketService.emit("grades:getTeacherGroups");
+      })
+    );
+
+    this.listeners.push(
+      this.schoolingo.socketService.addFunction("grades:getTeacherGroups")
+      .subscribe((data: dataAPI | any) => {
+        if (data.error) return;
+        this.groups = data;
+      })
+    );
+
+    this.listeners.push(
+      this.schoolingo.socketService.addFunction("grades:getTeacherGroupStudents")
+      .subscribe((data: any) => {
+        this.students = data.students;
+        this.columns = data.columns;
+        for(let i = 0;i < 20;i++) {
+          this.columns.push({ topic: "" })
+        }
+      })
+    )
 
     // this.listeners.push(this.selectedGroup.subscribe((groupId: number) => {
     //   if (groupId === -1) {
@@ -133,14 +85,16 @@ export class IntermRecordComponent implements OnInit {
     //   this.router.navigate([], { queryParams: { groupId, subjectId } });
     // }));
 
-    this.listeners.push(this.route.queryParamMap.subscribe((param: Params) => {
-      // Show company
-      if (param.params.groupId != undefined && param.params.subjectId != undefined) {
-        this.selectGroup(param.params.groupId, param.params.subjectId);
-      } else {
-        this.selectGroup(-1, -1)
-      }
-    }));
+    this.listeners.push(
+      this.route.queryParamMap.subscribe((param: Params) => {
+        // Show company
+        if (param.params.groupId != undefined && param.params.subjectId != undefined) {
+          this.selectGroup(param.params.groupId, param.params.subjectId);
+        } else {
+          this.selectGroup(-1, -1)
+        }
+      })
+    );
   }
 
   ngOnDestroy(): void {
@@ -186,6 +140,7 @@ export class IntermRecordComponent implements OnInit {
     if (this.getGroupFromId(groupId, subjectId)) {
       this.selectedGroup.next(groupId);
       this.selectedSubject.next(subjectId);
+      this.schoolingo.socketService.emit("grades:getTeacherGroupStudents", { groupId, subjectId })
     } else {
       this.selectedGroup.next(-1);
       this.selectedSubject.next(-1);
