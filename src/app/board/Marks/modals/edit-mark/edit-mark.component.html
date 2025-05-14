@@ -1,0 +1,36 @@
+<div class="items">
+    @if (alert != null) {
+        <alert [alert]="alert"></alert>
+    }
+
+    <div class="item mb">
+        <div class="label">
+            {{ schoolingo.locale.getLocale('marks/studentName') }}
+        </div>
+        <div class="value">
+            <input type="text" name="name" [value]="schoolingo.formatPerson(schoolingo.tmarks.getSelectedStudent())" readonly="true">
+        </div>
+    </div>
+
+    <div class="item mb">
+        <div class="label">
+            {{ schoolingo.locale.getLocale('subject') }}
+        </div>
+        <div class="value">
+            <input type="text" name="name" [value]="schoolingo.subjects[schoolingo.tmarks.getSubjectId()][0] || this.schoolingo.locale.getLocale('unknown')" readonly="true">
+        </div>
+    </div>
+
+    <div class="item mb">
+        <div class="label">
+            {{ schoolingo.locale.getLocale('marks/mark') }}
+        </div>
+        <div class="value">
+            <input type="text" name="name" [(ngModel)]="mark">
+        </div>
+    </div>
+
+    <div class="btn submit" role="button" (click)="editMark()">
+        {{ schoolingo.locale.getLocale("marks/editMark") }}
+    </div>
+</div>

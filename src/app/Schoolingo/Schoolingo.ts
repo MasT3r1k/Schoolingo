@@ -26,6 +26,7 @@ import { childrenSwitchComponent } from "../board/modals/childrenSwitch/children
 import { Classbook } from "./Classbook";
 import { LevelSystem } from "./LevelSystem";
 import { Avatar } from "./Avatar";
+import { teacherMarks } from "./Marks";
 export {
     TimetableAPI,
     ClassbookAPI,
@@ -88,7 +89,8 @@ export class Schoolingo {
         public auth: Authentication,
         public classbook: Classbook,
         public level: LevelSystem,
-        public avatar: Avatar
+        public avatar: Avatar,
+        public tmarks: teacherMarks
     ) {
         this.subscribers.push(
             this.locale.language.subscribe(() => {
@@ -117,9 +119,6 @@ export class Schoolingo {
                 if (this.isLoginExpired || moment().format('DD.MM.YYYY - HH:mm:ss') == date.format('DD.MM.YYYY - HH:mm:ss')) return;
                 if (date.isBefore(moment())) {
                     console.error('TOKEN EXPIRED! ' + date.format('DD.MM.YYYY - HH:mm:ss'));
-                    this.userService.logout();
-
-
                     // this.loginModal.close();
                     // clearTimeout(this.warnlogoutInterval)
                     // this.warnlogoutInterval = setTimeout(() => {
