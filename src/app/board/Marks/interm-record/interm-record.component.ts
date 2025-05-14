@@ -2,9 +2,13 @@ import { NgClass } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Params, Router } from '@angular/router';
 import { dataAPI } from '@Components/Datalist/Datalist';
+import { Modal } from '@Components/Modal/Modal';
 import { Schoolingo } from '@Schoolingo';
 import { personDetails } from '@Schoolingo/User';
 import { BehaviorSubject, Subscription } from 'rxjs';
+import { EditMarkComponent } from '../modals/edit-mark/edit-mark.component';
+import { Alert } from '@Schoolingo/Alert';
+import { AlertComponent } from '@Components/Alert/Alert';
 
 interface teacherGroup {
   subject: string;
@@ -18,7 +22,7 @@ interface teacherGroup {
 
 @Component({
   standalone: true,
-  imports: [NgClass],
+  imports: [NgClass, AlertComponent],
   templateUrl: './interm-record.component.html',
   styleUrls: ['./interm-record.component.css', '../../../Styles/card.css', '../../../Styles/input.css']
 })
@@ -34,6 +38,8 @@ export class IntermRecordComponent implements OnInit {
   public columns: any = []
 
   public students: {student: personDetails, grades: (string | number | null)[]}[] = [];
+  private modals: Record<string, Modal> = {};
+  public alert: Alert | null = null;
 
   constructor(
     public schoolingo: Schoolingo,
@@ -42,6 +48,20 @@ export class IntermRecordComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
+    this.modals['edit-mark'] = new Modal({
+      title: {
+        text: "marks/editMark",
+      },
+      size: 'size-2',
+      closeable: true,
+      items: [
+        {
+          type: "component",
+          component: EditMarkComponent
+        }
+      ]
+    });
+
     setTimeout(() => {
       const url = new URLSearchParams(window.location.search);
       let groupId = +url.get("groupId")!;
@@ -69,21 +89,32 @@ export class IntermRecordComponent implements OnInit {
     this.listeners.push(
       this.schoolingo.socketService.addFunction("grades:getTeacherGroupStudents")
       .subscribe((data: any) => {
-        this.students = data.students;
-        this.columns = data.columns;
-        for(let i = 0;i < 20;i++) {
-          this.columns.push({ topic: "" })
+        if ('error' in data) {
+          this.router.navigate(['main'])
+          return;
+        }
+        try {
+          if (data.students.filter((st: any) => st.student == null).length > 0) {
+            this.schoolingo.socketService.emit("grades:getTeacherGroupStudents", {
+              groupId: this.selectedGroup,
+              subjectId: this.selectedSubject
+            });
+            return;
+          }
+          this.students = data.students;
+          this.columns = data.columns;
+          for(let i = 0;i < 20;i++) {
+            this.columns.push({ topic: "" })
+          }
+        } catch(e) {
+          this.schoolingo.socketService.emit("grades:getTeacherGroupStudents", {
+            groupId: this.selectedGroup,
+            subjectId: this.selectedSubject
+          });
+          console.error(e);
         }
       })
     )
-
-    // this.listeners.push(this.selectedGroup.subscribe((groupId: number) => {
-    //   if (groupId === -1) {
-    //     this.router.navigate([]);
-    //     return;
-    //   }
-    //   this.router.navigate([], { queryParams: { groupId, subjectId } });
-    // }));
 
     this.listeners.push(
       this.route.queryParamMap.subscribe((param: Params) => {
@@ -97,21 +128,34 @@ export class IntermRecordComponent implements OnInit {
     );
   }
 
+  public editMark(student: number, gradeIndex: number): void {
+    this.error(null);
+    this.schoolingo.tmarks.setStudent(this.students[student].student);
+    this.schoolingo.tmarks.setSubjectId(this.selectedSubject.getValue());
+    this.schoolingo.tmarks.setMark(this.students[student].grades[gradeIndex]);
+    this.modals['edit-mark'].open();
+  }
+
   ngOnDestroy(): void {
     this.listeners.forEach((sub: Subscription) => sub.unsubscribe());
   }
 
   public getColumnAverage(columnIndex: number): string {
-    let gradeTotal = 0;
-    let gradeCount = 0;
-    this.students.forEach((student: any) => {
-      if (this.ignoreGrade.includes(student.grades[columnIndex])) return;
-      gradeTotal += student.grades[columnIndex];
-      gradeCount++;
-    })
-    let average = Number(gradeTotal / gradeCount);
-    if (isNaN(average)) return "";
-    return average.toFixed(2);
+    try {
+
+      let gradeTotal = 0;
+      let gradeCount = 0;
+      this.students.forEach((student: any) => {
+        if (this.ignoreGrade.includes(student.grades[columnIndex])) return;
+        gradeTotal += student.grades[columnIndex];
+        gradeCount++;
+      })
+      let average = Number(gradeTotal / gradeCount);
+      if (isNaN(average)) return "";
+      return average.toFixed(2);
+    } catch(e) {
+      return "";
+    }
   }
 
   public getStudentAverage(grades: (string | number | null)[]): string {
@@ -135,6 +179,15 @@ export class IntermRecordComponent implements OnInit {
     this.router.navigate([], { queryParams: { groupId, subjectId } });
   }
 
+  public error(type: 'firstCreateColumn' | null): void {
+    this.alert = null;
+    switch(type) {
+      case "firstCreateColumn":
+        this.alert = new Alert("error", "marks/alerts/firstCreateColumn", true)
+        break;
+    }
+  }
+
   public selectGroup(groupId: number, subjectId: number): void {
     this.gotoGroup(groupId, subjectId);
     if (this.getGroupFromId(groupId, subjectId)) {
@@ -144,6 +197,8 @@ export class IntermRecordComponent implements OnInit {
     } else {
       this.selectedGroup.next(-1);
       this.selectedSubject.next(-1);
+      this.students = [];
+      this.columns = [];
     }
   }
 

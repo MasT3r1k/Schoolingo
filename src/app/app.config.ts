@@ -28,6 +28,7 @@ import { Discord } from '@Schoolingo/Discord';
 import { Classbook } from '@Schoolingo/Classbook';
 import { LevelSystem } from '@Schoolingo/LevelSystem';
 import { Avatar } from '@Schoolingo/Avatar';
+import { teacherMarks } from '@Schoolingo/Marks';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -59,7 +60,8 @@ export const appConfig: ApplicationConfig = {
     Discord,
     Classbook,
     LevelSystem,
-    Avatar
+    Avatar,
+    teacherMarks
   ],
   
 };
