@@ -30,6 +30,8 @@ export class MainComponent {
     public permissions: Permission
   ) {}
 
+  public interval: NodeJS.Timeout | null = null;
+
   public getComponent(module: Module): Type<any> | null {
     if (Array.isArray(module.component)) {
       return module.component[module.selectedTab.getValue()];
@@ -41,12 +43,12 @@ export class MainComponent {
     var duration = 15 * 1000;
     var animationEnd = Date.now() + duration;
     var defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 0 };
-
-    var interval: NodeJS.Timeout = setInterval(function() {
+    clearInterval(this.interval!)
+    this.interval = setInterval(() => {
       var timeLeft = animationEnd - Date.now();
 
       if (timeLeft <= 0) {
-        return clearInterval(interval);
+        return clearInterval(this.interval!);
       }
 
       var particleCount = 50 * (timeLeft / duration);
