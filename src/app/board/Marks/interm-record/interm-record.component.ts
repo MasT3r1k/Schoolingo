@@ -9,6 +9,7 @@ import { BehaviorSubject, Subscription } from 'rxjs';
 import { EditMarkComponent } from '../modals/edit-mark/edit-mark.component';
 import { Alert } from '@Schoolingo/Alert';
 import { AlertComponent } from '@Components/Alert/Alert';
+import { EditColumnComponent } from '../modals/edit-column/edit-column.component';
 
 interface teacherGroup {
   subject: string;
@@ -62,6 +63,20 @@ export class IntermRecordComponent implements OnInit {
       ]
     });
 
+    this.modals['edit-column'] = new Modal({
+      title: {
+        text: "marks/editColumn",
+      },
+      size: 'size-2',
+      closeable: true,
+      items: [
+        {
+          type: "component",
+          component: EditColumnComponent
+        }
+      ]
+    });
+
     setTimeout(() => {
       const url = new URLSearchParams(window.location.search);
       let groupId = +url.get("groupId")!;
@@ -90,7 +105,7 @@ export class IntermRecordComponent implements OnInit {
       this.schoolingo.socketService.addFunction("grades:getTeacherGroupStudents")
       .subscribe((data: any) => {
         if ('error' in data) {
-          this.router.navigate(['main'])
+          this.gotoGroup(-1, -1);
           return;
         }
         try {
@@ -126,6 +141,13 @@ export class IntermRecordComponent implements OnInit {
         }
       })
     );
+  }
+
+    public editColumn(columnIndex: number): void {
+    this.error(null);
+    this.schoolingo.tmarks.setColumnIndex(columnIndex);
+    this.schoolingo.tmarks.setSubjectId(this.selectedSubject.getValue());
+    this.modals['edit-column'].open();
   }
 
   public editMark(student: number, gradeIndex: number): void {

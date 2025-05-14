@@ -1,6 +1,4 @@
-import { Schoolingo } from "@Schoolingo";
 import { personDetails } from "./User";
-import { inject } from "@angular/core";
 
 export class teacherMarks {
     private student: personDetails | null = null;
@@ -17,4 +15,7 @@ export class teacherMarks {
 
     public setMark(mark: typeof this.mark): void { this.mark = mark }
     public getMark(): typeof this.mark { return this.mark }
+
+    public setColumnIndex(columnIndex: number): void { this.columnIndex = columnIndex }
+    public getColumnIndex(): typeof this.columnIndex { return this.columnIndex }
 }
