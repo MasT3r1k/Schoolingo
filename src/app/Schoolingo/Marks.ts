@@ -6,6 +6,7 @@ export class teacherMarks {
     private groupId = -1;
     private subjectId = -1;
     private mark: string | number | null = null;
+    private topic = "";
 
     public setStudent(student: personDetails): void { this.student = student }
     public getSelectedStudent(): typeof this.student { return this.student }
@@ -18,4 +19,7 @@ export class teacherMarks {
 
     public setColumnIndex(columnIndex: number): void { this.columnIndex = columnIndex }
     public getColumnIndex(): typeof this.columnIndex { return this.columnIndex }
+
+    public setTopic(topic: string): void { this.topic = topic }
+    public getTopic(): typeof this.topic { return this.topic }
 }

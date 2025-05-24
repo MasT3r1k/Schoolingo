@@ -146,6 +146,7 @@ export class IntermRecordComponent implements OnInit {
     public editColumn(columnIndex: number): void {
     this.error(null);
     this.schoolingo.tmarks.setColumnIndex(columnIndex);
+    this.schoolingo.tmarks.setTopic(this.columns[columnIndex].topic);
     this.schoolingo.tmarks.setSubjectId(this.selectedSubject.getValue());
     this.modals['edit-column'].open();
   }

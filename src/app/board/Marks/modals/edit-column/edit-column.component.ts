@@ -29,6 +29,7 @@ export class EditColumnComponent implements OnInit {
   public selectedType: typeof this.type = 'marks';
 
   ngOnInit(): void {
+    this.topic = this.schoolingo.tmarks.getTopic();
   }
 
   public editColumn(): void {
@@ -81,5 +82,7 @@ export class EditColumnComponent implements OnInit {
       }
       break;
     }
+
+    
   }
 }
