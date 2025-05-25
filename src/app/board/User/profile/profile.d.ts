@@ -26,4 +26,5 @@ export interface Profile {
 export interface SidebarItem {
   label: string;
   perms: string[];
+  content: SidebarContent;
 }

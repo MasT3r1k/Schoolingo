@@ -393,7 +393,7 @@
             <ul>
                 @for (item of sidebarItems; track $index) {
                     @if (this.perms.checkPermission(item.perms)) {
-                        <li [ngClass]="{active: sidebar.getValue() === $index}" (click)="sidebar.next($index)">
+                        <li [ngClass]="{active: sidebar.getValue() === item.content}" (click)="sidebar.next(item.content)">
                             <div class="item">
                                 <div class="item-label">
                                     {{ schoolingo.locale.getLocale(item.label) }}
@@ -405,7 +405,7 @@
             </ul>
         </div>
         @switch (sidebar.getValue()) {
-            @case (0) {
+            @case (SidebarContent.myAccount) {
                 <div class="profile-content">
                     <div class="profile-header">
                         <div class="user">
@@ -564,7 +564,7 @@
                 </div>
             }
             
-            @case(1) {
+            @case(SidebarContent.personalInfo) {
                 <div class="profile-content">
                     <h2 class="mb-2">
                         {{ schoolingo.locale.getLocale('user/personalInformation') }}
@@ -733,7 +733,7 @@
                 </div>
             }
 
-            @case(2) {
+            @case(SidebarContent.parents) {
                 <div class="profile-content">
                     <h2 class="mb">{{ schoolingo.locale.getLocale('user/tabs/profile/parents') }}</h2>
                     <div class="profile-title mb">
@@ -756,13 +756,13 @@
                 </div>
             }
 
-            @case(3) {
+            @case(SidebarContent.notifications) {
                 <div class="profile-content">
                     <h2>{{ schoolingo.locale.getLocale('user/notifications') }}</h2>
                 </div>
             }
 
-            @case(4) {
+            @case(SidebarContent.connections) {
                 <div class="profile-content">
                     <h2>{{ schoolingo.locale.getLocale('user/connections') }}</h2>
                     <div class="items mt">
@@ -771,7 +771,7 @@
                 </div>
             }
 
-            @case(5) {
+            @case(SidebarContent.gdpr) {
                 <div class="profile-content">
                     <h2>{{ schoolingo.locale.getLocale('sidebar/gdpr') }}</h2>
                     <div class="items">

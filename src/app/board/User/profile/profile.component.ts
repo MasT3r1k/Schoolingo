@@ -5,10 +5,22 @@ import { Schoolingo } from '@Schoolingo';
 import { Utils } from '@Schoolingo/Utils';
 import { Country } from 'country-state-city';
 import { BehaviorSubject, Subscription } from 'rxjs';
-import { Profile, SidebarItem } from './profile';
+import { Profile, SidebarItem } from './profile.d';
 import { Permission } from '@Schoolingo/Permissions';
 import { IconsModule } from '../../../Modules/Icons.module';
 import { RouterLink } from '@angular/router';
+
+export enum SidebarContent {
+  "myAccount",
+  "settings",
+  "personalInfo",
+  "parents",
+  "loginHistory",
+  "devices",
+  "notifications",
+  "connections",
+  "gdpr"
+}
 
 @Component({
   standalone: true,
@@ -17,15 +29,20 @@ import { RouterLink } from '@angular/router';
   styleUrls: ['./profile.component.css', '../../../Styles/card.css', '../../../Styles/input.css', '../../../Styles/sidebar.css']
 })
 export class ProfileComponent implements OnInit {
+  SidebarContent = SidebarContent;
+
   public listeners: Subscription[] = [];
-  public sidebar = new BehaviorSubject<number>(0);
+  public sidebar = new BehaviorSubject<SidebarContent>(0);
   public sidebarItems: SidebarItem[] = [
-    { label: "user/tabs/profile/myAccount", perms: ['all'] },
-    { label: "user/personalInformation", perms: ['all'] },
-    { label: "user/tabs/profile/parents", perms: ['student'] },
-    { label: "user/notifications", perms: ['all'] },
-    { label: "user/connections", perms: ['all'] },
-    { label: "sidebar/gdpr", perms: ['all'] }
+    { label: "user/tabs/profile/myAccount", perms: ['all'],     content: SidebarContent.myAccount },
+    { label: "userSettings/title",          perms: ['all'],     content: SidebarContent.settings },
+    { label: "user/personalInformation",    perms: ['all'],     content: SidebarContent.personalInfo },
+    { label: "user/tabs/profile/parents",   perms: ['student'], content: SidebarContent.parents },
+    { label: "sidebar/user/devices",        perms: ['all'],     content: SidebarContent.devices },
+    { label: "sidebar/user/loginHistory",   perms: ['all'],     content: SidebarContent.loginHistory },
+    { label: "user/notifications",          perms: ['all'],     content: SidebarContent.notifications },
+    { label: "user/connections",            perms: ['all'],     content: SidebarContent.connections },
+    { label: "sidebar/gdpr",                perms: ['all'],     content: SidebarContent.gdpr }
   ];
   public selectedTab = new BehaviorSubject<number>(0);
   country = Country;
