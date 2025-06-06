@@ -22,7 +22,7 @@ export interface SidebarItem {
 }
 
 @Component({
-  imports: [RouterOutlet, IconsModule, RouterLink, RouterLinkActive],
+  imports: [RouterOutlet, IconsModule],
   templateUrl: './user.component.html',
   styleUrls: ['./user.component.css', '../../styles/sidebar.css']
 })
