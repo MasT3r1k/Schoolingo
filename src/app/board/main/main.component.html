@@ -1,47 +1,59 @@
-<div class="grid">
-    @for (module of modules.modules; track $index) {
-        @if ((module.modules && modules.moduleManager.checkModule(module.modules)) || !module.modules && ((module.perms && permissions.checkPermission(module.perms)) || !module.perms)) {
-            <div class="module">
-                <div class="module-header">
-                    <h2 [ngClass]="{'has-link': module.titles[module.selectedTab.getValue()].link != undefined}" [routerLink]="module.titles[module.selectedTab.getValue()].link">
-                        {{ locale.getLocale(module.titles[module.selectedTab.getValue()].title) }}
-                    </h2>
-                    <div class="flex-items">
-                        @if (module.titles.length > 1 && module.selectedTab) {
-                            <schoolingo-tabs [options]="getTitles(module)" [value]="module.selectedTab"></schoolingo-tabs>
-                        }
-                        <div [ngClass]="{'item-btn': true, active: dropdown.isOpen(timetableOptionsName)}" [attr.dropdown]="timetableOptionsName" (click)="$event.stopPropagation();dropdown.toggle(timetableOptionsName)">
-                            <div class="icon">
-                                <i-tabler name="dots-vertical"></i-tabler>
-                            </div>
-                        </div>
-                    </div>
+<div class="dashboard">
+    <h1>🎓 Můj přehled</h1>
+    <div class="modules">
+        <div class="module">
+            <div class="module-header">
+                <h2>{{ l.s("modules.timetable") }}</h2>
+                <div class="flex-items">
+                    <schoolingo-tabs></schoolingo-tabs>
                 </div>
-                @defer {
-                    @if (module.component == null) {
-                        <div class="module-body skeleton"></div>
-                    } @else {
-                        <div class="module-body">
-                            <ng-component [ngComponentOutlet]="getComponent(module)"></ng-component>
-                        </div>
-                    }
-                } @placeholder {
-                    <div class="module-body skeleton"></div>
-                } @error {
-                    <div class="module-body skeleton"></div>
-                }
             </div>
-        }
-    }
+            <div [ngClass]="{'module-body': true, skeleton: timetable() == null}">
+                <ng-container>
+                    <ng-container *ngComponentOutlet="timetable()"></ng-container>
+                </ng-container>
+            </div>
+        </div>
+
+        <div class="module">
+            <div class="module-header">
+                <h2>{{ l.s("modules.timetable") }}</h2>
+                <div class="flex-items">
+                    <schoolingo-tabs></schoolingo-tabs>
+                </div>
+            </div>
+            <div class="module-body skeleton"></div>
+        </div>
+
+        <div class="module">
+            <div class="module-header">
+                <h2>{{ l.s("modules.timetable") }}</h2>
+                <div class="flex-items">
+                    <schoolingo-tabs></schoolingo-tabs>
+                </div>
+            </div>
+            <div class="module-body skeleton"></div>
+        </div>
+
+        <div class="module">
+            <div class="module-header">
+                <h2>{{ l.s("modules.timetable") }}</h2>
+                <div class="flex-items">
+                    <schoolingo-tabs></schoolingo-tabs>
+                </div>
+            </div>
+            <div class="module-body skeleton"></div>
+        </div>
+    </div>
 </div>
 
 <!-- <div class="btn" (click)="testconfetti()">
     Test confetti
 </div> -->
 
-<div class="show-modules">
+<!-- <div class="show-modules">
     <div class="btn">
         <i-tabler name="baseline-density-medium"></i-tabler>
         <span>Nastavení oken</span>
     </div>
-</div>
+</div> -->

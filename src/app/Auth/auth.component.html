@@ -1,73 +1,202 @@
-<main>
+<main (click)="dropdown = ''">
+    <div class="top">
+        <div></div>
+        <div>
+            <div class="btn small-border" (click)="$event.stopPropagation();dropdown = dropdown == '' ? 'language' : ''">
+                <img style="width: 20px;" [src]="l.getLanguage(l.getSelectedLanguage().getValue())?.flag" [alt]="l.getLanguage(l.getSelectedLanguage().getValue())?.name">
+                <span>{{ l.getLanguage(l.getSelectedLanguage().getValue())?.name }}</span>
+                <div class="dropdown" [hidden]="dropdown != 'language'" (click)="$event.stopPropagation();">
+                    <ul>
+                        @for (language of l.getLanguages(); track $index) {
+                            <li class="btn" (click)="$event.stopPropagation();l.setLanguage(language)">
+                                <img style="width: 20px;" [src]="l.getLanguage(language)?.flag" [alt]="l.getLanguage(language)?.name">
+                                <span>{{ l.getLanguage(language)?.name }}</span>
+                            </li>
+                        }
+                    </ul>
+                </div>
+            </div>
+            <div class="btn small-border" (click)="$event.stopPropagation();dropdown = dropdown == '' ? 'theme' : ''">
+                <div [ngStyle]="{width: '20px',height: '20px','background-color': t.getThemeColor() == 'dark' ? '#000' : '#fff','border-radius': '50%','margin-right': '.5rem'}"></div>
+                <span>{{ l.s('themes.' + t.getTheme().getValue()) }}</span>
+
+                <div class="dropdown" [hidden]="dropdown != 'theme'" (click)="$event.stopPropagation();">
+                    <ul>
+                        @for (theme of t.getThemes(); track $index) {
+                            <li class="btn" (click)="t.updateTheme(theme)">
+                                <div class="item">
+                                    <div class="row">
+                                        <div [ngStyle]="{width: '20px',height: '20px','background-color': theme == 'system' ? (t.getSystemColor() == 'dark' ? '#000' : '#fff') : theme == 'dark' ? '#000' : '#fff','border-radius': '50%','margin-right': '.5rem'}"></div>
+                                        <span>{{ l.s('themes.' + theme) }}</span>
+                                    </div>
+                                </div>
+                            </li>
+                        }
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
     <h1 class="APP_Logo">
         {{ App.APP_NAME.toUpperCase() }}
     </h1>
-    <div class="card" [ngStyle]="{ minWidth: school.schoolInfo.fastLogin ? '784px' : '480px' }">
-        <div class="card-top">
-            <div class="alerts">
-                @if(schoolingo.auth.errors['auth'] != null) {
-                    <alert [alert]="schoolingo.auth.errors.auth"></alert>
-                }
-            </div>
-        </div>
-        <div class="card-row">
-            <div class="left" [ngStyle]="{ width: school.schoolInfo.fastLogin ? '50%' : '100%' }">
-                <h2 class="title">
-                    {{ schoolingo.locale.getLocale("login_formTitle") }}
-                </h2>
-                @if (school.schoolInfo.name == '') {
-                    <h3 class="school skeleton"></h3>
-                } @else {
-                    <p class="school">{{ school.schoolInfo.name }}</p>
-                }
-                <ng-container [ngComponentOutlet]="component"></ng-container>
-            </div>
-            @if(school.schoolInfo.fastLogin) {
-                <div class="splitter">
-                    {{ schoolingo.locale.getLocale('or') }}
-                </div>
-                <div class="right qrcode">
-                    <div class="qrcode">
-                        <div class="title" style="margin-bottom: 1rem">
-                            {{ schoolingo.locale.getLocale("login_qrcodeTitle") }}
-                        </div>
-                        @if (qrStatus.code == '' || qrStatus.code == null) {
-                            <div
-                            class="skeleton"
-                            [ngStyle]="{ width: 'var(--qrcode-size)', height: 'var(--qrcode-size)' }"></div>
-                        } @else {
-                            <qrcode
-                            [allowEmptyString]="false"
-                            [width]="160"
-                            [margin]="0"
-                            [elementType]="'canvas'"
-                            [errorCorrectionLevel]="'M'"
-                            [title]="'SCHOOLINGO QR Fastlogin'"
-                            [imageSrc]="'./assets/logo.webp'"
-                            [imageHeight]="56"
-                            [imageWidth]="56"
-                            [qrdata]="qrStatus.code"
-                            [colorDark]="schoolingo.theme.getTheme() == 'light' ? '#000000' : '#ffffff'"
-                            [colorLight]="schoolingo.theme.getTheme() == 'light' ? '#ffffff' : '#000000'"
-                            ></qrcode>
-                        }
-                    </div>
-                    @if (qrStatus.whatIsVisible != 'trylogin') {
-                        <div
-                        style="margin-top: 1rem; text-align: center"
-                        [innerHTML]="schoolingo.locale.getLocale('scan_qrcode')"
-                        ></div>
-                    }
-                </div>
+    <div class="card">
+        <div class="card-alerts">
+            @for (alert of a.getAlerts(); track $index) {
+                <alert [alert]="alert"></alert>
             }
         </div>
+        @if (isLoading) {
+            <div class="loader"></div>
+        } @else {
+        <div class="card-top">
+            <h2 class="title">
+                {{ l.s("auth.login.title") }}
+            </h2>
+            <p [ngClass]="{school: true, skeleton: isLoading}">
+                {{ school.config.getValue()?.name || "" }}
+            </p>
+
+        </div>
+        <div class="card-row">
+            <div class="left">
+                <div class="title">
+                    {{ l.s("auth.login.subtitle.0") }}
+                </div>
+                @switch (page) {
+                    @case ("login") {
+                        <form [formGroup]="loginForm" (ngSubmit)="login()">
+                            <input type="submit" value="" style="display: none" />
+
+                            <div class="form-group">
+                                <label for="username" [ngClass]="{ 'error-color': getInputError('username') !== '' }">
+                                    {{ l.s('auth.login.username') }}
+                                    @if (getInputError("username") !== "") {
+                                        <span class="label-error">
+                                            - {{ getInputError("username") }}
+                                        </span>
+                                    }
+                                </label>
+                                <div class="value">
+                                    <input type="text" id="username" name="username" formControlName="username" [placeholder]="l.s('auth.login.username_placeholder')" required />
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="password" [ngClass]="{ 'error-color': getInputError('password') !== '' }">
+                                    {{ l.s('auth.login.password') }}
+                                    @if (getInputError("password") !== "") {
+                                        <span class="label-error">
+                                            - {{ getInputError("password") }}
+                                        </span>
+                                    }
+                                </label>
+                                <div class="value">
+                                    <input type="password" id="password" name="password" formControlName="password" [placeholder]="l.s('auth.login.password_placeholder')" required />
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <a class="clickable" href="#">
+                                    {{ l.s('auth.forgotpass.click') }}
+                                </a>
+                            </div>
+                        </form>
+                        <div class="form-group">
+                            <div [ngClass]="{btn: true, primary: loginForm.status == 'VALID', disabled: loginForm.status == 'INVALID'}" (click)="login()">
+                                {{ l.s('auth.login.button') }}
+                            </div>
+                        </div>
+
+                        @if (isPasskeySupport) {
+                            <div class="splitter horizontal">
+                                <span>{{ l.s('or') }}</span>
+                            </div>
+
+                            <div class="btn" (click)="loginPasskey()">
+                                <i-tabler name="password-user"></i-tabler>
+                                <span>{{ l.s('auth.login.login_with_passkey') }}</span>
+                            </div>
+                        }
+                    }
+
+                    @case ("2fa") {
+                        <form [formGroup]="loginForm" (ngSubmit)="login()">
+                            <input type="submit" value="" style="display: none" />
+
+                            <div class="form-group">
+                                <label for="token" [ngClass]="{ 'error-color': getInputError('token') !== '' }">
+                                    {{ l.s('auth.2fa.authentication_code') }}
+                                    @if (getInputError("token") !== "") {
+                                        <span class="label-error">
+                                            - {{ getInputError("token") }}
+                                        </span>
+                                    }
+                                </label>
+                                <div class="value">
+                                    <div class="token">
+                                        <input type="text" id="token" [minlength]="AuthConfig.token_length" [maxlength]="AuthConfig.token_length" name="token" autocomplete="off" autocorrect="off" formControlName="token" required />
+                                        <div class="preview">{{ getTokenPlaceholder() }}</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <a class="clickable" href="#">
+                                    {{ l.s('auth.2fa.click') }}
+                                </a>
+                            </div>
+                        </form>
+                        <div class="form-group">
+                            <div [ngClass]="{btn: true, primary: loginForm.status == 'VALID', disabled: loginForm.status == 'INVALID'}" (click)="login()">
+                                {{ l.s('auth.2fa.verify_code') }}
+                            </div>
+                        </div>
+                    }
+                }
+            </div>
+            <div class="splitter">
+                <span>{{ l.s('or') }}</span>
+            </div>
+            <div class="right qrcode">
+                <div class="title">
+                    {{ l.s("auth.login.subtitle.1") }}
+                </div>
+                <div class="qrcode">
+                    @if (qrcode.getValue() == '') {
+                        <div class="skeleton" [ngStyle]="{ width: 'var(--qrcode-size)', height: 'var(--qrcode-size)' }"></div>
+                    } @else {
+                        <qrcode
+                        [allowEmptyString]="false"
+                        [width]="200"
+                        [margin]="0"
+                        [elementType]="'canvas'"
+                        [errorCorrectionLevel]="'M'"
+                        [title]="'SCHOOLINGO QR Fastlogin'"
+                        [imageSrc]="'./assets/logo.webp'"
+                        [imageHeight]="56"
+                        [imageWidth]="56"
+                        [qrdata]="qrcode.getValue()"
+                        [colorDark]="t.getTheme().getValue() == 'light' ? '#000000' : '#ffffff'"
+                        [colorLight]="t.getTheme().getValue() == 'light' ? '#ffffff' : '#000000'"
+                        ></qrcode>
+                    }
+                </div>
+                <div style="text-align: center">
+                    {{ l.s('auth.login.qrcode') }}
+                </div>
+            </div>
+        </div> 
+        }
     </div>
-    <p>{{ schoolingo.locale.getLocale('tryOnAnotherDevice') }}</p>
-    <div class="row">
-        <img src="/assets/google-play-badge.webp" height="40" alt="Google Play">
-        <img src="/assets/app-store-badge.webp" height="40" alt="App Store">
+    <div class="row" id="downloadApp">
+        <div id="downloadApp" class="btn add-phone small-border">
+            {{ l.s('auth.login.downloadApp').replaceAll('%app%', App.APP_NAME) }}
+        </div>
     </div>
 </main>
 <div class="bottom">
-    Verze systému: {{ App.APP_VERSION }}
+    <span>
+        {{ App.APP_NAME + ' ' + App.APP_TYPE }}
+    </span>
+    <span>
+        {{ l.s("system.version") + ': ' + App.APP_VERSION }}
+    </span>
 </div>

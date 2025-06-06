@@ -1,67 +1,43 @@
-import { ApplicationConfig } from '@angular/core';
-import { PreloadAllModules, provideRouter, withPreloading } from '@angular/router';
+import { APP_INITIALIZER, ApplicationConfig, provideZoneChangeDetection } from '@angular/core';
+import { provideRouter } from '@angular/router';
+
 import { routes } from './app.routes';
-import { UserService } from '@Schoolingo/User';
-import { Storage } from '@Schoolingo/Storage';
-import { CookieService } from '@Schoolingo/Cookie';
-import { SocketService } from '@Schoolingo/Socket';
-import { School } from '@Schoolingo/School';
-import { Logger } from '@Schoolingo/Logger';
-import { Locale } from '@Schoolingo/Locale';
-import { FormManager } from './Components/Forms/FormManager';
-import { Schoolingo } from '@Schoolingo';
-import { Theme } from '@Schoolingo/Theme';
-import { Sidebar } from '@Schoolingo/Sidebar';
-import { Permission } from '@Schoolingo/Permissions';
-import { HttpClient, provideHttpClient } from '@angular/common/http';
-import { TabsComponent } from '@Components/Tabs/Tabs';
-import { Dropdown } from '@Components/Dropdowns/Dropdown';
-import { MessageManager } from '@Schoolingo/Messages';
-import { MainModules } from './board/main/Modules/Modules';
-import { Modules } from '@Schoolingo/Modules';
-import { Traineeship } from '@Schoolingo/Traineeship';
-import { Homeworks } from '@Schoolingo/Homeworks';
-import { IPManager } from '@Schoolingo/IPManager';
-import { Authentication } from '@Schoolingo/Auth';
-import { IconsModule } from './Modules/Icons.module';
-import { Discord } from '@Schoolingo/Discord';
-import { Classbook } from '@Schoolingo/Classbook';
-import { LevelSystem } from '@Schoolingo/LevelSystem';
-import { Avatar } from '@Schoolingo/Avatar';
-import { teacherMarks } from '@Schoolingo/Marks';
+import { provideHttpClient } from '@angular/common/http';
+import { Authentication } from './infrastructure/authentication';
+import { Locale } from '@Schoolingo/locale';
+import { Theme } from '@Schoolingo/theme';
+import { School } from '@Schoolingo/school';
+import { AlertManager } from '@Schoolingo/alert';
+import { Sidebar } from '@Schoolingo/sidebar';
+import { Permission } from '@Schoolingo/permission';
+import { Modules } from '@Schoolingo/modules';
+import { Settings } from '@Schoolingo/settings';
+import { Passkey } from '@Schoolingo/passkey';
+
+export function initAuth(auth: Authentication): () => void {
+  return () => auth.loadState(); // např. HTTP požadavek + setAuthState()
+}
 
 export const appConfig: ApplicationConfig = {
   providers: [
+    {
+      provide: APP_INITIALIZER,
+      useFactory: initAuth,
+      deps: [Authentication, Locale, Theme],
+      multi: true
+    },
+    provideZoneChangeDetection({ eventCoalescing: true }),
     provideRouter(routes),
     provideHttpClient(),
-    UserService,
-    Storage,
-    CookieService,
-    SocketService,
-    School,
-    Logger,
+    Authentication,
     Locale,
-    FormManager,
-    Schoolingo,
     Theme,
+    School,
+    AlertManager,
     Sidebar,
     Permission,
-    HttpClient,
-    TabsComponent,
-    Dropdown,
-    MessageManager,
     Modules,
-    MainModules,
-    Homeworks,
-    IPManager,
-    Traineeship,
-    Authentication,
-    IconsModule,
-    Discord,
-    Classbook,
-    LevelSystem,
-    Avatar,
-    teacherMarks
-  ],
-  
+    Settings,
+    Passkey
+  ]
 };

@@ -1,74 +1,73 @@
-import { NgClass, NgStyle } from '@angular/common';
-import { Component, Renderer2, RendererFactory2 } from '@angular/core';
-import { Schoolingo, TimetableLesson } from '@Schoolingo';
-import { TabsComponent } from '@Components/Tabs/Tabs';
-import { BehaviorSubject } from 'rxjs';
-import { Utils } from '@Schoolingo/Utils';
-import { Dropdown } from '@Components/Dropdowns/Dropdown';
+import { NgClass } from '@angular/common';
+import { HttpClient } from '@angular/common/http';
+import { Component, inject, OnInit } from '@angular/core';
+import { TabsComponent } from '@Components/tabs/tabs';
+import { absence } from '@Schoolingo/absence';
+import { Authentication } from '@Schoolingo/authentication';
+import { Config } from '@Schoolingo/config';
+import { IconsModule } from '@Schoolingo/icons';
+import { Locale } from '@Schoolingo/locale';
+import { Permission, permType } from '@Schoolingo/permission';
+import { School } from '@Schoolingo/school';
+import { Utils } from '@Schoolingo/utils';
 import moment from 'moment';
-import { ContextButton } from '@Components/Dropdowns/Dropdown';
-import { absence } from '@Schoolingo/Absence';
-import { Modal } from '@Components/Modal/Modal';
-import { IconsModule } from '../../../Modules/Icons.module';
-import { ShowLessonComponent } from './show-lesson/show-lesson.component';
-import { Permission } from '@Schoolingo/Permissions';
-import { DomSanitizer } from '@angular/platform-browser';
+import { BehaviorSubject, distinctUntilChanged } from 'rxjs';
+
+export interface SidebarItem {
+    item: string;
+    type?: 'default' | 'danger';
+    icon?: string;
+    url?: string;
+    permission?: permType[];
+    children?: SidebarItem[];
+    badge?: any;
+    modules?: string[];
+    action?: Function;
+}
+
+export interface TimetableLesson {
+  type: number;
+  teacher: number;
+  room: string;
+  subject: number;
+  subjectName: string;
+  subjectShortcut: string;
+  oldTeacher: number;
+  oldSubject: string[];
+  className: string;
+  group: { id: number, text: string, num: string };
+  empty: boolean;
+}
+
+export interface TimetableHours {
+  startMoment: moment.Moment;
+  start: string;
+  endMoment: moment.Moment;
+  end: string;
+}
 
 @Component({
-  standalone: true,
-  imports: [NgClass, TabsComponent, IconsModule, NgStyle],
+  imports: [TabsComponent, NgClass, IconsModule],
   templateUrl: './timetable.component.html',
-  styleUrls: ['./timetable.component.css', '../../../Styles/card.css', '../../../Styles/item.css']
+  styleUrl: './timetable.component.css'
 })
-export class TimetableComponent {
-  private renderer: Renderer2;
-  constructor(
-    public schoolingo: Schoolingo,
-    public dropdown: Dropdown,
-    private factory: RendererFactory2,
-    public perms: Permission,
-    private sanitizer: DomSanitizer
-    ) {
-      this.renderer = this.factory.createRenderer(window, null);
-    }
+export class TimetableComponent implements OnInit {
+  public l = inject(Locale);
+  public perms = inject(Permission);
+  private http = inject(HttpClient);
+  public u = inject(Authentication);
+  public Utils = Utils;
+  public absenceConfig = absence;
+  private school = inject(School);
 
-  // Imports
-  Utils = Utils;
-  
-
-  public modal: Modal = new Modal({
-    closeable: true,
-    title: {
-      icon: "school",
-      text: "timetable/dropdown/showLesson/title"
-    },
-    size: 'size-1',
-    items: [
-      {
-        type: 'component',
-        component: ShowLessonComponent,
-        data: {}
-      }
-    ]
-  });
-
-  // Is active mass excuse option
-  public massExcuse = false;
-
-  // Select Week Tab
-  public selectedTab = new BehaviorSubject<number>(0);
-
-  // Select timetable
+  private declare refreshDataTimeout;
+  public dropdown: 'absence' | '' = '';
   public selectedTimetable = new BehaviorSubject<number>(0);
-  
-  
-  // Calendar
-  public selectedDate = new BehaviorSubject<moment.Moment>(moment());
-
-  // Dropdowns
-  public timetableAbsenceName: string = 'timetableAbsence';
-  public timetableOptionsName: string = 'timetableOptions';
-  public timetableCalendarName: string = 'timetableCalendar';
+  public selectedTab = new BehaviorSubject<number>(0);
+  public timetableSelectedWeek = new BehaviorSubject<moment.Moment | null>(moment());
+  public timetable: any[] = [];
+  public isClassService = false;
+  public timetableHours: TimetableHours[] = [];
   public options: Record<string, BehaviorSubject<boolean>> = {
     teachers: new BehaviorSubject<boolean>(true),
     groups: new BehaviorSubject<boolean>(true),
@@ -76,160 +75,150 @@ export class TimetableComponent {
   };
 
 
-  // Printer
-  public printSelectedTab: number = this.selectedTab.getValue();
-
-  public beforePrint(): void {
-    this.printSelectedTab = this.selectedTab.getValue();
-    this.selectedTab.next(2);
-  }
-
   ngOnInit(): void {
+    this.refreshData();
 
-    // Select Week Tab
-    this.selectedTab.subscribe((id: number) => {
-      let arrayWeek: (moment.Moment)[] = [
-        moment(),                     // current week
-        moment().add(1, 'week'),      // next week
-        moment("fake date"),          // Permanent
-        this.selectedDate.getValue()  // Calendar
-      ];
-
-      this.schoolingo.timetableSelectedWeek.next(arrayWeek[id]);
-
-      if (this.selectedDate.getValue().format("DD-MM-YYYY") !== moment().format("DD-MM-YYYY")) {
-
-        // this.schoolingo.socketService.emit('timetable:getLessons', {
-        //   userId,
-        //   week,
-        //   year: this.selectedDate.getValue().year()
-        // });
-
-        // this.schoolingo.socketService.emit('classes:getClassService',
-        //   {
-        //     week,
-        //     year: this.selectedDate.getValue().year()
-        //   })
-
-        // this.schoolingo.timetableSelectedWeek.next(this.selectedDate.getValue());
-
-      }
-
-    })
-
-
-    let dropdownAbsence: ContextButton[] = [];
-    for(let i = 0;i < absence.length;i++) {
-      dropdownAbsence.push({ 
-        type: 'custom',
-        html: '\
-        <div class="flex align-items-center absence-item">\
-          <div class="absence ab-' + absence[i].locale + '"></div> \
-          [l:absence/' + absence[i].locale + ']' + '\
-        </div>',
-        isActive: true
-      });
-    }
-
-    this.dropdown.create(this.timetableAbsenceName, { title: '', isOpen: false, items: dropdownAbsence})
-
-    this.dropdown.create(this.timetableOptionsName, { title: '', isOpen: false, items: [
-      {
-        label: 'timetable/print',
-        type: 'function',
-        func: () => {
-          this.dropdown.close(this.timetableOptionsName);
-          this.beforePrint();
-          setTimeout(() => window.print())
-        },
-        rightText: '[key:CTRL] [key:P]',
-        isActive: true
-      }, {
-        type: 'line',
-        isActive: true
-      }, {
-        label: 'timetable/showTeachers',
-        type: 'toggle',
-        value: this.options.teachers,
-        isActive: true
-      }, {
-        label: 'timetable/showGroups',
-        type: 'toggle',
-        value: this.options.groups,
-        isActive: true
-      }, {
-        label: 'timetable/showRooms',
-        type: 'toggle',
-        value: this.options.rooms,
-        isActive: true
-      }]
+    // Při změně dítěte, aktualizovat rozvrh
+    this.u.selectedChild
+    .pipe(distinctUntilChanged())
+    .subscribe(() => {
+      this.refreshData();
     });
 
-    // Calendar
-    this.dropdown.create(this.timetableCalendarName, { title: '', isOpen: false, items: [{
-      type: 'calendar',
-      date: this.selectedDate,
-      selectedMonth: this.selectedDate.getValue().clone(),
-      isActive: true
-    }] });
+    this.selectedTab
+    .pipe(distinctUntilChanged()) // Kontrola zda není hodnota stejná
+    .subscribe((val: number) => {
+      switch(val) {
+        case 0:
+          this.timetableSelectedWeek.next(moment());
+          break;
+        case 1:
+          this.timetableSelectedWeek.next(moment().add(1, 'week'));
+          break;
+        case 2:
+          this.timetableSelectedWeek.next(null);
+          break;
+        case 3:
+          break;
+      }
+      this.refreshData();
+    });
 
-    this.selectedDate.subscribe((date: moment.Moment) => {
-//       let userId = this.schoolingo.getStudentId();
-// ;
-//       this.schoolingo.socketService.emit('timetable:getLessons', {
-//         userId,
-//         week: date.isoWeek(),
-//         year: date.year()
-//       });
-      this.schoolingo.timetableSelectedWeek.next(date);
-    })
+    this.selectedTimetable
+    .pipe(distinctUntilChanged())
+    .subscribe(() => this.refreshData());
 
+  }
 
-    this.renderer.listen(window, "afterprint", () => {
-      this.selectedTab.next(this.printSelectedTab);
-    })
+  public refreshData(): void {
+    let timetableBuild: any[] = [];
+    clearTimeout(this.refreshDataTimeout)
 
-    // If is weekend, select next week as default
-    if (moment().isoWeekday() >= 6) {
-      this.selectedTab.next(1);
+    let timetableData = {
+      type: "person",
+      id: this.u.getId()
     }
-  }
-
-  ngOnDestroy(): void {
-    this.selectedDate.next(moment());
-
-    this.dropdown.remove(this.timetableAbsenceName);
-    this.dropdown.remove(this.timetableOptionsName);
-    this.dropdown.remove(this.timetableCalendarName);
-    this.renderer.destroy();
-  }
-
-  public openLesson(lesson: { lesson: TimetableLesson, day: number, hour: number, sub: number }): void {
-    if (lesson.lesson.empty) return;
-    if (!this.modal) {
-      console.error('NO MODAL')
+    switch(this.selectedTimetable.getValue()) {
+      case 0:
+        timetableData = {
+          type: "person",
+          id: this.u.getId()
+        }
+        break;
+      case 1:
+        timetableData = {
+          type: "class",
+          id: 1
+        }
     }
-    this.schoolingo.timetableSelectedLesson.next(lesson);
-    this.modal?.open();
-    // this.schoolingo.modal = 'timetable:showLesson';
+
+    this.http.post(
+      Config.API_URL + '/v1/timetable',
+      {...timetableData, time: moment().format("YYYY-MM-DD")},
+      { withCredentials: true })
+    .subscribe((data: any) => {
+      let maxHours = 0;
+
+      Object.values(data).forEach((item: any) => {
+        if (item.hour + 1 > maxHours) {
+          maxHours = item.hour + 1;
+        }
+
+        if (!timetableBuild[item.day]) {
+          timetableBuild[item.day] = [];
+        }
+
+        if (!timetableBuild[item.day][item.hour - 1]) {
+          timetableBuild[item.day][item.hour - 1] = [];
+        }
+
+        if (item.type == 0 || this.selectedTab.getValue() == 2 || this.selectedTab.getValue() !== 2 && item.type > 0
+        && (this.Utils.isOdd(this.timetableSelectedWeek.getValue()?.isoWeek()!) && item.type === 1 ||
+            !this.Utils.isOdd(this.timetableSelectedWeek.getValue()?.isoWeek()!) && item.type === 2)
+      ) {
+          timetableBuild[item.day][item.hour - 1].push({
+            ...item,
+            hour: item.hour - 1,
+            subjectName: item.subjectName,
+            subjectShortcut: item.subjectShortcut,
+            empty: false
+          });
+        }
+      });
+
+      this.timetable = timetableBuild;
+
+
+      let schoolConfig = this.school.config.getValue();
+
+      let hours: TimetableHours[] = [];
+      let time = moment()
+      .set('hours', schoolConfig?.startHour!)
+      .set('minutes', schoolConfig?.startMinute!);
+
+      for(let i = 1;i <= maxHours;i++) {
+          let startHour = time.clone();
+          time.add(schoolConfig?.lessonHour, 'minutes');
+          hours.push(
+              {
+                  startMoment: startHour.clone(),
+                  start: startHour.format('HH:mm'),
+                  endMoment: time.clone(),
+                  end: time.format('HH:mm')
+              }
+          );
+          let customBreak = schoolConfig?.breaks.filter((_) => _.hour == i + 1)[0]?.minutes;
+          time.add(customBreak || schoolConfig?.breakTime, 'minutes');
+      }
+
+      this.timetableHours = hours;
+    }, (err) => {
+      this.timetable = [];
+      clearTimeout(this.refreshDataTimeout);
+      this.refreshDataTimeout = setTimeout(() => {
+        this.refreshData();
+      }, 2500);
+    });
   }
 
-  public getLessonClasses(index: number, index2: number, lesson: TimetableLesson): string[] {
-    let classes = ['sub-lesson-hour', 'lesson-count-' + this.schoolingo.getTimetableLessons()[index][index2].length];
+
+    public getLessonClasses(index: number, index2: number, lesson: TimetableLesson): string[] {
+    let classes = ['sub-lesson-hour', 'lesson-count-' + this.timetable?.[index]?.[index2]?.length];
     if (lesson.empty) {
       classes.push('empty');
     }
 
-    if (this.schoolingo.isClassbook(index - 1, index2)) {
-      classes.push('classbook');
-    }
+    // if (this.schoolingo.isClassbook(index - 1, index2)) {
+    //   classes.push('classbook');
+    // }
 
-    let day = this.schoolingo.substitution[Utils.getDayOfWeek(this.schoolingo.timetableSelectedWeek.getValue(), index - 1).format('YYYY-MM-DD')];
+    // let day = thissubstitution[Utils.getDayOfWeek(this.timetableSelectedWeek.getValue()!, index - 1).format('YYYY-MM-DD')];
 
-    if (day && day[index2]) {
-      classes.push('substitution');
-    }
+    // if (day && day[index2]) {
+    //   classes.push('substitution');
+    // }
 
     return classes;
   }
+
 }

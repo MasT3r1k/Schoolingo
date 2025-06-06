@@ -1,7 +1,7 @@
 import { NgClass, NgStyle } from "@angular/common";
-import { Component, Input, OnInit, RendererFactory2 } from "@angular/core";
-import { Locale } from "@Schoolingo/Locale";
-import { Utils } from "@Schoolingo/Utils";
+import { Component, inject, Input, OnInit, RendererFactory2 } from "@angular/core";
+import { Locale } from "@Schoolingo/locale";
+import { Utils } from "@Schoolingo/utils";
 import { BehaviorSubject } from "rxjs";
 
 @Component({
@@ -14,13 +14,13 @@ import { BehaviorSubject } from "rxjs";
 export class TabsComponent implements OnInit {
     
     public renderer;
+    public l = inject(Locale);
 
     constructor(
-        public locale: Locale,
         private factory: RendererFactory2
-        ) {
-            this.renderer = this.factory.createRenderer(window, null);
-        }
+    ) {
+        this.renderer = this.factory.createRenderer(window, null);
+    }
 
     name: string = Utils.randomstring(16, false);
     @Input() value: BehaviorSubject<number> = new BehaviorSubject<number>(0);
@@ -60,12 +60,8 @@ export class TabsComponent implements OnInit {
             this.refreshGlider();
         });
 
-        this.locale.language.subscribe(() => {
-            setTimeout(() => this.refreshGlider());
-        });
-
-        this.locale.getLocaleConfig().subscribe(() => {
-            setTimeout(() => this.refreshGlider())
+        this.l.getLocaleData().subscribe(() => {
+            setTimeout(() => this.refreshGlider(), 10)
         });
         
     }
@@ -80,11 +76,12 @@ export class TabsComponent implements OnInit {
 
     public refreshGlider(): void {
         try {
-            let tab = document.querySelectorAll(".tabs#" + this.name + " .options .tab")[this.value.getValue() || 0] as HTMLElement;
+            let tab = document.querySelectorAll(".tabs#" + this.name + " .options .tab")
+                                            [this.value.getValue() || 0] as HTMLElement;
             if (!tab) return;
-            this.gliderStyles.width = tab.clientWidth;
-            this.gliderStyles.height = tab.clientHeight;
-            this.gliderStyles.transform = 'translate(' + tab.offsetLeft + 'px, ' + tab.offsetTop + 'px)';
+            this.gliderStyles["width"] = tab.clientWidth; 
+            this.gliderStyles["height"] = tab.clientHeight;
+            this.gliderStyles["transform"] = 'translate(' + tab.offsetLeft + 'px, ' + tab.offsetTop + 'px)';
         } catch(err) {
             console.error(err);
         }
