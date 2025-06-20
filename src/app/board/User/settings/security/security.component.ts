@@ -21,6 +21,7 @@ import { startRegistration } from '@simplewebauthn/browser';
 })
 export class SecurityComponent implements OnInit {
   public AuthConfig = AuthConfig;
+  public moment = moment;
 
   public l = inject(Locale)
   public collapses: boolean[] = [];

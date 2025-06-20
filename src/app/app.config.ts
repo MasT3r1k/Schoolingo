@@ -2,17 +2,21 @@ import { APP_INITIALIZER, ApplicationConfig, provideZoneChangeDetection } from '
 import { provideRouter } from '@angular/router';
 
 import { routes } from './app.routes';
-import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import { Authentication } from './infrastructure/authentication';
 import { Locale } from '@Schoolingo/locale';
 import { Theme } from '@Schoolingo/theme';
 import { School } from '@Schoolingo/school';
-import { AlertManager } from '@Schoolingo/alert';
+import { AuthAlertManager } from './infrastructure/alert/auth.alert.manager';
+import { BoardAlertManager } from './infrastructure/alert/board.alert.manager';
 import { Sidebar } from '@Schoolingo/sidebar';
 import { Permission } from '@Schoolingo/permission';
 import { Modules } from '@Schoolingo/modules';
 import { Settings } from '@Schoolingo/settings';
 import { Passkey } from '@Schoolingo/passkey';
+import { httpInterceptor } from './infrastructure/http/http.interceptor';
+import { Homeworks } from '@Schoolingo/homeworks';
+import { MessageManager } from '@Schoolingo/messages';
 
 export function initAuth(auth: Authentication): () => void {
   return () => auth.loadState(); // např. HTTP požadavek + setAuthState()
@@ -28,16 +32,19 @@ export const appConfig: ApplicationConfig = {
     },
     provideZoneChangeDetection({ eventCoalescing: true }),
     provideRouter(routes),
-    provideHttpClient(),
+    provideHttpClient(withInterceptors([httpInterceptor])),
     Authentication,
     Locale,
     Theme,
     School,
-    AlertManager,
+    AuthAlertManager,
+    BoardAlertManager,
     Sidebar,
     Permission,
     Modules,
     Settings,
-    Passkey
+    Passkey,
+    Homeworks,
+    MessageManager
   ]
 };

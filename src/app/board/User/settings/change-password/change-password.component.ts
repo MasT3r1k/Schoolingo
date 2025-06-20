@@ -4,7 +4,7 @@ import { Locale } from '@Schoolingo/locale';
 import { AuthConfig } from '../../../../infrastructure/authentication/config';
 import { Config } from '@Schoolingo/config';
 import { HttpClient } from '@angular/common/http';
-import { AlertManager } from '@Schoolingo/alert';
+import { BoardAlertManager } from '../../../../infrastructure/alert/board.alert.manager';
 import { NgClass } from '@angular/common';
 import { AlertComponent } from '@Components/Alert';
 
@@ -18,7 +18,7 @@ export class ChangePasswordComponent {
   public AuthConfig = AuthConfig;
   public l = inject(Locale);
   private http = inject(HttpClient);
-  public a = inject(AlertManager);
+  public a = inject(BoardAlertManager);
 
   public errors: { [key: string]: string } = {};
   formSubmitted = false;

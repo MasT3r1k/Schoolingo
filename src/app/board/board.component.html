@@ -43,7 +43,7 @@
                     <div class="dropdown" style="min-width: 225px;" [hidden]="dropdown !== 'add'" (click)="$event.stopPropagation()">
                         <ul>
                             @for (item of addDropdown; track $index) {
-                                <li [routerLink]="item.url" [ngClass]="[item.type ? item.type : '']" (click)="item?.action()" [routerLinkActive]="'active'">
+                                <li [routerLink]="item.url" [ngClass]="[item.type ? item.type : '']" (click)="dropdown = '';item?.action()" [routerLinkActive]="'active'">
                                     <div class="item">
                                         <div class="row">
                                             @if (item.icon) {
@@ -73,7 +73,7 @@
                         </label>
                         <ul>
                             @for (item of u.getUser().children; track $index) {
-                                <li (click)="u.selectedChild.next($index)">
+                                <li (click)="dropdown = '';u.selectedChild.next($index)">
                                     <div class="item">
                                         <div class="row">
                                             <div class="icon">
@@ -138,7 +138,7 @@
                 <div class="dropdown" [hidden]="dropdown !== 'user'" (click)="$event.stopPropagation()">
                     <ul>
                         @for (item of userDropdown; track $index) {
-                            <li [routerLink]="item.url" (click)="dropdown = ''" [ngClass]="[item.type ? item.type : '']" (click)="item?.action()" [routerLinkActive]="'active'">
+                            <li [routerLink]="item.url" [ngClass]="[item.type ? item.type : '']" (click)="dropdown='';item?.action();" [routerLinkActive]="'active'">
                                 <div class="item">
                                         <div class="row">
                                             @if (item.icon) {

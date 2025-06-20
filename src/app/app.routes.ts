@@ -14,6 +14,10 @@ import { NotificationsComponent } from './board/user/notifications/notifications
 import { ConnectionsComponent } from './board/user/connections/connections.component';
 import { GdprComponent } from './board/user/gdpr/gdpr.component';
 import { TimetableComponent } from './board/teach/timetable/timetable.component';
+import { HomeworksComponent } from './board/teach/homeworks/homeworks.component';
+import { SendComponent } from './board/messages/send/send.component';
+import { ReceivedComponent } from './board/messages/received/received.component';
+import { AbsenceComponent } from './board/teach/absence/absence.component';
 
 export const routes: Routes = [
     {
@@ -31,6 +35,22 @@ export const routes: Routes = [
                 path: 'teach', children: [
                     {
                         path: 'timetable', component: TimetableComponent
+                    },
+                    {
+                        path: 'homeworks', component: HomeworksComponent
+                    },
+                    {
+                        path: 'absence', component: AbsenceComponent
+                    }
+                ]
+            },
+            {
+                path: 'messages', children: [
+                    {
+                        path: 'send', component: SendComponent
+                    },
+                    {
+                        path: 'received', component: ReceivedComponent
                     }
                 ]
             },

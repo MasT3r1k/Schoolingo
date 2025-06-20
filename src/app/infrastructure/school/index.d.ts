@@ -16,5 +16,10 @@ export interface SchoolConfig {
     hour: number;
     minutes: number;
   }[];
+  year: {
+    start: Date;
+    midterm: Date;
+    end: Date;
+  };
   loginExpires: number;
 }

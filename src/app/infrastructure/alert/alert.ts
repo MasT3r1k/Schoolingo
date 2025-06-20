@@ -10,7 +10,7 @@ export interface Alert {
 }
 
 export class Alert {
-    constructor(type: SweetAlertIcon, text: string, actions: AlertButton[]) {
+    constructor(type: SweetAlertIcon, text: string, actions: AlertButton[] = []) {
         this.type = type;
         this.text = text;
         this.actions = actions;

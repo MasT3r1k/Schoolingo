@@ -6,7 +6,7 @@ import { QRCodeComponent } from 'angularx-qrcode';
 import { Locale } from '@Schoolingo/locale';
 import { School } from '@Schoolingo/school';
 import { Theme } from '@Schoolingo/theme';
-import { AlertManager } from '@Schoolingo/alert';
+import { AuthAlertManager } from '../infrastructure/alert/auth.alert.manager';
 import { AlertComponent } from '@Components/Alert';
 import { BehaviorSubject } from 'rxjs';
 import { AuthConfig } from '../infrastructure/authentication/config';
@@ -18,6 +18,8 @@ import {
   PublicKeyCredentialRequestOptionsJSON,
   startAuthentication
 } from '@simplewebauthn/browser';
+import { InstallAppModalComponent } from '../components/InstallAppModal/install-app-modal.component';
+
 export function isoBase64URLBuffer(buffer: Uint8Array): string {
   return btoa(String.fromCharCode(...buffer))
     .replace(/\+/g, "-")
@@ -28,7 +30,7 @@ import { base64urlToBuffer, Passkey } from '@Schoolingo/passkey';
 
 @Component({
   selector: 'app-auth',
-  imports: [NgStyle, NgClass, QRCodeComponent, AlertComponent, ReactiveFormsModule, IconsModule],
+  imports: [NgStyle, NgClass, QRCodeComponent, AlertComponent, ReactiveFormsModule, IconsModule, InstallAppModalComponent],
   templateUrl: './auth.component.html',
   styleUrls: ['./auth.component.css']
 })
@@ -37,7 +39,7 @@ export class AuthComponent implements OnInit {
   public AuthConfig = AuthConfig;
   l = inject(Locale);
   t = inject(Theme);
-  a = inject(AlertManager);
+  a = inject(AuthAlertManager);
   private auth = inject(Authentication);
   private http = inject(HttpClient);
   private router = inject(Router);
@@ -45,6 +47,7 @@ export class AuthComponent implements OnInit {
   public isPasskeySupport = false;
     
   public qrcode = new BehaviorSubject('');
+  public showInstallModal = false;
 
   public school = inject(School);
   public page: 'login' | '2fa' = 'login';
@@ -223,5 +226,13 @@ export class AuthComponent implements OnInit {
     }
 
     return '';
+  }
+
+  public openInstallModal() {
+    this.showInstallModal = true;
+  }
+
+  public closeInstallModal() {
+    this.showInstallModal = false;
   }
 }

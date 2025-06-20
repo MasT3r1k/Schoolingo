@@ -41,7 +41,8 @@ export class BoardComponent implements OnInit {
   addDropdown: SidebarItem[] = [
     {
       icon: 'mail',
-      item: 'dropdown.add.message'
+      item: 'dropdown.add.message',
+      url: "/messages/send"
     },
     {
       icon: 'home-plus',

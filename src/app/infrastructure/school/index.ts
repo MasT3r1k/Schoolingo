@@ -3,12 +3,12 @@ import { SchoolConfig } from "./index.d";
 import { BehaviorSubject, Observable } from "rxjs";
 import { HttpClient } from "@angular/common/http";
 import { Config } from "@Schoolingo/config";
-import { AlertManager } from "@Schoolingo/alert";
+import { BoardAlertManager } from "../alert/board.alert.manager";
 
 @Injectable()
 export class School {
     private http = inject(HttpClient);
-    private alert = inject(AlertManager);
+    private alert = inject(BoardAlertManager);
 
     public config = new BehaviorSubject<SchoolConfig | null>(null);
     constructor() {

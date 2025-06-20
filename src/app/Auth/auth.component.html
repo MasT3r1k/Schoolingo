@@ -187,7 +187,7 @@
         }
     </div>
     <div class="row" id="downloadApp">
-        <div id="downloadApp" class="btn add-phone small-border">
+        <div id="downloadApp" class="btn add-phone small-border" (click)="openInstallModal()">
             {{ l.s('auth.login.downloadApp').replaceAll('%app%', App.APP_NAME) }}
         </div>
     </div>
@@ -200,3 +200,7 @@
         {{ l.s("system.version") + ': ' + App.APP_VERSION }}
     </span>
 </div>
+
+@if (showInstallModal) {
+    <install-app-modal (closeModal)="closeInstallModal()"></install-app-modal>
+}
