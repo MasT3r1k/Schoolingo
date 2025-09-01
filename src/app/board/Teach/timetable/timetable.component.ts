@@ -99,6 +99,9 @@ export class TimetableComponent implements OnInit {
           this.timetableSelectedWeek.next(null);
           break;
         case 3:
+          if (this.timetableSelectedWeek.getValue() == null) {
+            this.timetableSelectedWeek.next(moment());
+          }
           break;
       }
       this.refreshData();
