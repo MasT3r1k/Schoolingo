@@ -1,7 +1,7 @@
 import { Component, inject } from '@angular/core';
 import { Config } from '@Schoolingo/config';
 import { Locale } from '@Schoolingo/locale';
-import { MessageManager, MessageType, messageTypes } from '@Schoolingo/messages';
+import { MessageManager, MessageSendSecondTab, MessageType, messageTypes } from '@Schoolingo/messages';
 import { Permission } from '@Schoolingo/permission';
 import { BehaviorSubject, Subscription } from 'rxjs';
 import { Alert } from '../../../infrastructure/alert/alert';
@@ -10,7 +10,7 @@ import { FormsModule } from '@angular/forms';
 import { NgClass } from '@angular/common';
 import { IconsModule } from '@Schoolingo/icons';
 import { Authentication } from '@Schoolingo/authentication';
-import { TabsComponent } from '@Components/tabs/tabs';
+import { TabsComponent } from '../../../Components/Tabs';
 import { AlertComponent } from '@Components/Alert';
 
 @Component({
@@ -21,6 +21,7 @@ import { AlertComponent } from '@Components/Alert';
 export class SendComponent {
   AppConfig = Config;
   messageTypes = messageTypes;
+  MessageSendSecondTab = MessageSendSecondTab;
   subscribers: Subscription[] = [];
   // Imports
   public auth = inject(Authentication);
@@ -34,6 +35,7 @@ export class SendComponent {
 
   // Tab
   public selectedTab = new BehaviorSubject<number>(0);
+  public selectedOptionTab = new BehaviorSubject<number>(0);
 
   // Selecting options
   public showSelect: 'messagetype' | 'homework' | 'children' | 'rating' | null = null;
@@ -41,12 +43,48 @@ export class SendComponent {
   // Options
   public excuseAllDay = false;
 
-  // Modals
+  // Receivers
+  public selectedReceivers: number[] = [];
+  public receivers: { id: number, name: string, tag: string }[] = [{
+    id: 1,
+    name: 'John Doe',
+    tag: 'Žák 1.B'
+  }, {
+    id: 2,
+    name: 'Jane Smith',
+    tag: 'Rodič John Doe'
+  }, {
+    id: 3,
+    name: 'Alice Johnson',
+    tag: 'Učitel'
+  }];
 
+  public toggleReceiverSelection(receiverId: number): void {
+    const index = this.selectedReceivers.indexOf(receiverId);
+    if (index > -1) {
+      this.selectedReceivers.splice(index, 1);
+    } else {
+      this.selectedReceivers.push(receiverId);
+    }
+  }
+
+  public isReceiverSelected(receiverId: number): boolean {
+    return this.selectedReceivers.includes(receiverId);
+  }
+
+  // Modals
   ngOnInit(): void {
-    this.subscribers.push(this.selectedTab.subscribe((tab: number) => {
-      this.alerts = {};
-    }));
+    this.subscribers.push(
+      this.selectedTab.subscribe((tab: number) => {
+        this.alerts = {};
+      })
+    );
+
+    this.subscribers.push(
+      this.messageManager.messageType.subscribe((tab: number) => {
+        setTimeout(() => this.selectedOptionTab.next(0), 300)
+      })
+    )
   }
 
   public sendMessage(): void {
@@ -95,13 +133,5 @@ export class SendComponent {
 
   public selectReceivers(): void {
     // this.selectReceiversModal.open();
-  }
-
-  public selectTags(): void {
-    console.log("SELECT TAAAGS");
-  }
-
-  public selectAttachments(): void {
-    console.log("SELECT ATTACHMEEENTS")
   }
 }

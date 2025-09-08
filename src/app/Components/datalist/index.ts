@@ -114,6 +114,23 @@ export class DatalistComponent implements OnInit {
         return Math.ceil(this.metadata.rows / this.metadata.limit);
     }
 
+    public totalRows(): number {
+        return this.options.noDynamic ? this.data.getValue().length : this.metadata.rows;
+    }
+
+    public currentStart(): number {
+        return this.metadata.limit * (this.page.getValue() - 1) + 1;
+    }
+
+    public currentEnd(): number {
+        const rawEnd = this.metadata.limit * this.page.getValue();
+        return this.totalRows() < rawEnd ? this.totalRows() : rawEnd;
+    }
+
+    public currentPage(): number {
+        return this.page.getValue();
+    }
+
     public refreshData(): void {
         this.visibleData = this.data.getValue().slice(0, this.page.getValue() * this.metadata.limit);
     }

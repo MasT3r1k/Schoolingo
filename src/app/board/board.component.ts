@@ -22,6 +22,7 @@ export interface SidebarItem {
 }
 
 @Component({
+  standalone: true,
   imports: [IconsModule, RouterLink, RouterLinkActive, NgStyle, NgClass, RouterOutlet],
   templateUrl: './board.component.html',
   styleUrls: ['./board.component.css', '../styles/sidebar.css']
@@ -63,6 +64,10 @@ export class BoardComponent implements OnInit {
     {
       icon: 'number-1',
       item: 'dropdown.add.mark'
+    },
+    {
+      icon: 'ambulance',
+      item: 'dropdown.add.excuse'
     },
     {
       icon: 'category-plus',

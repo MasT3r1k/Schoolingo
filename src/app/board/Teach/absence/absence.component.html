@@ -2,21 +2,21 @@
     <div class="card-top"></div>
     <div class="card-header">
         <h2 class="flex" style="align-items: center;">
-            {{ l.s('sidebar/absence') }}
+            {{ l.s('sidebar.absence') }}
             @if (!selectedTab.getValue()) {
                 <span style="width: 11px;
                 background: var(--color-darker);
                 height: 2px;
                 margin-inline: 10px;"></span>
-                {{ schoolingo.absenceDate.start.format('DD. MM. YYYY') + ' - ' + schoolingo.absenceDate.end.format('DD. MM. YYYY') }}
+                {{ absenceDate.start.format('DD. MM. YYYY') + ' - ' + absenceDate.end.format('DD. MM. YYYY') }}
             }
         </h2>
         <div class="flex-items">
             @if (selectedTab.getValue() === 0) {
-                <schoolingo-tabs [value]="selectedPeriod" class="first-margin" [options]="['time/toToday', 'time/firstTerm', 'time/secondTerm', 'time/schoolYear']"></schoolingo-tabs>
+                <schoolingo-tabs [value]="selectedPeriod" class="first-margin" [options]="['time.to_today', 'time.first_term', 'time.second_term', 'time.school_year']"></schoolingo-tabs>
             }
 
-            <schoolingo-tabs [value]="selectedTab" [options]="['sidebar/teach/subjects', 'absence/overviewAbsence']"></schoolingo-tabs>
+            <schoolingo-tabs [value]="selectedTab" [options]="['sidebar.teach.subjects', 'absence.overview_absence']"></schoolingo-tabs>
         </div>
     </div>
     <div class="card-body card-row">
@@ -28,20 +28,20 @@
                             {{ l.s('subject') }}
                         </th>
                         <th style="min-width: 100px;">
-                            {{ l.s('sidebar/absence') }}
+                            {{ l.s('sidebar.absence') }}
                         </th>
                         <th style="min-width: 100px;">%</th>
                     </thead>
                     <tbody>
-                        @for (subject of schoolingo.getSubjects(); track $index) {
-                            <tr [ngClass]="{ error: (s.c && schoolingo.absenceSubjects[subject] && schoolingo.absenceSubjects[subject].absence / schoolingo.absenceSubjects[subject].lessons * 100) >= schoolingo.school.schoolInfo.warningAbsence }">
+                        @for (subject of getSubjects(); track $index) {
+                            <tr [ngClass]="{ error: false }">
                                 <td style="width: 100%;">{{ subject }}</td>
                                 <td>
-                                    {{ schoolingo.absenceSubjects[subject] ? schoolingo.absenceSubjects[subject].absence + ' / ' + schoolingo.absenceSubjects[subject].lessons : "0/0" }}
+                                    {{ absenceSubjects[subject] ? absenceSubjects[subject].absence + ' / ' + absenceSubjects[subject].lessons : "0/0" }}
                                 </td>
-                                @if (schoolingo.school.schoolInfo && schoolingo.absenceSubjects[subject]) {
+                                @if (s.config.getValue()?.warningAbsencePercent && absenceSubjects[subject]) {
                                     <td style="min-width: 100px;">
-                                        {{ (schoolingo.absenceSubjects[subject].absence / schoolingo.absenceSubjects[subject].lessons * 100).toFixed(2) + '%' }}
+                                        {{ (absenceSubjects[subject].absence / absenceSubjects[subject].lessons * 100).toFixed(2) + '%' }}
                                     </td>
                                 } @else {
                                     <td style="min-width: 100px;">0%</td>

@@ -15,6 +15,7 @@ import { startRegistration } from '@simplewebauthn/browser';
 
 @Component({
   selector: 'settings-security',
+  standalone: true,
   imports: [NgClass, ReactiveFormsModule, IconsModule],
   templateUrl: './security.component.html',
   styleUrls: ['./security.component.css', '../settings.component.css']

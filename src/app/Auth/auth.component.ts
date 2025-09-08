@@ -12,13 +12,13 @@ import { BehaviorSubject } from 'rxjs';
 import { AuthConfig } from '../infrastructure/authentication/config';
 import { HttpClient } from '@angular/common/http';
 import { Authentication } from '@Schoolingo/authentication';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { IconsModule } from '@Schoolingo/icons';
 import {
   PublicKeyCredentialRequestOptionsJSON,
   startAuthentication
 } from '@simplewebauthn/browser';
-import { InstallAppModalComponent } from '../components/InstallAppModal/install-app-modal.component';
+import { InstallAppModalComponent } from '@Components/InstallAppModal/install-app-modal.component';
 
 export function isoBase64URLBuffer(buffer: Uint8Array): string {
   return btoa(String.fromCharCode(...buffer))
@@ -29,7 +29,7 @@ export function isoBase64URLBuffer(buffer: Uint8Array): string {
 import { base64urlToBuffer, Passkey } from '@Schoolingo/passkey';
 
 @Component({
-  selector: 'app-auth',
+  standalone: true,
   imports: [NgStyle, NgClass, QRCodeComponent, AlertComponent, ReactiveFormsModule, IconsModule, InstallAppModalComponent],
   templateUrl: './auth.component.html',
   styleUrls: ['./auth.component.css']
@@ -43,6 +43,7 @@ export class AuthComponent implements OnInit {
   private auth = inject(Authentication);
   private http = inject(HttpClient);
   private router = inject(Router);
+  private route = inject(ActivatedRoute);
   public passkey = inject(Passkey);
   public isPasskeySupport = false;
     
@@ -84,6 +85,9 @@ export class AuthComponent implements OnInit {
   async ngOnInit(): Promise<void> {
     this.isPasskeySupport = await this.passkey.isSupported();
 
+    const encodedReturnUrl = this.route.snapshot.queryParamMap.get('returnUrl');
+    const returnUrl = encodedReturnUrl ? decodeURIComponent(encodedReturnUrl) : null;
+
     this.school.config.subscribe((data) => {
       if (data == null) return;
       this.isLoading = false;
@@ -91,7 +95,11 @@ export class AuthComponent implements OnInit {
 
     this.auth.getAuthState().subscribe((data) => {
       if (data === true) {
-        this.router.navigate(['', 'main']);
+        if (returnUrl) {
+          this.router.navigateByUrl(returnUrl);
+        } else {
+          this.router.navigate(['', 'main']);
+        }
       }
     })
 
@@ -170,19 +178,25 @@ export class AuthComponent implements OnInit {
         if ('error' in data && data.error instanceof Array) {
           if (data.error?.includes("Invalid username")) {
             this.errors['username'] = this.l.s('auth.errors.invalid_username');
+            if (this.page === '2fa') { this.page = 'login' }
           }
           if (data.error?.includes("Invalid password")) {
             this.errors['password'] = this.l.s('auth.errors.invalid_password');
+            if (this.page === '2fa') { this.page = 'login' }
           }
           if (data.error?.includes("Missing username")) {
             this.errors['username'] = this.l.s('form.required');
+            if (this.page === '2fa') { this.page = 'login' }
           }
           if (data.error?.includes("Missing password")) {
             this.errors['password'] = this.l.s('form.required');
+            if (this.page === '2fa') { this.page = 'login' }
           }
+
           if (data.error?.includes("Missing 2FA")) {
             this.page = '2fa';
           }
+          
           if (data.error?.includes("Invalid 2FA")) {
             this.errors['token'] = this.l.s('auth.errors.invalid_tfa');
           }

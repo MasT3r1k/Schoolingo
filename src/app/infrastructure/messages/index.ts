@@ -13,12 +13,17 @@ export interface MessageTag {
 
 export type MessageOptions = 'asPrincipal' | 'requireConfirmation' | 'copyToClassTeacher' | 'copyToParents' | 'toAll';
 
+export enum MessageSendSecondTab {
+  RECEIVERS,
+  ATTACHMENTS
+}
+
 export enum messageTypes {
-    MESSAGE,
-    HOMEWORK,
-    EXCUSESTUDENT,
-    RATESTUDENT,
-    SYSTEM
+  MESSAGE,
+  HOMEWORK,
+  EXCUSESTUDENT,
+  RATESTUDENT,
+  SYSTEM
 }
 
 export class MessageManager {

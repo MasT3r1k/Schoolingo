@@ -58,7 +58,7 @@
 }
 
 .timetable > .hours > .hour-info > .hour-id,
-.timetable .item .sub-lesson-hour .subject {
+.timetable .item .subject {
     font-size: 18px;
     font-weight: 600;
     line-height: 18px;
@@ -68,7 +68,7 @@
 
 .timetable > .hours > .hour-info > .hour-id { color: var(--primary) }
 
-.timetable .item .sub-lesson-hour .subject { color: var(--color) }
+.timetable .item .subject { color: var(--color) }
 
 .timetable .item .sub-lesson-hour.classbook .subject { color: var(--primary) }
 
@@ -82,7 +82,7 @@
 }
 
 .timetable > .hours > .hour-info > .hour-time,
-.timetable .item .sub-lesson-hour .teacher {
+.timetable .item .teacher {
     font-size: 12px;
     color: var(--color);
     opacity: .7;
@@ -102,6 +102,14 @@
     flex-direction: row;
     align-items: center;
     border-collapse: collapse;
+}
+
+.timetable > .days > .day:not(:last-child) {
+    border-bottom: 1px solid var(--border-color);
+}
+
+.timetable > .days > .day > .all-day {
+    width: 100%;
 }
 
 .timetable > .days > .day:nth-child(2n) > .name,
@@ -144,7 +152,6 @@
 
 .timetable > .days > .day > .item {
     border-collapse: collapse;
-
 }
 
 .timetable > .days > .day:first-child > .item { border-top: 1px solid var(--border-color) }
@@ -160,7 +167,8 @@
     flex-direction: column;
 }
 
-.timetable .item .sub-lesson-hour {
+.timetable .item .sub-lesson-hour,
+.timetable .item.all-day {
     width: 100%;
     height: 100%;
     cursor: pointer;
@@ -189,8 +197,8 @@
     background-color: var(--background-active);
 }
 
-.timetable .item .sub-lesson-hour .group,
-.timetable .item .sub-lesson-hour .room {
+.timetable .item .group,
+.timetable .item .room {
     position: absolute;
     top: 1px;
     font-size: 11px;
@@ -200,25 +208,25 @@
     width: 50%;
 }
 
-.timetable .item .sub-lesson-hour .group {
+.timetable .item .group {
     left: 4px;
     text-align: left;
     color: var(--primary);
 }
 
-.timetable .item .sub-lesson-hour .room {
+.timetable .item .room {
     right: 4px;
     text-align: right;
 }
 
-.timetable .item .sub-lesson-hour .teacher {
+.timetable .item .teacher {
     text-overflow: ellipsis;
     overflow: hidden; 
     white-space: nowrap;
     max-width: 100%;
 }
 
-.timetable .item .sub-lesson-hour .absence {
+.timetable .item .absence {
     position: absolute;
     bottom: 4px;
     left: 50%;
@@ -273,7 +281,7 @@
 }
 
 .absence-item {
-    padding-left: 4px;
+    padding: 2px 12px;
     font-size: 15px;
     margin-bottom: .5rem;
 }

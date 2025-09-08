@@ -4,6 +4,7 @@ import { Locale } from '@Schoolingo/locale';
 
 @Component({
   selector: 'settings-change-language',
+  standalone: true,
   imports: [NgClass],
   templateUrl: './language.component.html',
   styleUrls: ['../settings.component.css', './language.component.css']

@@ -5,6 +5,7 @@ import { Theme } from '@Schoolingo/theme';
 
 @Component({
   selector: 'settings-change-theme',
+  standalone: true,
   imports: [NgClass],
   templateUrl: './theme.component.html',
   styleUrls: ['../settings.component.css', './theme.component.css']

@@ -1,4 +1,5 @@
-import { Injectable } from "@angular/core";
+import { inject, Injectable } from "@angular/core";
+import { Theme, themes } from "@Schoolingo/theme";
 import country from "country-state-city/lib/country";
 import moment from "moment";
 
@@ -117,13 +118,85 @@ export namespace Utils {
   }
 
   export function getOS(userAgent: string): string {
-    var OSName = "Unknown";
-    if (userAgent.includes("Win"))      OSName = "Windows";
-    if (userAgent.includes("Mac"))      OSName = "Macintosh";
-    if (userAgent.includes("Linux"))    OSName = "Linux";
-    if (userAgent.includes("Android"))  OSName = "Android";
-    if (userAgent.includes("like Mac")) OSName = "iOS";
+    let OSName = "Unknown";
+
+    if (userAgent.includes("Windows NT")) {
+      if (userAgent.includes("Windows NT 10.0")) {
+        OSName = "Windows 10/11"; // 10.0 platí pro Windows 10 i 11
+      } else if (userAgent.includes("Windows NT 6.3")) {
+        OSName = "Windows 8.1";
+      } else if (userAgent.includes("Windows NT 6.2")) {
+        OSName = "Windows 8";
+      } else if (userAgent.includes("Windows NT 6.1")) {
+        OSName = "Windows 7";
+      } else if (userAgent.includes("Windows NT 6.0")) {
+        OSName = "Windows Vista";
+      } else if (userAgent.includes("Windows NT 5.1")) {
+        OSName = "Windows XP";
+      } else {
+        OSName = "Windows";
+      }
+    } else if (userAgent.includes("Mac")) {
+      OSName = "Macintosh";
+    } else if (userAgent.includes("Linux")) {
+      OSName = "Linux";
+    } else if (userAgent.includes("Android")) {
+      OSName = "Android";
+    } else if (userAgent.includes("like Mac")) {
+      OSName = "iOS";
+    }
+
     return OSName;
+  }
+
+  export function getOSIcon(userAgent: string): string {
+    let OSName = "Unknown";
+
+    if (userAgent.includes("Windows NT")) {
+      if (userAgent.includes("Windows NT 10.0")) {
+        OSName = "Windows 10/11"; // 10.0 platí pro Windows 10 i 11
+      } else if (userAgent.includes("Windows NT 6.3")) {
+        OSName = "Windows 8.1";
+      } else if (userAgent.includes("Windows NT 6.2")) {
+        OSName = "Windows 8";
+      } else if (userAgent.includes("Windows NT 6.1")) {
+        OSName = "Windows 7";
+      } else if (userAgent.includes("Windows NT 6.0")) {
+        OSName = "Windows Vista";
+      } else if (userAgent.includes("Windows NT 5.1")) {
+        OSName = "Windows XP";
+      } else {
+        OSName = "Windows";
+      }
+    } else if (userAgent.includes("Mac")) {
+      OSName = "Macintosh";
+    } else if (userAgent.includes("Linux")) {
+      OSName = "Linux";
+    } else if (userAgent.includes("Android")) {
+      OSName = "Android";
+    } else if (userAgent.includes("like Mac")) {
+      OSName = "iOS";
+    }
+
+    return OSName;
+  }
+
+  export function getLoginTypeIcon(type: string): string {
+    let loginType = '';
+    switch (type) {
+      case 'password':
+        loginType = 'icon-login-password';
+        break;
+      case 'passkey':
+        loginType = 'icon-login-passkey';
+        break;
+      case 'qrcode':
+        loginType = 'icon-login-qrcode';
+        break;
+      default:
+        loginType = 'icon-login-unknown';
+    }
+    return loginType;
   }
 
   export function getOwnUserAgent(): typeof window.navigator.userAgent {
@@ -152,6 +225,24 @@ export namespace Utils {
       browser = "Mozilla";
     } else if ((userAgent.includes("MSIE")) || (!!(document as any).documentMode == true)) {
       browser = 'IE';
+    }
+    return browser;
+  }
+
+  export function getBrowserIcon(userAgent: string): string {
+    let browser = '';
+    if (userAgent.includes("Opera") || userAgent.includes('OPR')) {
+      browser = "opera.svg";
+    } else if (userAgent.includes("Edg")) {
+      browser = "edge.svg";
+    } else if (userAgent.includes("Chrome")) {
+      browser = "chrome.svg";
+    } else if (userAgent.includes("Safari")) {
+      browser = "safari.svg";
+    } else if (userAgent.includes("Firefox")) {
+      browser = "firefox.svg";
+    } else if ((userAgent.includes("MSIE")) || (!!(document as any).documentMode == true)) {
+      browser = 'IE.svg';
     }
     return browser;
   }

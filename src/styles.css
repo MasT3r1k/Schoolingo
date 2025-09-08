@@ -90,9 +90,9 @@ a {
 }
 
 .dark {
-    --input-background: hsl(240deg, 4%, 16%);
-    --background-body: hsl(240deg, 6%, 10%);
-    --background-header: hsl(0deg, 0%, 5%);
+    --input-background: rgb(37, 42, 49);
+    --background-body: #20242a;
+    --background-header: #2b3038;
     --background-basic: hsl(228deg 6% 32.5% / 8%);
     --background-hover: hsl(228deg 6% 32.5% / 16%);
     --background-active: hsl(228deg 6% 32.5% / 24%);
@@ -105,7 +105,7 @@ a {
     --secondary-color: hsl(216deg, 5%, 12%);
     --secondary-color-hover: hsla(216deg, 5%, 12%, 48%);
     --sidebar-arrow: hsl(0deg, 0%, 20%);
-    --border-color: rgb(255 255 255 / 10%);
+    --border-color: #2d3145;
     --alert-button-border: hsl(0deg, 0%, 47%);
     --error-start-bg: hsl(332deg, 39%, 14%);
     --error-end-bg: hsl(334deg, 39%, 14%);
@@ -268,12 +268,10 @@ body {
 .card {
     display: flex;
     flex-direction: column;
-    justify-content: center;
     box-shadow: rgba(2, 2, 2, 0.5) 0px 0px 3px;
     background-color: var(--background-body);
     padding: 2rem;
     border-radius: var(--radius);
-    min-width: 784px;
     position: relative;
 }
 
@@ -312,7 +310,9 @@ body {
     color: var(--color-darker);
 }
 
-.card-row, .card-header, .select-items {
+.card-row,
+.card-header,
+.select-items {
     display: flex;
     flex-direction: row;
 }
@@ -416,7 +416,25 @@ label.error-color {
     font-size: 14px;
 }
 
-input, select, textarea, .input, .preview {
+.form-group i-tabler {
+    position: absolute;
+    left: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--color-darker);
+    width: 16px;
+    height: 16px;
+}
+
+.form-group i-tabler ~ input {
+    padding-left: 2rem;
+}
+
+input,
+select,
+textarea,
+.input,
+.preview {
     appearance: none;
     display: block;
     border-radius: var(--radius);
@@ -430,7 +448,7 @@ input, select, textarea, .input, .preview {
     background-color: var(--input-background);
     background-clip: padding-box;
     z-index: 3;
-    transition: border-color .15s ease-in-out,box-shadow .15s ease-in-out;
+    transition: border-color .15s ease-in-out, box-shadow .15s ease-in-out;
 }
 
 .preview {
@@ -471,7 +489,9 @@ textarea {
     resize: vertical;
 }
 
-input:focus, textarea:focus, select:focus {
+input:focus,
+textarea:focus,
+select:focus {
     background-color: var(--input-background);
     border-color: var(--primary);
     outline: none;
@@ -1012,4 +1032,37 @@ span.danger {
   animation:
     loader-1 0.8s infinite linear alternate,
     loader-2 1.6s infinite linear;
+}
+
+.table-icon {
+    width: 24px;
+    height: 24px;
+    vertical-align: middle;
+    margin-right: 4px;
+}
+
+.icon-login-password,
+.icon-login-passkey,
+.icon-login-qrcode,
+.icon-login-unknown,
+.icon-arrow-right {
+  width: 24px;
+  height: 24px;
+  background-color: var(--color);
+  mask-size: contain;
+  mask-repeat: no-repeat;
+  mask-position: center;
+  margin-right: 4px;
+}
+
+.icon-login-password { mask-image: url('/assets/login/password.svg'); }
+.icon-login-passkey  { mask-image: url('/assets/login/passkey.svg');  }
+.icon-login-qrcode   { mask-image: url('/assets/login/qrcode.svg');   }
+.icon-login-unknown  { mask-image: url('/assets/login/unknown.svg');  }
+.icon-arrow-right {
+    mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' class='icon icon-tabler icons-tabler-outline icon-tabler-chevron-right'%3E%3Cpath stroke='none' d='M0 0h24v24H0z' fill='none'/%3E%3Cpath d='M9 6l6 6l-6 6' /%3E%3C/svg%3E");
+    width: 20px;
+    height: 20px;
+    margin-right: 0;
+    background-color: var(--color-darker)
 }

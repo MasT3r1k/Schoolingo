@@ -66,7 +66,11 @@
         }
     </div>
     <div class="card-body center">
-        @if (this.timetable.length) {
+        @if (isLoadingTimetable) {
+            <div class="loading">
+                <div class="loader"></div>
+            </div>
+        } @else if (this.timetable.length) {
         <div class="timetable">
             <div class="hours">
                 <div class="week-type">
@@ -106,73 +110,84 @@
                             }
                         </div>
 
-                        @if (false) {
-                            <div class="item all-day"></div>
-                        }
 
-                        @for (hour of [].constructor(timetableHours.length); track index2;let index2 = $index) {
-
-                            <div class="item lesson-hour">
-                                @if (timetable[index]?.[index2]) {
-                                    @for (lesson of timetable[index][index2] ?? []; track $index) { 
-                                        <div [ngClass]="getLessonClasses(index, index2, lesson)">
-                                            <div class="group">
-                                                <span>B3.I 2</span>
-                                            </div>
-                                            <div class="room">
-                                                {{ lesson.room }}
-                                            </div>
-                                            <div class="subject">
-                                                @if (selectedTab.getValue() === 2 && lesson.type !== 0) {
-                                                    {{ l.s('weeks.' + (lesson.type == 1 ? 'odd' : 'even')).charAt(0) + ': ' }}
-                                                }
-                                                {{ lesson.subjectShortcut }}
-                                            </div>
-                                            <div class="teacher">
-                                                @if (lesson.className) {
-                                                    {{ lesson.className }}
-                                                }
-                                                @if (lesson.lastName) {
-                                                    {{ lesson.lastName }}
-                                                }
-                                            </div>
-
-                                            <!-- @if (options['groups'].getValue() === true && lesson.group) {
-                                                <div class="group">
-                                                    @if (lesson.group.text != '') {
-                                                        <span>{{ lesson.group.text }}</span>
-                                                    }
-                                                    
-                                                    @if (lesson.group.num != '') {
-                                                        <span>{{ lesson.group.num }}</span>
-                                                    }
-                                                </div>
-                                            }
-
-                                            @if (options['rooms'].getValue() === true) {
-                                                <div class="room">{{ lesson.room }}</div>
-                                            }
-
-                                            <div class="subject">
-                                                @if (selectedTab.getValue() === 2 && lesson.type !== 0) {
-                                                    {{ l.s('weeks.' + (lesson.type == 1 ? 'odd' : 'even')).charAt(0) + ': ' }}
-                                                }
-                                                {{ lesson.subjectShortcut }}
-                                            </div>
-
-                                            @if (options['teachers'].getValue() === true && lesson.teacher != -1 && timetable[index][index2][lesson]) {
-                                                <div class="teacher">
-                                                    {{ lesson?.teacher }}
-                                                </div>
-                                            } -->
-
-                                            <!-- @if (schoolingo.getAbsence(index - 1, index2) != -1) {
-                                                <div [ngClass]="['absence', 'ab-' + schoolingo.absenceConfig[schoolingo.getAbsence(index - 1, index2)].locale]"></div>
-                                            } -->
-                                        </div>
-                                    }
-                                }
+                        @if (timetable?.[index] && timetable[index].length && timetable[index][0].length && timetable[index][1][0].all_day) {
+                            <div class="item all-day" [ngStyle]="{backgroundColor: timetable[index][1][0].color}">
+                                <div class="group">
+                                    <span></span>
+                                </div>
+                                <div class="room">
+                                    {{ timetable[index][1][0].room }}
+                                </div>
+                                <div class="subject">
+                                    {{ timetable[index][1][0].subjectName }}
+                                </div>
                             </div>
+                        } @else {
+                            @for (hour of [].constructor(timetableHours.length); track index2;let index2 = $index) {
+                                <div class="item lesson-hour">
+                                    @if (timetable[index]?.[index2]) {
+                                        @for (lesson of timetable[index][index2] ?? []; track $index) { 
+                                            <div [ngClass]="getLessonClasses(index, index2, lesson)" [ngStyle]="{backgroundColor: lesson.color}">
+                                                <div class="group">
+                                                    <span>B3.I 2</span>
+                                                </div> 
+                                                <div class="room">
+                                                    {{ lesson.room }}
+                                                </div>
+                                                <div class="subject">
+                                                    @if (selectedTab.getValue() === 2 && lesson.type !== 0) {
+                                                        {{ l.s('weeks.' + (lesson.type == 1 ? 'odd' : 'even')).charAt(0) + ': ' }}
+                                                    }
+                                                    {{ lesson.subjectShortcut }}
+                                                </div>
+                                                <div class="teacher">
+                                                    @if (lesson.className) {
+                                                        {{ lesson.className }}
+                                                    }
+                                                    @if (lesson.lastName) {
+                                                        {{ lesson.lastName }}
+                                                    }
+                                                </div>
+
+                                                <!-- @if (options['groups'].getValue() === true && lesson.group) {
+                                                    <div class="group">
+                                                        @if (lesson.group.text != '') {
+                                                            <span>{{ lesson.group.text }}</span>
+                                                        }
+                                                        
+                                                        @if (lesson.group.num != '') {
+                                                            <span>{{ lesson.group.num }}</span>
+                                                        }
+                                                    </div>
+                                                }
+
+                                                @if (options['rooms'].getValue() === true) {
+                                                    <div class="room">{{ lesson.room }}</div>
+                                                }
+
+                                                <div class="subject">
+                                                    @if (selectedTab.getValue() === 2 && lesson.type !== 0) {
+                                                        {{ l.s('weeks.' + (lesson.type == 1 ? 'odd' : 'even')).charAt(0) + ': ' }}
+                                                    }
+                                                    {{ lesson.subjectShortcut }}
+                                                </div>
+
+                                                @if (options['teachers'].getValue() === true && lesson.teacher != -1 && timetable[index][index2][lesson]) {
+                                                    <div class="teacher">
+                                                        {{ lesson?.teacher }}
+                                                    </div>
+                                                } -->
+
+                                                <!-- @if (schoolingo.getAbsence(index - 1, index2) != -1) {
+                                                    <div [ngClass]="['absence', 'ab-' + schoolingo.absenceConfig[schoolingo.getAbsence(index - 1, index2)].locale]"></div>
+                                                } -->
+                                            </div>
+                                        }
+                                    }
+                                </div>
+                            }
+
                         }
                     </div>
                     }
@@ -181,9 +196,7 @@
             </div>
         </div>
         } @else {
-            <div class="loading">
-                <div class="loader"></div>
-            </div>
+            <p>Nemáte tento týden žádné hodiny</p>
         }
 
     </div>

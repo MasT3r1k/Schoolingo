@@ -17,6 +17,7 @@ import { Passkey } from '@Schoolingo/passkey';
 import { httpInterceptor } from './infrastructure/http/http.interceptor';
 import { Homeworks } from '@Schoolingo/homeworks';
 import { MessageManager } from '@Schoolingo/messages';
+import { IconsModule } from '@Schoolingo/icons';
 
 export function initAuth(auth: Authentication): () => void {
   return () => auth.loadState(); // např. HTTP požadavek + setAuthState()
@@ -45,6 +46,7 @@ export const appConfig: ApplicationConfig = {
     Settings,
     Passkey,
     Homeworks,
-    MessageManager
+    MessageManager,
+    IconsModule
   ]
 };

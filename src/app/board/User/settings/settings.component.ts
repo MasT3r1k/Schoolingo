@@ -1,5 +1,5 @@
 import { Component, inject, OnInit } from '@angular/core';
-import { TabsComponent } from '@Components/tabs/tabs';
+import { TabsComponent } from '../../../Components/Tabs';
 import { Locale } from '@Schoolingo/locale';
 import { BehaviorSubject } from 'rxjs';
 import { ChangePasswordComponent } from './change-password/change-password.component';
@@ -9,6 +9,7 @@ import { SecurityComponent } from './security/security.component';
 import { Settings } from '@Schoolingo/settings';
 
 @Component({
+  standalone: true,
   imports: [TabsComponent, ChangePasswordComponent, LanguageComponent, ThemeComponent, SecurityComponent],
   templateUrl: './settings.component.html',
   styleUrl: './settings.component.css'

@@ -4,7 +4,7 @@ import { RouterLink } from '@angular/router';
 import { Locale } from '@Schoolingo/locale';
 import { Permission } from '@Schoolingo/permission';
 import { IconsModule } from '@Schoolingo/icons';
-import { TabsComponent } from '@Components/tabs/tabs';
+import { TabsComponent } from '../../Components/Tabs';
 
 @Component({
   selector: 'app-main',

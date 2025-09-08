@@ -9,6 +9,7 @@ import { NgClass } from '@angular/common';
 import { AlertComponent } from '@Components/Alert';
 
 @Component({
+  standalone: true,
   imports: [ReactiveFormsModule, NgClass, AlertComponent],
   selector: 'settings-change-password',
   templateUrl: './change-password.component.html',
