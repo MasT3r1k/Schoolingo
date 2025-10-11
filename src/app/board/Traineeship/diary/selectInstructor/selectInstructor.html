@@ -1,0 +1,41 @@
+<div class="items">
+    @if (alert != null) {
+        <div class="alerts mb">
+            <div class="alert red">
+                {{ schoolingo.locale.getLocale('traineeship/alerts/' + alert) }}
+            </div>
+        </div>
+    }
+
+    <div class="item">
+        <div class="label">
+            {{ schoolingo.locale.getLocale('traineeship/selectedCompany') }}
+        </div>
+        <div class="value">
+            <input type="text" name="name" class="disabled" [value]="schoolingo.traineeship.selectedDairy?.companyName" readonly="true">
+        </div>
+    </div>
+
+    <div class="item">
+        <div class="label">
+            {{ schoolingo.locale.getLocale('traineeship/instructor') }}
+        </div>
+        <div class="value select select-column">
+            @for (instructor of this.schoolingo.traineeship.instructors; track $index) {
+                <div [ngClass]="{'select-option': true, active: selectedInstructor == instructor}" (click)="selectedInstructor = instructor;">
+                    <p>{{ schoolingo.formatPerson(instructor) }}</p>
+                </div>
+            } @empty {
+                <alert [alert]="alerts.noInstructors"></alert>
+            }
+        </div>
+    </div>
+
+    <div class="description">
+        {{ schoolingo.locale.getLocale('traineeship/selectCompany/bottomInformation') }}
+    </div>
+
+    <div class="btn submit" role="button" (click)="selectInstructor()">
+        {{ schoolingo.locale.getLocale("traineeship/buttons/selectInstructor") }}
+    </div>
+</div>

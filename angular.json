@@ -3,7 +3,7 @@
   "version": 1,
   "newProjectRoot": "projects",
   "projects": {
-    "ElysiaClient": {
+    "Website": {
       "projectType": "application",
       "schematics": {},
       "root": "",
@@ -13,7 +13,7 @@
         "build": {
           "builder": "@angular-devkit/build-angular:application",
           "options": {
-            "outputPath": "dist/elysia-client",
+            "outputPath": "dist",
             "index": "src/index.html",
             "browser": "src/main.ts",
             "polyfills": [
@@ -21,13 +21,13 @@
             ],
             "tsConfig": "tsconfig.app.json",
             "assets": [
-              {
-                "glob": "**/*",
-                "input": "public"
-              }
+              "src/assets",
+              "src/locales"
             ],
             "styles": [
-              "src/styles.css"
+              "src/styles.css",
+              "src/app/Styles/card.css",
+              "src/app/Styles/input.css"
             ],
             "scripts": []
           },
@@ -36,19 +36,29 @@
               "budgets": [
                 {
                   "type": "initial",
-                  "maximumWarning": "500kB",
-                  "maximumError": "1MB"
+                  "maximumWarning": "500kb",
+                  "maximumError": "1mb"
                 },
                 {
                   "type": "anyComponentStyle",
-                  "maximumWarning": "4kB",
-                  "maximumError": "8kB"
+                  "maximumWarning": "2kb",
+                  "maximumError": "4kb"
                 }
               ],
-              "outputHashing": "all"
+              "outputHashing": "all",
+              "fileReplacements": [
+                {
+                  "replace": "src/Schoolingo/Config.ts",
+                  "with": "src/Schoolingo/Config.prod.ts"
+                }
+              ]
             },
             "development": {
-              "optimization": false,
+              "optimization": {
+                "fonts": {
+                  "inline": false
+                }
+              },
               "extractLicenses": false,
               "sourceMap": true
             }
@@ -59,16 +69,19 @@
           "builder": "@angular-devkit/build-angular:dev-server",
           "configurations": {
             "production": {
-              "buildTarget": "ElysiaClient:build:production"
+              "buildTarget": "Website:build:production"
             },
             "development": {
-              "buildTarget": "ElysiaClient:build:development"
+              "buildTarget": "Website:build:development"
             }
           },
           "defaultConfiguration": "development"
         },
         "extract-i18n": {
-          "builder": "@angular-devkit/build-angular:extract-i18n"
+          "builder": "@angular-devkit/build-angular:extract-i18n",
+          "options": {
+            "buildTarget": "Website:build"
+          }
         },
         "test": {
           "builder": "@angular-devkit/build-angular:karma",
@@ -79,18 +92,21 @@
             ],
             "tsConfig": "tsconfig.spec.json",
             "assets": [
-              {
-                "glob": "**/*",
-                "input": "public"
-              }
+              "src/favicon.ico",
+              "src/assets"
             ],
             "styles": [
-              "src/styles.css"
+              "src/styles.css",
+              "src/app/Styles/card.css",
+              "src/app/Styles/input.css"
             ],
             "scripts": []
           }
         }
       }
     }
+  },
+  "cli": {
+    "analytics": false
   }
 }

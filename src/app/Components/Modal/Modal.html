@@ -1,0 +1,56 @@
+@if (getModals().length) {
+    <div class="modals" (click)="closeAllModals()">
+        @for (modal of getModals(); track $index) {
+            <div [ngClass]="['modal', modal.options.size]" [ngStyle]="{ 'z-index': modal.zIndex }" (click)="$event.stopPropagation()">
+                @if (modal.options.closeable) {
+                    <div class="modal-close" (click)="modal.close()">
+                        <i-tabler name="x"></i-tabler>
+                    </div>
+                }
+                <div class="modal-header">
+                    @if (modal.options.title.icon) {
+                        <i-tabler [name]="modal.options.title.icon"></i-tabler>
+                    }
+                    <span>
+                        {{ locale.getLocale(modal.options.title.text) }}
+                    </span>
+                </div>
+                @for (item of modal.options.items; track $index;) {
+                    @switch (item.type) {
+                        @case ("tabs") {
+                            <div class="modal-items" [ngStyle]="{ 'border-top': ($first) ? 'none' : '1px solid var(--border-color)' }">
+                                <schoolingo-tabs [options]="item.items" [option_width]="'fit'"></schoolingo-tabs>
+                            </div>
+                        }
+                        @case ("value") {
+                            <div class="modal-item" [ngStyle]="{ 'border-top': ($first) ? 'none' : '1px solid var(--border-color)' }">
+                                <div>{{ locale.getLocale(item.label) }}</div>
+                                @if (item.value.isLocale) {
+                                    <div>
+                                        {{ locale.getLocale((item.value.localePrefix ?? '') + item.value.object?.getValue()?.[0]?.[item.value.key]) }}
+                                    </div>
+                                } @else {
+                                    <div>
+                                        {{ item.value.object?.getValue()?.[0]?.[item.value.key] }}
+                                    </div>
+                                }
+                            </div>
+                        }
+                        @case ("date") {
+                            <div class="modal-item" [ngStyle]="{ 'border-top': ($first) ? 'none' : '1px solid var(--border-color)' }">
+                                <div>{{ locale.getLocale(item.label) }}</div>
+                                <div>{{ item.value.object?.getValue()?.[item.value.key].format('HH:mm DD.MM.YYYY') }}</div>
+                            </div>
+                        }
+                        @case ("line") {
+                            <div class="line"></div>
+                        }
+                        @case("component") {
+                            <ng-container [ngComponentOutlet]="item.component"></ng-container>
+                        }
+                    }
+                }
+            </div>
+        }
+    </div>
+}

@@ -1,54 +1,75 @@
 import { NgClass, NgStyle } from '@angular/common';
-import { Component, inject, OnInit } from '@angular/core';
-import { TabsComponent } from '../../../Components/Tabs';
-import { absence, AbsenceConfig, AbsenceType } from '@Schoolingo/absence';
-import { removeDiacritics } from '@Schoolingo/diacritics';
-import { IconsModule } from '@Schoolingo/icons';
-import { Locale } from '@Schoolingo/locale';
-import { School } from '@Schoolingo/school';
-import moment from 'moment';
+import { Component, OnInit, Renderer2 } from '@angular/core';
+import { TabsComponent } from '@Components/Tabs/Tabs';
+import { Absence, Schoolingo } from '@Schoolingo';
 import { BehaviorSubject, Subscription } from 'rxjs';
-
-export interface Absence {
-  type: number;
-  subject: number;
-  reason: string;
-  minutes: number;
-}
+import * as AbsenceConfig from "@Schoolingo/Absence";
+import { IconsModule } from '../../../Modules/Icons.module';
+import moment from 'moment';
 
 @Component({
-  imports: [NgClass, IconsModule, TabsComponent],
+  standalone: true,
+  imports: [TabsComponent, NgClass, NgStyle, IconsModule],
   templateUrl: './absence.component.html',
-  styleUrl: './absence.component.css'
+  styleUrls: ['./absence.component.css', '../../../Styles/card.css']
 })
 export class AbsenceComponent implements OnInit {
-  public l = inject(Locale);
-  public s = inject(School);
+  constructor(
+    public schoolingo: Schoolingo,
+    private renderer: Renderer2
+  ) {}
 
-  public absenceConfig: AbsenceConfig[] = absence;
-  public absenceSubjects: Record<string, { absence: number, lessons: number }> = {};
-  public absenceDate: { start: moment.Moment, end: moment.Moment } = { start: moment(), end: moment() };
-  public absence: Record<string, Absence[]> = {};
+  public absenceConfig = AbsenceConfig.absence;
   public selectedPeriod = new BehaviorSubject<number>(0);
   public selectedTab = new BehaviorSubject<number>(0);
   private listeners: Subscription[] = [];
   public monthStatus: boolean[] = [];
-  public ignoredAbsence: AbsenceType[] = [AbsenceType.NON_COUNT];
+  public ignoredAbsence: AbsenceConfig.AbsenceType[] = [AbsenceConfig.AbsenceType.NON_COUNT];
 
-  private timetableSubjects: Record<string, number[]> = {};
+  public tableHeader: { active: boolean;top: number;width: number } = { active: false, top: 0, width: 0 };
 
-  public getSubjects(): string[] {
-    return Object.keys(this.timetableSubjects).sort((a: string, b: string) => 
-      removeDiacritics(a).localeCompare(removeDiacritics(b))
+  ngOnInit(): void {
+    this.listeners.push(
+      this.selectedPeriod.subscribe((type: number) => {
+        this.schoolingo.socketService.emit('absence:getAbsence', {
+          userId: this.schoolingo.userService.getUser()!.id,
+          type
+        });
+      })
     );
+
+    // this.renderer.listen(document.querySelector(".main-content"), "scroll", (ev: any) => {
+    //   let el: HTMLElement = ev.target!;
+    //   if (el.scrollTop > 160) {
+    //     this.tableHeader.active = true;
+    //   } else {
+    //     this.tableHeader.active = false
+    //   }
+    //   let oldEl = document.querySelector("thead.table-row") as any;
+    //   if (!oldEl) return;
+    //   this.tableHeader.width = oldEl.clientWidth;
+    //   this.tableHeader.top = el.scrollTop;
+    // })
+
+    // this.renderer.listen("window", "resize", () => {
+    //   this.tableHeader.width = document.querySelector("thead.table-row")?.clientWidth!;
+    //   setTimeout(() => this.tableHeader.width = document.querySelector("thead.table-row")?.clientWidth!, 300)
+    // })
+  }
+
+  ngOnDestroy(): void {
+    this.listeners.forEach((subscribe: Subscription) => subscribe.unsubscribe());
+    this.schoolingo.socketService.emit('absence:getAbsence', {
+      userId: this.schoolingo.userService.getUser()!.id,
+      type: 3
+    });
+    this.renderer.destroy();
   }
 
   public getMonths(): number {
     let count = 0;
-      let school_config = this.s.config.getValue();
-    if (school_config == null) return 0;
-    let date = moment(school_config.year.start).clone();
-    let end = moment(school_config.year.end);
+    let date = this.schoolingo.school.schoolYear.start.clone();
+    let end = this.schoolingo.school.schoolYear.end;
 
     do {
       count++;
@@ -58,23 +79,19 @@ export class AbsenceComponent implements OnInit {
   }
 
   public daysInMonth(month: number): number {
-    let school_config = this.s.config.getValue();
-    if (school_config == null) return 0;
-    let startMonth = moment(school_config.year.start).clone().add(month, 'month').startOf('month');
+    let startMonth = this.schoolingo.school.schoolYear.start.clone().add(month, 'month').startOf('month');
     let daysInMonth = startMonth.daysInMonth();
     return daysInMonth;
   }
 
   public getCountMonthInDay(month: number, day: number, countAbsence: number[] = []): number[] {
-      let school_config = this.s.config.getValue();
-    if (school_config == null) return [];
-    let date = moment(school_config.year.start).clone().add(month, 'month').startOf('month').add(day, 'day');
+    let date = this.schoolingo.school.schoolYear.start.clone().add(month, 'month').startOf('month').add(day, 'day');
 
-    if (!this.absence[date.format('YYYY-MM-DD')]) {
+    if (!this.schoolingo.absence[date.format('YYYY-MM-DD')]) {
       return countAbsence;
     }
     
-    this.absence[date.format('YYYY-MM-DD')].forEach((absence: Absence) => {
+    this.schoolingo.absence[date.format('YYYY-MM-DD')].forEach((absence: Absence) => {
       if (!countAbsence[absence.type]) {
         countAbsence[absence.type] = 0;
       }
@@ -93,9 +110,7 @@ export class AbsenceComponent implements OnInit {
   }
 
   public getCountMonth(month: number): number[] {
-    let school_config = this.s.config.getValue();
-    if (school_config == null) return [];
-    let startMonth = moment(school_config.year.start).add(month, 'month').startOf('month');
+    let startMonth = this.schoolingo.school.schoolYear.start.clone().add(month, 'month').startOf('month');
     let daysInMonth = startMonth.daysInMonth();
     let countAbsence: number[] = [];
     for(let i = 0;i < daysInMonth;i++) {
@@ -114,54 +129,7 @@ export class AbsenceComponent implements OnInit {
   }
 
   public getMonthText(month: number): string {
-    let school_config = this.s.config.getValue();
-    if (school_config == null) return "";
-    let date = moment(school_config.year.start).clone().add(month, 'month')
-    return this.l.s('months.' + date.month()) + ' ' + date.year();
-  }
-
-  ngOnInit(): void {
-    this.listeners.push(this.selectedTab.subscribe((tab: number) => {
-      if (tab === 0) {
-        this.absenceSubjects = {};
-        this.absence = {};
-        this.selectedPeriod.next(0);
-      }
-    }));
-
-    this.listeners.push(this.selectedPeriod.subscribe((period: number) => {
-      let school_config = this.s.config.getValue();
-      if (school_config == null) return;
-      let start = moment(school_config.year.start).clone();
-      let midterm = moment(school_config.year.midterm).clone();
-      let end = moment(school_config.year.end).clone();
-
-      switch (period) {
-        case 0:
-          this.absenceDate.start = start.clone().startOf('day');
-          this.absenceDate.end = moment().endOf('day');
-          break;
-        case 1:
-          this.absenceDate.start = start.clone().startOf('day');
-          this.absenceDate.end = midterm.clone().endOf('day');
-          break;
-        case 2:
-          this.absenceDate.start = midterm.clone().startOf('day');
-          this.absenceDate.end = end.clone().endOf('day');
-          break;
-        case 3:
-          this.absenceDate.start = start.clone().startOf('day');
-          this.absenceDate.end = end.clone().endOf('day');
-          break;
-        default:
-          this.absenceDate.start = start.clone().startOf('day');
-          this.absenceDate.end = moment().endOf('day');
-          break;
-      }
-    }));
-    
-    let school_config = this.s.config.getValue();
-    if (school_config == null) return;
-
+    let date = this.schoolingo.school.schoolYear.start.clone().add(month, 'month')
+    return this.schoolingo.locale.getLocale('months/' + date.month()) + ' ' + date.year();
   }
 }

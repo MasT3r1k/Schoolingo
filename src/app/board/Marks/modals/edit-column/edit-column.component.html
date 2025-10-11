@@ -1,0 +1,99 @@
+<div class="items">
+    @if (alert != null) {
+        <alert [alert]="alert"></alert>
+    }
+
+    <div class="item mb">
+        <div class="label">
+            {{ schoolingo.locale.getLocale('marks/title') }}
+        </div>
+        <div class="value">
+            <input type="text" name="markTopic" maxlength="50" [placeholder]="schoolingo.locale.getLocale('marks/titlePlaceholder')" [(ngModel)]="topic">
+        </div>
+    </div>
+
+    <div class="item mb">
+        <div class="label">
+            {{ schoolingo.locale.getLocale('marks/type') }}
+        </div>
+        <div class="value">
+            <div class="input-select">
+                <input type="text" (click)="showSelect = showSelect == 'type' ? null : 'type'" name="inputSelect" readonly="true" [value]="schoolingo.locale.getLocale('marks/types/' + type)" />
+                @if (showSelect == 'type') {
+                    <div class="options">
+                        @for (columnType of types; track $index) {
+                            <div class="option" (click)="showSelect = null;type = columnType">
+                                {{ schoolingo.locale.getLocale('marks/types/' + columnType) }}
+                            </div>
+                        }
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+
+    @switch (type) {
+        @case("marks") {
+            <div class="item mb">
+                <div class="label">
+                    {{ schoolingo.locale.getLocale('marks/weight') }}
+                </div>
+                <div class="value">
+                    <input type="text" name="weight" [(ngModel)]="weight" />
+                </div>
+            </div>
+        }
+        @case("points") {
+            <div class="item mb">
+                <div class="label">
+                    {{ schoolingo.locale.getLocale('marks/maxPoints') }}
+                </div>
+                <div class="value">
+                    <input type="text" name="maxPoints" [placeholder]="schoolingo.locale.getLocale('marks/maxPointsPlaceholder')" [(ngModel)]="maxPoints">
+                </div>
+            </div>
+
+            <div class="item mb">
+                <div class="label">
+                    {{ schoolingo.locale.getLocale('marks/includeInGradeEvenIfNoPoints') }}
+                </div>
+                <div class="value">
+                    <div class="yesOrNo row">
+                        <div [ngClass]="{'blue-info': includeInGradeEvenIfNoPoints}" (click)="includeInGradeEvenIfNoPoints = true">
+                            {{ schoolingo.locale.getLocale('yes') }}
+                        </div>
+                        <div [ngClass]="{'blue-info': !includeInGradeEvenIfNoPoints}" (click)="includeInGradeEvenIfNoPoints = false">
+                            {{ schoolingo.locale.getLocale('no') }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    }
+
+    @if (type == "points" && !includeInGradeEvenIfNoPoints || type == "marks") {
+        <div class="item mb">
+            <div class="label">
+                {{ schoolingo.locale.getLocale('marks/prefill') }}
+            </div>
+            <div class="value">
+                <input type="text" name="prefillMark" [placeholder]="schoolingo.locale.getLocale('marks/prefillPlaceholder')" [(ngModel)]="prefillMark">
+            </div>
+        </div>
+    }
+
+    @if (prefillMark == "?") {
+                <div class="item mb">
+            <div class="label">
+                {{ schoolingo.locale.getLocale('marks/plannedMark') }}
+            </div>
+            <div class="value">
+                <input type="text" name="plannedMark" [placeholder]="schoolingo.locale.getLocale('marks/plannedMark')" [(ngModel)]="plannedMark">
+            </div>
+        </div>
+    }
+
+    <div class="btn submit" role="button" (click)="editColumn()">
+        {{ schoolingo.locale.getLocale("marks/createColumn") }}
+    </div>
+</div>

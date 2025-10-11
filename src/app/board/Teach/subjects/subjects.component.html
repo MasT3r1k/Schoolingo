@@ -1,0 +1,27 @@
+<div class="card">
+    <div class="card-top"></div>
+    <div class="card-header">
+        <h2>{{ schoolingo.locale.getLocale('sidebar/teach/subjects') }}</h2>
+    </div>
+    <div class="card-body">
+        <table>
+            <thead>
+                <th>{{ schoolingo.locale.getLocale('subject') }}</th>
+                <th>{{ schoolingo.locale.getLocale('roles/teacher') }}</th>
+            </thead>
+            <tbody>
+                @for (subject of schoolingo.getSubjects(); track $index) {
+                    <tr>
+                        <td>{{ subject }}</td>
+                        <td>
+                            @for (teacherId of schoolingo.getTeachersFromSubject(subject); track $index) {
+                                <p>{{ schoolingo.formatPerson(teacherId) }}</p>
+                            }
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+
+    </div>
+</div>

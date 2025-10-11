@@ -1,0 +1,70 @@
+@for (dropdown of getDropdowns(); track $index) {
+    <div (click)="$event.stopPropagation()" [ngClass]="{dropdown: true, active: dropdown[1].isOpen}" [id]="dropdown[0]" [ngStyle]="{ transform: 'translate(' + dropdown[1].position?.[0] + 'px, ' + dropdown[1].position?.[1] +'px)' }">
+        @for (item of dropdown[1].items; track $index) {
+            @switch(item.type) {
+                @case("text") {
+                    <div class="item text">
+                        {{ locale.getLocale(item.label) }}
+                    </div>
+                }
+                @case("line") {
+                    <div class="line"></div>
+                }
+                @case("calendar") {
+                    <div class="calendar">
+                        <div class="calendar-header">
+                            <div class="icon" (click)="item.selectedMonth.subtract(1, 'month')">
+                                <i-tabler name="chevron-left"></i-tabler>
+                            </div>
+                            <div class="month">
+                                {{ item.selectedMonth.format('MMMM') + ', ' + item.selectedMonth.year() }}
+                            </div>
+                            <div class="icon" (click)="item.selectedMonth.add(1, 'month')">
+                                <i-tabler name="chevron-right"></i-tabler>
+                            </div>
+                        </div>
+                        <div class="calendar-body">
+                            <div class="calendar-days">
+                                @for (_ of [].constructor(7); track $index) {
+                                    <div class="calendar-day">
+                                        {{ item.selectedMonth.clone().set('d', $index + 1).format('ddd') }}
+                                    </div>
+                                }
+                            </div>
+                            <div class="calendar-row">
+                                @for (day of getCalendar(item.selectedMonth); track $index) {
+                                    <div [ngClass]="{'calendar-day': true, active: day.date.startOf('day').isSame(item.date.getValue().startOf('day'))}" (click)="item.date.next(day.date);dropdown[1].isOpen = false">
+                                        <span [ngClass]="{'calendar-gray': day.gray}">
+                                            {{ day.date.date() }}
+                                        </span>
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                }
+                @case("function") {
+                    <div [ngClass]="{'dropdown-item': true, item: true, active: item.isActive}" (click)="clickEvent(dropdown[0], $index)">
+                        <span>{{ locale.getLocale(item.label) }}</span>
+                        @if (item.rightText) {
+                            <div [innerHTML]="formatRightText(item.rightText)"></div>
+                        }
+                    </div>
+                }
+                @case("toggle") {
+                    <div [ngClass]="{'dropdown-item': true, item: true, active: item.isActive}" (click)="clickEvent(dropdown[0], $index)">
+                        <span>{{ locale.getLocale(item.label) }}</span>
+                        <div [ngClass]="{checkmark: true, draw: true, active: item.value.getValue()}"></div>
+                    </div>
+                }
+                @case("custom") {
+                    <div [innerHTML]="formatHtmlText(item.html)"></div>
+                }
+                @default {
+                    Item: {{ item }} - not defined in Components/Dropdowns/Dropdown.html
+                }
+            }
+        }
+
+    </div>
+}

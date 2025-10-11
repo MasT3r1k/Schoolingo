@@ -1,1 +1,146 @@
-<p>devices works!</p>
+<div class="card">
+    <div class="card-top"></div>
+    <div class="card-header">
+        <h2>{{ schoolingo.locale.getLocale('sidebar/user/devices') }}</h2>
+    </div>
+    <div class="card-body">
+        <p>Zde naleznete veškeré Vaše připojené zařízení, které jsou připojené k Vašemu Schoolingo účtu. Můžete zde odhlásit kterékoliv zařízení nebo všechny.</p>
+        <p>Pokud tu naleznete zařízení, které nepoznáváte. Odhlašte to zařízení a <a [routerLink]="['', 'user', 'settings']" [queryParams]="{ page: 'changepassword' }">změňte si heslo</a>!</p>
+        <h2 class="small mt">{{ schoolingo.locale.getLocale('devices/thisDevice') }}</h2>
+        <div class="select select-column">
+            <div class="select-option only-value">
+                <div class="icon">
+                    @if (Utils.getMobile(Utils.getOwnUserAgent())) {
+                        <i-tabler name="device-mobile"></i-tabler>
+                    } @else {
+                        <i-tabler name="device-desktop"></i-tabler>
+                    }
+                </div>
+
+                <div class="information">
+                    <div class="device">
+                        {{ Utils.getOS(Utils.getOwnUserAgent()).toUpperCase() + ' - ' + Utils.getBrowser(Utils.getOwnUserAgent()).toUpperCase() }}
+                        <div class="badges">
+                            @if (schoolingo.getOfflineMode()) {
+                                <div class="badge">Offline Mod</div>
+                            }
+                        </div>
+                    </div>
+                    @if (!schoolingo.getOfflineMode() && !schoolingo.isLoginExpired && schoolingo.userService.getExpiration() && getActiveDevice()) {
+                        <div class="time flex align-items-center">
+                            {{ schoolingo.locale.getLocale('devices/until')
+                            + schoolingo.userService.getExpiration().format('HH:mm:ss DD.MM.YYYY')
+                             + (schoolingo.ipManager.getIPInfo(schoolingo.ipManager.getMyIP())?.status ? (' | IP: ' + Utils.getFlagFromCountry(schoolingo.ipManager.getIPInfo(schoolingo.ipManager.getMyIP())!.country)) : '')
+                            }}
+                            @if (!getActiveDevice().ipShow) {
+                                <span class="ip blur">
+                                    {{ Utils.blurIPAddress(schoolingo.ipManager.getMyIP()) }}
+                                </span>
+                            } @else {
+                                <span class="ip">
+                                    {{ schoolingo.ipManager.getMyIP() }}
+                                </span>
+                            }
+                            <div class="btn gray" style="padding: 4px 8px;" (click)="getActiveDevice().ipShow = !getActiveDevice().ipShow">
+                                {{ schoolingo.locale.getLocale("devices/buttons/" + (getActiveDevice().ipShow ? "hideIP" : "showIP")) }}
+                            </div>
+                        </div>
+                    } @else if (schoolingo.isLoginExpired) {
+                        <div class="time">
+                            <div class="alerts">
+                                <div class="alert red" style="padding: 4px 16px;">
+                                    {{ schoolingo.locale.getLocale('devices/youAreOffline') }}
+                                </div>
+                            </div>
+                        </div>
+                    }
+                    @if (schoolingo.getOfflineMode()) {
+                        <div class="time" [innerHTML]="schoolingo.locale.getLocale('alerts/offlineMode')"></div>
+                    }
+                </div>
+
+            </div>
+        </div>
+
+        @if(!schoolingo.getOfflineMode() && !schoolingo.isLoginExpired) {
+            <h2 class="small mt">
+                {{ schoolingo.locale.getLocale('devices/anotherDevices') }}
+                @if (getAnotherDevices().length) {
+                    <div class="btn" (click)="removeAllDevices(false)">
+                        {{ schoolingo.locale.getLocale('devices/logoutAllDevices') }}
+                    </div>
+                }
+            </h2>
+            <div class="select select-column">
+                @for (device of getAnotherDevices(); track $index) {
+                    <div class="select-option only-value">
+                        <div class="icon">
+                            @if (Utils.getMobile(device.userAgent)) {
+                                <i-tabler name="device-mobile"></i-tabler>
+                            } @else {
+                                <i-tabler name="device-desktop"></i-tabler>
+                            }
+                        </div>
+        
+                        <div class="information">
+                            <div class="device">
+                                {{ Utils.getOS(device.userAgent).toUpperCase() + ' - ' + Utils.getBrowser(device.userAgent).toUpperCase() }}
+                            </div>
+                            @if (device.expires) {
+                                <div class="time flex align-items-center">
+                                    {{ schoolingo.locale.getLocale('devices/until') + Utils.makeMoment(device.expires).format('HH:mm:ss DD.MM.YYYY') + (schoolingo.ipManager.getIPInfo(device.ip)?.status ? (' | IP: ' + Utils.getFlagFromCountry(schoolingo.ipManager.getIPInfo(device.ip)!.country)) : '') }}
+                                    @if (!device.ipShow) {
+                                        <span class="ip blur">
+                                            {{ Utils.blurIPAddress(device.ip) }}
+                                        </span>
+                                    } @else {
+                                        <span class="ip">
+                                            {{ device.ip }}
+                                        </span>
+                                    }
+                                    <div class="btn gray" style="padding: 4px 8px;" (click)="device.ipShow = !device.ipShow">
+                                        {{ schoolingo.locale.getLocale("devices/buttons/" + (device.ipShow ? "hideIP" : "showIP")) }}
+                                    </div>
+                                </div>
+                            }
+                        </div>
+        
+                        <div class="logout" [attr.tooltip]="schoolingo.locale.getLocale('devices/logoutDevice')" (click)="removeDevice([device.id])">
+                            <i-tabler name="x"></i-tabler>
+                        </div>
+                    </div>
+                } @empty {
+                    <div class="alert error">
+                        {{ schoolingo.locale.getLocale('devices/notAnotherFound') }}
+                    </div>
+                }
+            </div>
+        }
+    </div>
+</div>
+
+@if (modal != null) {
+    <div class="modals" (click)="modal = null">
+        @if (modal == 'confirmLogout') {
+            <div class="modal" (click)="$event.stopPropagation()">
+                <div class="modal-close" (click)="modal = null">
+                    <i-tabler name="x"></i-tabler>
+                </div>
+                
+                <div class="modal-header">
+                    <i-tabler name="logout"></i-tabler>
+                    {{ schoolingo.locale.getLocale("devices/modals/confirmLogout/title") }}
+                </div>
+        
+                <div class="mt mb">
+                    {{ schoolingo.locale.getLocale("devices/modals/confirmLogout/text") }}
+                </div>
+
+                <div class="flex align-items-center justify-content-end mt">
+                    <div class="btn gray first-margin" (click)="modal = null">Zrušit</div>
+                    <div class="btn blue" (click)="removeAllDevices(true)">Odhlásit</div>
+                </div>
+            </div>
+        }
+    </div>
+}

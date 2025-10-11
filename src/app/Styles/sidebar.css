@@ -19,7 +19,7 @@
     margin: 0;
 }
 
-.sidebar > ul > li {
+.sidebar ul li {
     color: var(--color-darker);
     font-weight: 400;
     text-overflow: ellipsis;
@@ -28,7 +28,20 @@
 
 .sidebar > ul > li > .item {
     padding-left: 12px;
+} 
+
+.sidebar > ul > li > .item {
+    clip-path: var(--polygon);
     z-index: 99999;
+}
+
+.sidebar .item {
+    user-select: none;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    white-space: break-spaces;
 }
 
 .sidebar .item .dropdown-icon {
@@ -49,6 +62,7 @@
     padding-top: 1px;
     border-bottom-left-radius: var(--radius);
     border-bottom-right-radius: var(--radius);
+    width: calc(100% - 4px);
     overflow: hidden;
 }
 
@@ -56,6 +70,8 @@
     padding-left: 32px;
     padding-right: 8px;
     padding-bottom: 4px;
+    clip-path: var(--polygon);
+
 }
 
 .sidebar ul li.active {
@@ -96,51 +112,22 @@
 /* Unordered list */
 ul {
     list-style: none;
-    padding: 8px;
-    margin: 0;
+    padding: 0;
 }
 
 ul li {
     margin: 4px 0;
     cursor: pointer;
     position: relative;
-    color: var(--color-darker);
-    font-weight: 400;
-    text-overflow: ellipsis;
-    white-space: nowrap;
 }
 
 ul li .item {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    justify-content: space-between;
-    padding: 8px 16px;
+    padding: 8px 12px;
     transition: all .3s;
-    z-index: 99999;
-}
-
-ul li .item .item-label {
-    text-overflow: ellipsis;
-    overflow: hidden;
 }
 
 ul li .item:hover  {
     background-color: var(--background-hover);
-}
-
-ul li.danger .item {
-    color: var(--red);
-}
-
-ul li.danger .item:hover {
-    background-color: var(--danger-bg);
-}
-
-ul li .icon {
-    height: 24px;
-    width: 24px;
-    margin-right: .5rem;
 }
 
 li.active > .item,

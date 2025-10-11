@@ -1,0 +1,116 @@
+@if (!schoolingo.traineeship.selectedDay && schoolingo.userService.getUser()!.type == 'student') {
+    <div [ngClass]="{card: true, active: !schoolingo.traineeship.selectedDairy}">
+        <div class="card-top"></div>
+        <div class="card-header mb">
+            <h2>{{ schoolingo.locale.getLocale('sidebar/traineeship/diary') }}</h2>
+        </div>
+        <div class="card-body deniky-container">
+            @for (week of schoolingo.traineeship.diaryWeeks.getValue(); track $index) {
+                <div class="denik-card" (click)="selectWeek(week)">
+                    <div class="denik-header">
+                        <div class="denik-info">
+                        <span class="denik-date">
+                            {{ week.start.format('DD. MM. YYYY') }} – {{ week.end.format('DD. MM. YYYY') }}
+                        </span>
+                        <span class="denik-firma">{{ week.companyName }}</span>
+                        <span class="denik-instruktor"><b>{{ schoolingo.locale.getLocale('traineeship/instructor') }}:</b> {{ (schoolingo.formatPerson(week.instructor!) || schoolingo.locale.getLocale('traineeship/alerts/success_selected_company_no_instructor')) }}</span>
+                        </div>
+                        <div class="badges">
+                            @if (week.status == 'approved') {
+                                <div class="badge info">
+                                    <span>Schválená firma</span>
+                                </div>
+                            }
+                            @if (schoolingo.traineeship.isWeekOngoing(week)) {
+                                <div class="badge primary">
+                                    <span>Probíhající praxe</span>
+                                </div>
+                            }
+                        </div>
+                    </div>
+
+                    <div class="denik-extra">
+                        <span>
+                            <b>🏭 {{ schoolingo.locale.getLocale('city') }}:</b>
+                            {{ week.cityName }}
+                        </span>
+                        <span>
+                            <b>⏳ {{ schoolingo.locale.getLocale('traineeship/numberOfDays') }}:</b>
+                            {{ schoolingo.locale.getLocale('traineeship/numberOfDaysValue').replace('%days%', schoolingo.traineeship.getDays(week).toString()) }}
+                        </span>
+                        <span>
+                            <b>🕒 {{ schoolingo.locale.getLocale('traineeship/workingHours') }}:</b>
+                            {{ Utils.removeSecondsFromTime(week.start_working_hours) }} – {{ Utils.removeSecondsFromTime(week.end_working_hours) }}
+                        </span>
+                        <span>
+                            <b>⭐ {{ schoolingo.locale.getLocale('traineeship/averageRate') }}:</b> {{ getCompanyRating(week.rating) }}
+                        </span>
+                    </div>
+                </div>
+
+            }
+        </div>
+    </div>
+    
+    <div [ngClass]="{card: true, active: schoolingo.traineeship.selectedDairy}">
+        <div class="card-top">
+            @if (!schoolingo.traineeship.selectedDairy?.company) {
+                <alert [alert]="alerts['noCompanySelected']"></alert>
+            }
+            @if (schoolingo.traineeship.selectedDairy?.company) {
+                <div class="alerts mb">
+                    <div class="alert blue-info" style="justify-content: center;">
+                        {{
+                            schoolingo.locale.getLocale('traineeship/alerts/selectedCompany')
+                            .replaceAll('%companyName%', schoolingo.traineeship.selectedDairy?.companyName || "")
+                            .replaceAll('%instructor%', schoolingo.locale.getLocale('traineeship/alerts/' +
+                                            (schoolingo.traineeship.selectedDairy?.instructor ? 'success_selected_company_with_instructor' : 'success_selected_company_no_instructor')
+                                        )
+                                        .replaceAll('%instructorName%', schoolingo.formatPerson(schoolingo.traineeship.selectedDairy?.instructor!)))
+                        }}
+                        <div class="actions">
+                            <div class="btn submit small gray" role="button" (click)="selectInstructor()">
+                                {{ schoolingo.locale.getLocale(schoolingo.traineeship.selectedDairy?.instructor ? 'traineeship/buttons/changeInstructor' : 'traineeship/buttons/selectInstructor') }}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+            @if (alert) {
+                <div class="alerts mb">
+                    <alert [alert]="alert"></alert>
+                </div>
+            }
+        </div>
+        <div class="card-header mb">
+            @if (schoolingo.traineeship.selectedDairy) {
+                <div class="left">
+                    <h2 class="clickable" (click)="selectWeek(null)">
+                        {{ schoolingo.locale.getLocale('traineeship/diary/main') }}
+                    </h2>
+                    <p class="description">
+                        {{
+                            schoolingo.locale.getLocale('traineeship/diary/description')
+                            .replaceAll('%start%', schoolingo.traineeship.selectedDairy.start.format('DD.MM.YYYY'))
+                            .replaceAll('%end%', schoolingo.traineeship.selectedDairy.end.format('DD.MM.YYYY'))
+                        }}
+                    </p>
+                </div>
+                <div class="flex-items">
+                    <div class="btn submit small blue-info" role="button" (click)="printContract()">
+                        {{ schoolingo.locale.getLocale('traineeship/buttons/printContract') }}
+                    </div>
+                    <div class="btn submit small blue-info" role="button">
+                        {{ schoolingo.locale.getLocale('traineeship/buttons/printGuide') }}
+                    </div>
+                </div>
+            }
+        </div>
+        <div class="card-body">
+            <schoolingo-datalist (datalist)="receivedDatalist($event)" [options]="{ search: false, hideInfo: true, hidePagination: true }" [head]="['day', 'date', 'traineeship/status/main', 'marks/mark']" [data]="schoolingo.traineeship.diary"></schoolingo-datalist>
+        </div>
+    </div>
+}
+
+
+<schoolingo-traineeship-writeDairy></schoolingo-traineeship-writeDairy>

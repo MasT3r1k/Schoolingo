@@ -1,0 +1,312 @@
+<div class="mb">
+    <schoolingo-tabs [options]="['traineeship/tabs/detailCompany/main', 'traineeship/instructors', 'settings']" [option_width]="'fit'" [value]="selectedTab"></schoolingo-tabs>
+</div>
+
+<div [ngClass]="{items: true, active: selectedTab.getValue() === 0}">
+    <div class="item">
+        <div class="label">
+            {{ schoolingo.locale.getLocale('traineeship/companyName') }}
+        </div>
+        <div class="value">
+            <input type="text" name="name" [value]="schoolingo.traineeship.selectedCompany.name" readonly="true">
+        </div>
+    </div>
+    <div class="item">
+        <div class="label">
+            {{ schoolingo.locale.getLocale('traineeship/CIN') }}
+        </div>
+        <div class="value">
+            <input type="text" name="name" [value]="schoolingo.traineeship.selectedCompany.ico" [placeholder]="schoolingo.locale.getLocale('traineeship/noCIN')" readonly="true">
+        </div>
+    </div>
+    <div class="item">
+        <div class="label">
+            {{ schoolingo.locale.getLocale('traineeship/description') }}
+        </div>
+        <div class="value">
+            <input type="text" name="name" [value]="schoolingo.traineeship.selectedCompany.description" [placeholder]="schoolingo.locale.getLocale('traineeship/noDescription')" readonly="true">
+        </div>
+    </div>
+    <div class="item">
+        <div class="label">
+            {{ schoolingo.locale.getLocale('web') }}
+        </div>
+        <div class="value">
+            <div class="input-text">
+                {{ Utils.webProtocol(schoolingo.traineeship.selectedCompany.web) }}://
+            </div>
+            <input type="text" class="no-left-radius" name="web" [value]="Utils.formatWeb(schoolingo.traineeship.selectedCompany.web, true)" [placeholder]="schoolingo.locale.getLocale('traineeship/noWeb')" readonly="true">
+        </div>
+        <div class="note">
+            <span>Klikatelný odkaz: </span> 
+            <a [href]="Utils.formatWeb(schoolingo.traineeship.selectedCompany.web, false)" target="_blank">
+                {{ Utils.formatWeb(schoolingo.traineeship.selectedCompany.web, false) }}
+            </a>
+        </div>
+    </div>
+    <div class="item">
+        <div class="label">
+            {{ schoolingo.locale.getLocale('traineeship/activity') }}
+        </div>
+        <div class="value">
+            <input type="text" name="name" [value]="schoolingo.traineeship.selectedCompany.activity" [placeholder]="schoolingo.locale.getLocale('traineeship/noActivity')" readonly="true">
+        </div>
+    </div>
+    <div class="item">
+        <div class="label">
+            {{ schoolingo.locale.getLocale('traineeship/equipment') }}
+        </div>
+        <div class="value">
+            <input type="text" name="name" [value]="schoolingo.traineeship.selectedCompany.equipment" [placeholder]="schoolingo.locale.getLocale('traineeship/noEquipment')" readonly="true">
+        </div>
+    </div>
+
+    <div class="item" (click)="page = 'scopes'">
+        <div class="label">
+            {{ schoolingo.locale.getLocale('traineeship/scopes') }}
+        </div>
+        <div class="value">
+            <input type="text" class="nextPage" name="inputSelect" readonly="true" [value]="schoolingo.locale.getLocale('traineeship/clickToSelectScopes')" />
+
+            <div class="arrow-right">
+                <i-tabler name="chevron-right"></i-tabler>
+            </div>
+        </div>
+    </div>
+
+    <div class="item" (click)="page = 'responsiblePerson'">
+        <div class="label">
+            {{ schoolingo.locale.getLocale('traineeship/responsiblePerson') }}
+        </div>
+        <div class="value">
+            <input type="text" class="nextPage" name="inputSelect" readonly="true" [value]="schoolingo.traineeship.selectedCompany.rp_firstName + ' ' + schoolingo.traineeship.selectedCompany.rp_lastName" />
+            <div class="arrow-right">
+                <i-tabler name="chevron-right"></i-tabler>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div [ngClass]="{items: true, active: selectedTab.getValue() === 1}" style="min-height: 400px;">
+    <div class="item">
+        <div class="label">
+            {{ schoolingo.locale.getLocale('traineeship/instructors') }}
+        </div>
+        <div class="modal-body-external">
+            <div class="options">
+                @for(instructor of schoolingo.traineeship.instructors;track $index) {
+                    <div class="option instructor-info align-items-center">
+                        <div class="left">
+                            <div>
+                                <b>{{ schoolingo.formatPerson(instructor) }}</b>
+                            </div>
+
+                            <div class="flex align-items-center">
+                                <i-tabler name="clock-hour-4" class="first-margin"></i-tabler>
+                                <span>{{ schoolingo.locale.getLocale('traineeship/addedIn') }}: 10. 4. 98</span>
+                            </div>
+
+                            <div class="flex align-items-center">
+                                <i-tabler name="mail" class="first-margin"></i-tabler>
+                                <span>{{ "ivanovic@luptak.cz" }}</span>
+                            </div>
+
+                            <div class="flex align-items-center">
+                                <i-tabler name="phone" class="first-margin"></i-tabler>
+                                <span>{{ Utils.formatPhone("666777888") }}</span>
+                            </div>
+                        </div>
+                        <div class="right">
+                            <div class="flex">
+                                <div class="item first-margin gray">
+                                    <i-tabler name="pencil"></i-tabler>
+                                </div>
+                                <div class="item first-margin red">
+                                    <i-tabler name="trash-x-filled"></i-tabler>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+    <div class="btn submit mb" role="button" (click)="page = 'newInstructor'">
+        {{ schoolingo.locale.getLocale('traineeship/addInstructor') }}
+    </div>
+</div>
+    
+
+<div [ngClass]="{items: true, active: selectedTab.getValue() === 2}" style="min-height: 400px;">
+    <div class="item">
+        <div class="label">
+            {{ schoolingo.locale.getLocale('traineeship/statusCompany/main') }}
+        </div>
+        <div class="value">
+            <input type="text" name="name" [value]="schoolingo.locale.getLocale('traineeship/statusCompany/' + schoolingo.traineeship.selectedCompany.status)" readonly="true">
+        </div>
+    </div>
+
+    <div class="item">
+        <div class="label">
+            {{ schoolingo.locale.getLocale('traineeship/requested') }}
+        </div>
+        <div class="value">
+            <input type="text" name="name" [value]="Utils.formatDate(schoolingo.traineeship.selectedCompany.requested) || schoolingo.locale.getLocale('traineeship/notRequestedFromStudent')" readonly="true">
+        </div>
+    </div>
+    
+    <div class="item">
+        <div class="label">
+            {{ schoolingo.locale.getLocale('traineeship/created') }}
+        </div>
+        <div class="value">
+            <input type="text" name="name" [value]="Utils.formatDate(schoolingo.traineeship.selectedCompany.created)" readonly="true">
+        </div>
+    </div>
+</div>
+
+<div [ngStyle]="{position: 'absolute', top:0, left:0, transform: page == 'scopes' ? 'translateX(0%)' : 'translateX(100%)', width: '100%',height:'100%', 'max-height': '100vh', 'visibility': page == 'scopes' ? 'visible' : 'hidden', backgroundColor: 'var(--background-body)', transition: 'all .5s', zIndex: '500', padding: '2rem'}" class="modal">
+    <div class="modal-header" style="justify-content: space-between;">
+        <div>
+            <div class="btn small gray" style="display: flex;align-items: center;" (click)="page = 'main'">
+                <i-tabler name="chevron-left" style="margin-right: 4px;width: 20px;height: 20px;"></i-tabler>
+                {{ schoolingo.locale.getLocale('back') }}
+            </div>
+        </div>
+        <span>{{ schoolingo.locale.getLocale('traineeship/scopes') }}</span>
+    </div>
+    <div class="modal-body">
+        <div class="items active">
+            @for (scope of getScopes(); track $index) {
+                <div class="item">
+                    <div class="label">
+                        {{ scope.name }}
+                    </div>
+                    <div class="value">
+                        <div class="input clickable" (click)="setScopeState(scope.scopeId, !scope.state)">
+                            {{ scope.state ? '✅ '+schoolingo.locale.getLocale('traineeship/scopes_suitable') : '❌ '+schoolingo.locale.getLocale('traineeship/scopes_inappropriate') }}
+                        </div>
+                        <div class="arrow-right">
+                            <i-tabler name="click"></i-tabler>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+
+    <div class="btn" (click)="SaveScopesOfCompany()">
+        {{ schoolingo.locale.getLocale('traineeship/buttons/saveChanges') }}
+    </div>
+</div>
+
+<div [ngStyle]="{position: 'absolute', top:0, left:0, transform: page == 'responsiblePerson' ? 'translateX(0%)' : 'translateX(100%)', width: '100%',height:'100%', 'max-height': '100vh', 'visibility': page == 'responsiblePerson' ? 'visible' : 'hidden', backgroundColor: 'var(--background-body)', transition: 'all .5s', zIndex: '500', padding: '2rem'}" class="modal">
+    <div class="modal-header" style="justify-content: space-between;">
+        <div>
+            <div class="btn small gray" style="display: flex;align-items: center;" (click)="page = 'main'">
+                <i-tabler name="chevron-left" style="margin-right: 4px;width: 20px;height: 20px;"></i-tabler>
+                {{ schoolingo.locale.getLocale('back') }}
+            </div>
+        </div>
+        <span>{{ schoolingo.locale.getLocale('traineeship/responsiblePerson') }}</span>
+    </div>
+    <div class="modal-body">
+        <div class="items active">
+            <div class="item">
+                <div class="label">
+                    {{ schoolingo.locale.getLocale('firstName') }}
+                </div>
+                <div class="value">
+                    <input type="text" [(ngModel)]="rp_firstname" name="firstname" [value]="schoolingo.traineeship.selectedCompany.rp_firstName" [placeholder]="schoolingo.locale.getLocale('firstName')">
+                </div>
+            </div>
+
+            <div class="item">
+                <div class="label">
+                    {{ schoolingo.locale.getLocale('lastName') }}
+                </div>
+                <div class="value">
+                    <input type="text" [(ngModel)]="rp_lastname" name="lastname" [value]="schoolingo.traineeship.selectedCompany.rp_lastName" [placeholder]="schoolingo.locale.getLocale('lastName')">
+                </div>
+            </div>
+
+            <div class="item">
+                <div class="label">
+                    {{ schoolingo.locale.getLocale('email') }}
+                </div>
+                <div class="value">
+                    <input type="text" [(ngModel)]="rp_email"  name="email" [value]="schoolingo.traineeship.selectedCompany.email" [placeholder]="schoolingo.locale.getLocale('traineeship/noEmail')">
+                </div>
+            </div>
+            
+            <div class="item">
+                <div class="label">
+                    {{ schoolingo.locale.getLocale('phone') }}
+                </div>
+                <div class="value">
+                    <input type="text" [(ngModel)]="rp_phone"  name="phone" [value]="schoolingo.traineeship.selectedCompany.phone" [placeholder]="schoolingo.locale.getLocale('traineeship/noPhone')">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="btn" (click)="SaveRPInfo()">
+        {{ schoolingo.locale.getLocale('traineeship/buttons/saveChanges') }}
+    </div>
+</div>
+
+<div [ngStyle]="{position: 'absolute', top:0, left:0, transform: page == 'newInstructor' ? 'translateX(0%)' : 'translateX(100%)', width: '100%',height:'100%', 'max-height': '100vh', 'visibility': page == 'newInstructor' ? 'visible' : 'hidden', backgroundColor: 'var(--background-body)', transition: 'all .5s', zIndex: '500', padding: '2rem'}" class="modal">
+    <div class="modal-header" style="justify-content: space-between;">
+        <div>
+            <div class="btn small gray" style="display: flex;align-items: center;" (click)="page = 'main'">
+                <i-tabler name="chevron-left" style="margin-right: 4px;width: 20px;height: 20px;"></i-tabler>
+                {{ schoolingo.locale.getLocale('back') }}
+            </div>
+        </div>
+        <span>{{ schoolingo.locale.getLocale('traineeship/newInstructor') }}</span>
+    </div>
+    <div class="modal-body">
+        <div class="items active">
+            <div class="item">
+                <div class="label">
+                    {{ schoolingo.locale.getLocale('firstName') }}
+                </div>
+                <div class="value">
+                    <input type="text" name="firstname" [value]="" [placeholder]="schoolingo.locale.getLocale('firstName')">
+                </div>
+            </div>
+
+            <div class="item">
+                <div class="label">
+                    {{ schoolingo.locale.getLocale('lastName') }}
+                </div>
+                <div class="value">
+                    <input type="text" name="lastname" [value]="" [placeholder]="schoolingo.locale.getLocale('lastName')">
+                </div>
+            </div>
+
+            <div class="item">
+                <div class="label">
+                    {{ schoolingo.locale.getLocale('email') }}
+                </div>
+                <div class="value">
+                    <input type="text" name="email" [value]="schoolingo.traineeship.selectedCompany.email" [placeholder]="schoolingo.locale.getLocale('traineeship/noEmail')">
+                </div>
+            </div>
+            
+            <div class="item">
+                <div class="label">
+                    {{ schoolingo.locale.getLocale('phone') }}
+                </div>
+                <div class="value">
+                    <input type="text" name="phone" [value]="schoolingo.traineeship.selectedCompany.phone" [placeholder]="schoolingo.locale.getLocale('traineeship/noPhone')">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="btn blue-info">
+        {{ schoolingo.locale.getLocale('traineeship/buttons/saveChanges') }}
+    </div>
+</div>

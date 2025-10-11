@@ -1,0 +1,102 @@
+@switch (schoolingo.auth.page) {
+    @case("login") {
+        <form (submit)="schoolingo.auth.login()">
+            <input type="submit" value="" style="display: none" />
+
+            <div class="form-group">
+                <label for="username" [ngClass]="{ 'error-color': schoolingo.auth.errors['username'] != null }">
+                    {{ schoolingo.locale.getLocale('username') }}
+                    @if (schoolingo.auth.errors['username'] != null) {
+                        <span class="label-error">
+                            - {{ schoolingo.locale.getLocale(schoolingo.auth.errors['username'].text) }}
+                        </span>
+                    }
+                </label>
+                <div class="value">
+                    <input type="username" [placeholder]="schoolingo.locale.getLocale('username')" name="username" [(ngModel)]="schoolingo.auth.username" required [readOnly]="!checkURL().startsWith('/login')" />
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="password" [ngClass]="{ 'error-color': schoolingo.auth.errors['password'] != null }">
+                    {{ schoolingo.locale.getLocale('password') }}
+                    @if (schoolingo.auth.errors['password'] != null) {
+                        <span class="label-error">
+                            - {{ schoolingo.locale.getLocale(schoolingo.auth.errors['password'].text) }}
+                        </span>
+                    }
+                </label>
+                <input type="password" [placeholder]="schoolingo.locale.getLocale('password')" name="password" [(ngModel)]="schoolingo.auth.password" required />
+            </div>
+            <div class="form-group">
+                <a class="clickable" (click)="schoolingo.auth.forgotPassword()">
+                    {{ schoolingo.locale.getLocale('auth/forgotpass/button') }}
+                </a>
+            </div>
+            <div class="form-group">
+                <div class="btn" (click)="schoolingo.auth.login()" [innerHTML]="schoolingo.auth.getLoginButtonText()"></div>
+            </div>
+        </form>
+    }
+    @case("2fa") {
+        <form (submit)="schoolingo.auth.login()">
+            <input type="submit" value="" style="display: none" />
+
+            <div class="form-group">
+                <label for="username">{{ schoolingo.locale.getLocale('username') }}</label>
+                <div class="value">
+                    <input type="username" [placeholder]="schoolingo.locale.getLocale('username')" name="username" [(ngModel)]="schoolingo.auth.username" readonly />
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="token" [ngClass]="{ 'error-color': schoolingo.auth.errors['token'] != null }">
+                    {{ schoolingo.locale.getLocale('userSettings/2faToken') }}
+                    @if (schoolingo.auth.errors['token'] != null) {
+                        <span class="label-error">
+                            - {{ schoolingo.locale.getLocale(schoolingo.auth.errors['token'].text) }}
+                        </span>
+                    }
+                </label>
+                <input type="text" maxlength="6" [placeholder]="schoolingo.locale.getLocale('userSettings/2faToken')" name="token" (onchange)="schoolingo.auth.check2FA()" [(ngModel)]="schoolingo.auth.token2FA" required />
+            </div>
+
+            <div class="form-group">
+                <a class="clickable" (click)="schoolingo.auth.goBackToLogin()">
+                    {{ schoolingo.locale.getLocale('auth/2fa/goBack') }}
+                </a>
+            </div>
+
+            <div class="form-group">
+                <div class="btn" (click)="schoolingo.auth.login()">
+                    {{ schoolingo.locale.getLocale('login_btn') }}
+                </div>
+            </div>
+        </form>
+    }
+    <!-- @case ("forgot") {
+        <form (submit)="schoolingo.auth.login()">
+            <input type="submit" value="" style="display: none" />
+
+            <div class="form-group">
+                <label for="username" [ngClass]="{ 'error-color': schoolingo.auth.errors['username'] != null }">
+                    {{ schoolingo.locale.getLocale('username') }}
+                    @if (schoolingo.auth.errors['username'] != null) {
+                        <span class="label-error">
+                            - {{ schoolingo.locale.getLocale(schoolingo.auth.errors['username'].text) }}
+                        </span>
+                    }
+                </label>
+                <div class="value">
+                    <input type="username" [placeholder]="schoolingo.locale.getLocale('username')" name="username" [(ngModel)]="schoolingo.auth.username" [readOnly]="!checkURL().startsWith('/login')" required />
+                </div>
+            </div>
+
+            <div class="form-group">
+                <a class="clickable" (click)="schoolingo.auth.goPage('login')">{{ schoolingo.locale.getLocale('remembered_pass') }}</a>
+            </div>
+            <div class="form-group">
+                <div class="btn">{{ schoolingo.locale.getLocale('reset_pass') }}</div>
+            </div>
+        </form>
+    } -->
+}

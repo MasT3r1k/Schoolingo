@@ -1,0 +1,19 @@
+<div class="card">
+    <div class="card-top"></div>
+    <div class="card-header mb">
+        <h2>{{ schoolingo.locale.getLocale('sidebar/library/loans') }}</h2>
+        <div class="flex-items">
+            <schoolingo-tabs [options]="['active', 'all']" [value]="tabValue"></schoolingo-tabs>
+        </div>
+    </div>
+    <div class="card-body">
+
+        <div class="form-group search mb">
+            <input type="text" name="search" [formControl]="search" [placeholder]="schoolingo.locale.getLocale('library/searchBook')">
+            <div class="btn submit blue-info" role="button">{{ schoolingo.locale.getLocale('library/bookNow') }}</div>
+        </div>
+
+        <schoolingo-datalist (datalist)="receivedDatalist($event)" [options]="{ search: false, url: 'library:getLoans', ignore: tabValue.getValue() ? [] : ['returned', 'overdue'] }" [head]="['library/name', 'library/authors', 'library/ISBN', 'library/genre', 'library/status/main']" [data]="loans" [clickFc]="onClick" [metadata]="metadata" [search]="search"></schoolingo-datalist>
+
+    </div>
+</div>

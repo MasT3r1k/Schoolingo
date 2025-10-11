@@ -1,175 +1,143 @@
-<div class="wrapper" (click)="dropdown = ''">
-    <div class="navbar">
-        <div class="left">
-            <div class="title">
-                <div class="application APP_Logo">
-                    {{ App.APP_NAME }}
-                </div>
-                <div class="school" [title]="school.config.getValue()?.shortName">
-                    {{ school.config.getValue()?.shortName }}
-                </div>
-            </div>
-            <div class="options">
-                <div class="item-btn show-sidebar" (click)="$event.stopPropagation();sidebarToggled = !sidebarToggled">
-                    <div class="icon">
-                        <i-tabler name="menu-2"></i-tabler>
+@if (schoolingo.userService.getUser()) {
+    <div class="wrapper" (click)="$event.stopPropagation();dropdown.closeAll()">
+        <!-- Navbar -->
+        <div class="navbar">
+            <div class="left">
+                <!-- <img src="/assets/logo.webp" draggable="false" width="36" height="36" alt="" style="position: absolute;left: 4px;user-select: none;" /> -->
+                <div class="title">
+                    <div class="application APP_Logo">
+                        {{ App.APP_NAME }}
+                    </div>
+                    <div class="school" [title]="school.schoolInfo.name">
+                        {{ getSchoolName() }}
                     </div>
                 </div>
-                <!-- <div class="item-btn" [routerLink]="['', 'teach', 'classbook']" [routerLinkActive]="'active'">
-                    <div class="icon">
-                        <i-tabler name="chalkboard"></i-tabler>
+                <div class="options">
+                    <div class="item-btn show-sidebar" (click)="$event.stopPropagation();schoolingo.sidebar.sidebarToggled = !schoolingo.sidebar.sidebarToggled">
+                        <div class="icon">
+                            <i-tabler name="menu-2"></i-tabler>
+                        </div>
+                        <div class="name">
+                            {{ schoolingo.locale.getLocale('sidebar/main') }}
+                        </div>
                     </div>
-                    <div class="name">
-                        {{ l.s('sidebar/teach/classbook') }}
-                    </div>
-                </div>
 
-                <div class="item-btn" [routerLink]="['', 'marks', 'intermrecord']" [routerLinkActive]="'active'">
-                    <div class="icon">
-                        <i-tabler name="time-duration-5"></i-tabler>
-                    </div>
-                    <div class="name">
-                        {{ l.s('sidebar/marks/intermRecord') }}
-                    </div>
-                </div> -->
-            </div>
-        </div>
-        <div class="right">
-            <div class="options">
-                <div class="item-btn" (click)="$event.stopPropagation();dropdown = (dropdown == 'add') ? '' : 'add'">
-                    <div class="icon">
-                        <i-tabler name="plus"></i-tabler>
-                    </div>
-                    <div class="dropdown" style="min-width: 225px;" [hidden]="dropdown !== 'add'" (click)="$event.stopPropagation()">
-                        <ul>
-                            @for (item of addDropdown; track $index) {
-                                <li [routerLink]="item.url" [ngClass]="[item.type ? item.type : '']" (click)="dropdown = '';item?.action()" [routerLinkActive]="'active'">
-                                    <div class="item">
-                                        <div class="row">
-                                            @if (item.icon) {
-                                                <div class="icon">
-                                                    <i-tabler [name]="item.icon"></i-tabler>
-                                                </div>
-                                            }
-                                            <div class="item-label">
-                                                {{ l.s(item.item) }}
-                                            </div>
-                                        </div>
-                                    </div>
-                                </li>
-                            }
-                        </ul>
-                    </div>
-                </div>
-
-                @if (u.getUser().children.length) {
-                <div class="item-btn" (click)="$event.stopPropagation();dropdown = (dropdown == 'child') ? '' : 'child'">
-                    <div class="icon">
-                        <i-tabler name="users"></i-tabler>
-                    </div>
-                    <div class="dropdown" style="min-width: 225px;" [hidden]="dropdown !== 'child'" (click)="$event.stopPropagation()">
-                        <label style="user-select: none;padding: .75rem 1rem .25rem;margin: 0;">
-                            {{ l.s('dropdown.child.label') }}
-                        </label>
-                        <ul>
-                            @for (item of u.getUser().children; track $index) {
-                                <li (click)="dropdown = '';u.selectedChild.next($index)">
-                                    <div class="item">
-                                        <div class="row">
-                                            <div class="icon">
-                                                @if (item.gender === 0) {
-                                                    <i-tabler style="color: #90D5FF;" name="gender-male"></i-tabler>
-                                                } @else if (item.gender == 1) {
-                                                    <i-tabler style="color: #FFC0CB;" name="gender-female"></i-tabler>
-                                                }
-                                            </div>
-                                            <div class="item-label">
-                                                {{ item.firstName + ' ' + item.lastName }}
-                                            </div>
-                                        </div>
-                                        @if (u.selectedChild.getValue() == $index) {
-                                            <i-tabler name="check" style="margin-left:.5rem;color: var(--primary)"></i-tabler>
-                                        }
-                                    </div>
-                                </li>
-                            } @empty {
-                                <li class="danger disabled">
-                                    <div class="item">
-                                        <div class="row">
-                                            <div class="icon">
-                                                <i-tabler name="x"></i-tabler>
-                                            </div>
-                                            <div class="item-label">
-                                                {{ l.s("dropdown.child.empty") }}
-                                            </div>
-                                        </div>
-                                    </div>
-                                </li>
-                            }
-                        </ul>
-                    </div>
-                </div>
-                }
-
-            </div>
-            <div class="user" (click)="$event.stopPropagation();dropdown = (dropdown == 'user') ? '' : 'user'">
-                <div class="avatar golden center">
-                    <div class="hexagon">
-                        <img [src]="u.getAvatar()" alt="Avatar">
-                    </div>
-                    <div class="level">
-                        {{ u.getUser().level }}
-                    </div>
-                </div>
-
-                <div class="xp-bar">
-                    <div class="progress" [ngStyle]="{width: (u.getUser().xp / u.getUser().requiredXP * 100) + '%'}"></div>
-                </div>
-
-                <div class="info">
-                    <p class="name">
-                        {{ u.getUser().fullName }}
-                    </p>
-                    <p class="role">
-                        {{ u.getRole() }}
-                    </p>
-                </div>
-
-                <div class="dropdown" [hidden]="dropdown !== 'user'" (click)="$event.stopPropagation()">
-                    <ul>
-                        @for (item of userDropdown; track $index) {
-                            <li [routerLink]="item.url" [ngClass]="[item.type ? item.type : '']" (click)="dropdown='';item?.action();" [routerLinkActive]="'active'">
-                                <div class="item">
-                                        <div class="row">
-                                            @if (item.icon) {
-                                                <div class="icon">
-                                                    <i-tabler [name]="item.icon"></i-tabler>
-                                                </div>
-                                            }
-                                            <div class="item-label">
-                                                {{ l.s(item.item) }}
-                                            </div>
-                                        </div>
+                        @if (perms.checkPermission(["teacher"])) {
+                            <div class="item-btn" [routerLink]="['', 'teach', 'classbook']" [routerLinkActive]="'active'">
+                                <div class="icon">
+                                    <i-tabler name="chalkboard"></i-tabler>
                                 </div>
-                            </li>
+                                <div class="name">
+                                    {{ schoolingo.locale.getLocale('sidebar/teach/classbook') }}
+                                </div>
+                            </div>
+
+                            <div class="item-btn" [routerLink]="['', 'marks', 'intermrecord']" [routerLinkActive]="'active'">
+                                <div class="icon">
+                                    <i-tabler name="time-duration-5"></i-tabler>
+                                </div>
+                                <div class="name">
+                                    {{ schoolingo.locale.getLocale('sidebar/marks/intermRecord') }}
+                                </div>
+                            </div>
                         }
-                    </ul>
+                </div>
+            </div>
+    
+            <div class="right">
+                <div class="options">
+    
+                    <!-- <div class="item-btn" [routerLink]="['', 'discordconnect']" [routerLinkActive]="'active'">
+                        <div class="icon">
+                            <i-tabler name="brand-discord"></i-tabler>
+                        </div>
+                        <div class="name">
+                            {{ schoolingo.locale.getLocale('dropdowns/discord/main') }}
+                        </div>
+                    </div> -->
+    
+                    <div class="item-btn">
+                        <div class="icon">
+                            <i-tabler name="plus"></i-tabler>
+                        </div>
+                        <div class="name">
+                            {{ schoolingo.locale.getLocale('dropdowns/addItem/button') }}
+                        </div>
+                    </div>
+
+                    <div class="item-btn" [routerLink]="['', 'user', 'settings']" [routerLinkActive]="'active'">
+                        <div class="icon">
+                            <i-tabler name="settings"></i-tabler>
+                        </div>
+                        <div class="name">
+                            {{ schoolingo.locale.getLocale('settings') }}
+                        </div>
+                    </div>
+    
+                    @if (schoolingo.userService.getUser()?.type == 'parent') {
+                        <div class="item-btn" (click)="schoolingo.childrenSwitchModal.open()">
+                            <div class="icon">
+                                <i-tabler name="users"></i-tabler>
+                            </div>
+                            <div class="name">
+                                {{ schoolingo.locale.getLocale('dropdowns/switchChildren/title') }}
+                            </div>
+                        </div>
+                    }
+                </div>
+    
+                <div class="user" [routerLink]="['', 'user', 'profile']">
+                    @if (App.ALLOW_AVATARS) {
+
+                        <div class="avatar golden center">
+                            <div class="hexagon">
+                                <img [src]="schoolingo.avatar.getAvatar()" alt="Avatar">
+                            </div>
+
+                            @if (App.ALLOW_LEVEL_SYSTEM) {
+                                <div class="level">
+                                    {{ schoolingo.level.getLevel() }}                            
+                                </div>
+                            }
+                        </div>
+                    }
+                    @if (App.ALLOW_LEVEL_SYSTEM) {
+                        <div class="xp-bar">
+                            <div class="progress" [ngStyle]="{width: schoolingo.level.getProgress() + '%'}"></div>
+                        </div>
+                    }
+
+                    @if (schoolingo.userService.getUser()) {
+                        <div class="info">
+                            <p class="name">
+                                {{ schoolingo.formatPerson(schoolingo.userService.getUser()?.person?.personId) }}
+                            </p>
+                            <p class="role">
+                                {{ schoolingo.getUserRole() }}
+                            </p>
+                        </div>
+                    }
+                </div>
+                
+                <div class="btn red logout" (click)="schoolingo.userService.logout(true)">
+                    <i-tabler name="logout"></i-tabler>
+                    {{ schoolingo.locale.getLocale('logout') }}
                 </div>
             </div>
         </div>
-    </div>
-    <div class="content">
-        <div [ngClass]="{sidebar: true, active: sidebarToggled}">
-            @for (section of sidebar.data; track $index) {
+    
+        <div class="content">
+            <div [ngClass]="{sidebar: true, active: schoolingo.sidebar.sidebarToggled}">
+                @for (section of schoolingo.sidebar.data; track $index) {
                     <ul>
                         @for (item of section.items; track $index) {
-                            <li [routerLink]="item.url" (click)="item.url ? sidebar.sidebarToggled = false : {}"  [routerLinkActive]="'active'" [ngClass]="{ opened: item.children && item.children.length > 0 && sidebar.isToggled($index) }" (click)="sidebar.toggleDropdown($index)">
+                            <li [routerLink]="item.url" (click)="item.url ? schoolingo.sidebar.sidebarToggled = false : {}"  [routerLinkActive]="'active'" [ngClass]="{ opened: item.children && item.children.length > 0 && schoolingo.sidebar.isToggled($index) }" (click)="schoolingo.sidebar.toggleDropdown($index)">
                                 <div class="item">
                                     <div class="item-label">
-                                        {{ l.s(item.item) }}
+                                        {{ schoolingo.locale.getLocale(item.item) }}
                                     </div>
                                     @if (item.children && item.children.length > 0) {
-                                        <div class="dropdown-icon" [ngStyle]="{ transform: sidebar.toggledDropdowns.includes($index) ? 'rotate(180deg)' : '' }">
+                                        <div class="dropdown-icon" [ngStyle]="{ transform: schoolingo.sidebar.toggledDropdowns.includes($index) ? 'rotate(180deg)' : '' }">
                                             <svg xmlns="http://www.w3.org/2000/svg" height="16" width="14" viewBox="0 0 448 512">
                                                 <path fill="currentColor" d="M201.4 342.6c12.5 12.5 32.8 12.5 45.3 0l160-160c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L224 274.7 86.6 137.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l160 160z"/>
                                             </svg>
@@ -177,19 +145,19 @@
                                     }
                                 </div>
                                 @if (item.children && item.children.length > 0) {
-                                    <div class="dropdown-child" [ngStyle]="{height: sidebar.isToggled($index) ? 'auto' : '0px'}" (click)="$event.stopPropagation()">
+                                    <div class="dropdown-child" [ngStyle]="{height: schoolingo.sidebar.isToggled($index) ? 'auto' : '0px'}" (click)="$event.stopPropagation()">
                                         <ul>
                                             @for (child of item.children; track $index) {
-                                                <li (click)="sidebar.sidebarToggled = false" [routerLink]="child.url" [routerLinkActive]="'active'" [routerLinkActiveOptions]="{ exact: true }">
+                                                <li (click)="schoolingo.sidebar.sidebarToggled = false" [routerLink]="child.url" [routerLinkActive]="'active'">
                                                     <div class="item">
                                                         <div class="item-label">
-                                                            {{ l.s(child.item) }}
+                                                            {{ schoolingo.locale.getLocale(child.item) }}
                                                         </div>
-                                                        <!-- @if (getSidebarBadge(child) != "") {
-                                                            <div class="badge blue-info">
+                                                        @if (getSidebarBadge(child) != "") {
+                                                            <div class="badge alert blue-info">
                                                                 {{ getSidebarBadge(child) }}
                                                             </div>
-                                                        } -->
+                                                        }
                                                     </div>
                                                 </li>
                                             }
@@ -200,9 +168,119 @@
                         }
                     </ul>
                 }
-        </div>
-        <div class="main-content" (click)="sidebarToggled = false;">
-            <router-outlet></router-outlet>
+            </div>
+            <div class="main-content" (click)="schoolingo.sidebar.sidebarToggled = false;">
+                @if (pageLoading) {
+                    @if (pageLoadingAlert) {
+                        <alert [alert]="pageLoadingAlert"></alert>
+                    }
+
+                    <div style="display: flex;height:100%">
+                        <div class="loading" style="height: auto">
+                            <svg width="200" height="300" viewBox="0 0 40 60">
+                                <polygon
+                                class="triangle"
+                                fill="none"
+                                points="16,1 32,32 1,32"
+                                [attr.stroke]="(schoolingo.theme.getThemeColor() == 'dark') ? '#fff' : '#000'"
+                                stroke-width="1"
+                                ></polygon>
+                            </svg>
+                        </div>
+                    </div>
+                }
+
+                @if (schoolingo.hasAccessToPage) {
+                    <div [ngStyle]="{padding: '2rem', display: pageLoading ? 'none' : 'block'}">
+                        <router-outlet></router-outlet>
+                    </div>
+                } @else {
+                    <div class="alerts">
+                        <div class="alert error">
+                            <div class="text">
+                                {{ schoolingo.locale.getLocale('alerts/noAccess') }}
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
         </div>
     </div>
-</div>
+<!--     
+    @if(schoolingo.modal !== '') {
+        <div class="modals" (click)="schoolingo.modal = ''">
+            @switch (schoolingo.modal) {
+                @case ("main:switchChildren") {
+                    @if (schoolingo.userService.getUser()?.type == "parent") {
+                        <div class="modal" style="width: 500px;" (click)="$event.stopPropagation()">
+                            <div class="modal-close" (click)="schoolingo.modal = ''">
+                                <i class="ti ti-x"></i>
+                            </div>
+                            <div class="modal-header">
+                                <i class="ti ti-users"></i>
+                                {{ schoolingo.locale.getLocale('dropdowns/switchChildren/title') }}
+                            </div>
+                            <div class="modal-center">
+                                <div class="modal-body scroll">
+                                    @for (child of schoolingo.userService.children; track $index) {
+                                        <div [ngClass]="{child: true, active: schoolingo.userService.selectedChild == $index}">
+                                            <div class="left">
+                                                <div class="child-name">{{ child.firstName + ' ' + child.lastName  }}</div>
+                                                <div class="child-info">{{ child.class }}</div>
+                                            </div>
+                                            <div class="right">
+                                                @if (schoolingo.userService.selectedChild !== $index) {
+                                                    <div class="btn" (click)="schoolingo.userService.selectedChild = $index">{{ schoolingo.locale.getLocale('buttons/switch') }}</div>
+                                                } 
+                                            </div>
+                                        </div>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                    }
+                }
+    
+                @case ("library:showBook") {
+                        <div class="modal" style="width: 500px;" (click)="$event.stopPropagation()">
+                            <div class="modal-close" (click)="schoolingo.modal = ''">
+                                <i class="ti ti-x"></i>
+                            </div>
+                            <div class="modal-header">
+                                <i class="ti ti-book"></i>
+                                {{ schoolingo.locale.getLocale('library/dropdown/showBook/title') }}
+                            </div>
+                            <div class="modal-center">
+                                <div class="form-group">
+    
+                                </div>
+                            </div>
+                        </div>
+                }
+    
+            }
+        </div>
+    } -->
+    
+    <schoolingo-dropdowns></schoolingo-dropdowns>
+    <schoolingo-modals></schoolingo-modals>
+} @else {
+    <div class="loading">
+        <svg width="200" height="300" viewBox="0 0 40 60">
+            <polygon
+            class="triangle"
+            fill="none"
+            points="16,1 32,32 1,32"
+            [attr.stroke]="(schoolingo.theme.getThemeColor() == 'dark') ? '#fff' : '#000'"
+            stroke-width="1"
+            ></polygon>
+        </svg>
+    </div>
+    <div class="alerts bottom">
+        <div class="alert">
+            <div class="text">
+                {{ "Probíhá načítání dat uživatele" }}
+            </div>
+        </div>
+    </div>
+}

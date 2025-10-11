@@ -1,0 +1,295 @@
+<div class="card">
+    <div class="card-top"></div>
+    <div class="card-header mb">
+        <h2>{{ schoolingo.locale.getLocale('sidebar/teach/classbook') }}</h2>
+        <div class="flex-items">
+            <div [ngClass]="{button: true, active: dropdown.isOpen(calendarCalendarName)}" [attr.dropdown]="calendarCalendarName" (click)="$event.stopPropagation();dropdown.toggle(calendarCalendarName)">
+                <i-tabler name="calendar-month"></i-tabler>
+                {{ schoolingo.classbook.selectedDate.getValue().format('DD. MM. YYYY') }}
+            </div>
+        </div>
+    </div>
+    @if (checkDay()) {
+        <div class="card-body card-row">
+            <div class="left hours">
+                @for (hour of schoolingo.getTimetableHours(); track hourIndex;let hourIndex = $index) {
+                    @for (lesson of schoolingo.getTimetableLessons()[schoolingo.classbook.selectedDate.getValue().isoWeekday() - 1][hourIndex]; track $index) {
+                        <div [ngClass]="{hour: true, active: schoolingo.classbook.selectedHour.getValue() == hourIndex}" (click)="schoolingo.classbook.selectedHour.next(hourIndex)">
+                            <div class="hour-index center">
+                                {{ hourIndex + 1 }}
+                            </div>
+                            <div class="hour-info">
+                                <div class="hour-lesson">
+                                    {{ (lesson.empty) ? schoolingo.locale.getLocale('timetable/freetime') : lesson.subjectName }}
+                                </div>
+                                <div class="hour-time">
+                                    <span>
+                                        {{ schoolingo.getTimetableHours()[hourIndex].start + ' - ' + schoolingo.getTimetableHours()[hourIndex].end }}
+                                    </span>
+                                    @if (!lesson.empty) {
+                                        | <span>
+                                            {{ lesson.className }}
+                                        </span>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                    }
+                }
+            </div>
+
+            <div class="right">
+                @if (schoolingo.classbook.selectedHour.getValue() == null) {
+                    <div class="help">
+                        <div class="help-title">
+                            {{ schoolingo.locale.getLocale('sidebar/teach/classbook') }}
+                        </div>
+                        <div class="help-content">
+                            <p>
+Nyní čtete okno "Detail hodiny" a vlevo od tohoto okna se nachází dnešní hodiny. Kliknutím na hodinu v tom okně, se změní obsah tohoto okna. Vpravo nahoře se nachází kalendář, kde můžete vybrat jiný den.
+
+Nezapsané hodiny jsou zvýrazněny světlejším pozadím než zapsané hodiny. Pokud chcete zapsat hodinu, klikněte na ni v levém okně.
+                            </p>
+                        </div>
+                    </div>
+                } @else if (schoolingo.getTimetableLessons()[schoolingo.classbook.selectedDate.getValue().isoWeekday() - 1][schoolingo.classbook.selectedHour.getValue()!][0].empty) {
+                    <alert [alert]="alerts['emptyLesson']"></alert>
+                } @else {
+
+                    <div style="display: flex;justify-content: flex-end;">
+                        <schoolingo-tabs [options]="['classbook/lessonNotation', 'classbook/attendance', 'sidebar/teach/homeworks', 'classbook/notes']" [value]="schoolingo.classbook.selectedTab"></schoolingo-tabs>
+                    </div>
+                    @switch(schoolingo.classbook.selectedTab.getValue()) {
+                        @case (0) {
+                            <div class="header mb mt">
+                                <div style="font-size: 20px;font-weight: bold;">
+                                    {{ schoolingo.getTimetableLessons()[schoolingo.classbook.selectedDate.getValue().isoWeekday() - 1][schoolingo.classbook.selectedHour.getValue()!][0].subjectName }}
+                                </div>
+                                <div>
+                                    {{ schoolingo.getTimetableHours()[schoolingo.classbook.selectedHour.getValue()!].start + ' - ' + schoolingo.getTimetableHours()[schoolingo.classbook.selectedHour.getValue()!].end }}
+                                </div>
+                                <div>
+                                    {{ schoolingo.getTimetableLessons()[schoolingo.classbook.selectedDate.getValue().isoWeekday() - 1][schoolingo.classbook.selectedHour.getValue()!][0].className }}
+                                </div>
+                            </div>
+
+                            <div class="items">
+                                <div class="item">
+                                    <label for="lessonNumber">
+                                        {{ schoolingo.locale.getLocale('classbook/writeLesson/number') }}
+                                    </label>
+                                    <div class="value">
+                                        <input type="text" name="lessonNumber" class="disabled" [value]="lesson.lessonNumber" readonly>
+                                    </div>
+                                </div>
+
+                                <div class="item">
+                                    <label for="lessonTopic" [ngClass]="{ 'error-color': alerts['lessonTopic'] != null }">
+                                        {{ schoolingo.locale.getLocale('classbook/writeLesson/topic') }}
+                                        @if (alerts['lessonTopic'] != null) {
+                                            <span class="label-error">
+                                                - {{ schoolingo.locale.getLocale(alerts['lessonTopic'].text) }}
+                                            </span>
+                                        }
+                                    </label>
+                                    <div class="value">
+                                        <input type="text" name="lessonTopic" [(ngModel)]="lessonTopic" [placeholder]="schoolingo.locale.getLocale('classbook/writeLesson/topic')">
+                                    </div>
+                                </div>
+                                
+                                <div class="item">
+                                    <label for="lessonNote" [ngClass]="{ 'error-color': alerts['lessonNote'] != null }">
+                                        {{ schoolingo.locale.getLocale('classbook/writeLesson/note') }}
+                                        @if (alerts['lessonNote'] != null) {
+                                            <span class="label-error">
+                                                - {{ schoolingo.locale.getLocale(alerts['lessonNote'].text) }}
+                                            </span>
+                                        }
+                                    </label>
+                                    <div class="value">
+                                        <input type="text" name="lessonNote" [(ngModel)]="lessonNote" [placeholder]="schoolingo.locale.getLocale('classbook/writeLesson/note')">
+                                    </div>
+                                </div>
+                                <div class="item">
+                                    <label for="lessonInternalNote" [ngClass]="{ 'error-color': alerts['lessonInternalNote'] != null }">
+                                        {{ schoolingo.locale.getLocale('classbook/writeLesson/internalNote') }}
+                                        @if (alerts['lessonInternalNote'] != null) {
+                                            <span class="label-error">
+                                                - {{ schoolingo.locale.getLocale(alerts['lessonInternalNote'].text) }}
+                                            </span>
+                                        }
+                                    </label>
+                                    <div class="value">
+                                        <input type="text" name="lessonInternalNote" [(ngModel)]="lessonInternalNote" [placeholder]="schoolingo.locale.getLocale('classbook/writeLesson/internalNote')">
+                                    </div>
+                                </div>
+                                <div class="item">
+                                    <div class="btn">
+                                        {{ schoolingo.locale.getLocale('classbook/writeLesson/button') }}
+                                    </div>
+                                </div>
+                            </div>
+
+                            @if (lesson.lessonNumber == 1) {
+                                <alert [alert]="alerts['firstLesson']" class="mt"></alert>
+                            } @else {
+                                <div class="lastLessons">
+                                    <h2 class="mb">
+                                        {{ schoolingo.locale.getLocale('classbook/writeLesson/lastLesson') }}
+                                    </h2>
+                                    @for (previousLesson of lastLesson;track $index) {
+                                        <div class="lastLesson">
+                                            @if (previousLesson.cbId == -1) {
+                                                <alert [alert]="alerts.notWrittenLesson" class="mb"></alert>
+                                            }
+                                            <h2 class="mb">
+                                                {{
+                                                schoolingo.locale.getLocale('classbook/lastLesson/title')
+                                                .replaceAll('%date%', Utils.makeMoment(previousLesson.date).format('DD. MM. YYYY'))
+                                                .replaceAll('%day%', Utils.makeMoment(previousLesson.date).format('dddd'))
+                                                .replaceAll('%hour%', (previousLesson.dayHour).toString())
+                                                .replaceAll('%start%', schoolingo.getTimetableHours()[previousLesson.dayHour - 1].start)
+                                                .replaceAll('%end%', schoolingo.getTimetableHours()[previousLesson.dayHour - 1].end)
+                                                }}
+                                            </h2>
+    
+                                            <div class="item mb">
+                                                <label for="lessonNumber">
+                                                    {{ schoolingo.locale.getLocale('classbook/writeLesson/number') }}
+                                                </label>
+                                                <div class="value">
+                                                    {{ previousLesson.number || schoolingo.locale.getLocale('classbook/noNumber') }}
+                                                </div>
+                                            </div>
+    
+                                            <div class="item mb">
+                                                <label for="lessonTopic">
+                                                    {{ schoolingo.locale.getLocale('classbook/writeLesson/topic') }}
+                                                </label>
+                                                <div class="value">
+                                                    {{ previousLesson.topic || schoolingo.locale.getLocale('classbook/noTopic') }}
+                                                </div>
+                                            </div>
+        
+                                            <div class="item mb">
+                                                <label for="lessonNote">
+                                                    {{ schoolingo.locale.getLocale('classbook/writeLesson/note') }}
+                                                </label>
+                                                <div class="value">
+                                                    {{ previousLesson.note || schoolingo.locale.getLocale('classbook/noNote') }}
+                                                </div>
+                                            </div>
+        
+                                            <div class="item mb">
+                                                <label for="lessonInternalNote">
+                                                    {{ schoolingo.locale.getLocale('classbook/writeLesson/internalNote') }}
+                                                </label>
+                                                <div class="value">
+                                                    {{ previousLesson.internalNote || schoolingo.locale.getLocale('classbook/noInternalNote') }}
+                                                </div>
+                                            </div>
+    
+                                            <div class="item mb">
+                                                <label for="absence">
+                                                    {{ schoolingo.locale.getLocale('sidebar/absence') }}
+                                                </label>
+                                                <div class="value">
+                                                    {{ previousLesson.absence ? previousLesson.absence : schoolingo.locale.getLocale('classbook/lastLesson/noAbsence') }}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    }
+                                </div>
+                            }
+                        }
+
+                        @case (1) {
+                            <p>
+                                {{ schoolingo.locale.getLocale('total') }}:
+                                {{ schoolingo.classbook.students.length }}
+                            </p>
+                            <p>
+                                {{ schoolingo.locale.getLocale('classbook/absence/atSchool') }}:
+                                {{ schoolingo.classbook.students.length - getMissingStudents() }}
+                            </p>
+                            <p>
+                                {{ schoolingo.locale.getLocale('classbook/absence/missing') }}:
+                                {{ getMissingStudents() }}
+                            </p>
+
+                            <hr>
+
+                            <div style="height:50px">
+                                @if (alerts["absence"]) {
+                                    <alert [alert]="alerts['absence']" class="mt"></alert>
+                                }
+                            </div>
+
+                            <div class="absence-selector mt mb-2">
+                                @if (schoolingo.classbook.selectedHour.getValue()! > 0) {
+                                    <div class="item-btn text">
+                                        <div class="text">
+                                            {{ schoolingo.locale.getLocale('absence/copyFromLastLesson') }}
+                                        </div>
+                                    </div>
+                                }
+                                @for (absence of getAbsenceList();track $index) {
+                                    <div
+                                    [ngClass]="['item', 'absence', 'ab-' + absence.locale, (schoolingo.classbook.selectedAbsence.getValue() == this.schoolingo.absenceConfig.indexOf(absence)) ? 'active' : '']"
+                                    [attr.tooltip]="schoolingo.locale.getLocale('absence/' + absence.locale)"
+                                    (click)="schoolingo.classbook.selectedAbsence.next(this.schoolingo.absenceConfig.indexOf(absence))">
+                                        @if(absence.icon) {
+                                            <i-tabler [name]="absence.icon"></i-tabler>
+                                        } @else {
+                                            {{ schoolingo.locale.getLocale('absence/' + absence.locale).charAt(0).toUpperCase() }}
+                                        }
+                                    </div>
+                                }
+
+                                <!-- Remove absence -->
+                                <div
+                                [ngClass]="{item: true, absence: true, trash: true, active: schoolingo.classbook.selectedAbsence.getValue() === -1}"
+                                [attr.tooltip]="schoolingo.locale.getLocale('absence/trash')"
+                                (click)="schoolingo.classbook.selectedAbsence.next(-1)">
+                                    <i-tabler style="width: 24px;height: 24px;" name="trash-x-filled"></i-tabler>
+                                </div>
+                            </div>
+
+                            <div class="students">
+                                @for (student of schoolingo.classbook.students; track $index) {
+                                    <div class="absence-student">
+                                        <div class="name">
+                                            <b>{{ ($index + 1) + '. ' }}</b>
+                                            {{ schoolingo.formatPerson(student) }}
+                                        </div>
+
+                                        <div class="hours">
+                                            @for (_ of [].constructor(lesson.maxHours.maxHours || 0);track $index) {
+                                                <div
+                                                [ngClass]="{hour: true, active: schoolingo.classbook.selectedHour.getValue() === $index}"
+                                                [attr.lessonCount]="$index + 1"
+                                                (click)="(schoolingo.classbook.selectedHour.getValue() === $index) ? applyAbsence(student.personId) : ''"
+                                                >
+                                                    @if(getAbsence(student.personId, $index) !== -1) {
+                                                        <div
+                                                        [ngClass]="['item', 'absence', 'ab-' + schoolingo.absenceConfig[getAbsence(student.personId, $index)].locale]">
+                                                            @if (schoolingo.absenceConfig[getAbsence(student.personId, $index)].icon) {
+                                                                <i-tabler [name]="schoolingo.absenceConfig[getAbsence(student.personId, $index)].icon!"></i-tabler>
+                                                            }
+                                                        </div>
+                                                    }
+                                                </div>
+                                            }
+                                        </div>
+                                    </div>
+                                }
+                            </div>
+                        }
+                    }
+                }
+            </div>
+        </div>
+    } @else {
+        <alert [alert]="alerts.noLessons"></alert>
+    }
+</div>

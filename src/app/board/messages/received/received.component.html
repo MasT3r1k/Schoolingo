@@ -1,1 +1,213 @@
-<p>received works!</p>
+<div class="card">
+    <div class="card-top"></div>
+    <div class="card-header mb">
+        <h2>{{ schoolingo.locale.getLocale('sidebar/messages/received') }}</h2>
+        <div class="flex-items">
+            <div class="item-btn text">
+                <div class="text">
+                    <i-tabler name="filter"></i-tabler>
+                    {{ schoolingo.locale.getLocale('filter') }}
+                </div>
+            </div>
+
+            <schoolingo-tabs [options]="['time/week', 'time/month', 'time/schoolYear', 'time/older']" [value]="selectedTab"></schoolingo-tabs>
+        </div>
+    </div>
+    <div class="card-body card-row">
+        <div class="left">
+            <div class="header mb">
+                <div class="form-group">
+                    <input type="text" [placeholder]="schoolingo.locale.getLocale('messages/search')">
+                </div>
+            </div>
+            <div class="list-messages">
+                @if (!messages.length) {
+                    <div class="alert error">
+                        Žádné zprávy nejsou k dispozici.
+                    </div>
+                }
+
+                @for (message of messages; track $index) {
+                    <div [ngClass]="{message: true, isNew: message.isRead, active: $index === selectedMessage}" (click)="selectedMessage = $index">
+                        <div class="border-type" [ngStyle]="{backgroundImage: getBackground(message)}"></div>
+                        <div class="message-header">
+                            <div class="left">
+                                <div class="author">
+                                    @if (message.type == messageTypes.MESSAGE && message.author) {
+                                        {{ schoolingo.formatPerson(message.author) }}
+                                    }
+                                </div>
+                                <div class="type">
+                                    <div class="icon">
+                                        <!-- <i-tabler name="mail"></i-tabler> -->
+                                        @if (schoolingo.messages.types[message.type].icon) {
+                                            <i-tabler [name]="schoolingo.messages.types[message.type].icon || ''"></i-tabler>
+                                        }
+                                    </div>
+                                    <span>
+                                        {{ schoolingo.locale.getLocale('messages/types/' + schoolingo.messages.types[message.type].label) }}
+                                    </span>
+                                    <!-- <span>
+                                        {{ schoolingo.locale.getLocale('messages/classicMessage') }}
+                                    </span> -->
+                                    <!-- <div class="tag" [ngStyle]="{ backgroundColor: schoolingo.messages.types[thread.type].color || ''}">
+                                        @if (schoolingo.messages.types[thread.type].icon) {
+                                            <i-tabler [name]="schoolingo.messages.types[thread.type].icon || ''"></i-tabler>
+                                        }
+                                        {{ schoolingo.locale.getLocale('messages/types/' + schoolingo.messages.types[thread.type].label) }}
+                                    </div> -->
+                                </div>
+                            </div>
+                            <div class="right">
+                                <div class="time">
+                                    <span>
+                                        {{ Utils.formatDate(message.sent) }}
+                                    </span>
+                                </div>
+                                <div class="tags">
+                                    <div class="tag">
+                                        <i-tabler name="paperclip"></i-tabler>
+                                        Obsahuje přílohy
+                                    </div>                               
+                                    @if (message.requireConfirm) {
+                                        <div class="tag red">
+                                            {{ schoolingo.locale.getLocale('messages/tags/requireConfirmation') }}
+                                        </div>
+                                    } 
+                                </div>
+                            </div>
+                        </div>
+                        <div class="message-body">
+                            {{ message.message }}
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+
+        <div class="right">           
+            <div class="message-box">
+                @if (selectedMessage == -1) {
+                    <div class="help">
+                        <h2 class="mb">{{ "Vaše zprávy" }}</h2>
+                        <p>Nyní čtete okno "Detail zprávy" a vlevo od tohoto okna se nachází seznam zpráv. Kliknutím na zprávu v tom okně, se změní obsah tohoto okna. Nad seznamem zpráv se nachází vyhledávání zpráv podle odesílatele. Nad tímto oknem můžete dále najít filtrování zpráv.</p>
+                        <!-- TODO: rozdělení druhů zpráv -->
+                        <p>Nepřečtené zprávy jsou zvýrazněny světlejším pozadím než přečtené zprávy. Zprávy s potvrzením vyžadují potvrzení o přečtení zprávy a jsou označené "Vyžaduje potvrzení".</p>
+                        <div class="preview">
+                            <div class="tag red">Vyžaduje potvrzení</div>
+                        </div>
+                        <hr />
+                        <p>Pro snadnější identifikaci typu zpráv jsou různě označeni.</p>
+                        <div class="preview">
+                            @for(message of schoolingo.messages.types;track $index) {
+                                <div class="tag" [ngStyle]="{ backgroundColor: message.color || ''}">
+                                    @if (message.icon) {
+                                        <i-tabler [name]="message.icon"></i-tabler>
+                                    }
+                                    {{ schoolingo.locale.getLocale('messages/types/' + message.label) }}
+                                </div>
+                            }
+                        </div>
+                        <hr>
+                        <p>Na levé hraně každé zprávy se nachází proužek označující příjemce (v případě více příjemců je označena různými barvami)</p>
+                        <div class="preview">
+    
+                        </div>
+                    </div>    
+                } @else {
+                    <div class="message-navbar">
+                        <div class="left">
+                            <div class="item-btn">
+                                <div class="icon">
+                                    <i-tabler name="corner-up-left"></i-tabler>
+                                </div>
+                                <div class="name">
+                                    {{ schoolingo.locale.getLocale('buttons/reply') }}
+                                </div>
+                            </div>
+                            <div class="item-btn">
+                                <div class="icon">
+                                    <i-tabler name="arrow-big-right"></i-tabler>
+                                </div>
+                                <div class="name">
+                                    {{ schoolingo.locale.getLocale('buttons/forward') }}
+                                </div>
+                            </div>
+                            @if (messages[selectedMessage].requireConfirm) {
+                                <div class="item-btn text">
+                                    <div class="text green">
+                                        <i-tabler name="check" style="width:20px;height:20px;"></i-tabler>
+                                        <span>
+                                            {{ schoolingo.locale.getLocale('messages/confirmRead') }}
+                                        </span>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                        <div class="right">
+                            <div class="item-btn">
+                                <div class="icon">
+                                    <i-tabler name="square-forbid"></i-tabler>
+                                </div>
+                                <div class="name">
+                                    {{ schoolingo.locale.getLocale('messages/suppress') }}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="message-header">
+                        <div class="card-row">
+                            <div class="left">
+                                <div class="author">
+                                    {{ getAuthor() }}
+                                </div>
+                                <div class="type">
+                                    <div class="tag" [ngStyle]="{ backgroundColor: schoolingo.messages.types[messages[selectedMessage].type].color || ''}">
+                                        @if (schoolingo.messages.types[messages[selectedMessage].type].icon) {
+                                            <i-tabler [name]="schoolingo.messages.types[messages[selectedMessage].type].icon || ''"></i-tabler>
+                                        }
+                                        {{ schoolingo.locale.getLocale('messages/types/' + schoolingo.messages.types[messages[selectedMessage].type].label) }}
+                                    </div>
+                                </div>
+                            </div>
+    
+                            <div class="right">
+                                <div class="time">
+                                    <span>{{ Utils.formatDate(messages[selectedMessage].sent, 'long') }}</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        @if (messages[selectedMessage].type == messageTypes.EXCUSESTUDENT) {
+                            <div class="card-row">
+                                <div class="left">
+                                    <div>
+                                        <i-tabler name="calendar-month"></i-tabler>
+                                        <span>
+                                            {{ schoolingo.locale.getLocale('messages/from') }}: xx.xx.xxxx
+                                        </span>
+                                    </div>
+                                    <div>
+                                        <i-tabler name="calendar-month"></i-tabler>
+                                        <span>
+                                            {{ schoolingo.locale.getLocale('messages/to') }}: xx.xx.xxxx
+                                        </span>
+                                    </div>
+                                </div>
+                                <div class="right">
+                                    <div class="btn submit" role="button">
+                                        {{ schoolingo.locale.getLocale('messages/excuse') }}
+                                    </div>
+                                </div>
+                            </div>
+                        }
+
+                    </div>
+                    <div class="message-body">
+                        {{ messages[selectedMessage].message }}
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>

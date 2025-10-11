@@ -1,252 +1,159 @@
-import { Component, inject, OnInit } from '@angular/core';
-import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { Config } from '../infrastructure/config';
-import { NgClass, NgStyle } from '@angular/common';
-import { QRCodeComponent } from 'angularx-qrcode';
-import { Locale } from '@Schoolingo/locale';
-import { School } from '@Schoolingo/school';
-import { Theme } from '@Schoolingo/theme';
-import { AuthAlertManager } from '../infrastructure/alert/auth.alert.manager';
-import { AlertComponent } from '@Components/Alert';
-import { BehaviorSubject } from 'rxjs';
-import { AuthConfig } from '../infrastructure/authentication/config';
-import { HttpClient } from '@angular/common/http';
-import { Authentication } from '@Schoolingo/authentication';
-import { ActivatedRoute, Router } from '@angular/router';
-import { IconsModule } from '@Schoolingo/icons';
-import {
-  PublicKeyCredentialRequestOptionsJSON,
-  startAuthentication
-} from '@simplewebauthn/browser';
-import { InstallAppModalComponent } from '@Components/InstallAppModal/install-app-modal.component';
+import { NgClass, NgComponentOutlet, NgStyle } from '@angular/common';
+import { Component, Type } from '@angular/core';
+import { AppConfig } from '@Schoolingo/App';
+import { languages } from '@Schoolingo/Locale';
+import { School } from '@Schoolingo/School';
+import { QRCodeModule } from 'angularx-qrcode';
+import { ActivatedRoute, Params } from '@angular/router';
+import { Logger } from '@Schoolingo/Logger';
+import { Title } from '@angular/platform-browser';
+import { Schoolingo } from '@Schoolingo';
+import { Storage } from '@Schoolingo/Storage';
+import { Subscription } from 'rxjs';
+import { AuthLogin } from './Tabs/Login/Login';
+import { AlertComponent } from '@Components/Alert/Alert';
 
-export function isoBase64URLBuffer(buffer: Uint8Array): string {
-  return btoa(String.fromCharCode(...buffer))
-    .replace(/\+/g, "-")
-    .replace(/\//g, "_")
-    .replace(/=/g, "");
-}
-import { base64urlToBuffer, Passkey } from '@Schoolingo/passkey';
+export type pageTypes = 'login' | 'forgotpass';
+type QRPages = 'loading' | 'error' | 'scan' | 'trylogin';
+
+interface QRStatus {
+  whatIsVisible: QRPages;
+  code?: string;
+  error?: boolean;
+};
 
 @Component({
   standalone: true,
-  imports: [NgStyle, NgClass, QRCodeComponent, AlertComponent, ReactiveFormsModule, IconsModule, InstallAppModalComponent],
+  imports: [QRCodeModule, NgStyle, NgComponentOutlet, AlertComponent],
+  providers: [Storage],
   templateUrl: './auth.component.html',
-  styleUrls: ['./auth.component.css']
+  styleUrls: ['./auth.component.css', '../Styles/card.css', '../Styles/select.css']
 })
-export class AuthComponent implements OnInit {
-  public App = Config
-  public AuthConfig = AuthConfig;
-  l = inject(Locale);
-  t = inject(Theme);
-  a = inject(AuthAlertManager);
-  private auth = inject(Authentication);
-  private http = inject(HttpClient);
-  private router = inject(Router);
-  private route = inject(ActivatedRoute);
-  public passkey = inject(Passkey);
-  public isPasskeySupport = false;
-    
-  public qrcode = new BehaviorSubject('');
-  public showInstallModal = false;
+export class AuthComponent {
+  public App = AppConfig;
 
-  public school = inject(School);
-  public page: 'login' | '2fa' = 'login';
-  public isLoading = true;
-  public errors: { [key: string]: string } = {};
-  formSubmitted = false;
-  public dropdown: 'language' | 'theme' | '' = '';
+  private Listeners: Subscription[] = [];
+  private QRListeners: Subscription[] = [];
+  private routerSocket!: Subscription;
 
-  private formBuilder = inject(FormBuilder);
-  loginForm = this.formBuilder.group({
-    username: ['',
-      [
-        Validators.required,
-        Validators.minLength(AuthConfig.username_min),
-        Validators.maxLength(AuthConfig.username_max),
-        Validators.pattern(AuthConfig.username_regex)
-      ]
-    ],
-    password: ['',
-      [
-        Validators.required,
-        Validators.minLength(AuthConfig.password_min),
-        Validators.maxLength(AuthConfig.password_max)
-      ]
-    ],
-    token: ['',
-      [
-        Validators.minLength(AuthConfig.token_length),
-        Validators.maxLength(AuthConfig.token_length)
-      ]
-    ]
-  })
+  constructor(
+    public school: School,
+    private logger: Logger,
+    private title: Title,
+    private route: ActivatedRoute,
+    public schoolingo: Schoolingo,
+  ) {}
 
-  async ngOnInit(): Promise<void> {
-    this.isPasskeySupport = await this.passkey.isSupported();
-
-    const encodedReturnUrl = this.route.snapshot.queryParamMap.get('returnUrl');
-    const returnUrl = encodedReturnUrl ? decodeURIComponent(encodedReturnUrl) : null;
-
-    this.school.config.subscribe((data) => {
-      if (data == null) return;
-      this.isLoading = false;
-    });
-
-    this.auth.getAuthState().subscribe((data) => {
-      if (data === true) {
-        if (returnUrl) {
-          this.router.navigateByUrl(returnUrl);
-        } else {
-          this.router.navigate(['', 'main']);
-        }
-      }
-    })
-
-
-    // Error while too long loading
-    setTimeout(() => {
-      if (this.qrcode.getValue() == '' && !this.isLoading) {
-        let alert = this.a.alert("error", "auth.errors.longLoadingQR");
-        alert.closeable(true);
-        this.qrcode.subscribe((data) => {
-          if (data != "") {
-            alert.close();
-          }
-        })
-      }
-    }, 5000);
-
-    setTimeout(() => this.qrcode.next("QR kód data"), 10000)
+  public selectLanguage(lng: languages): void {
+    if (this.schoolingo.locale.getUserLocale() == lng) {return;}
+    this.schoolingo.locale.setUserLocale(lng);
   }
 
-  public async loginPasskey(): Promise<void> {
-    this.http.get<PublicKeyCredentialRequestOptionsJSON>(Config.ELYSIA_URL + '/auth-passkey')
-    .subscribe( async(options: PublicKeyCredentialRequestOptionsJSON) => {
-      try {
-        const authResponse = await startAuthentication({optionsJSON: options});
-        this.http.post(Config.ELYSIA_URL + '/verify-authentication', {
-          response: authResponse,
-          challenge: options.challenge
-        }, {
-          withCredentials: true
-        })
-        .subscribe((data) => {
-          if ('username' in data) {
-            this.auth.loadState();
-            return;
-          }
-        });
+  public component: Type<any> = AuthLogin;
 
-      } catch (err: unknown) {
-        const error = err as Error;
-        const msg = error?.message || '';
+  ngOnInit(): void {
+    this.schoolingo.resetToDefault();
+    this.schoolingo.socketService.connect();
 
-        if (msg.includes('The operation either timed out or was not allowed')) {
-          console.error('🟡 Uživatelsky zrušené přihlášení nebo timeout.');
-        }
+    this.schoolingo.auth.page = 'login';
 
-        else if (msg.includes('not supported') || msg.includes('not allowed')) {
-          console.error('❌ Prohlížeč nepodporuje WebAuthn nebo Passkeys.');
-        }
-
-        else {
-          console.error('❗ Neočekávaná chyba:', err);
-        }
-      }
-    }, (err) => {
-      this.a.alert("error", "auth.errors.429");
-      console.error('❌ Nepodařilo se komunikovat se serverem ')
-    })
-  }
-
-  public login(): void {
-    this.errors = {};
-    this.formSubmitted = true;
-    if (this.loginForm.invalid) return;
-
-    this.http.post(Config.ELYSIA_URL + "/auth", {
-      username: this.loginForm.value.username,
-      password: this.loginForm.value.password,
-      TFA: this.loginForm.value.token
-    }, { withCredentials: true }).subscribe(
-      (data) => {
-        if ('username' in data) {
-          this.auth.loadState();
-          return;
-        }
-        if ('error' in data && data.error instanceof Array) {
-          if (data.error?.includes("Invalid username")) {
-            this.errors['username'] = this.l.s('auth.errors.invalid_username');
-            if (this.page === '2fa') { this.page = 'login' }
-          }
-          if (data.error?.includes("Invalid password")) {
-            this.errors['password'] = this.l.s('auth.errors.invalid_password');
-            if (this.page === '2fa') { this.page = 'login' }
-          }
-          if (data.error?.includes("Missing username")) {
-            this.errors['username'] = this.l.s('form.required');
-            if (this.page === '2fa') { this.page = 'login' }
-          }
-          if (data.error?.includes("Missing password")) {
-            this.errors['password'] = this.l.s('form.required');
-            if (this.page === '2fa') { this.page = 'login' }
-          }
-
-          if (data.error?.includes("Missing 2FA")) {
-            this.page = '2fa';
-          }
-          
-          if (data.error?.includes("Invalid 2FA")) {
-            this.errors['token'] = this.l.s('auth.errors.invalid_tfa');
-          }
-        }
-      },
-      (err) => this.a.alert("error", "auth.errors.429")
+    this.title.setTitle(
+      this.schoolingo.locale.getLocale('login_title') + ' | ' + this.App.APP_NAME
     );
+    this.schoolingo.sidebar.sidebarToggled = false;
+
+    this.Listeners.push(
+      this.schoolingo.socketService.addFunction("connect").subscribe(() => {
+        this.refreshQRcode()
+      })
+    );
+
+    this.Listeners.push(
+      this.schoolingo.socketService.addFunction("disconnect").subscribe(() => {
+        this.qrCode = '';
+        this.qrCodeResult = null;
+      })
+    )
   }
 
-  public getTokenPlaceholder(): string {
-    let text = this.loginForm.value.token?.toString()!;
-    for(const _ of [].constructor(AuthConfig.token_length - this.loginForm.value.token!.length)) {
-      text += "X";
-    }
-    return text;
+  ngOnDestroy(): void {
+    if (this.routerSocket) this.routerSocket.unsubscribe();
+    this.schoolingo.socketService.disconnect();
+    this.Listeners.forEach((listen: Subscription) => listen.unsubscribe());
+    this.QRListeners.forEach((listen: Subscription) => listen.unsubscribe());
+
   }
 
-  public getInputError(input: string): string {
-    if (this.errors[input]) {
-      return this.errors[input];
-    }
+  // QR CODE
+  private qrCode!: string;
+  private qrCodeError = false;
+  private qrCodeResult: any = null;
+  private qrTimeout!: NodeJS.Timeout;
 
-    const control = this.loginForm.get(input);
-    if (!control) return '';
+  public qrStatus: QRStatus = this.getQRcodeStatus();
 
-    const shouldShowError = this.formSubmitted || (control.dirty && control.touched);
-    if (!shouldShowError || control.valid) return ''; 
+  /**
+   * Set default values to QRCode variables and reset timeout of loading qrcode
+   */
+  public refreshQRcode(): void {
 
-    if (control.hasError('required')) {
-      return this.l.s('form.required');
-    }
+    this.QRListeners.forEach((listen: Subscription) => listen.unsubscribe());
 
-    const minLengthError = control.getError('minlength');
-    if (minLengthError) {
-      return this.l.s('form.minLength').replaceAll('%min%', minLengthError.requiredLength);
-    }
+    this.logger.send('QRCode', 'Loading QR code..');
+    this.qrCode = '';
+    this.qrCodeError = false;
+    this.qrCodeResult = null;
+    this.qrStatus = this.getQRcodeStatus();
+    
+    this.schoolingo.socketService.emit("generate-qrcode");
 
-    const maxLengthError = control.getError('maxlength');
-    if (maxLengthError) {
-      return this.l.s('form.maxLength').replaceAll('%max%', maxLengthError.requiredLength);
-    }
+    this.QRListeners.push(
+      this.schoolingo.socketService.addFunction('login-qrcode').subscribe((data: string) => {
+        this.logger.send('QRCode', 'QR code loaded.');
+        this.qrCode = data;
+        this.qrCodeError = false;
+        this.qrStatus = this.getQRcodeStatus();
+      })
+    );
 
-    return '';
+    this.QRListeners.push(
+      this.schoolingo.socketService.addFunction('qrScanCode').subscribe((data: unknown) => {
+        this.qrCodeResult = data;
+        this.qrStatus = this.getQRcodeStatus();
+      })
+    );
+
+    clearTimeout(this.qrTimeout);
+    this.qrTimeout = setTimeout(() => {
+      if (this.qrCode != '') return;
+      this.logger.send('QRCode', 'QR code failed to load.');
+      this.qrCodeError = true;
+      this.qrCodeResult = null;
+      this.qrStatus = this.getQRcodeStatus();
+    }, 5000);
   }
 
-  public openInstallModal() {
-    this.showInstallModal = true;
+  public getQRcodeStatus(): QRStatus {
+    let page: QRPages | null = null;
+    if (
+      this.qrCode == '' &&
+      !this.qrCodeError &&
+      this.qrCodeResult == null
+    ) {
+      page = 'loading';
+    } else if (this.qrCode != '' && !this.qrCodeError) {
+      if (this.qrCodeResult == null) {
+        page = 'scan';
+      } else {
+        page = 'trylogin';
+      }
+    }
+    if (page == null) page = 'error';
+
+    return {
+      whatIsVisible: page, // page
+      code: this.qrCode,
+    };
   }
 
-  public closeInstallModal() {
-    this.showInstallModal = false;
-  }
 }

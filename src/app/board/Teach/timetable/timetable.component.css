@@ -1,7 +1,3 @@
-.loading {
-    padding: 2rem;
-}
-
 .select-items {
     position: relative;
 }
@@ -58,17 +54,17 @@
 }
 
 .timetable > .hours > .hour-info > .hour-id,
-.timetable .item .subject {
-    font-size: 18px;
+.timetable .item .sub-lesson-hour .subject {
+    font-size: 15px;
     font-weight: 600;
-    line-height: 18px;
-    min-height: 18px;
+    line-height: 16px;
+    min-height: 16px;
     text-align: center;
 }
 
 .timetable > .hours > .hour-info > .hour-id { color: var(--primary) }
 
-.timetable .item .subject { color: var(--color) }
+.timetable .item .sub-lesson-hour .subject { color: var(--color) }
 
 .timetable .item .sub-lesson-hour.classbook .subject { color: var(--primary) }
 
@@ -81,11 +77,9 @@
     line-height: 20px;
 }
 
-.timetable > .hours > .hour-info > .hour-time,
-.timetable .item .teacher {
+.timetable > .hours > .hour-info > .hour-time, .timetable .item .sub-lesson-hour .teacher {
     font-size: 12px;
-    color: var(--color);
-    opacity: .7;
+    color: #79878D;
     line-height: 16px;
     min-height: 12px;
     text-align: center;
@@ -102,14 +96,6 @@
     flex-direction: row;
     align-items: center;
     border-collapse: collapse;
-}
-
-.timetable > .days > .day:not(:last-child) {
-    border-bottom: 1px solid var(--border-color);
-}
-
-.timetable > .days > .day > .all-day {
-    width: 100%;
 }
 
 .timetable > .days > .day:nth-child(2n) > .name,
@@ -132,8 +118,7 @@
 
 .timetable > .days > .day > .name > .time {
     font-size: 12px;
-    color: var(--color);
-    opacity: .7;
+    color: #79878D;
     line-height: 16px;
     min-height: 12px;
     text-align: center;
@@ -152,6 +137,7 @@
 
 .timetable > .days > .day > .item {
     border-collapse: collapse;
+
 }
 
 .timetable > .days > .day:first-child > .item { border-top: 1px solid var(--border-color) }
@@ -167,8 +153,7 @@
     flex-direction: column;
 }
 
-.timetable .item .sub-lesson-hour,
-.timetable .item.all-day {
+.timetable .item .sub-lesson-hour {
     width: 100%;
     height: 100%;
     cursor: pointer;
@@ -197,8 +182,8 @@
     background-color: var(--background-active);
 }
 
-.timetable .item .group,
-.timetable .item .room {
+.timetable .item .sub-lesson-hour .group,
+.timetable .item .sub-lesson-hour .room {
     position: absolute;
     top: 1px;
     font-size: 11px;
@@ -208,25 +193,25 @@
     width: 50%;
 }
 
-.timetable .item .group {
+.timetable .item .sub-lesson-hour .group {
     left: 4px;
     text-align: left;
     color: var(--primary);
 }
 
-.timetable .item .room {
+.timetable .item .sub-lesson-hour .room {
     right: 4px;
     text-align: right;
 }
 
-.timetable .item .teacher {
+.timetable .item .sub-lesson-hour .teacher {
     text-overflow: ellipsis;
     overflow: hidden; 
     white-space: nowrap;
     max-width: 100%;
 }
 
-.timetable .item .absence {
+.timetable .item .sub-lesson-hour .absence {
     position: absolute;
     bottom: 4px;
     left: 50%;
@@ -278,18 +263,4 @@
     .timetable > .days > .day > .item:last-child {
         border-color: #000;
     }
-}
-
-.absence-item {
-    padding: 2px 12px;
-    font-size: 15px;
-    margin-bottom: .5rem;
-}
-
-.absence {
-    width: 3px;
-    height: 16px;
-    border-radius: 8px;
-    background-color: var(--absence-color);
-    margin-right: .5rem;
 }
