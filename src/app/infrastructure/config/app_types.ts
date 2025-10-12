@@ -1,0 +1,1 @@
+export type AppType = 'DEV' | 'DEMO' | 'TEST' | 'STAGING' | 'PROD' | 'LOCAL' | 'CI' | 'MAINT';

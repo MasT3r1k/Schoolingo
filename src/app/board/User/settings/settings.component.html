@@ -2,110 +2,30 @@
     <div class="card-top">
         @if (alert == '2FAEnabled') {
             <div class="alert success">
-                {{ schoolingo.locale.getLocale('userSettings/2FAEnabled') }}
+                {{ l.s('userSettings.2FAEnabled') }}
             </div>
         }
     </div>
     <div class="card-header">
-        <h2>{{ schoolingo.locale.getLocale('settings') }}</h2>
+        <h2>{{ l.s('sidebar.settings') }}</h2>
         <div class="flex-items">
             <schoolingo-tabs [value]="selectedTab" [options]="options"></schoolingo-tabs>
         </div>
     </div>
-    <div class="card-body card-row">
-        <div [ngClass]="{'card-tab': true, active: options.indexOf('changepassword') == selectedTab.getValue()}" id="changepassword">
-            <h2 class="small mb">{{ schoolingo.locale.getLocale('changepassword') }}</h2>
-            <div class="alert error" style="justify-content: center;">{{ schoolingo.locale.getLocale('changePasswordLogout') }}</div>
-            <div class="form">
-
-                <schoolingo-form [inputs]="inputs" [buttons]="buttons" [form]="'changePassword'"></schoolingo-form>
-
-            </div>
-        </div>
-        <div [ngClass]="{'card-tab': true, active: options.indexOf('language') == selectedTab.getValue()}" id="language">
-            <h2 class="small mb">
-                {{ schoolingo.locale.getLocale('languageTitle') }}
-            </h2>
-            <div class="language">
-                <div class="items">
-                    @for (language of schoolingo.locale.getLanguages(); track $index) {
-                        <div [ngClass]="{item: true, active: schoolingo.locale.getSelectedLanguage() == language}" (click)="schoolingo.locale.setUserLocale(language)">
-                            <img [src]="schoolingo.locale.locales[language].flag" [alt]="schoolingo.locale.locales[language].name" height="24" style="margin-right: 8px;">
-                            <div>
-                                {{ schoolingo.locale.locales[language].name }}
-                            </div>
-                            @if (schoolingo.locale.getSelectedLanguage() == language) {
-                                <div [ngClass]="{badge: true, active: schoolingo.locale.getState() == 'loaded', loading: schoolingo.locale.getState() == 'loading'}">
-                                    @if (schoolingo.locale.getState() == "loading") {
-                                        <div class="btn-loader mr"></div>
-                                    }
-                                    {{ schoolingo.locale.getLocale(schoolingo.locale.getState() == 'loaded' ? 'selected' : 'loading') }}
-                                </div>
-                            }
-                        </div>
-                    }
-                </div>
-            </div>
-        </div>
-        <div [ngClass]="{'card-tab': true, active: options.indexOf('theme') == selectedTab.getValue()}" id="theme">
-            <h2 class="small mb">{{ schoolingo.locale.getLocale('theme') }}</h2>
-            <theme-selector></theme-selector>
-        </div>
-        <div [ngClass]="{'card-tab': true, active: options.indexOf('security') == selectedTab.getValue()}" id="theme">
-            <h2 class="small mb">{{ schoolingo.locale.getLocale('userSettings/2fa') }}</h2>
-            <div class="items">
-                <div class="item" style="justify-content: space-between;">
-                    <div class="left">
-                        <p class="title">Dvoufazové ověření</p>
-                        <p class="description"></p>
-                    </div>
-                    <div class="right">
-                        @if (schoolingo.userService.tfaSecret == '') {
-                            <div class="btn small" (click)="allow2FA()">
-                                Zapnout 2FA
-                            </div>
-                        }
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div [ngClass]="{'card-tab': true, active: options.indexOf('other') == selectedTab.getValue()}" id="theme">
-            <h2 class="small mb">{{ schoolingo.locale.getLocale('other') }}</h2>
-            <div class="items">
-                <div class="item" style="justify-content: space-between;">
-                    <div class="left">
-                        <p class="title">Mapa v detailu firmy</p>
-                        <p class="description">Zobrazit mapu v detailu firmy u praxí</p>
-                    </div>
-
-                    <div class="right">
-                        <div class="btn small" (click)="updateSettings('showMap', true)">Zapnout</div>
-                        <div class="btn small" (click)="updateSettings('showMap', false)">Vypnout</div>
-                    </div>
-                </div>
-
-                <div class="item" style="justify-content: space-between;">
-                    <div class="left">
-                        <p class="title">Automaticky zobrazovat další týden v rozvrhu</p>
-                        <p class="description">O víkendu se automaticky zobrazí další týden</p>
-                    </div>
-                    
-                    <div class="right">
-                        <div class="btn small" (click)="updateSettings('autoSelectNextWeek', true)">Zapnout</div>
-                        <div class="btn small" (click)="updateSettings('autoSelectNextWeek', false)">Vypnout</div>
-                    </div>
-                </div>
-            </div>
-        </div>
+    <div class="card-body">
+        @switch (selectedTab.getValue()) {
+            @case (options.indexOf("settings.change_password")) {
+                <settings-change-password></settings-change-password>
+            }
+            @case (options.indexOf('settings.language')) {
+                <settings-change-language></settings-change-language>
+            }
+            @case (options.indexOf('settings.theme')) {
+                <settings-change-theme></settings-change-theme>
+            }
+            @case (options.indexOf('settings.security')) {
+                <settings-security></settings-security>
+            }
+        }
     </div>
 </div>
-
-<!-- <div class="toasts">
-    <div class="toast">
-        <div class="toast-text">Probíhá změna jazyka..</div>
-        <div class="buttons">
-            <div class="btn submit small gray" role="button">Zrušit</div>
-            <div class="btn submit small green" role="button">Uložit</div>
-        </div>
-    </div>
-</div> -->

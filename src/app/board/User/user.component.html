@@ -1,0 +1,310 @@
+    <div class="card profile">
+        <!-- <div class="sidebar active" style="margin-right: 1rem;">
+            <ul>
+                @for (item of sidebarItems; track $index) {
+                    @if (true) {
+                        <li [routerLink]="item.href" [routerLinkActive]="'active'" [routerLinkActiveOptions]="{ exact: true }">
+                            <div class="item">
+                                <div class="item-label">
+                                    {{ l.s(item.label) }}
+                                </div>
+                            </div>
+                        </li>
+                    }
+                }
+            </ul>
+        </div> -->
+        <div class="content">
+            <router-outlet></router-outlet>
+        </div>
+
+        <!-- @switch (sidebar.getValue()) {
+            @case(SidebarContent.personalInfo) {
+                <div class="profile-content">
+                    <h2 class="mb-2">
+                        {{ l.s('user/personalInformation') }}
+                    </h2>
+                    <div class="items">
+                        <!-- <div class="row">
+                            <div class="item">
+                                <label for="firstname">
+                                    {{ l.s('firstName') }}
+                                </label>
+                                <div class="value">
+                                    <input type="text" class="disabled" name="firstname" [value]="schoolingo.userService.getUser()?.person?.firstName" readonly>
+                                </div>
+                            </div>
+    
+                            <div class="item">
+                                <label for="lastname">
+                                    {{ l.s('lastName') }}
+                                </label>
+                                <div class="value">
+                                    <input type="text" class="disabled" name="lastname" [value]="schoolingo.userService.getUser()?.person?.lastName" readonly>
+                                </div>
+                            </div>
+                        </div> -->
+
+                        <!-- <div class="row">
+                            <div class="item">
+                                <label for="sex">
+                                    {{ l.s('sex') }}
+                                </label>
+                                <div class="value">
+                                    <div class="input">
+                                        <div class="gender-icon">
+                                            @if (schoolingo.userService.getUser()?.person?.sex) {
+                                                <i-tabler style="color: #FFC0CB;" name="gender-female"></i-tabler>
+                                            } @else {
+                                                <i-tabler style="color: #90D5FF;" name="gender-male"></i-tabler>
+                                            }
+                                        </div>
+                                        <span>
+                                            {{ l.s('genders/' + schoolingo.userService.getUser()?.person?.sex) }}
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="item">
+                                <label for="birthday">
+                                    {{ l.s('birthday') }}
+                                </label>
+                                <div class="input">
+                                    <span>
+                                        {{ u.getUser().birthday.format("DD. MM. YYYY") }}
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- <div class="row">
+                            <div class="item">
+                                <label for="address">
+                                    {{ l.s('address') }}
+                                </label>
+                                <div class="input">
+                                    <span style="margin-right: .5rem">
+                                        {{ country.getCountryByCode("CZ")?.flag }}
+                                    </span>
+                                    <span>
+                                    {{ " Šumavská 77, Strakonice 386 01" }}
+                                    </span>
+                                </div>
+                            </div>
+                        </div> -->
+
+                        <!-- <div class="row">
+                            <div class="item">
+                                <label for="nationality">
+                                    {{ l.s('nationality') }}
+                                </label>
+                                <div class="input">
+                                    <span style="margin-right: .5rem">
+                                        {{ country.getCountryByCode("CZ")?.flag }}
+                                    </span>
+                                    <span>
+                                        {{ country.getCountryByCode("CZ")?.name }}
+                                    </span>
+                                </div>
+                            </div>
+                        </div> -->
+
+                        <!-- @if (perms.checkPermission(["student"])) {
+                            <div class="row">
+                                <div class="item">
+                                    <label for="class">
+                                        {{ l.s('class') }}
+    
+                                    </label>
+                                    <div class="input">
+                                        <span>
+                                            {{ profile.className }}
+                                        </span>
+                                    </div>
+                                </div>
+
+                                <div class="item">
+                                    <label for="class">
+                                        {{ l.s('roles.classteacher') }}
+    
+                                    </label>
+                                    <div class="input">
+                                        <span>
+                                            {{ schoolingo.formatPerson(profile.teacher) }}
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="item">
+                                    <label for="scope">
+                                        {{ l.s('user/scope') }}
+                                    </label>
+                                    <div class="input">
+                                        <span>
+                                            {{ profile.scopeName }}
+                                        </span>
+                                    </div>
+                                </div>
+    
+                                <div class="item">
+                                    <label for="scopeYears">
+                                        {{ l.s('user/scopeYears') }}
+                                    </label>
+                                    <div class="input">
+                                        <span>
+                                            {{ profile.scopeYears + ' ' + l.s('ageUnit') }}
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        } 
+
+                        <div class="row">
+                            <div class="item">
+                                <label for="insuranceCode">
+                                    {{ l.s('user/insuranceCode') }}
+                                </label>
+                                <!-- @if(profile.insuranceId) {
+                                    <div class="input" [title]="profile.insuranceName">
+                                        <span>
+                                            {{ profile.insuranceId + " - " + profile.insuranceCode }}
+                                        </span>
+                                    </div>
+                                } @else {
+                                    <div class="input">
+                                        <span>
+                                            {{ l.s('user/noInsuranceSet') }}
+                                        </span>
+                                    </div>
+                                } 
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+
+            @case(SidebarContent.parents) {
+                <div class="profile-content">
+                    <h2 class="mb">{{ l.s('user/tabs/profile/parents') }}</h2>
+                    <div class="profile-title mb">
+                        <div style="width: 150px;">
+                            <span>Otec</span>
+                        </div>
+                    </div>
+                    <div class="items mb-2">
+                        <div class="alert error">Osoba nebyla nalezena</div>
+                    </div>
+
+                    <div class="profile-title mb">
+                        <div style="width: 150px;">
+                            <span>Matka</span>
+                        </div>
+                    </div>
+                    <div class="items mb-2">
+                        <div class="alert error">Osoba nebyla nalezena</div>
+                    </div>
+                </div>
+            }
+
+            @case(SidebarContent.notifications) {
+                <div class="profile-content">
+                    <h2>{{ l.s('user/notifications') }}</h2>
+                </div>
+            }
+
+            @case(SidebarContent.connections) {
+                <div class="profile-content">
+                    <h2>{{ l.s('user/connections') }}</h2>
+                    <div class="items mt">
+                        <div class="alert error">Nemáte žádné propojené účty</div>
+                    </div>
+                </div>
+            }
+
+            @case(SidebarContent.gdpr) {
+                <div class="profile-content">
+                    <h2>{{ l.s('sidebar/gdpr') }}</h2>
+                    <div class="items">
+                        <div class="row">
+                            <div class="item">
+                                <label>
+                                    {{ l.s('fullName') }}
+                                </label>
+                                <div class="input">
+                                    <span>
+                                        {{ "" }}
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="item">
+                                <label>
+                                    {{ l.s('phone') }}
+                                </label>
+                                <div class="input">
+                                    <span>
+                                        {{ "" }}
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="item">
+                                <label>
+                                    {{ l.s('email') }}
+                                </label>
+                                <div class="input">
+                                    <span>
+                                        {{ "" }}
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="item">
+                                <label>
+                                    {{ l.s('databox') }}
+                                </label>
+                                <div class="input">
+                                    <span>
+                                        {{ "" }}
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="item">
+                                <label>
+                                    {{ l.s('mobile') }}
+                                </label>
+                                <div class="input">
+                                    <span>
+                                        {{ "" }}
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="item">
+                                <label>
+                                    {{ l.s('web') }}
+                                </label>
+                                <div class="input">
+                                    <span>
+                                        {{ "" }}
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+
+        } -->
+    </div>

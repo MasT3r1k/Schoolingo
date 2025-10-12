@@ -1,34 +1,41 @@
-import { NgClass } from '@angular/common';
-import { Component } from '@angular/core';
-import { Schoolingo } from '@Schoolingo';
-import { MessageManager, MessageType, messageTypes } from '@Schoolingo/Messages';
-import { Permission } from '@Schoolingo/Permissions';
+import { Component, inject } from '@angular/core';
+import { Config } from '@Schoolingo/config';
+import { Locale } from '@Schoolingo/locale';
+import { MessageManager, MessageSendSecondTab, MessageType, messageTypes } from '@Schoolingo/messages';
+import { Permission } from '@Schoolingo/permission';
 import { BehaviorSubject, Subscription } from 'rxjs';
-import { ModalSelectReceivers } from '../modals/selectReceivers/selectReceivers';
-import { Modal } from '@Components/Modal/Modal';
-import { TabsComponent } from '@Components/Tabs/Tabs';
-import { AppConfig } from '@Schoolingo/App';
-import { IconsModule } from '../../../Modules/Icons.module';
-import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { Alert } from '@Schoolingo/Alert';
-import { AlertComponent } from '@Components/Alert/Alert';
+import { Alert } from '../../../infrastructure/alert/alert';
+import { Homeworks } from '@Schoolingo/homeworks';
+import { FormsModule } from '@angular/forms';
+import { NgClass } from '@angular/common';
+import { IconsModule } from '@Schoolingo/icons';
+import { Authentication } from '@Schoolingo/authentication';
+import { TabsComponent } from '../../../Components/Tabs';
+import { AlertComponent } from '@Components/Alert';
 
 @Component({
-  standalone: true,
-  imports: [NgClass, TabsComponent, IconsModule, FormsModule, ReactiveFormsModule, AlertComponent],
+  imports: [FormsModule, NgClass, IconsModule, TabsComponent, AlertComponent],
   templateUrl: './send.component.html',
-  styleUrls: ['./send.component.css', '../../../Styles/card.css', '../../../Styles/input.css']
+  styleUrl: './send.component.css'
 })
 export class SendComponent {
-
-  AppConfig = AppConfig;
+  AppConfig = Config;
   messageTypes = messageTypes;
+  MessageSendSecondTab = MessageSendSecondTab;
   subscribers: Subscription[] = [];
+  // Imports
+  public auth = inject(Authentication);
+  public l = inject(Locale);
+  public perms = inject(Permission);
+  public messageManager = inject(MessageManager);
+  public homeworks = inject(Homeworks);
 
-  public alerts: { [key: string]: Alert } = {};
+  // Alerts
+  public alerts: any = {};
 
   // Tab
   public selectedTab = new BehaviorSubject<number>(0);
+  public selectedOptionTab = new BehaviorSubject<number>(0);
 
   // Selecting options
   public showSelect: 'messagetype' | 'homework' | 'children' | 'rating' | null = null;
@@ -36,32 +43,48 @@ export class SendComponent {
   // Options
   public excuseAllDay = false;
 
+  // Receivers
+  public selectedReceivers: number[] = [];
+  public receivers: { id: number, name: string, tag: string }[] = [{
+    id: 1,
+    name: 'John Doe',
+    tag: 'Žák 1.B'
+  }, {
+    id: 2,
+    name: 'Jane Smith',
+    tag: 'Rodič John Doe'
+  }, {
+    id: 3,
+    name: 'Alice Johnson',
+    tag: 'Učitel'
+  }];
+
+  public toggleReceiverSelection(receiverId: number): void {
+    const index = this.selectedReceivers.indexOf(receiverId);
+    if (index > -1) {
+      this.selectedReceivers.splice(index, 1);
+    } else {
+      this.selectedReceivers.push(receiverId);
+    }
+  }
+
+  public isReceiverSelected(receiverId: number): boolean {
+    return this.selectedReceivers.includes(receiverId);
+  }
+
   // Modals
-  public selectReceiversModal = new Modal({
-    closeable: true,
-    title: {
-      text: "messages/receiver"
-    },
-    size: 'size-2',
-    items: [
-      {
-        type: 'component',
-        component: ModalSelectReceivers,
-        data: []
-      }
-    ]
-  });
-
-  constructor(
-    public schoolingo: Schoolingo,
-    public perms: Permission,
-    public messageManager: MessageManager
-  ){}
-
   ngOnInit(): void {
-    this.subscribers.push(this.selectedTab.subscribe((tab: number) => {
-      this.alerts = {};
-    }));
+    this.subscribers.push(
+      this.selectedTab.subscribe((tab: number) => {
+        this.alerts = {};
+      })
+    );
+
+    this.subscribers.push(
+      this.messageManager.messageType.subscribe((tab: number) => {
+        setTimeout(() => this.selectedOptionTab.next(0), 300)
+      })
+    )
   }
 
   public sendMessage(): void {
@@ -83,7 +106,7 @@ export class SendComponent {
         }
         break;
       case messageTypes.HOMEWORK:
-        if (!this.schoolingo.homeworks.list.length) {
+        if (!this.homeworks.list.length) {
           this.alerts.main = new Alert('error', 'messages/homeworks/empty');
         }
         if (this.messageManager.selectedHomework.getValue() == null) {
@@ -109,15 +132,6 @@ export class SendComponent {
   }
 
   public selectReceivers(): void {
-    this.selectReceiversModal.open();
+    // this.selectReceiversModal.open();
   }
-
-  public selectTags(): void {
-    console.log("SELECT TAAAGS");
-  }
-
-  public selectAttachments(): void {
-    console.log("SELECT ATTACHMEEENTS")
-  }
-
 }

@@ -1,47 +1,52 @@
 <div class="items">
-    @if (getData().length > 0) {
-        <table>
-            <thead>
-                @for (item of head; track $index) {
-                    @if (!options.hideColumns?.includes($index)) {
-                        <th [title]="options.titles?.[$index] || ''">{{ (options.disableLocales?.[$index] === true) ? item : locale.getLocale(item) }}</th>
-                    }
+    <table>
+        <thead>
+            @for (item of head; track $index) {
+                @if (!options.hideColumns?.includes($index)) {
+                    <th [title]="options.titles?.[$index] || ''">{{ (options.disableLocales?.[$index] === true) ? item : l.s(item) }}</th>
                 }
-            </thead>
-            <tbody>
-                @for (item of getData(); track $index) {
-                    <tr [ngClass]="{ active: selectedRow == $index }" (click)="clickEvent($index)">
-                        @for (info of item; track index;let index = $index) {
-    
-                            @if (!info.id && info.id !== null && !options.hideColumns?.includes(getColumnId(index))) {
-                                @if (info.isLocale) {
-                                    <td>{{ ((info.localePrefix) ? info.localePrefix : '') + locale.getLocale(info.value) +  ((info.localeSuffix) ? info.localeSuffix : '')}}</td>
-                                } @else if (info.value) {
-                                    <td>{{ info.value }}</td>
-                                } @else if (info.html) {
-                                    <td [innerHTML]="formatHtmlText(info?.html)"></td>
-                                }
+            }
+        </thead>
+        <tbody>
+            @for (item of getData(); track $index) {
+                <tr [ngClass]="{ active: selectedRow == $index }" (click)="clickEvent($index)">
+                    @for (info of item; track index;let index = $index) {
+
+                        @if (!info.id && info.id !== null && !options.hideColumns?.includes(getColumnId(index))) {
+                            @if (info.isLocale) {
+                                <td>{{ ((info.localePrefix) ? info.localePrefix : '') + l.s(info.value) +  ((info.localeSuffix) ? info.localeSuffix : '')}}</td>
+                            } @else if (info.value) {
+                                <td>{{ info.value }}</td>
+                            } @else if (info.html) {
+                                <td [innerHTML]="formatHtmlText(info?.html)"></td>
                             }
                         }
-                    </tr>
-                }
-            </tbody>
-        </table>
-    } @else {
-        <div class="alerts">
-            <div class="alert red">
-                {{ locale.getLocale('components/datalist/noData') }}
-            </div>
-        </div>
-    }
+                    }
+                </tr>
+            } @empty {
+                <tr style="pointer-events: none;">
+                    <td [attr.colspan]="head.length - (options.hideColumns ? options.hideColumns.length : 0)">
+                        <div class="alerts">
+                            <div class="alert red">
+                                {{ l.s('components.datalist.no_data') }}
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
     <div class="bottom">
         <div class="left">
-            @if (!options.hideInfo) {
-                <p>Zobrazeno {{ getData().length }} z {{ this.data.getValue().length }} (celkem {{ (options.noDynamic ? data.getValue().length : this.metadata.rows) }}), stránka {{ page.getValue() }} z {{ getMaxPages() }}</p>
+            @if (!options.hideInfo && this.data.getValue().length) {
+                <p>
+                Zobrazeno {{ currentStart() }} z {{ currentEnd() }} (celkem {{ totalRows() }}),
+                stránka {{ currentPage() }} z {{ getMaxPages() }}
+                </p>
             }
         </div>
         <div class="right">
-            @if (!options.hidePagination || getMaxPages() > 1) {
+            @if (!options.hidePagination || getMaxPages() > 1 && this.data.getValue().length) {
                 <div [ngClass]="{page: true, center: true, previous: true, disabled: page.getValue() == 1}" (click)="goPage(page.getValue() - 1)">
                     <i-tabler name="chevron-left" style="width:18px;height:18px;"></i-tabler>
                 </div>
