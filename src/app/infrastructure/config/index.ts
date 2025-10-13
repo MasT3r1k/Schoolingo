@@ -12,6 +12,10 @@ export namespace Config {
     export const APP_CREDITS = "Made by Josef Kosík with 💙"
     export const APP_TYPE: AppType = "DEV";
 
+    // App settings
     export const LOGGER_LEVEL = "INFO";
     export const SHOW_DOWNLOAD_BUTTON = false;
+    export const ALLOW_LEVEL_SYSTEM = false;
+    export const ALLOW_AVATARS = false;
+    export const ALLOW_ACHIEVEMENTS = false;
 }

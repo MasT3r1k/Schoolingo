@@ -1,5 +1,5 @@
 import { Component, inject, OnInit } from '@angular/core';
-import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import { FormBuilder, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Config } from '../infrastructure/config';
 import { NgClass, NgStyle } from '@angular/common';
 import { QRCodeComponent } from 'angularx-qrcode';
@@ -38,6 +38,7 @@ import { IconAlphabetThai } from 'angular-tabler-icons/icons';
     QRCodeComponent,
     AlertComponent,
     ReactiveFormsModule,
+    FormsModule,
     IconsModule,
     InstallAppModalComponent,
   ],
@@ -164,9 +165,12 @@ export class AuthComponent implements OnInit {
   public forgotpass_token?: string;
   public emails: string[] = [];
   public selectedEmail?: number;
-  public emailCode?: string
+  public emailCode?: string;
   public newPassword?: string;
+  public newAgainPassword?: string;
   public emailTFA?: string;
+
+  // 🚀 Hlavní metoda pro zapomenuté heslo
   public forgotPassword(): void {
     this.errors = {};
 
@@ -175,23 +179,34 @@ export class AuthComponent implements OnInit {
       return;
     }
 
-    if (
-      this.loginForm.value.username == null ||
-      this.loginForm.value.username.trim() == ''
-    ) {
+    const username = this.loginForm.value.username?.trim();
+    if (!username) {
       this.errors['username'] = this.l.s('form.required');
       return;
     }
 
+    // kontrola podle aktuálního kroku
     if (this.page === 'forgotpass_email' && this.selectedEmail == null) {
+      this.a.alert('error', 'auth.forgotpass.missing_selected_email');
       return;
     }
 
+    if (this.page === 'forgotpass_code' && !this.emailCode) {
+      this.errors['email_code'] = this.l.s('form.required');
+      return;
+    }
+
+    if (this.page === 'forgotpass_password' && this.newPassword !== this.newAgainPassword) {
+      this.errors['new_password'] = this.l.s('form.passwords_not_same');
+      return;
+    }
+
+    // 🔹 Odeslání požadavku na server
     this.http
       .post(
         Config.ELYSIA_URL + '/forgot-pass',
         {
-          username: this.loginForm.value.username,
+          username,
           selectedEmail: this.selectedEmail,
           token: this.forgotpass_token,
           emailCode: this.emailCode,
@@ -201,76 +216,109 @@ export class AuthComponent implements OnInit {
         { withCredentials: true }
       )
       .subscribe(
-        (data) => {
+        (data: any) => {
+          // 🔸 chyba
           if ('error' in data && data.error instanceof Array) {
-            if (data.error.includes('Invalid username')) {
-              this.errors['username'] = this.l.s(
-                'auth.errors.invalid_username'
-              );
-              this.page = 'login';
+            const errors = data.error as string[];
+
+            if (errors.includes('No verified email found for this user')) {
+              this.a.alert('error', 'auth.forgotpass.no_emails')
+              return;
             }
 
-            if (data.error.includes('Missing username')) {
-              this.errors['username'] = this.l.s('form.required');
-              this.page = 'login';
-            }
-
-            if (
-              data.error.includes(
-                'No verified email found in the system for this user'
-              )
-            ) {
-              this.a.alert('error', 'auth.forgotpass.no_emails');
-              this.page = 'login';
-            }
-
-            if (
-              data.error.includes(
-                'Multiple verified emails found, please select one'
-              ) &&
-              'emails' in data &&
-              data.emails instanceof Array &&
-              data.emails.length > 0 &&
-              'token' in data &&
-              typeof data.token === 'string'
-            ) {
+            // === STAGE: výběr e-mailu ===
+            if (errors.includes('Multiple verified emails found, please select one') &&
+                Array.isArray(data.emails) && data.token) {
               this.page = 'forgotpass_email';
-              this.emails = data.emails || [];
+              this.emails = data.emails;
               this.forgotpass_token = data.token;
+              return;
             }
 
-            if (data.error.includes('Reset password token expired')) {
-              this.page = 'login';
-              this.a.alert('error', 'auth.forgotpass.token_expired');
-            }
-
-            if (data.error.includes('Missing selectedEmail')) {
-              this.a.alert('error', 'auth.forgotpass.missing_selected_email');
-            }
-
-            if (data.error.includes('Invalid selectedEmail')) {
-              this.a.alert('error', 'auth.forgotpass.invalid_selected_email');
-            }
-
-            if (data.error.includes('Failed to set selected email, please try again')) {
-              this.a.alert('error', 'auth.forgotpass.set_email_failed');
-            }
-
-            if (data.error.includes('Selected email set, input emailCode')) {
+            // === STAGE: ověření kódu ===
+            if (data.stage === 'verify_code') {
               this.page = 'forgotpass_code';
+              return;
+            }
+
+            // === STAGE: chybné OTP ===
+            if (errors.includes('Invalid verification code')) {
+              this.errors['email_code'] = this.l.s('auth.forgotpass.invalid_code');
+              return;
+            }
+
+            if (errors.includes('Invalid TFA code')) {
+              this.errors['emailTFA'] = this.l.s('auth.errors.invalid_tfa');
+              return;
+            }
+
+            // === TOKEN EXPIRED ===
+            if (errors.includes('Reset token expired')) {
+              this.a.alert('error', 'auth.forgotpass.token_expired');
+              this.resetForgotPassword();
+              return;
+            }
+
+            // === Invalid username ===
+            if (errors.includes('Invalid username')) {
+              this.errors['username'] = this.l.s('auth.errors.invalid_username');
+              this.resetForgotPassword();
+              return;
+            }
+
+            // === Invalid password ===
+            if (errors.includes('Invalid password')) {
+              this.errors['new_password'] = this.l.s('settings.passwords.invalid_new_password');
+              return;
+            }
+
+            // === STAGE: 2FA ===
+            if (data.stage === 'tfa_required') {
+              this.page = 'forgotpass_2fa';
+              return;
+            }
+
+            // === Úspěch ===
+            if (data.stage === 'done' && data.success) {
+              this.a.alert('success', 'auth.forgotpass.done');
+              this.resetForgotPassword();
+              return;
             }
           }
+
+          // === STAGE: verify_code přímo ===
+          if (data.stage === 'verify_code' && data.token) {
+            this.page = 'forgotpass_code';
+            this.forgotpass_token = data.token;
+            return;
+          }
+
+          // === STAGE: new_password
+          if (data.stage === 'new_password') {
+            this.page = 'forgotpass_password';
+          }
+
+          // === STAGE: done ===
+          if (data.stage === 'done' && data.success) {
+            this.a.alert('success', 'auth.forgotpass.done');
+            this.resetForgotPassword();
+            return;
+          }
         },
-        (err) => this.a.alert('error', 'auth.forgotpass.http_error')
+        (err) => {
+          console.error(err);
+          this.a.alert('error', 'auth.forgotpass.http_error');
+        }
       );
   }
 
+  // 🔁 Reset všeho po dokončení nebo přerušení
   public resetForgotPassword(): void {
     this.page = 'login';
     this.forgotpass_token = undefined;
     this.emails = [];
     this.selectedEmail = undefined;
-    this.emailCode = undefined
+    this.emailCode = undefined;
     this.newPassword = undefined;
     this.emailTFA = undefined;
   }
@@ -371,10 +419,9 @@ export class AuthComponent implements OnInit {
       );
   }
 
-  public getTokenPlaceholder(): string {
-    let text = this.loginForm.value.token?.toString()!;
+  public getTokenPlaceholder(text: string = this.loginForm.value.token?.toString()!, length: number = AuthConfig.token_length): string {
     for (const _ of [].constructor(
-      AuthConfig.token_length - this.loginForm.value.token!.length
+      length - text.length
     )) {
       text += 'X';
     }

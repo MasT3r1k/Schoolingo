@@ -3,14 +3,12 @@ import { AuthComponent } from './Auth/auth.component';
 import { NotUserGuard, UserGuard } from './Guards/Auth.guard';
 import { BoardComponent } from './board/board.component';
 import { MainComponent } from './board/main/main.component';
-import { UserComponent } from './board/User/user.component';
 import { SettingsComponent } from './board/User/settings/settings.component';
 import { AccountComponent } from './board/User/account/account.component';
 import { PersonalInformationComponent } from './board/User/personal-information/personal-information.component';
 import { ParentsComponent } from './board/User/parents/parents.component';
 import { DevicesComponent } from './board/User/devices/devices.component';
 import { LoginHistoryComponent } from './board/User/login-history/login-history.component';
-import { NotificationsComponent } from './board/User/notifications/notifications.component';
 import { ConnectionsComponent } from './board/User/connections/connections.component';
 import { GdprComponent } from './board/User/gdpr/gdpr.component';
 import { TimetableComponent } from './board/Teach/timetable/timetable.component';
@@ -73,9 +71,6 @@ export const routes: Routes = [
                     },
                     {
                         path: 'logins', component: LoginHistoryComponent
-                    },
-                    {
-                        path: 'notifications', component: NotificationsComponent
                     },
                     {
                         path: 'connections', component: ConnectionsComponent

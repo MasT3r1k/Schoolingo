@@ -44,16 +44,7 @@
                             </div>
                         </div>
         
-                        @if (checkMessageType([messageTypes.MESSAGE])) {
-                            <div class="item">
-                                <label for="selectReceiver">
-                                    {{ l.s('messages.receiver') }}
-                                </label>
-                                <div class="value">
-                                    <input type="text" style="cursor: pointer;" [value]="l.s('messages.no_selected')" name="selectReceiver" readOnly (click)="selectReceivers()">
-                                </div>
-                            </div>
-        
+                        @if (checkMessageType([messageTypes.MESSAGE])) {        
                             <div class="item">
                                 <label for="topic" [ngClass]="{ 'error-color': alerts['topic'] != null }">
                                     {{ l.s('messages.topic') }}
@@ -99,10 +90,6 @@
                         }
 
                         @if (checkMessageType([messageTypes.EXCUSESTUDENT])) {
-                            <div class="message info">
-                                {{ l.s('messages.excuse_message') }}
-                            </div>
-
                             <div class="item">
                                 <label for="selectReceiver">
                                     {{ l.s('messages.student') }}
@@ -323,11 +310,18 @@
                             } 
                         </div>
                     }
+
+                    @if (checkMessageType([messageTypes.EXCUSESTUDENT])) {
+                        <div class="message info">
+                            {{ l.s('messages.excuse_message') }}
+                        </div>
+                    }
                 }
 
                 @case(MessageSendSecondTab.ATTACHMENTS) {
                     <div class="form-group">
                         <div class="btn btn-upload">
+                            <input type="file" id="myFile" name="filename">
                             {{ l.s('buttons.upload_files') }}
                         </div>
                     </div>

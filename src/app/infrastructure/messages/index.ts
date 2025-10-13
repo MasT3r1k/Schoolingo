@@ -85,5 +85,6 @@ export class MessageManager {
   // Rate student
   public messageRating: 'positive' | 'negative' = 'positive';
 
-
+  // Receivers
+  public receivers: number[] = [];
 }

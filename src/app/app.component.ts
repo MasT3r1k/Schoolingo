@@ -17,7 +17,8 @@ export class AppComponent implements OnInit {
     // Enable flags Windows 11
     polyfillCountryFlagEmojis();
 
-    this.auth.getAuthState().subscribe((data) => {
+    this.auth.getAuthState()
+    .subscribe((data) => {
       if (data == "offline") {
         this.appState = false;
       } else {

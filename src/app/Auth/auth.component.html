@@ -141,9 +141,7 @@
                                 </div>
                             </div>
                             <div class="form-group">
-                                <a class="clickable" href="#">
-                                    {{ l.s('auth.2fa.click') }}
-                                </a>
+                                <span>{{ l.s('auth.2fa.note') }}</span>
                             </div>
                         </form>
                         <div class="form-group">
@@ -186,16 +184,110 @@
                         <div class="note mt">
                             {{ l.s('auth.forgotpass.code_from_email') }}
                         </div>
-                        @for(_ of [].constructor(8);track $index) {
-                            
-                        }
                         <div class="form-group">
-                            <div [ngClass]="{btn: true, primary: this.selectedEmail != undefined, disabled: this.selectedEmail == undefined}" (click)="forgotPassword()">
+                            <label for="email_code" [ngClass]="{ 'error-color': getInputError('email_code') !== '' }">
+                                {{ l.s('auth.2fa.authentication_code') }}
+                                @if (getInputError("email_code") !== "") {
+                                    <span class="label-error">
+                                        - {{ getInputError("email_code") }}
+                                    </span>
+                                }
+                            </label>
+                            <div class="value">
+                                <input type="text" id="email_code" [(ngModel)]="emailCode" [minlength]="8" [maxlength]="8" name="email_code" autocomplete="off" autocorrect="off" required placeholder="XXXXXXXX" />
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div [ngClass]="{btn: true, primary: this.emailCode?.length == 8, disabled: this.emailCode?.length != 8}" (click)="forgotPassword()">
                                 {{ l.s('auth.forgotpass.verify_code') }}
                             </div>
                         </div>
                         <div class="form-group">
                             <div [ngClass]="{btn: true}" (click)="resetForgotPassword()">
+                                {{ l.s('auth.login.back_to_login') }}
+                            </div>
+                        </div>
+                    }
+
+                    @case("forgotpass_password") {
+                        <div class="title">
+                            {{ l.s("auth.forgotpass.title") }}
+                        </div>
+
+                        <div class="note mt">
+                            {{ l.s('auth.forgotpass.new_password') }}
+                        </div>
+
+                        <div class="form-group">
+                            <label for="new_password" [ngClass]="{ 'error-color': getInputError('new_password') !== '' }">
+                                {{ l.s('settings.passwords.new_password') }}
+                                @if (getInputError("new_password") !== "") {
+                                    <span class="label-error">
+                                        - {{ getInputError("new_password") }}
+                                    </span>
+                                }
+                            </label>
+                            <div class="value">
+                                <input type="password" id="new_password" [(ngModel)]="newPassword" name="new_password" autocomplete="off" autocorrect="off" [placeholder]="l.s('settings.passwords.new_password')" />
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="new_again_password" [ngClass]="{ 'error-color': getInputError('new_again_password') !== '' }">
+                                {{ l.s('settings.passwords.again_new_password') }}
+                                @if (getInputError("new_again_password") !== "") {
+                                    <span class="label-error">
+                                        - {{ getInputError("new_again_password") }}
+                                    </span>
+                                }
+                            </label>
+                            <div class="value">
+                                <input type="password" id="new_again_password" [(ngModel)]="newAgainPassword" name="new_again_password" autocomplete="off" autocorrect="off" [placeholder]="l.s('settings.passwords.again_new_password')" />
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <div [ngClass]="{btn: true, primary: newPassword == newAgainPassword && (newPassword?.length ?? 0) > 0}" (click)="forgotPassword()">
+                                {{ l.s('auth.forgotpass.request_new_password') }}
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="btn" (click)="resetForgotPassword()">
+                                {{ l.s('auth.login.back_to_login') }}
+                            </div>
+                        </div>
+                    }
+
+                    @case ("forgotpass_2fa") {
+                        <div class="title">
+                            {{ l.s("auth.forgotpass.title") }}
+                        </div>
+
+                        <div class="note mt">
+                            {{ l.s('auth.2fa.description') }}
+                        </div>
+
+                        <div class="form-group">
+                            <label for="emailTFA" [ngClass]="{ 'error-color': getInputError('emailTFA') !== '' }">
+                                {{ l.s('auth.2fa.authentication_code') }}
+                                @if (getInputError("emailTFA") !== "") {
+                                    <span class="label-error">
+                                        - {{ getInputError("emailTFA") }}
+                                    </span>
+                                }
+                            </label>
+                            <div class="value">
+                                <input type="text" id="emailTFA" [(ngModel)]="emailTFA" name="emailTFA" autocomplete="off" autocorrect="off" [placeholder]="l.s('auth.2fa.authentication_code')" />
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <div [ngClass]="{btn: true, primary: (emailTFA?.length ?? 0) == 6}" (click)="forgotPassword()">
+                                {{ l.s('auth.2fa.verify_code') }}
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="btn" (click)="resetForgotPassword()">
                                 {{ l.s('auth.login.back_to_login') }}
                             </div>
                         </div>

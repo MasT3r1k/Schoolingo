@@ -79,17 +79,6 @@ export class BoardComponent implements OnInit {
     }
   ];
 
-  childDropdown: SidebarItem[] = [
-    {
-      item: this.l.s('dropdown.child.son') + ' Josef Kosík',
-      icon: 'male'
-    },
-    {
-      item: this.l.s('dropdown.child.daughter') + ' Ivana Kosíková',
-      icon: 'female'
-    }
-  ]
-
   userDropdown: SidebarItem[] = [
     {
       item: 'sidebar.account',

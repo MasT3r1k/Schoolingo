@@ -113,18 +113,24 @@
 
             </div>
             <div class="user" (click)="$event.stopPropagation();dropdown = (dropdown == 'user') ? '' : 'user'">
-                <div class="avatar golden center">
-                    <div class="hexagon">
-                        <img [src]="u.getAvatar()" alt="Avatar">
+                @if (App.ALLOW_AVATARS) {
+                    <div class="avatar golden center">
+                        <div class="hexagon">
+                            <img [src]="u.getAvatar()" alt="Avatar">
+                        </div>
+                        @if (App.ALLOW_LEVEL_SYSTEM) {
+                            <div class="level">
+                                {{ u.getUser().level }}
+                            </div>
+                        }
                     </div>
-                    <div class="level">
-                        {{ u.getUser().level }}
-                    </div>
-                </div>
+                }
 
-                <div class="xp-bar">
-                    <div class="progress" [ngStyle]="{width: (u.getUser().xp / u.getUser().requiredXP * 100) + '%'}"></div>
-                </div>
+                @if (App.ALLOW_LEVEL_SYSTEM) {
+                    <div class="xp-bar">
+                        <div class="progress" [ngStyle]="{width: (u.getUser().xp / u.getUser().requiredXP * 100) + '%'}"></div>
+                    </div>
+                }
 
                 <div class="info">
                     <p class="name">

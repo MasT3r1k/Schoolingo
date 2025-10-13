@@ -18,6 +18,7 @@ import { httpInterceptor } from './infrastructure/http/http.interceptor';
 import { Homeworks } from '@Schoolingo/homeworks';
 import { MessageManager } from '@Schoolingo/messages';
 import { IconsModule } from '@Schoolingo/icons';
+import { BaseAlertManager } from './infrastructure/alert/alert.manager';
 
 export function initAuth(auth: Authentication): () => void {
   return () => auth.loadState(); // např. HTTP požadavek + setAuthState()
@@ -39,6 +40,7 @@ export const appConfig: ApplicationConfig = {
     Theme,
     School,
     AuthAlertManager,
+    BaseAlertManager,
     BoardAlertManager,
     Sidebar,
     Permission,
