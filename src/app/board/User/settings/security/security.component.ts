@@ -80,7 +80,7 @@ export class SecurityComponent implements OnInit {
 
     this.http.post(
        `${Config.API_URL}/v1/security`,
-       { method: 'ACTIVATE_2FA' },
+       { method: 'ACTIVATE_2FA', TFA: this.settings.TFAControl.value },
        { withCredentials: true }
     )
     .subscribe((data) => {
@@ -111,14 +111,64 @@ export class SecurityComponent implements OnInit {
     });
   }
 
-  public deactivate2FA(): void {
+  public openDeactivate2FA(): void {
     this.modal = 'verify_code';
     this.action = 'deactivate2FA';
   }
 
-  public showBackupCodes(): void {
+  public deactivate2FA(): void {
+    this.http.post(
+       `${Config.API_URL}/v1/security`,
+       { method: 'DEACTIVATE_2FA', TFA: this.settings.TFAControl.value },
+       { withCredentials: true }
+    )
+    .subscribe((data) => {
+      this.active_action = '';
+      if ('error' in data && data.error instanceof Array) {
+        if (data.error.includes('Already deactivated 2FA')) {
+          this.modal = '';
+          this.action = '';
+          return;
+        }
+
+        if (data.error.includes('Invalid TFA')) {
+          this.errors['token'] = this.l.s('auth.errors.invalid_tfa');
+          return;
+        }
+      }
+    });
+  }
+
+  public openBackupCodes(): void {
     this.modal = 'verify_code';
     this.action = 'show_backup_codes';
+  }
+  
+  public showBackupCodes(): void {
+    this.http.post(
+       `${Config.API_URL}/v1/security`,
+       { method: 'GET_BACKUP_CODES', TFA: this.settings.TFAControl.value },
+       { withCredentials: true }
+    )
+    .subscribe((data) => {
+      this.active_action = '';
+      if ('codes' in data) {
+        console.log(data.codes);
+      }
+
+      if ('error' in data && data.error instanceof Array) {
+        if (data.error.includes('Not activated TFA')) {
+          this.modal = '';
+          this.action = '';
+          return;
+        }
+
+        if (data.error.includes('Invalid TFA')) {
+          this.errors['token'] = this.l.s('auth.errors.invalid_tfa');
+          return;
+        }
+      }
+    });
   }
 
   public refreshBackupCodes(): void {
