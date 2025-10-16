@@ -26,6 +26,13 @@ export enum messageTypes {
   SYSTEM
 }
 
+export type messageReceiver = {
+  id: number;
+  name: string;
+  role: string;
+  class?: string;
+}
+
 export class MessageManager {
 
   public types: MessageType[] = [
@@ -78,7 +85,7 @@ export class MessageManager {
   public messageType = new BehaviorSubject<messageTypes>(messageTypes.MESSAGE);
   public message = "";
   public topic = "";
-  
+
   // Homeworks
   public selectedHomework = new BehaviorSubject(null);
 
