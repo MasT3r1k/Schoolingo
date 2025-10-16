@@ -10,7 +10,7 @@ import { AuthConfig } from '../../../../infrastructure/authentication/config';
 import { IconsModule } from '@Schoolingo/icons';
 import { Passkey } from '@Schoolingo/passkey';
 import Swal from 'sweetalert2';
-import { startRegistration } from '@simplewebauthn/browser';
+import { PublicKeyCredentialCreationOptionsJSON, startRegistration } from '@simplewebauthn/browser';
 import { QRCodeComponent } from 'angularx-qrcode';
 import { Theme } from '@Schoolingo/theme';
 import { BaseAlertManager } from '../../../../infrastructure/alert/alert.manager';
@@ -39,35 +39,7 @@ export class SecurityComponent implements OnInit {
   public utils = Utils;
 
   public isPasskeySupported: boolean | null = null;
-  public codes: BackupCode[] = [
-    // {
-    //   code: 'AAAA-BBBB',
-    //   used: true,
-    //   used_at: new Date(),
-    // },
-    // {
-    //   code: 'BBBB-CCCC',
-    //   used: false,
-    // },
-    // {
-    //   code: 'AAAA-BBB5',
-    //   used: false,
-    // },
-    // {
-    //   code: 'AAAA-BBB2',
-    //   used: true,
-    //   used_at: new Date(),
-    // },
-    // {
-    //   code: 'BBBB-CCC3',
-    //   used: true,
-    //   used_at: new Date(),
-    // },
-    // {
-    //   code: 'AAAA-BBB4',
-    //   used: false,
-    // },
-  ];
+  public codes: BackupCode[] = [];
 
   public getRemainingCodes(): number {
     return this.codes.filter((code) => code.used == false).length;
@@ -202,9 +174,10 @@ export class SecurityComponent implements OnInit {
           )
           .subscribe((data) => {
             this.active_action = '';
-            if ('codes' in data) {
+            if ('codes' in data && data.codes instanceof Array) {
               this.settings.TFAControl.setValue('');
-              console.log(data.codes);
+              this.codes = data.codes;
+              this.modal = "backup_codes";
             }
 
             if ('error' in data && data.error instanceof Array) {
@@ -236,9 +209,10 @@ export class SecurityComponent implements OnInit {
           )
           .subscribe((data) => {
             this.active_action = '';
-            if ('codes' in data) {
+            if ('codes' in data && data.codes instanceof Array) {
               this.settings.TFAControl.setValue('');
-              console.log(data.codes);
+              this.codes = data.codes.map((code: string) => ({ code, used: false }));
+              this.modal = "backup_codes";
             }
 
             if ('error' in data && data.error instanceof Array) {

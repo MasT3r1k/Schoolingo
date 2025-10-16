@@ -7,9 +7,5 @@ export interface SecurityAPI {
 
 export type BackupCode = {
   code: string;
-} & ({
-  used: true,
-  used_at: Date
-} | {
-  used: false
-})
+  used: boolean;
+}
