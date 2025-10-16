@@ -31,6 +31,7 @@ export class Settings {
         } else {
           this.security = data;
           this.security['2fa_activated'] = moment(data['2fa_activated']);
+          this.TFAControl.setValue("");
         }
       });
   }
