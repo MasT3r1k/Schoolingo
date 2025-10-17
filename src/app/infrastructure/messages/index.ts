@@ -31,6 +31,10 @@ export type messageReceiver = {
   name: string;
   role: string;
   class?: string;
+  classTeacher?: messageReceiver[];
+  parents?: messageReceiver[];
+  child: string;
+  type?: 'parent'
 }
 
 export class MessageManager {

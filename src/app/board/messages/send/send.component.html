@@ -452,21 +452,21 @@
       }"
     >
       @switch(selectedOptionTab.getValue()) {
-      @case(MessageSendSecondTab.RECEIVERS) { @if
-      (checkMessageType([messageTypes.MESSAGE])) {
+      @case(MessageSendSecondTab.RECEIVERS) {
+        @if (checkMessageType([messageTypes.MESSAGE])) {
       <div class="form-group input-icon mb">
         <i-tabler name="search"></i-tabler>
         <input
           type="text"
           name="receiver"
           [(ngModel)]="receiverFilter"
-          placeholder="Hledat příjemce"
+          [placeholder]="l.s('messages.search_receiver')"
         />
       </div>
 
       <div class="receivers">
         @for(receiver of receivers;track $index) {
-        <div class="receiver" (click)="toggleReceiverSelection(receiver)">
+        <div [ngClass]="{receiver: true, active: isReceiverSelected(receiver)}" (click)="toggleReceiverSelection(receiver)">
           <div
             [ngClass]="{ select: true, selected: isReceiverSelected(receiver) }"
           >
@@ -478,13 +478,16 @@
             }
           </div>
           <div class="name">
-            {{ receiver.name }}
-          </div>
-          <div class="role">
-            {{ l.s("roles." + receiver.role) }}
+            <span>{{ receiver.name }}</span>
+            <span class="role">
+              {{ l.s("roles." + receiver.role) }} 
             @if (receiver.class) {
-            {{ " - " + receiver.class }}
+            <span>{{ l.s('messages.receivers.from_class').replaceAll('%class%', receiver.class) }}</span>
             }
+            @if (receiver.child) {
+              <span>{{ l.s('messages.receivers.from_child').replaceAll('%child%', receiver.child) }}</span>
+            }
+            </span>
           </div>
         </div>
         }
@@ -496,9 +499,49 @@
           active: showSelectedReceivers
         }"
       >
-        <div class="list-selected-receivers"></div>
+        <div class="list-selected-receivers receivers">
+          <p>{{ l.s('messages.selected_receivers') }}</p>
+          @for (receiver of getSelectedReceivers(); track $index) {
+            <div class="receiver" (click)="toggleReceiverSelection(receiver)">
+              <div
+                [ngClass]="{ select: true, selected: isReceiverSelected(receiver) }"
+              >
+                @if (isReceiverSelected(receiver) && receiver.type != "parent") {
+                <i-tabler
+                  name="check"
+                  style="height: 16px; stroke-width: 3px"
+                ></i-tabler>
+                }
+
+                @if (receiver.type == "parent") {
+                <i-tabler
+                  name="chevron-down"
+                  style="height: 16px; stroke-width: 3px"
+                ></i-tabler>
+                }
+              </div>
+              <div class="name">
+                <span>{{ receiver.name }}</span>
+                <span class="role">
+                  {{ l.s("roles." + receiver.role) }} 
+                @if (receiver.class) {
+                <span>{{ l.s('messages.receivers.from_class').replaceAll('%class%', receiver.class) }}</span>
+                }
+                @if (receiver.child) {
+                  <span>{{ l.s('messages.receivers.from_child').replaceAll('%child%', receiver.child) }}</span>
+                }
+                </span>
+              </div>
+            </div>
+          }
+          @empty {
+            <div class="message error">
+              {{ l.s('messages.no_selected_receivers') }}
+            </div>
+          }
+        </div>
         <div
-          class="btn"
+          class="btn primary"
           (click)="showSelectedReceivers = !showSelectedReceivers"
         >
           <i-tabler
@@ -511,7 +554,7 @@
                   ? "messages.hide_selected_receivers"
                   : "messages.show_selected_receivers"
               )
-              .replaceAll("%count%", selectedReceivers.length.toString())
+              .replaceAll("%count%", getSelectedReceivers().length.toString())
           }}
         </div>
       </div>
@@ -519,7 +562,14 @@
       <div class="message info">
         {{ l.s("messages.excuse_message") }}
       </div>
-      } } @case(MessageSendSecondTab.ATTACHMENTS) {
+      } @if (checkMessageType([messageTypes.HOMEWORK])) {
+        @if (messageManager.selectedHomework.getValue() == null) {
+          <div class="message error">
+            {{ l.s("messages.homeworks.not_selected") }}
+          </div>
+        }
+      } }
+      @case(MessageSendSecondTab.ATTACHMENTS) {
       <div class="form-group">
         <div class="btn btn-upload">
           <i-tabler name="upload"></i-tabler>

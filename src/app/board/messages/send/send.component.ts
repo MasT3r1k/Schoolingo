@@ -21,7 +21,14 @@ import { AlertComponent } from '@Components/Alert';
 import { HttpClient } from '@angular/common/http';
 
 @Component({
-  imports: [FormsModule, NgClass, IconsModule, TabsComponent, AlertComponent, NgStyle],
+  imports: [
+    FormsModule,
+    NgClass,
+    IconsModule,
+    TabsComponent,
+    AlertComponent,
+    NgStyle,
+  ],
   templateUrl: './send.component.html',
   styleUrl: './send.component.css',
 })
@@ -47,7 +54,8 @@ export class SendComponent {
   public selectedOptionTab = new BehaviorSubject<number>(0);
 
   // === UI ===
-  public showSelect: 'messagetype' | 'homework' | 'children' | 'rating' | null = null;
+  public showSelect: 'messagetype' | 'homework' | 'children' | 'rating' | null =
+    null;
   public isHiddenRightCard = false;
 
   // === Options ===
@@ -73,8 +81,50 @@ export class SendComponent {
     }
   }
 
+  public getSelectedReceivers(): messageReceiver[] {
+    const receiversMap: Map<number, messageReceiver> = new Map();
+
+    this.selectedReceivers.forEach((receiver: messageReceiver) => {
+      // přidáme třídní učitele
+      if (
+        this.messageManager.options.copyToClassTeacher &&
+        receiver.classTeacher
+      ) {
+        for (let classteacher of receiver.classTeacher) {
+          if (!receiversMap.has(classteacher.id)) {
+            receiversMap.set(classteacher.id, {
+              ...classteacher,
+              role: 'teacher'
+            });
+          }
+        }
+      }
+
+      // přidáme hlavního příjemce
+      receiversMap.set(receiver.id, receiver);
+
+      // přidáme rodiče
+      if (this.messageManager.options.copyToParents && receiver.parents) {
+        for (let parent of receiver.parents) {
+          if (!receiversMap.has(parent.id)) {
+            receiversMap.set(
+              parent.id,
+              {
+                ...parent,
+                child: receiver.name,
+                role: 'parent',
+                type: 'parent'
+              });
+          }
+        }
+      }
+    });
+
+    return Array.from(receiversMap.values());
+  }
+
   public isReceiverSelected(receiver: messageReceiver): boolean {
-    return this.selectedReceivers.some((r) => r.id === receiver.id);
+    return this.getSelectedReceivers().some((r) => r.id === receiver.id);
   }
 
   public removeSelectedReceiver(id: number): void {
@@ -106,12 +156,16 @@ export class SendComponent {
 
     // Load recipients
     this.http
-      .get<messageReceiver[]>(`${Config.API_URL}/v1/messages/recipients`, { withCredentials: true })
+      .get<messageReceiver[]>(`${Config.API_URL}/v1/messages/recipients`, {
+        withCredentials: true,
+      })
       .subscribe((rows) => (this.receivers = rows || []));
 
     // Load message config
     this.http
-      .get<any>(`${Config.API_URL}/v1/messages/config`, { withCredentials: true })
+      .get<any>(`${Config.API_URL}/v1/messages/config`, {
+        withCredentials: true,
+      })
       .subscribe((data) => {
         if (!('error' in data)) this.config = data;
       });
@@ -169,7 +223,10 @@ export class SendComponent {
             this.selectedReceivers = [];
             this.alerts['main'] = new Alert('success', 'messages/sent');
           } else {
-            this.alerts['main'] = new Alert('error', res?.error || 'unknown_error');
+            this.alerts['main'] = new Alert(
+              'error',
+              res?.error || 'unknown_error'
+            );
           }
         },
         error: () => {
