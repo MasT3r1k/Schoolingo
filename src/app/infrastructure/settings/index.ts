@@ -4,9 +4,11 @@ import { HttpClient } from '@angular/common/http';
 import { Config } from '@Schoolingo/config';
 import moment from 'moment';
 import { FormBuilder } from '@angular/forms';
+import { Router } from '@angular/router';
 
 export class Settings {
   private http = inject(HttpClient);
+  private router = inject(Router);
   private security: SecurityAPI | null = null;
   private formBuilder = inject(FormBuilder);
   public passkeyName = this.formBuilder.control('');
@@ -27,6 +29,10 @@ export class Settings {
       })
       .subscribe((data) => {
         if ('error' in data) {
+          if (data.error == 'no_user') {
+            this.router.navigate(['/login']);
+            return;
+          }
           console.error(data.error);
         } else {
           this.security = data;
