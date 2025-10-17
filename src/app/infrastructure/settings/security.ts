@@ -4,3 +4,8 @@ export interface SecurityAPI {
   fastlogin: boolean;
   passkeys: any[];
 }
+
+export type BackupCode = {
+  code: string;
+  used: boolean;
+}

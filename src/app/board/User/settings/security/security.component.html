@@ -144,8 +144,6 @@
                 [imageHeight]="56"
                 [imageWidth]="56"
                 [qrdata]="TFA_qrcode!"
-                [colorDark]="t.getTheme().getValue() == 'light' ? '#000000' : '#ffffff'"
-                [colorLight]="t.getTheme().getValue() == 'light' ? '#ffffff' : '#000000'"
                 ></qrcode>
             }
         </div>
@@ -200,7 +198,7 @@
                 <input type="text" [placeholder]="l.s('auth.2fa.authentication_code')" id="token" autocomplete="off" [minlength]="AuthConfig.token_length"  [maxlength]="AuthConfig.token_length" [formControl]="settings.TFAControl">
             </div>
             <div class="form-group">
-                <div [ngClass]="{btn: true, primary: settings.checkValidTFA(), disabled: !settings.checkValidTFA()}" (click)="showBackupCodes()">
+                <div [ngClass]="{btn: true, primary: settings.checkValidTFA(), disabled: !settings.checkValidTFA()}" (click)="runAction2FA()">
                     @if (active_action == 'activating_2fa') {
                         <div class="loader"></div>
                         <span>{{ l.s('auth.2fa.verify_code_action') }}</span>
@@ -246,6 +244,62 @@
                 </div>
             </div>
         </form>
+    </div>
+</div>
+}
+
+@if (modal == "backup_codes") {
+<div class="modals">
+    <div class="modal" id="update_passkey">
+        <div class="modal-header">
+            <h2>{{ l.s('settings.2fa.backup_codes.title') }}</h2>
+        </div>
+        
+        <div class="modal-close" (click)="modal = ''">
+            <i-tabler name="x"></i-tabler>
+        </div>
+
+        <div class="message info">
+            {{ l.s('settings.2fa.backup_codes.description') }}
+        </div>
+
+        @if (codes.length) {
+            <div class="note">
+                {{ l.s('settings.2fa.backup_codes.note').replaceAll('%remain%', getRemainingCodes().toString()).replaceAll('%all%', getAllCodes().toString()) }}
+            </div>
+        }
+
+        <div class="codes">
+            @for (code of codes;track code.code) {
+                <div [ngClass]="{code: true, 'is-used': code.used}">
+                    <code>{{ code.code }}</code>
+                    @if (code.used) {
+                        <span class="used-label">
+                            {{ l.s('settings.2fa.backup_codes.used') }}
+                        </span>
+                    } @else {
+                        <div class="code-btn" (click)="utils.copyTextToClipboard(code.code)">
+                            <i-tabler name="copy"></i-tabler>
+                        </div>
+                    }
+                </div>
+            } @empty {
+                <div class="note danger">
+                    {{ l.s('settings.2fa.backup_codes.empty') }}
+                </div>
+            }
+        </div>
+        <div class="form-group">
+            <span class="note primary clickable" (click)="downloadBackupCodes()">
+                {{ l.s('settings.2fa.backup_codes.download_backup_codes') }}
+            </span>
+        </div>
+        <div class="form-group">
+            <div class="btn primary" (click)="refreshBackupCodes()">
+                <i-tabler name="rocket"></i-tabler>
+                <span>{{ l.s('settings.2fa.backup_codes.generate_new_codes') }}</span>
+            </div>
+        </div>
     </div>
 </div>
 }

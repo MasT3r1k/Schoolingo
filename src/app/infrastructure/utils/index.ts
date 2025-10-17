@@ -246,4 +246,31 @@ export namespace Utils {
     }
     return browser;
   }
+
+  export function copyTextToClipboard(text: string): void {
+    if (navigator.clipboard && window.isSecureContext) {
+      navigator.clipboard.writeText(text).catch(err => {
+        console.error('Nepodařilo se zkopírovat text:', err);
+      });
+    } else {
+      const textArea = document.createElement('textarea');
+      textArea.value = text;
+
+      textArea.style.position = 'fixed';
+      textArea.style.left = '-9999px';
+      textArea.style.top = '-9999px';
+      document.body.appendChild(textArea);
+
+      textArea.focus();
+      textArea.select();
+
+      try {
+        document.execCommand('copy');
+      } catch (err) {
+        console.error('Záložní kopírování selhalo:', err);
+      }
+
+      document.body.removeChild(textArea);
+    }
+  }
 }
