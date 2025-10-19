@@ -5,9 +5,16 @@
     <div class="items">
         @for (language of l.getLanguages(); track $index) {
             <div [ngClass]="{item: true, active: l.getSelectedLanguage().getValue() == language}" (click)="l.setLanguage(language)">
-                <img [src]="l.getLanguage(language)?.flag" [alt]="l.getLanguage(language)?.name" height="24" style="margin-right: 8px;">
-                <div>
-                    {{ l.getLanguage(language)?.name }}
+                <div class="flag">
+                    <img [src]="l.getLanguage(language)?.flag" [alt]="l.getLanguage(language)?.name" width="27" height="18">
+                </div>
+                <div class="meta">
+                    <span class="name">
+                        {{ l.getLanguage(language)?.name }}
+                        <span class="subname">
+                            ({{ l.getSelectedLanguage().getValue() == language ? l.getLanguage(language)?.name : l.s('languages.' + l.getLanguage(language)?.iso) }})
+                        </span>
+                    </span>
                 </div>
                 @if (l.getSelectedLanguage().getValue() == language) {
                     <div [ngClass]="{badge: true, active: l.getState() == 'loaded', loading: l.getState() == 'loading'}">
