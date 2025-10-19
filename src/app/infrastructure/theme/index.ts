@@ -38,10 +38,14 @@ export class Theme {
     this.renderer.destroy();
   }
 
-  public getSystemColor(): "dark" | "light" {
+  public getSystemColor(): Omit<themes, "system"> {
     return window.matchMedia('(prefers-color-scheme: dark)').matches
       ? 'dark'
       : 'light';
+  }
+
+  public getThemeColorFromTheme(theme: themes): Omit<themes, "system"> {
+    return theme == "system" ? this.getSystemColor() : theme;
   }
 
   /**
@@ -62,7 +66,7 @@ export class Theme {
     } else {
       this.renderer.addClass(
         document.body.parentElement,
-        this.getSystemColor()
+        this.getSystemColor().toString()
       );
     }
   }

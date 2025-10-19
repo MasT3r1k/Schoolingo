@@ -40,8 +40,13 @@
         <div class="left">
             @if (!options.hideInfo && this.data.getValue().length) {
                 <p>
-                Zobrazeno {{ currentStart() }} z {{ currentEnd() }} (celkem {{ totalRows() }}),
-                stránka {{ currentPage() }} z {{ getMaxPages() }}
+                    {{ l.s('components.datalist.info')
+                        .replaceAll('%start%', currentStart().toString())
+                        .replaceAll('%end%', currentEnd().toString())
+                        .replaceAll('%rows%', totalRows().toString())
+                        .replaceAll('%page%', currentPage().toString())
+                        .replaceAll('%max_pages%', getMaxPages().toString())
+                    }}
                 </p>
             }
         </div>

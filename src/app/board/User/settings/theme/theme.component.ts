@@ -1,4 +1,4 @@
-import { NgClass } from '@angular/common';
+import { NgClass, NgStyle } from '@angular/common';
 import { Component, inject, OnInit } from '@angular/core';
 import { Locale } from '@Schoolingo/locale';
 import { Theme } from '@Schoolingo/theme';
@@ -6,7 +6,7 @@ import { Theme } from '@Schoolingo/theme';
 @Component({
   selector: 'settings-change-theme',
   standalone: true,
-  imports: [NgClass],
+  imports: [NgClass, NgStyle],
   templateUrl: './theme.component.html',
   styleUrls: ['../settings.component.css', './theme.component.css']
 })
