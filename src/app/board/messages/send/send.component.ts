@@ -91,7 +91,7 @@ export class SendComponent {
         receiver.classTeacher
       ) {
         for (let classteacher of receiver.classTeacher) {
-          if (!receiversMap.has(classteacher.id)) {
+          if (!receiversMap.has(classteacher.id) && this.auth.getUser().personId != classteacher.id) {
             receiversMap.set(classteacher.id, {
               ...classteacher,
               role: 'teacher'
