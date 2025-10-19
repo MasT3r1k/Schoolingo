@@ -94,7 +94,7 @@ import { Config } from '@Schoolingo/config';
     }
 
     .tab:hover {
-      background-color: var(--background-hover);
+      background-color: var(--hover-bg);
     }
 
     .tab.active {

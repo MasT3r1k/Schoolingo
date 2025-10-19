@@ -1,113 +1,127 @@
 import { inject, Injectable } from "@angular/core";
-
 import { HttpClient } from "@angular/common/http";
 import { Config } from "@Schoolingo/config";
 import { BehaviorSubject, distinctUntilChanged } from "rxjs";
-import 'moment/locale/cs';
-import 'moment/locale/en-gb';
 import { Language } from "./language";
+import { Authentication } from "@Schoolingo/authentication";
 
 @Injectable()
 export class Locale {
     private http = inject(HttpClient);
-    public languages: Language[] = [];
+    private auth = inject(Authentication);
 
-    private selectedLanguage = new BehaviorSubject<string>('');
-    private locale = new BehaviorSubject<any>({});
-    private state: 'loaded' | 'loading' = 'loading';
+    public languages: Language[] = [];
+    private selectedLanguage$ = new BehaviorSubject<string>('');
+    private locale$ = new BehaviorSubject<any>({});
+    private state: 'loaded' | 'loading' | 'error' = 'loading';
 
     constructor() {
-        this.http.get(Config.LOCALE_URL)
-        .subscribe((languages: any) => {
-            for(const language of languages) {
-                this.languages.push(language);
-            }
-            this.setLanguage("Čeština");
-        })
+        this.loadLanguages();
+        this.handleLanguageChanges();
+        this.loadUserLanguageOnLogin();
+    }
 
+    /** 1️⃣ Načti seznam jazyků a nastav výchozí */
+    private loadLanguages(): void {
+        this.http.get<Language[]>(Config.LOCALE_URL).subscribe({
+            next: (languages) => {
+                this.languages = languages;
+                const initialLang = this.selectedLanguage$.value || this.languages[0]?.name;
+                this.setLanguage(initialLang);
+            },
+            error: () => this.state = 'error'
+        });
+    }
 
-        this.selectedLanguage
-        .pipe(distinctUntilChanged())
-        .subscribe((language) => {
-            if (language == "" || language == null) return;
-            this.state = 'loading';
-            const lng = this.languages.filter((_) => _.name == language)[0];
-            this.http.get(Config.LOCALE_URL + lng.file)
-            .subscribe((locale) => {
-                this.locale.next(locale);
-                this.state = 'loaded';
+    /** 2️⃣ Sleduj změnu jazyka a načítej locale */
+    private handleLanguageChanges(): void {
+        this.selectedLanguage$
+            .pipe(distinctUntilChanged())
+            .subscribe((language) => {
+                if (!language) return;
+
+                const lng = this.getLanguage(language);
+                if (!lng || !lng.file) return;
+
+                this.state = 'loading';
+                this.http.get(Config.LOCALE_URL + lng.file).subscribe({
+                    next: (locale) => {
+                        this.locale$.next(locale);
+                        this.state = 'loaded';
+                    },
+                    error: () => this.state = 'error'
+                });
             });
-        })
     }
 
-    public getState(): typeof this.state {
-        return this.state;
+    /** 3️⃣ Načti jazyk přihlášeného uživatele */
+    private loadUserLanguageOnLogin(): void {
+        this.auth.getAuthState().subscribe((logged) => {
+            if (logged) {
+                const user = this.auth.getUser();
+                if (user?.locale) {
+                    this.setLanguage(user.locale);
+                }
+            }
+        });
     }
 
-    public getSelectedLanguage(): typeof this.selectedLanguage {
-        return this.selectedLanguage;
+    /** ✅ Ulož jazyk do API */
+    public saveLanguage(): void {
+        const lng = this.getLanguage(this.selectedLanguage$.value);
+        if (!lng) return;
+
+        this.state = 'loading';
+        this.http.post(Config.API_URL + '/v1/user/update', {
+            method: "UPDATE_LANGUAGE",
+            language: lng.iso
+        }, { withCredentials: true })
+        .subscribe({
+            next: (data: any) => this.state = data?.status ? 'loaded' : 'error',
+            error: () => this.state = 'error'
+        });
     }
+
+    /** ✅ Nastavení jazyka (bez ukládání do API) */
+    public setLanguage(language: string): void {
+        const lng = this.getLanguage(language);
+        if (!lng) return console.error("Language not found:", language);
+        this.selectedLanguage$.next(lng.name);
+    }
+
+    /** ✅ Veřejné getry */
+    public getState() { return this.state; }
+    public getSelectedLanguage() { return this.selectedLanguage$; }
+    public getLocaleData() { return this.locale$; }
 
     public getLanguage(language: string): Language | null {
-        return this.languages.filter(lang => lang.name === language)[0];
+        return this.languages.find(lang => lang.name === language || lang.iso === language) || null;
     }
 
-    public getLocaleData(): typeof this.locale {
-        return this.locale;
-    }
-
-    public setLanguage(language: string): void {
-        const exists = this.languages.some(lang => lang.name === language);
-        if (!exists) {
-            console.error("Language not found")
-            return;
-        }
-        this.selectedLanguage.next(language);
-    }
-
-
-    /**
-     * @returns list of languages in array
-     */
     public getLanguages(): string[] {
-        let languages: string[] = [];
-        this.languages.forEach((lng) => languages.push(lng.name));
-        return languages;
+        return this.languages.map(l => l.name);
     }
 
-    /**
-     * Select default language from language in browser
-     * @return void 
-     */
+    /** ✅ Výchozí jazyk podle prohlížeče */
     public setDefaultLanguage(): void {
-        const exists = this.languages.some(lang => lang.name === window.navigator.language);
-        if (exists) {
-            this.setLanguage(window.navigator.language);
-        }else{
-            this.setLanguage("Čeština");
-        }
+        const browserLang = window.navigator.language;
+        const target = this.languages.some(lang => lang.name === browserLang)
+            ? browserLang
+            : this.languages[0]?.name;
+        this.setLanguage(target);
     }
 
-    /**
-     * Get translated text from locale
-     * @param path Path to locale
-     * @param locale language (optional)
-     * @returns Translate of path
-     */
+    /** ✅ Překlad podle path (safety) */
     public s(path: string): string {
-        if (path == '') return '[no path]';
-        let nextLocale = this.locale.getValue();
-        if (!nextLocale) return '[no locale]';
-        let pathSplitted = path.split('.');
-
-        pathSplitted.forEach(p => {
-            if (nextLocale[p]) {
-                nextLocale = nextLocale[p];
-            }else{
-                nextLocale = '[' + path + ']';
+        if (!path) return '[no path]';
+        let current = this.locale$.value;
+        for (const key of path.split('.')) {
+            if (current && current[key] !== undefined) {
+                current = current[key];
+            } else {
+                return `[${path}]`;
             }
-        })
-        return nextLocale;
+        }
+        return current;
     }
-
 }

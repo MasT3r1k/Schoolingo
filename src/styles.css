@@ -31,8 +31,8 @@ a {
 
 :root {
     --primary: #5865f2;
-    --primary-second: #4654c0;
-    --primary-gradient: linear-gradient(45deg, var(--primary), var(--primary-second));
+    --primary-strong: #4654c0;
+    --primary-gradient: linear-gradient(45deg, var(--primary), var(--primary-strong));
     --red: hsl(0deg, 63%, 43%);
     --error: var(--red);
     --green: hsl(134deg, 62%, 41%);
@@ -43,40 +43,175 @@ a {
     --swal2-confirm-button-background-color: var(var(--primary));
 }
 
+
+.dark {
+    /* --- Base (tmavý skoro černý vzhled) --- */
+    --bg: #0a0a0c;              /* hlavní pozadí – téměř černé */
+    --surface: #111114;         /* panely, karty */
+    --surface-2: #1a1a1e;       /* zvýrazněné povrchy */
+    --elevated: #131317;        /* hoverované / aktivní pozadí */
+    --border: #2a2a2f;          /* decentní ohraničení */
+    --shadow: 0 6px 18px rgba(0,0,0,0.6);
+
+    /* --- Texty --- */
+    --text: #f1f1f2;            /* hlavní světlý text */
+    --text-muted: #b4b4b8;      /* sekundární text */
+    --muted: #8c8c91;           /* slabší text */
+    --icon: #d8d8dd;            /* ikony */
+
+    /* --- Primární modrá (hlavní akcent) --- */
+    --primary: #5865f2;         /* základ */
+    --primary-strong: #4752d9;  /* hover / strong */
+    --primary-700: #3640b8;
+    --primary-900: #1f265f;
+    --primary-200: #8a92f7;     /* světlejší tón (tagy, badge) */
+    --primary-100: #c1c5ff;
+    --primary-50:  #eef0ff;
+
+    /* --- Sekundární modrá (accent) --- */
+    --accent: #4654c0;
+    --accent-700: #38449b;
+    --accent-900: #262d5c;
+    --accent-200: #707be0;
+    --accent-100: #a2a8ef;
+    --accent-50:  #d5d7f8;
+
+    /* --- Semantic colors --- */
+    --success: #2ecc71;
+    --success-700: #1e8a50;
+
+    --warning: #f1c40f;
+    --warning-700: #b8930b;
+
+    --danger: #e74c3c;
+    --danger-700: #a83428;
+
+    --info: var(--primary);
+
+    /* --- UI helpers --- */
+    --surface-glow: linear-gradient(90deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+    --glass-0: rgba(255,255,255,0.02);
+    --glass-1: rgba(255,255,255,0.04);
+
+    /* --- Focus / hover states --- */
+    --focus-ring: 0 0 0 4px rgba(88,101,242,0.25);
+    --hover-bg: rgba(255,255,255,0.04);
+    --active-bg: rgba(255,255,255,0.06);
+
+    /* --- Messages --- */
+    --message-info-bg: oklab(0.70 -0.03 -0.10 / 0.15);
+    --message-info-border: oklab(0.70 -0.03 -0.10 / 0.4);
+    --message-info-color: oklch(0.80 0.12 250);
+
+    --message-error-bg: oklab(0.68 0.14 0.07 / 0.15);
+    --message-error-border: oklab(0.68 0.14 0.07 / 0.4);
+    --message-error-color: oklch(0.78 0.15 20);
+
+    --message-success-bg: oklab(0.74 -0.12 0.10 / 0.15);
+    --message-success-border: oklab(0.74 -0.12 0.10 / 0.4);
+    --message-success-color: rgb(110, 220, 160);
+}
+
 .light {
-    --input-background: hsl(240deg, 14%, 92.5%);
-    --background-body: hsl(0deg, 0%, 100%);
+    /* --- Base (světlý vzhled) --- */
+    --bg: #f5f6f8;             /* hlavní pozadí */
+    --surface: #ffffff;        /* panely, karty */
+    --surface-2: #f0f1f4;      /* sekundární povrch */
+    --elevated: #ffffff;       /* zvýrazněné/hoverované prvky */
+    --border: #d5d7de;         /* jemné ohraničení */
+    --shadow: 0 6px 16px rgba(0,0,0,0.06);
+
+    /* --- Texty --- */
+    --text: #1b1d21;           /* hlavní tmavý text */
+    --text-muted: #51545a;     /* sekundární text */
+    --muted: #6c6f75;          /* slabší text */
+    --icon: #3a3d42;           /* ikony */
+
+    /* --- Primární modrá (zůstává stejná) --- */
+    --primary: #5865f2;
+    --primary-strong: #4752d9;
+    --primary-700: #3640b8;
+    --primary-900: #1f265f;
+    --primary-200: #8a92f7;
+    --primary-100: #c1c5ff;
+    --primary-50:  #eef0ff;
+
+    /* --- Sekundární modrá (accent) --- */
+    --accent: #4654c0;
+    --accent-700: #38449b;
+    --accent-900: #262d5c;
+    --accent-200: #707be0;
+    --accent-100: #a2a8ef;
+    --accent-50:  #d5d7f8;
+
+    /* --- Semantic colors --- */
+    --success: #2ecc71;
+    --success-700: #1e8a50;
+
+    --warning: #f1c40f;
+    --warning-700: #b8930b;
+
+    --danger: #e74c3c;
+    --danger-700: #a83428;
+
+    --info: var(--primary);
+
+    /* --- UI helpers --- */
+    --surface-glow: linear-gradient(90deg, rgba(0,0,0,0.02), rgba(0,0,0,0.01));
+    --glass-0: rgba(0,0,0,0.02);
+    --glass-1: rgba(0,0,0,0.04);
+
+    /* --- Focus / hover states --- */
+    --focus-ring: 0 0 0 4px rgba(88,101,242,0.25);
+    --hover-bg: rgba(0,0,0,0.04);
+    --active-bg: rgba(0,0,0,0.06);
+
+    /* --- Messages --- */
+    --message-info-bg: oklab(0.623 -0.0378409 -0.210628 / 0.1);
+    --message-info-border: oklab(0.623 -0.0378409 -0.210628 / 0.25);
+    --message-info-color: oklch(0.546 0.245 262.881);
+    --message-error-bg: oklab(0.637 0.214213 0.1014 / 0.1);
+    --message-error-border: oklab(0.637 0.214213 0.1014 / 0.25);
+    --message-error-color: oklch(0.577 0.245 27.325);
+    --message-success-bg: oklab(0.711349 -0.161865 0.0801783 / 0.1);
+    --message-success-border: oklab(0.711349 -0.161865 0.0801783 / 0.25);
+    --message-success-color: rgb(0, 161, 85);
+}
+
+/* .--light {
+    --elevated: hsl(240deg, 14%, 92.5%);
+    --surface: hsl(0deg, 0%, 100%);
     --background-header: hsl(220deg, 43%, 96%);
-    --background-basic: hsl(228deg 6% 32.5% / 4%);
+    --icon: hsl(228deg 6% 32.5% / 4%);
     --background-tertiary: color-mix( in oklab, hsl(216 calc(1 * 9.804%) 90% / 1) 100%, black 0% );
-    --background-hover: color-mix( in oklab, hsl(222.857 calc(1 * 5.833%) 52.941% / 0.08) 100%, hsl(0 0% 0% / 0.08) 0% );
-    --background-active: color-mix( in oklab, hsl(222.857 calc(1 * 5.833%) 52.941% / 0.16) 100%, hsl(0 0% 0% / 0.16) 0% );
+    --hover-bg: color-mix( in oklab, hsl(222.857 calc(1 * 5.833%) 52.941% / 0.08) 100%, hsl(0 0% 0% / 0.08) 0% );
+    --surface-2: color-mix( in oklab, hsl(222.857 calc(1 * 5.833%) 52.941% / 0.16) 100%, hsl(0 0% 0% / 0.16) 0% );
     --calendar-background: hsl(240deg, 6%, 87%);
     --navbar-shadow: rgba(6, 6, 7, 0.1) 0 1px 0 0, rgba(2, 2, 2, 0.025) 0 1.5px 0 0, rgba(6, 6, 7, 0.025) 0 2px 0 0;
-    --dark-border: hsl(0deg, 0%, 13%);
-    --color: hsl(0deg, 0%, 0%);
-    --color-darker: hsl(0deg, 0%, 15%);
+    --border: hsl(0deg, 0%, 13%);
+    --text: hsl(0deg, 0%, 0%);
+    --text-muted: hsl(0deg, 0%, 15%);
     --secondary-color: hsl(215deg, 61%, 94%);
     --secondary-color-hover: hsl(215deg 61% 94% / 48%);
     --sidebar-arrow: hsl(0deg, 0%, 87%);
-    --border-color: rgba(255,255,255,50%);
+    --border: rgba(255,255,255,50%);
     --alert-button-border: hsl(0deg, 0%, 100%);
     --error-start-bg: hsl(353deg, 85%, 53%);
     --error-end-bg: hsl(0deg, 63%, 43%);
     --danger-bg: hsla(0deg, 63%, 43%, .64);
     --error-color: hsl(0deg, 0%, 100%);
     --info-start-bg: var(--primary);
-    --info-end-bg: var(--primary-second);
+    --info-end-bg: var(--primary-strong);
     --blue-bg: #f2fefe;
     --blue-color: #2c6b8d;
     --header-shadow: rgba(2, 2, 2, 0.2) 0 1px 0 0, rgba(6, 6, 7, 0.05) 0 1.5px 0 0, rgba(2, 2, 2, 0.05) 0 2 0 0;
     --ag-background-color: #fff!important;
-    --swal2-color: var(--color)!important;
-    --swal2-background: var(--background-body)!important;
+    --swal2-color: var(--text)!important;
+    --swal2-background: var(--surface)!important;
     --swal2-validation-message-background: var(--red)!important;
     --swal2-validation-message-color: #fff!important;
-    --swal2-input-background: var(--input-background)!important;
-    --swal2-timer-progress-bar-background: var(--input-background)!important;
+    --swal2-input-background: var(--elevated)!important;
+    --swal2-timer-progress-bar-background: var(--elevated)!important;
 
     --message-info-bg: oklab(0.623 -0.0378409 -0.210628 / 0.1);
     --message-info-border: oklab(0.623 -0.0378409 -0.210628 / 0.25);
@@ -89,52 +224,38 @@ a {
     --message-success-color: rgb(0, 161, 85);
 }
 
-.dark {
-    --input-background: rgb(37, 42, 49);
-    --background-body: #20242a;
-    --background-header: #2b3038;
-    --background-basic: hsl(228deg 6% 32.5% / 8%);
-    --background-hover: hsl(228deg 6% 32.5% / 16%);
-    --background-active: hsl(228deg 6% 32.5% / 24%);
-    --background-tertiary: rgb(70,70,70,.12);
-    --calendar-background: hsl(240deg, 6%, 13%);
-    --navbar-shadow: rgba(6, 6, 7, 0.1) 0 1px 0 0, rgba(2, 2, 2, 0.025) 0 1.5px 0 0, rgba(6, 6, 7, 0.025) 0 2px 0 0;
-    --dark-border: hsla(0deg, 0%, 93%, 13.3%);
-    --color: hsl(0deg, 0%, 100%);
-    --color-darker: rgb(179, 179, 179);
-    --secondary-color: hsl(216deg, 5%, 12%);
-    --secondary-color-hover: hsla(216deg, 5%, 12%, 48%);
-    --sidebar-arrow: hsl(0deg, 0%, 20%);
-    --border-color: #2d3145;
-    --alert-button-border: hsl(0deg, 0%, 47%);
-    --error-start-bg: hsl(332deg, 39%, 14%);
-    --error-end-bg: hsl(334deg, 39%, 14%);
-    --danger-bg: hsla(334deg, 39%, 14%, .64);
-    --error-color: hsl(338deg, 82%, 69%);
-    --info-start-bg: var(--primary);
-    --info-end-bg: var(--primary-second);
-    --blue-bg: hsl(200, 60%, 1%);
-    --blue-color: #2999ed;
-    --header-shadow: rgba(2, 2, 2, 0.2) 0 1px 0 0, rgba(6, 6, 7, 0.05) 0 1.5px 0 0, rgba(2, 2, 2, 0.05) 0 2px 0 0;
-    --ag-background-color: #000!important;
-    --swal2-color: var(--color)!important;
-    --swal2-background: var(--background-body)!important;
-    --swal2-validation-message-background: var(--red)!important;
-    --swal2-validation-message-color: #fff!important;
-    --swal2-input-background: var(--input-background)!important;
-    --swal2-timer-progress-bar-background: var(--primary)!important;
-    --swal2-cancel-button-background-color: var(--input-background)!important;
+.--dark {
+  --elevated: hsl(220 13% 18%);
+  --background-header: hsl(220 13% 15%);
+  --surface: hsl(220 13% 17%);
+  --icon: hsl(220 13% 22%);
+  --hover-bg: hsl(220 13% 28%);
+  --surface-2: hsl(220 13% 32%);
+  --background-tertiary: hsl(220 10% 25%);
+  --calendar-background: hsl(220 13% 13%);
+  --navbar-shadow: rgba(0,0,0,0.4) 0 1px 3px;
 
-    --message-info-bg: oklab(0.707 -0.0437502 -0.159094 / 0.1);
-    --message-info-border: oklab(0.707 -0.0437502 -0.159094 / 0.25);
-    --message-info-color: oklch(0.809 0.105 251.813);
-    --message-error-bg: oklab(0.704 0.176821 0.072217 / 0.1);
-    --message-error-border: oklab(0.704 0.176821 0.072217 / 0.25);
-    --message-error-color: oklch(0.808 0.114 19.571);
-    --message-success-bg: oklab(0.786089 -0.174844 0.0792253 / 0.1);
-    --message-success-border: oklab(0.786089 -0.174844 0.0792253 / 0.25);
-    --message-success-color: rgb(117, 237, 174);
-}
+  --text: hsl(0 0% 100%);
+  --text-muted: hsl(0 0% 85%);
+  --secondary-color: hsl(220 10% 20%);
+  --secondary-color-hover: hsl(220 10% 25%);
+  --sidebar-arrow: hsl(0 0% 65%);
+  --border: hsl(220 10% 25%);
+  --border: hsl(220 10% 30%);
+  
+  --message-info-bg: oklab(0.70 -0.03 -0.10 / 0.15);
+  --message-info-border: oklab(0.70 -0.03 -0.10 / 0.4);
+  --message-info-color: oklch(0.80 0.12 250);
+
+  --message-error-bg: oklab(0.68 0.14 0.07 / 0.15);
+  --message-error-border: oklab(0.68 0.14 0.07 / 0.4);
+  --message-error-color: oklch(0.78 0.15 20);
+
+  --message-success-bg: oklab(0.74 -0.12 0.10 / 0.15);
+  --message-success-border: oklab(0.74 -0.12 0.10 / 0.4);
+  --message-success-color: rgb(110, 220, 160);
+} */
+
 
 div:where(.swal2-container) div:where(.swal2-timer-progress-bar) {
     background-color: var(--swal2-timer-progress-bar-background)!important;
@@ -199,8 +320,8 @@ body {
     max-width: 100vw;
     margin: 0;
     font-family: "Twemoji Country Flags", "Roboto", "sans-serif";
-    background-color: var(--background-header);
-    color: var(--color);
+    background-color: var(--bg);
+    color: var(--text);
     overflow: hidden;
     display: flex;
     flex-direction: column;
@@ -227,11 +348,11 @@ body {
 
 .APP_Logo {
     font-weight: 900;
-    color: var(--color);
+    color: var(--text);
     text-transform: uppercase;
     background-clip: text;
     -webkit-text-fill-color: transparent;
-    background-image: linear-gradient(150deg, var(--primary-second) 0%, var(--primary-second) 47%, var(--primary) 48%);
+    background-image: linear-gradient(150deg, var(--primary-strong) 0%, var(--primary-strong) 47%, var(--primary) 48%);
 }
 
 .disabled {
@@ -275,7 +396,7 @@ body {
     display: flex;
     flex-direction: column;
     box-shadow: rgba(2, 2, 2, 0.5) 0px 0px 3px;
-    background-color: var(--background-body);
+    background-color: var(--surface);
     padding: 2rem;
     border-radius: var(--radius);
     position: relative;
@@ -313,7 +434,7 @@ body {
 
 .card-header p.description {
     line-height: 20px;
-    color: var(--color-darker);
+    color: var(--text-muted);
 }
 
 .card-row,
@@ -341,7 +462,7 @@ body {
     line-height: 1.25rem;
     text-align: left;
     padding: .35rem .75rem;
-    background-color: var(--background-active);
+    background-color: var(--surface-2);
     display: flex;
     transition: all .3s;
     flex-direction: row;
@@ -359,7 +480,7 @@ body {
 }
 
 .select-item:hover {
-    background-color: var(--background-hover);
+    background-color: var(--hover-bg);
 }
 
 .select-item.active {
@@ -368,7 +489,7 @@ body {
 }
 
 .select-item.active:hover {
-    background-color: var(--primary-second);
+    background-color: var(--primary-strong);
 }
 
 h2.small {
@@ -428,7 +549,7 @@ label.error-color {
     left: 10px;
     top: 50%;
     transform: translateY(-50%);
-    color: var(--color-darker);
+    color: var(--text-muted);
     width: 16px;
     height: 16px;
 }
@@ -445,14 +566,14 @@ textarea,
     appearance: none;
     display: block;
     border-radius: var(--radius);
-    border: 1px solid var(--border-color);
+    border: 1px solid var(--border);
     height: calc(1.5em + .75rem + 2px);
     font-size: .875rem;
     line-height: 1.25rem;
     width: 100%;
     padding: .5rem .75rem;
-    color: var(--color);
-    background-color: var(--input-background);
+    color: var(--text);
+    background-color: var(--elevated);
     background-clip: padding-box;
     z-index: 3;
     transition: border-color .15s ease-in-out, box-shadow .15s ease-in-out;
@@ -484,7 +605,7 @@ input.no-left-radius {
     color:#fff;
     border-top-left-radius: var(--radius);
     border-bottom-left-radius: var(--radius);
-    border: 1px solid var(--border-color);
+    border: 1px solid var(--border);
     height: 35px;
     font-size: 15px;
     line-height: 1.25rem;
@@ -499,15 +620,15 @@ textarea {
 input:focus,
 textarea:focus,
 select:focus {
-    background-color: var(--input-background);
+    background-color: var(--elevated);
     border-color: var(--primary);
     outline: none;
     box-shadow: 0 0 0 3.2px hsl(235, 86%, 65%, .25);
 }
 
 .btn {
-    background-color: var(--input-background);
-    color: var(--color);
+    background-color: var(--surface-2);
+    color: var(--text);
     text-align: center;
     padding: 8px 24px;
     border-radius: var(--radius);
@@ -526,7 +647,7 @@ select:focus {
 }
 
 .btn.primary:hover {
-    background-color: var(--primary-second);
+    background-color: var(--primary-strong);
 }
 
 .btn.danger,
@@ -545,7 +666,7 @@ span.primary {
 }
 
 span.primary.clickable:hover {
-    color: var(--primary-second);
+    color: var(--primary-strong);
 }
 
 
@@ -664,8 +785,8 @@ button.danger:hover {
     user-select: none;
 }
 
-.input-select-option:hover { background-color: var(--background-hover) }
-.input-select-option.active { background-color: var(--background-active) }
+.input-select-option:hover { background-color: var(--hover-bg) }
+.input-select-option.active { background-color: var(--surface-2) }
 
 .search-dropdown {
     max-height: 200px;
@@ -715,7 +836,7 @@ button.danger:hover {
     font-size: 22px;
     display: flex;
     justify-content: center;
-    background-color: var(--background-basic);
+    background-color: var(--surface-2);
     align-items: center;
 }
 
@@ -778,7 +899,7 @@ button.danger:hover {
 .item-btn.active > .icon,
 .item-btn:hover .text,
 .item-btn.active .text {
-    background-color: var(--background-hover);
+    background-color: var(--hover-bg);
 }
 
 .dropdown {
@@ -789,7 +910,7 @@ button.danger:hover {
     min-width: 100%;
     width: max-content;
     border-radius: var(--radius);
-    background-color: var(--background-body);
+    background-color: var(--surface);
     box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15); 
 }
 
@@ -827,7 +948,7 @@ button.danger:hover {
     left: 50%;
     transform: translate(-50%, -50%);
     position: absolute;
-    background-color: var(--background-body);
+    background-color: var(--surface);
     width: var(--width, 500px);
     border-radius: var(--radius);
     box-shadow: rgba(2, 2, 2, 0.5) 0px 0px 3px;
@@ -855,13 +976,13 @@ button.danger:hover {
     right: 15px;
     font-size: 24px;
     cursor: pointer;
-    color: var(--color-darker);
+    color: var(--text-muted);
     transition: color .3s;
     z-index: 99999999;
 }
 
 .modals > .modal > .modal-close:hover {
-    color: var(--color);
+    color: var(--text);
 }
 
 .modal > .modal-header {
@@ -897,8 +1018,8 @@ button.danger:hover {
 .modals > .modal .modal-body,
 .modal-body-external {
     margin: 1rem 2rem;
-    border: 1px solid var(--border-color);
-    background-color: var(--background-hover);
+    border: 1px solid var(--border);
+    background-color: var(--hover-bg);
     width: calc(100% - 4rem);
     height: 25rem;
 }
@@ -923,7 +1044,7 @@ button.danger:hover {
     justify-content: space-between;
     align-items: center;
     padding: 16px;
-    background-color: var(--background-body);
+    background-color: var(--surface);
     transition: all .3s;
 }
 
@@ -932,18 +1053,18 @@ button.danger:hover {
 }
 
 .modals > .modal > .modal-center > .modal-body .child .child-info {
-    color: var(--color-darker);
+    color: var(--text-muted);
 }
 
 .modals > .modal > .modal-center > .modal-body .child .btn {
     padding: 8px 16px;
     cursor: pointer;
     transition: all .3s;
-    border: 1px solid var(--border-color);
+    border: 1px solid var(--border);
 }
 
 .modals > .modal > .modal-center > .modal-body .child .btn:hover {
-    background-color: var(--background-hover);
+    background-color: var(--hover-bg);
 }
 
 .modals > .modal .modal-icon {
@@ -976,7 +1097,7 @@ button.danger:hover {
 .line {
     width: 100%;
     height: 2px;
-    background-color: var(--border-color);
+    background-color: var(--border);
 }
 
 .message {
@@ -1038,8 +1159,8 @@ button.danger:hover {
 }
 
 .badge.loading {
-    background-color: var(--background-active);
-    color: var(--color);
+    background-color: var(--surface-2);
+    color: var(--text);
     opacity: .6;
 }
 
@@ -1049,7 +1170,7 @@ button.danger:hover {
   aspect-ratio: 1;
   border-radius: 50%;
   margin-right: 8px;
-  border: 2px solid var(--color);
+  border: 2px solid var(--text);
   animation:
     loader-1 0.8s infinite linear alternate,
     loader-2 1.6s infinite linear;
@@ -1075,7 +1196,7 @@ button.danger:hover {
 .icon-arrow-right {
   width: 24px;
   height: 24px;
-  background-color: var(--color);
+  background-color: var(--text);
   mask-size: contain;
   mask-repeat: no-repeat;
   mask-position: center;
@@ -1091,5 +1212,5 @@ button.danger:hover {
     width: 20px;
     height: 20px;
     margin-right: 0;
-    background-color: var(--color-darker)
+    background-color: var(--text-muted)
 }

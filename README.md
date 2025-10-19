@@ -22,7 +22,8 @@
 * Lepší získávání překladu
 * Možnost zobrazit data minulých ročníků
 * Lepší optimalizace
-* Možnost aktivovat 2FA u přihlášení
+* Možnost aktivovat 2FA
+* Možnost resetovat heslo přes email
 * Více funkcí a modulů (Praxe, jídelna, knihovna, platby, atd.)
 * Přidána podpora pro discord (WIP)
 * Nové logo

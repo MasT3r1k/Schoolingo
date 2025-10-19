@@ -9,11 +9,11 @@ import { avataaarsNeutral } from '@dicebear/collection';
 import { Locale } from '@Schoolingo/locale';
 import moment from 'moment';
 import { Router } from '@angular/router';
+import { Theme, themes } from '@Schoolingo/theme';
 
 export class Authentication {
     private http = inject(HttpClient);
     private router = inject(Router);
-    private l = inject(Locale);
     private authState$ = new BehaviorSubject<boolean | 'offline' | null>(null);
     private declare user: User;
     public selectedChild = new BehaviorSubject(0);
@@ -24,7 +24,7 @@ export class Authentication {
 
     public loadState(): void {
         this.http.get<User | { error: string }>(Config.API_URL + '/v1/user', { withCredentials: true })
-        .subscribe((user) => {
+        .subscribe((user: User | { error: string }) => {
             if ('error' in user) {
                 switch(user.error) {
                     case "no_user":
@@ -32,8 +32,8 @@ export class Authentication {
                         break;
                 }
             } else if ('username' in user) {
-                this.setAuthState(true);
                 this.user = user as User;
+                this.setAuthState(true);
                 // user.children = [];
                 this.user.birthday = moment(user.birthday)
             }
@@ -70,8 +70,7 @@ export class Authentication {
             return "";
         }
 
-        let text = this.l.s('roles.' + user.role);
-        return text;
+        return user.role;
     }
 
     public getId(): number {
@@ -89,5 +88,9 @@ export class Authentication {
 
     public getAuthState(): Observable<typeof this.authState$.value> {
         return this.authState$.asObservable();
+    }
+
+    public getAuthStateValue(): typeof this.authState$.value {
+        return this.authState$.getValue();
     }
 }

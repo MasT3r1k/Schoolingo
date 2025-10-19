@@ -16,7 +16,7 @@ export interface User {
         mouth: string;
     };
     locale: string;
-    theme: string;
+    theme: number;
     level: number;
     xp: number;
     requiredXP: number;
