@@ -16,6 +16,7 @@ import { HomeworksComponent } from './board/Teach/homeworks/homeworks.component'
 import { SendComponent } from './board/messages/send/send.component';
 import { ReceivedComponent } from './board/messages/received/received.component';
 import { AbsenceComponent } from './board/Teach/absence/absence.component';
+import { IntermComponent } from './board/marks/interm/interm.component';
 
 export const routes: Routes = [
     {
@@ -28,6 +29,13 @@ export const routes: Routes = [
         path: '', component: BoardComponent, canActivate: [UserGuard], children: [
             {
                 path: 'main', component: MainComponent
+            },
+            {
+                path: 'marks', children: [
+                    {
+                        path: 'interm', component: IntermComponent
+                    }
+                ]
             },
             {
                 path: 'teach', children: [

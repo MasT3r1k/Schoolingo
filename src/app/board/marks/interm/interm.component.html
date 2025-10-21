@@ -1,0 +1,212 @@
+<div class="card">
+  <div class="card-top"></div>
+  <div class="card-header">
+    <h2>{{ l.s("sidebar.marks.interm") }}</h2>
+    <div class="flex-items">
+      <schoolingo-tabs
+        [value]="selectedTab"
+        [options]="options"
+      ></schoolingo-tabs>
+    </div>
+  </div>
+  <div class="card-body">
+    @switch (selectedTab.getValue()) { @case(0) {
+    <div class="subjects">
+      @for (subject of getMarksPerSubject(); track $index) {
+      <div class="subject-row">
+        <div class="subject-name">
+          {{ subject.subject }}
+        </div>
+        <div class="stats-box">
+          <div class="quarter">1</div>
+          <div class="average">
+            {{ getAverageBySubject(subject.subject) }}
+          </div>
+        </div>
+        <div class="grades-row">
+          @for(mark of subject.marks; track $index) {
+          <div
+            class="grade-item"
+            [style.fontSize.px]="getFontSize(mark.weight)"
+          >
+            <span class="mark">{{ mark.mark }}</span>
+            <span class="topic">{{ mark.topic }}</span>
+          </div>
+          }
+        </div>
+      </div>
+      }
+    </div>
+    } @case(1) {
+    <div class="list-subjects-head">
+      <div class="table-subject-name">
+        {{ l.s("subject") }}
+      </div>
+      <div class="table-mark">
+        {{ l.s("marks.mark") }}
+      </div>
+      <div class="table-topic">
+        {{ l.s("marks.topic") }}
+      </div>
+      <div class="table-weight">
+        {{ l.s("marks.weight") }}
+      </div>
+      <div class="table-date">
+        {{ l.s("date") }}
+      </div>
+      <div class="table-description">
+        {{ l.s("marks.description") }}
+      </div>
+    </div>
+    @for(mark of marks;track $index) {
+    <div class="grade-row">
+      <div class="table-subject-name bold">
+        {{ mark.subjectName }}
+      </div>
+      <div class="table-mark bold">
+        {{ mark.mark }}
+      </div>
+      <div class="table-topic">
+        {{ mark.topic }}
+      </div>
+      <div class="table-weight">
+        {{ mark.weight }}
+      </div>
+      <div class="table-date">
+        {{ utils.formatDateShort(mark.created) }}
+      </div>
+      <div class="table-description">
+        {{ mark.description }}
+      </div>
+    </div>
+    } } @case(2) { @if (!getAllSubjects().length) {
+    <div class="alerts">
+      <div class="alert error">
+        {{ l.s("marks.predictor.no_subjects") }}
+      </div>
+    </div>
+    }
+
+    <div class="averages mb">
+      <div class="average-old">
+        <p>{{ l.s("marks.predictor.old_average") }}</p>
+        <p>{{ getAverageBySubject(this.selected_subject) }}</p>
+      </div>
+      <div class="average-new">
+        <p>{{ l.s("marks.predictor.new_average") }}</p>
+        <p>{{ getAverageBySubject(this.selected_subject, true) }}</p>
+      </div>
+    </div>
+
+    <div class="panel">
+      <h2>{{ l.s("marks.predictor.title") }}</h2>
+      <div class="form-select">
+        <div class="select select-subject">
+          <label for="subject">
+            {{ l.s("subject") }}
+          </label>
+          <select [(ngModel)]="selected_subject">
+            @for(subject of getAllSubjects();track $index) {
+            <option [value]="subject">{{ subject }}</option>
+            }
+          </select>
+        </div>
+
+        <div class="select select-mark">
+          <label for="mark">
+            {{ l.s("marks.mark") }}
+          </label>
+          <select [(ngModel)]="selected_mark">
+            <option value="1">1</option>
+            <option value="2">2</option>
+            <option value="3">3</option>
+            <option value="4">4</option>
+            <option value="5">5</option>
+          </select>
+        </div>
+
+        <div class="select select-weight">
+          <label for="weight">
+            {{ l.s("marks.weight") }}
+          </label>
+          <select [(ngModel)]="selected_weight">
+            @for (_ of [].constructor(10); track $index) {
+            <option [value]="$index + 1">
+              {{ `${l.s('marks.weight')} ${$index + 1}`}}
+            </option>
+            }
+          </select>
+        </div>
+      </div>
+      <div class="buttons">
+        @if (editingIndex != null) {
+            <div class="btn primary" (click)="updateMark()">
+                <i-tabler name="edit"></i-tabler>
+                {{ l.s("marks.predictor.edit_mark") }}
+            </div>
+
+            <div class="btn primary only-text" (click)="this.editingIndex = null;">
+                {{ l.s('marks.predictor.stop_edit_mark') }}
+            </div>
+        } @else {
+            <div class="btn primary" (click)="addMarkToPredictor()">
+                <i-tabler name="plus"></i-tabler>
+                {{ l.s("marks.predictor.add_mark") }}
+            </div>
+        }
+
+        <div class="btn secondary only-text" (click)="resetPredictor()">
+          {{ l.s("marks.predictor.reset") }}
+        </div>
+      </div>
+    </div>
+
+    <div class="list-subjects-head predictor-table mt">
+      <div class="table-2-topic">
+        {{ l.s("marks.topic") }}
+      </div>
+      <div class="table-2-mark center">
+        {{ l.s("marks.mark") }}
+      </div>
+      <div class="table-2-weight center">
+        {{ l.s("marks.weight") }}
+      </div>
+      <div class="table-2-actions center">
+        {{ l.s("actions") }}
+      </div>
+    </div>
+    @for(mark of getGradesBySubject(selected_subject, true);track $index) {
+    <div class="grade-row predictor-table" [class.selected]="mark.id === editingIndex">
+      <div class="table-2-topic bold">
+        {{ mark.topic }}
+      </div>
+      <div class="table-2-mark center">
+        <div class="grade-box">
+          {{ mark.mark }}
+        </div>
+      </div>
+      <div class="table-2-weight center">
+        {{ mark.weight }}
+      </div>
+      <div class="table-2-actions center">
+        <div class="buttons">
+          <div
+            class="btn only-text"
+            style="color: var(--primary)"
+            (click)="editMark(mark.id)"
+          >
+            {{ l.s("marks.predictor.edit") }}
+          </div>
+          <div
+            class="btn only-text"
+            style="color: var(--danger)"
+            (click)="removeMark(mark.id)"
+          >
+            {{ l.s("marks.predictor.remove") }}
+          </div>
+        </div>
+      </div>
+    </div>
+    } } }
+  </div>
+</div>

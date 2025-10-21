@@ -37,7 +37,7 @@ a {
     --error: var(--red);
     --green: hsl(134deg, 62%, 41%);
     --green-darker: hsl(135deg, 65%, 31%);
-    --radius: 16px;
+    --radius: 8px;
     --polygon: polygon(4px 0, 100% 0%, calc(100% - 4px) 100%, 0% 100%);
     --tag-color: hsl(228deg 6% 25% / 85%);
     --swal2-confirm-button-background-color: var(var(--primary));
@@ -283,8 +283,8 @@ div:where(.swal2-container) div:where(.swal2-timer-progress-bar) {
 
 .red,
 .error {
-    background-image: linear-gradient(90deg, var(--error-start-bg), var(--error-end-bg));
-    background-color: var(--error-start-bg) !important;
+    background-image: linear-gradient(90deg, var(--danger), var(--danger-700));
+    background-color: var(--danger) !important;
     color: var(--error-color) !important;
 }
 
@@ -305,13 +305,10 @@ div:where(.swal2-container) div:where(.swal2-timer-progress-bar) {
     pointer-events: none;
 }
 
-.clickable {
-    cursor: pointer;
-}
+.bold { font-weight: bold; }
+.clickable { cursor: pointer; }
 
-h1, h2, h3, h4, h5, h6, p {
-    margin: 0;
-}
+h1, h2, h3, h4, h5, h6, p { margin: 0; }
 
 body {
     min-height: 100vh;
@@ -430,6 +427,7 @@ body {
 
 .card-header {
     justify-content: space-between;
+    margin-bottom: 1rem;
 }
 
 .card-header p.description {
@@ -565,7 +563,7 @@ textarea,
 .preview {
     appearance: none;
     display: block;
-    border-radius: var(--radius);
+    border-radius: 8px;
     border: 1px solid var(--border);
     height: calc(1.5em + .75rem + 2px);
     font-size: .875rem;
@@ -626,6 +624,12 @@ select:focus {
     box-shadow: 0 0 0 3.2px hsl(235, 86%, 65%, .25);
 }
 
+.buttons {
+    display: flex;
+    flex-direction: row;
+    gap: 12px;
+}
+
 .btn {
     background-color: var(--surface-2);
     color: var(--text);
@@ -648,6 +652,28 @@ select:focus {
 
 .btn.primary:hover {
     background-color: var(--primary-strong);
+}
+
+.btn.secondary {
+    background-color: var(--surface-2);
+}
+.btn.secondary:hover {
+    background-color: var(--surface);
+}
+.btn.only-text {
+    background: none;
+    padding: 8px 16px;
+    font-size: 14px;
+}
+
+.btn.only-text.primary {
+    color: var(--primary);
+    background: none;
+    border: 1px solid transparent;
+}
+
+.btn.only-text.primary:hover {
+    border-color: var(--primary);
 }
 
 .btn.danger,
