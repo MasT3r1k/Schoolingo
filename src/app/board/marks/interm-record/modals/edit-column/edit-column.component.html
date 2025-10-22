@@ -1,25 +1,25 @@
 <div class="items">
     <div class="item mb">
         <div class="label">
-            {{ l.s('marks/title') }}
+            {{ l.s('marks.title') }}
         </div>
         <div class="value">
-            <input type="text" name="markTopic" maxlength="50" [placeholder]="l.s('marks/titlePlaceholder')" [(ngModel)]="topic">
+            <input type="text" name="markTopic" maxlength="50" [placeholder]="l.s('marks.title_placeholder')" [(ngModel)]="topic">
         </div>
     </div>
 
     <div class="item mb">
         <div class="label">
-            {{ l.s('marks/type') }}
+            {{ l.s('marks.type') }}
         </div>
         <div class="value">
             <div class="input-select">
-                <input type="text" (click)="showSelect = showSelect == 'type' ? null : 'type'" name="inputSelect" readonly="true" [value]="l.s('marks/types/' + type)" />
+                <input type="text" (click)="showSelect = showSelect == 'type' ? null : 'type'" name="inputSelect" readonly="true" [value]="l.s('marks.types.' + type)" />
                 @if (showSelect == 'type') {
                     <div class="options">
                         @for (columnType of types; track $index) {
                             <div class="option" (click)="showSelect = null;type = columnType">
-                                {{ l.s('marks/types/' + columnType) }}
+                                {{ l.s('marks.types.' + columnType) }}
                             </div>
                         }
                     </div>
@@ -32,7 +32,7 @@
         @case("marks") {
             <div class="item mb">
                 <div class="label">
-                    {{ l.s('marks/weight') }}
+                    {{ l.s('marks.weight') }}
                 </div>
                 <div class="value">
                     <input type="text" name="weight" [(ngModel)]="weight" />
@@ -42,16 +42,16 @@
         @case("points") {
             <div class="item mb">
                 <div class="label">
-                    {{ l.s('marks/maxPoints') }}
+                    {{ l.s('marks.max_points') }}
                 </div>
                 <div class="value">
-                    <input type="text" name="maxPoints" [placeholder]="l.s('marks/maxPointsPlaceholder')" [(ngModel)]="maxPoints">
+                    <input type="text" name="maxPoints" [placeholder]="l.s('marks.max_points_placeholder')" [(ngModel)]="maxPoints">
                 </div>
             </div>
 
             <div class="item mb">
                 <div class="label">
-                    {{ l.s('marks/includeInGradeEvenIfNoPoints') }}
+                    {{ l.s('marks.include_in_grade_even_if_no_points') }}
                 </div>
                 <div class="value">
                     <div class="yesOrNo row">
@@ -70,10 +70,10 @@
     @if (type == "points" && !includeInGradeEvenIfNoPoints || type == "marks") {
         <div class="item mb">
             <div class="label">
-                {{ l.s('marks/prefill') }}
+                {{ l.s('marks.prefill') }}
             </div>
             <div class="value">
-                <input type="text" name="prefillMark" [placeholder]="l.s('marks/prefillPlaceholder')" [(ngModel)]="prefillMark">
+                <input type="text" name="prefillMark" [placeholder]="l.s('marks.prefill_placeholder')" [(ngModel)]="prefillMark">
             </div>
         </div>
     }
@@ -81,15 +81,15 @@
     @if (prefillMark == "?") {
                 <div class="item mb">
             <div class="label">
-                {{ l.s('marks/plannedMark') }}
+                {{ l.s('marks.planned_mark') }}
             </div>
             <div class="value">
-                <input type="text" name="plannedMark" [placeholder]="l.s('marks/plannedMark')" [(ngModel)]="plannedMark">
+                <input type="text" name="plannedMark" [placeholder]="l.s('marks.planned_mark')" [(ngModel)]="plannedMark">
             </div>
         </div>
     }
 
     <div class="btn submit" role="button" (click)="editColumn()">
-        {{ l.s("marks/createColumn") }}
+        {{ l.s("marks.create_column") }}
     </div>
 </div>

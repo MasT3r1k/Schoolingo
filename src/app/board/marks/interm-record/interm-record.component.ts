@@ -4,6 +4,8 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Config } from '@Schoolingo/config';
 import { Locale } from '@Schoolingo/locale';
+import { EditColumnComponent } from './modals/edit-column/edit-column.component';
+import { NgComponentOutlet } from '@angular/common';
 
 interface Group {
   groupId: number;
@@ -26,11 +28,14 @@ interface Student {
 }
 
 @Component({
-  imports: [FormsModule, ReactiveFormsModule],
+  imports: [FormsModule, ReactiveFormsModule, NgComponentOutlet],
   templateUrl: './interm-record.component.html',
   styleUrl: './interm-record.component.css'
 })
 export class IntermRecordComponent {
+  EditColumnComponent = EditColumnComponent;
+
+  public modal: '' | 'edit_column' = 'edit_column';
   public add_more_columns = 16;
 
   public selected_group: number = -1;
