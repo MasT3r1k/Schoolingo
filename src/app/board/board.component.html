@@ -169,28 +169,34 @@
             @for (section of sidebar.data; track $index) {
                     <ul>
                         @for (item of section.items; track $index) {
-                            <li [routerLink]="item.url" (click)="item.url ? sidebar.sidebarToggled = false : {}"  [routerLinkActive]="'active'" [ngClass]="{ opened: item.children && item.children.length > 0 && sidebar.isToggled($index) }" (click)="sidebar.toggleDropdown($index)">
+                            <li [routerLink]="item.url" (click)="item.url ? sidebar.sidebarToggled = false : {}"  [routerLinkActive]="'active'" [ngClass]="{ opened: item.children && item.children.length > 0 && sidebar.isToggled($index) }" [routerLinkActiveOptions]="{ exact: false, queryParams: 'ignored'}" (click)="sidebar.toggleDropdown($index)">
                                 <div class="item">
                                     <div class="item-label">
                                         {{ l.s(item.item) }}
                                     </div>
-                                    @if (item.children && item.children.length > 0) {
-                                        <div class="dropdown-icon" [ngStyle]="{ transform: sidebar.toggledDropdowns.includes($index) ? 'rotate(180deg)' : '' }">
-                                            <svg xmlns="http://www.w3.org/2000/svg" height="16" width="14" viewBox="0 0 448 512">
-                                                <path fill="currentColor" d="M201.4 342.6c12.5 12.5 32.8 12.5 45.3 0l160-160c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L224 274.7 86.6 137.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l160 160z"/>
-                                            </svg>
-                                        </div>
-                                    }
+                                    <div class="right">
+                                        <!-- <div class="badge blue-info">
+                                            {{ "NEW" }}
+                                        </div> -->
+                                        @if (item.children && item.children.length > 0) {
+                                            <div class="dropdown-icon" [ngStyle]="{ transform: sidebar.toggledDropdowns.includes($index) ? 'rotate(180deg)' : '' }">
+                                                <svg xmlns="http://www.w3.org/2000/svg" height="16" width="14" viewBox="0 0 448 512">
+                                                    <path fill="currentColor" d="M201.4 342.6c12.5 12.5 32.8 12.5 45.3 0l160-160c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L224 274.7 86.6 137.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l160 160z"/>
+                                                </svg>
+                                            </div>
+                                        }
+                                    </div>
                                 </div>
                                 @if (item.children && item.children.length > 0) {
                                     <div class="dropdown-child" [ngStyle]="{height: sidebar.isToggled($index) ? 'auto' : '0px'}" (click)="$event.stopPropagation()">
                                         <ul>
                                             @for (child of item.children; track $index) {
-                                                <li (click)="sidebar.sidebarToggled = false" [routerLink]="child.url" [routerLinkActive]="'active'" [routerLinkActiveOptions]="{ exact: true }">
+                                                <li (click)="sidebar.sidebarToggled = false" [routerLink]="child.url" [routerLinkActive]="'active'" [routerLinkActiveOptions]="{ exact: false, queryParams: 'ignored'}" >
                                                     <div class="item">
                                                         <div class="item-label">
                                                             {{ l.s(child.item) }}
                                                         </div>
+
                                                         <!-- @if (getSidebarBadge(child) != "") {
                                                             <div class="badge blue-info">
                                                                 {{ getSidebarBadge(child) }}

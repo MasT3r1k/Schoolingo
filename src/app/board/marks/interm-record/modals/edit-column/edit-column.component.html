@@ -1,0 +1,95 @@
+<div class="items">
+    <div class="item mb">
+        <div class="label">
+            {{ l.s('marks/title') }}
+        </div>
+        <div class="value">
+            <input type="text" name="markTopic" maxlength="50" [placeholder]="l.s('marks/titlePlaceholder')" [(ngModel)]="topic">
+        </div>
+    </div>
+
+    <div class="item mb">
+        <div class="label">
+            {{ l.s('marks/type') }}
+        </div>
+        <div class="value">
+            <div class="input-select">
+                <input type="text" (click)="showSelect = showSelect == 'type' ? null : 'type'" name="inputSelect" readonly="true" [value]="l.s('marks/types/' + type)" />
+                @if (showSelect == 'type') {
+                    <div class="options">
+                        @for (columnType of types; track $index) {
+                            <div class="option" (click)="showSelect = null;type = columnType">
+                                {{ l.s('marks/types/' + columnType) }}
+                            </div>
+                        }
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+
+    @switch (type) {
+        @case("marks") {
+            <div class="item mb">
+                <div class="label">
+                    {{ l.s('marks/weight') }}
+                </div>
+                <div class="value">
+                    <input type="text" name="weight" [(ngModel)]="weight" />
+                </div>
+            </div>
+        }
+        @case("points") {
+            <div class="item mb">
+                <div class="label">
+                    {{ l.s('marks/maxPoints') }}
+                </div>
+                <div class="value">
+                    <input type="text" name="maxPoints" [placeholder]="l.s('marks/maxPointsPlaceholder')" [(ngModel)]="maxPoints">
+                </div>
+            </div>
+
+            <div class="item mb">
+                <div class="label">
+                    {{ l.s('marks/includeInGradeEvenIfNoPoints') }}
+                </div>
+                <div class="value">
+                    <div class="yesOrNo row">
+                        <div [ngClass]="{'blue-info': includeInGradeEvenIfNoPoints}" (click)="includeInGradeEvenIfNoPoints = true">
+                            {{ l.s('yes') }}
+                        </div>
+                        <div [ngClass]="{'blue-info': !includeInGradeEvenIfNoPoints}" (click)="includeInGradeEvenIfNoPoints = false">
+                            {{ l.s('no') }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    }
+
+    @if (type == "points" && !includeInGradeEvenIfNoPoints || type == "marks") {
+        <div class="item mb">
+            <div class="label">
+                {{ l.s('marks/prefill') }}
+            </div>
+            <div class="value">
+                <input type="text" name="prefillMark" [placeholder]="l.s('marks/prefillPlaceholder')" [(ngModel)]="prefillMark">
+            </div>
+        </div>
+    }
+
+    @if (prefillMark == "?") {
+                <div class="item mb">
+            <div class="label">
+                {{ l.s('marks/plannedMark') }}
+            </div>
+            <div class="value">
+                <input type="text" name="plannedMark" [placeholder]="l.s('marks/plannedMark')" [(ngModel)]="plannedMark">
+            </div>
+        </div>
+    }
+
+    <div class="btn submit" role="button" (click)="editColumn()">
+        {{ l.s("marks/createColumn") }}
+    </div>
+</div>

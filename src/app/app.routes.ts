@@ -17,6 +17,7 @@ import { SendComponent } from './board/messages/send/send.component';
 import { ReceivedComponent } from './board/messages/received/received.component';
 import { AbsenceComponent } from './board/Teach/absence/absence.component';
 import { IntermComponent } from './board/marks/interm/interm.component';
+import { IntermRecordComponent } from './board/marks/interm-record/interm-record.component';
 
 export const routes: Routes = [
     {
@@ -34,6 +35,10 @@ export const routes: Routes = [
                 path: 'marks', children: [
                     {
                         path: 'interm', component: IntermComponent
+                    },
+
+                    {
+                        path: 'intermrecord', component: IntermRecordComponent
                     }
                 ]
             },

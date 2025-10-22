@@ -1,0 +1,94 @@
+<div class="card">
+    <div class="card-header">
+        <h2>{{ l.s("marks.interm_record.select_group") }}</h2>
+        <div class="flex-items">
+            <div class="select">
+                <label for="group">
+                    {{ l.s("marks.interm_record.group") }}
+                </label>
+                <select [(ngModel)]="selected_group" (ngModelChange)="updateGroup()">
+                    <option [value]="-1"></option>
+                    @for (group of groups; track $index) {
+                        <option [value]="$index">
+                            {{ `${group.className} - ${group.shortSubject}` }}
+                        </option>
+                    }
+                </select>
+            </div>
+        </div>
+    </div>
+
+    @if (selected_group == -1) {
+        <div class="card-body">
+            <div class="group-list">
+                @for (group of groups; track $index) {
+                    <button class="group-card" (click)="selected_group = $index;updateGroup()">
+                        <span class="group-name">
+                            {{ `${group.className} - ${group.subject}` }}
+                        </span>
+                        <span class="group-info">
+                            {{ l.s('marks.interm_record.student_count').replaceAll('%count%', group.studentCount.toString()) }}
+                        </span>
+                    </button> 
+                } @empty {
+                    <div class="alert error">
+                        {{ l.s('marks.interm_record.no_group') }}
+                    </div>
+                }
+            </div>
+        </div>
+    } @else {
+        @if (students.length == 0) {
+            <div class="center">
+                <div class="loader bigger"></div>
+            </div>
+        } @else {
+<div class="grade-table-wrapper">
+    <table>
+        <thead>
+            <tr>
+                <th class="student-column">
+                    {{ l.s('roles.student') }}
+                </th>
+                @for(column of gradeColumns;track $index) {
+                    <th class="grade-cell">
+                        <div style="display: flex;flex-direction: column;">
+                            <span class="columnTopic">{{ column.topic }}</span>
+                            <span class="columnAverage">{{ getColumnAverage($index) }}</span>
+                        </div>                    
+                    </th>
+                }
+            </tr>
+        </thead>
+        <tbody>
+            @for (student of students; track $index) {
+                <tr>
+                    <td class="student-column">
+                        <div class="student-cell">
+                            <span class="student-name">
+                                {{ `${$index + 1}. ${student.name}` }}
+                            </span>
+                            <div class="student-stats">
+                                <div class="quarter">
+                                    {{ student.quarter ?? "?"}}
+                                </div>
+                                <div class="average">
+                                    {{ getStudentAverage($index) }}
+                                </div>
+                            </div>
+                        </div>
+                    </td>
+                    @for(_ of [].constructor(student.marks.length + add_more_columns);track $index) {
+                        <td class="grade-cell">
+                            <div class="grade-input">{{ student.marks[$index] }}</div>
+                        </td>
+                    }
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+        }
+
+    }
+</div>
