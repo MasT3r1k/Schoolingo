@@ -1,10 +1,17 @@
 export class MarksManager {
+    private action: 'edit' | 'create' | '' = '';
     private student: number | null = null;
     private columnIndex = -1;
     private groupId = -1;
     private subjectId = -1;
     private mark: string | number | null = null;
     private topic = "";
+    private weight = 1;
+    private mark_types: string[] = ['marks', 'points']
+    private type: string | null = null;
+
+    public setAction(action: typeof this.action): void { this.action = action }
+    public getAction(): typeof this.action { return this.action }
 
     public setStudent(student: typeof this.student): void { this.student = student }
     public getSelectedStudent(): typeof this.student { return this.student }
@@ -20,4 +27,18 @@ export class MarksManager {
 
     public setTopic(topic: string): void { this.topic = topic }
     public getTopic(): typeof this.topic { return this.topic }
+
+    public setWeight(weight: number): void { this.weight = weight }
+    public getWeight(): typeof this.weight { return this.weight }
+
+    public setType(type: string | number | null): void {
+        if (typeof type == "number") {
+            this.type = this.mark_types[type];
+        } else {
+            this.type = type;
+        }
+    }
+    public getType(): typeof this.type {
+        return this.type;
+    }
 }

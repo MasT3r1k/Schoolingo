@@ -19,6 +19,8 @@ import { Homeworks } from '@Schoolingo/homeworks';
 import { MessageManager } from '@Schoolingo/messages';
 import { IconsModule } from '@Schoolingo/icons';
 import { BaseAlertManager } from './infrastructure/alert/alert.manager';
+import { ModalManager } from '@Schoolingo/modal';
+import { MarksManager } from '@Schoolingo/marks';
 
 export function initAuth(auth: Authentication): () => void {
   return () => auth.loadState(); // např. HTTP požadavek + setAuthState()
@@ -49,6 +51,8 @@ export const appConfig: ApplicationConfig = {
     Passkey,
     Homeworks,
     MessageManager,
-    IconsModule
+    IconsModule,
+    ModalManager,
+    MarksManager
   ]
 };

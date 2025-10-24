@@ -1,7 +1,11 @@
-<div class="items">
+@if (!isLoading) {
+<div class="items" (click)="showSelect = null;">
     <div class="item mb">
         <div class="label">
             {{ l.s('marks.title') }}
+            @if (errors['topic']) {
+                - {{ errors['topic'] }}
+            }
         </div>
         <div class="value">
             <input type="text" name="markTopic" maxlength="50" [placeholder]="l.s('marks.title_placeholder')" [(ngModel)]="topic">
@@ -14,11 +18,11 @@
         </div>
         <div class="value">
             <div class="input-select">
-                <input type="text" (click)="showSelect = showSelect == 'type' ? null : 'type'" name="inputSelect" readonly="true" [value]="l.s('marks.types.' + type)" />
+                <input type="text" (click)="$event.stopPropagation();showSelect = showSelect == 'type' ? null : 'type'" name="inputSelect" readonly="true" [value]="l.s('marks.types.' + type)" />
                 @if (showSelect == 'type') {
                     <div class="options">
                         @for (columnType of types; track $index) {
-                            <div class="option" (click)="showSelect = null;type = columnType">
+                            <div class="option" (click)="$event.stopPropagation();showSelect = null;type = columnType">
                                 {{ l.s('marks.types.' + columnType) }}
                             </div>
                         }
@@ -89,7 +93,12 @@
         </div>
     }
 
-    <div class="btn submit" role="button" (click)="editColumn()">
-        {{ l.s("marks.create_column") }}
+    <div class="btn" [class.primary]="isButtonActivated()" role="button" (click)="editColumn()">
+        {{ l.s(`marks.${action == 'edit' ? 'edit_column' : 'create_column'}`) }}
     </div>
 </div>
+} @else {
+    <div class="center" style="height: 400px;">
+        <div class="loader bigger"></div>
+    </div>
+}

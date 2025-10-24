@@ -2,10 +2,11 @@ import { Component, inject, OnInit } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { Authentication } from './infrastructure/authentication';
 import { polyfillCountryFlagEmojis } from "country-flag-emoji-polyfill";
+import { ModalComponent } from '@Components/modal';
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet],
+  imports: [RouterOutlet, ModalComponent],
   templateUrl: './app.component.html',
   styleUrl: './app.component.css'
 })

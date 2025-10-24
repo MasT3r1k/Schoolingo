@@ -6,6 +6,8 @@ import { Config } from '@Schoolingo/config';
 import { Locale } from '@Schoolingo/locale';
 import { EditColumnComponent } from './modals/edit-column/edit-column.component';
 import { NgComponentOutlet } from '@angular/common';
+import { ModalManager } from '@Schoolingo/modal';
+import { MarksManager } from '@Schoolingo/marks';
 
 interface Group {
   groupId: number;
@@ -19,6 +21,9 @@ interface Group {
 interface GradeColumn {
   topic: string;
   weight: number;
+  type: number;
+  created: Date;
+  isExist: boolean;
 }
 
 interface Student {
@@ -28,12 +33,14 @@ interface Student {
 }
 
 @Component({
-  imports: [FormsModule, ReactiveFormsModule, NgComponentOutlet],
+  imports: [FormsModule, ReactiveFormsModule],
   templateUrl: './interm-record.component.html',
   styleUrl: './interm-record.component.css'
 })
 export class IntermRecordComponent {
   EditColumnComponent = EditColumnComponent;
+  private modalManager = inject(ModalManager);
+  private marksManager = inject(MarksManager);
 
   public modal: '' | 'edit_column' = 'edit_column';
   public add_more_columns = 16;
@@ -48,6 +55,25 @@ export class IntermRecordComponent {
   public groups: Group[] = [];
   public gradeColumns: GradeColumn[] = []
   public students: Student[] = [];
+
+  public openColumn(columnIndex: number): void {
+    const column = this.gradeColumns[columnIndex];
+
+    // === Set Data ==
+    this.marksManager.setAction(column.isExist ? "edit" : "create");
+    this.marksManager.setTopic(column.topic);
+    this.marksManager.setWeight(column.weight);
+    this.marksManager.setColumnIndex(columnIndex);
+    this.marksManager.setSubjectId(this.groups[this.selected_group].subjectId);
+    this.marksManager.setType(column.type)
+
+    // === Update Modal Title ===
+    this.modalManager.updateModal("edit-column", "title", column.isExist ? "marks.edit_column" : "marks.create_column")
+
+    // === Open Modal ===
+    this.modalManager.openModal("edit-column");
+
+  }
 
   public getStudentAverage(student_index: number): string {
     if (!this.students[student_index]) return "";
@@ -96,11 +122,14 @@ export class IntermRecordComponent {
         { withCredentials: true }
       ).subscribe((data) => {
         if ('columns' in data && 'students' in data) {
-          this.gradeColumns = data.columns as GradeColumn[];
+          this.gradeColumns = (data.columns as GradeColumn[]).map((column: GradeColumn) => ({ ...column, isExist: true }));
           for(let i = 0;i < this.add_more_columns;i++) {
             this.gradeColumns.push({
               topic: "",
-              weight: 1
+              weight: 1,
+              type: 0,
+              created: new Date(),
+              isExist: false
             })
           }
           this.students = data.students as Student[]; 
@@ -122,6 +151,20 @@ export class IntermRecordComponent {
   }
 
   ngOnInit(): void {
+    // === Create modals ===
+    this.modalManager.addModal(
+      "edit-column",
+      {
+        title: "marks.edit_column",
+        items: [
+          { type: 'component', component: EditColumnComponent }
+        ],
+        closeable: true
+      }
+    );
+
+
+    // === Get teacher groups ===
     this.http
     .get<{ status: boolean; groups?: Group[] }>(
       `${Config.API_URL}/v1/marks/teacher/list`,

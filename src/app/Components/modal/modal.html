@@ -1,0 +1,21 @@
+@for (modal of modalManager.getModals(); track $index) {
+<div class="modals">
+    <div class="modal" [id]="modal.id">
+        <div class="modal-header">
+            <h2>{{ l.s(modal.title) }}</h2>
+        </div>
+
+        <div class="modal-close" (click)="modalManager.closeModal(modal.id)">
+            <i-tabler name="x"></i-tabler>
+        </div>
+        
+        @for (item of modal.items; track $index) {
+            @switch(item.type) {
+                @case("component") {
+                    <ng-component [ngComponentOutlet]="item.component"></ng-component>
+                }
+            }
+        }
+    </div>
+</div>
+}

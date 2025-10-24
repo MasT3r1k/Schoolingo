@@ -51,7 +51,7 @@
                     {{ l.s('roles.student') }}
                 </th>
                 @for(column of gradeColumns;track $index) {
-                    <th class="grade-cell">
+                    <th class="grade-cell" (click)="openColumn($index)">
                         <div style="display: flex;flex-direction: column;">
                             <span class="columnTopic">{{ column.topic }}</span>
                             <span class="columnAverage">{{ getColumnAverage($index) }}</span>
@@ -92,15 +92,3 @@
 
     }
 </div>
-
-@if (modal == 'edit_column') {
-<div class="modals">
-    <div class="modal" id="edit_column">
-        <div class="modal-header">
-            <h2>{{ l.s('marks.edit_column') }}</h2>
-        </div>
-        
-        <ng-component *ngComponentOutlet="EditColumnComponent"></ng-component>
-    </div>
-</div>
-}
