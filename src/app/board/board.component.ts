@@ -1,10 +1,14 @@
 import { NgClass, NgStyle } from '@angular/common';
+import { HttpClient } from '@angular/common/http';
 import { Component, inject, OnInit } from '@angular/core';
 import { Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { Authentication } from '@Schoolingo/authentication';
 import { Config } from '@Schoolingo/config';
 import { IconsModule } from '@Schoolingo/icons';
 import { Locale } from '@Schoolingo/locale';
+import { MarkConfig } from '@Schoolingo/marks';
+import { MarksManager } from '@Schoolingo/marks';
+import { MessageConfig, MessageManager } from '@Schoolingo/messages';
 import { permType } from '@Schoolingo/permission';
 import { School } from '@Schoolingo/school';
 import { Sidebar } from '@Schoolingo/sidebar';
@@ -32,6 +36,9 @@ export class BoardComponent implements OnInit {
   sidebarToggled = false;
   private router = inject(Router);
   public sidebar = inject(Sidebar);
+  private marks = inject(MarksManager);
+  private messages = inject(MessageManager);
+  private http = inject(HttpClient);
   school = inject(School);
   
   l = inject(Locale);
@@ -107,6 +114,31 @@ export class BoardComponent implements OnInit {
   ngOnInit(): void {
     this.u.getAuthState().subscribe((data) => {
       this.sidebar.build();
+      if (data) {
+        this.http.get(
+          `${Config.API_URL}/v1/marks/config`,
+          { withCredentials: true }
+        )
+        .subscribe((data) => {
+          if ('error' in data) {
+            return;
+          }
+
+          this.marks.setConfig(data as MarkConfig);
+        })
+
+        this.http.get(
+          `${Config.API_URL}/v1/messages/config`,
+          { withCredentials: true }
+        )
+        .subscribe((data) => {
+          if ('error' in data) {
+            return;
+          }
+
+          this.messages.setConfig(data as MessageConfig);
+        })
+      }
     })
   }
 

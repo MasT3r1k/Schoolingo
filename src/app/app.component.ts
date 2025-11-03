@@ -3,10 +3,11 @@ import { RouterOutlet } from '@angular/router';
 import { Authentication } from './infrastructure/authentication';
 import { polyfillCountryFlagEmojis } from "country-flag-emoji-polyfill";
 import { ModalComponent } from '@Components/modal';
+import { CalendarManager } from '@Components/calendar-dropdown';
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet, ModalComponent],
+  imports: [RouterOutlet, ModalComponent, CalendarManager],
   templateUrl: './app.component.html',
   styleUrl: './app.component.css'
 })

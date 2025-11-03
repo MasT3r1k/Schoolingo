@@ -116,25 +116,26 @@ export class Sidebar {
 
     /**
      * Get page information by page's url
-     * @param url url of page
+     * @param urlParam url of page
      * @returns information of page
      */
-    public getItem(url: string): SidebarItem[] {
-        let gotItem: SidebarItem[] = [];
-        this.data.forEach((group) => {
-            group.items.forEach((item: SidebarItem) => {
-                if (item.url == url) {
-                    gotItem[0] = item;
-                }
-                item.children?.forEach((nItem: SidebarItem) => {
-                    if (nItem.url == url) {
-                        gotItem[0] = item;
-                        gotItem[1] = nItem;
-                    };
-                })
-            });
-        })
-        return gotItem;
+    public getItem(urlParam: string = window.location.pathname): SidebarItem[] {
+      const url = urlParam.startsWith('/') ? urlParam.slice(1) : urlParam;
+      let gotItem: SidebarItem[] = [];
+      this.data.forEach((group) => {
+          group.items.forEach((item: SidebarItem) => {
+              if (item.url == url) {
+                  gotItem[0] = item;
+              }
+              item.children?.forEach((nItem: SidebarItem) => {
+                  if (nItem.url == url) {
+                      gotItem[0] = item;
+                      gotItem[1] = nItem;
+                  };
+              })
+          });
+      })
+      return gotItem;
     }
 
     public updateTitle(url: string): void {

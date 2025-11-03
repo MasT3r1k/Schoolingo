@@ -141,7 +141,6 @@ export class IntermRecordComponent {
       this.students = [];
       this.gradeColumns = [];
     }
-    console.log(group)
   }
 
   public getSelectedGroup(): Group | null {
@@ -163,6 +162,21 @@ export class IntermRecordComponent {
       }
     );
 
+    // === Listen to query params ===
+    this.route.queryParams.subscribe(() => {
+      const subject_id = this.route.snapshot.queryParamMap.get('subject_id');
+      const group_id = this.route.snapshot.queryParamMap.get('group_id');
+      if (subject_id != null && group_id != null) {
+        this.selected_group = this.groups.findIndex(
+          (group) =>
+            group.groupId === parseInt(group_id, 10) &&
+            group.subjectId === parseInt(subject_id, 10)
+        );
+      } else {
+        this.selected_group = -1;
+      }
+      this.updateGroup();
+    });
 
     // === Get teacher groups ===
     this.http

@@ -1,4 +1,16 @@
+import { MarkConfig } from './index.d';
+export type { MarkConfig }
+
 export class MarksManager {
+    private config!: MarkConfig;
+    public getConfig(): typeof this.config {
+        return this.config;
+    }
+
+    public setConfig(config: typeof this.config): void {
+        this.config = config;
+    }
+
     private action: 'edit' | 'create' | '' = '';
     private student: number | null = null;
     private columnIndex = -1;

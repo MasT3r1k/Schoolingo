@@ -1,8 +1,9 @@
 import { Component, inject, OnInit } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { AlertComponent } from '@Components/Alert/Alert';
-import { Schoolingo } from '@Schoolingo';
-import { Alert } from '@Schoolingo/Alert';
+import { AlertComponent } from '@Components/Alert';
+import { Alert } from '@Schoolingo/alert';
+import { Locale } from '@Schoolingo/locale';
+import { MarksManager } from '@Schoolingo/marks';
 
 @Component({
   standalone: true,
@@ -11,20 +12,21 @@ import { Alert } from '@Schoolingo/Alert';
   styleUrl: './edit-mark.component.css'
 })
 export class EditMarkComponent implements OnInit {
-  public schoolingo = inject(Schoolingo);
   public alert: Alert | null = null;
+  public marksManager = inject(MarksManager);
+  public l = inject(Locale);
+  
 
   public mark: string | number | null = null;
 
   ngOnInit(): void {
-    this.mark = this.schoolingo.tmarks.getMark()
+    this.mark = this.marksManager.getMark()
   }
 
   public editMark(): void {
     this.alert = null;
     // Validation
-    if (!this.schoolingo.tmarks.getSelectedStudent() || !this.schoolingo.tmarks.getSubjectId()) {
-      this.alert = new Alert("error", "marks/alerts/unknownDetails", true);
+    if (!this.marksManager.getSelectedStudent() || !this.marksManager.getSubjectId()) {
       return;
     }
 
@@ -34,7 +36,6 @@ export class EditMarkComponent implements OnInit {
 
     if (typeof this.mark == "string" && !["A", "N", "X", "?"].includes(this.mark) ||
         typeof this.mark == "number" && isNaN(this.mark)) {
-          this.alert = new Alert("error", "marks/alerts/invalidMark", true);
           return;
       }
   }

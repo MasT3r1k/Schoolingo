@@ -1,0 +1,129 @@
+@if (getCalendars().length) {
+<div class="calendar-wrap" id="calWrap">
+  @for(calendar of getCalendars();track $index) {
+  <div style="position: relative; width: 100%; height: 100%" (click)="closeCalendar(calendar.id)">
+    <div
+      class="calendar-panel"
+      id="calPanel"
+      [style.width.px]="calendar.width"
+      [style.left.px]="calendar.position.x"
+      [style.top.px]="calendar.position.y"
+      (click)="$event.stopPropagation()"
+    >
+      <div class="cal-header">
+        <div class="nav">
+          <div
+            class="header-btn center"
+            id="prevYear"
+            title="Předchozí rok"
+            (click)="selectedDate.subtract(1, 'year')"
+          >
+            <i-tabler style="margin: 0" name="chevrons-left"></i-tabler>
+          </div>
+          <div
+            class="header-btn center"
+            id="prevMonth"
+            title="Předchozí měsíc"
+            (click)="selectedDate.subtract(1, 'month')"
+          >
+            <i-tabler style="margin: 0" name="chevron-left"></i-tabler>
+          </div>
+        </div>
+        <div class="month-title" id="monthTitle">
+          {{ l.s('calendar.title')
+          .replaceAll('%month%', l.s('months.' + selectedDate.month()))
+          .replaceAll('%year%', selectedDate.year().toString()) }}
+        </div>
+        <div class="nav">
+          <div
+            class="header-btn center"
+            id="nextMonth"
+            title="Další měsíc"
+            (click)="selectedDate.add(1, 'month')"
+          >
+            <i-tabler style="margin: 0" name="chevron-right"></i-tabler>
+          </div>
+          <div
+            class="header-btn center"
+            id="nextYear"
+            title="Další rok"
+            (click)="selectedDate.add(1, 'year')"
+          >
+            <i-tabler style="margin: 0" name="chevrons-right"></i-tabler>
+          </div>
+        </div>
+      </div>
+
+      <div class="weekdays" id="weekdays">
+        @for(_ of [].constructor(7);track $index) {
+        <div>
+          {{ l.s('short_days.' + ($index == 6 ? 0 : $index + 1).toString()) }}
+        </div>
+        }
+      </div>
+      <div class="calendar-grid" id="grid">
+        @for(day of getCalendar(selectedDate);track $index) {
+        <div class="day" [class.inactive]="day.gray" [class.selected]="isSameDay(calendar, day.date)" [class.inrange]="isBetweenDay(calendar, day.date)" (click)="selectDay(calendar.id, day.date)">
+          {{ day.date.format('D') }}
+        </div>
+        }
+      </div>
+
+      <div class="options">
+        <div
+          class="chip"
+          [class.active]="calendar.options.multiple_days"
+          id="multiDay"
+        >
+          Více dnů
+        </div>
+        <div
+          class="chip"
+          [class.active]="calendar.options.multiple_hours"
+          id="multiHour"
+        >
+          Více hodin (od-do)
+        </div>
+      </div>
+
+      <div class="time-row">
+        <div style="flex: 1">
+          <label>{{ l.s('calendar.from') }}</label>
+          <input
+            type="time"
+            step="900"
+            id="timeFrom"
+            class="time-input"
+            value="08:00"
+          />
+        </div>
+        <div style="flex: 1">
+          <label>{{ l.s('calendar.to') }}</label>
+          <input
+            type="time"
+            step="900"
+            id="timeTo"
+            class="time-input"
+            value="09:00"
+          />
+        </div>
+      </div>
+
+      <div class="hint">
+        Tip: klikni na první den a pak na poslední pro výběr rozsahu (když je
+        aktivní "Více dnů").
+      </div>
+
+      <div class="buttons end">
+        <div class="btn" id="clearBtn">
+          {{ l.s('buttons.reset') }}
+        </div>
+        <div class="btn primary" id="saveBtn">
+          {{ l.s('buttons.save') }}
+        </div>
+      </div>
+    </div>
+  </div>
+  }
+</div>
+}

@@ -173,6 +173,7 @@ export class AuthComponent implements OnInit {
   // 🚀 Hlavní metoda pro zapomenuté heslo
   public forgotPassword(): void {
     this.errors = {};
+    this.a.getAlerts().forEach((alert) => this.a.removeAlert(alert));
 
     if (!this.school.config.getValue()?.resetPasswordWithEmail) {
       this.a.alert('info', 'auth.forgotpass.not_available');

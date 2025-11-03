@@ -1,21 +1,21 @@
 @if (!isLoading) {
 <div class="items" (click)="showSelect = null;">
     <div class="item mb">
-        <div class="label">
+        <label class="label" [class.error-color]="errors['topic']">
             {{ l.s('marks.title') }}
             @if (errors['topic']) {
                 - {{ errors['topic'] }}
             }
-        </div>
+        </label>
         <div class="value">
-            <input type="text" name="markTopic" maxlength="50" [placeholder]="l.s('marks.title_placeholder')" [(ngModel)]="topic">
+            <input type="text" [class.input-error]="errors['topic']" name="markTopic" [maxlength]="marksManager.getConfig().max_topic_length" [placeholder]="l.s('marks.title_placeholder')" [(ngModel)]="topic">
         </div>
     </div>
 
     <div class="item mb">
-        <div class="label">
+        <label class="label">
             {{ l.s('marks.type') }}
-        </div>
+        </label>
         <div class="value">
             <div class="input-select">
                 <input type="text" (click)="$event.stopPropagation();showSelect = showSelect == 'type' ? null : 'type'" name="inputSelect" readonly="true" [value]="l.s('marks.types.' + type)" />
@@ -35,28 +35,34 @@
     @switch (type) {
         @case("marks") {
             <div class="item mb">
-                <div class="label">
+                <label class="label" [class.error-color]="errors['weight']">
                     {{ l.s('marks.weight') }}
-                </div>
+                    @if (errors['weight']) {
+                        - {{ errors['weight'] }}
+                    }
+                </label>
                 <div class="value">
-                    <input type="text" name="weight" [(ngModel)]="weight" />
+                    <input type="text" [class.input-error]="errors['weight']" name="weight" [(ngModel)]="weight" />
                 </div>
             </div>
         }
         @case("points") {
             <div class="item mb">
-                <div class="label">
+                <label class="label" [class.error-color]="errors['points']">
                     {{ l.s('marks.max_points') }}
-                </div>
+                    @if (errors['points']) {
+                        - {{ errors['points'] }}
+                    }
+                </label>
                 <div class="value">
-                    <input type="text" name="maxPoints" [placeholder]="l.s('marks.max_points_placeholder')" [(ngModel)]="maxPoints">
+                    <input type="text" [class.input-error]="errors['points']" name="maxPoints" [placeholder]="l.s('marks.max_points_placeholder')" [(ngModel)]="maxPoints">
                 </div>
             </div>
 
             <div class="item mb">
-                <div class="label">
+                <label class="label">
                     {{ l.s('marks.include_in_grade_even_if_no_points') }}
-                </div>
+                </label>
                 <div class="value">
                     <div class="yesOrNo row">
                         <div [ngClass]="{'blue-info': includeInGradeEvenIfNoPoints}" (click)="includeInGradeEvenIfNoPoints = true">
@@ -73,27 +79,31 @@
 
     @if (type == "points" && !includeInGradeEvenIfNoPoints || type == "marks") {
         <div class="item mb">
-            <div class="label">
+            <label class="label" [class.error-color]="errors['prefill']">
                 {{ l.s('marks.prefill') }}
-            </div>
+                @if (errors['prefill']) {
+                    - {{ errors['prefill'] }}
+                }
+            </label>
             <div class="value">
-                <input type="text" name="prefillMark" [placeholder]="l.s('marks.prefill_placeholder')" [(ngModel)]="prefillMark">
+                <input type="text" [class.input-error]="errors['prefill']" name="prefillMark" [placeholder]="l.s('marks.prefill_placeholder')" [(ngModel)]="prefillMark">
             </div>
         </div>
-    }
 
-    @if (prefillMark == "?") {
-                <div class="item mb">
-            <div class="label">
-                {{ l.s('marks.planned_mark') }}
+        @if (prefillMark == "?") {
+            <div class="item mb" style="position: relative;">
+                <label class="label">
+                    {{ l.s('marks.planned_mark') }}
+                </label>
+                <div class="value">
+                    <app-calendar (dateSelected)="onDatePicked($event)" (hourSelected)="onHourPicked($event)"></app-calendar>
+                </div>
             </div>
-            <div class="value">
-                <input type="text" name="plannedMark" [placeholder]="l.s('marks.planned_mark')" [(ngModel)]="plannedMark">
-            </div>
-        </div>
+        }
     }
 
     <div class="btn" [class.primary]="isButtonActivated()" role="button" (click)="editColumn()">
+        <i-tabler [name]="action == 'edit' ? 'pencil' : 'plus'"></i-tabler>
         {{ l.s(`marks.${action == 'edit' ? 'edit_column' : 'create_column'}`) }}
     </div>
 </div>

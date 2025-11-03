@@ -8,7 +8,7 @@
                 <div class="dropdown" [hidden]="dropdown != 'language'" (click)="$event.stopPropagation();">
                     <ul>
                         @for (language of l.getLanguages(); track $index) {
-                            <li class="btn" (click)="$event.stopPropagation();l.setLanguage(language)">
+                            <li class="btn" style="justify-content: flex-start;" (click)="$event.stopPropagation();l.setLanguage(language)">
                                 <img style="width: 20px;" [src]="l.getLanguage(language)?.flag" [alt]="l.getLanguage(language)?.name">
                                 <span>{{ l.getLanguage(language)?.name }}</span>
                             </li>
@@ -23,7 +23,7 @@
                 <div class="dropdown" [hidden]="dropdown != 'theme'" (click)="$event.stopPropagation();">
                     <ul>
                         @for (theme of t.getThemes(); track $index) {
-                            <li class="btn" (click)="t.updateTheme(theme)">
+                            <li class="btn" style="justify-content: flex-start;" (click)="t.updateTheme(theme)">
                                 <div class="item">
                                     <div class="row">
                                         <div [ngStyle]="{width: '20px',height: '20px','background-color': theme == 'system' ? (t.getSystemColor() == 'dark' ? '#000' : '#fff') : theme == 'dark' ? '#000' : '#fff','border-radius': '50%','margin-right': '.5rem'}"></div>
@@ -80,7 +80,7 @@
                                     }
                                 </label>
                                 <div class="value">
-                                    <input type="text" id="username" name="username" formControlName="username" [placeholder]="l.s('auth.login.username_placeholder')" required />
+                                    <input type="text" [class.input-error]="getInputError('username')" id="username" name="username" formControlName="username" [placeholder]="l.s('auth.login.username_placeholder')" required />
                                 </div>
                             </div>
                             <div class="form-group">
@@ -93,7 +93,7 @@
                                     }
                                 </label>
                                 <div class="value">
-                                    <input type="password" id="password" name="password" formControlName="password" [placeholder]="l.s('auth.login.password_placeholder')" required />
+                                    <input type="password" [class.input-error]="getInputError('password')" id="password" name="password" formControlName="password" [placeholder]="l.s('auth.login.password_placeholder')" required />
                                 </div>
                             </div>
                             <div class="form-group">
@@ -134,7 +134,7 @@
                                     }
                                 </label>
                                 <div class="value">
-                                    <input type="text" id="token" [minlength]="AuthConfig.token_length" [maxlength]="AuthConfig.token_length" name="token" autocomplete="off" autocorrect="off" formControlName="token" required />
+                                    <input type="text" [class.input-error]="getInputError('token')" id="token" [minlength]="AuthConfig.token_length" [maxlength]="AuthConfig.token_length" name="token" autocomplete="off" autocorrect="off" formControlName="token" required />
                                 </div>
                             </div>
                             <div class="form-group">
@@ -178,7 +178,7 @@
                         <div class="title">
                             {{ l.s("auth.forgotpass.title") }}
                         </div>
-                        <div class="note mt">
+                        <div class="message info mt">
                             {{ l.s('auth.forgotpass.code_from_email') }}
                         </div>
                         <div class="form-group">
@@ -191,7 +191,7 @@
                                 }
                             </label>
                             <div class="value">
-                                <input type="text" id="email_code" [(ngModel)]="emailCode" [minlength]="8" [maxlength]="8" name="email_code" autocomplete="off" autocorrect="off" required placeholder="XXXXXXXX" />
+                                <input type="text" [class.input-error]="getInputError('email_code')" id="email_code" [(ngModel)]="emailCode" [minlength]="8" [maxlength]="8" name="email_code" autocomplete="off" autocorrect="off" required placeholder="XXXXXXXX" />
                             </div>
                         </div>
                         <div class="form-group">
@@ -225,7 +225,7 @@
                                 }
                             </label>
                             <div class="value">
-                                <input type="password" id="new_password" [(ngModel)]="newPassword" name="new_password" autocomplete="off" autocorrect="off" [placeholder]="l.s('settings.passwords.new_password')" />
+                                <input type="password" [class.input-error]="getInputError('new_password')" id="new_password" [(ngModel)]="newPassword" name="new_password" autocomplete="off" autocorrect="off" [placeholder]="l.s('settings.passwords.new_password')" />
                             </div>
                         </div>
 
@@ -239,7 +239,7 @@
                                 }
                             </label>
                             <div class="value">
-                                <input type="password" id="new_again_password" [(ngModel)]="newAgainPassword" name="new_again_password" autocomplete="off" autocorrect="off" [placeholder]="l.s('settings.passwords.again_new_password')" />
+                                <input type="password" [class.input-error]="getInputError('new_again_password')" id="new_again_password" [(ngModel)]="newAgainPassword" name="new_again_password" autocomplete="off" autocorrect="off" [placeholder]="l.s('settings.passwords.again_new_password')" />
                             </div>
                         </div>
 
@@ -274,7 +274,7 @@
                                 }
                             </label>
                             <div class="value">
-                                <input type="text" id="emailTFA" [(ngModel)]="emailTFA" name="emailTFA" autocomplete="off" autocorrect="off" [placeholder]="l.s('auth.2fa.authentication_code')" />
+                                <input type="text" id="emailTFA" [class.input-error]="getInputError('emailTFA')" [(ngModel)]="emailTFA" name="emailTFA" autocomplete="off" autocorrect="off" [placeholder]="l.s('auth.2fa.authentication_code')" />
                             </div>
                         </div>
 

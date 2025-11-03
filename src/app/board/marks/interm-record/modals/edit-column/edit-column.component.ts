@@ -4,10 +4,13 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { Locale } from '@Schoolingo/locale';
 import { Alert } from '../../../../../infrastructure/alert/alert';
 import { MarksManager } from '@Schoolingo/marks';
+import { CalendarComponent } from '@Components/calendar';
+import moment from 'moment';
+import { IconsModule } from '@Schoolingo/icons';
 
 @Component({
   standalone: true,
-  imports: [FormsModule, ReactiveFormsModule, NgClass],
+  imports: [FormsModule, ReactiveFormsModule, NgClass, CalendarComponent, IconsModule],
   templateUrl: './edit-column.component.html',
   styleUrl: './edit-column.component.css'
 })
@@ -27,6 +30,19 @@ export class EditColumnComponent implements OnInit {
   public includeInGradeEvenIfNoPoints: boolean = false;
   public plannedMark = "";
   public errors: { [key: string]: string } = {};
+
+  selectedDateFromChild: moment.Moment = moment();
+  selectedHourFromChild: string | null = null;
+
+  onDatePicked(date: moment.Moment) {
+    this.selectedDateFromChild = date;
+    console.log('Vybrané datum:', date);
+  }
+
+  onHourPicked(hour: string) {
+    this.selectedHourFromChild = hour;
+    console.log('Vybraná hodina:', hour);
+  }
 
   public showSelect: 'type' | 'weight' | null = null;
 
@@ -51,12 +67,14 @@ export class EditColumnComponent implements OnInit {
     // Validation
     if (!this.topic.length) {
       this.errors['topic'] = this.l.s('form.required');
-      return;
     }
 
-    if (this.topic.length > 50) {
-      this.errors['topic'] = this.l.s('form.maxLength').replaceAll('%max%', "50");
-      return;
+    if (this.topic.length > this.marksManager.getConfig().max_topic_length) {
+      this.errors['topic'] = this.l.s('form.maxLength').replaceAll('%max%', this.marksManager.getConfig().max_topic_length.toString());
+    }
+
+    if (this.topic.length < this.marksManager.getConfig().min_topic_length) {
+      this.errors['topic'] = this.l.s('form.minLength').replaceAll('%min%', this.marksManager.getConfig().min_topic_length.toString());
     }
 
     switch (this.type) {
@@ -64,36 +82,41 @@ export class EditColumnComponent implements OnInit {
         let weight = parseFloat(this.weight);
         if (isNaN(weight) || this.weight == "" || this.weight == null || this.weight == undefined) {
           this.errors['weight'] = this.l.s('form.required');
-          return;
         }
 
-        if (weight < 1 || weight > 10) {
-          this.errors['weight'] = this.l.s('form.invalid');
-          return;
+        if (weight < this.marksManager.getConfig().min_weight) {
+          this.errors['weight'] = this.l.s('form.minValue').replaceAll('%min%', this.marksManager.getConfig().min_weight.toString());
+        }
+
+        if (weight > this.marksManager.getConfig().max_weight) {
+          this.errors['weight'] = this.l.s('form.maxValue').replaceAll('%max%', this.marksManager.getConfig().max_weight.toString());
         }
 
         if (parseInt(this.weight).toString() != this.weight) {
           this.errors['weight'] = this.l.s('form.invalid');
-          return;
         }
       break;
     case "points":
       let maxPoints = parseFloat(this.maxPoints);
       if (isNaN(maxPoints) || this.maxPoints == "" || this.maxPoints == null || this.maxPoints == undefined) {
         this.errors['points'] = this.l.s('form.required');
-        return;
       }
 
-      if (maxPoints < 1 || maxPoints > 100) {
-        this.errors['points'] = this.l.s('form.invalid');
-        return;
+      if (maxPoints > this.marksManager.getConfig().max_points) {
+        this.errors['points'] = this.l.s('form.maxValue').replaceAll('%max%', this.marksManager.getConfig().max_points.toString());
+      }
+      if (maxPoints < this.marksManager.getConfig().min_points) {
+        this.errors['points'] = this.l.s('form.minValue').replaceAll('%min%', this.marksManager.getConfig().min_points.toString());
       }
 
       if (parseInt(this.maxPoints).toString() != this.maxPoints) {
         this.errors['points'] = this.l.s('form.invalid');
-        return;
       }
       break;
+    }
+
+    if (Object.keys(this.errors).length) {
+      return;
     }
   }
 }

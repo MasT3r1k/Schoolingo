@@ -144,7 +144,7 @@
                 <div class="dropdown" [hidden]="dropdown !== 'user'" (click)="$event.stopPropagation()">
                     <ul>
                         @for (item of userDropdown; track $index) {
-                            <li [routerLink]="item.url" [ngClass]="[item.type ? item.type : '']" (click)="dropdown='';item?.action();" [routerLinkActive]="'active'">
+                            <li [routerLink]="item.url" [ngClass]="[item.type ? item.type : '']" (click)="dropdown='';item?.action();" [routerLinkActive]="'active'" [routerLinkActiveOptions]="{ exact: false, queryParams: 'ignored' }">
                                 <div class="item">
                                         <div class="row">
                                             @if (item.icon) {
@@ -169,7 +169,7 @@
             @for (section of sidebar.data; track $index) {
                     <ul>
                         @for (item of section.items; track $index) {
-                            <li [routerLink]="item.url" (click)="item.url ? sidebar.sidebarToggled = false : {}"  [routerLinkActive]="'active'" [ngClass]="{ opened: item.children && item.children.length > 0 && sidebar.isToggled($index) }" [routerLinkActiveOptions]="{ exact: false, queryParams: 'ignored'}" (click)="sidebar.toggleDropdown($index)">
+                            <li [routerLink]="item.url" (click)="item.url ? sidebar.sidebarToggled = false : {}"  [routerLinkActive]="'active'" [ngClass]="{ opened: item.children && item.children.length > 0 && sidebar.isToggled($index) }" [routerLinkActiveOptions]="{ exact: true, queryParams: 'ignored'}" (click)="sidebar.toggleDropdown($index)">
                                 <div class="item">
                                     <div class="item-label">
                                         {{ l.s(item.item) }}
@@ -191,7 +191,7 @@
                                     <div class="dropdown-child" [ngStyle]="{height: sidebar.isToggled($index) ? 'auto' : '0px'}" (click)="$event.stopPropagation()">
                                         <ul>
                                             @for (child of item.children; track $index) {
-                                                <li (click)="sidebar.sidebarToggled = false" [routerLink]="child.url" [routerLinkActive]="'active'" [routerLinkActiveOptions]="{ exact: false, queryParams: 'ignored'}" >
+                                                <li (click)="sidebar.sidebarToggled = false" [routerLink]="child.url" [routerLinkActive]="'active'" [routerLinkActiveOptions]="{ exact: true, queryParams: 'ignored'}" >
                                                     <div class="item">
                                                         <div class="item-label">
                                                             {{ l.s(child.item) }}
