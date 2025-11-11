@@ -52,6 +52,17 @@ export class Permission {
                     if (getAge(user.birthday) >= age) {
                         permCount++;
                     }
+                } else if (permission.startsWith("manager:")) {
+                    if (user.manager == -1) {
+                        permCount++;
+                    } else {
+                        let manPerm = permission.slice(8);
+                        let id = PermissionsConfig.Managers.indexOf(manPerm);
+                        let bin = (user.manager >>> 0).toString(2).split('').reverse();
+                        if (id !== -1 && bin[id] && bin[id].toString() == "1") {
+                            permCount++;
+                        }
+                    }
                 } else if (permission == "classteacher" && this.user.getUser().classes.length) {
                     permCount++;
                 } else if (permission == "all") {

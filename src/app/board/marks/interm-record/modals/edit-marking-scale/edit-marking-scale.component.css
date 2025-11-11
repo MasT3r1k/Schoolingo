@@ -1,0 +1,284 @@
+.btn i-tabler,
+.name i-tabler {
+    width: 20px;
+    height: 20px;
+}
+
+.name {
+    color: var(--primary-200);
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 4px;
+    cursor: pointer;
+}
+
+.panel {
+    width: 100%;
+    padding: 1rem;
+    border: 1px solid var(--border);
+    background-color: var(--surface-2);
+    border-radius: var(--radius);
+}
+
+.panel-header {
+    border-bottom: 1px solid var(--border);
+    color: var(--text-muted);
+    font-weight: bold;
+}
+
+.panel-header, .panel-row {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    width: 100%;
+}
+
+.panel-row {
+    margin-top: 8px;
+}
+
+.panel .panel-grade {
+    flex: 0 0 calc(100% - 150px);
+}
+
+.panel .panel-percentage {
+    flex: 0 0 150px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 4px;
+}
+
+input {
+    width: 48px;
+    padding: .5rem;
+    -moz-appearance: textfield;
+}
+
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.panel .panel-actions {
+    flex: 0 0 28px;
+    color: var(--accent);
+    cursor: pointer;
+}
+
+.modal-body {
+    overflow: auto;
+}
+
+.scale-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    padding-block: 4px;
+}
+
+.scale-card.default {
+    border-color: var(--success);
+}
+
+.scale-card.active {
+    border-color: var(--primary);
+}
+
+.scale-card {
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    position: relative;
+    cursor: pointer;
+    transition: 0.2s ease;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+}
+
+.scale-card:not(.edit-mode):hover {
+    background: var(--elevated);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.4);
+}
+
+.scale-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+}
+
+.scale-header h5 {
+    margin: 0;
+    color: var(--text);
+}
+
+.badges, .actions {
+    display: flex;
+    flex-direction: row;
+    gap: 6px;
+}
+
+.badge.default {
+    background: rgba(46, 204, 113, 0.15);
+    color: var(--success);
+    border: 1px solid rgba(46, 204, 113, 0.3);
+}
+
+.badge.active {
+    background: rgba(88, 101, 242, 0.15);
+    color: var(--primary-100);
+    border: 1px solid rgba(88, 101, 242, 0.3);
+}
+
+.grades {
+    display: flex;
+    justify-content: space-around;
+    padding: 8px 0;
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+    font-size: 14px;
+}
+
+.grade {
+    text-align: center;
+}
+
+.grade .num {
+    font-weight: bold;
+    color: var(--text);
+}
+
+.grade .percent {
+    color: var(--text-muted);
+    font-size: 13px;
+}
+
+.usage {
+    font-size: 13px;
+    color: var(--text-muted);
+    gap: 8px;
+    display: flex;
+    justify-content: space-between;
+}
+
+.usage > div {
+    flex: 0 0 calc(50% - 4px);
+    max-width: calc(50% - 4px);
+    text-overflow: ellipsis;
+    overflow: hidden;
+    text-wrap-mode: nowrap;
+}
+
+.usage > div:last-child {
+    text-align: end;
+}
+
+.skeleton {
+    color: transparent!important;
+    background: var(--surface-glow) !important;
+}
+
+.skeleton div,
+.skeleton span {
+    color: transparent!important;
+}
+
+/* Přidat k tvému původnímu CSS */
+
+/* --- Režim editace --- */
+.scale-card.edit-mode {
+  border-color: var(--primary-700);
+  background: var(--surface-2);
+}
+
+/* --- Inputy --- */
+.scale-card input[type="text"],
+.scale-card input[type="number"] {
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  color: var(--text);
+  border-radius: 6px;
+  padding: 6px 8px;
+  font-size: 0.9rem;
+  font-family: inherit;
+  width: 100%;
+  box-sizing: border-box;
+  transition: 0.15s ease;
+}
+
+.scale-card input[type="text"]:focus,
+.scale-card input[type="number"]:focus {
+  border-color: var(--primary);
+  background: var(--elevated);
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(88, 101, 242, 0.25);
+}
+
+/* --- Input v názvu --- */
+.scale-card.edit-mode h5 input {
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid var(--border);
+  font-size: 1rem;
+  font-weight: 600;
+  border-radius: 0;
+  color: var(--text);
+  padding: 4px 0;
+  width: 100%;
+}
+
+.scale-card.edit-mode h5 input:focus {
+  border-color: var(--primary);
+  background: transparent;
+  outline: none;
+  box-shadow: none;
+}
+
+/* --- Inputy u známek --- */
+.scale-card .grade input[type="number"] {
+  text-align: center;
+  width: 60px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  color: var(--text);
+  margin-top: 4px;
+  appearance: none;
+}
+
+.scale-card .grade input[type="number"]:focus {
+  border-color: var(--primary);
+  background: var(--elevated);
+}
+
+.percent-symbol {
+  color: var(--text-muted);
+  font-size: 0.85rem;
+  margin-left: 3px;
+}
+
+/* --- Responsivní úprava (do 500px) --- */
+@media (max-width: 500px) {
+  .scale-card {
+    padding: 12px;
+  }
+
+  .scale-card .grades {
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .scale-card .grade input[type="number"] {
+    width: 48px;
+  }
+
+  .scale-card .usage > div {
+    flex: 1 1 100%;
+    text-align: left;
+  }
+}

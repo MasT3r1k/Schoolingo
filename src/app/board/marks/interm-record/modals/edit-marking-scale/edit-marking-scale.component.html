@@ -1,0 +1,401 @@
+@if (!isLoading && selected_marking_scale) {
+<div class="items">
+    <div class="message info">{{ l.s('marks.edit_marking_scale.description') }}</div>
+
+    <div class="item mb">
+        <div class="row" style="justify-content: space-between;">
+            <label class="label">
+                {{ l.s('marks.edit_marking_scale.table') }}
+            </label>
+            <div class="name" (click)="go_to_list()">
+                {{ l.s('marks.edit_marking_scale.change_table') }}
+                <i-tabler name="chevron-right"></i-tabler>
+            </div>
+        </div>
+
+        <div class="value">
+            <div class="scale-card" (contextmenu)="contextMenuChangeMarkingScale(selected_marking_scale.ms_id, $event)">
+                <div class="scale-header">
+                    <div>
+                        <h5>
+                            {{ selected_marking_scale.name ?? l.s('marks.edit_marking_scale.default_name') }}
+                        </h5>
+                        <div class="meta">
+                            <span style="color: var(--text-muted)">
+                                {{ l.s('marks.edit_marking_scale.usage_count') }}:
+                            </span>
+                            <span style="color: var(--text);">
+                                {{ selected_marking_scale.usage_count }}x
+                            </span>
+                        </div>
+                    </div>
+                    <div class="right">
+                        <div class="badges">
+                            @if (selected_marking_scale.is_default) {
+                                <span class="badge default">
+                                    {{ l.s('marks.edit_marking_scale.badges.default') }}
+                                </span>
+                            }
+                        </div>
+                    </div>
+                </div>
+
+                <div class="grades">
+                    @for(grade of selected_marking_scale.grades;track $index) {
+                    <div class="grade">
+                        <span class="num">
+                            {{ $index + 1 }}
+                        </span>
+                        <br>
+                        <span class="percent">
+                            {{ grade }}%
+                        </span>
+                    </div>
+                    }
+                </div>
+                <div class="usage">
+                    <div>
+                        <span style="color: var(--text-muted)">
+                            {{ l.s('subject') }}:
+                        </span>
+                        <span style="color: var(--text);">
+                            {{ selected_marking_scale.most_used_subject ? selected_marking_scale.most_used_subject.subject_name : '' }}
+                        </span>
+                    </div>
+                    <div>
+                        <span style="color: var(--text-muted)">
+                            {{ l.s('marks.edit_marking_scale.last_updated') }}:
+                        </span>
+                        <span style="color: var(--text);">
+                            {{ Utils.formatDateShort(selected_marking_scale.last_updated) }}
+                        </span>
+                    </div>
+                </div>
+            </div>
+            <div class="note">
+                {{ l.s('marks.edit_marking_scale.auto_update') }}
+            </div>
+        </div>
+    </div>
+
+    <div class="btn primary" role="button" (click)="saveMarkingScale()">
+        <i-tabler name="pencil"></i-tabler>
+        {{ l.s('buttons.save_changes') }}
+    </div>
+</div>
+
+<div [ngStyle]="{position: 'absolute', top:0, left:0, transform: ['list', 'edit', 'new'].includes(page) ? 'translateX(0%)' : 'translateX(100%)', width: '100%',height:'100%', 'max-height': '100vh', 'visibility': ['list', 'edit', 'new'].includes(page) ? 'visible' : 'hidden', backgroundColor: 'var(--surface)', transition: 'all .5s', zIndex: '500', padding: '2rem', overflow: 'hidden', display: 'flex', 'flex-direction': 'column', gap: '8px'}" class="modal" (click)="page = page == 'new' ? 'list' : page">
+    @if (page == 'new') {
+        <div class="modal-darkening" style="z-index: 540;"></div>
+    }
+    <div class="modal-header" style="justify-content: flex-start;flex: 0 0 72px">
+        <div>
+            <div class="btn small gray" style="display: flex;align-items: center;margin-right: .5rem;" (click)="$event.stopPropagation();page = 'detail'">
+                <i-tabler name="chevron-left" style="margin-right: 4px;width: 20px;height: 20px;"></i-tabler>
+                {{ l.s('buttons.back') }}
+            </div>
+        </div>
+        <h2>{{ l.s('marks.edit_marking_scale.table') }}</h2>
+    </div>
+    <div class="modal-body invisible-scrollbar" style="flex: 1">
+        <div class="scale-list">
+            @for (marking_scale of ordered_marking_scales; track $index) {
+                <div class="scale-card" [class.active]="marking_scale.ms_id == selected_marking_scale.ms_id" [class.default]="marking_scale.is_default" (contextmenu)="contextMenuEditMarkingScale(marking_scale.ms_id, $event)" (click)="selectMarkingScale(marking_scale)">
+                    <div class="scale-header">
+                        <div>
+                            <h5>
+                                {{ marking_scale.name ?? l.s('marks.edit_marking_scale.default_name') }}
+                            </h5>
+                            <div class="meta">
+                                <span style="color: var(--text-muted)">
+                                    {{ l.s('marks.edit_marking_scale.usage_count') }}:
+                                </span>
+                                <span style="color: var(--text);">
+                                    {{ marking_scale.usage_count }}x
+                                </span>
+                            </div>
+                        </div>
+                        <div class="right">
+                            <div class="badges">
+                                @if (marking_scale.is_default) {
+                                    <span class="badge default">
+                                        {{ l.s('marks.edit_marking_scale.badges.default') }}
+                                    </span>
+                                }
+                                @if (marking_scale.ms_id == selected_marking_scale.ms_id) {
+                                    <span class="badge active">
+                                        {{ l.s('marks.edit_marking_scale.badges.active') }}
+                                    </span>
+                                }
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="grades">
+                        @for(grade of marking_scale.grades;track $index) {
+                        <div class="grade">
+                            <span class="num">
+                                {{ $index + 1 }}
+                            </span>
+                            <br>
+                            <span class="percent">
+                                {{ grade }}%
+                            </span>
+                        </div>
+                        }
+                    </div>
+                    <div class="usage">
+                        <div>
+                            <span style="color: var(--text-muted)">
+                                {{ l.s('subject') }}:
+                            </span>
+                            <span style="color: var(--text);">
+                                {{ marking_scale.most_used_subject ? marking_scale.most_used_subject.subject_name : '' }}
+                            </span>
+                        </div>
+                        <div>
+                            <span style="color: var(--text-muted)">
+                                {{ l.s('marks.edit_marking_scale.last_updated') }}:
+                            </span>
+                            <span style="color: var(--text);">
+                                {{ Utils.formatDateShort(marking_scale.last_updated) }}
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            }
+
+            @for (_ of [].constructor(loadingList);track $index) {
+                <div class="scale-card">
+                    <div class="scale-header">
+                        <div>
+                            <h5 class="skeleton">Výchozí tabulka</h5>
+                            <div class="meta skeleton">
+                                <span style="color: var(--text-muted)">
+                                    {{ l.s('marks.edit_marking_scale.usage_count') }}:
+                                </span>
+                                <span style="color: var(--text);">
+                                    0x
+                                </span>
+                            </div>
+                        </div>
+                        <div class="badges">
+                            <span class="badge skeleton">Výchozí</span>
+                        </div>
+                    </div>
+
+                    <div class="grades skeleton">
+                        <div class="grade">
+                            <span class="num">1</span>
+                            <br>
+                            <span class="percent">90%</span>
+                        </div>
+
+                        <div class="grade">
+                            <span class="num">2</span>
+                            <br>
+                            <span class="percent">75%</span>
+                        </div>
+                        <div class="grade">
+                            <span class="num">3</span>
+                            <br>
+                            <span class="percent">60%</span>
+                        </div>
+                        <div class="grade">
+                            <span class="num">4</span>
+                            <br>
+                            <span class="percent">45%</span>
+                        </div>
+                        <div class="grade">
+                            <span class="num">5</span>
+                            <br>
+                            <span class="percent">0%</span>
+                        </div>
+                    </div>
+
+                    <div class="usage">
+                        <div class="skeleton">
+                            <span style="color: var(--text-muted)">
+                                {{ l.s('subject') }}:
+                            </span>
+                            <span style="color: var(--text);">
+                                Matematika
+                            </span>
+                        </div>
+                        <div class="skeleton">
+                            <span style="color: var(--text-muted)">
+                                {{ l.s('marks.edit_marking_scale.last_updated') }}:
+                            </span>
+                            <span style="color: var(--text);">
+                                3. 11. 2025
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+    <div class="btn primary" (click)="$event.stopPropagation();page = 'new'">
+        <i-tabler name="plus"></i-tabler>
+        {{ l.s('marks.edit_marking_scale.new_table') }}
+    </div>
+</div>
+
+<div [ngStyle]="{position: 'absolute', top:0, left:0, transform: page == 'edit' ? 'translateX(0%)' : 'translateX(100%)', width: '100%',height:'100%', 'max-height': '100vh', 'visibility': page == 'edit' ? 'visible' : 'hidden', backgroundColor: 'var(--surface)', transition: 'all .5s', zIndex: '550', padding: '2rem', overflow: 'hidden', display: 'flex', 'flex-direction': 'column', gap: '8px'}" class="modal">
+    <div class="modal-header" style="justify-content: flex-start;flex: 0 0 72px">
+        <div>
+            <div class="btn small gray" style="display: flex;align-items: center;margin-right: .5rem;" (click)="page = 'list'">
+                <i-tabler name="chevron-left" style="margin-right: 4px;width: 20px;height: 20px;"></i-tabler>
+                {{ l.s('buttons.back') }}
+            </div>
+        </div>
+        <h2>{{ l.s('marks.edit_marking_scale.edit_table') }}</h2>
+    </div>
+    @if (alert) {
+    <div class="alert error">{{ l.s(alert) }}</div>
+    }
+    <div class="modal-body invisible-scrollbar" style="flex: 1;display: flex;flex-direction: column;justify-content: center;">
+        <div class="scale-card edit-mode">
+            <div class="scale-header">
+                <div style="display: flex;flex-direction: column;gap:8px">
+                    <h5 style="z-index: 50;background-color: var(--surface-2);">
+                        <input
+                        type="text"
+                        [(ngModel)]="markingScale.name"
+                        [placeholder]="l.s('marks.edit_marking_scale.default_name')"
+                        maxlength="20"
+                        />
+                    </h5>
+                    <div class="meta">
+                        <span style="color: var(--text-muted);transform: translateY(-150%);" (click)="markingScale.name = getMarkingScale(markingScale.ms_id)?.name!">
+                        {{ getMarkingScale(markingScale.ms_id)?.name ?? l.s('marks.edit_marking_scale.default_name') }}
+                        </span>
+                    </div>
+                </div>
+
+                <div class="right">
+                    <div class="badges">
+                        @if (markingScale.is_default) {
+                        <span class="badge default">
+                            {{ l.s('marks.edit_marking_scale.badges.default') }}
+                        </span>
+                        }
+                    </div>
+                </div>
+            </div>
+
+            <div class="grades">
+                @for (grade of markingScale.grades; track $index) {
+                <div class="grade">
+                    <span class="num">{{ $index + 1 }}</span>
+                    <br />
+                    <input
+                    type="number"
+                    [(ngModel)]="markingScale.grades[$index]"
+                    min="0"
+                    max="100"
+                    [readOnly]="$index == 4"
+                    [disabled]="$index == 4"
+                    />
+                    <span class="percent-symbol">%</span>
+                </div>
+                }
+            </div>
+
+            <div class="usage">
+                <div>
+                    <span style="color: var(--text-muted)">
+                        {{ l.s('subject') }}:
+                    </span>
+                    <span style="color: var(--text);">
+                        {{ markingScale.most_used_subject ? markingScale.most_used_subject.subject_name : '' }}
+                    </span>
+                </div>
+                <div>
+                    <span style="color: var(--text-muted)">
+                        {{ l.s('marks.edit_marking_scale.last_updated') }}:
+                    </span>
+                    <span style="color: var(--text);">
+                        {{ Utils.formatDateShort(markingScale.last_updated) }}
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="btn primary" (click)="updateMarkingScale()">
+        <i-tabler name="pencil"></i-tabler>
+        {{ l.s('marks.edit_marking_scale.save_table') }}
+    </div>
+</div>
+
+<div [ngStyle]="{position: 'absolute', bottom:0, left:0, transform: page == 'new' ? 'translateY(0%)' : 'translateY(100%)', width: '100%',height:'auto', 'visibility': page == 'new' ? 'visible' : 'hidden', backgroundColor: 'var(--surface)', transition: 'all .5s', zIndex: '550', padding: '2rem', overflow: 'hidden', display: 'flex', 'flex-direction': 'column', gap: '8px'}" class="modal">
+    <div class="modal-grabber" (click)="$event.stopPropagation();page = 'list'"></div>
+    @if (alert) {
+    <div class="alert error">
+        {{ l.s(alert) }}
+    </div>
+    }
+    <div class="modal-body invisible-scrollbar" style="flex: 1">
+        <div class="scale-list">
+            <div class="scale-card edit-mode">
+                <div class="scale-header">
+                <div style="display: flex;flex-direction: column;gap:8px">
+                    <h5 style="z-index: 50;background-color: var(--surface-2);">
+                        <input
+                        type="text"
+                        [(ngModel)]="newMarkingScale.name"
+                        [placeholder]="l.s('marks.edit_marking_scale.default_name')"
+                        maxlength="20"
+                        />
+                    </h5>
+                    <div class="meta"></div>
+                </div>
+                    <div class="badges"></div>
+                </div>
+
+                <div class="grades">
+                    @for (grade of newMarkingScale.grades; track $index) {
+                    <div class="grade">
+                        <span class="num">{{ $index + 1 }}</span>
+                        <br />
+                        <input
+                        type="number"
+                        [(ngModel)]="newMarkingScale.grades[$index]"
+                        min="0"
+                        max="100"
+                        [readOnly]="$index == 4"
+                        [disabled]="$index == 4"
+                        />
+                        <span class="percent-symbol">%</span>
+                    </div>
+                    }
+                </div>
+
+                <div class="usage">
+                    <div>
+                        <span style="color: var(--text);">
+                            {{ l.s('marks.edit_marking_scale.subject_auto_complete') }}
+                        </span>
+                    </div>
+                    <div>
+                        <span style="color: var(--text-muted)">
+                            {{ l.s('marks.edit_marking_scale.last_updated') }}:
+                        </span>
+                        <span style="color: var(--text);">
+                            {{ Utils.formatDateShort(Utils.getNow()) }}
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="btn primary" (click)="createMarkingScale()">
+        <i-tabler name="plus"></i-tabler>
+        {{ l.s('marks.edit_marking_scale.create_table') }}
+    </div>
+</div>
+} @else {
+    <div class="center" style="height: 400px;">
+        <div class="loader bigger"></div>
+    </div>
+}

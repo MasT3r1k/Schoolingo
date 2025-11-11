@@ -1,5 +1,6 @@
 import { NgComponentOutlet } from "@angular/common";
 import { Component, inject } from "@angular/core";
+import { ContextMenu } from "@Schoolingo/context-menu";
 import { IconsModule } from "@Schoolingo/icons";
 import { Locale } from "@Schoolingo/locale";
 import { ModalManager } from "@Schoolingo/modal";
@@ -15,4 +16,5 @@ import { ModalManager } from "@Schoolingo/modal";
 export class ModalComponent {
     public modalManager = inject(ModalManager);
     public l = inject(Locale);
+    public context_menu = inject(ContextMenu)
 }

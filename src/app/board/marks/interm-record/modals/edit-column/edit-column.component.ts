@@ -7,6 +7,9 @@ import { MarksManager } from '@Schoolingo/marks';
 import { CalendarComponent } from '@Components/calendar';
 import moment from 'moment';
 import { IconsModule } from '@Schoolingo/icons';
+import { HttpClient } from '@angular/common/http';
+import { Config } from '@Schoolingo/config';
+import { ModalManager } from '@Schoolingo/modal';
 
 @Component({
   standalone: true,
@@ -16,7 +19,9 @@ import { IconsModule } from '@Schoolingo/icons';
 })
 export class EditColumnComponent implements OnInit {
   public l = inject(Locale)
+  private modalManager = inject(ModalManager);
   public marksManager = inject(MarksManager);
+  private http = inject(HttpClient);
   public alert: Alert | null = null;
 
   public action: 'edit' | 'create' = 'edit';
@@ -118,5 +123,25 @@ export class EditColumnComponent implements OnInit {
     if (Object.keys(this.errors).length) {
       return;
     }
+
+    this.http.post(
+      `${Config.API_URL}/v1/marks/update_column`,
+      {
+        group_id: this.marksManager.getGroupId(),
+        subject_id: this.marksManager.getSubjectId(),
+        columnIndex: this.marksManager.getColumnIndex(),
+        weight: parseInt(this.weight),
+        type: this.types.indexOf(this.type),
+        topic: this.topic
+      },
+      { withCredentials: true }
+    )
+    .subscribe((data) => {
+      if ('data' in data) {
+        this.marksManager.updateColumn$.next(data.data);
+        this.modalManager.closeModal("edit_column")
+      }
+      console.log(data)
+    })
   }
 }

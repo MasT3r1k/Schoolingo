@@ -93,8 +93,41 @@ export namespace Utils {
   }
 
   export function formatPhone(phone: string): string {
-    return ((phone || "").match(/.{1,3}/g) || []).join(' ');
+    if (!phone) return '';
+
+    // Odstraníme mezery a jiné znaky kromě "+"
+    let cleaned = phone.replace(/[^\d+]/g, '');
+
+    // Pokud nezačíná "+" ani "00", doplníme české předčíslí
+    if (!cleaned.startsWith('+') && !cleaned.startsWith('00')) {
+      // Odstraníme případnou počáteční nulu
+      if (cleaned.startsWith('0')) cleaned = cleaned.slice(1);
+      cleaned = '+420' + cleaned;
+    }
+
+    // Pokud začíná "00", změníme na "+"
+    if (cleaned.startsWith('00')) {
+      cleaned = '+' + cleaned.slice(2);
+    }
+
+    // Rozparsujeme prefix a číslo
+    const match = cleaned.match(/^(\+\d{1,3})(\d+)$/);
+    if (!match) return cleaned;
+    let [, prefix, number] = match;
+
+    console.log(prefix, number)
+
+    // Odstraníme počáteční nulu po předčíslí (např. +4200 → +420)
+    if ((prefix === '+420' || prefix === '+421') && number.startsWith('0')) {
+      number = number.slice(1);
+    }
+
+    // Naformátuj po trojicích
+    const formattedNumber = number.match(/.{1,3}/g)?.join(' ') ?? number;
+
+    return `${prefix} ${formattedNumber}`.trim();
   }
+
 
   export function formatAddress(address: { code2: string, street: string, houseNumber: string, city: string, postcode: string }): string | null {
     if (!address.city) return '';
@@ -276,5 +309,9 @@ export namespace Utils {
 
       document.body.removeChild(textArea);
     }
+  }
+
+  export function removeSecondsFromTime(time: string): string {
+    return time ? time.slice(0, 5) : '';
   }
 }

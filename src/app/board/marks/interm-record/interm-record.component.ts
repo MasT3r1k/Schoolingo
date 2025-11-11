@@ -5,9 +5,12 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { Config } from '@Schoolingo/config';
 import { Locale } from '@Schoolingo/locale';
 import { EditColumnComponent } from './modals/edit-column/edit-column.component';
-import { NgComponentOutlet } from '@angular/common';
 import { ModalManager } from '@Schoolingo/modal';
 import { MarksManager } from '@Schoolingo/marks';
+import { distinctUntilChanged } from 'rxjs';
+import { EditMarkComponent } from './modals/edit-mark/edit-mark.component';
+import { IconsModule } from '@Schoolingo/icons';
+import { EditMarkingScaleComponent } from './modals/edit-marking-scale/edit-marking-scale.component';
 
 interface Group {
   groupId: number;
@@ -29,11 +32,11 @@ interface GradeColumn {
 interface Student {
   name: string;
   quarter: number | null;
-  marks: (number | null)[];
+  marks: (string | null)[];
 }
 
 @Component({
-  imports: [FormsModule, ReactiveFormsModule],
+  imports: [FormsModule, ReactiveFormsModule, IconsModule],
   templateUrl: './interm-record.component.html',
   styleUrl: './interm-record.component.css'
 })
@@ -42,7 +45,6 @@ export class IntermRecordComponent {
   private modalManager = inject(ModalManager);
   private marksManager = inject(MarksManager);
 
-  public modal: '' | 'edit_column' = 'edit_column';
   public add_more_columns = 16;
 
   public selected_group: number = -1;
@@ -64,15 +66,36 @@ export class IntermRecordComponent {
     this.marksManager.setTopic(column.topic);
     this.marksManager.setWeight(column.weight);
     this.marksManager.setColumnIndex(columnIndex);
+    this.marksManager.setGroupId(this.groups[this.selected_group].groupId);
     this.marksManager.setSubjectId(this.groups[this.selected_group].subjectId);
     this.marksManager.setType(column.type)
 
     // === Update Modal Title ===
-    this.modalManager.updateModal("edit-column", "title", column.isExist ? "marks.edit_column" : "marks.create_column")
+    this.modalManager.updateModal("edit_column", "title", column.isExist ? "marks.edit_column" : "marks.create_column")
 
     // === Open Modal ===
-    this.modalManager.openModal("edit-column");
+    this.modalManager.openModal("edit_column");
+  }
 
+  public updateMark(columnIndex: number, studentIndex: number): void {
+    const column = this.gradeColumns[columnIndex];
+    const mark = this.students[studentIndex].marks[columnIndex]
+    if (!column.isExist) return;
+
+    // === Set Data ==
+    this.marksManager.setAction(mark ? "edit" : "create");
+    this.marksManager.setTopic(column.topic);
+    this.marksManager.setWeight(column.weight);
+    this.marksManager.setColumnIndex(columnIndex);
+    this.marksManager.setGroupId(this.groups[this.selected_group].groupId);
+    this.marksManager.setSubjectId(this.groups[this.selected_group].subjectId);
+    this.marksManager.setSubjectName(this.groups[this.selected_group].subject);
+    this.marksManager.setType(column.type)
+    this.marksManager.setStudent(this.students[studentIndex].name);
+    this.marksManager.setMark(this.students[studentIndex].marks[columnIndex]);
+
+    // === Open Modal ===
+    this.modalManager.openModal("edit_mark");
   }
 
   public getStudentAverage(student_index: number): string {
@@ -85,7 +108,7 @@ export class IntermRecordComponent {
     for (let i = 0;i < student.marks.length;i++) {
       if (student.marks[i]) {
         const weight = this.gradeColumns[i].weight;
-        total += (student.marks[i] || 0) * weight;
+        total += (parseInt(student.marks[i]!) || 0) * weight;
         totalDivide += weight;
       }
     }
@@ -102,7 +125,7 @@ export class IntermRecordComponent {
     if (!students.length) return "";
 
     students.forEach((student) => {
-      total += student.marks[columnIndex]!;
+      total += parseInt(student.marks[columnIndex]! ?? 0);
     })
 
     return (total / students.length).toFixed(2);
@@ -152,7 +175,7 @@ export class IntermRecordComponent {
   ngOnInit(): void {
     // === Create modals ===
     this.modalManager.addModal(
-      "edit-column",
+      "edit_column",
       {
         title: "marks.edit_column",
         items: [
@@ -161,6 +184,28 @@ export class IntermRecordComponent {
         closeable: true
       }
     );
+
+    this.modalManager.addModal(
+      "edit_mark",
+      {
+        title: "marks.edit_mark",
+        items: [
+          { type: 'component', component: EditMarkComponent }
+        ],
+        closeable: true
+      }
+    );
+
+    this.modalManager.addModal(
+      'edit_marking_scale',
+      {
+        title: 'marks.edit_marking_scale.title',
+        items: [
+          { type: 'component', component: EditMarkingScaleComponent }
+        ],
+        closeable: true
+      }
+    )
 
     // === Listen to query params ===
     this.route.queryParams.subscribe(() => {
@@ -176,6 +221,19 @@ export class IntermRecordComponent {
         this.selected_group = -1;
       }
       this.updateGroup();
+    });
+
+    // === Update column info ===
+    this.marksManager.updateColumn$
+    .pipe(distinctUntilChanged())
+    .subscribe((data) => {
+      if (!Object.keys(data).length) return;
+      this.gradeColumns[data.columnIndex].isExist = true;
+      this.gradeColumns[data.columnIndex].topic = data.topic;
+      this.gradeColumns[data.columnIndex].type = data.type;
+      this.gradeColumns[data.columnIndex].weight = data.weight;
+      this.marksManager.updateColumn$.next({});
+      console.log(data)
     });
 
     // === Get teacher groups ===
@@ -201,5 +259,9 @@ export class IntermRecordComponent {
         }
       }
     });
+  }
+
+  public openMarkingScale(): void {
+    this.modalManager.openModal('edit_marking_scale');
   }
 }

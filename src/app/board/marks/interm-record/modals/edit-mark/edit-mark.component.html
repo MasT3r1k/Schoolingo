@@ -4,33 +4,39 @@
     }
 
     <div class="item mb">
-        <div class="label">
-            {{ l.s('marks/studentName') }}
-        </div>
+        <label>
+            {{ l.s('roles.student') }}
+        </label>
         <div class="value">
-            <input type="text" name="name" [value]="schoolingo.formatPerson(marksManager.getSelectedStudent())" readonly="true">
+            <input type="text" name="name" [value]="marksManager.getSelectedStudent()" readonly="true">
         </div>
     </div>
 
     <div class="item mb">
-        <div class="label">
+        <label>
             {{ l.s('subject') }}
-        </div>
+        </label>
         <div class="value">
-            <input type="text" name="name" [value]="marksManager.getSubjectId()xbáí učcj,wtíác jwčháíéhjá || this.l.s('unknown')" readonly="true">
+            <input type="text" name="name" [value]="marksManager.getSubjectName() || this.l.s('unknown')" readonly="true">
         </div>
     </div>
 
     <div class="item mb">
-        <div class="label">
-            {{ l.s('marks/mark') }}
-        </div>
+        <label class="label" [class.error-color]="errors['mark']">
+            {{ l.s('marks.mark') }}
+            @if (errors['mark']) {
+                - {{ errors['mark'] }}
+            }
+        </label>
         <div class="value">
-            <input type="text" name="name" [(ngModel)]="mark">
+            <input type="text" name="name" [placeholder]="l.s('marks.mark_placeholder')" [(ngModel)]="mark">
+        </div>
+        <div class="note">
+            {{ l.s('marks.mark_placeholder') }}
         </div>
     </div>
 
-    <div class="btn submit" role="button" (click)="editMark()">
-        {{ l.s("marks/editMark") }}
+    <div class="btn" [class.primary]="isButtonActivated()" role="button" (click)="editMark()">
+        {{ l.s(`marks.${action == 'edit' ? 'edit_mark' : 'create_mark'}`) }}
     </div>
 </div>

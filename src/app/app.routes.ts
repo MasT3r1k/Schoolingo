@@ -18,6 +18,10 @@ import { ReceivedComponent } from './board/messages/received/received.component'
 import { AbsenceComponent } from './board/Teach/absence/absence.component';
 import { IntermComponent } from './board/marks/interm/interm.component';
 import { IntermRecordComponent } from './board/marks/interm-record/interm-record.component';
+import { ManageComponent } from './board/Traineeship/manage/manage.component';
+import { CompaniesComponent } from './board/Traineeship/companies/companies.component';
+import { DiaryComponent } from './board/Traineeship/diary/diary.component';
+import { OverviewComponent } from './board/Traineeship/overview/overview.component';
 
 export const routes: Routes = [
     {
@@ -54,6 +58,35 @@ export const routes: Routes = [
                         path: 'absence', component: AbsenceComponent
                     }
                 ]
+            },
+            {
+            path: 'traineeship',
+            children: [
+                {
+                    path: 'overview',
+                    component: OverviewComponent
+                },
+                {
+                    path: 'diary',
+                    component: DiaryComponent
+                },
+                {
+                    path: 'diary/:id',
+                    component: DiaryComponent
+                },
+                {
+                    path: 'companies',
+                    component: CompaniesComponent
+                },
+                {
+                    path: 'companies/:id',
+                    component: CompaniesComponent
+                },
+                {
+                    path: 'manage',
+                    component: ManageComponent
+                }
+            ]
             },
             {
                 path: 'messages', children: [

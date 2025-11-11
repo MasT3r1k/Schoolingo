@@ -7,6 +7,7 @@ export interface User {
     personId: number;
     gender: number;
     role: 'student' | 'teacher' | 'parent';
+    manager: number;
     birthday: moment.Moment;
     avatar: {
         seed: string;
@@ -27,6 +28,7 @@ export interface User {
 export interface SchoolClass {
     classId: number;
     className: string;
+    scopeId: number;
     students: number;
 }
 

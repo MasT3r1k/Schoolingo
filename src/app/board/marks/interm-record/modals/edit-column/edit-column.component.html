@@ -18,7 +18,7 @@
         </label>
         <div class="value">
             <div class="input-select">
-                <input type="text" (click)="$event.stopPropagation();showSelect = showSelect == 'type' ? null : 'type'" name="inputSelect" readonly="true" [value]="l.s('marks.types.' + type)" />
+                <input type="text" (click)="$event.stopPropagation();showSelect = showSelect == 'type' ? null : 'type'" name="inputSelect" readonly="true" [value]="l.s('marks.types.' + type)" [disabled]="action == 'edit'" />
                 @if (showSelect == 'type') {
                     <div class="options">
                         @for (columnType of types; track $index) {
@@ -28,6 +28,7 @@
                         }
                     </div>
                 }
+                <div class="note">{{ l.s('marks.cant_edit_after_creation') }}</div>
             </div>
         </div>
     </div>
@@ -86,11 +87,12 @@
                 }
             </label>
             <div class="value">
-                <input type="text" [class.input-error]="errors['prefill']" name="prefillMark" [placeholder]="l.s('marks.prefill_placeholder')" [(ngModel)]="prefillMark">
+                <input type="text" [disabled]="action == 'edit'" [class.input-error]="errors['prefill']" name="prefillMark" [placeholder]="l.s('marks.prefill_placeholder')" [(ngModel)]="prefillMark">
+                <div class="note">{{ l.s('marks.cant_edit_after_creation') }}</div>
             </div>
         </div>
 
-        @if (prefillMark == "?") {
+        @if (prefillMark == "?" && action == 'create') {
             <div class="item mb" style="position: relative;">
                 <label class="label">
                     {{ l.s('marks.planned_mark') }}

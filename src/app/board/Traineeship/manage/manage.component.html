@@ -1,0 +1,73 @@
+<div class="card">
+    <div class="card-top">
+    </div>
+    <div class="card-header mb">
+        <h2>{{ l.s('sidebar.traineeship.manage') }}</h2>
+        <div class="flex-items">
+            <div class="btn small primary" role="button">
+                {{ l.s('traineeship.manage.new_traineeship') }}
+            </div>
+        </div>
+    </div>
+    <div class="card-body">
+        <h2>
+            {{
+            l.s('traineeship.manage.title')
+            .replaceAll('%year%',
+                Utils.makeMoment(school.config.getValue()?.year?.start?.toString()!).year()
+                + "/" +
+                Utils.makeMoment(school.config.getValue()?.year?.end?.toString()!).year().toString().slice(2)
+            )
+            }}
+        </h2>
+        <div class="card-body deniky-container">
+            @for (week of traineeship.diaryWeeks.getValue(); track $index) {
+                <div class="denik-card" (click)="selectWeek(week)">
+                    <div class="denik-header">
+                        <div class="denik-info">
+                            <span class="denik-date">
+                                {{ week.start.format('DD. MM. YYYY') }} – {{ week.end.format('DD. MM. YYYY') }}
+                            </span>
+                            <span class="denik-firma">{{ week.name }}</span>
+                        </div>
+                        <div class="badges">
+                            @if (week.ignoredDays == ['6', '7']) {
+                                <div class="badge">
+                                    {{ l.s('traineeship.only_working_days') }}
+                                </div>
+                            }
+
+                            <div [ngClass]="{
+                                badge: true,
+                                primary: traineeship.getStateOfTraineeship(week) == 'ongoing',
+                                success: traineeship.getStateOfTraineeship(week) == 'finished',
+                                error: traineeship.getStateOfTraineeship(week) == 'canceled',
+                                }">
+                                {{ l.s('traineeship.diary.status.' + traineeship.getStateOfTraineeship(week)) }}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="denik-extra">
+                        <span>
+                            <b>👨‍🎓 {{ l.s('traineeship.manage.enrolled_students') }}:</b>
+                            {{ week.zapsaniStudenti }}
+                        </span>
+                        <span>
+                            <b>👨‍🎓 {{ l.s('traineeship.manage.done_students') }}:</b>
+                            {{ week.celkemStudentu }}
+                        </span>
+                        <span>
+                            <b>👨‍🎓 {{ l.s('traineeship.manage.total_students') }}:</b>
+                            {{ week.celkemStudentu }}
+                        </span>
+                        <span>
+                            <b>⏳ {{ l.s('traineeship.number_of_days') }}:</b>
+                            {{ l.s('traineeship.number_of_days_value').replace('%days%', traineeship.getDays(week).toString()) }}
+                        </span>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</div>

@@ -4,6 +4,7 @@ import { Component, inject, OnInit } from '@angular/core';
 import { Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { Authentication } from '@Schoolingo/authentication';
 import { Config } from '@Schoolingo/config';
+import { ContextMenu } from '@Schoolingo/context-menu';
 import { IconsModule } from '@Schoolingo/icons';
 import { Locale } from '@Schoolingo/locale';
 import { MarkConfig } from '@Schoolingo/marks';
@@ -12,6 +13,8 @@ import { MessageConfig, MessageManager } from '@Schoolingo/messages';
 import { permType } from '@Schoolingo/permission';
 import { School } from '@Schoolingo/school';
 import { Sidebar } from '@Schoolingo/sidebar';
+import { DiaryWeek, Traineeship } from '@Schoolingo/traineeship';
+import moment from 'moment';
 
 export interface SidebarItem {
     item: string;
@@ -39,6 +42,8 @@ export class BoardComponent implements OnInit {
   private marks = inject(MarksManager);
   private messages = inject(MessageManager);
   private http = inject(HttpClient);
+  private traineeship = inject(Traineeship);
+  public context_menu = inject(ContextMenu);
   school = inject(School);
   
   l = inject(Locale);
@@ -115,6 +120,26 @@ export class BoardComponent implements OnInit {
     this.u.getAuthState().subscribe((data) => {
       this.sidebar.build();
       if (data) {
+        this.http.get(
+          `${Config.API_URL}/v1/traineeship/diary_weeks`,
+          { withCredentials: true }
+        )
+        .subscribe((data) => {
+          if ('error' in data) {
+            return;
+          }
+
+          if (!Array.isArray(data)) return;
+
+          this.traineeship.diaryWeeks.next(
+            data.map((_) => ({
+              ..._,
+              start: moment(_.start),
+              end: moment(_.end)
+            })) as DiaryWeek[]
+          );
+        });
+
         this.http.get(
           `${Config.API_URL}/v1/marks/config`,
           { withCredentials: true }

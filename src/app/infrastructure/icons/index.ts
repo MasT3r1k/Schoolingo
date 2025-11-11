@@ -2,7 +2,7 @@ import { NgModule } from '@angular/core';
 
 import { TablerIconsModule } from 'angular-tabler-icons';
 // import { IconMenu2, IconBrandDiscord, IconSettings, IconUsers } from 'angular-tabler-icons/icons';
-import { IconAlertTriangle, IconAmbulance, IconArrowBigRight, IconBackslash, IconBaselineDensityMedium, IconBox, IconBrandDiscord, IconBriefcase2, IconBuilding, IconBuildingPlus, IconCalendarMonth, IconCalendarWeek, IconCaretLeft, IconCaretLeftFilled, IconCategoryPlus, IconChalkboard, IconCheck, IconChevronDown, IconChevronLeft, IconChevronRight, IconChevronsLeft, IconChevronsRight, IconChevronUp, IconClipboardPlus, IconClockHour4, IconCopy, IconCornerUpLeft, IconDeviceDesktop, IconDeviceMobile, IconDotsVertical, IconEdit, IconExclamationMark, IconFilePencil, IconFileReport, IconFilter, IconFlag3Filled, IconGenderFemale, IconGenderMale, IconHomePlus, IconInfinity, IconInfoCircle, IconKeyFilled, IconLetterD, IconLetterN, IconLetterO, IconLetterP, IconLock, IconLogout, IconMail, IconMath1Divide2, IconMeat, IconMenu2, IconMessages, IconMinus, IconNote, IconNotes, IconNumber1, IconOld, IconPaperclip, IconPasswordUser, IconPencil, IconPhone, IconPlus, IconQuestionMark, IconRocket, IconSchool, IconSearch, IconSettings, IconSettings2, IconShield, IconSlash, IconSquareForbid, IconStars, IconTable, IconTags, IconThumbUp, IconTimeDuration5, IconTrashXFilled, IconTrophy, IconUpload, IconUser, IconUsers, IconUserScreen, IconUserX, IconWindowMaximize, IconWindowMinimize, IconX } from 'angular-tabler-icons/icons';
+import { IconAlertTriangle, IconAmbulance, IconArrowBigRight, IconBackslash, IconBaselineDensityMedium, IconBox, IconBrandDiscord, IconBriefcase2, IconBuilding, IconBuildingPlus, IconCalendarMonth, IconCalendarSearch, IconCalendarWeek, IconCaretLeft, IconCaretLeftFilled, IconCategoryPlus, IconChalkboard, IconCheck, IconChevronDown, IconChevronLeft, IconChevronRight, IconChevronsLeft, IconChevronsRight, IconChevronUp, IconClick, IconClipboardPlus, IconClockHour4, IconCopy, IconCornerUpLeft, IconDeviceDesktop, IconDeviceMobile, IconDotsVertical, IconEdit, IconExclamationMark, IconFilePencil, IconFileReport, IconFilter, IconFlag3Filled, IconGenderFemale, IconGenderMale, IconHomePlus, IconInfinity, IconInfoCircle, IconKeyFilled, IconLetterD, IconLetterN, IconLetterO, IconLetterP, IconLock, IconLogout, IconMail, IconMath1Divide2, IconMeat, IconMenu2, IconMessages, IconMinus, IconNote, IconNotes, IconNumber1, IconOld, IconPaperclip, IconPasswordUser, IconPencil, IconPhone, IconPlus, IconQuestionMark, IconRestore, IconRocket, IconSchool, IconSearch, IconSettings, IconSettings2, IconShield, IconSlash, IconSquareForbid, IconStar, IconStarFilled, IconStarHalfFilled, IconStars, IconTable, IconTags, IconThumbUp, IconTimeDuration5, IconTrashX, IconTrashXFilled, IconTrophy, IconUpload, IconUser, IconUsers, IconUserScreen, IconUserX, IconWindowMaximize, IconWindowMinimize, IconX } from 'angular-tabler-icons/icons';
 
 // Select some icons (use an object, not an array)
 const icons = {
@@ -89,7 +89,14 @@ const icons = {
   IconAmbulance,
   IconCopy,
   IconRocket,
-  IconUpload
+  IconUpload,
+  IconTrashX,
+  IconClick,
+  IconStar,
+  IconStarFilled,
+  IconStarHalfFilled,
+  IconRestore,
+  IconCalendarSearch
 };
 
 @NgModule({

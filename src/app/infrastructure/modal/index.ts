@@ -20,7 +20,7 @@ export class ModalManager {
     private modals: { [key: string]: Modal } = {};
     public addModal(name: string, modal: ModalSetup): void { this.modals[name] = { ...modal, children: modal.children || [], dropdown: '', isOpen: false } }
     public getModals(): (Modal & {id: string})[] {
-        return Object.entries(this.modals).filter(([modal1, modal2]) => modal2.isOpen == true).map(([modal1, modal2]) => ({...modal2, id: modal1}));
+        return Object.entries(this.modals).filter(([modal1, modal2]) => modal2?.isOpen == true).map(([modal1, modal2]) => ({...modal2, id: modal1}));
     }
 
     public updateModal(name: string, key: string, value: any): void {

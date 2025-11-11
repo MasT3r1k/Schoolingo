@@ -1,0 +1,118 @@
+@if (!traineeship.selectedDairy) {
+    <div [ngClass]="{card: true, active: !traineeship.selectedDairy}">
+        <div class="card-top"></div>
+        <div class="card-header mb">
+            <h2>{{ l.s('sidebar.traineeship.diary') }}</h2>
+        </div>
+        <div class="card-body deniky-container">
+            @for (week of traineeship.diaryWeeks.getValue(); track $index) {
+                <div class="denik-card" (click)="selectWeek(week)">
+                    <div class="denik-header">
+                        <div class="denik-info">
+                        <span class="denik-date">
+                            {{ week.start.format('DD. MM. YYYY') }} – {{ week.end.format('DD. MM. YYYY') }}
+                        </span>
+                        <span class="denik-firma">{{ week.companyName }}</span>
+                        <span class="denik-instruktor"><b>{{ l.s('traineeship.instructor') }}:</b> {{ week.instructor || l.s('traineeship.alerts.success_selected_company_no_instructor') }}</span>
+                        </div>
+                        <div class="badges">
+                            @if (week.status == 'approved') {
+                                <div class="badge info">
+                                    <span>{{ l.s('traineeship.approved_company') }}</span>
+                                </div>
+                            }
+                            @if (traineeship.isWeekOngoing(week)) {
+                                <div class="badge primary">
+                                    <span>{{ l.s('traineeship.diary.status.ongoing') }}</span>
+                                </div>
+                            }
+                        </div>
+                    </div>
+
+                    <div class="denik-extra">
+                        <span>
+                            <b>🏭 {{ l.s('traineeship.city') }}:</b>
+                            {{ week.cityName }}
+                        </span>
+                        <span>
+                            <b>⏳ {{ l.s('traineeship.number_of_days') }}:</b>
+                            {{ l.s('traineeship.number_of_days_value').replace('%days%', traineeship.getDays(week).toString()) }}
+                        </span>
+                        <span>
+                            <b>🕒 {{ l.s('traineeship.working_hours') }}:</b>
+                            {{ Utils.removeSecondsFromTime(week.start_working_hours) }} – {{ Utils.removeSecondsFromTime(week.end_working_hours) }}
+                        </span>
+                        <span>
+                            <b>⭐ {{ l.s('traineeship.average_rate') }}:</b> {{ getCompanyRating(week.rating) }}
+                        </span>
+                    </div>
+                </div>
+
+            }
+        </div>
+    </div>
+
+} @else if (traineeship.selectedDairy) {
+    <div class="card">
+        <div class="card-top">
+            @if (traineeship.selectedDairy.companyId) {
+                <div class="alerts mb">
+                    <div class="alert blue-info" style="justify-content: center;">
+                        {{
+                            l.s('traineeship.alerts.selected_company')
+                            .replaceAll('%companyName%', traineeship.selectedDairy.companyName || "")
+                            .replaceAll('%instructor%', l.s('traineeship.alerts.' +
+                                            (traineeship.selectedDairy.instructor ? 'success_selected_company_with_instructor' : 'success_selected_company_no_instructor')
+                                        )
+                                        .replaceAll('%instructorName%', traineeship.selectedDairy.instructor ? traineeship.selectedDairy.instructor : ''))
+                        }}
+                        <div class="actions">
+                            <div class="btn gray" role="button" (click)="modalManager.openModal('select_instructor')">
+                                {{ l.s(traineeship.selectedDairy.instructor ? 'traineeship.buttons.change_instructor' : 'traineeship.buttons.select_instructor') }}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+        <div class="card-header mb">
+            @if (traineeship.selectedDairy) {
+                <div class="left">
+                    <div class="row mb">
+                        <div (click)="selectWeek(null)" class="btn small" style="margin-right: .5rem;" role="button">
+                            <i-tabler
+                                name="chevron-left"
+                                style="margin-right: 4px; width: 20px; height: 20px"
+                            ></i-tabler>
+                            <span>{{ l.s("traineeship.back_to_list") }}</span>
+                        </div>
+                        <h2 class="clickable">
+                            {{ l.s('traineeship.diary.main') }}
+                        </h2>
+                    </div>
+                    <p class="description">
+                        {{
+                            l.s('traineeship.diary.description')
+                            .replaceAll('%start%', traineeship.selectedDairy.start.format('DD.MM.YYYY'))
+                            .replaceAll('%end%', traineeship.selectedDairy.end.format('DD.MM.YYYY'))
+                        }}
+                    </p>
+                </div>
+                <div class="flex-items">
+                    <div class="btn small primary" role="button" (click)="printContract()">
+                        {{ l.s('traineeship.buttons.print_contract') }}
+                    </div>
+                    <div class="btn small primary" role="button">
+                        {{ l.s('traineeship.buttons.print_guide') }}
+                    </div>
+                </div>
+            }
+        </div>
+        <div class="card-body">
+            <schoolingo-datalist (datalist)="receivedDatalist($event)" [options]="{ search: false, hideInfo: true, hidePagination: true }" [head]="['traineeship.day', 'date', 'traineeship.status.main', 'marks.mark']" [data]="traineeship.diary"></schoolingo-datalist>
+        </div>
+    </div>
+}
+
+
+<schoolingo-traineeship-writeDairy></schoolingo-traineeship-writeDairy>

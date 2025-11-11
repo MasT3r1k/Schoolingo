@@ -1,0 +1,189 @@
+<div class="items">
+    @if (alert != null) {
+        <div class="alerts mb">
+            <div class="alert red">
+                {{ l.s('traineeship.alerts.' + alert) }}
+            </div>
+        </div>
+    }
+
+    <div class="item">
+        <div class="label">
+            {{ l.s('traineeship.selected_company') }}
+        </div>
+        <div class="value">
+            <input type="text" name="name" [value]="traineeship.selectedCompany.name" readonly="true">
+        </div>
+    </div>
+
+    <div class="item">
+        <div class="label">
+            {{ l.s('traineeship.select_dairy') }}
+        </div>
+        <div class="value">
+            <input type="text" class="clickable" (click)="page = 'select_traineeship'" name="inputSelect" readonly="true" [value]="traineeship.selectedDairy ? Utils.formatDateShort(traineeship.selectedDairy.start) + ' až ' + Utils.formatDateShort(traineeship.selectedDairy.end) + ' ( ' + traineeship.getDays(traineeship.selectedDairy) + ' dní )' : l.s('traineeship.no_dairy_selected')" />
+            <div class="arrow-right">
+                <i-tabler name="chevron-right"></i-tabler>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="item">
+        <div class="label">
+            {{ l.s('traineeship.instructor') }}
+        </div>
+        <div class="value">
+            <input type="text" class="clickable" (click)="page = 'select_instructor'" name="inputSelect" readonly="true" [value]="traineeship.selectedInstructor ? traineeship.getInstructorName(traineeship.selectedInstructor) : l.s('traineeship.no_instructor_selected')" />
+            <div class="arrow-right">
+                <i-tabler name="chevron-right"></i-tabler>
+            </div>
+        </div>
+    </div>
+
+    <div class="description note">
+        {{ l.s('traineeship.select_company.bottom_information') }}
+    </div>
+
+    <div class="btn" [class.primary]="validateButton()" role="button" (click)="selectCompany()">
+        {{ l.s("traineeship.register_to_company") }}
+    </div>
+</div>
+
+<div [ngStyle]="{position: 'absolute', top:0, left:0, transform: page == 'select_traineeship' ? 'translateX(0%)' : 'translateX(100%)', width: '100%',height:'100%', 'max-height': '100vh', 'visibility': page == 'select_traineeship' ? 'visible' : 'hidden', backgroundColor: 'var(--surface)', transition: 'all .5s', zIndex: '500', padding: '2rem', display: 'flex', 'flex-direction': 'column'}" class="modal">
+    <div class="modal-header" style="justify-content: flex-start;">
+        <div>
+            <div class="btn small gray" style="display: flex;align-items: center;margin-right: .5rem;" (click)="page = 'main'">
+                <i-tabler name="chevron-left" style="margin-right: 4px;width: 20px;height: 20px;"></i-tabler>
+                {{ l.s('buttons.back') }}
+            </div>
+        </div>
+        <h2>{{ l.s('traineeship.choose_dairy') }}</h2>
+    </div>
+    <div class="modal-body invisible-scrollbar" style="max-height: 400px;flex: 1;overflow: auto;">
+        <div class="options" style="display:flex;flex-direction:column;gap:8px">
+            @for(week of getWeeks();track $index) {
+                <div class="instructor-item" [class.active]="traineeship.selectedDairy?.traineeship == week.traineeship" (click)="traineeship.selectDairy(week);page = 'main';">
+                    <div class="instructor-info">
+                        <div class="instructor-name">
+                            {{ week.name || l.s('traineeship.no_name') }}
+                        </div>
+                        <div class="instructor-meta">
+                            <div class="meta">
+                                <span>
+                                    {{ l.s('traineeship.from') }}:
+                                </span>
+                                <span style="color: var(--text);">
+                                    {{ Utils.formatDateShort(week.start) || l.s('unknown') }}
+                                </span>
+                            </div>
+                            <div class="meta">
+                                <span>
+                                    {{ l.s('traineeship.to') }}:
+                                </span>
+                                <span style="color: var(--text);">
+                                    {{ Utils.formatDateShort(week.end) || l.s('unknown') }}
+                                </span>
+                            </div>
+                            <div class="meta">
+                                <span>
+                                    {{ l.s('traineeship.number_of_days') }}:
+                                </span>
+                                <span style="color: var(--primary-200);">
+                                    {{ l.s('traineeship.number_of_days_value').replaceAll('%days%', traineeship.getDays(week).toString()) || l.s('unknown') }}
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="badges" style="position:absolute;top:8px;right:12px;">
+                        @if (traineeship.selectedDairy?.traineeship == week.traineeship) {
+                            <div class="badge primary">
+                                {{ l.s('selected') }}
+                            </div>
+                        }
+                    </div>
+                </div>
+            } @empty {
+                <div class="instructor-empty">
+                    <div class="empty-icon">
+                        <i-tabler name="calendar-search"></i-tabler>
+                    </div>
+                    <div class="empty-text">
+                        <h3>{{ l.s('traineeship.no_weeks') }}</h3>
+                        <p>{{ l.s('traineeship.no_incoming_weeks') }}</p>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+<div [ngStyle]="{position: 'absolute', top:0, left:0, transform: page == 'select_instructor' ? 'translateX(0%)' : 'translateX(100%)', width: '100%',height:'100%', 'max-height': '100vh', 'visibility': page == 'select_instructor' ? 'visible' : 'hidden', backgroundColor: 'var(--surface)', transition: 'all .5s', zIndex: '500', padding: '2rem', display: 'flex', 'flex-direction': 'column'}" class="modal">
+    <div class="modal-header" style="justify-content: flex-start;">
+        <div>
+            <div class="btn small gray" style="display: flex;align-items: center;margin-right: .5rem;" (click)="page = 'main'">
+                <i-tabler name="chevron-left" style="margin-right: 4px;width: 20px;height: 20px;"></i-tabler>
+                {{ l.s('buttons.back') }}
+            </div>
+        </div>
+        <h2>{{ l.s('traineeship.choose_instructor') }}</h2>
+    </div>
+    <div class="modal-body invisible-scrollbar" style="max-height: 400px;flex: 1;overflow: auto;">
+        <div class="options" style="display:flex;flex-direction:column;gap:8px">
+            @for(instructor of getInstructors();track $index) {
+                <div class="instructor-item" [class.active]="traineeship.selectedInstructor == instructor.instructorId" (click)="traineeship.selectInstructor(instructor.instructorId);page = 'main';" (contextmenu)="contextMenuInstructor(instructor.instructorId, $event)">
+                    <div class="instructor-info">
+                        <div class="instructor-name">
+                            {{ instructor.name }}
+                        </div>
+                        <div class="instructor-meta">
+                            <div class="meta">
+                                <span>
+                                    {{ l.s('traineeship.email') }}:
+                                </span>
+                                <span style="color: var(--text);">
+                                    {{ instructor.email ? instructor.email : l.s('unknown') }}
+                                </span>
+                            </div>
+                            <div class="meta">
+                                <span>
+                                    {{ l.s('traineeship.phone') }}:
+                                </span>
+                                <span style="color: var(--text);">
+                                    {{ instructor.phone ? Utils.formatPhone(instructor.phone) : l.s('unknown') }}
+                                </span>
+                            </div>
+                            <div class="meta">
+                                <span>
+                                    {{ l.s('traineeship.role') }}:
+                                </span>
+                                <span style="color: var(--primary-200);">
+                                    {{ instructor.role ? instructor.role : l.s('unknown') }}
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="badges" style="position:absolute;top:8px;right:12px;">
+                        @if (traineeship.selectedInstructor == instructor.instructorId) {
+                            <div class="badge primary">
+                                {{ l.s('selected') }}
+                            </div>
+                        }
+                    </div>
+                </div>
+            } @empty {
+                <div class="instructor-empty">
+                    <div class="empty-icon">
+                        <i-tabler name="users"></i-tabler>
+                    </div>
+                    <div class="empty-text">
+                        <h3>{{ l.s('traineeship.no_instructors') }}</h3>
+                        <p>{{ l.s('traineeship.no_instructors_select') }}</p>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</div>

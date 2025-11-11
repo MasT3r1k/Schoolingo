@@ -36,6 +36,9 @@ export class IntermComponent implements OnInit {
     'marks.interm.predictor',
   ];
 
+  // === Alert ===
+  public alert: '' | 'already_editing_mark' = '';
+
   // === Data ===
   public marks: any;
   public marksCopy: any[] = [];   // kopie pro prediktor
@@ -75,6 +78,7 @@ export class IntermComponent implements OnInit {
 
   /** Inicializace prediktoru – vytvoření kopie známek */
   public loadPredictor(): void {
+    this.alert = '';
     this.marksCopy = JSON.parse(JSON.stringify(this.marks)); // deep copy
     
     for(let i = 0;i < this.marksCopy.length;i++) {
@@ -165,6 +169,10 @@ export class IntermComponent implements OnInit {
   }
 
   public removeMark(id: number): void {
+    if (this.editingIndex == id) {
+      this.alert = 'already_editing_mark';
+      return;
+    }
     const markIndex = this.marksCopy.findIndex((mark: any) => mark.id === id);
     if (markIndex !== -1) {
       this.marksCopy.splice(markIndex, 1);
@@ -213,7 +221,7 @@ export class IntermComponent implements OnInit {
       predicted = this.predictorMap[subject] || [];
       grades = this.getGradesBySubject(subject, addPredicted);
     }
-    if (!grades || grades.length === 0) return "Err";
+    if (!grades || grades.length === 0) return this.l.s('marks.no_subjects');
 
     let total = 0;
     let totalDivide = 0;
@@ -225,7 +233,7 @@ export class IntermComponent implements OnInit {
         totalDivide += weight;
       }
     }
-    if (totalDivide === 0) return "Err";
+    if (totalDivide === 0) return this.l.s('marks.no_subjects');
 
     const average = total / totalDivide;
     return average < 1 ? "1.00" : average.toFixed(2);

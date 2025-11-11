@@ -1,0 +1,103 @@
+.deniky-container {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+/* === KARTA DENÍKU === */
+.denik-card {
+    background: var(--elevated);
+    border-radius: var(--radius);
+    padding: 1.25rem 1rem;
+    box-shadow: var(--shadow);
+    transition: transform 0.25s ease, background 0.25s ease, box-shadow 0.25s ease;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    cursor: pointer;
+    border: 1px solid var(--border);
+}
+
+.denik-card:hover {
+    transform: translateY(3px);
+    background: var(--surface-2);
+    box-shadow: 0 8px 20px rgba(0,0,0,0.4);
+}
+
+/* === HLAVIČKA === */
+.denik-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    flex-wrap: wrap;
+    gap: 12px;
+}
+
+.denik-info {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.denik-date {
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: var(--primary-200);
+}
+
+.denik-firma {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--text);
+    letter-spacing: 0.3px;
+}
+
+
+/* === DODATEČNÉ INFORMACE === */
+.denik-extra {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 10px;
+    font-size: 0.9rem;
+}
+
+.denik-extra span {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: var(--surface);
+    padding: 8px 10px;
+    border-radius: var(--radius);
+    color: var(--text-muted);
+    border: 1px solid var(--border);
+    transition: background 0.2s ease, border 0.2s ease;
+}
+
+.denik-extra span:hover {
+    background: var(--hover-bg);
+    border-color: var(--primary-200);
+}
+
+.denik-extra b {
+    color: var(--primary);
+    font-weight: 600;
+}
+
+/* === RESPONSIVNÍ === */
+@media (max-width: 700px) {
+    .denik-extra {
+        grid-template-columns: 1fr;
+    }
+    .denik-card {
+        padding: 1rem;
+    }
+    .denik-firma {
+        font-size: 1.1rem;
+    }
+}
+
+/* === ANIMACE === */
+.denik-card,
+.denik-extra span {
+    will-change: transform, background;
+}

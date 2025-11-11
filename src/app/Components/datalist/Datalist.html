@@ -3,7 +3,9 @@
         <thead>
             @for (item of head; track $index) {
                 @if (!options.hideColumns?.includes($index)) {
-                    <th [title]="options.titles?.[$index] || ''">{{ (options.disableLocales?.[$index] === true) ? item : l.s(item) }}</th>
+                    <th [title]="options.titles?.[$index] || ''">
+                        {{ (options.disableLocales?.[$index] === true) ? item : l.s(item) }}
+                    </th>
                 }
             }
         </thead>
@@ -14,7 +16,9 @@
 
                         @if (!info.id && info.id !== null && !options.hideColumns?.includes(getColumnId(index))) {
                             @if (info.isLocale) {
-                                <td>{{ ((info.localePrefix) ? info.localePrefix : '') + l.s(info.value) +  ((info.localeSuffix) ? info.localeSuffix : '')}}</td>
+                                <td>
+                                    {{ ((info.localePrefix) ? info.localePrefix : '') + l.s(info.value) +  ((info.localeSuffix) ? info.localeSuffix : '') }}
+                                </td>
                             } @else if (info.value) {
                                 <td>{{ info.value }}</td>
                             } @else if (info.html) {

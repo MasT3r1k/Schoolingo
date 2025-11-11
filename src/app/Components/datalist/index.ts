@@ -21,7 +21,6 @@ export type Data = {
 };
 
 export interface DatalistOptions {
-    url?: string;
     search?: boolean;
     ignore?: string[];
     titles?: string[];
@@ -59,7 +58,6 @@ export class DatalistComponent implements OnInit {
     
     private listeners: Subscription[] = [];
     public l = inject(Locale);
-    private http = inject(HttpClient);
 
     constructor() { this.refreshData() }
 

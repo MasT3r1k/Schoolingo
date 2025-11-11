@@ -153,25 +153,25 @@ export const config: SidebarGroup[] = [
                 }]
             },
             {
-                item: "sidebar/traineeship/main",
+                item: "sidebar.traineeship.main",
                 modules: ['traineeship'],
                 children: [{
-                    item: "sidebar/traineeship/overview",
+                    item: "sidebar.traineeship.overview",
                     url: "traineeship/overview",
                     permission: ['student', 'teacher']
                 },
                 {
-                    item: "sidebar/traineeship/diary",
+                    item: "sidebar.traineeship.diary",
                     url: "traineeship/diary",
                     permission: ['student']
                 },
                 {
-                    item: "sidebar/traineeship/companies",
+                    item: "sidebar.traineeship.companies",
                     url: "traineeship/companies",
                     permission: ['student', 'teacher']
                 },
                 {
-                    item: "sidebar/traineeship/manage",
+                    item: "sidebar.traineeship.manage",
                     url: "traineeship/manage",
                     permission: ['manager:traineeship:manage']
                 }]
@@ -244,11 +244,6 @@ export const config: SidebarGroup[] = [
                 url: 'documents',
             },
             {
-                item: 'dropdowns.discord.main',
-                permission: ['all'],
-                url: 'discordconnect',
-            },
-            {
                 item: 'sidebar.account',
                 permission: ['all'],
                 children: [{
@@ -271,7 +266,8 @@ export const config: SidebarGroup[] = [
                 url: 'archive'
             },
             {
-                item: 'sidebar/tools/main',
+                item: 'sidebar.tools.main',
+                permission: ['manager:system:admin'],
                 children: [
                     {
                         item: 'sidebar.tools.settings',
@@ -279,7 +275,7 @@ export const config: SidebarGroup[] = [
                         permission: ['manager:system:admin']
                     },
                     {
-                        item: 'sidebar.tools.manageUsers',
+                        item: 'sidebar.tools.manage_users',
                         url: "tools/manageusers",
                         permission: ['manager:system:admin']
                     },

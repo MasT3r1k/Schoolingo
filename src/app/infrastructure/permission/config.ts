@@ -6,6 +6,6 @@ export namespace PermissionsConfig {
         'traineeship:manage',
         'traineeship:settings',
         'students:addStudent',
-        'system:admin'
+        'system:admin',
     ];
 }

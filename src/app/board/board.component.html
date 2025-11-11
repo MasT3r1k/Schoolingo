@@ -1,4 +1,4 @@
-<div class="wrapper" (click)="dropdown = ''">
+<div class="wrapper" (click)="dropdown = '';context_menu.hideContextMenu()">
     <div class="navbar">
         <div class="left">
             <div class="title">
@@ -10,7 +10,7 @@
                 </div>
             </div>
             <div class="options">
-                <div class="item-btn show-sidebar" (click)="$event.stopPropagation();sidebarToggled = !sidebarToggled">
+                <div class="item-btn show-sidebar" (click)="$event.stopPropagation();sidebar.sidebarToggled = !sidebar.sidebarToggled">
                     <div class="icon">
                         <i-tabler name="menu-2"></i-tabler>
                     </div>
@@ -165,11 +165,11 @@
         </div>
     </div>
     <div class="content">
-        <div [ngClass]="{sidebar: true, active: sidebarToggled}">
+        <div [ngClass]="{sidebar: true, active: sidebar.sidebarToggled}">
             @for (section of sidebar.data; track $index) {
                     <ul>
                         @for (item of section.items; track $index) {
-                            <li [routerLink]="item.url" (click)="item.url ? sidebar.sidebarToggled = false : {}"  [routerLinkActive]="'active'" [ngClass]="{ opened: item.children && item.children.length > 0 && sidebar.isToggled($index) }" [routerLinkActiveOptions]="{ exact: true, queryParams: 'ignored'}" (click)="sidebar.toggleDropdown($index)">
+                            <li [routerLink]="item.url" (click)="item.url ? sidebar.sidebarToggled = false : ''"  [routerLinkActive]="'active'" [ngClass]="{ opened: item.children && item.children.length > 0 && sidebar.isToggled($index) }" [routerLinkActiveOptions]="{ exact: true, queryParams: 'ignored'}" (click)="sidebar.toggleDropdown($index)">
                                 <div class="item">
                                     <div class="item-label">
                                         {{ l.s(item.item) }}
@@ -217,4 +217,17 @@
             <router-outlet></router-outlet>
         </div>
     </div>
+</div>
+
+<div id="context-menu" [style.display]="context_menu.isVisibleContextMenu() ? 'flex' : 'none'" [style.top.px]="context_menu.getPosition().y" [style.left.px]="context_menu.getPosition().x">
+    @for(item of context_menu.getItems();track $index) {
+        @if (item.text != undefined) {
+            <div class="menu-item" [class.danger]="item.color == 'danger'" (click)="item?.action()">
+                {{ l.s(item.text) }}
+            </div>
+        }
+        @if (item.type == 'split') {
+            <div class="menu-separator"></div>
+        }
+    }
 </div>

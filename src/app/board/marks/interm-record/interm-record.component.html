@@ -2,6 +2,22 @@
     <div class="card-header">
         <h2>{{ l.s("marks.interm_record.select_group") }}</h2>
         <div class="flex-items">
+            @if (selected_group != -1) {
+                <div class="buttons">
+                    <div class="item-btn danger">
+                        <div class="icon">
+                            <i-tabler name="trash-x"></i-tabler>
+                        </div>
+                    </div>
+
+                    <div class="item-btn" (click)="openMarkingScale()">
+                        <div class="icon">
+                            <i-tabler name="table"></i-tabler>
+                        </div>
+                    </div>
+                </div>
+            }
+
             <div class="select">
                 <label for="group">
                     {{ l.s("marks.interm_record.group") }}
@@ -61,7 +77,7 @@
             </tr>
         </thead>
         <tbody>
-            @for (student of students; track $index) {
+            @for (student of students; track $index;let studentIndex = $index) {
                 <tr>
                     <td class="student-column">
                         <div class="student-cell">
@@ -70,7 +86,7 @@
                             </span>
                             <div class="student-stats">
                                 <div class="quarter">
-                                    {{ student.quarter ?? "?"}}
+                                    {{ student.quarter ?? "?" }}
                                 </div>
                                 <div class="average">
                                     {{ getStudentAverage($index) }}
@@ -79,8 +95,10 @@
                         </div>
                     </td>
                     @for(_ of [].constructor(student.marks.length + add_more_columns);track $index) {
-                        <td class="grade-cell">
-                            <div class="grade-input">{{ student.marks[$index] }}</div>
+                        <td class="grade-cell" (click)="updateMark($index, studentIndex)">
+                            <div class="grade-input">
+                                {{ student.marks[$index] }}
+                            </div>
                         </td>
                     }
                 </tr>

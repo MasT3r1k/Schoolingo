@@ -1,0 +1,600 @@
+<div class="mb">
+    <schoolingo-tabs [options]="['traineeship.tabs.detail_company.main', 'traineeship.instructors', 'traineeship.settings']" [option_width]="'fit'" [value]="selectedTab"></schoolingo-tabs>
+</div>
+
+<div [ngClass]="{items: true, active: selectedTab.getValue() === 0}">
+    <div class="item">
+        <div class="label">
+            {{ l.s('traineeship.company_name') }}
+        </div>
+        <div class="value" (click)="page = 'name'">
+            <input type="text" class="clickable" name="name" [value]="traineeship.selectedCompany.name" readonly="true">
+            <div class="arrow-right">
+                <i-tabler name="click"></i-tabler>
+            </div>
+        </div>
+    </div>
+    <div class="item">
+        <div class="label">
+            {{ l.s('traineeship.CIN') }}
+        </div>
+        <div class="value" (click)="page = 'ico'">
+            <input type="text" class="clickable" name="name" [value]="traineeship.selectedCompany.ico" [placeholder]="l.s('traineeship.no_CIN')" readonly="true">
+            <div class="arrow-right">
+                <i-tabler name="click"></i-tabler>
+            </div>
+        </div>
+    </div>
+    <div class="item">
+        <div class="label">
+            {{ l.s('traineeship.description') }}
+        </div>
+        <div class="value" (click)="page = 'description'">
+            <input type="text" class="clickable" name="name" [value]="traineeship.selectedCompany.description" [placeholder]="l.s('traineeship.no_description')" readonly="true">
+            <div class="arrow-right">
+                <i-tabler name="click"></i-tabler>
+            </div>
+        </div>
+    </div>
+    <div class="item">
+        <div class="label">
+            {{ l.s('traineeship.web') }}
+        </div>
+        <div class="value">
+            <div class="input-text">
+                {{ Utils.webProtocol(traineeship.selectedCompany.web) }}://
+            </div>
+            <input type="text" class="no-left-radius" name="web" [value]="Utils.formatWeb(traineeship.selectedCompany.web, true)" [placeholder]="l.s('traineeship.no_web')" readonly="true">
+        </div>
+        <div class="note">
+            <span>Klikatelný odkaz: </span> 
+            <a [href]="Utils.formatWeb(traineeship.selectedCompany.web, false)" target="_blank">
+                {{ Utils.formatWeb(traineeship.selectedCompany.web, false) }}
+            </a>
+        </div>
+    </div>
+    <div class="item">
+        <div class="label">
+            {{ l.s('traineeship.activity') }}
+        </div>
+        <div class="value" (click)="page = 'activities'">
+            <input type="text" class="clickable" name="name" [value]="traineeship.selectedCompany.activity" [placeholder]="l.s('traineeship.no_activity')" readonly="true">
+            <div class="arrow-right">
+                <i-tabler name="click"></i-tabler>
+            </div>
+        </div>
+    </div>
+    <div class="item">
+        <div class="label">
+            {{ l.s('traineeship.equipment') }}
+        </div>
+        <div class="value" (click)="page = 'equipment'">
+            <input type="text" class="clickable" name="name" [value]="traineeship.selectedCompany.equipment" [placeholder]="l.s('traineeship.no_equipment')" readonly="true">
+            <div class="arrow-right">
+                <i-tabler name="click"></i-tabler>
+            </div>
+        </div>
+    </div>
+
+    <div class="item">
+        <div class="label">
+            {{ l.s('traineeship.scopes') }}
+        </div>
+        <div class="value" (click)="page = 'scopes'">
+            <input type="text" class="clickable" name="inputSelect" readonly="true" [value]="l.s('traineeship.click_to_select_scopes')" />
+
+            <div class="arrow-right">
+                <i-tabler name="chevron-right"></i-tabler>
+            </div>
+        </div>
+    </div>
+
+    <div class="item">
+        <div class="label">
+            {{ l.s('traineeship.responsible_person') }}
+        </div>
+        <div class="value" (click)="page = 'responsiblePerson'">
+            <input type="text" class="clickable" name="inputSelect" readonly="true" [value]="traineeship.selectedCompany.rp_firstName + ' ' + traineeship.selectedCompany.rp_lastName" />
+            <div class="arrow-right">
+                <i-tabler name="chevron-right"></i-tabler>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="items modal" [class.active]="selectedTab.getValue() === 1" style="min-height: 400px;">
+    @if (page == 'newInstructor') {
+        <div class="modal-darkening" style="z-index: 540;" (click)="page = page == 'newInstructor' ? 'main' : page"></div>
+    }
+    <div class="item">
+        <div class="label">
+            {{ l.s('traineeship.instructors') }}
+        </div>
+        <div class="modal-body invisible-scrollbar" style="min-height: 400px;max-height: 400px;flex: 1;overflow: auto;">
+            <div class="options" style="display:flex;flex-direction:column;gap:8px">
+                @for(instructor of traineeship.selectedCompany.instructors;track $index) {
+                    <div class="instructor-item" [class.danger]="instructor.status == 'deleted'" (contextmenu)="contextMenuInstructor(instructor.instructorId, $event)">
+                        <div class="instructor-info">
+                            <div class="instructor-name">
+                                {{ instructor.name }}
+                            </div>
+                            <div class="instructor-meta">
+                                <div class="meta">
+                                    <span>
+                                        {{ l.s('traineeship.email') }}:
+                                    </span>
+                                    <span style="color: var(--text);">
+                                        {{ instructor.email ? instructor.email : l.s('unknown') }}
+                                    </span>
+                                </div>
+                                <div class="meta">
+                                    <span>
+                                        {{ l.s('traineeship.phone') }}:
+                                    </span>
+                                    <span style="color: var(--text);">
+                                        {{ instructor.phone ? Utils.formatPhone(instructor.phone) : l.s('unknown') }}
+                                    </span>
+                                </div>
+                                <div class="meta">
+                                    <span>
+                                        {{ l.s('traineeship.role') }}:
+                                    </span>
+                                    <span style="color: var(--primary-200);">
+                                        {{ instructor.role ? instructor.role : l.s('unknown') }}
+                                    </span>
+                                </div>
+                                <div class="meta">
+                                    <span>
+                                        {{ l.s('traineeship.added_in') }}:
+                                    </span>
+                                    <span style="color: var(--text);">
+                                        {{ Utils.formatDateShort(instructor.created) }}
+                                    </span>
+                                </div>
+                                <div class="meta">
+                                    <span>
+                                        {{ l.s('traineeship.last_updated') }}:
+                                    </span>
+                                    <span style="color: var(--text);">
+                                        {{ Utils.formatDateShort(instructor.last_updated) }}
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="badges" style="position:absolute;top:8px;right:12px;">
+                            @if (instructor.status == 'deleted') {
+                                <div class="badge danger">
+                                    {{ l.s('traineeship.removed') }}
+                                </div>
+                            }
+                        </div>
+
+                        <div class="instructor-actions">
+                            @if (instructor.status == 'active') {
+                                <div class="btn edit" (click)="editInstructor(instructor.instructorId)">
+                                    <i-tabler name="pencil"></i-tabler>
+                                </div>
+                                <div class="btn danger" (click)="removeInstructor(instructor.instructorId)">
+                                    <i-tabler name="trash-x"></i-tabler>
+                                </div>
+                            }
+
+                            @if (instructor.status == 'deleted') {
+                                <div class="btn edit" (click)="restoreInstructor(instructor.instructorId)">
+                                    <i-tabler name="restore"></i-tabler>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                } @empty {
+                    <div class="instructor-empty">
+                        <div class="empty-icon">
+                            <i-tabler name="users"></i-tabler>
+                        </div>
+                        <div class="empty-text">
+                            <h3>{{ l.s('traineeship.no_instructors') }}</h3>
+                            <p>{{ l.s('traineeship.no_instructors_description') }}</p>
+                            <div class="btn primary" (click)="page = 'newInstructor'">
+                                <i-tabler name="plus"></i-tabler>    
+                                {{ l.s('traineeship.new_instructor') }}
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+    @if (traineeship.selectedCompany.instructors.length) {
+    <div class="btn primary" role="button" (click)="page = 'newInstructor'">
+        <i-tabler name="plus"></i-tabler>
+        {{ l.s('traineeship.new_instructor') }}
+    </div>
+    }
+</div>
+    
+
+<div [ngClass]="{items: true, active: selectedTab.getValue() === 2}" style="min-height: 400px;">
+    <div class="item">
+        <div class="label">
+            {{ l.s('traineeship.status_company.main') }}
+        </div>
+        <div class="value">
+            <input type="text" name="name" [value]="l.s('traineeship.status_company.' + traineeship.selectedCompany.status)" readonly="true">
+        </div>
+    </div>
+
+    <div class="item">
+        <div class="label">
+            {{ l.s('traineeship.requested') }}
+        </div>
+        <div class="value">
+            <input type="text" name="name" [value]="Utils.formatDate(traineeship.selectedCompany.requested) || l.s('traineeship.not_requested_from_student')" readonly="true">
+        </div>
+    </div>
+    
+    <div class="item">
+        <div class="label">
+            {{ l.s('traineeship.created') }}
+        </div>
+        <div class="value">
+            <input type="text" name="name" [value]="Utils.formatDate(traineeship.selectedCompany.created)" readonly="true">
+        </div>
+    </div>
+</div>
+
+<div [ngStyle]="{position: 'absolute', top:0, left:0, transform: page == 'scopes' ? 'translateX(0%)' : 'translateX(100%)', width: '100%',height:'100%', 'max-height': '100vh', 'visibility': page == 'scopes' ? 'visible' : 'hidden', backgroundColor: 'var(--surface)', transition: 'all .5s', zIndex: '500', padding: '2rem'}" class="modal">
+    <div class="modal-header" style="justify-content: flex-start;">
+        <div>
+            <div class="btn small " style="display: flex;align-items: center;margin-right: .5rem;" (click)="page = 'main'">
+                <i-tabler name="chevron-left" style="margin-right: 4px;width: 20px;height: 20px;"></i-tabler>
+                {{ l.s('buttons.back') }}
+            </div>
+        </div>
+        <h2>{{ l.s('traineeship.scopes') }}</h2>
+    </div>
+    <div class="modal-body">
+        <div class="items active">
+            @for (scope of getScopes(); track $index) {
+                <div class="item">
+                    <div class="label">
+                        {{ scope.name }}
+                    </div>
+                    <div class="value">
+                        <div class="input clickable" (click)="setScopeState(scope.scopeId, !scope.state)">
+                            {{ scope.state ? '✅ '+l.s('traineeship.scopes_suitable') : '❌ '+l.s('traineeship.scopes_inappropriate') }}
+                        </div>
+                        <div class="arrow-right">
+                            <i-tabler name="click"></i-tabler>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+
+    <div class="btn" (click)="SaveScopesOfCompany()">
+        {{ l.s('traineeship.buttons.save_changes') }}
+    </div>
+</div>
+
+<div [ngStyle]="{position: 'absolute', top:0, left:0, transform: page == 'responsiblePerson' ? 'translateX(0%)' : 'translateX(100%)', width: '100%',height:'100%', 'max-height': '100vh', 'visibility': page == 'responsiblePerson' ? 'visible' : 'hidden', backgroundColor: 'var(--surface)', transition: 'all .5s', zIndex: '500', padding: '2rem'}" class="modal">
+    <div class="modal-header" style="justify-content: flex-start;">
+        <div>
+            <div class="btn small gray" style="display: flex;align-items: center;margin-right: .5rem;" (click)="page = 'main'">
+                <i-tabler name="chevron-left" style="margin-right: 4px;width: 20px;height: 20px;"></i-tabler>
+                {{ l.s('buttons.back') }}
+            </div>
+        </div>
+        <h2>{{ l.s('traineeship.responsible_person') }}</h2>
+    </div>
+    <div class="modal-body">
+        <div class="items active">
+            <div class="item">
+                <div class="label">
+                    {{ l.s('person.first_name') }}
+                </div>
+                <div class="value">
+                    <input type="text" [(ngModel)]="rp_firstname" name="firstname" [value]="traineeship.selectedCompany.rp_firstName" [placeholder]="l.s('person.first_name')">
+                </div>
+            </div>
+
+            <div class="item">
+                <div class="label">
+                    {{ l.s('person.last_name') }}
+                </div>
+                <div class="value">
+                    <input type="text" [(ngModel)]="rp_lastname" name="lastname" [value]="traineeship.selectedCompany.rp_lastName" [placeholder]="l.s('person.last_name')">
+                </div>
+            </div>
+
+            <div class="item">
+                <div class="label">
+                    {{ l.s('traineeship.email') }}
+                </div>
+                <div class="value">
+                    <input type="text" [(ngModel)]="rp_email"  name="email" [value]="traineeship.selectedCompany.email" [placeholder]="l.s('traineeship.no_email')">
+                </div>
+            </div>
+            
+            <div class="item">
+                <div class="label">
+                    {{ l.s('traineeship.phone') }}
+                </div>
+                <div class="value">
+                    <input type="text" [(ngModel)]="rp_phone"  name="phone" [value]="traineeship.selectedCompany.phone" [placeholder]="l.s('traineeship.no_phone')">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="btn" (click)="updateCompany(['rp_firstName', 'rp_lastName', 'email', 'phone'], [rp_firstname, rp_lastname, rp_email, rp_phone])">
+        {{ l.s('traineeship.buttons.save_changes') }}
+    </div>
+</div>
+
+<div [ngStyle]="{position: 'absolute', top:0, left:0, transform: page == 'name' ? 'translateX(0%)' : 'translateX(100%)', width: '100%',height:'100%', 'max-height': '100vh', 'visibility': page == 'name' ? 'visible' : 'hidden', backgroundColor: 'var(--surface)', transition: 'all .5s', zIndex: '500', padding: '2rem'}" class="modal">
+    <div class="modal-header" style="justify-content: flex-start;">
+        <div>
+            <div class="btn small gray" style="display: flex;align-items: center;margin-right: .5rem;" (click)="page = 'main'">
+                <i-tabler name="chevron-left" style="margin-right: 4px;width: 20px;height: 20px;"></i-tabler>
+                {{ l.s('buttons.back') }}
+            </div>
+        </div>
+        <h2>{{ l.s('traineeship.company_name') }}</h2>
+    </div>
+    <div class="modal-body">
+        <div class="items active">
+            <div class="item">
+                <div class="label">
+                    {{ l.s('traineeship.company_name') }}
+                </div>
+                <div class="value">
+                    <input type="text" name="company_name" [(ngModel)]="c_name">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="btn primary" (click)="updateCompany(['name'], [c_name])">
+        {{ l.s('traineeship.buttons.save_changes') }}
+    </div>
+</div>
+
+<div [ngStyle]="{position: 'absolute', top:0, left:0, transform: page == 'ico' ? 'translateX(0%)' : 'translateX(100%)', width: '100%',height:'100%', 'max-height': '100vh', 'visibility': page == 'ico' ? 'visible' : 'hidden', backgroundColor: 'var(--surface)', transition: 'all .5s', zIndex: '500', padding: '2rem'}" class="modal">
+    <div class="modal-header" style="justify-content: flex-start;">
+        <div>
+            <div class="btn small gray" style="display: flex;align-items: center;margin-right: .5rem;" (click)="page = 'main'">
+                <i-tabler name="chevron-left" style="margin-right: 4px;width: 20px;height: 20px;"></i-tabler>
+                {{ l.s('buttons.back') }}
+            </div>
+        </div>
+        <h2>{{ l.s('traineeship.CIN') }}</h2>
+    </div>
+    <div class="modal-body">
+        <div class="items active">
+            <div class="item">
+                <div class="label">
+                    {{ l.s('traineeship.CIN') }}
+                </div>
+                <div class="value">
+                    <input type="text" name="ico" [(ngModel)]="c_ico">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="btn primary" (click)="updateCompany(['ico'], [c_ico])">
+        {{ l.s('traineeship.buttons.save_changes') }}
+    </div>
+</div>
+
+<div [ngStyle]="{position: 'absolute', top:0, left:0, transform: page == 'description' ? 'translateX(0%)' : 'translateX(100%)', width: '100%',height:'100%', 'max-height': '100vh', 'visibility': page == 'description' ? 'visible' : 'hidden', backgroundColor: 'var(--surface)', transition: 'all .5s', zIndex: '500', padding: '2rem'}" class="modal">
+    <div class="modal-header" style="justify-content: flex-start;">
+        <div>
+            <div class="btn small gray" style="display: flex;align-items: center;margin-right: .5rem;" (click)="page = 'main'">
+                <i-tabler name="chevron-left" style="margin-right: 4px;width: 20px;height: 20px;"></i-tabler>
+                {{ l.s('buttons.back') }}
+            </div>
+        </div>
+        <h2>{{ l.s('traineeship.description') }}</h2>
+    </div>
+    <div class="modal-body">
+        <div class="items active">
+            <div class="item">
+                <div class="label">
+                    {{ l.s('traineeship.description') }}
+                </div>
+                <div class="value">
+                    <input type="text" [(ngModel)]="c_description" [placeholder]="l.s('traineeship.no_description')">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="btn primary" (click)="updateCompany(['description'], [c_description])">
+        {{ l.s('traineeship.buttons.save_changes') }}
+    </div>
+</div>
+
+<div [ngStyle]="{position: 'absolute', top:0, left:0, transform: page == 'activities' ? 'translateX(0%)' : 'translateX(100%)', width: '100%',height:'100%', 'max-height': '100vh', 'visibility': page == 'activities' ? 'visible' : 'hidden', backgroundColor: 'var(--surface)', transition: 'all .5s', zIndex: '500', padding: '2rem'}" class="modal">
+    <div class="modal-header" style="justify-content: flex-start;">
+        <div>
+            <div class="btn small gray" style="display: flex;align-items: center;margin-right: .5rem;" (click)="page = 'main'">
+                <i-tabler name="chevron-left" style="margin-right: 4px;width: 20px;height: 20px;"></i-tabler>
+                {{ l.s('buttons.back') }}
+            </div>
+        </div>
+        <h2>{{ l.s('traineeship.activity') }}</h2>
+    </div>
+    <div class="modal-body">
+        <div class="items active">
+            <div class="item">
+                <div class="label">
+                    {{ l.s('traineeship.activity') }}
+                </div>
+                <div class="value">
+                    <input type="text" name="name" [(ngModel)]="c_activity" [placeholder]="l.s('traineeship.no_activity')">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="btn primary" (click)="updateCompany(['activity'], [c_activity])">
+        {{ l.s('traineeship.buttons.save_changes') }}
+    </div>
+</div>
+
+<div [ngStyle]="{position: 'absolute', top:0, left:0, transform: page == 'equipment' ? 'translateX(0%)' : 'translateX(100%)', width: '100%',height:'100%', 'max-height': '100vh', 'visibility': page == 'equipment' ? 'visible' : 'hidden', backgroundColor: 'var(--surface)', transition: 'all .5s', zIndex: '500', padding: '2rem'}" class="modal">
+    <div class="modal-header" style="justify-content: flex-start;">
+        <div>
+            <div class="btn small gray" style="display: flex;align-items: center;margin-right: .5rem;" (click)="page = 'main'">
+                <i-tabler name="chevron-left" style="margin-right: 4px;width: 20px;height: 20px;"></i-tabler>
+                {{ l.s('buttons.back') }}
+            </div>
+        </div>
+        <h2>{{ l.s('traineeship.equipment') }}</h2>
+    </div>
+    <div class="modal-body">
+        <div class="items active">
+            <div class="item">
+                <div class="label">
+                    {{ l.s('traineeship.equipment') }}
+                </div>
+                <div class="value">
+                    <input type="text" name="equipment" [(ngModel)]="c_equipment" [placeholder]="l.s('traineeship.no_equipment')">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="btn primary" (click)="updateCompany(['equipment'], [c_equipment])">
+        {{ l.s('traineeship.buttons.save_changes') }}
+    </div>
+</div>
+
+<div [ngStyle]="{position: 'absolute', top:0, left:0, transform: page == 'editInstructor' ? 'translateX(0%)' : 'translateX(100%)', width: '100%',height:'100%', 'max-height': '100vh', 'visibility': page == 'editInstructor' ? 'visible' : 'hidden', backgroundColor: 'var(--surface)', transition: 'all .5s', zIndex: '500', padding: '2rem', display: 'flex', 'flex-direction': 'column'}" class="modal">
+    <div class="modal-header" style="justify-content: flex-start;">
+        <div>
+            <div class="btn small gray" style="display: flex;align-items: center;margin-right: .5rem;" (click)="page = 'main'">
+                <i-tabler name="chevron-left" style="margin-right: 4px;width: 20px;height: 20px;"></i-tabler>
+                {{ l.s('buttons.back') }}
+            </div>
+        </div>
+        <h2>{{ l.s('traineeship.edit_instructor') }}</h2>
+    </div>
+    <div class="modal-body" style="flex: 1">
+        <div class="items active">
+            <div class="item">
+                <div class="label">
+                    {{ l.s('person.first_name') }}
+                </div>
+                <div class="value">
+                    <input type="text" name="firstname" [(ngModel)]="editInstructorData.firstname" [placeholder]="l.s('person.first_name')">
+                </div>
+            </div>
+
+            <div class="item">
+                <div class="label">
+                    {{ l.s('person.last_name') }}
+                </div>
+                <div class="value">
+                    <input type="text" name="lastname" [(ngModel)]="editInstructorData.lastname" [placeholder]="l.s('person.last_name')">
+                </div>
+            </div>
+
+            <div class="item">
+                <div class="label">
+                    {{ l.s('traineeship.email') }}
+                </div>
+                <div class="value">
+                    <input type="text" name="email" [(ngModel)]="editInstructorData.email" [placeholder]="l.s('traineeship.no_email')">
+                </div>
+            </div>
+            
+            <div class="item">
+                <div class="label">
+                    {{ l.s('traineeship.phone') }}
+                </div>
+                <div class="value">
+                    <input type="text" name="phone" [(ngModel)]="editInstructorData.phone" [placeholder]="l.s('traineeship.no_phone')">
+                </div>
+            </div>
+
+            <div class="item">
+                <div class="label">
+                    {{ l.s('traineeship.role') }}
+                </div>
+                <div class="value">
+                    <input type="text" name="role" [(ngModel)]="editInstructorData.role" [placeholder]="l.s('traineeship.no_role')">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="btn primary" (click)="updateInstructor()">
+        <i-tabler name="pencil"></i-tabler>
+        {{ l.s('traineeship.save_instructor') }}
+    </div>
+</div>
+
+<div [ngStyle]="{position: 'absolute', bottom:0, left:0, transform: page == 'newInstructor' ? 'translateY(0%)' : 'translateY(100%)', width: '100%',height:'auto', 'visibility': page == 'newInstructor' ? 'visible' : 'hidden', backgroundColor: 'var(--surface)', transition: 'all .5s', zIndex: '550', padding: '2rem', overflow: 'hidden', display: 'flex', 'flex-direction': 'column', gap: '8px'}" class="modal">
+    <div class="modal-grabber" (click)="$event.stopPropagation();page = 'main'"></div>
+
+    <div class="modal-header" style="justify-content: flex-start;">
+        <h2>{{ l.s('traineeship.new_instructor') }}</h2>
+    </div>
+    <div class="modal-body">
+        <div class="items active">
+            <div class="item">
+                <div class="label">
+                    {{ l.s('person.first_name') }}
+                </div>
+                <div class="value">
+                    <input type="text" name="firstname" [(ngModel)]="newInstructor.firstname" [placeholder]="l.s('person.first_name')">
+                </div>
+            </div>
+
+            <div class="item">
+                <div class="label">
+                    {{ l.s('person.last_name') }}
+                </div>
+                <div class="value">
+                    <input type="text" name="lastname" [(ngModel)]="newInstructor.lastname" [placeholder]="l.s('person.last_name')">
+                </div>
+            </div>
+
+            <div class="item">
+                <div class="label">
+                    {{ l.s('traineeship.email') }}
+                </div>
+                <div class="value">
+                    <input type="text" name="email" [(ngModel)]="newInstructor.email" [placeholder]="l.s('traineeship.no_email')">
+                </div>
+            </div>
+            
+            <div class="item">
+                <div class="label">
+                    {{ l.s('traineeship.phone') }}
+                </div>
+                <div class="value">
+                    <input type="text" name="phone" [(ngModel)]="newInstructor.phone" [placeholder]="l.s('traineeship.no_phone')">
+                </div>
+            </div>
+
+            <div class="item">
+                <div class="label">
+                    {{ l.s('traineeship.role') }}
+                </div>
+                <div class="value">
+                    <input type="text" name="role" [(ngModel)]="newInstructor.role" [placeholder]="l.s('traineeship.no_role')">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="btn primary" (click)="createInstructor()">
+        <i-tabler name="plus"></i-tabler>
+        {{ l.s('traineeship.create_instructor') }}
+    </div>
+</div>

@@ -22,6 +22,8 @@ import { BaseAlertManager } from './infrastructure/alert/alert.manager';
 import { ModalManager } from '@Schoolingo/modal';
 import { MarksManager } from '@Schoolingo/marks';
 import { CalendarManager } from '@Components/calendar-dropdown';
+import { Traineeship } from '@Schoolingo/traineeship';
+import { ContextMenu } from '@Schoolingo/context-menu';
 
 export function initAuth(auth: Authentication): () => void {
   return () => auth.loadState(); // např. HTTP požadavek + setAuthState()
@@ -55,6 +57,8 @@ export const appConfig: ApplicationConfig = {
     IconsModule,
     ModalManager,
     MarksManager,
-    CalendarManager
+    CalendarManager,
+    Traineeship,
+    ContextMenu
   ]
 };

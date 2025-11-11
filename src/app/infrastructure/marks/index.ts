@@ -1,3 +1,4 @@
+import { BehaviorSubject } from 'rxjs';
 import { MarkConfig } from './index.d';
 export type { MarkConfig }
 
@@ -12,15 +13,19 @@ export class MarksManager {
     }
 
     private action: 'edit' | 'create' | '' = '';
-    private student: number | null = null;
+    private student: string | null = null;
     private columnIndex = -1;
     private groupId = -1;
     private subjectId = -1;
-    private mark: string | number | null = null;
+    private subjectName = '';
+    private mark: string | null = null;
     private topic = "";
     private weight = 1;
-    private mark_types: string[] = ['marks', 'points']
+    private mark_types: string[] = ['marks', 'points'];
     private type: string | null = null;
+
+    public updateColumn$ = new BehaviorSubject<any>({});
+    public updateMark$ = new BehaviorSubject<any>({});
 
     public setAction(action: typeof this.action): void { this.action = action }
     public getAction(): typeof this.action { return this.action }
@@ -28,8 +33,14 @@ export class MarksManager {
     public setStudent(student: typeof this.student): void { this.student = student }
     public getSelectedStudent(): typeof this.student { return this.student }
 
+    public setGroupId(groupId: number): void { this.groupId = groupId }
+    public getGroupId(): typeof this.groupId { return this.groupId }
+
     public setSubjectId(subjectId: number): void { this.subjectId = subjectId }
     public getSubjectId(): typeof this.subjectId { return this.subjectId }
+
+    public setSubjectName(subjectName: typeof this.subjectName): void { this.subjectName = subjectName }
+    public getSubjectName(): typeof this.subjectName { return this.subjectName }
 
     public setMark(mark: typeof this.mark): void { this.mark = mark }
     public getMark(): typeof this.mark { return this.mark }

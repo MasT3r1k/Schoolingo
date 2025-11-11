@@ -79,13 +79,23 @@
         {{ mark.description }}
       </div>
     </div>
-    } } @case(2) { @if (!getAllSubjects().length) {
-    <div class="alerts">
-      <div class="alert error">
-        {{ l.s("marks.predictor.no_subjects") }}
+    } } @case(2) {
+    @if (!getAllSubjects().length) {
+      <div class="alerts">
+        <div class="alert error">
+          {{ l.s("marks.predictor.no_subjects") }}
+        </div>
       </div>
-    </div>
     }
+
+    @if (alert == 'already_editing_mark') {
+      <div class="alerts mb">
+        <div class="alert error">
+          {{ l.s("marks.predictor.already_editing_mark") }}
+        </div>
+      </div>
+    }
+
 
     <div class="averages mb">
       <div class="average-old">
@@ -145,7 +155,7 @@
                 {{ l.s("marks.predictor.edit_mark") }}
             </div>
 
-            <div class="btn primary only-text" (click)="this.editingIndex = null;">
+            <div class="btn primary only-text" (click)="this.editingIndex = null;alert=''">
                 {{ l.s('marks.predictor.stop_edit_mark') }}
             </div>
         } @else {
@@ -177,7 +187,7 @@
     </div>
     @for(mark of getGradesBySubject(selected_subject, true);track $index) {
     <div class="grade-row predictor-table" [class.selected]="mark.id === editingIndex">
-      <div class="table-2-topic bold">
+      <div class="table-2-topic bold" [class.muted]="mark.isPredicted">
         {{ mark.topic }}
       </div>
       <div class="table-2-mark center">
