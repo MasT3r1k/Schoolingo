@@ -24,6 +24,7 @@ import { MarksManager } from '@Schoolingo/marks';
 import { CalendarManager } from '@Components/calendar-dropdown';
 import { Traineeship } from '@Schoolingo/traineeship';
 import { ContextMenu } from '@Schoolingo/context-menu';
+import { ScheduleBuilder } from '@Schoolingo/schedule_builder';
 
 export function initAuth(auth: Authentication): () => void {
   return () => auth.loadState(); // např. HTTP požadavek + setAuthState()
@@ -59,6 +60,7 @@ export const appConfig: ApplicationConfig = {
     MarksManager,
     CalendarManager,
     Traineeship,
-    ContextMenu
+    ContextMenu,
+    ScheduleBuilder
   ]
 };

@@ -22,6 +22,7 @@ import { ManageComponent } from './board/Traineeship/manage/manage.component';
 import { CompaniesComponent } from './board/Traineeship/companies/companies.component';
 import { DiaryComponent } from './board/Traineeship/diary/diary.component';
 import { OverviewComponent } from './board/Traineeship/overview/overview.component';
+import { BuilderComponent } from './board/schedule/builder/builder.component';
 
 export const routes: Routes = [
     {
@@ -34,6 +35,9 @@ export const routes: Routes = [
         path: '', component: BoardComponent, canActivate: [UserGuard], children: [
             {
                 path: 'main', component: MainComponent
+            },
+            {
+                path: 'schedule/builder', component: BuilderComponent
             },
             {
                 path: 'marks', children: [

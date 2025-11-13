@@ -31,6 +31,11 @@ export const config: SidebarGroup[] = [
                 permission: ['manager:system:admin']
             },
             {
+                item: 'sidebar.schedule_builder',
+                url: 'schedule/builder',
+                permission: ['manager:system:admin']
+            },
+            {
                 item: 'sidebar.marks.main',
                 permission: ['teacher', 'student', 'parent'],
                 children: [{
