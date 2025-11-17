@@ -5,6 +5,7 @@ import { Authentication } from '@Schoolingo/authentication';
 import { IconsModule } from '@Schoolingo/icons';
 import { Locale } from '@Schoolingo/locale';
 import { Config } from '@Schoolingo/config';
+import { Utils } from '@Schoolingo/utils';
 
 @Component({
   imports: [NgStyle, IconsModule, RouterLink],
@@ -15,4 +16,5 @@ export class AccountComponent {
   u = inject(Authentication);
   l = inject(Locale);
   Config = Config;
+  Utils = Utils;
 }

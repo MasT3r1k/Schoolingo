@@ -19,6 +19,8 @@ export interface User {
     locale: string;
     theme: number;
     level: number;
+    emails: UserEmail[];
+    phones: UserPhone[];
     xp: number;
     requiredXP: number;
     children: Child[];
@@ -37,4 +39,17 @@ export interface Child {
     firstName: string;
     lastName: string;
     gender: number;
+}
+
+export interface UserEmail {
+    email: string;
+    description: string;
+    is_verified: boolean;
+}
+
+export interface UserPhone {
+    code: string;
+    number: string;
+    description: string;
+    is_verified: boolean;
 }
