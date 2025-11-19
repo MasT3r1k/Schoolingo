@@ -19,6 +19,9 @@ export interface User {
     locale: string;
     theme: number;
     level: number;
+    passwordChanged: Date;
+    lastLogins7Days: number;
+    failedLogins7Days: number;
     emails: UserEmail[];
     phones: UserPhone[];
     xp: number;
@@ -45,6 +48,7 @@ export interface UserEmail {
     email: string;
     description: string;
     is_verified: boolean;
+    is_created: boolean;
 }
 
 export interface UserPhone {
@@ -52,4 +56,5 @@ export interface UserPhone {
     number: string;
     description: string;
     is_verified: boolean;
+    is_created: boolean;
 }

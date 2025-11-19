@@ -91,71 +91,195 @@
 
         <div class="items mt mb">
             <div class="item">
-                <label for="email">
-                    {{ l.s('email') }}
-                </label>
+                <h2>
+                    {{ l.s('settings.emails.title') }}
+                </h2>
                 <div class="value">
-                    @for (email of u.getUser().emails; track $index) {
-                        <input type="text" class="disabled" [value]="email.email" readonly>
+                    @for (email of emails; track $index) {
+
+                        <div class="item-group">
+                            <div class="left">
+                                <div class="item-title">
+                                    <input type="text" [(ngModel)]="email.email">
+                                </div>
+                                <div class="badges">
+                                    @if (email.is_verified) {
+                                        <div class="badge success">Ověřený</div>
+                                    }
+                                    <!-- <div class="badge primary">Primární</div> -->
+                                </div>
+                            </div>
+                            <div class="item-actions">
+                                <div class="btn">
+                                    <i-tabler name="pencil"></i-tabler>
+                                </div>
+                                <div class="btn danger" (click)="removeEmail($index)">
+                                    <i-tabler name="trash-x"></i-tabler>
+
+                                </div>
+                            </div>
+                        </div>
                     } @empty {
-                        <input type="text" class="disabled" [value]="l.s('user_settings.no_email_set')" readonly>
+                        <div class="item-empty">
+                            <div class="left">
+                                <div class="empty-icon">
+                                    <i-tabler name="mailbox-off"></i-tabler>
+                                </div>
+                                <div class="empty-text">
+                                    <h3>
+                                        {{ l.s('settings.emails.empty') }}
+                                    </h3>
+                                    <p>
+                                        {{ l.s('settings.emails.empty_description') }}
+                                    </p>
+                                </div>
+                            </div>
+                            <div class="btn primary" (click)="addEmptyEmail()">
+                                <i-tabler name="plus"></i-tabler>
+                                {{ l.s('buttons.add_email') }}
+                            </div>
+                        </div>
+                        <!-- <input type="text" class="disabled" [placeholder]="l.s('user_settings.no_email_set')"> -->
                     }
                 </div>
             </div>
-            <div class="btn small gray" style="width: fit-content;display: flex;align-items: center;">
+            @if (emails.length) {
+            <div class="btn small primary" style="width: fit-content;display: flex;align-items: center;" (click)="addEmptyEmail()">
                 <i-tabler name="plus"></i-tabler>
                 <span>
                     {{ l.s('buttons.add_email') }}
                 </span>
             </div>
+            }
         </div>
 
         <hr />
 
         <div class="items mt">
             <div class="item">
-                <label for="phone">
-                    {{ l.s('phone') }}
-                </label>
+                <h2 for="phone">
+                    {{ l.s('settings.phones.title') }}
+                </h2>
                 <div class="value">
-                    @for (phone of u.getUser().phones; track $index) {
+                    @for (phone of phones; track $index) {
                         <input type="text" class="disabled" [value]="Utils.formatPhone(phone.number)" readonly>
                     } @empty {
-                        <input type="text" class="disabled" [value]="l.s('userSettings/noPhoneSet')" readonly>
+                        <div class="item-empty">
+                            <div class="left">
+                                <div class="empty-icon">
+                                    <i-tabler name="phone-off"></i-tabler>
+                                </div>
+                                <div class="empty-text">
+                                    <h3>
+                                        {{ l.s('settings.phones.empty') }}
+                                    </h3>
+                                    <p>
+                                        {{ l.s('settings.phones.empty_description') }}
+                                    </p>
+                                </div>
+                            </div>
+                            <div class="btn primary small">
+                                    <i-tabler name="plus"></i-tabler>
+                                    {{ l.s('buttons.add_phone') }}
+                                </div>
+                        </div>
                     }
                 </div>
             </div>
-            <div class="btn small gray" style="width: fit-content;display: flex;align-items: center;">
+            @if (phones.length) {
+            <div class="btn small primary" style="width: fit-content;display: flex;align-items: center;">
                 <i-tabler name="plus"></i-tabler>
                 <span>
                     {{ l.s('buttons.add_phone') }}
                 </span>
             </div>
+            }
         </div>
 
         <hr class="mb-2" />
 
         <h2 class="mt mb">
-            {{ l.s('user.password_authenticator.title') }}
+            {{ l.s('user.security') }}
         </h2>
 
-        <span>
-            {{ l.s('user.password_authenticator.description') }}
-        </span>
-        
-        <div class="btn small mt mb-2" [routerLink]="['/user/settings']" [queryParams]="{ page: 'changepassword' }" style="width: fit-content;">
-            {{ l.s('buttons.change_password') }}
+        <div class="item-empty mb">
+            <div class="left">
+                <div class="empty-icon">
+                    <i-tabler name="lock"></i-tabler>
+                </div>
+                <div class="empty-text">
+                    <h3>
+                        {{ l.s('user.password_authenticator.title') }}
+                    </h3>
+                    <p>
+                        {{ l.s('user.password_authenticator.description') }}
+                    </p>
+                    
+                    <div class="badges">
+                        <div class="badge">
+                            {{ l.s('user.password_authenticator.last_updated').replaceAll('%time%', Utils.formatDateShort(u.getUser().passwordChanged)) }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="btn primary small" [routerLink]="['/user/settings']" [queryParams]="{ page: 'changepassword' }">
+                {{ l.s('buttons.change_password') }}
+            </div>
         </div>
 
-        <h2 class="mb">
-            {{ l.s('user.app_authenticator.title') }}
-        </h2>
-        <span>
-            {{ l.s('user.app_authenticator.description') }}
-        </span>
+        <div class="item-empty mb" [class.danger]="u.getUser().failedLogins7Days">
+            <div class="left">
+                <div class="empty-icon">
+                    <i-tabler name="history"></i-tabler>
+                </div>
+                <div class="empty-text">
+                    <h3 class="row" style="gap: 8px;">
+                        {{ l.s('user.login_history') }}
+                        @if (u.getUser().failedLogins7Days) {
+                        <div class="badge danger">
+                            <i-tabler name="alert-triangle"></i-tabler>
+                            Neznámé přihlášení
+                        </div>
+                        }
+                    </h3>
+                    <p>
+                        {{ l.s('user.login_history_description') }}
+                    </p>
+                    
+                    <div class="badges">
+                        <div class="badge">
+                            {{ l.s('user.logins_for_7days') }}: {{ u.getUser().lastLogins7Days }}
+                        </div>
 
-        <div class="flex align-items-center mt" [routerLink]="['/user/settings']" [queryParams]="{ page: 'security' }">
-            <div class="btn small" style="width: fit-content;">
+                        @if (u.getUser().failedLogins7Days) {
+                        <div class="badge danger">
+                            {{ l.s('user.failed_logins_for_7days') }}: {{ u.getUser().failedLogins7Days }}
+                        </div>
+                        }
+                    </div>
+                </div>
+            </div>
+            <div class="right" style="display:flex;flex-direction: column;gap: 8px">
+                <div class="btn small" [class.danger]="u.getUser().failedLogins7Days" [class.primary]="!u.getUser().failedLogins7Days" [routerLink]="['/user/logins']">{{ l.s('user.login_history_action') }}</div>
+                <small class="note clickable" [routerLink]="['/user/devices']">Zobrazit přihlášené zařízení</small>
+            </div>
+        </div>
+
+        <div class="item-empty mb">
+            <div class="left">
+                <div class="empty-icon">
+                    <i-tabler name="auth-2fa"></i-tabler>
+                </div>
+                <div class="empty-text">
+                    <h3>
+                        {{ l.s('settings.2fa.title') }}
+                    </h3>
+                    <p>
+                        {{ l.s('user.app_authenticator.description') }}
+                    </p>
+                </div>
+            </div>
+            <div class="btn primary small" [routerLink]="['/user/settings']" [queryParams]="{ page: 'security' }">
                 {{ l.s('buttons.jump_to_2FA_settings') }}
             </div>
         </div>

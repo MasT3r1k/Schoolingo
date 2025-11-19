@@ -4,12 +4,10 @@ import { BehaviorSubject, Observable } from 'rxjs';
 import { Config } from '../config';
 import { handleHttpException } from '../http/http';
 import { User } from './user';
-import { createAvatar, Result } from '@dicebear/core';
+import { createAvatar } from '@dicebear/core';
 import { avataaarsNeutral } from '@dicebear/collection';
-import { Locale } from '@Schoolingo/locale';
 import moment from 'moment';
 import { Router } from '@angular/router';
-import { Theme, themes } from '@Schoolingo/theme';
 
 export class Authentication {
     private http = inject(HttpClient);
@@ -33,6 +31,8 @@ export class Authentication {
                 }
             } else if ('username' in user) {
                 this.user = user as User;
+                this.user.emails = user.emails.map((email) => ({...email, is_created: true}))
+                this.user.phones = user.phones.map((phone) => ({...phone, is_created: true}))
                 this.setAuthState(true);
                 // user.children = [];
                 this.user.birthday = moment(user.birthday)
