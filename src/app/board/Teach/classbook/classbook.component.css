@@ -106,6 +106,10 @@
     background: var(--surface-glow);
 }
 
+.lesson-details > .header.skeleton * {
+  color: transparent!important;
+}
+
 .lesson-details > .lesson-body {
     padding: 24px;
     gap: 16px;
@@ -224,6 +228,10 @@
     align-items: center;
 }
 
+.absence-type.active {
+  box-shadow: var(--focus-ring);
+}
+
 .absence-type.empty {
     border-color: transparent;
 }
@@ -231,6 +239,53 @@
 .absence-type i-tabler {
     width: 22px;
     height: 22px;
+}
+
+.table-header, .student-row, .hours {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+
+.student-name {
+  flex: 0 0 250px;
+}
+
+.hours {
+  flex: 0 0 400px;
+  gap: 8px;
+}
+
+.hours > .hour {
+  width: 32px;
+  height: 32px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.student-row .hours .hour {
+  border: 1px solid var(--border);
+}
+
+.hours .hour.active {
+  width: 40px;
+  height: 40px;
+}
+
+.table-header .hours .hour.active {
+  color: var(--primary);
+  font-weight: bold;
+  font-size: 24px;
+}
+
+.student-row .hours .hour.active {
+  border-color: var(--primary);
+  cursor: pointer;
+}
+
+.absence {
+  flex: 0 0 300px;
 }
 
 .add-btn {
@@ -256,12 +311,15 @@
   color: var(--primary);
 }
 
-.homework-list {
+.homework-list,
+.notes-list,
+.students-list {
   display: grid;
   gap: 12px;
 }
 
-.homework-item {
+.homework-item,
+.note-item {
   background: var(--elevated);
   border: 1px solid var(--border);
   border-radius: var(--radius);
@@ -269,29 +327,34 @@
   transition: all 0.2s;
 }
 
-.homework-item:hover {
+.homework-item:hover,
+.note-item:hover {
   background: var(--hover-bg);
   border-color: var(--primary);
 }
 
-.homework-header {
+.homework-header,
+.note-header {
   display: flex;
   justify-content: space-between;
   align-items: start;
   margin-bottom: 8px;
 }
 
-.homework-title {
+.homework-title,
+.note-title {
   font-weight: 600;
   font-size: 15px;
 }
 
-.homework-date {
+.homework-date,
+.note-date {
   color: var(--text-muted);
   font-size: 13px;
 }
 
-.homework-desc {
+.homework-desc,
+.note-desc {
   color: var(--text-muted);
   font-size: 14px;
   line-height: 1.5;
