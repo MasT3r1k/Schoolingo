@@ -23,6 +23,7 @@ import { CompaniesComponent } from './board/Traineeship/companies/companies.comp
 import { DiaryComponent } from './board/Traineeship/diary/diary.component';
 import { OverviewComponent } from './board/Traineeship/overview/overview.component';
 import { BuilderComponent } from './board/schedule/builder/builder.component';
+import { ClassbookComponent } from './board/Teach/classbook/classbook.component';
 
 export const routes: Routes = [
     {
@@ -60,6 +61,9 @@ export const routes: Routes = [
                     },
                     {
                         path: 'absence', component: AbsenceComponent
+                    },
+                    {
+                        path: 'classbook', component: ClassbookComponent
                     }
                 ]
             },

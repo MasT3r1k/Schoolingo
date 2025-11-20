@@ -1,0 +1,256 @@
+<div class="card">
+    <div class="card-top"></div>
+    <div class="card-header">
+        <h2>
+            {{ l.s('sidebar.teach.classbook') }}
+        </h2>
+        <div class="flex-items">
+            <input type="date">
+        </div>
+    </div>
+
+    <div class="card-body">
+        <div class="lessons-list">
+            <div class="lesson-card" [class.active]="selected_lesson == 0">
+                <div class="lesson-index">1</div>
+
+                <div class="lesson-info">
+                    <div class="lesson-subject">
+                        <span>Matematika</span>
+                        <div class="lesson-icons">
+                            <i-tabler name="key"></i-tabler>
+                        </div>
+                    </div>
+                    <div class="lesson-meta">
+                        <span class="lesson-time" style="flex: 0 0 100px;">8:00 - 8:45</span>
+                        <span style="flex: 0 0 72px;">B4.I</span>
+                        <span class="lesson-muted" style="flex: 1">Kvadratické rovnice</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="lesson-card">
+                <div class="lesson-index">2</div>
+
+                <div class="lesson-info">
+                    <div class="lesson-subject">
+                        <span>Český jazyk</span>
+                        <div class="lesson-icons">
+                        </div>
+                    </div>
+                    <div class="lesson-meta">
+                        <span class="lesson-time" style="flex: 0 0 100px;">8:50 - 9:35</span>
+                        <span style="flex: 0 0 72px;">B3.I</span>
+                        <span class="lesson-muted" style="flex: 1">Čeští spisovatelé</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="lesson-card">
+                <div class="lesson-index">3</div>
+
+                <div class="lesson-info">
+                    <div class="lesson-subject">
+                        <span>Český jazyk</span>
+                        <div class="lesson-icons">
+                        </div>
+                    </div>
+                    <div class="lesson-meta">
+                        <span class="lesson-time" style="flex: 0 0 100px;">9:45 - 10:30</span>
+                        <span style="flex: 0 0 72px;">B3.I</span>
+                        <span class="lesson-muted" style="flex: 1">Čeští spisovatelé</span>
+                    </div>
+                </div>
+            </div>
+            <div class="lesson-card">
+                <div class="lesson-index">4</div>
+
+                <div class="lesson-info">
+                    <div class="lesson-subject">
+                        <span>Český jazyk</span>
+                        <div class="lesson-icons">
+                        </div>
+                    </div>
+                    <div class="lesson-meta">
+                        <span class="lesson-time" style="flex: 0 0 100px;">10:50 - 11:35</span>
+                        <span style="flex: 0 0 72px;">B3.I</span>
+                        <span class="lesson-muted" style="flex: 1">Čeští spisovatelé</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="lesson-details">
+            <div class="header">
+                <h2>Matematika</h2>
+                <div class="lesson-meta">
+                    <span class="lesson-time">8:00 - 8:45</span>
+                    <span>B4.I 2</span>
+                    <span>24. 7. 2025 (Středa)</span>
+                </div>
+                <div class="lesson-meta lesson-muted">
+                Pořádková služba: Adam Adamec, Babeta Borská
+                </div>
+            </div>
+            <div class="lesson-body">
+                <div class="tabs">
+                    <div class="tab" [class.active]="selected_tab == 0" (click)="selected_tab = 0">Zápis hodiny</div>
+                    <div class="tab" [class.active]="selected_tab == 1" (click)="selected_tab = 1">Docházka</div>
+                    <div class="tab" [class.active]="selected_tab == 2" (click)="selected_tab = 2">Domácí úkoly</div>
+                    <div class="tab" [class.active]="selected_tab == 3" (click)="selected_tab = 3">Poznámky</div>
+                </div>
+
+                @if (selected_tab == 0) {
+                <div class="card-content">
+                    <div class="form-group">
+                        <label for="lessonNumber">Číslo hodiny</label>
+                        <div class="row">
+                            <input type="number">
+                            <div class="btn small">
+                                <i-tabler name="arrow-back-up-double"></i-tabler>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="lessonTopic">Téma hodiny</label>
+                        <input type="text">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="lessonNote">Poznámka k hodině</label>
+                        <textarea></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="lessoninternalNote">Poznámka k hodině</label>
+                        <input type="text">
+                    </div>
+
+                    <div class="form-group">
+                        <div class="btn primary">
+                            <i-tabler name="device-floppy"></i-tabler>
+                            Uložit zápis
+                        </div>
+                    </div>
+                </div>
+                <div class="info-card">
+                    <h3>Minulá hodina</h3>
+                    <div class="info-row">
+                        <span class="muted">Téma:</span>
+                        <span>Lineární funkce</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="muted">Poznámka:</span>
+                        <span>Žáci dobře zvládli grafické znázornění</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="muted">Absence:</span>
+                        <span>Baček</span>
+                    </div>
+                </div>
+                }
+
+                @if (selected_tab == 1) {
+                    <div class="stats-bar">
+                        <div class="stat-item">
+                            <div class="stat-value">28</div>
+                            <div class="stat-label">Celkem studentů</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value">25</div>
+                            <div class="stat-label">Přítomní</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value">3</div>
+                            <div class="stat-label">Chybějící</div>
+                        </div>
+                    </div>
+
+                    <div class="absence-selector">
+                        <div class="clickable" style="display: flex;align-items: center;color: var(--primary-100)">
+                            <i-tabler style="margin-right: .5rem;" name="copy"></i-tabler>
+                            Kopírovat z přechozí hodiny
+                        </div>
+
+                        <div class="absence-type ab-absence">
+                            <i-tabler name="slash"></i-tabler>
+                        </div>
+
+                        <div class="absence-type ab-excused">
+                            <i-tabler name="x"></i-tabler>
+                        </div>
+
+                        <div class="absence-type ab-non_count">
+                            <i-tabler name="minus"></i-tabler>
+                        </div>
+
+                        <div class="absence-type ab-early">
+                            O
+                        </div>
+
+                        <div class="absence-type ab-late">
+                            P
+                        </div>
+
+                        <div class="absence-type ab-unexcused">
+                            N
+                        </div>
+
+                        <div class="absence-type ab-distance">
+                            D
+                        </div>
+
+                        <div class="absence-type empty danger">
+                            <i-tabler name="trash-x"></i-tabler>
+                        </div>
+                    </div>
+                }
+
+                @if (selected_tab == 2) {
+                    <div class="add-btn">
+                        <i-tabler name="plus"></i-tabler>
+                        Přidat domácí úkol
+                    </div>
+                    <div class="homework-list">
+                        <div class="homework-item">
+                            <div class="homework-header">
+                                <div>
+                                    <div class="homework-title">Vypočítat příklady 1-15</div>
+                                    <div class="homework-date">Zadáno: 18. 11. 2025 | Odevzdat do: 22. 11. 2025</div>
+                                </div>
+                            </div>
+                            <div class="homework-desc">
+                                Vyřešit kvadratické rovnice ze sbírky, strana 45. Použít diskriminant a zkontrolovat výsledky dosazením.
+                            </div>
+                        </div>
+
+                        <div class="homework-item">
+                            <div class="homework-header">
+                                <div>
+                                    <div class="homework-title">Grafické znázornění funkcí</div>
+                                    <div class="homework-date">Zadáno: 15. 11. 2025 | Odevzdat do: 20. 11. 2025</div>
+                                </div>
+                            </div>
+                            <div class="homework-desc">
+                                Nakreslit grafy 5 lineárních funkcí do milimetrového papíru. Označit průsečíky s osami.
+                            </div>
+                        </div>
+
+                        <div class="homework-item">
+                            <div class="homework-header">
+                                <div>
+                                    <div class="homework-title">Příprava na písemnou práci</div>
+                                    <div class="homework-date">Zadáno: 12. 11. 2025 | Odevzdat do: 19. 11. 2025</div>
+                                </div>
+                            </div>
+                            <div class="homework-desc">
+                                Zopakovat látku z kapitol 3-5. Zaměřit se na řešení rovnic a nerovnic.
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>
