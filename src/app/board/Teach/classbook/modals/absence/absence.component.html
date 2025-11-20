@@ -1,0 +1,93 @@
+<div (click)="showSelect = null">
+    <div class="items">
+        <div class="item">
+            <label for="topic" [ngClass]="{ 'error-color': errors['student'] != null }">
+                {{ l.s('roles.student') }}
+            </label>
+            <div class="value">
+                <input type="text" class="disabled" name="topic" readonly [value]="classbook.getStudent(classbook.selectedStudent).full_name">
+            </div>
+        </div>
+
+        <div class="item">
+            <label for="type" [ngClass]="{ 'error-color': errors['type'] != null }">
+                {{ l.s('classbook.add_absence.type') }}
+            </label>
+            <div class="value">
+                <input type="text" class="disabled" name="type" readonly [value]="l.s('absence.' + absenceConfig[classbook.selectedAbsence].locale)">
+            </div>
+        </div>
+
+        @if ([AbsenceType.LATE, AbsenceType.EARLY].includes(classbook.selectedAbsence)) {
+            <div class="item">
+                <label for="minutes" [ngClass]="{ 'error-color': errors['minutes'] != null }">
+                    {{ l.s('classbook.add_absence.minutes') }}
+                    @if (errors['minutes'] != null) {
+                        <span class="label-error">
+                            - {{ l.s(errors['minutes']) }}
+                        </span>
+                    }
+                </label>
+                <div class="value">
+                    <input type="text" name="minutes" [(ngModel)]="classbook.minutes" [placeholder]="l.s('classbook.add_absence.minutes')">
+                </div>
+                @if ([AbsenceType.LATE].includes(classbook.selectedAbsence)) {
+                    <p>
+                        {{ l.s('classbook.add_absence.descriptions.late_arrival')
+                        .replaceAll('%time%', getTime('arrival').format('HH:mm')) }}
+                    </p>
+                }
+                @if ([AbsenceType.EARLY].includes(classbook.selectedAbsence)) {
+                    {{ l.s('classbook.add_absence.descriptions.early_departure')
+                        .replaceAll('%time%', getTime('departure').format('HH:mm')) }}
+                }
+    
+            </div>
+        }
+
+        <div class="item">
+            <label for="reason" [ngClass]="{ 'error-color': errors['reason'] != null }">
+                {{ l.s('classbook.add_absence.reason') }}
+                @if (errors['reason'] != null) {
+                    <span class="label-error">
+                        - {{ l.s(errors['reason']) }}
+                    </span>
+                }
+            </label>
+            <div class="value">
+                <div class="input-select">
+                    <input type="text" (click)="$event.stopPropagation();showSelect = showSelect == 'reason' ? null : 'reason'" name="inputSelect" readOnly="true" [value]="classbook.reason ? l.s('classbook.add_absence.reasons.' + classbook.reason) : ''" [placeholder]="l.s('classbook.add_absence.reasons.unknown')" />
+                    @if (showSelect == 'reason') {
+                        <div class="options">   
+                            @for (reason of getAbsenceReasons(); track $index) {
+                                <div class="option" (click)="showSelect = null;classbook.reason = reason;">
+                                    {{ l.s('classbook.add_absence.reasons.' + reason) }}
+                                </div>
+                            }
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <div class="item">
+            <label for="note" [ngClass]="{ 'error-color': errors['note'] != null }">
+                {{ l.s('classbook.lesson_note') }}
+                @if (errors['note'] != null) {
+                    <span class="label-error">
+                        - {{ l.s(errors['note']) }}
+                    </span>
+                }
+            </label>
+            <div class="value">
+                <input type="text" name="note" [(ngModel)]="classbook.note" [placeholder]="l.s('classbook.placeholder_note')">
+            </div>
+        </div>
+
+        <div class="item">
+            <div class="btn" (click)="submitAbsence()">
+                {{ l.s('classbook.save_absence') }}
+            </div>
+        </div>
+    </div>
+</div>

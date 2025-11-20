@@ -56,7 +56,7 @@
 
         <div class="lesson-details">
             <div class="header" [class.skeleton]="is_lesson_loading"> 
-                <h2>Matematika</h2>
+                <h2>{{ classbook.classbook.subjectName }}</h2>
                 <div class="lesson-meta">
                     <span class="lesson-time">8:00 - 8:45</span>
                     <span>B4.I 2</span>
@@ -90,7 +90,7 @@
                             {{ l.s('classbook.lesson_number') }}
                         </label>
                         <div class="row">
-                            <input type="number" [placeholder]="l.s('classbook.placeholder_number')">
+                            <input type="text" [(ngModel)]="classbook.classbook.lessonNumber" readonly [placeholder]="l.s('classbook.placeholder_number')">
                             <div class="btn small">
                                 <i-tabler name="arrow-back-up-double"></i-tabler>
                             </div>
@@ -101,21 +101,21 @@
                         <label for="lessonTopic">
                             {{ l.s('classbook.lesson_topic') }}
                         </label>
-                        <input type="text" [placeholder]="l.s('classbook.placeholder_topic')">
+                        <input type="text" [(ngModel)]="classbook.classbook.topic" [placeholder]="l.s('classbook.placeholder_topic')">
                     </div>
 
                     <div class="form-group">
                         <label for="lessonNote">
                             {{ l.s('classbook.lesson_note') }}
                         </label>
-                        <textarea [placeholder]="l.s('classbook.placeholder_note')"></textarea>
+                        <textarea [(ngModel)]="classbook.classbook.note" [placeholder]="l.s('classbook.placeholder_note')"></textarea>
                     </div>
 
                     <div class="form-group">
                         <label for="lessonTeacherNote">
                             {{ l.s('classbook.lesson_teacher_note') }}
                         </label>
-                        <textarea [placeholder]="l.s('classbook.placeholder_teacher_note')"></textarea>
+                        <textarea [(ngModel)]="classbook.classbook.internalNote" [placeholder]="l.s('classbook.placeholder_teacher_note')"></textarea>
                         <small class="note">
                             {{ l.s('classbook.lesson_teacher_note_note') }}
                         </small>
@@ -161,19 +161,25 @@
                 @if (selected_tab == 1) {
                     <div class="stats-bar">
                         <div class="stat-item">
-                            <div class="stat-value">28</div>
+                            <div class="stat-value">
+                                {{ get_total_students() }}
+                            </div>
                             <div class="stat-label">
                                 {{ l.s('classbook.total_students') }}
                             </div>
                         </div>
                         <div class="stat-item">
-                            <div class="stat-value">25</div>
+                            <div class="stat-value">
+                                {{ get_present_students() }}
+                            </div>
                             <div class="stat-label">
                                 {{ l.s('classbook.present_students') }}
                             </div>
                         </div>
                         <div class="stat-item">
-                            <div class="stat-value">3</div>
+                            <div class="stat-value">
+                                {{ get_missing_students() }}
+                            </div>
                             <div class="stat-label">
                                 {{ l.s('classbook.missing_students') }}
                             </div>
@@ -195,7 +201,7 @@
 
                         }
 
-                        <div class="absence-type empty danger">
+                        <div class="absence-type empty" [class.danger]="this.selected_absence == -1" (click)="this.selected_absence = -1">
                             <i-tabler name="trash-x"></i-tabler>
                         </div>
                     </div>
@@ -203,43 +209,41 @@
                     <div class="table-header">
                         <div class="student-name"></div>
                         <div class="hours">
-                            <div class="hour" [class.active]="true">1</div>
-                            <div class="hour">2</div>
-                            <div class="hour">3</div>
-                            <div class="hour">4</div>
-                            <div class="hour">5</div>
-                            <div class="hour">6</div>
-                            <div class="hour">7</div>
-                            <div class="hour">8</div>
+                            @for (_ of [].constructor(max_hours); track $index) {
+                                <div class="hour" [class.active]="$index == selected_lesson">{{ $index + 1 }}</div>
+                            }
                         </div>
                         <div class="absence"></div>
                     </div>
 
                     <div class="students-list">
+                        @for (student of classbook.students; track $index) {
                         <div class="student-row">
                             <div class="student-name">
-                                <span class="index">1.</span>
-                                <span class="name">Student name</span>
+                                <span class="index">{{ $index + 1 }}. </span>
+                                <span class="name">{{ student.full_name }}</span>
                             </div>
                             <div class="hours">
-                                <div class="hour" [class.active]="true"></div>
-                                <div class="hour"></div>
-                                <div class="hour"></div>
-                                <div class="hour"></div>
-                                <div class="hour"></div>
-                                <div class="hour"></div>
-                                <div class="hour"></div>
-                                <div class="hour"></div>
+                                @for (_ of [].constructor(max_hours); track $index) {
+                                    <div class="hour" [class.active]="$index == selected_lesson" (click)="applyAbsence(student.student_id, $index)">
+                                        @if (student.absence[$index] != undefined) {
+                                            <div [ngClass]="['absence-type', 'ab-' + absenceConfig[student.absence[$index]].locale]">
+                                                <i-tabler [name]="absenceConfig[student.absence[$index]].icon!"></i-tabler>
+                                            </div>
+                                        }
+                                    </div>
+                                }
                             </div>
                             <div class="absence muted">
-                                0% (0 / 1)
+                                {{ student.total_absence / classbook.classbook.lessonTotal * 100 }}% ({{ student.total_absence }} / {{ classbook.classbook.lessonTotal }})
                             </div>
                         </div>
+                        }
                     </div>
                 }
 
                 @if (selected_tab == 2) {
-                    <div class="add-btn">
+                    <div class="add-btn" (click)="newHomework()">
                         <i-tabler name="plus"></i-tabler>
                         {{ l.s('classbook.add_homework') }}
                     </div>
@@ -285,7 +289,7 @@
                 }
 
                 @if (selected_tab == 3) {
-                    <div class="add-btn">
+                    <div class="add-btn" (click)="newNote()">
                         <i-tabler name="plus"></i-tabler>
                         {{ l.s('classbook.add_note') }}
                     </div>
