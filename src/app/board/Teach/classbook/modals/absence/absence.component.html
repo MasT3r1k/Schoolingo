@@ -56,23 +56,21 @@
             </label>
             <div class="value">
                 <div class="input-select">
-                    <input type="text" (click)="$event.stopPropagation();showSelect = showSelect == 'reason' ? null : 'reason'" name="inputSelect" readOnly="true" [value]="classbook.reason ? l.s('classbook.add_absence.reasons.' + classbook.reason) : ''" [placeholder]="l.s('classbook.add_absence.reasons.unknown')" />
-                    @if (showSelect == 'reason') {
-                        <div class="options">   
-                            @for (reason of getAbsenceReasons(); track $index) {
-                                <div class="option" (click)="showSelect = null;classbook.reason = reason;">
-                                    {{ l.s('classbook.add_absence.reasons.' + reason) }}
-                                </div>
-                            }
-                        </div>
-                    }
+                    <select [(ngModel)]="classbook.reason">
+                        <option value=""></option>
+                        @for (reason of getAbsenceReasons(); track $index) {
+                            <option [value]="reason">
+                                {{ l.s('classbook.add_absence.reasons.' + reason) }}
+                            </option>
+                        }
+                    </select>
                 </div>
             </div>
         </div>
 
         <div class="item">
             <label for="note" [ngClass]="{ 'error-color': errors['note'] != null }">
-                {{ l.s('classbook.lesson_note') }}
+                {{ l.s('classbook.add_absence.note') }}
                 @if (errors['note'] != null) {
                     <span class="label-error">
                         - {{ l.s(errors['note']) }}
@@ -80,7 +78,7 @@
                 }
             </label>
             <div class="value">
-                <input type="text" name="note" [(ngModel)]="classbook.note" [placeholder]="l.s('classbook.placeholder_note')">
+                <input type="text" name="note" [(ngModel)]="classbook.note" [placeholder]="l.s('classbook.add_absence.note')">
             </div>
         </div>
 

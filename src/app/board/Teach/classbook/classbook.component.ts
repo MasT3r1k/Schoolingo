@@ -91,7 +91,7 @@ export class ClassbookComponent implements OnInit {
     this.modalManager.addModal(
       'add_homework',
       {
-        title: '',
+        title: 'classbook.add_homework.title',
         closeable: true,
         items: [
           {
@@ -140,8 +140,17 @@ export class ClassbookComponent implements OnInit {
         lessonNumber: data.lessonNumber,
         lessonTotal: data.lessonTotal,
       };
-      this.classbook.students = data.students;
-    })
+
+      this.classbook.students = data.students.map((student: any) => ({
+        ...student,
+        absence: Array.isArray(student.absence)
+          ? student.absence.map((a: any) => (a?.type ?? undefined))
+          : []
+      }));
+
+      console.log(this.classbook.students);
+    });
+
 
     this.http.get(
       `${Config.API_URL}/v1/classbook/homework?groupId=0&subjectId=0`,
@@ -153,11 +162,14 @@ export class ClassbookComponent implements OnInit {
   // === Apply Absence ===
   public applyAbsence(student_id: number, hour: number): void {
     if (this.selected_lesson !== hour) return;
+    this.classbook.selectedHour = hour;
     this.classbook.selectedAbsence = this.selected_absence;
     this.classbook.selectedStudent = student_id;
-    this.modalManager.openModal('add_absence');
-    return;
-    this.classbook.students.find((student) => student.student_id == student_id).absence[hour] = this.selected_absence == -1 ? undefined : this.selected_absence;
+    if (this.absenceConfig[this.selected_absence] && this.absenceConfig[this.selected_absence].reasons.length) {
+      this.modalManager.openModal('add_absence');
+      return;
+    }
+    this.classbook.applyAbsence();
   }
 
   public is_loading = false;

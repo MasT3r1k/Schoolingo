@@ -75,6 +75,6 @@ export class ClassbookAbsenceComponent {
       return;
     }
 
-    // this.classbook.applyAbsence.next(true);
+    this.classbook.applyAbsence();
   }
 }
