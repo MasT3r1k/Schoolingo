@@ -11,6 +11,12 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { NoteModal } from './modals/add-note/note';
 import { Classbook } from '@Schoolingo/classbook';
 import { ClassbookAbsenceComponent } from './modals/absence/absence.component';
+import { BehaviorSubject } from 'rxjs';
+import { Authentication } from '@Schoolingo/authentication';
+import moment from 'moment';
+import { TimetableHours } from '../timetable/timetable.component';
+import { School } from '@Schoolingo/school';
+import { Utils } from '@Schoolingo/utils';
 
 interface ClassbookLesson {
   subjectName: string;
@@ -29,9 +35,12 @@ interface ClassbookLesson {
 export class ClassbookComponent implements OnInit {
   private http = inject(HttpClient);
   private modalManager = inject(ModalManager);
+  private school = inject(School);
+  private u = inject(Authentication);
   public l = inject(Locale);
   public absenceConfig = absence;
   public classbook = inject(Classbook);
+  Utils = Utils;
 
   public max_hours = 8;
 
@@ -41,11 +50,11 @@ export class ClassbookComponent implements OnInit {
   }
 
   public get_present_students(): number {
-    return this.classbook.students.filter((student) => student.absence[this.selected_lesson] == undefined).length;
+    return this.classbook.students.filter((student) => student.absence[this.selected_lesson.getValue()] == undefined).length;
   }
 
   public get_missing_students(): number {
-    return this.classbook.students.filter((student) => student.absence[this.selected_lesson] !== undefined).length;
+    return this.classbook.students.filter((student) => student.absence[this.selected_lesson.getValue()] !== undefined).length;
   }
 
   // === List lessons ===
@@ -83,11 +92,51 @@ export class ClassbookComponent implements OnInit {
     this.modalManager.openModal('add_note')
   }
 
-  public selected_lesson = 0;
+  public selected_lesson = new BehaviorSubject<number>(0);
   public selected_tab = 0;
   public selected_absence = 0;
+  public timetable: any[] = [];
+  public selected_date = moment().format('YYYY-MM-DD');
+  public hours: TimetableHours[] = [];
+
+  public updateLessons(): void {
+    this.http.post(
+      `${Config.API_URL}/v1/timetable`,
+      {
+        type: "person",
+        id: this.u.getId(),
+        time: this.selected_date
+      },
+      { withCredentials: true }
+    )
+    .subscribe((data: any) => {
+      this.timetable = (data.timetable as any[]).filter((tt) => tt.day == moment(this.selected_date).isoWeekday());
+
+      let schoolConfig = this.school.config.getValue();
+      let time = moment()
+      .set('hours', schoolConfig?.startHour!)
+      .set('minutes', schoolConfig?.startMinute!);
+
+      for(let i = 1;i <= this.max_hours;i++) {
+        let startHour = time.clone();
+        time.add(schoolConfig?.lessonHour, 'minutes');
+        this.hours.push(
+          {
+            startMoment: startHour.clone(),
+            start: startHour.format('HH:mm'),
+            endMoment: time.clone(),
+            end: time.format('HH:mm')
+          }
+        );
+        let customBreak = schoolConfig?.breaks.filter((_) => _.hour == i + 1)[0]?.minutes;
+        time.add(customBreak || schoolConfig?.breakTime, 'minutes');
+      }
+    })
+  }
 
   ngOnInit(): void {
+    this.updateLessons();
+
     this.modalManager.addModal(
       'add_homework',
       {
@@ -105,7 +154,7 @@ export class ClassbookComponent implements OnInit {
     this.modalManager.addModal(
       'add_note',
       {
-        title: '',
+        title: 'classbook.add_note.title',
         closeable: true,
         items: [
           {
@@ -130,45 +179,58 @@ export class ClassbookComponent implements OnInit {
       }
     )
 
-    this.http.get(
-      `${Config.API_URL}/v1/classbook/lesson?groupId=10&date=2025-11-18&hour=2&subjectId=6`,
-      { withCredentials: true }
-    )
-    .subscribe((data: any) => {
-      this.classbook.classbook = {
-        ...data.classbook,
-        lessonNumber: data.lessonNumber,
-        lessonTotal: data.lessonTotal,
-      };
+    this.selected_lesson.subscribe(() => {
+      this.http.get(
+        `${Config.API_URL}/v1/classbook/lesson?groupId=${this.timetable[this.selected_lesson.getValue()].groupId}&date=${this.selected_date}&hour=${this.selected_lesson.getValue()}`,
+        { withCredentials: true }
+      )
+      .subscribe((data: any) => {
+        this.classbook.classbook = {
+          ...data.classbook,
+          lessonNumber: data.lessonNumber,
+          lessonTotal: data.lessonTotal,
+          classService: data.classService
+        };
 
-      this.classbook.students = data.students.map((student: any) => ({
-        ...student,
-        absence: Array.isArray(student.absence)
-          ? student.absence.map((a: any) => (a?.type ?? undefined))
-          : []
-      }));
+        this.classbook.students = data.students.map((student: any) => ({
+          ...student,
+          absence: Array.isArray(student.absence)
+            ? student.absence.map((a: any) => (a?.type ?? undefined))
+            : [],
+          absence_data: student.absence
+        }));
+      });
 
-      console.log(this.classbook.students);
+      this.http.get<any[]>(
+        `${Config.API_URL}/v1/classbook/homework?groupId=${this.timetable[this.selected_lesson.getValue()].groupId}&subjectId=${this.timetable[this.selected_lesson.getValue()].subjectId}`,
+        { withCredentials: true }
+      )
+      .subscribe((data: any[]) => {
+        this.classbook.homeworks = data;
+      })
+
+      this.http.get<any[]>(
+        `${Config.API_URL}/v1/classbook/notes?groupId=${this.timetable[this.selected_lesson.getValue()].groupId}&subjectId=${this.timetable[this.selected_lesson.getValue()].subjectId}`,
+        { withCredentials: true }
+      )
+      .subscribe((data: any[]) => {
+        this.classbook.notes = data;
+      })
     });
-
-
-    this.http.get(
-      `${Config.API_URL}/v1/classbook/homework?groupId=0&subjectId=0`,
-      { withCredentials: true }
-    )
-    .subscribe((data) => console.log(data))
   }
 
   // === Apply Absence ===
   public applyAbsence(student_id: number, hour: number): void {
-    if (this.selected_lesson !== hour) return;
+    if (this.selected_lesson.getValue() !== hour) return;
     this.classbook.selectedHour = hour;
     this.classbook.selectedAbsence = this.selected_absence;
     this.classbook.selectedStudent = student_id;
+
     if (this.absenceConfig[this.selected_absence] && this.absenceConfig[this.selected_absence].reasons.length) {
       this.modalManager.openModal('add_absence');
       return;
     }
+
     this.classbook.applyAbsence();
   }
 

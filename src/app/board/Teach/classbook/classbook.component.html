@@ -5,21 +5,21 @@
             {{ l.s('sidebar.teach.classbook') }}
         </h2>
         <div class="flex-items">
-            <input type="date">
+            <input type="date" [(ngModel)]="selected_date" (ngModelChange)="updateLessons()">
         </div>
     </div>
 
     <div class="card-body">
         <div class="lessons-list">
             @if (!is_loading) {
-                @for (lesson of lessons; track $index) {
-            <div class="lesson-card" [class.active]="selected_lesson == $index" (click)="selected_lesson = $index">
+                @for (lesson of timetable; track $index) {
+            <div class="lesson-card" [class.active]="selected_lesson.getValue() == $index" (click)="selected_lesson.next($index)">
                 <div class="lesson-index">
                     {{ $index + 1 }}
                 </div>
                 <div class="lesson-info">
                     <div class="lesson-subject">
-                        <span>{{ lesson.subjectName }}</span>
+                        <span>{{ lesson.subjectName || '' }}</span>
                         <div class="lesson-icons">
                             @if (lesson.lockClassAfterLesson) {
                                 <i-tabler name="key"></i-tabler>
@@ -27,9 +27,9 @@
                         </div>
                     </div>
                     <div class="lesson-meta">
-                        <span class="lesson-time" style="flex: 0 0 100px;">8:00 - 8:45</span>
-                        <span style="flex: 0 0 72px;">{{ `${lesson.className} ${lesson.groupName ? lesson.groupName : ''}` }}</span>
-                        <span class="lesson-muted" style="flex: 1">{{ lesson.topic }}</span>
+                        <span class="lesson-time" style="flex: 0 0 100px;">{{ hours[$index].start }} - {{ hours[$index].end }}</span>
+                        <span style="flex: 0 0 72px;">{{ `${lesson.className || ''} ${lesson.groupName ? lesson.groupName : ''}` }}</span>
+                        <span class="lesson-muted" style="flex: 1">{{ lesson.topic || '' }}</span>
                     </div>
                 </div>
             </div>
@@ -55,15 +55,16 @@
         </div>
 
         <div class="lesson-details">
+            @if (classbook.classbook) {
             <div class="header" [class.skeleton]="is_lesson_loading"> 
-                <h2>{{ classbook.classbook.subjectName }}</h2>
+                <h2>{{  classbook.classbook ? classbook.classbook.subjectName : '' }}</h2>
                 <div class="lesson-meta">
-                    <span class="lesson-time">8:00 - 8:45</span>
-                    <span>B4.I 2</span>
-                    <span>24. 7. 2025 (Středa)</span>
+                    <span class="lesson-time">{{ hours[selected_lesson.getValue()].start }} - {{ hours[selected_lesson.getValue()].end }}</span>
+                    <span>{{ classbook.classbook ? classbook.classbook.className : '' }}</span>
+                    <span>{{ classbook.classbook ? Utils.formatDateShort(classbook.classbook.date) : '' }} ({{ l.s('days.' + Utils.makeMoment(classbook.classbook.date).day()) }})</span>
                 </div>
                 <div class="lesson-meta lesson-muted">
-                {{ l.s('classbook.class_service') }}: Adam Adamec, Babeta Borská
+                {{ l.s('classbook.class_service') }}: {{ classbook.classbook.classService }}
                 </div>
             </div>
             <div class="lesson-body">
@@ -89,12 +90,7 @@
                         <label for="lessonNumber">
                             {{ l.s('classbook.lesson_number') }}
                         </label>
-                        <div class="row">
-                            <input type="text" [(ngModel)]="classbook.classbook.lessonNumber" readonly [placeholder]="l.s('classbook.placeholder_number')">
-                            <div class="btn small">
-                                <i-tabler name="arrow-back-up-double"></i-tabler>
-                            </div>
-                        </div>
+                        <input type="text" [(ngModel)]="classbook.classbook.lessonNumber" readonly [placeholder]="l.s('classbook.placeholder_number')">
                     </div>
 
                     <div class="form-group">
@@ -220,7 +216,7 @@
                         <div class="student-name"></div>
                         <div class="hours">
                             @for (_ of [].constructor(max_hours); track $index) {
-                                <div class="hour" [class.active]="$index == selected_lesson">{{ $index + 1 }}</div>
+                                <div class="hour" [class.active]="$index == selected_lesson.getValue()">{{ $index + 1 }}</div>
                             }
                         </div>
                         <div class="absence"></div>
@@ -235,7 +231,7 @@
                             </div>
                             <div class="hours">
                                 @for (_ of [].constructor(max_hours); track $index) {
-                                    <div class="hour" [class.active]="$index == selected_lesson" (click)="applyAbsence(student.student_id, $index)">
+                                    <div class="hour" [class.active]="$index == selected_lesson.getValue()" (click)="applyAbsence(student.student_id, $index)">
                                         @if (student.absence[$index] != undefined) {
                                             <div [ngClass]="['absence-type', 'ab-' + absenceConfig[student.absence[$index]].locale]">
                                                 <i-tabler [name]="absenceConfig[student.absence[$index]].icon!"></i-tabler>
@@ -301,38 +297,18 @@
                 @if (selected_tab == 3) {
                     <div class="add-btn" (click)="newNote()">
                         <i-tabler name="plus"></i-tabler>
-                        {{ l.s('classbook.add_note') }}
+                        {{ l.s('classbook.add_note_btn') }}
                     </div>
                     <div class="notes-list">
+                        @for(note of classbook.notes;track $index) {
                         <div class="note-item">
                             <div class="note-header">
-                                <div class="note-title">Vypočítat příklady 1-15</div>
-                                <div class="note-date">18. 11. 2025</div>
+                                <div class="note-title">{{ note.title || l.s('classbook.add_note.no_title') }}</div>
+                                <div class="note-date">{{ Utils.formatDateShort(note.created_at) }}</div>
                             </div>
-                            <div class="note-desc">
-                                Vyřešit kvadratické rovnice ze sbírky, strana 45. Použít diskriminant a zkontrolovat výsledky dosazením.
-                            </div>
+                            <div class="note-desc">{{ note.note }}</div>
                         </div>
-
-                        <div class="note-item">
-                            <div class="note-header">
-                                <div class="note-title">Grafické znázornění funkcí</div>
-                                <div class="note-date">15. 11. 2025</div>
-                            </div>
-                            <div class="note-desc">
-                                Nakreslit grafy 5 lineárních funkcí do milimetrového papíru. Označit průsečíky s osami.
-                            </div>
-                        </div>
-
-                        <div class="note-item">
-                            <div class="note-header">
-                                <div class="note-title">Příprava na písemnou práci</div>
-                                <div class="note-date">12. 11. 2025</div>
-                            </div>
-                            <div class="note-desc">
-                                Zopakovat látku z kapitol 3-5. Zaměřit se na řešení rovnic a nerovnic.
-                            </div>
-                        </div>
+                        }
                     </div>
                 }
                 } @else {
@@ -341,6 +317,7 @@
                     </div>
                 }
             </div>
+            }
         </div>
     </div>
 </div>

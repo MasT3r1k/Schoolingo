@@ -15,6 +15,9 @@ export class Classbook {
     public classbook: any;
     public students: any[] = [];
 
+    public homeworks: any[] = [];
+    public notes: any[] = [];
+
     public getStudent(student_id: number | null): any {
         if (student_id == null) return {};
         return this.students.find((student) => student.student_id == student_id);

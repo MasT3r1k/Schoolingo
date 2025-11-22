@@ -1,4 +1,5 @@
-import { Component } from "@angular/core";
+import { Component, inject } from "@angular/core";
+import { Locale } from "@Schoolingo/locale";
 
 @Component({
     imports: [],
@@ -7,5 +8,6 @@ import { Component } from "@angular/core";
 })
 
 export class HomeworkModal {
-
+    public l = inject(Locale);
+    public errors: any = {};
 }

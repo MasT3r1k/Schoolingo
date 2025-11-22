@@ -1,0 +1,20 @@
+<div class="form-group">
+    <label for="title">{{ l.s('classbook.add_note.note_title') }}</label>
+    <input type="text" [(ngModel)]="title" name="title" id="title">
+</div>
+
+<div class="form-group">
+    <label for="note" [class.error-color]="errors.note">
+        {{ l.s('classbook.add_note.note') }}
+        @if(errors.note) {
+            <span class="label-error"> - {{ l.s(errors.note) }}</span>
+        }
+    </label>
+    <textarea name="note" [(ngModel)]="note" id="note"></textarea>
+</div>
+
+<div class="form-group">
+    <div class="btn primary" (click)="newNote()">
+        {{ l.s('classbook.add_note.save_note') }}
+    </div>
+</div>
