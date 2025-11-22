@@ -1,200 +1,304 @@
-.multi-card-wrapper {
+.send-container {
     display: flex;
     flex-direction: row;
-    gap: 1rem;
+    gap: 1.5rem;
+    height: 100%;
+    overflow: hidden;
 }
 
-.multi-card-wrapper > .card:first-child {
+.main-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.sidebar {
+    flex: 0 0 350px;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.card {
+    background: var(--surface);
+    border-radius: var(--radius);
+    border: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    height: 100%;
+}
+
+.card-header {
+    padding: 1.5rem;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: var(--surface);
+}
+
+.card-body {
+    padding: 1.5rem;
+    overflow-y: auto;
     flex: 1;
 }
 
-.multi-card-wrapper > .card:last-child {
-    flex: 0 0 400px;
+.form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
 }
 
-.items {
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.form-group label {
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--text-muted);
+}
+
+.custom-select {
+    position: relative;
+    cursor: pointer;
+}
+
+.selected-value {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.options-dropdown {
+    position: absolute;
+    top: calc(100% + 4px);
+    left: 0;
+    right: 0;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    z-index: 50;
+    max-height: 200px;
+    overflow-y: auto;
+}
+
+.option {
+    padding: .5rem .75rem;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.option:hover {
+    background: var(--surface-2);
+}
+
+
+textarea {
+    min-height: 200px;
+    resize: vertical;
+}
+
+.actions {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.privacy-note {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.875rem;
+    color: var(--text-muted);
+}
+
+/* Sidebar Styles */
+.sidebar-tabs {
+    padding: 1rem;
+    border-bottom: 1px solid var(--border);
+}
+
+.sidebar-content {
+    flex: 1;
+    overflow: hidden;
     display: flex;
     flex-direction: column;
 }
 
-.items > .item {
+.receivers-panel {
     display: flex;
     flex-direction: column;
-    margin-bottom: 1rem;
-    padding: 2px;
+    height: 100%;
 }
 
-.items > .item > .value {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
+.search-box {
+    padding: 1rem;
+    position: relative;
 }
 
-/* Select-row */
-.row-selectors {
-    display: flex;
-    flex-direction: row;
-}
-
-.select-row {
-    display: flex;
-    flex-direction: row;
-    margin-right: 1rem;
-}
-
-.select-row > .select-item {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    transition: all .3s;
-    user-select: none;
-}
-
-.select-row > .select-item.active {
-    background-color: var(--primary);
-    color: #fff;
-}
-
-.select-row > .select-item i-tabler {
-    margin-right: .5rem;
+.search-box i-tabler {
+    position: absolute;
+    left: 1.75rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--text-muted);
     width: 18px;
     height: 18px;
 }
 
-/* Select */
-.input-select {
-    display: flex;
-    flex-direction: column;
-    position: relative;
-    width: 100%;
+.search-box input {
+    padding-left: 2.5rem;
 }
 
-.input-select > input { cursor: pointer }
-
-.input-select > .options {
-    display: flex;
-    flex-direction: column;
-    position: absolute;
-    top: 100%;
-    width: 100%;
-    background-color: var(--elevated);
-    z-index: 99999;
-    overflow-y: auto;
-    max-height: 300px;
-}
-
-.input-select > .options > .option {
-    padding: 8px;
-    border: 1px solid var(--border);
-    cursor: pointer;
-}
-
-textarea {
-    min-height: 350px;
-    height: 350px;
-    max-height: 350px;
-}
-
-.alerts { width: 100% }
-
-.receivers {
-    display: flex;
-    flex-direction: column;
-    gap: .25rem;
-    overflow-y: auto;
+.receivers-list {
     flex: 1;
+    overflow-y: auto;
+    padding: 0 1rem;
 }
 
-.receivers > .receiver {
+.receiver-item {
     display: flex;
-    flex-direction: row;
     align-items: center;
-    gap: 1rem;
-    padding: 8px 1rem;
+    gap: 0.75rem;
+    padding: 0.75rem;
+    border-radius: var(--radius);
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.receiver-item:hover {
+    background: var(--surface-2);
+}
+
+.receiver-item.active {
+    background: var(--primary-50);
+}
+
+.checkbox {
+    width: 20px;
+    height: 20px;
+    border: 2px solid var(--border);
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+}
+
+.checkbox.checked {
+    background: var(--primary);
+    border-color: var(--primary);
+    color: white;
+}
+
+.checkbox i-tabler {
+    width: 14px;
+    height: 14px;
+}
+
+.receiver-info {
+    display: flex;
+    flex-direction: column;
+}
+
+.receiver-info .name {
+    font-weight: 500;
+    color: var(--text);
+}
+
+.receiver-info .role {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+}
+
+.selected-summary {
+    padding: 1rem;
+    background: var(--surface-2);
+    border-top: 1px solid var(--border);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: pointer;
+    font-weight: 500;
+}
+
+.options-section {
+    padding: 1rem;
+    border-top: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.option-toggle {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.5rem;
     cursor: pointer;
     border-radius: var(--radius);
-    transition: background-color .3s;
 }
 
-.receivers > .receiver:hover {
-    background-color: var(--hover-bg);
+.option-toggle:hover {
+    background: var(--surface-2);
 }
 
-.receivers > .receiver.active {
-    background-color: var(--message-info-bg);
-}
-
-.receivers > .receiver > .select {
-    width: 16px;
-    height: 16px;
-    border-radius: 4px;
+.toggle-checkbox {
+    width: 18px;
+    height: 18px;
     border: 2px solid var(--border);
-    display: flex;
-    justify-content: center;
-    align-items: center;
+    border-radius: 4px;
 }
 
-.receivers > .receiver > .select.selected {
-    background-color: var(--primary);
+.toggle-checkbox.checked {
+    background: var(--primary);
     border-color: var(--primary);
-    color: #fff;
 }
 
-.receivers > .receiver > .name {
-    width: 100%;
+.upload-zone {
+    margin: 1rem;
+    border: 2px dashed var(--border);
+    border-radius: var(--radius);
+    padding: 2rem;
     display: flex;
     flex-direction: column;
-}
-
-.receivers > .receiver .role {
-    font-size: 14px;
+    align-items: center;
+    gap: 0.5rem;
     color: var(--text-muted);
-    opacity: .7;
-}
-
-.btn-upload {
-    border: 0.125rem dashed hsla(223, 10%, 50%, 0.4);
-    flex: 1;
-    padding: 0.375rem 2rem;
-    background-color: transparent;
-    border-radius: 0.25rem;
-    font-size: 15px;
+    cursor: pointer;
     position: relative;
+    transition: all 0.2s;
 }
 
-.btn-upload:hover {
-    background-color: hsla(223, 10%, 60%, 0.1);
+.upload-zone:hover {
+    border-color: var(--primary);
+    background: var(--primary-50);
+    color: var(--primary);
 }
 
-.btn-upload input[type='file'] {
-    appearance: none;
-    visibility: hidden;
+.upload-zone input {
     position: absolute;
-    width: 100%;
-    height: 100%;
-    top: 0;
-    left: 0;
+    inset: 0;
+    opacity: 0;
+    cursor: pointer;
 }
 
-.selected-receivers:not(.active) .list-selected-receivers {
-    display: none;
+.file-list {
+    padding: 0 1rem;
 }
 
-.selected-receivers.active .list-selected-receivers {
-    padding-block: 1rem;
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 100%;
-    z-index: 50;
-    background-color: var(--surface);
-}
-.selected-receivers .btn {
-    z-index: 75;
-    position: relative;
-}
-
-.card.card-hidden {
-    display: none;
+.file-item {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.75rem;
+    background: var(--surface-2);
+    border-radius: var(--radius);
+    margin-bottom: 0.5rem;
 }

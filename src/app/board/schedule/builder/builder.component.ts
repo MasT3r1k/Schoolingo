@@ -8,7 +8,8 @@ import { ScheduleBuilder } from '@Schoolingo/schedule_builder';
 import { AddSubjectComponent } from '../add-subject/add-subject.component';
 import { AddEventComponent } from '../add-event/add-event.component';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import {CdkDrag} from '@angular/cdk/drag-drop';
+import {CdkDrag, CdkDragDrop, moveItemInArray} from '@angular/cdk/drag-drop';
+import { NumberSymbol } from '@angular/common';
 
 @Component({
   selector: 'app-builder',
@@ -17,6 +18,7 @@ import {CdkDrag} from '@angular/cdk/drag-drop';
   styleUrl: './builder.component.css'
 })
 export class BuilderComponent implements OnInit {
+  public alerts: any = {};
   public l = inject(Locale);
   public scheduleBuilder = inject(ScheduleBuilder);
   private http = inject(HttpClient);
@@ -98,6 +100,20 @@ export class BuilderComponent implements OnInit {
       }
       console.log(data)
     })
+  }
+
+  public clearTimetable(): void {
+    this.scheduleBuilder.subjects = [];
+    this.scheduleBuilder.isTimetableLoading = false;
+    this.scheduleBuilder.isSubjectsLoading = false;
+  }
+
+  public openSettings(): void {
+    this.modalManager.openModal('schedule_settings');
+  }
+
+  public onDrop(event: DragEvent, index: number, index2: number): void {
+    moveItemInArray(this.scheduleBuilder.subjects, index, index2);
   }
 
   public selectClass(class_id: number): void {

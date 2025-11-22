@@ -1,1 +1,80 @@
-<p>noticeboard works!</p>
+<div class="noticeboard-container">
+    <div class="feed-column">
+        <div class="feed-header">
+            <h2>{{ l.s('sidebar.messages.noticeboard') }}</h2>
+            <button class="btn primary">
+                <i-tabler name="plus"></i-tabler>
+                {{ l.s('messages.new_announcement') }}
+            </button>
+        </div>
+
+        <div class="announcements-list">
+            @for (post of announcements; track post.id) {
+            <div class="post-card">
+                <div class="post-header">
+                    <div class="author-info">
+                        <div class="avatar" [class.teacher]="post.author.role === 'teacher'"
+                            [class.director]="post.author.role === 'director'">
+                            {{ getInitials(post.author.name) }}
+                        </div>
+                        <div class="meta">
+                            <span class="name">{{ post.author.name }}</span>
+                            <span class="role">{{ l.s('roles.' + post.author.role) }}</span>
+                            <span class="dot">•</span>
+                            <span class="date">{{ post.date | date:'medium' }}</span>
+                        </div>
+                    </div>
+                    <button class="btn icon-only">
+                        <i-tabler name="dots"></i-tabler>
+                    </button>
+                </div>
+
+                <div class="post-content">
+                    {{ post.content }}
+                </div>
+
+                @if (post.attachments?.length) {
+                <div class="attachments-list">
+                    @for (file of post.attachments; track $index) {
+                    <div class="attachment-item">
+                        <i-tabler [name]="file.type === 'image' ? 'photo' : 'file-text'"></i-tabler>
+                        <span>{{ file.name }}</span>
+                    </div>
+                    }
+                </div>
+                }
+
+                <div class="post-actions">
+                    <button class="action-btn">
+                        <i-tabler name="heart"></i-tabler>
+                        <span>{{ post.likes }}</span>
+                    </button>
+                    <button class="action-btn">
+                        <i-tabler name="message-circle"></i-tabler>
+                        <span>{{ post.comments }}</span>
+                    </button>
+                    <button class="action-btn">
+                        <i-tabler name="share"></i-tabler>
+                    </button>
+                </div>
+            </div>
+            }
+        </div>
+    </div>
+
+    <div class="sidebar-column">
+        <div class="sidebar-card">
+            <h3>{{ l.s('messages.pinned') }}</h3>
+            <div class="empty-placeholder">
+                {{ l.s('messages.no_pinned') }}
+            </div>
+        </div>
+
+        <div class="sidebar-card">
+            <h3>{{ l.s('messages.trending') }}</h3>
+            <div class="empty-placeholder">
+                {{ l.s('messages.no_trending') }}
+            </div>
+        </div>
+    </div>
+</div>

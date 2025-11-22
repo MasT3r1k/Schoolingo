@@ -1,0 +1,78 @@
+<div class="calendar-container">
+    <div class="calendar-header">
+        <div class="header-left">
+            <h2>{{ l.s('sidebar.teach.timetable') }}</h2>
+            <div class="date-controls">
+                <button class="btn icon-only" (click)="previousWeek()">
+                    <i-tabler name="chevron-left"></i-tabler>
+                </button>
+                <span class="current-date">
+                    {{ weekDays[0] | date:'d. M.' }} - {{ weekDays[4] | date:'d. M. yyyy' }}
+                </span>
+                <button class="btn icon-only" (click)="nextWeek()">
+                    <i-tabler name="chevron-right"></i-tabler>
+                </button>
+            </div>
+        </div>
+        <div class="header-right">
+            <button class="btn primary">
+                <i-tabler name="plus"></i-tabler>
+                {{ l.s('schedule.builder.add_event') }}
+            </button>
+            <div class="view-toggle">
+                <button class="btn active">Týden</button>
+                <button class="btn">Měsíc</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="calendar-grid-wrapper custom-scrollbar">
+        <div class="calendar-grid">
+            <!-- Time Column -->
+            <div class="time-column">
+                <div class="header-cell empty"></div>
+                @for (hour of hours; track hour) {
+                <div class="time-slot">
+                    <span>{{ hour }}:00</span>
+                </div>
+                }
+            </div>
+
+            <!-- Days Columns -->
+            @for (day of weekDays; track day) {
+            <div class="day-column">
+                <div class="header-cell day-header" [class.today]="day.toDateString() === currentDate.toDateString()">
+                    <span class="day-name">{{ day | date:'EEEE' }}</span>
+                    <span class="day-number">{{ day | date:'d' }}</span>
+                </div>
+
+                <div class="day-content">
+                    <!-- Grid Lines -->
+                    @for (hour of hours; track hour) {
+                    <div class="grid-cell"></div>
+                    }
+
+                    <!-- Events -->
+                    @for (event of getEventsForDay(day); track event.id) {
+                    <div class="calendar-event" [style]="getEventStyle(event)" [class.exam]="event.type === 'exam'">
+                        <div class="event-time">
+                            {{ event.start | date:'HH:mm' }} - {{ event.end | date:'HH:mm' }}
+                        </div>
+                        <div class="event-title">{{ event.title }}</div>
+                        @if (event.location) {
+                        <div class="event-location">
+                            <i-tabler name="map-pin" style="width: 12px; height: 12px;"></i-tabler>
+                            {{ event.location }}
+                        </div>
+                        }
+                    </div>
+                    }
+
+                    <!-- Current Time Indicator (if today) -->
+                    <!-- Logic to position this would be added here -->
+                </div>
+            </div>
+            }
+        </div>
+    </div>
+</div>

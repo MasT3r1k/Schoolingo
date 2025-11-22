@@ -1,592 +1,176 @@
-<div class="multi-card-wrapper">
-  <div class="card" (click)="showSelect = null">
-    <div class="card-top">
-      @if (alerts['main']) {
-      <alert [alert]="alerts['main']" class="mb"></alert>
-      }
-    </div>
-    <div class="card-header mb">
-      <h2>
-        {{
-          l.s(
-            ["sidebar.messages.send", "messages.write_message_on_noticeboard"][
-              selectedTab.getValue()
-            ]
-          )
-        }}
-      </h2>
-      <div class="flex-items">
-        <schoolingo-tabs
-          [options]="[
-            'messages.classic_message',
-            'sidebar.messages.noticeboard'
-          ]"
-          [value]="selectedTab"
-        ></schoolingo-tabs>
-        <div
-          class="btn"
-          style="padding: 8px 16px"
-          (click)="isHiddenRightCard = !isHiddenRightCard"
-        >
-          <i-tabler
-            style="margin: 0"
-            [name]="isHiddenRightCard ? 'chevron-left' : 'chevron-right'"
-          ></i-tabler>
+<div class="send-container">
+  <!-- Main Content Area -->
+  <div class="main-content">
+    <div class="card">
+      <div class="card-header">
+        <div class="header-content">
+          <h2>{{ l.s("sidebar.messages.send") }}</h2>
+          <p>{{ l.s("messages.send_description") }}</p>
         </div>
       </div>
-    </div>
 
-    <div class="card-body">
-      @if (messageManager.types && messageManager.types.length) { @if
-      (messageManager.types[messageManager.messageType.getValue()]) {
-      <div class="items">
-        <div class="item">
-          <label for="inputSelect">
-            {{ l.s("messages.type") }}
-          </label>
-          <div class="value">
-            <div class="input-select">
-              <input
-                type="text"
-                (click)="
-                  $event.stopPropagation();
-                  showSelect =
-                    showSelect == 'messagetype' ? null : 'messagetype'
-                "
-                name="inputSelect"
-                readOnly
-                [value]="
-                  l.s(
-                    'messages.types.' +
-                      messageManager.types[
-                        messageManager.messageType.getValue()
-                      ].label
-                  )
-                "
-              />
-
+      <div class="card-body">
+        <!-- Message Type Selection -->
+        @if (messageManager.types && messageManager.types.length) {
+          <div class="form-group">
+            <label>{{ l.s("messages.type") }}</label>
+            <div class="custom-select" (click)="$event.stopPropagation(); showSelect = showSelect == 'messagetype' ? null : 'messagetype'">
+              <div class="selected-value">
+                {{ l.s('messages.types.' + messageManager.types[messageManager.messageType.getValue()].label) }}
+                <i-tabler name="chevron-down"></i-tabler>
+              </div>
               @if (showSelect == 'messagetype') {
-              <div class="options">
-                @for (type of getMessageTypes(); track $index) {
-                <div
-                  class="option"
-                  (click)="
-                    showSelect = null;
-                    messageManager.messageType.next(
-                      messageManager.types.indexOf(type)
-                    )
-                  "
-                >
-                  {{ l.s("messages.types." + type.label) }}
+                <div class="options-dropdown">
+                  @for (type of getMessageTypes(); track $index) {
+                    <div class="option" (click)="$event.stopPropagation();showSelect = null; messageManager.messageType.next(messageManager.types.indexOf(type))">
+                      {{ l.s("messages.types." + type.label) }}
+                    </div>
+                  }
                 </div>
-                } @empty {
-                <div class="option">
-                  {{ l.s("messages.no_types_available") }}
-                </div>
-                }
-              </div>
               }
             </div>
           </div>
-        </div>
 
-        @if (checkMessageType([messageTypes.MESSAGE])) {
-        <div class="item">
-          <label
-            for="topic"
-            [ngClass]="{ 'error-color': alerts['topic'] != null }"
-          >
-            {{ l.s("messages.topic") }}
-            @if (alerts['topic'] != null) {
-            <span class="label-error"> - {{ l.s(alerts["topic"].text) }} </span>
-            }
-          </label>
-          <div class="value">
-            <input
-              type="text"
-              name="topic"
-              [(ngModel)]="messageManager.topic"
-              [placeholder]="l.s('messages.topic')"
-            />
-          </div>
-        </div>
-        } @if (checkMessageType([messageTypes.HOMEWORK])) {
-        <div class="item">
-          <label for="homework">
-            {{ l.s("homeworks.homework") }}
-          </label>
-          <div class="value">
-            @if (homeworks.list.length > 0) {
-            <div class="input-select">
-              <input
-                type="text"
-                (click)="
-                  $event.stopPropagation();
-                  showSelect = showSelect == 'homework' ? null : 'homework'
-                "
-                name="inputSelect"
-                readOnly="true"
-                [value]="messageManager.selectedHomework.getValue()"
-              />
-              @if (showSelect == 'homework') {
-              <div class="options">
-                @for (type of []; track $index) {
-                <div class="option" (click)="showSelect = null">
-                  {{ "123" }}
-                </div>
-                }
-              </div>
-              }
-            </div>
-            } @else {
-            <div class="message error" style="width: 100%">
-              {{ l.s("homeworks.no_homework_to_submit") }}
-            </div>
-            }
-          </div>
-        </div>
-        } @if (checkMessageType([messageTypes.EXCUSESTUDENT])) {
-        <div class="item">
-          <label for="selectReceiver">
-            {{ l.s("messages.student") }}
-          </label>
-          <div class="value">
-            @if (perms.checkPermission(['parent']) &&
-            auth.getUser().children.length) {
-            <div class="input-select">
-              <input
-                type="text"
-                style="cursor: pointer; user-select: none"
-                [value]="
-                  messageManager.selectedChild != null
-                    ? auth.getUser().children[messageManager.selectedChild]
-                        .firstName +
-                      ' ' +
-                      auth.getUser().children[messageManager.selectedChild]
-                        .lastName
-                    : l.s('messages.no_child_selected')
-                "
-                name="selectReceiver"
-                readOnly
-                (click)="
-                  $event.stopPropagation();
-                  showSelect = showSelect == 'children' ? null : 'children'
-                "
-              />
-              @if (showSelect == 'children') {
-              <div class="options">
-                @for (child of auth.getUser().children; track $index) {
-                <div
-                  class="option"
-                  (click)="
-                    showSelect = null; messageManager.selectedChild = $index
-                  "
-                >
-                  {{ child.firstName + " " + child.lastName }}
-                </div>
-                }
-              </div>
-              }
-            </div>
-            } @if (perms.checkPermission([['student', 'older:18']])) {
-            <input
-              type="text"
-              style="cursor: pointer"
-              class="disabled"
-              [value]="l.s('messages.excuse_myself')"
-              name="selectReceiver"
-              readOnly
-            />
-            }
-          </div>
-        </div>
-
-        <div class="item">
-          <label>
-            {{ l.s("messages.excuse_label") }}
-          </label>
-
-          <div class="value">
-            <div style="width: 50%">
-              <label for="from">
-                {{ l.s("messages.from") }}
+          <!-- Topic Input -->
+          @if (checkMessageType([messageTypes.MESSAGE])) {
+            <div class="form-group">
+              <label [class.error-text]="alerts['topic']">
+                {{ l.s("messages.topic") }}
+                @if (alerts['topic']) { <span>- {{ l.s(alerts["topic"].text) }}</span> }
               </label>
-              <input
-                type="text"
-                name="from"
-                [placeholder]="l.s('messages.from')"
-              />
+              <input type="text" [(ngModel)]="messageManager.topic" [placeholder]="l.s('messages.topic')" [class.input-error]="alerts['topic']">
             </div>
-
-            <div style="width: 50%">
-              <label for="to">
-                {{ l.s("messages.to") }}
-              </label>
-              <input type="text" name="to" [placeholder]="l.s('messages.to')" />
-            </div>
-          </div>
-        </div>
-        } @if (checkMessageType([messageTypes.MESSAGE]) ||
-        (checkMessageType([messageTypes.HOMEWORK]) && homeworks.list.length >
-        0)) {
-        <div class="row-selectors mb">
-          <div class="select-row">
-            <div
-              [ngClass]="{
-                'select-item': true,
-                active: messageManager.options.requireConfirmation
-              }"
-              (click)="
-                messageManager.options.requireConfirmation =
-                  !messageManager.options.requireConfirmation
-              "
-            >
-              <i-tabler name="check"></i-tabler>
-              <span>
-                {{ l.s("messages.tags.require_confirmation") }}
-              </span>
-            </div>
-
-            @if (perms.checkPermission(["teacher"]) && getCountOfReceiverType("student") > 0 && getCountOfReceiverType("teacher") > 0) {
-            <div
-              [ngClass]="{
-                'select-item': true,
-                active: messageManager.options.copyToClassTeacher
-              }"
-              (click)="
-                messageManager.options.copyToClassTeacher =
-                  !messageManager.options.copyToClassTeacher
-              "
-            >
-              <i-tabler name="chalkboard"></i-tabler>
-              <span>
-                {{ l.s("messages.copy_classteacher") }}
-              </span>
-            </div>
-
-            <div
-                [ngClass]="{
-                    'select-item': true,
-                    active: messageManager.options.copyToParents
-                }"
-                (click)="
-                    messageManager.options.copyToParents =
-                    !messageManager.options.copyToParents
-                "
-                >
-                <i-tabler name="old"></i-tabler>
-                <span>
-                    {{ l.s("messages.copy_parents") }}
-                </span>
-            </div>
-            }
-          </div>
-
-          @if (auth.getUser() && checkMessageType([messageTypes.MESSAGE])) {
-          <div class="select-row">
-            <div
-              [ngClass]="{
-                'select-item': true,
-                active: messageManager.options.asPrincipal
-              }"
-              (click)="
-                messageManager.options.asPrincipal =
-                  !messageManager.options.asPrincipal
-              "
-            >
-              <i-tabler name="user-screen"></i-tabler>
-              <span>
-                {{ l.s("messages.as_principal") }}
-              </span>
-            </div>
-          </div>
           }
-        </div>
-        } @if (checkMessageType([messageTypes.RATESTUDENT])) {
-        <div class="item">
-          <label for="selectReceiver">
-            {{ l.s("messages.student") }}
-          </label>
-        </div>
 
-        <div class="item">
-          <label for="selectReceiver">
-            {{ l.s("messages.rating.main") }}
-          </label>
-          <div class="value">
-            <div class="input-select">
-              <input
-                type="text"
-                (click)="
-                  $event.stopPropagation();
-                  showSelect = showSelect == 'rating' ? null : 'rating'
-                "
-                name="inputSelect"
-                readonly
-                [value]="l.s('messages.rating.' + messageManager.messageRating)"
-              />
-              @if (showSelect == 'rating') {
-              <div class="options">
-                <div
-                  class="option"
-                  (click)="
-                    messageManager.messageRating = 'positive'; showSelect = null
-                  "
-                >
-                  {{ l.s("messages.rating.positive") }}
-                </div>
-                <div
-                  class="option"
-                  (click)="
-                    messageManager.messageRating = 'negative'; showSelect = null
-                  "
-                >
-                  {{ l.s("messages.rating.negative") }}
-                </div>
-              </div>
-              }
+          <!-- Message Body -->
+          <div class="form-group mt-4">
+            <label [class.error-text]="alerts['message']">
+              {{ l.s("messages.message") }}
+              @if (alerts['message']) { <span>- {{ l.s(alerts["message"].text) }}</span> }
+            </label>
+            <textarea
+              [(ngModel)]="messageManager.message"
+              [placeholder]="l.s('messages.message_placeholder')"
+              [class.input-error]="alerts['message']"
+            ></textarea>
+          </div>
+
+          <!-- Action Buttons -->
+          <div class="form-group">
+            <div class="btn primary" (click)="sendMessage()">
+              <i-tabler name="send"></i-tabler>
+              {{ l.s("messages.buttons.send_message") }}
             </div>
           </div>
-        </div>
+          <div class="form-group">
+            <div class="privacy-note">
+              <i-tabler name="info-circle"></i-tabler>
+              {{ l.s("messages.privacy").replaceAll("%app%", AppConfig.APP_NAME) }}
+            </div>
+          </div>
+
+        } @else {
+            <div class="alert error">{{ l.s("messages.sus_error") }}</div>
         }
-      </div>
-      } @else {
-      <div class="alerts mb">
-        <div class="alert red" (click)="messageManager.messageType.next(0)">
-          {{ l.s("messages.sus_error") }}
-        </div>
-      </div>
-      } } @else if (selectedTab.getValue() === 1) {
-      <div class="items">
-        <div class="item">
-          <label for="selectReceiver">
-            {{ l.s("messages.receiver") }}
-          </label>
-        </div>
-
-        <div class="item">
-          <label
-            for="topic"
-            [ngClass]="{ 'error-color': alerts['topic'] != null }"
-          >
-            {{ l.s("messages.topic") }}
-            @if (alerts['topic'] != null) {
-            <span class="label-error"> - {{ l.s(alerts["topic"].text) }} </span>
-            }
-          </label>
-          <div class="value">
-            <input
-              type="text"
-              name="topic"
-              [(ngModel)]="messageManager.topic"
-              [placeholder]="l.s('messages.topic')"
-            />
-          </div>
-        </div>
-      </div>
-      } @else {
-      <div class="alerts mb">
-        <div class="alert red">
-          {{ l.s("messages.types.error") }}
-        </div>
-      </div>
-      }
-      <div class="items">
-        <div class="item">
-          <label
-            for="message"
-            [ngClass]="{ 'error-color': alerts['message'] != null }"
-          >
-            {{ l.s("messages.message") }}
-            @if (alerts['message'] != null) {
-            <span class="label-error">
-              - {{ l.s(alerts["message"].text) }}
-            </span>
-            }
-          </label>
-          <textarea
-            name="message"
-            id="message"
-            [(ngModel)]="messageManager.message"
-            style="min-height: 15rem"
-            [placeholder]="l.s('messages.message_placeholder')"
-            (resize)="('horizontal')"
-          ></textarea>
-        </div>
-
-        <div class="alerts mb">
-          <div class="alert blue-info">
-            {{
-              l.s("messages.privacy").replaceAll("%app%", AppConfig.APP_NAME)
-            }}
-          </div>
-        </div>
-
-        <div class="btn submit" role="button" (click)="sendMessage()">
-          {{ l.s("messages.buttons.send_message") }}
-        </div>
       </div>
     </div>
   </div>
 
-  <div [ngClass]="{ card: true, 'card-hidden': isHiddenRightCard }">
-    <div class="row">
-      <schoolingo-tabs
-        style="width: 100%"
-        [option_width]="'fit'"
-        [options]="['messages.receiver', 'messages.attachments']"
-        [value]="selectedOptionTab"
-      ></schoolingo-tabs>
-    </div>
-    <div
-      class="card-body"
-      [ngStyle]="{
-        display: 'flex',
-        'flex-direction': 'column',
-        height: '100%',
-        'justify-content':
-          selectedOptionTab.getValue() == MessageSendSecondTab.RECEIVERS
-            ? 'space-between'
-            : '',
-        position: 'relative'
-      }"
-    >
-      @switch(selectedOptionTab.getValue()) {
-      @case(MessageSendSecondTab.RECEIVERS) {
-        @if (checkMessageType([messageTypes.MESSAGE])) {
-      <div class="form-group input-icon mb">
-        <i-tabler name="search"></i-tabler>
-        <input
-          type="text"
-          name="receiver"
-          [(ngModel)]="receiverFilter"
-          [placeholder]="l.s('messages.search_receiver')"
-        />
+  <!-- Sidebar / Settings -->
+  <div class="sidebar">
+    <div class="card h-100">
+      <div class="card-header">
+        <h3>{{ l.s("messages.settings") }}</h3>
+      </div>
+      
+      <div class="sidebar-tabs">
+        <schoolingo-tabs
+            [option_width]="'100%'"
+            [options]="['messages.receiver', 'messages.attachments']"
+            [value]="selectedOptionTab"
+        ></schoolingo-tabs>
       </div>
 
-      <div class="receivers">
-        @for(receiver of receivers;track $index) {
-        <div [ngClass]="{receiver: true, active: isReceiverSelected(receiver)}" (click)="toggleReceiverSelection(receiver)">
-          <div
-            [ngClass]="{ select: true, selected: isReceiverSelected(receiver) }"
-          >
-            @if (isReceiverSelected(receiver)) {
-            <i-tabler
-              name="check"
-              style="height: 16px; stroke-width: 3px"
-            ></i-tabler>
-            }
-          </div>
-          <div class="name">
-            <span>{{ receiver.name }}</span>
-            <span class="role">
-              {{ l.s("roles." + receiver.role) }} 
-            @if (receiver.class) {
-            <span>{{ l.s('messages.receivers.from_class').replaceAll('%class%', receiver.class) }}</span>
-            }
-            @if (receiver.child) {
-              <span>{{ l.s('messages.receivers.from_child').replaceAll('%child%', receiver.child) }}</span>
-            }
-            </span>
-          </div>
+      <div class="sidebar-content">
+        @switch(selectedOptionTab.getValue()) {
+          @case(MessageSendSecondTab.RECEIVERS) {
+            <div class="receivers-panel">
+                <div class="search-box">
+                    <i-tabler name="search"></i-tabler>
+                    <input type="text" [(ngModel)]="receiverFilter" [placeholder]="l.s('messages.search_receiver')">
+                </div>
+
+                <div class="receivers-list">
+                    @for(receiver of receivers; track $index) {
+                        <div class="receiver-item" [class.active]="isReceiverSelected(receiver)" (click)="toggleReceiverSelection(receiver)">
+                            <div class="checkbox" [class.checked]="isReceiverSelected(receiver)">
+                                @if(isReceiverSelected(receiver)) { <i-tabler name="check"></i-tabler> }
+                            </div>
+                            <div class="receiver-info">
+                                <span class="name">{{ receiver.name }}</span>
+                                <span class="role">{{ l.s("roles." + receiver.role) }}</span>
+                            </div>
+                        </div>
+                    }
+                </div>
+                
+                <div class="selected-summary" (click)="showSelectedReceivers = !showSelectedReceivers">
+                    <span>{{ l.s("messages.selected_receivers") }} ({{ getSelectedReceivers().length }})</span>
+                    <i-tabler [name]="showSelectedReceivers ? 'chevron-up' : 'chevron-down'"></i-tabler>
+                </div>
+                
+                @if(showSelectedReceivers) {
+                    <div class="selected-list-overlay">
+                        @for(receiver of getSelectedReceivers(); track $index) {
+                            <div class="selected-item">
+                                <span>{{ receiver.name }}</span>
+                                <i-tabler name="x" (click)="toggleReceiverSelection(receiver)"></i-tabler>
+                            </div>
+                        }
+                    </div>
+                }
+            </div>
+          }
+          @case(MessageSendSecondTab.ATTACHMENTS) {
+            <div class="attachments-panel">
+                <div class="upload-zone">
+                    <i-tabler name="cloud-upload"></i-tabler>
+                    <span>{{ l.s("buttons.upload_files") }}</span>
+                    <input type="file" (change)="files = $any($event.target).files">
+                </div>
+                @if(files.length) {
+                    <div class="file-list">
+                        @for(file of files; track $index) {
+                            <div class="file-item">
+                                <i-tabler name="file"></i-tabler>
+                                <span>{{ file.name }}</span>
+                            </div>
+                        }
+                    </div>
+                }
+            </div>
+          }
+        }
+      </div>
+      
+      <!-- Options Toggles -->
+      <div class="options-section">
+        <div class="option-toggle" (click)="messageManager.options.requireConfirmation = !messageManager.options.requireConfirmation">
+            <div class="toggle-checkbox" [class.checked]="messageManager.options.requireConfirmation"></div>
+            <span>{{ l.s("messages.tags.require_confirmation") }}</span>
         </div>
+        @if(perms.checkPermission(["teacher"])) {
+            <div class="option-toggle" (click)="messageManager.options.copyToClassTeacher = !messageManager.options.copyToClassTeacher">
+                <div class="toggle-checkbox" [class.checked]="messageManager.options.copyToClassTeacher"></div>
+                <span>{{ l.s("messages.copy_classteacher") }}</span>
+            </div>
+             <div class="option-toggle" (click)="messageManager.options.copyToParents = !messageManager.options.copyToParents">
+                <div class="toggle-checkbox" [class.checked]="messageManager.options.copyToParents"></div>
+                <span>{{ l.s("messages.copy_parents") }}</span>
+            </div>
         }
       </div>
 
-      <div
-        [ngClass]="{
-          'selected-receivers': true,
-          active: showSelectedReceivers
-        }"
-      >
-        <div class="list-selected-receivers receivers">
-          <p>{{ l.s('messages.selected_receivers') }}</p>
-          @for (receiver of getSelectedReceivers(); track $index) {
-            <div class="receiver" (click)="toggleReceiverSelection(receiver)">
-              <div
-                [ngClass]="{ select: true, selected: isReceiverSelected(receiver) }"
-              >
-                @if (isReceiverSelected(receiver) && receiver.type != "parent") {
-                <i-tabler
-                  name="check"
-                  style="height: 16px; stroke-width: 3px"
-                ></i-tabler>
-                }
-
-                @if (receiver.type == "parent") {
-                <i-tabler
-                  name="chevron-down"
-                  style="height: 16px; stroke-width: 3px"
-                ></i-tabler>
-                }
-              </div>
-              <div class="name">
-                <span>{{ receiver.name }}</span>
-                <span class="role">
-                  {{ l.s("roles." + receiver.role) }} 
-                @if (receiver.class) {
-                <span>{{ l.s('messages.receivers.from_class').replaceAll('%class%', receiver.class) }}</span>
-                }
-                @if (receiver.child) {
-                  <span>{{ l.s('messages.receivers.from_child').replaceAll('%child%', receiver.child) }}</span>
-                }
-                </span>
-              </div>
-            </div>
-          }
-          @empty {
-            <div class="message error">
-              {{ l.s('messages.no_selected_receivers') }}
-            </div>
-          }
-        </div>
-        <div
-          class="btn primary"
-          (click)="showSelectedReceivers = !showSelectedReceivers"
-        >
-          <i-tabler
-            [name]="showSelectedReceivers ? 'chevron-down' : 'chevron-up'"
-          ></i-tabler>
-          {{
-            l
-              .s(
-                showSelectedReceivers
-                  ? "messages.hide_selected_receivers"
-                  : "messages.show_selected_receivers"
-              )
-              .replaceAll("%count%", getSelectedReceivers().length.toString())
-          }}
-        </div>
-      </div>
-      } @if (checkMessageType([messageTypes.EXCUSESTUDENT])) {
-      <div class="message info">
-        {{ l.s("messages.excuse_message") }}
-      </div>
-      } @if (checkMessageType([messageTypes.HOMEWORK])) {
-        @if (messageManager.selectedHomework.getValue() == null) {
-          <div class="message error">
-            {{ l.s("messages.homeworks.not_selected") }}
-          </div>
-        }
-      } }
-      @case(MessageSendSecondTab.ATTACHMENTS) {
-      <div class="form-group">
-        <div class="btn btn-upload">
-          <i-tabler name="upload"></i-tabler>
-          <input type="file" id="myFile" name="filename" />
-          {{ l.s("buttons.upload_files") }}
-        </div>
-      </div>
-      @if (config.files_limit) {
-      <div class="note mt mb">
-        {{
-          l
-            .s("messages.file_limit_info")
-            .replaceAll("%count%", files.length.toString())
-            .replaceAll("%limit%", config.files_limit)
-        }}
-      </div>
-      } } }
     </div>
   </div>
 </div>

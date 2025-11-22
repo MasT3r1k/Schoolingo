@@ -1,0 +1,48 @@
+<div class="devices-container">
+    <div class="card">
+        <div class="card-header">
+            <h2>{{ l.s('user.devices') }}</h2>
+            <div class="btn danger outline" (click)="logoutAllOther()">
+                <i-tabler name="logout"></i-tabler>
+                {{ l.s('devices.logout_all_other') }}
+            </div>
+        </div>
+
+        <div class="sessions-list">
+            @for (session of sessions; track session.id) {
+            <div class="session-item" [class.current]="session.current">
+                <div class="device-icon">
+                    <i-tabler [name]="session.icon"></i-tabler>
+                </div>
+
+                <div class="session-info">
+                    <div class="device-name">
+                        {{ session.browser }} on {{ session.os }}
+                        @if (session.current) {
+                        <span class="badge success">
+                            {{ l.s('devices.current_device') }}
+                        </span>
+                        }
+                    </div>
+                    <div class="session-meta">
+                        <span class="ip">{{ session.ip }}</span>
+                        <span class="dot">•</span>
+                        <span class="location">{{ session.location }}</span>
+                        <span class="dot">•</span>
+                        <span class="last-active">
+                            {{ session.current ? l.s('devices.active_now') : (session.lastActive | date:'medium') }}
+                        </span>
+                    </div>
+                </div>
+
+                @if (!session.current) {
+                <div class="btn icon-only danger" (click)="logoutSession(session.id)"
+                    [title]="l.s('devices.logout')">
+                    <i-tabler name="trash-x"></i-tabler>
+                </div>
+                }
+            </div>
+            }
+        </div>
+    </div>
+</div>

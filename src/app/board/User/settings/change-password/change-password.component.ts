@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Locale } from '@Schoolingo/locale';
 import { AuthConfig } from '../../../../infrastructure/authentication/config';
@@ -7,19 +7,27 @@ import { HttpClient } from '@angular/common/http';
 import { BoardAlertManager } from '../../../../infrastructure/alert/board.alert.manager';
 import { NgClass } from '@angular/common';
 import { AlertComponent } from '@Components/Alert';
+import { IconsModule } from '@Schoolingo/icons';
+import { Authentication } from '@Schoolingo/authentication';
+import { ModalManager } from '@Schoolingo/modal';
+import { GeneratePasswordComponent } from './modals/generate-password/generate-password';
+import { Settings } from '@Schoolingo/settings';
 
 @Component({
   standalone: true,
-  imports: [ReactiveFormsModule, NgClass, AlertComponent],
+  imports: [ReactiveFormsModule, NgClass, AlertComponent, IconsModule],
   selector: 'settings-change-password',
   templateUrl: './change-password.component.html',
   styleUrl: './change-password.component.css'
 })
-export class ChangePasswordComponent {
+export class ChangePasswordComponent implements OnInit {
   public AuthConfig = AuthConfig;
+  private settings = inject(Settings);
   public l = inject(Locale);
   private http = inject(HttpClient);
   public a = inject(BoardAlertManager);
+  public u = inject(Authentication);
+  private modalManager = inject(ModalManager);
 
   public errors: { [key: string]: string } = {};
   formSubmitted = false;
@@ -109,6 +117,34 @@ export class ChangePasswordComponent {
     );
   }
 
+  ngOnInit(): void {
+    this.settings.password.subscribe((password) => {
+      if (password == '') return;
+
+      this.changePasswordForm.get('password')?.setValue(password);
+      this.changePasswordForm.get('password2')?.setValue(password);
+      this.settings.password.next('');
+    })
+
+    this.modalManager.addModal(
+      'generate_password',
+      {
+        title: 'user.generator_password.title',
+        closeable: true,
+        items: [
+          {
+            type: 'component',
+            component: GeneratePasswordComponent
+          }
+        ]
+      }
+    )
+  }
+
+  public openGeneratePasswordModal(): void {
+    this.modalManager.openModal('generate_password');
+  }
+
   public getInputError(input: string): string {
     if (this.errors[input]) {
       return this.errors[input];
@@ -145,4 +181,45 @@ export class ChangePasswordComponent {
     return text;
   }
 
+  public passwordStrength: number = 0;
+  public showPassword = false;
+
+  public passwordRequirements = {
+    length: false,
+    uppercase: false,
+    number: false,
+    special: false
+  };
+
+  public calculateStrength(password: string): void {
+    let score = 0;
+    if (!password) {
+      this.passwordStrength = 0;
+      this.passwordRequirements = { length: false, uppercase: false, number: false, special: false };
+      return;
+    }
+
+    this.passwordRequirements.length = password.length > 8;
+    this.passwordRequirements.uppercase = /[A-Z]/.test(password);
+    this.passwordRequirements.number = /[0-9]/.test(password);
+    this.passwordRequirements.special = /[^A-Za-z0-9]/.test(password);
+
+    if (this.passwordRequirements.length) score++;
+    if (this.passwordRequirements.uppercase) score++;
+    if (this.passwordRequirements.number) score++;
+    if (this.passwordRequirements.special) score++;
+
+    this.passwordStrength = score;
+  }
+
+  public toggleVisibility(): void {
+    this.showPassword = !this.showPassword;
+  }
+
+  // Hook into value changes
+  constructor() {
+    this.changePasswordForm.get('password')?.valueChanges.subscribe(val => {
+      this.calculateStrength(val || '');
+    });
+  }
 }

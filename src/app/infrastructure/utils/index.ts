@@ -159,7 +159,7 @@ export namespace Utils {
 
     if (userAgent.includes("Windows NT")) {
       if (userAgent.includes("Windows NT 10.0")) {
-        OSName = "Windows 10/11"; // 10.0 platí pro Windows 10 i 11
+        OSName = "Windows"; // 10.0 platí pro Windows 10 i 11
       } else if (userAgent.includes("Windows NT 6.3")) {
         OSName = "Windows 8.1";
       } else if (userAgent.includes("Windows NT 6.2")) {
@@ -187,32 +187,16 @@ export namespace Utils {
   }
 
   export function getOSIcon(userAgent: string): string {
-    let OSName = "Unknown";
+    let OSName = "device-unknown";
 
     if (userAgent.includes("Windows NT")) {
-      if (userAgent.includes("Windows NT 10.0")) {
-        OSName = "Windows 10/11"; // 10.0 platí pro Windows 10 i 11
-      } else if (userAgent.includes("Windows NT 6.3")) {
-        OSName = "Windows 8.1";
-      } else if (userAgent.includes("Windows NT 6.2")) {
-        OSName = "Windows 8";
-      } else if (userAgent.includes("Windows NT 6.1")) {
-        OSName = "Windows 7";
-      } else if (userAgent.includes("Windows NT 6.0")) {
-        OSName = "Windows Vista";
-      } else if (userAgent.includes("Windows NT 5.1")) {
-        OSName = "Windows XP";
-      } else {
-        OSName = "Windows";
-      }
+      OSName = "brand-windows";
     } else if (userAgent.includes("Mac")) {
-      OSName = "Macintosh";
+      OSName = "brand-apple";
     } else if (userAgent.includes("Linux")) {
-      OSName = "Linux";
+      OSName = "brand-ubuntu";
     } else if (userAgent.includes("Android")) {
-      OSName = "Android";
-    } else if (userAgent.includes("like Mac")) {
-      OSName = "iOS";
+      OSName = "brand-android";
     }
 
     return OSName;
@@ -259,7 +243,7 @@ export namespace Utils {
     } else if (userAgent.includes("Safari")) {
       browser = "Safari";
     } else if (userAgent.includes("Firefox")) {
-      browser = "Mozilla";
+      browser = "Firefox";
     } else if ((userAgent.includes("MSIE")) || (!!(document as any).documentMode == true)) {
       browser = 'IE';
     }

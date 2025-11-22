@@ -6,6 +6,7 @@ import moment from 'moment';
 import { FormBuilder } from '@angular/forms';
 import { Router } from '@angular/router';
 import { Authentication } from '@Schoolingo/authentication';
+import { BehaviorSubject } from 'rxjs';
 
 export class Settings {
   private auth = inject(Authentication);
@@ -13,6 +14,7 @@ export class Settings {
   private router = inject(Router);
   private security: SecurityAPI | null = null;
   private formBuilder = inject(FormBuilder);
+  public password = new BehaviorSubject('');
   public passkeyName = this.formBuilder.control('');
   public TFAControl = this.formBuilder.control('');
 

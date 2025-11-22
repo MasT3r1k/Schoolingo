@@ -13,21 +13,16 @@ import { BehaviorSubject, Subscription } from 'rxjs';
 import { Alert } from '../../../infrastructure/alert/alert';
 import { Homeworks } from '@Schoolingo/homeworks';
 import { FormsModule } from '@angular/forms';
-import { NgClass, NgStyle } from '@angular/common';
 import { IconsModule } from '@Schoolingo/icons';
 import { Authentication } from '@Schoolingo/authentication';
 import { TabsComponent } from '../../../Components/Tabs';
-import { AlertComponent } from '@Components/Alert';
 import { HttpClient } from '@angular/common/http';
 
 @Component({
   imports: [
     FormsModule,
-    NgClass,
     IconsModule,
-    TabsComponent,
-    AlertComponent,
-    NgStyle,
+    TabsComponent
   ],
   templateUrl: './send.component.html',
   styleUrl: './send.component.css',
@@ -50,7 +45,6 @@ export class SendComponent {
   public alerts: Record<string, Alert> = {};
 
   // === Tabs ===
-  public selectedTab = new BehaviorSubject<number>(0);
   public selectedOptionTab = new BehaviorSubject<number>(0);
 
   // === UI ===
@@ -142,12 +136,6 @@ export class SendComponent {
 
   // === Lifecycle ===
   ngOnInit(): void {
-    this.subscribers.push(
-      this.selectedTab.subscribe(() => {
-        this.alerts = {};
-      })
-    );
-
     this.subscribers.push(
       this.messageManager.messageType.subscribe(() => {
         setTimeout(() => this.selectedOptionTab.next(0), 300);

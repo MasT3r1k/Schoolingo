@@ -23,7 +23,10 @@ import { CompaniesComponent } from './board/Traineeship/companies/companies.comp
 import { DiaryComponent } from './board/Traineeship/diary/diary.component';
 import { OverviewComponent } from './board/Traineeship/overview/overview.component';
 import { BuilderComponent } from './board/schedule/builder/builder.component';
+import { CalendarComponent } from './board/calendar/calendar.component';
 import { ClassbookComponent } from './board/Teach/classbook/classbook.component';
+import { NoticeboardComponent } from './board/messages/noticeboard/noticeboard.component';
+import { GroupsComponent } from './board/messages/groups/groups.component';
 
 export const routes: Routes = [
     {
@@ -39,6 +42,9 @@ export const routes: Routes = [
             },
             {
                 path: 'schedule/builder', component: BuilderComponent
+            },
+            {
+                path: 'calendar', component: CalendarComponent
             },
             {
                 path: 'marks', children: [
@@ -103,6 +109,12 @@ export const routes: Routes = [
                     },
                     {
                         path: 'received', component: ReceivedComponent
+                    },
+                    {
+                        path: 'noticeboard', component: NoticeboardComponent
+                    },
+                    {
+                        path: 'groups', component: GroupsComponent
                     }
                 ]
             },
