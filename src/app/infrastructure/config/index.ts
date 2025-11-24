@@ -2,7 +2,7 @@ import { AppType } from "./app_types";
 
 export namespace Config {
     // Routes
-    export const ELYSIA_URL = "http://192.168.1.102:3000";
+    export const ELYSIA_URL = "http://localhost:3000";
     export const API_URL = `${ELYSIA_URL}/api`;
     export const LOCALE_URL = ELYSIA_URL + '/locales/';
 

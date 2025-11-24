@@ -40,7 +40,7 @@
     <h1 class="APP_Logo">
         {{ App.APP_NAME.toUpperCase() }}
     </h1>
-    <div class="card" [ngStyle]="{ minWidth: school.config.getValue()?.fastlogin ? '1048px' : '720px'}">
+    <div class="card" [class.no-fastlogin]="!school.config.getValue()?.fastlogin">
         <div class="card-alerts">
             @for (alert of a.getAlerts(); track $index) {
                 <alert [alert]="alert"></alert>
@@ -336,9 +336,10 @@
     }
 </main>
 <div class="bottom">
-    <span>
-        {{ App.APP_NAME + ' ' + App.APP_TYPE }}
-    </span>
+    <div style="display: flex;flex-direction: row;gap: 8px;">
+        <span>{{ App.APP_NAME }}</span>
+        <span style="color: var(--primary-200);font-weight: bold;">{{ App.APP_TYPE }}</span>
+    </div>
     <span>
         {{ App.APP_CREDITS }} |
         {{ l.s("system.version") + ': ' + App.APP_VERSION }}

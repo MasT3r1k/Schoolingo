@@ -49,6 +49,12 @@ a {
     --polygon: polygon(4px 0, 100% 0%, calc(100% - 4px) 100%, 0% 100%);
     --tag-color: hsl(228deg 6% 25% / 85%);
     --swal2-confirm-button-background-color: var(var(--primary));
+    --swal2-color: var(--text)!important;
+    --swal2-background: var(--surface)!important;
+    --swal2-validation-message-background: var(--red)!important;
+    --swal2-validation-message-color: #fff!important;
+    --swal2-input-background: var(--surface-2)!important;
+    --swal2-timer-progress-bar-background: var(--surface)!important;
 }
 
 
@@ -275,6 +281,64 @@ hr {
     font-size: 0.85rem;
     color: var(--text-muted);
     margin-top: 3px;
+}
+
+.splitter {
+    display: flex;
+    position: relative;
+    justify-content: center !important;
+    color: var(--text);
+    opacity: .85;
+}
+
+.splitter:not(.horizontal) {
+    margin: auto 1rem;
+    height: 100%;
+    width: fit-content !important;
+}
+
+.splitter.horizontal {
+    margin: 1rem auto;
+    width: 100%;
+    height: fit-content !important;
+}
+
+.splitter:not(.horizontal)::before,
+.splitter:not(.horizontal)::after {
+    content: '';
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    height: calc(50% - 24px);
+    width: 2px !important;
+    background-color: #444;
+}
+
+.splitter.horizontal::before,
+.splitter.horizontal::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    width: calc(50% - 24px);
+    height: 2px !important;
+    background-color: #444;
+}
+
+.splitter:not(.horizontal)::before {
+    top: 0
+}
+
+.splitter:not(.horizontal)::after {
+    bottom: 0
+}
+
+.splitter.horizontal::before {
+    left: 0
+}
+
+.splitter.horizontal::after {
+    right: 0
 }
 
 h1,
@@ -893,7 +957,7 @@ button.danger,
 }
 
 .btn.outline {
-    background-color: transparent!important;
+    background-color: transparent !important;
     border: 2px solid;
 }
 
@@ -1314,14 +1378,19 @@ button.danger:hover {
     background-color: var(--primary);
 }
 
-.badge.loading {
+.badge.loading,
+.alert.loading {
     background-color: var(--surface-2);
     color: var(--text);
+}
+
+.badge.loading {
     opacity: .6;
 }
 
 .badge.loading .loader,
-.btn .loader {
+.btn .loader,
+.alert .loader {
     width: 12px;
     aspect-ratio: 1;
     border-radius: 50%;
@@ -1659,8 +1728,220 @@ button.danger:hover {
     margin-bottom: 4px;
 }
 
+#context-menu .menu-item:active {
+    background: var(--active-bg);
+}
+
+/* Ikony */
+#context-menu .menu-item .icon {
+    font-size: 16px;
+    opacity: 0.9;
+    width: 18px;
+    text-align: center;
+}
+
+/* Oddělovač */
+#context-menu .menu-separator {
+    height: 1px;
+    background: var(--border);
+    margin: 4px 0;
+}
+
+/* Nebezpečná položka */
+#context-menu .menu-item.danger {
+    color: var(--danger);
+}
+
+#context-menu .menu-item.danger:hover {
+    background: rgba(231, 76, 60, 0.1);
+}
+
+/* Animace */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: scale(0.96);
+    }
+
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+* Select */ input.clickable {
+    position: relative;
+}
+
+.arrow-right {
+    position: absolute;
+    right: 4px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 24px;
+    height: 24px;
+    color: var(--text-muted);
+    transition: color .3s;
+    z-index: 3;
+    pointer-events: none;
+}
+
+.value:hover .arrow-right {
+    color: var(--color);
+}
+
+.description {
+    padding: 4px 8px;
+    margin-bottom: 1rem;
+}
+
+.instructor-item {
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 12px 14px;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    gap: 8px;
+    position: relative;
+    transition: background 0.2s ease;
+    cursor: pointer;
+}
+
+.instructor-item.active {
+    border: 1px solid var(--primary);
+}
+
+.instructor-item.danger {
+    border: 1px solid var(--danger);
+}
+
+.instructor-item:hover {
+    background: var(--elevated);
+}
+
+.instructor-info {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.instructor-name {
+    font-weight: 600;
+    font-size: 1rem;
+    color: var(--text);
+}
+
+.instructor-meta {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.instructor-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.instructor-item .btn {
+    all: unset;
+    cursor: pointer;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--icon);
+    transition: background 0.2s, color 0.2s, border 0.2s;
+}
+
+.instructor-item .btn i-tabler {
+    margin-right: 0;
+}
+
+.btn i-tabler {
+    width: 20px;
+    height: 20px;
+}
+
+.instructor-item .btn:hover {
+    background: var(--hover-bg);
+    border-color: var(--primary);
+    color: var(--primary-100);
+}
+
+.instructor-item .btn.edit:hover {
+    color: var(--primary-200);
+}
+
+.instructor-item .btn.delete:hover {
+    color: var(--danger);
+}
+
+
+
+/* === EMPTY STATE === */
+.instructor-empty {
+    border: 1px dashed var(--border);
+    background: var(--surface-2);
+    border-radius: 12px;
+    padding: 30px 20px;
+    text-align: center;
+    color: var(--text-muted);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+}
+
+.empty-icon {
+    font-size: 2.5rem;
+    opacity: 0.6;
+    color: var(--primary);
+}
+
+.empty-icon i-tabler {
+    width: 2.5rem;
+    height: 2.5rem;
+}
+
+.empty-text {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.empty-text h3 {
+    color: var(--text);
+    font-size: 1.1rem;
+    margin-bottom: 4px;
+}
+
 .empty-text p {
     font-size: 0.9rem;
     color: var(--muted);
     margin-bottom: 10px;
+}
+
+@media (max-width: 768px) {
+    .card {
+        padding: 1rem;
+    }
+
+    .row {
+        flex-wrap: wrap;
+    }
+
+    /* Ensure inputs don't zoom on focus on iOS */
+    input,
+    select,
+    textarea {
+        font-size: 16px;
+    }
 }

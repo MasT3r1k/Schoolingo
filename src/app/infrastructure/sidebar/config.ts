@@ -271,22 +271,22 @@ export const config: SidebarGroup[] = [
                 url: 'archive'
             },
             {
-                item: 'sidebar.tools.main',
+                item: 'sidebar.system.main',
                 permission: ['manager:system:admin'],
                 children: [
                     {
-                        item: 'sidebar.tools.settings',
-                        url: "tools/settings",
+                        item: 'sidebar.system.settings',
+                        url: "system/settings",
                         permission: ['manager:system:admin']
                     },
                     {
-                        item: 'sidebar.tools.manage_users',
-                        url: "tools/manageusers",
+                        item: 'sidebar.system.manage_users',
+                        url: "system/manageusers",
                         permission: ['manager:system:admin']
                     },
                     {
-                        item: 'sidebar.tools.auditlog',
-                        url: "tools/auditlog",
+                        item: 'sidebar.system.auditlog',
+                        url: "system/auditlog",
                         permission: ['manager:system:admin']
                     }
                 ]

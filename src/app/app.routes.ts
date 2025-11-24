@@ -27,6 +27,8 @@ import { CalendarComponent } from './board/calendar/calendar.component';
 import { ClassbookComponent } from './board/Teach/classbook/classbook.component';
 import { NoticeboardComponent } from './board/messages/noticeboard/noticeboard.component';
 import { GroupsComponent } from './board/messages/groups/groups.component';
+import { SettingsComponent as SystemSettings } from './board/system/settings/settings.component';
+
 
 export const routes: Routes = [
     {
@@ -143,6 +145,13 @@ export const routes: Routes = [
                     },
                     {
                         path: 'gdpr', component: GdprComponent
+                    },
+                ]
+            },
+            {
+                path: 'system', children: [
+                    {
+                        path: 'settings', component: SystemSettings
                     },
                 ]
             }

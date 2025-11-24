@@ -1,93 +1,89 @@
-<div class="builder-container">
-    <!-- Alerts Overlay -->
-    @if (alerts['main']) {
-    <div class="alerts-overlay">
-        <div class="alert error">{{ alerts['main'] }}</div>
+
+<div class="container">
+    <div class="alerts">
+        <div class="alert error">Nastala kolize dat!</div>
     </div>
-    }
-
-    <div class="builder-layout">
-        <!-- Sidebar -->
-        <aside class="builder-sidebar">
-            <!-- Stats Card -->
-            <div class="sidebar-section stats-section">
-                <div class="section-header">
-                    <h3>{{ l.s('schedule.builder.stats') }}</h3>
-                </div>
-                <div class="stats-grid">
-                    <div class="stat-item">
-                        <span class="label">{{ l.s('schedule.builder.week_hours') }}</span>
-                        <span class="value" id="weekHours">0 / 35</span>
+    <div class="wrapper">
+        <aside class="sidebar">
+            <div class="section" style="flex: 0 0 125px;">
+                <div class="stats-card">
+                    <div class="stat-row">
+                        <span class="muted">{{ l.s('schedule.builder.week_hours') }}</span>
+                        <span class="stat-value" id="weekHours">0 / 35</span>
                     </div>
-                    <div class="stat-item">
-                        <span class="label">{{ l.s('schedule.builder.occupied_hours') }}</span>
-                        <span class="value" id="occupiedSlots">0 / 35</span>
+                    <div class="stat-row">
+                        <span class="muted">{{ l.s('schedule.builder.occupied_hours') }}</span>
+                        <span class="stat-value" id="occupiedSlots">0 / 35</span>
                     </div>
-                    <div class="stat-item warning">
-                        <span class="label">{{ l.s('schedule.builder.substitution_week') }}</span>
-                        <span class="value" id="substitutions">0</span>
+                    <div class="stat-row">
+                        <span class="muted">{{ l.s('schedule.builder.substitution_week') }}</span>
+                        <span class="stat-value warning" id="substitutions">0</span>
                     </div>
                 </div>
             </div>
 
-            <!-- Subjects List -->
-            <div class="sidebar-section subjects-section">
-                <div class="section-header">
-                    <h3>{{ l.s('schedule.builder.available_subjects') }}</h3>
-                    <div class="badge">{{ scheduleBuilder.subjects.length }}</div>
+            <div class="section invisible-scrollbar" style="flex: 1;">
+                <div class="section-title">
+                    {{ l.s('schedule.builder.available_subjects') }}
                 </div>
-
-                <div class="subjects-list custom-scrollbar" id="subjectList">
+                <div class="subject-list" id="subjectList">
                     @if (!scheduleBuilder.isSubjectsLoading) {
-                    @for (subject of scheduleBuilder.subjects; track $index) {
-                    <div class="subject-card" draggable="true">
-                        <div class="card-left">
-                            <div class="subject-color-indicator" [style.backgroundColor]="subject.color"></div>
-                        </div>
-                        <div class="card-content">
-                            <div class="subject-name">{{ subject.subjectName }}</div>
-                            <div class="subject-meta">
-                                <span class="limit">0 / {{ subject.hours_per_week }}</span>
-                                @for(teacher of scheduleBuilder.getSubject(subject.subjectId)?.teachers; track $index) {
-                                <span class="teacher-name">{{ teacher.teacherName }}</span>
-                                }
+                        @for (subject of scheduleBuilder.subjects; track $index) {
+                            <div class="subject-item" draggable="true">
+                                <div class="subject-header">
+                                    <div class="subject-color" [style.backgroundColor]="subject.color"></div>
+                                    <div class="subject-name">
+                                        {{ subject.subjectName }}
+                                    </div>
+                                    <div class="subject-limit">0 / {{ subject.hours_per_week }}</div>
+                                </div>
+                                <div class="subject-teachers">
+                                    @for(teacher of scheduleBuilder.getSubject(subject.subjectId)?.teachers;track $index) {
+                                        <span class="teacher-tag">
+                                            {{ teacher.teacherName }}
+                                        </span>                                        
+                                    }
+                                </div>
                             </div>
-                        </div>
-                        <div class="drag-handle">
-                            <i-tabler name="grip-vertical"></i-tabler>
-                        </div>
-                    </div>
-                    }
+                        }
                     } @else {
-                    @for (_ of [].constructor(5); track $index) {
-                    <div class="subject-card skeleton"></div>
-                    }
+                        @for (_ of [].constructor(5); track $index) {
+                            <div class="subject-item skeleton" draggable="true">
+                                <div class="subject-header">
+                                    <div class="subject-color"></div>
+                                    <div class="subject-name skeleton">
+                                        <br />
+                                    </div>
+                                    <div class="subject-limit">0 / 4</div>
+                                </div>
+                                <div class="subject-teachers">
+                                    <span class="teacher-tag">Mgr. Nováková</span>
+                                </div>
+                            </div>
+                        }
                     }
                 </div>
             </div>
 
-            <!-- Actions -->
-            <div class="sidebar-section actions-section">
-                <button class="btn primary full-width" (click)="openAddSubjectModal()">
+            <div class="section" style="flex: 0 0 100px;">
+                <div class="btn primary" (click)="openAddSubjectModal()">
                     <i-tabler name="plus"></i-tabler>
                     {{ l.s('schedule.builder.add_subject') }}
-                </button>
-                <div class="action-row">
-                    <button class="btn danger outline" (click)="clearTimetable()">
-                        <i-tabler name="trash"></i-tabler>
-                    </button>
-                    <button class="btn secondary outline" (click)="openSettings()">
+                </div>
+                <div class="row" style="gap: 8px;">
+                    <div class="btn danger" style="flex: 1;">
+                        <i-tabler name="restore"></i-tabler>
+                    </div>
+                    <div class="btn" style="flex: 1;">
                         <i-tabler name="settings"></i-tabler>
-                    </button>
+                    </div>
                 </div>
             </div>
         </aside>
 
-        <!-- Main Content -->
-        <main class="builder-main">
-            <!-- Toolbar -->
-            <header class="builder-toolbar">
-                <div class="toolbar-group">
+        <div class="builder-content">
+            <div class="builder-toolbar">
+                <div class="toolbar-left">
                     <div class="input-group">
                         <label>{{ l.s('schedule.builder.class') }}</label>
                         <div class="custom-select-wrapper">
@@ -100,78 +96,86 @@
                             <i-tabler name="chevron-down" class="select-icon"></i-tabler>
                         </div>
                     </div>
-                </div>
+                    <div class="divider"></div>
+                    <input type="date" name="calendar" id="calendar">
 
-                <div class="toolbar-actions">
-                    <button class="btn secondary small" (click)="openAddEventModal()">
+                </div>
+                <div class="toolbar-right">
+                    <div class="btn small primary" (click)="openAddEventModal()">
                         <i-tabler name="calendar-plus"></i-tabler>
                         {{ l.s('schedule.builder.add_event') }}
-                    </button>
+                    </div>
                     <div class="divider"></div>
-                    <button class="btn icon-only" [title]="l.s('schedule.builder.export')">
+                    <div class="btn icon-only" [title]="l.s('schedule.builder.export')">
                         <i-tabler name="download"></i-tabler>
-                    </button>
-                    <button class="btn icon-only" [title]="l.s('schedule.builder.import')">
+                    </div>
+                    <div class="btn icon-only" [title]="l.s('schedule.builder.import')">
                         <i-tabler name="upload"></i-tabler>
-                    </button>
-                    <button class="btn icon-only" [title]="l.s('schedule.builder.print')">
+                    </div>
+                    <div class="btn icon-only" [title]="l.s('schedule.builder.print')">
                         <i-tabler name="printer"></i-tabler>
-                    </button>
+                    </div>
                 </div>
-            </header>
+            </div>
 
-            <!-- Timetable Grid -->
-            <div class="timetable-wrapper custom-scrollbar">
-                @if(scheduleBuilder.isTimetableLoading) {
-                <div class="loading-state">
-                    <div class="loader bigger"></div>
-                </div>
-                } @else {
-                <div class="timetable-grid">
-                    <!-- Header Row (Hours) -->
-                    <div class="grid-header">
-                        <div class="corner-cell"></div>
-                        @for (hour of scheduleBuilder.hours; track $index) {
-                        <div class="header-cell">
-                            <span class="hour-number">{{ $index + 1 }}</span>
-                            <span class="hour-time">{{ hour.start }} - {{ hour.end }}</span>
-                        </div>
-                        }
+            @if(scheduleBuilder.isTimetableLoading) {
+            <div class="timetable center">
+                <div class="loader bigger"></div>
+            </div>
+            } @else {
+            <div class="timetable">
+                <div class="hours">
+                    <div class="week-type">
                     </div>
 
-                    <!-- Days Rows -->
-                    @for (day of [].constructor(5); track index; let index = $index) {
-                    <div class="grid-row">
-                        <div class="day-header">
-                            <span class="day-name">{{ l.s('days.' + (index + 1)) }}</span>
-                        </div>
-
-                        @for (hour of [].constructor(scheduleBuilder.hours.length); track index2; let index2 = $index) {
-                        <div class="grid-cell" [class.drag-over]="false" (dragover)="$event.preventDefault()"
-                            (drop)="onDrop($event, index, index2)">
-
-                            <!-- Example Lesson Content -->
-                            @if (true) {
-                            @for (lesson of []; track $index) {
-                            <div class="lesson-card">
-                                <div class="lesson-top">
-                                    <span class="subject-code">Čj</span>
-                                    <span class="room-code">U12</span>
-                                </div>
-                                <div class="lesson-bottom">
-                                    <span class="teacher-name">Novák</span>
-                                    <span class="group-badge">A</span>
-                                </div>
+                    @for (hour of scheduleBuilder.hours; track $index) {
+                        <div class="hour-info">
+                            <div class="hour-id">
+                                {{ $index + 1 }}
                             </div>
-                            }
-                            }
+                            <div class="hour-time">
+                                {{ hour.start + ' - ' + hour.end }}
+                            </div>
                         </div>
-                        }
-                    </div>
                     }
                 </div>
-                }
+                <div class="days">
+                    @for (day of [].constructor(5); track index;let index = $index) {
+                        <div class="day">
+                            <div class="name">
+                                {{ l.s('days.' + (+$index + 1)) }}
+
+                                <div class="time"></div>
+                            </div>
+
+                            @for (hour of [].constructor(scheduleBuilder.hours.length); track index2;let index2 = $index) {
+                                <div class="item lesson-hour">
+                                    @if (true) {
+                                        @for (lesson of []; track $index) { 
+                                            <div>
+                                                <div class="group">
+                                                    <span>B3.I 2</span>
+                                                </div> 
+                                                <div class="room">
+                                                    {{ 'Místnost' }}
+                                                </div>
+                                                <div class="subject">
+                                                    {{ 'Čj' }}
+                                                </div>
+                                                <div class="teacher">
+                                                    {{ 'Učitel' }}
+                                                </div>
+                                            </div>
+                                        }
+                                    }
+                                </div>
+                            }
+                        </div>
+                    }
+                </div>
             </div>
-        </main>
+
+            }
+        </div>
     </div>
 </div>
