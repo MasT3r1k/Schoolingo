@@ -2,35 +2,16 @@
     <div class="sidebar">
         <div class="header">
             <h3>{{ l.s('documents.folders') }}</h3>
-            <div class="btn-icon">
+            <div class="btn-icon" (click)="openCreationFolder()">
                 <i-tabler name="folder-plus"></i-tabler>
             </div>
         </div>
         <div class="sidebar-content">
             <ul>
                 @for (tree of documents.getTree(); track $index) {
-                    <ng-container [ngTemplateOutlet]="tree_content" [ngTemplateOutletContext]="{item: tree }"/>
+                    <ng-container [ngTemplateOutlet]="tree_content" [ngTemplateOutletContext]="{item: tree }" />
                 }
             </ul>
-            <!--<ul>
-                <li>
-                    <ng-container  [ngTemplateOutlet]="tree_content"  [ngTemplateOutletContext]="{item: tree }"/>
-                </li>
-                <ul class="tree">
-                    <li>
-                        <div class="tree-content">
-                            <i-tabler name="folder"></i-tabler>
-                            <span>{{ l.s('documents.all_files') }}</span>
-                        </div>
-                    </li>
-                    <li>
-                        <div class="tree-content">
-                            <i-tabler name="folder"></i-tabler>
-                            <span>{{ l.s('documents.all_files') }}</span>
-                        </div>
-                    </li>
-                </ul>
-            </ul> -->
         </div>
     </div>
 
@@ -44,7 +25,7 @@
             </div>
 
             <div class="right">
-                <div class="btn small primary" (click)="uploadFile()">
+                <div class="btn small primary" (click)="openUploadFiles()">
                     <i-tabler name="upload"></i-tabler>
                     {{ l.s('documents.upload') }}
                 </div>
@@ -53,7 +34,8 @@
         <div class="document-explorer">
             <div class="explorer-grid">
                 @for(file of documents.getFiles();track $index) {
-                <div class="file-card" (click)="documents.showProperties(file)" (dblclick)="documents.selectFolder(file)">
+                <div class="file-card" (click)="documents.showProperties(file)"
+                    (dblclick)="documents.selectFolder(file)">
                     <div class="icon-wrapper">
                         <i-tabler [name]="documents.getIcon(file.type)"></i-tabler>
                     </div>
@@ -79,69 +61,69 @@
             </div>
         </div>
         @if (file) {
-            <div class="detail-content">
-                <div class="detail-preview">
-                    <i-tabler [name]="documents.getIcon(file.type)" style="width: 64px; height: 64px;"></i-tabler>
-                </div>
-                <div class="info-group">
-                    <label>Název</label>
-                    <p>{{ file.name }}</p>
-                </div>
-                <div class="info-group">
-                    <label>Typ</label>
-                    <p>{{ file.type }}</p>
-                </div>
-                <div class="info-group">
-                    <label>Velikost</label>
-                    <p>{{ file.size }} B</p>
-                </div>
-                <div class="info-group">
-                    <label>Změněno</label>
-                    <p>{{ Utils.formatDate(file.modified_at) }}</p>
-                </div>
+        <div class="detail-content">
+            <div class="detail-preview">
+                <i-tabler [name]="documents.getIcon(file.type)" style="width: 64px; height: 64px;"></i-tabler>
+            </div>
+            <div class="info-group">
+                <label>Název</label>
+                <p>{{ file.name }}</p>
+            </div>
+            <div class="info-group">
+                <label>Typ</label>
+                <p>{{ file.type }}</p>
+            </div>
+            <div class="info-group">
+                <label>Velikost</label>
+                <p>{{ file.size }} B</p>
+            </div>
+            <div class="info-group">
+                <label>Změněno</label>
+                <p>{{ Utils.formatDate(file.modified_at) }}</p>
+            </div>
 
-                <div class="buttons">
-                    @if (file.type == 'folder') {
-                        <div class="btn secondary" (click)="documents.selectFolder(file)">
-                            <i-tabler name="click"></i-tabler> Otevřít složku
-                        </div>
-                    }
-                    <div class="btn secondary">
-                        <i-tabler name="edit"></i-tabler> Přejmenovat
-                    </div>
-                    <div class="btn secondary">
-                        <i-tabler name="lock"></i-tabler> Oprávnění
-                    </div>
-                    <div class="btn danger">
-                        <i-tabler name="trash-x"></i-tabler> Smazat
-                    </div>
+            <div class="buttons">
+                @if (file.type == 'folder') {
+                <div class="btn secondary" (click)="documents.selectFolder(file)">
+                    <i-tabler name="click"></i-tabler> Otevřít složku
+                </div>
+                }
+                <div class="btn secondary">
+                    <i-tabler name="edit"></i-tabler> Přejmenovat
+                </div>
+                <div class="btn secondary">
+                    <i-tabler name="lock"></i-tabler> Oprávnění
+                </div>
+                <div class="btn danger">
+                    <i-tabler name="trash-x"></i-tabler> Smazat
                 </div>
             </div>
+        </div>
         }
     </div>
 </div>
 
 <ng-template #tree_content let-item="item">
     <li>
-        <div class="tree-content" (click)="documents.selectFolder(item)">
-            @if(item.children && item.children.length) {
-                <span class="toggle-icon" (click)="$event.stopPropagation();">
-                    <i-tabler [name]="'chevron-down'" style="width: 12px; height: 12px;"></i-tabler>
-                </span>
+        <div class="tree-content" (click)="documents.selectFolder(item)" [class.active]="item.file_id === documents.getSelectedFolder()?.file_id">
+            @if (item.children && item.children.length) {
+            <span class="toggle-icon" (click)="toggleFolder(item, $event)" [class.expanded]="isFolderExpanded(item)">
+                <i-tabler [name]="isFolderExpanded(item) ? 'chevron-down' : 'chevron-right'" style="width: 16px; height: 16px;"></i-tabler>
+            </span>
             } @else {
-                <span class="toggle-spacer"></span>
+            <span class="toggle-spacer"></span>
             }
             <span class="tree-label">
-                <i-tabler [name]="documents.getIcon(item.type)"></i-tabler>
+                <i-tabler [name]="documents.getIcon(item.type) == 'folder-filled' ? isFolderExpanded(item) ? 'folder-open' : 'folder'  : documents.getIcon(item.type)"></i-tabler>
                 {{ item.name }}
             </span>
         </div>
-        @if (item.children && item.children.length) {
-            <ul class="tree">
+        @if (item.children && item.children.length && isFolderExpanded(item)) {
+        <ul class="tree">
             @for (tree of item.children; track $index) {
-                <ng-container [ngTemplateOutlet]="tree_content" [ngTemplateOutletContext]="{ item: tree }"/>
+                <ng-container [ngTemplateOutlet]="tree_content" [ngTemplateOutletContext]="{ item: tree }" />
             }
-            </ul>
+        </ul>
         }
     </li>
 </ng-template>

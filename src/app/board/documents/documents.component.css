@@ -46,89 +46,81 @@ ul {
 }
 
 ul.tree {
-    padding-left: 10px;
-}
-
-ul.tree ul {
-    margin-left: 10px;
+    padding-left: 0;
+    margin-left: 12px;
 }
 
 ul.tree li {
     margin: 0;
-    padding-left: 16px;
-    line-height: 20px;
-    border-left: 1px solid var(--border);
+    padding: 0;
     position: relative;
 }
 
+ul li .tree-label {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex: 1;
+}
+
 ul li .tree-label i-tabler {
-    margin-right: .5rem;
-}
-
-ul.tree li:last-child {
-    border-left: none;
-}
-
-ul.tree li::before {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 10px;
-    height: 18px;
-    /* Adjust based on line height/padding */
-    border-bottom: 1px solid var(--border);
-    content: "";
-    display: inline-block;
-}
-
-ul.tree li:last-child::before {
-    border-left: 1px solid var(--border);
+    width: 16px;
+    height: 16px;
+    color: var(--text-muted);
 }
 
 .tree-content {
     display: flex;
     align-items: center;
-    padding: 6px 12px;
+    padding: 4px 0px;
+    margin: 1px 0;
+    height: 32px;
     border-radius: var(--radius);
     cursor: pointer;
-    color: var(--text-muted);
-    transition: all 0.2s;
+    color: var(--text);
+    transition: background-color 0.15s ease;
     position: relative;
+    font-size: 0.875rem;
+    user-select: none;
 }
 
 .tree-content:hover {
     background: var(--hover-bg);
-    color: var(--text);
 }
 
 .tree-content.active {
     background: var(--active-bg);
-    color: var(--primary);
+    color: var(--text);
     font-weight: 500;
 }
 
-.tree-label {
-    display: flex;
-    align-items: center;
-    gap: 6px;
+.tree-content.active .tree-label i-tabler {
+    color: var(--primary);
 }
 
 .toggle-icon {
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 16px;
-    height: 16px;
-    margin-right: 4px;
-    border-radius: 4px;
+    height: 32px;
+    margin-right: .5rem;
+    border-top-left-radius: inherit;
+    border-bottom-left-radius: inherit;
+    transition: transform 0.2s ease, background-color 0.15s ease;
+    flex-shrink: 0;
 }
 
 .toggle-icon:hover {
     background-color: var(--hover-bg);
 }
 
+.toggle-icon i-tabler {
+    color: var(--text-muted);
+}
+
 .toggle-spacer {
     width: 20px;
+    flex-shrink: 0;
 }
 
 .search {

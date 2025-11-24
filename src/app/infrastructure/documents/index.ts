@@ -7,7 +7,7 @@ export interface FileItem {
     file_id: number | null;
     parent_id: number | null; // null for root
     name: string;
-    type:  FileType;
+    type: FileType;
     size: number;
     permissions: permType[];
     owner_id: number | null;
@@ -30,17 +30,36 @@ export class Documents {
     public selectedFile$ = this._selected_file.asObservable();
 
     public selectFolder(folder: FileItem | FolderItem | null): void {
-        if (folder?.type !== 'folder') return;
+        if (folder?.type !== 'folder') {
+            return;
+        }
         this._current_folder.next(folder as FolderItem);
         this._selected_file.next(null);
+    }
+
+    public getSelectedFolder(): FolderItem | null {
+        return this._current_folder.getValue();
     }
 
     public getSelectedFile(): FileItem | FolderItem | null {
         return this._selected_file.getValue();
     }
 
+    public addFile(file: (FileItem | FolderItem)): void {
+        this._files.getValue().push(file);
+    }
+
     public getFiles() {
-        return this._files.getValue().filter((file) => file.parent_id == this._current_folder.getValue()?.file_id || null);
+        return this._files.getValue()
+            .filter((file) => file.parent_id === (this._current_folder.getValue()?.file_id ?? null))
+            .sort((a, b) => {
+                // Nejdřív seřadíme složky
+                if (a.type === 'folder' && b.type !== 'folder') return -1;
+                if (a.type !== 'folder' && b.type === 'folder') return 1;
+
+                // Jinak seřadit podle názvu
+                return a.name.localeCompare(b.name);
+            });
     }
 
     public getIcon(type: string): string {
@@ -75,7 +94,6 @@ export class Documents {
             const node = map.get(f.file_id);
 
             if (f.parent_id === -1) {
-                // Root položka (Všechny soubory)
                 root.push(node);
             } else {
                 const parent = map.get(f.parent_id);
@@ -85,8 +103,26 @@ export class Documents {
             }
         });
 
+        // Rekurzivní seřazení: nejdřív složky, pak soubory
+        const sortTree = (nodes: any[]) => {
+            nodes.sort((a, b) => {
+                // složky nahoru
+                if (a.type === 'folder' && b.type !== 'folder') return -1;
+                if (a.type !== 'folder' && b.type === 'folder') return 1;
+
+                // pokud jsou oba stejné, řadit podle názvu
+                return a.name.localeCompare(b.name);
+            });
+
+            // rekurze
+            nodes.forEach(n => sortTree(n.children));
+        };
+
+        sortTree(root);
+
         return root;
     }
+
 
 
     constructor() {
@@ -101,173 +137,8 @@ export class Documents {
                 owner_id: null,
                 permissions: [],
                 size: 0
-            },
-            {
-                file_id: 1,
-                parent_id: null,
-                name: 'Dokumenty školy',
-                type: 'folder',
-                modified_at: new Date(),
-                created_at: new Date(),
-                owner_id: 1,
-                permissions: [],
-                size: 0
-            },
-            {
-                file_id: 2,
-                parent_id: null,
-                name: 'Fotogalerie',
-                type: 'folder',
-                modified_at: new Date(),
-                created_at: new Date(),
-                owner_id: 1,
-                permissions: [],
-                size: 0
-            },
-            {
-                file_id: 3,
-                parent_id: 1,
-                name: 'Řád školy.pdf',
-                type: 'pdf',
-                modified_at: new Date(),
-                created_at: new Date(),
-                owner_id: 1,
-                permissions: [],
-                size: 1024 * 500 // 500KB
-            },
-            {
-                file_id: 4,
-                parent_id: 1,
-                name: 'Rozvrh 2024.xlsx',
-                type: 'sheet',
-                modified_at: new Date(),
-                created_at: new Date(),
-                owner_id: 1,
-                permissions: [],
-                size: 1024 * 20 // 20kb
-            },
-            {
-                file_id: 5,
-                parent_id: 2,
-                name: 'Výlet 2023.jpg',
-                type: 'image',
-                modified_at: new Date(),
-                created_at: new Date(),
-                owner_id: 1,
-                permissions: [],
-                size: 1024 * 2500
-            },
-            {
-                file_id: 6,
-                parent_id: null,
-                name: 'Dokumenty školy',
-                type: 'folder',
-                modified_at: new Date(),
-                created_at: new Date(),
-                owner_id: 1,
-                permissions: [],
-                size: 0
-            },
-            {
-                file_id: 7,
-                parent_id: null,
-                name: 'Fotogalerie',
-                type: 'folder',
-                modified_at: new Date(),
-                created_at: new Date(),
-                owner_id: 1,
-                permissions: [],
-                size: 0
-            },
-            {
-                file_id: 8,
-                parent_id: 1,
-                name: 'Řád školy.pdf',
-                type: 'pdf',
-                modified_at: new Date(),
-                created_at: new Date(),
-                owner_id: 1,
-                permissions: [],
-                size: 1024 * 500 // 500KB
-            },
-            {
-                file_id: 9,
-                parent_id: 1,
-                name: 'Rozvrh 2024.xlsx',
-                type: 'sheet',
-                modified_at: new Date(),
-                created_at: new Date(),
-                owner_id: 1,
-                permissions: [],
-                size: 1024 * 20 // 20kb
-            },
-            {
-                file_id: 10,
-                parent_id: 2,
-                name: 'Výlet 2023.jpg',
-                type: 'image',
-                modified_at: new Date(),
-                created_at: new Date(),
-                owner_id: 1,
-                permissions: [],
-                size: 1024 * 2500
-            },
-            {
-                file_id: 11,
-                parent_id: null,
-                name: 'Dokumenty školy',
-                type: 'folder',
-                modified_at: new Date(),
-                created_at: new Date(),
-                owner_id: 1,
-                permissions: [],
-                size: 0
-            },
-            {
-                file_id: 12,
-                parent_id: null,
-                name: 'Fotogalerie',
-                type: 'folder',
-                modified_at: new Date(),
-                created_at: new Date(),
-                owner_id: 1,
-                permissions: [],
-                size: 0
-            },
-            {
-                file_id: 13,
-                parent_id: 1,
-                name: 'Řád školy.pdf',
-                type: 'pdf',
-                modified_at: new Date(),
-                created_at: new Date(),
-                owner_id: 1,
-                permissions: [],
-                size: 1024 * 500 // 500KB
-            },
-            {
-                file_id: 14,
-                parent_id: 1,
-                name: 'Rozvrh 2024.xlsx',
-                type: 'sheet',
-                modified_at: new Date(),
-                created_at: new Date(),
-                owner_id: 1,
-                permissions: [],
-                size: 1024 * 20 // 20kb
-            },
-            {
-                file_id: 15,
-                parent_id: 2,
-                name: 'Výlet 2023.jpg',
-                type: 'image',
-                modified_at: new Date(),
-                created_at: new Date(),
-                owner_id: 1,
-                permissions: [],
-                size: 1024 * 2500
             }
-        ];
+        ]
         this._files.next(mockData);
     }
 }
