@@ -167,4 +167,13 @@ export class BoardComponent implements OnInit {
     })
   }
 
+  public getUserRole(): string {
+    let roles = [this.l.s('roles.' + this.u.getRole())];
+    if (this.u.getUser().manager == -1) {
+      roles.push(this.l.s('roles.manager'))
+    }
+
+    return roles.join(', ');
+  }
+
 }

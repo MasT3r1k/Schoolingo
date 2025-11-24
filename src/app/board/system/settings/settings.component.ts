@@ -5,6 +5,7 @@ import { Config } from '@Schoolingo/config';
 import { IconsModule } from '@Schoolingo/icons';
 import { Locale } from '@Schoolingo/locale';
 import { Utils } from '@Schoolingo/utils';
+import { IconEyeglassFilled, IconRectangleRoundedBottom } from 'angular-tabler-icons/icons';
 
 interface ElysiaVersion {
   current: string;
@@ -17,7 +18,23 @@ interface ElysiaVersionLoading {
   error: string | null;
 }
 
-interface ElysiaSystemAPI {
+interface SubjectAPI {
+  subjectId: number | null;
+  subjectName: string;
+  shortcut: string;
+}
+
+interface ScopeAPI {
+  scopeId: number | null;
+  name: string;
+  code: string;
+  shortcut: string;
+  years: number;
+  number_of_classes: number;
+  students_per_class: number;
+}
+
+type ElysiaSystemAPI = {
   settings: {
     name: string;
     shortName: string;
@@ -43,21 +60,13 @@ interface ElysiaSystemAPI {
 
   student_count: number;
 
-  subjects: {
-    subjectId: number;
-    subjectName: string;
-    shortcut: string;
-  }[]
+  subjects: SubjectAPI[]
 
-  scopes: {
-    scopeId: number;
-    name: string;
-    code: string;
-    shortcut: string;
-    years: number;
-    number_of_classes: number;
-    students_per_class: number;
-  }[]
+  scopes: ScopeAPI[];
+
+  lesson_hour: string;
+  lesson_length: string;
+  break_time: string;
 }
 
 enum enumSidebar {
@@ -76,9 +85,11 @@ export class SettingsComponent implements OnInit {
   private http = inject(HttpClient);
   public l = inject(Locale);
 
+  public input_errors: { [key: string]: string } = {};
+
   public sidebar: enumSidebar = 0;
   // === API data ===
-  public system: any;
+  public declare system: ElysiaSystemAPI;
   public declare version: ElysiaVersion;
   public version_loading: ElysiaVersionLoading = {
     is_loading: true,
@@ -86,13 +97,128 @@ export class SettingsComponent implements OnInit {
   }
 
   // === Scopes ===
-  public selected_scope = 0;
+  public selected_scope: ScopeAPI | undefined = undefined;
   public subject_hours: {[key: number]: number[]} = {};
+
+  public select_scope(scope: ScopeAPI | undefined): void {
+    this.selected_scope = JSON.parse(JSON.stringify(scope));
+    this.input_errors = {};
+  }
+
+  public get_selected_scope_index(): number {
+    return this.system.scopes.findIndex((scope) => scope.scopeId == this.selected_scope?.scopeId);
+  }
+
+  public new_scope(): void {
+    const scope = this.system.scopes.find((scope) => scope.scopeId == null);
+    if (scope) {
+      this.selected_scope = scope;
+      return;
+    }
+
+    this.system.scopes.unshift({
+      scopeId: null,
+      name: "",
+      code: "",
+      shortcut: "",
+      years: 3,
+      number_of_classes: 1,
+      students_per_class: 20
+    });
+
+    this.select_scope(this.system.scopes[0]);
+  }
+
+  public remove_scope(scopeId: number | null): void {
+    const scopeIndex = this.system.scopes.findIndex((scope) => scope.scopeId == scopeId);
+    if (scopeIndex == -1) return;
+    this.system.scopes.splice(scopeIndex, 1);
+    this.selected_scope = undefined;
+  }
+
+  // === Update Scope ===
+  public update_scope(): void {
+    this.input_errors = {};
+    if (!this.selected_scope) return;
+    if (this.selected_scope.name == "") {
+      this.input_errors['scope_name'] = this.l.s('form.required');
+    }
+
+    if (this.selected_scope.code == "") {
+      this.input_errors['scope_code'] = this.l.s('form.required');
+    }
+
+    if (this.selected_scope.shortcut == "") {
+      this.input_errors['scope_shortcut'] = this.l.s('form.required');
+    }
+
+    if (Object.keys(this.input_errors).length) {
+      return;
+    }
+    const scope = this.selected_scope;
+    if (scope == undefined) return;
+    console.log(scope);
+    console.log(this.subject_hours);
+    this.http.post(
+      `${Config.API_URL}/v1/system/update_scope`,
+      {
+        scopeId: scope.scopeId,
+        name: scope.name,
+        shortcut: scope.shortcut,
+        code: scope.code,
+        years: scope.years,
+        students_per_class: scope.students_per_class,
+        number_of_classes: scope.number_of_classes,
+        subjects: this.subject_hours
+      },
+      { withCredentials: true }
+    )
+    .subscribe((data) => {
+      const scope = this.selected_scope;
+      if (scope == undefined) return;
+      if ('scopeId' in data) {
+        if (scope.scopeId == null) {
+          scope.scopeId = data.scopeId as number;
+        }
+      }
+      console.log(data)
+    });
+  }
 
   // === Subjects ===
   public selected_subject = 0;
+  public translate_subject = '';
   public get_translate_subjects(): any[] {
     return Object.entries(this.l.s('subject_translations'));
+  }
+
+  public new_subject(): void {
+    const subjectIndex = this.system.subjects.findIndex((subject) => subject.subjectId == null);
+    if (subjectIndex != -1) {
+      this.selected_subject = subjectIndex;
+      return;
+    }
+
+    this.system.subjects.unshift({
+      subjectId: null,
+      subjectName: "",
+      shortcut: ""
+    });
+
+    this.selected_subject = 0;
+  }
+
+  public onInputSubjectName(): void {
+    const translation = this.get_translate_subjects().find((sub) => sub[1].toLowerCase() == this.system.subjects[this.selected_subject].subjectName.toLowerCase());
+    if (translation) {
+      this.translate_subject = translation[0];
+    }
+  }
+
+  public checkCollisionSubject(): boolean {
+    const currentSubject = this.system.subjects[this.selected_subject];
+    const subjects = this.system.subjects.filter((subject) => (subject.subjectName.toLowerCase() == currentSubject.subjectName.toLowerCase() || subject.shortcut.toLowerCase() == currentSubject.shortcut.toLowerCase()) && subject.subjectId != currentSubject.subjectId);
+    return !!subjects.length;
   }
 
   // === Helpers ===
@@ -119,7 +245,9 @@ export class SettingsComponent implements OnInit {
       };
 
       for(let subject of data.subjects) {
-        this.subject_hours[subject.subjectId] = [0, 0, 0, 0, 0];
+        if (subject.subjectId != null) {
+          this.subject_hours[subject.subjectId] = [0, 0, 0, 0, 0];
+        }
       }
     });
 
@@ -161,12 +289,5 @@ export class SettingsComponent implements OnInit {
       console.log(data);
     })
 
-  }
-
-  // === Update Scope ===
-  public update_scope(): void {
-    const scope = this.system.scopes[this.selected_scope];
-    console.log(scope);
-    console.log(this.subject_hours);
   }
 }
