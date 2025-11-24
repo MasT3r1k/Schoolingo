@@ -70,6 +70,7 @@ type ElysiaSystemAPI = {
 }
 
 enum enumSidebar {
+  SYSTEM,
   MAIN,
   SCOPES,
   SUBJECTS

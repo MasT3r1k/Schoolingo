@@ -26,6 +26,7 @@ import { Traineeship } from '@Schoolingo/traineeship';
 import { ContextMenu } from '@Schoolingo/context-menu';
 import { ScheduleBuilder } from '@Schoolingo/schedule_builder';
 import { Classbook } from '@Schoolingo/classbook';
+import { Documents } from '@Schoolingo/documents';
 
 export function initAuth(auth: Authentication): () => void {
   return () => auth.loadState(); // např. HTTP požadavek + setAuthState()
@@ -63,6 +64,7 @@ export const appConfig: ApplicationConfig = {
     Traineeship,
     ContextMenu,
     ScheduleBuilder,
-    Classbook
+    Classbook,
+    Documents
   ]
 };

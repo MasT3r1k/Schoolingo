@@ -2,6 +2,10 @@
     <div class="container-sidebar">
         <label>{{ l.s('system.section_main') }}</label>
 
+        <div class="item" [class.active]="sidebar==enumSidebar.SYSTEM" (click)="sidebar = enumSidebar.SYSTEM">
+            {{ l.s('system.system_settings') }}
+        </div>
+
         <div class="item" [class.active]="sidebar==enumSidebar.MAIN" (click)="sidebar = enumSidebar.MAIN">
             {{ l.s('system.school_settings') }}
         </div>
@@ -17,11 +21,15 @@
     </div>
 
         @switch (sidebar) {
-            @case(enumSidebar.MAIN) {
+            @case(enumSidebar.SYSTEM) {
     <div class="container-content">
-
         @if (version_loading.is_loading) {
-
+            <div class="alert loading" style="justify-content: center;border-radius: 0;">
+                <div class="loader"></div>
+                <div class="row">
+                    <span>{{ l.s('system.system_update_loading') }}</span>
+                </div>
+            </div>
         } @else if (version && version_loading.error == null) {
         <div class="alert"
         [class.success]="version.isUpToDate"
@@ -55,7 +63,11 @@
                 </small>
             </div>
         </div>
+    </div>
+            }
 
+            @case(enumSidebar.MAIN) {
+    <div class="container-content">
         <h2>{{ l.s('system.school_settings') }}</h2>
         <div class="form-group">
             <label for="name">
