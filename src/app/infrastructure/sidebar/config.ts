@@ -234,11 +234,6 @@ export const config: SidebarGroup[] = [
                 }]
             },
             {
-                item: 'sidebar.action_plan',
-                permission: ['student', 'parent', 'teacher'],
-                url: 'actionplan',
-            },
-            {
                 item: 'sidebar.calendar',
                 permission: ['student', 'parent', 'teacher'],
                 url: 'calendar',

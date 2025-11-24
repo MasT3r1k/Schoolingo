@@ -28,6 +28,7 @@ import { ClassbookComponent } from './board/Teach/classbook/classbook.component'
 import { NoticeboardComponent } from './board/messages/noticeboard/noticeboard.component';
 import { GroupsComponent } from './board/messages/groups/groups.component';
 import { SettingsComponent as SystemSettings } from './board/system/settings/settings.component';
+import { DocumentsComponent } from './board/documents/documents.component';
 
 
 export const routes: Routes = [
@@ -47,6 +48,9 @@ export const routes: Routes = [
             },
             {
                 path: 'calendar', component: CalendarComponent
+            },
+            {
+                path: 'documents', component: DocumentsComponent
             },
             {
                 path: 'marks', children: [

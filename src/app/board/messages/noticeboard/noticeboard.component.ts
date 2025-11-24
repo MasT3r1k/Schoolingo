@@ -2,6 +2,7 @@ import { Component, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { IconsModule } from '@Schoolingo/icons';
 import { Locale } from '@Schoolingo/locale';
+import { Utils } from '@Schoolingo/utils';
 
 interface Announcement {
   id: number;
@@ -27,6 +28,7 @@ interface Announcement {
 export class NoticeboardComponent implements OnInit {
   public l = inject(Locale);
   public announcements: Announcement[] = [];
+  Utils = Utils;
 
   ngOnInit(): void {
     this.announcements = [

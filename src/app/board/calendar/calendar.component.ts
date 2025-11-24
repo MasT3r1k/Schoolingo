@@ -24,8 +24,12 @@ interface CalendarEvent {
 export class CalendarComponent implements OnInit {
   public l = inject(Locale);
   public currentDate: Date = new Date();
+  public today = new Date();
   public weekDays: Date[] = [];
-  public hours: number[] = Array.from({ length: 13 }, (_, i) => i + 7); // 7:00 - 19:00
+  public hours: number[] = Array.from(
+    { length: 13 },
+    (_, i) => i + 7
+  ); // 7:00 - 19:00
   public events: CalendarEvent[] = [];
 
   ngOnInit(): void {

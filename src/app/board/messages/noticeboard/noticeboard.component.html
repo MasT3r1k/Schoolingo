@@ -2,10 +2,10 @@
     <div class="feed-column">
         <div class="feed-header">
             <h2>{{ l.s('sidebar.messages.noticeboard') }}</h2>
-            <button class="btn primary">
+            <div class="btn primary">
                 <i-tabler name="plus"></i-tabler>
                 {{ l.s('messages.new_announcement') }}
-            </button>
+            </div>
         </div>
 
         <div class="announcements-list">
@@ -18,15 +18,23 @@
                             {{ getInitials(post.author.name) }}
                         </div>
                         <div class="meta">
-                            <span class="name">{{ post.author.name }}</span>
-                            <span class="role">{{ l.s('roles.' + post.author.role) }}</span>
-                            <span class="dot">•</span>
-                            <span class="date">{{ post.date | date:'medium' }}</span>
+                            <span class="name">
+                                {{ post.author.name }}
+                            </span>
+                            <div class="row" style="gap: 4px;">
+                                <span class="role">
+                                    {{ l.s('roles.' + post.author.role) }}
+                                </span>
+                                <span class="dot">•</span>
+                                <span class="date">
+                                    {{ Utils.formatDate(post.date) }}
+                                </span>
+                            </div>
                         </div>
                     </div>
-                    <button class="btn icon-only">
-                        <i-tabler name="dots"></i-tabler>
-                    </button>
+                    <div class="btn icon-only">
+                        <i-tabler name="dots-vertical"></i-tabler>
+                    </div>
                 </div>
 
                 <div class="post-content">
@@ -45,17 +53,17 @@
                 }
 
                 <div class="post-actions">
-                    <button class="action-btn">
+                    <div class="action-btn">
                         <i-tabler name="heart"></i-tabler>
                         <span>{{ post.likes }}</span>
-                    </button>
-                    <button class="action-btn">
+                    </div>
+                    <div class="action-btn">
                         <i-tabler name="message-circle"></i-tabler>
                         <span>{{ post.comments }}</span>
-                    </button>
-                    <button class="action-btn">
+                    </div>
+                    <div class="action-btn">
                         <i-tabler name="share"></i-tabler>
-                    </button>
+                    </div>
                 </div>
             </div>
             }
@@ -67,13 +75,6 @@
             <h3>{{ l.s('messages.pinned') }}</h3>
             <div class="empty-placeholder">
                 {{ l.s('messages.no_pinned') }}
-            </div>
-        </div>
-
-        <div class="sidebar-card">
-            <h3>{{ l.s('messages.trending') }}</h3>
-            <div class="empty-placeholder">
-                {{ l.s('messages.no_trending') }}
             </div>
         </div>
     </div>

@@ -37,6 +37,7 @@ export interface SidebarItem {
 export class BoardComponent implements OnInit {
   App = Config
   sidebarToggled = false;
+  public cookies_visibled = true;
   private router = inject(Router);
   public sidebar = inject(Sidebar);
   private marks = inject(MarksManager);
