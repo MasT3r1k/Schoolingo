@@ -39,6 +39,13 @@ export class CreateFolderComponent {
       { withCredentials: true }
     )
     .subscribe((data: any) => {
+      if ('error' in data) {
+        switch(data.error) {
+          case 'folder_already_created':
+            this.input_errors['name'] = this.l.s('documents.folder_already_created')
+            break;
+        }
+      }
       if (data.success !== true) return;
       this.modalManager.closeModal('create_folder');
       this.documents.addFile({

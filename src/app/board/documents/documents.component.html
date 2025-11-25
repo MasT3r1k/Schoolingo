@@ -9,7 +9,7 @@
         <div class="sidebar-content">
             <ul>
                 @for (tree of documents.getTree(); track $index) {
-                    <ng-container [ngTemplateOutlet]="tree_content" [ngTemplateOutletContext]="{item: tree }" />
+                    <ng-container [ngTemplateOutlet]="tree_content" [ngTemplateOutletContext]="{ item: tree }" />
                 }
             </ul>
         </div>
@@ -46,7 +46,7 @@
                 } @empty {
                 <div class="empty-state">
                     <i-tabler name="folder-off"></i-tabler>
-                    <p>Tato složka je prázdná</p>
+                    <p>{{ l.s('documents.folder_empty') }}</p>
                 </div>
                 }
             </div>
@@ -55,7 +55,7 @@
 
     <div class="details-panel" [class.open]="file">
         <div class="detail-header header">
-            <h3>Podrobnosti</h3>
+            <h3>{{ l.s('documents.file_details') }}</h3>
             <div class="btn-icon" (click)="documents.closeProperties()">
                 <i-tabler name="x"></i-tabler>
             </div>
@@ -66,36 +66,36 @@
                 <i-tabler [name]="documents.getIcon(file.type)" style="width: 64px; height: 64px;"></i-tabler>
             </div>
             <div class="info-group">
-                <label>Název</label>
+                <label>{{ l.s('documents.file_name') }}</label>
                 <p>{{ file.name }}</p>
             </div>
             <div class="info-group">
-                <label>Typ</label>
+                <label>{{ l.s('documents.file_type') }}</label>
                 <p>{{ file.type }}</p>
             </div>
             <div class="info-group">
-                <label>Velikost</label>
+                <label>{{ l.s('documents.file_size') }}</label>
                 <p>{{ file.size }} B</p>
             </div>
             <div class="info-group">
-                <label>Změněno</label>
+                <label>{{ l.s('documents.file_modified') }}</label>
                 <p>{{ Utils.formatDate(file.modified_at) }}</p>
             </div>
 
             <div class="buttons">
                 @if (file.type == 'folder') {
                 <div class="btn secondary" (click)="documents.selectFolder(file)">
-                    <i-tabler name="click"></i-tabler> Otevřít složku
+                    <i-tabler name="folder-open"></i-tabler> {{ l.s('documents.open_folder') }}
                 </div>
                 }
                 <div class="btn secondary">
-                    <i-tabler name="edit"></i-tabler> Přejmenovat
+                    <i-tabler name="edit"></i-tabler> {{ l.s('documents.rename_file') }}
                 </div>
                 <div class="btn secondary">
-                    <i-tabler name="lock"></i-tabler> Oprávnění
+                    <i-tabler name="lock"></i-tabler> {{ l.s('documents.permissions_file') }}
                 </div>
                 <div class="btn danger">
-                    <i-tabler name="trash-x"></i-tabler> Smazat
+                    <i-tabler name="trash-x"></i-tabler> {{ l.s('documents.delete_file') }}
                 </div>
             </div>
         </div>
