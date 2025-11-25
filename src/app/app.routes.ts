@@ -29,6 +29,7 @@ import { NoticeboardComponent } from './board/messages/noticeboard/noticeboard.c
 import { GroupsComponent } from './board/messages/groups/groups.component';
 import { SettingsComponent as SystemSettings } from './board/system/settings/settings.component';
 import { DocumentsComponent } from './board/documents/documents.component';
+import { MidtermComponent } from './board/marks/midterm/midterm.component';
 
 
 export const routes: Routes = [
@@ -60,6 +61,9 @@ export const routes: Routes = [
 
                     {
                         path: 'intermrecord', component: IntermRecordComponent
+                    },
+                    {
+                        path: 'midterm', component: MidtermComponent
                     }
                 ]
             },
