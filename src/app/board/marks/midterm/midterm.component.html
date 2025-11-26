@@ -19,77 +19,65 @@
                         <th rowspan="2" class="subject-col"></th>
 
                         <!-- Roky -->
-                        <th colspan="2" class="year">První rok</th>
-                        <th colspan="2" class="year">Druhý rok</th>
-                        <th colspan="2" class="year">Třetí rok</th>
+                        @for(year of [].constructor(getYears());track $index) {
+                            <th colspan="2" class="year">
+                                {{ getYearText($index) }}
+                            </th>
+                        }
                     </tr>
                     <tr>
-                        <th>1.</th>
-                        <th>2.</th>
-                        <th>1.</th>
-                        <th>2.</th>
-                        <th>1.</th>
-                        <th>2.</th>
+                        @for(year of [].constructor(getYears());track $index) {
+                            @for(semester of [].constructor(2);track $index) {
+                                <th>{{ $index + 1 }}.</th>
+                            }
+                        }
                     </tr>
                 </thead>
 
                 <tbody>
 
                     <!-- CHOVÁNÍ -->
+                    @for (subject of getSubjects('behave'); track $index) {
                     <tr>
-                        <td class="subject">Chování</td>
-                        <td>1</td>
-                        <td>1</td>
-                        <td>1</td>
-                        <td>1</td>
-                        <td>1</td>
-                        <td>1</td>
+                        <td class="subject">
+                            {{ subject.subjectName }}
+                        </td>
+                        @for (grade of subject.semesters; track $index) {
+                            <td>{{ grade ?? '-' }}</td>
+                        }
                     </tr>
-
+                    }
                     <!-- POVINNÉ -->
                     <tr class="section-row">
-                        <td colspan="7">Povinné předměty</td>
+                        <td colspan="999">{{ l.s('marks.midterm.mandatory_subjects') }}</td>
                     </tr>
 
+                    @for (subject of getSubjects('mandatory'); track $index) {
                     <tr>
-                        <td class="subject">Matematika</td>
-                        <td>2</td><td>3</td>
-                        <td>2</td><td>2</td>
-                        <td>1</td><td>2</td>
+                        <td class="subject">
+                            {{ subject.subjectName }}
+                        </td>
+                        @for (grade of subject.semesters; track $index) {
+                            <td>{{ grade ?? '-' }}</td>
+                        }
                     </tr>
-
-                    <tr>
-                        <td class="subject">Český jazyk</td>
-                        <td>1</td><td>1</td>
-                        <td>1</td><td>1</td>
-                        <td>2</td><td>2</td>
-                    </tr>
-
-                    <tr>
-                        <td class="subject">Angličtina</td>
-                        <td>1</td><td>2</td>
-                        <td>1</td><td>1</td>
-                        <td>1</td><td>1</td>
-                    </tr>
+                    }
 
                     <!-- NEPOVINNÉ -->
                     <tr class="section-row">
-                        <td colspan="7">Nepovinné předměty</td>
+                        <td colspan="999">{{ l.s('marks.midterm.optional_subjects') }}</td>
                     </tr>
 
+                    @for (subject of getSubjects('optional'); track $index) {
                     <tr>
-                        <td class="subject">Sborový zpěv</td>
-                        <td>-</td><td>1</td>
-                        <td>-</td><td>1</td>
-                        <td>-</td><td>-</td>
+                        <td class="subject">
+                            {{ subject.subjectName }}
+                        </td>
+                        @for (grade of subject.semesters; track $index) {
+                            <td>{{ grade ?? '-' }}</td>
+                        }
                     </tr>
-
-                    <tr>
-                        <td class="subject">Programování</td>
-                        <td>1</td><td>1</td>
-                        <td>-</td><td>-</td>
-                        <td>-</td><td>-</td>
-                    </tr>
+                    }
 
                 </tbody>
             </table>

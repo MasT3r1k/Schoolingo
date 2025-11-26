@@ -35,6 +35,8 @@ export interface SchoolClass {
     className: string;
     scopeId: number;
     students: number;
+    scopeName: string;
+    scopeYears: number;
 }
 
 export interface Child {
