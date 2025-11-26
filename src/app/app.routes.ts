@@ -12,7 +12,7 @@ import { LoginHistoryComponent } from './board/User/login-history/login-history.
 import { ConnectionsComponent } from './board/User/connections/connections.component';
 import { GdprComponent } from './board/User/gdpr/gdpr.component';
 import { TimetableComponent } from './board/Teach/timetable/timetable.component';
-import { HomeworksComponent } from './board/Teach/homeworks/homeworks.component';
+import { HomeworkComponent } from './board/Teach/homework/homework.component';
 import { SendComponent } from './board/messages/send/send.component';
 import { ReceivedComponent } from './board/messages/received/received.component';
 import { AbsenceComponent } from './board/Teach/absence/absence.component';
@@ -73,7 +73,7 @@ export const routes: Routes = [
                         path: 'timetable', component: TimetableComponent
                     },
                     {
-                        path: 'homeworks', component: HomeworksComponent
+                        path: 'homeworks', component: HomeworkComponent
                     },
                     {
                         path: 'absence', component: AbsenceComponent

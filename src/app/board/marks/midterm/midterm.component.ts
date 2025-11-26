@@ -16,37 +16,34 @@ export class MidtermComponent implements OnInit {
   public selectedTab = new BehaviorSubject(0);
   public options = ['marks.midterm.tabs.marks', 'marks.midterm.tabs.reports'];
   
-  public midterm_grades: any[] = [
-    {
-      subjectName: "Chování",
-      semesters: [1, 1, 1, 1, 1, 1, null, null],
-      type: 'behave'
-    },
-    {
-      subjectName: "Matematika",
-      semesters: [2, 3, 2, 2, 1, 2, null, null],
-      type: 'mandatory'
-    },
-    {
-      subjectName: "Český jazyk",
-      semesters: [1, 1, 1, 1, 2, 2, null, null],
-      type: 'mandatory'
-    },
-    {
-      subjectName: "Angličtina",
-      semesters: [1, 2, 1, 1, 1, 1, null, null],
-      type: 'mandatory'
-    },
-    {
-      subjectName: "Programování",
-      semesters: [1, 1, null, null, null, null, null, null],
-      type: 'optional'
-    }
-  ];
-
-  public getSubjects(type: 'behave' | 'mandatory' | 'optional'): any[] {
-    return this.midterm_grades.filter((grade) => grade.type == type);
-  }
+  public midterm_grades: {[ key: ('mandatory' | 'optional' | string) ]: any[]} = {
+    null: [
+      {
+        subjectName: "Chování",
+        semesters: [1, 1, 1, 1, 1, 1, null, null],
+      }
+    ],
+    mandatory: [
+      {
+        subjectName: "Matematika",
+        semesters: [2, 3, 2, 2, 1, 2, null, null],
+      },
+      {
+        subjectName: "Český jazyk",
+        semesters: [1, 1, 1, 1, 2, 2, null, null],
+      },
+      {
+        subjectName: "Angličtina",
+        semesters: [1, 2, 1, 1, 1, 1, null, null],
+      }
+    ],
+    optional: [
+      {
+        subjectName: "Programování",
+        semesters: [1, 1, null, null, null, null, null, null],
+      }
+    ]
+  };
 
   public getYears(): number {
     return this.u.getUser().classes[0].scopeYears;
@@ -63,6 +60,5 @@ export class MidtermComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    console.log(this.u.getUser());
   }
 }

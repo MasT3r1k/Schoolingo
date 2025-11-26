@@ -1,0 +1,53 @@
+<div class="card">
+    <div class="card-header">
+        <h2>{{ l.s('sidebar.teach.homeworks') }}</h2>
+        <div class="flex-items">
+            <schoolingo-tabs
+                [value]="selectedTab"
+                [options]="options"
+            ></schoolingo-tabs>
+        </div>
+    </div>
+    <div class="card-body">
+        @for (item of homework; track $index) {
+            <div class="task-card">
+                <div class="task-header">
+                    <div class="task-subject">
+                        {{ item.subjectName }}
+                    </div>
+                    <div class="task-title">
+                        {{ item.headline }}
+                    </div>
+                </div>
+                <div class="task-description">
+                    {{ item.homework }}
+                </div>
+                <div class="task-footer">
+                    <div class="row">
+                        <div class="task-meta">
+                            <small class="muted">Zadání: </small>
+                            <span>{{ Utils.formatDateShort(item.assigned_at) }}</span>
+                        </div>
+                        <div class="task-meta">
+                            <small class="muted">Odevzdat: </small>
+                            <span>{{ Utils.formatDateShort(item.due_to) }}</span>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="btn-icon">
+                            <i-tabler name="attachments"></i-tabler>
+                        </div>
+                        @switch (item.type) {
+                            @case(0) {
+                                <div class="btn primary small outline">Mám hotovo</div>
+                            }
+                            @case(1) {
+                                <div class="btn primary small">Odevzdat úkol</div>
+                            }
+                        }
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>
