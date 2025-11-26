@@ -106,7 +106,7 @@
 <ng-template #tree_content let-item="item">
     <li>
         <div class="tree-content" (click)="documents.selectFolder(item)" [class.active]="item.file_id === documents.getSelectedFolder()?.file_id">
-            @if (item.children && item.children.length) {
+            @if ((item.files_count || (item.children && item.children.length))) {
             <span class="toggle-icon" (click)="toggleFolder(item, $event)" [class.expanded]="isFolderExpanded(item)">
                 <i-tabler [name]="isFolderExpanded(item) ? 'chevron-down' : 'chevron-right'" style="width: 16px; height: 16px;"></i-tabler>
             </span>
@@ -118,7 +118,7 @@
                 {{ item.name }}
             </span>
         </div>
-        @if (item.children && item.children.length && isFolderExpanded(item)) {
+        @if ((item.files_count || (item.children && item.children.length)) && isFolderExpanded(item)) {
         <ul class="tree">
             @for (tree of item.children; track $index) {
                 <ng-container [ngTemplateOutlet]="tree_content" [ngTemplateOutletContext]="{ item: tree }" />

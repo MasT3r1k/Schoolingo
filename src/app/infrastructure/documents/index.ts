@@ -1,3 +1,6 @@
+import { HttpClient } from "@angular/common/http";
+import { inject } from "@angular/core";
+import { Config } from "@Schoolingo/config";
 import { permType } from "@Schoolingo/permission";
 import { BehaviorSubject } from "rxjs";
 
@@ -18,10 +21,12 @@ export interface FileItem {
 
 export interface FolderItem extends FileItem {
     type: 'folder';
+    files_count: number;
     expanded?: boolean;
 }
 
 export class Documents {
+    private http = inject(HttpClient)
     private _files = new BehaviorSubject<(FileItem | FolderItem)[]>([]);
     public files$ = this._files.asObservable();
     private _current_folder = new BehaviorSubject<FolderItem | null>(null);
@@ -32,6 +37,10 @@ export class Documents {
     public selectFolder(folder: FileItem | FolderItem | null): void {
         if (folder?.type !== 'folder') {
             return;
+        }
+
+        if (folder.type == 'folder') {
+            this.loadFiles(folder.file_id);
         }
         this._current_folder.next(folder as FolderItem);
         this._selected_file.next(null);
@@ -45,8 +54,24 @@ export class Documents {
         return this._selected_file.getValue();
     }
 
-    public addFile(file: (FileItem | FolderItem)): void {
-        this._files.getValue().push(file);
+    public loadFiles(parent_id: number | null): void {
+        this.http.post<(FileItem | FolderItem)[]>(
+            `${Config.API_URL}/v1/documents/files`,
+            { parent_id },
+            { withCredentials: true }
+        )
+        .subscribe((files: (FileItem | FolderItem)[]) => {
+            files.forEach((file) => this.addFile(file));
+        });
+    }
+
+    public addFile(file: FileItem | FolderItem): void {
+        const files = this._files.getValue();
+
+        const exists = files.some(f => f.file_id === file.file_id);
+        if (exists) return;
+
+        this._files.next([...files, file]);
     }
 
     public getFiles() {

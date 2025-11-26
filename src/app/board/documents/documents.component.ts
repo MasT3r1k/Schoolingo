@@ -54,19 +54,7 @@ export class DocumentsComponent implements OnInit {
       }
     )
 
-    this.http.post<any[]>(
-      `${Config.API_URL}/v1/documents/files`,
-      {
-        parent_id: this.documents.getSelectedFolder()?.parent_id || null
-      },
-      { withCredentials: true }
-    )
-    .subscribe((data: any[]) => {
-      data.forEach((file) => {
-        this.documents.addFile(file);
-      })
-      // console.log(data)
-    });
+    this.documents.loadFiles(this.documents.getSelectedFolder()?.parent_id || null);
 
     this.documents.selectedFile$.subscribe((file) => this.file = file);
     // Expand root folders by default
@@ -91,6 +79,9 @@ export class DocumentsComponent implements OnInit {
     if (this.expandedFolders.has(item.file_id)) {
       this.expandedFolders.delete(item.file_id);
     } else {
+      if (!item.children || !item.children.length) {
+        this.documents.loadFiles(item.file_id);
+      }
       this.expandedFolders.add(item.file_id);
     }
   }
