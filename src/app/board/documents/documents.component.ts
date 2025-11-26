@@ -7,7 +7,6 @@ import { ModalManager } from '@Schoolingo/modal';
 import { Utils } from '@Schoolingo/utils';
 import { CreateFolderComponent } from './modals/create-folder/create-folder.component';
 import { HttpClient } from '@angular/common/http';
-import { Config } from '@Schoolingo/config';
 import { UploadFilesComponent } from './modals/upload-files/upload-files.component';
 
 @Component({
@@ -17,7 +16,6 @@ import { UploadFilesComponent } from './modals/upload-files/upload-files.compone
   styleUrl: './documents.component.css'
 })
 export class DocumentsComponent implements OnInit {
-  private http = inject(HttpClient);
   public l = inject(Locale);
   public documents = inject(Documents);
   public file: FileItem | FolderItem | null = null;

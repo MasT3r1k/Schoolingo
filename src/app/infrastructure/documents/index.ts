@@ -4,14 +4,14 @@ import { Config } from "@Schoolingo/config";
 import { permType } from "@Schoolingo/permission";
 import { BehaviorSubject } from "rxjs";
 
-export type FileType = 'folder' | 'image' | 'video' | 'pdf' | 'doc' | 'sheet' | 'unknown';
+export type FileType = 'folder' | 'file';
 
 export interface FileItem {
     file_id: number | null;
     parent_id: number | null; // null for root
-    name: string;
+    name: string | null; // null for all files folder
     type: FileType;
-    size: number;
+    file_size: number;
     permissions: permType[];
     owner_id: number | null;
     content?: string;
@@ -83,7 +83,7 @@ export class Documents {
                 if (a.type !== 'folder' && b.type === 'folder') return 1;
 
                 // Jinak seřadit podle názvu
-                return a.name.localeCompare(b.name);
+                return a.name!.localeCompare(b.name!);
             });
     }
 
@@ -151,19 +151,19 @@ export class Documents {
 
 
     constructor() {
-        const mockData: (FileItem | FolderItem)[] = [
+        const defaultFolder: (FileItem | FolderItem)[] = [
             {
                 file_id: null,
                 parent_id: -1,
-                name: 'Všechny soubory',
+                name: null,
                 type: 'folder',
                 modified_at: new Date(),
                 created_at: new Date(),
                 owner_id: null,
                 permissions: [],
-                size: 0
+                file_size: 0
             }
         ]
-        this._files.next(mockData);
+        this._files.next(defaultFolder);
     }
 }

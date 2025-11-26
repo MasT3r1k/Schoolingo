@@ -71,11 +71,11 @@
             </div>
             <div class="info-group">
                 <label>{{ l.s('documents.file_type') }}</label>
-                <p>{{ file.type }}</p>
+                <p>{{ l.s('documents.types.' + file.type) }}</p>
             </div>
             <div class="info-group">
                 <label>{{ l.s('documents.file_size') }}</label>
-                <p>{{ file.size }} B</p>
+                <p>{{ file.file_size }} B</p>
             </div>
             <div class="info-group">
                 <label>{{ l.s('documents.file_modified') }}</label>
@@ -115,7 +115,7 @@
             }
             <span class="tree-label">
                 <i-tabler [name]="documents.getIcon(item.type) == 'folder-filled' ? isFolderExpanded(item) ? 'folder-open' : 'folder'  : documents.getIcon(item.type)"></i-tabler>
-                {{ item.name }}
+                {{ item.name || l.s('documents.all_files') }}
             </span>
         </div>
         @if ((item.files_count || (item.children && item.children.length)) && isFolderExpanded(item)) {
