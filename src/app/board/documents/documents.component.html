@@ -20,27 +20,57 @@
             <div class="left">
                 <div class="search">
                     <i-tabler name="search"></i-tabler>
-                    <input type="text" [placeholder]="l.s('documents.search_files')">
+                    <input type="text" [formControl]="search" [placeholder]="l.s('documents.search_files')">
+                </div>
+                <div class="btn-icon" (click)="toggleLayout()">
+                    <i-tabler [name]="'layout-' + layout"></i-tabler>
                 </div>
             </div>
 
             <div class="right">
+                <div class="btn-icon" (click)="refreshFiles()">
+                    <i-tabler name="refresh"></i-tabler>
+                </div>
                 <div class="btn small primary" (click)="openUploadFiles()">
                     <i-tabler name="upload"></i-tabler>
                     {{ l.s('documents.upload') }}
                 </div>
             </div>
         </div>
-        <div class="document-explorer">
-            <div class="explorer-grid">
+        @if (search.value == '') {
+        <div class="document-explorer" (contextmenu)="$event.stopPropagation();rightClickOnGrid($event)">
+            @if (layout == 'list') {
+            <div class="layout-header file-meta" style="padding: 0 1.5rem">
+                <div class="meta" style="flex: 1;">{{ l.s('documents.file_name') }}</div>
+                <div class="meta">{{ l.s('documents.file_modified') }}</div>
+                <div class="meta">{{ l.s('documents.file_type') }}</div>
+                <div class="meta">{{ l.s('documents.file_size') }}</div>
+            </div>
+            }
+            <div class="explorer" [class.explorer-grid]="layout == 'grid'" [class.explorer-list]="layout == 'list'">
                 @for(file of documents.getFiles();track $index) {
-                <div class="file-card" (click)="documents.showProperties(file)"
+                <div class="file-card" [class.selected]="documents.getSelectedFile()?.file_id == file.file_id" (contextmenu)="$event.stopPropagation();rightClickOnItem(file.file_id, $event)" (click)="documents.showProperties(file)"
                     (dblclick)="documents.selectFolder(file)">
                     <div class="icon-wrapper">
                         <i-tabler [name]="documents.getIcon(file.type)"></i-tabler>
                     </div>
                     <div class="file-info">
                         <div class="name" [title]="file.name">{{ file.name }}</div>
+                        @if (layout == 'list') {
+                            <div class="file-meta">
+                                <div class="meta">
+                                    {{ Utils.formatDateShort(file.modified_at) }}
+                                </div>
+
+                                <div class="meta">
+                                    {{ l.s('documents.types.' + file.type) }}
+                                </div>
+
+                                <div class="meta">
+                                    {{ file.file_size }} B
+                                </div>
+                            </div>
+                        }
                     </div>
                 </div>
                 } @empty {
@@ -51,6 +81,7 @@
                 }
             </div>
         </div>
+        }
     </div>
 
     <div class="details-panel" [class.open]="file">
@@ -105,9 +136,9 @@
 
 <ng-template #tree_content let-item="item">
     <li>
-        <div class="tree-content" (click)="documents.selectFolder(item)" [class.active]="item.file_id === documents.getSelectedFolder()?.file_id">
+        <div class="tree-content" (click)="context_menu.hideContextMenu();documents.selectFolder(item)" (contextmenu)="rightClickOnItem(item.file_id, $event)" [class.active]="item.file_id === documents.getSelectedFolder()?.file_id">
             @if ((item.files_count || (item.children && item.children.length))) {
-            <span class="toggle-icon" (click)="toggleFolder(item, $event)" [class.expanded]="isFolderExpanded(item)">
+            <span class="toggle-icon" (click)="context_menu.hideContextMenu();toggleFolder(item, $event)" [class.expanded]="isFolderExpanded(item)">
                 <i-tabler [name]="isFolderExpanded(item) ? 'chevron-down' : 'chevron-right'" style="width: 16px; height: 16px;"></i-tabler>
             </span>
             } @else {

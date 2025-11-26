@@ -1,4 +1,4 @@
-interface ContextMenuItem {
+export interface ContextMenuItem {
     icon?: string | undefined;
     type?: 'split';
     color?: 'danger';

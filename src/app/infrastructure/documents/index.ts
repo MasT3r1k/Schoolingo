@@ -34,7 +34,7 @@ export class Documents {
     private _selected_file = new BehaviorSubject<FileItem | FolderItem | null>(null);
     public selectedFile$ = this._selected_file.asObservable();
 
-    public selectFolder(folder: FileItem | FolderItem | null): void {
+    public selectFolder(folder: FileItem | FolderItem | null, select_file: FileItem | FolderItem | number | null = null): void {
         if (folder?.type !== 'folder') {
             return;
         }
@@ -43,7 +43,11 @@ export class Documents {
             this.loadFiles(folder.file_id);
         }
         this._current_folder.next(folder as FolderItem);
-        this._selected_file.next(null);
+        if (select_file instanceof Number) {
+            this._selected_file.next(this._files.getValue()[0]);
+        } else {
+            this._selected_file.next(select_file as FolderItem | FileItem | null);
+        }
     }
 
     public getSelectedFolder(): FolderItem | null {
@@ -63,6 +67,10 @@ export class Documents {
         .subscribe((files: (FileItem | FolderItem)[]) => {
             files.forEach((file) => this.addFile(file));
         });
+    }
+
+    public getFile(file_id: number | null): FileItem | FolderItem {
+        return this._files.getValue().find((file) => file.file_id == file_id)!;
     }
 
     public addFile(file: FileItem | FolderItem): void {

@@ -33,6 +33,13 @@
     color: var(--text);
 }
 
+.header > div {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 8px;
+}
+
 .sidebar-content {
     flex: 1;
     overflow-y: auto;
@@ -194,24 +201,40 @@ i-tabler {
     padding: 1rem;
 }
 
-.explorer-grid {
+.explorer {
     display: flex;
-    flex-direction: row;
     flex-wrap: wrap;
+}
+
+.explorer-grid {
     gap: 1rem;
+    flex-direction: row;
+}
+
+.explorer-list {
+    flex-direction: column;
+    gap: 4px;
 }
 
 .file-card {
-    flex: 0 0 120px;
     display: flex;
-    flex-direction: column;
-    align-items: center;
-    max-width: 120px;
-    padding: 1rem;
     border-radius: var(--radius);
     cursor: pointer;
     transition: all 0.2s;
     border: 1px solid transparent;
+    align-items: center;
+}
+
+.explorer-grid .file-card {
+    flex: 0 0 120px;
+    flex-direction: column;
+    max-width: 120px;
+    padding: 1rem;
+}
+
+.explorer-list .file-card {
+    padding: .25rem .5rem;
+    flex-direction: row;
 }
 
 .file-card:hover {
@@ -224,18 +247,32 @@ i-tabler {
 }
 
 .icon-wrapper {
-    width: 48px;
-    height: 48px;
     display: flex;
     align-items: center;
     justify-content: center;
-    margin-bottom: 0.5rem;
     color: var(--text-muted);
 }
 
-.icon-wrapper i-tabler {
+.explorer-grid .icon-wrapper {
+    width: 48px;
+    height: 48px;
+    margin-bottom: 0.5rem;
+}
+
+.explorer-list .icon-wrapper {
+    height: 32px;
+    width: 32px;
+    margin-right: 0.5rem;
+}
+
+.explorer-grid .icon-wrapper i-tabler {
     width: 2rem;
     height: 2rem;
+}
+
+.explorer-list .icon-wrapper i-tabler {
+    width: 1.5rem;
+    height: 1.5rem;
 }
 
 .icon-wrapper.folder {
@@ -255,8 +292,15 @@ i-tabler {
 }
 
 .file-info {
-    text-align: center;
     width: 100%;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.explorer-grid .file-info {
+    justify-content: center;
 }
 
 .name {
@@ -267,9 +311,29 @@ i-tabler {
     color: var(--text);
 }
 
+.file-meta {
+    padding: 0 1rem;
+    gap: 2rem;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+
 .meta {
+    flex: 0 0 115px;
     font-size: 0.75rem;
     color: var(--text-muted);
+    text-overflow: ellipsis;
+    overflow: hidden;
+    text-wrap: nowrap;
+}
+
+.file-meta.layout-header > .meta {
+    color: var(--primary)
+}
+
+.meta i-tabler {
+    margin-right: .5rem;
 }
 
 .empty-state {
