@@ -15,11 +15,11 @@
                 </div>
             }
 
-            <div [ngClass]="{'item-btn': true, text: true}" (click)="$event.stopPropagation();dropdown = (dropdown == 'absence') ? '' : 'absence'">
+            <div [ngClass]="{'item-btn': true, text: true}" (click)="$event.stopPropagation();dropdownManager.selected_dropdown = (dropdownManager.selected_dropdown == 'timetable_absence') ? '' : 'timetable_absence'">
                 <div class="text">
                     {{ l.s('sidebar.absence') }}
                 </div>
-                <div class="dropdown" style="min-width: 225px;" [hidden]="dropdown !== 'absence'" (click)="$event.stopPropagation()">
+                <div class="dropdown" style="min-width: 225px;" [hidden]="dropdownManager.selected_dropdown !== 'timetable_absence'" (click)="$event.stopPropagation()">
                     <ul>
                         @for (absence of absenceConfig; track $index) {                            
                             <div class="flex align-items-center absence-item">

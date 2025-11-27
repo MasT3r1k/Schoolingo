@@ -1,18 +1,15 @@
-<div class="documents-container">
+<div class="documents-container" (click)="dropdownManager.selected_dropdown = ''">
     <div class="sidebar">
         <div class="header">
             <h3>{{ l.s('documents.folders') }}</h3>
-            <!-- <div class="btn-icon" (click)="openCreationFolder()">
-                <i-tabler name="plus"></i-tabler>
-            </div> -->
-            <div class="item-btn" (click)="$event.stopPropagation();dropdown = (dropdown == 'add') ? '' : 'add'">
+            <div class="item-btn" (click)="$event.stopPropagation();dropdownManager.selected_dropdown = (dropdownManager.selected_dropdown == 'documents_add') ? '' : 'documents_add'">
                 <div class="icon">
                     <i-tabler name="plus"></i-tabler>
                 </div>
-                <div class="dropdown" style="min-width: 225px;" [hidden]="dropdown !== 'add'" (click)="$event.stopPropagation()">
+                <div class="dropdown" style="min-width: 225px;" [hidden]="dropdownManager.selected_dropdown !== 'documents_add'" (click)="$event.stopPropagation()">
                     <ul>
                         @for (item of addDropdown; track $index) {
-                            <li [ngClass]="[item.type ? item.type : '']" (click)="dropdown = '';item?.action()">
+                            <li [ngClass]="[item.type ? item.type : '']" (click)="dropdownManager.selected_dropdown = '';item?.action()">
                                 <div class="item">
                                     <div class="row">
                                         @if (item.icon) {

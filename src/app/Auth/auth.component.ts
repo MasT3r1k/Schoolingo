@@ -27,8 +27,8 @@ export function isoBase64URLBuffer(buffer: Uint8Array): string {
     .replace(/=/g, '');
 }
 
-import { base64urlToBuffer, Passkey } from '@Schoolingo/passkey';
-import { IconAlphabetThai } from 'angular-tabler-icons/icons';
+import { Passkey } from '@Schoolingo/passkey';
+import { DropdownManager } from '@Schoolingo/dropdown';
 
 @Component({
   standalone: true,
@@ -46,6 +46,7 @@ import { IconAlphabetThai } from 'angular-tabler-icons/icons';
   styleUrls: ['./auth.component.css'],
 })
 export class AuthComponent implements OnInit {
+  public dropdownManager = inject(DropdownManager)
   public App = Config;
   public AuthConfig = AuthConfig;
   l = inject(Locale);
@@ -66,7 +67,7 @@ export class AuthComponent implements OnInit {
   public isLoading = true;
   public errors: { [key: string]: string } = {};
   formSubmitted = false;
-  public dropdown: 'language' | 'theme' | '' = '';
+  // public dropdown: 'language' | 'theme' | '' = '';
 
   // Login form
   private formBuilder = inject(FormBuilder);

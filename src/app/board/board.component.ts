@@ -5,12 +5,13 @@ import { Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/rou
 import { Authentication } from '@Schoolingo/authentication';
 import { Config } from '@Schoolingo/config';
 import { ContextMenu } from '@Schoolingo/context-menu';
+import { DropdownManager } from '@Schoolingo/dropdown';
 import { IconsModule } from '@Schoolingo/icons';
 import { Locale } from '@Schoolingo/locale';
 import { MarkConfig } from '@Schoolingo/marks';
 import { MarksManager } from '@Schoolingo/marks';
 import { MessageConfig, MessageManager } from '@Schoolingo/messages';
-import { permType } from '@Schoolingo/permission';
+import { Permission, permType } from '@Schoolingo/permission';
 import { School } from '@Schoolingo/school';
 import { Sidebar } from '@Schoolingo/sidebar';
 import { DiaryWeek, Traineeship } from '@Schoolingo/traineeship';
@@ -35,14 +36,17 @@ export interface SidebarItem {
   styleUrls: ['./board.component.css', '../styles/sidebar.css']
 })
 export class BoardComponent implements OnInit {
+  public dropdownManager = inject(DropdownManager);
   App = Config
   sidebarToggled = false;
+  public notification_count = 0;
   public cookies_visibled = true;
   private router = inject(Router);
   public sidebar = inject(Sidebar);
   private marks = inject(MarksManager);
   private messages = inject(MessageManager);
   private http = inject(HttpClient);
+  private perm = inject(Permission);
   private traineeship = inject(Traineeship);
   public context_menu = inject(ContextMenu);
   school = inject(School);
@@ -50,47 +54,65 @@ export class BoardComponent implements OnInit {
   l = inject(Locale);
   u = inject(Authentication);
 
-  dropdown: 'add' | 'child' | 'user' | '' = '';
+  // dropdown: 'add' | 'notification' | 'child' | 'user' | '' = '';
 
-  addDropdown: SidebarItem[] = [
+  private addDropdownConfig: SidebarItem[] = [
     {
       icon: 'mail',
       item: 'dropdown.add.message',
-      url: "/messages/send"
+      url: "/messages/send",
+      permission: ['all']
     },
     {
       icon: 'home-plus',
-      item: 'dropdown.add.homework'
+      item: 'dropdown.add.homework',
+      permission: ['teacher']
     },
     {
       icon: 'calendar-week',
-      item: 'dropdown.add.event'
+      item: 'dropdown.add.event',
+      permission: ['teacher']
     },
     {
       icon: 'note',
-      item: 'dropdown.add.note'
+      item: 'dropdown.add.note',
+      permission: ['all']
     },
     {
       icon: 'clipboard-plus',
-      item: 'dropdown.add.anketa'
+      item: 'dropdown.add.anketa',
+      permission: ['teacher']
     },
     {
       icon: 'number-1',
-      item: 'dropdown.add.mark'
+      item: 'dropdown.add.mark',
+      permission: ['teacher']
     },
     {
       icon: 'ambulance',
-      item: 'dropdown.add.excuse'
+      item: 'dropdown.add.excuse',
+      permission: ['parent', 'older:18']
     },
     {
       icon: 'category-plus',
-      item: 'dropdown.add.request'
+      item: 'dropdown.add.request',
+      permission: ['manager:admin']
     },
     {
       icon: 'building-plus',
-      item: 'dropdown.add.company'
+      item: 'dropdown.add.company',
+      permission: ['manager:traineeship:manage']
     }
   ];
+
+  public addDropdown: SidebarItem[] = [];
+  public buildAddDropdown(): void {
+    this.addDropdownConfig.forEach((item) => {
+      if (this.perm.checkPermission(item.permission)) {
+        this.addDropdown.push(item);
+      }
+    })
+  }
 
   userDropdown: SidebarItem[] = [
     {
@@ -119,8 +141,12 @@ export class BoardComponent implements OnInit {
 
   ngOnInit(): void {
     this.u.getAuthState().subscribe((data) => {
-      this.sidebar.build();
+      this.sidebar.build();    
       if (data) {
+        // === Update add dropdown ===
+        this.buildAddDropdown();
+
+        // === Get traineeship weeks ===
         this.http.get(
           `${Config.API_URL}/v1/traineeship/diary_weeks`,
           { withCredentials: true }

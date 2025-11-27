@@ -1,11 +1,11 @@
-<main (click)="dropdown = ''">
+<main (click)="dropdownManager.selected_dropdown = ''">
     <div class="top">
         <div></div>
         <div>
-            <div class="btn small-border" (click)="$event.stopPropagation();dropdown = dropdown == '' ? 'language' : ''">
+            <div class="btn small-border" (click)="$event.stopPropagation();dropdownManager.selected_dropdown = dropdownManager.selected_dropdown == '' ? 'language' : ''">
                 <img style="width: 20px;" [src]="l.getLanguage(l.getSelectedLanguage().getValue())?.flag" [alt]="l.getLanguage(l.getSelectedLanguage().getValue())?.name">
                 <span>{{ l.getLanguage(l.getSelectedLanguage().getValue())?.name }}</span>
-                <div class="dropdown" [hidden]="dropdown != 'language'" (click)="$event.stopPropagation();">
+                <div class="dropdown" [hidden]="dropdownManager.selected_dropdown != 'language'" (click)="$event.stopPropagation();">
                     <ul>
                         @for (language of l.getLanguages(); track $index) {
                             <li class="btn" style="justify-content: flex-start;" (click)="$event.stopPropagation();l.setLanguage(language)">
@@ -16,11 +16,11 @@
                     </ul>
                 </div>
             </div>
-            <div class="btn small-border" (click)="$event.stopPropagation();dropdown = dropdown == '' ? 'theme' : ''">
+            <div class="btn small-border" (click)="$event.stopPropagation();dropdownManager.selected_dropdown = dropdownManager.selected_dropdown == '' ? 'theme' : ''">
                 <div [ngStyle]="{width: '20px',height: '20px','background-color': t.getThemeColor() == 'dark' ? '#000' : '#fff','border-radius': '50%','margin-right': '.5rem'}"></div>
                 <span>{{ l.s('themes.' + t.getTheme().getValue()) }}</span>
 
-                <div class="dropdown" [hidden]="dropdown != 'theme'" (click)="$event.stopPropagation();">
+                <div class="dropdown" [hidden]="dropdownManager.selected_dropdown != 'theme'" (click)="$event.stopPropagation();">
                     <ul>
                         @for (theme of t.getThemes(); track $index) {
                             <li class="btn" style="justify-content: flex-start;" (click)="t.updateTheme(theme)">

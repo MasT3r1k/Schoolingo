@@ -13,6 +13,7 @@ import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { DeleteFileComponent } from './modals/delete-file/delete-file.component';
 import { RenameFileComponent } from './modals/rename-file/rename-file.component';
 import { SidebarItem } from '../board.component';
+import { DropdownManager } from '@Schoolingo/dropdown';
 
 @Component({
   selector: 'app-documents',
@@ -21,17 +22,17 @@ import { SidebarItem } from '../board.component';
   styleUrls: ['./documents.component.css', '../../Styles/sidebar.css']
 })
 export class DocumentsComponent implements OnInit {
-  public dropdown: '' | 'add' = '';
+  public dropdownManager = inject(DropdownManager);
   addDropdown: SidebarItem[] = [
     {
       icon: 'folder-plus',
       item: 'documents.create_folder',
-      action: () => { this.dropdown = '';this.openCreationFolder(); }
+      action: () => { this.dropdownManager.selected_dropdown = '';this.openCreationFolder(); }
     },
     {
       icon: 'file-plus',
       item: 'documents.create_file',
-      action: () => { this.dropdown = '';this.openCreationFile(); }
+      action: () => { this.dropdownManager.selected_dropdown = '';this.openCreationFile(); }
     }
   ];
   public context_menu = inject(ContextMenu);
@@ -88,27 +89,20 @@ export class DocumentsComponent implements OnInit {
       items.push({
         text: 'documents.open_folder',
         action: () => {this.documents.selectFolder(file);this.context_menu.hideContextMenu()}
-      },
-      {
-        text: 'documents.create_folder',
-        action: () => {this.documents.selectFolder(file);this.openCreationFolder();this.context_menu.hideContextMenu()}
-      },
-      {
-        text: 'documents.create_file',
-        action: () => {this.documents.selectFolder(file);this.openCreationFile();this.context_menu.hideContextMenu()}
       })
     }
 
     if (file.file_id !== null) {
       items.push(
         {
-          text: 'documents.rename_file',
+          text: 'documents.rename_' + file.type,
           action: () => {this.context_menu.hideContextMenu();this.renameFile(file)}
         },
         {
           text: 'documents.permissions_file'
         },
         {
+          icon: 'trash-x',
           text: 'documents.delete',
           color: 'danger',
           action: () => {this.context_menu.hideContextMenu();this.deleteFile(file)}
@@ -250,6 +244,8 @@ export class DocumentsComponent implements OnInit {
   }
 
   public renameFile(file: FileItem | FolderItem): void {
+    this.documents.renamingFile = JSON.parse(JSON.stringify(file));
+    this.modalManager.updateModal('rename_file', 'title', 'documents.rename_' + file.type);
     this.modalManager.openModal('rename_file');
   }
 

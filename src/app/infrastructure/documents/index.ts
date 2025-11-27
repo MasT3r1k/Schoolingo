@@ -34,6 +34,10 @@ export class Documents {
     private _selected_file = new BehaviorSubject<FileItem | FolderItem | null>(null);
     public selectedFile$ = this._selected_file.asObservable();
 
+    ///
+
+    public renamingFile: FileItem | FolderItem | null = null;
+
     public selectFolder(folder: FileItem | FolderItem | null, select_file: FileItem | FolderItem | number | null = null): void {
         if (folder?.type !== 'folder') {
             return;

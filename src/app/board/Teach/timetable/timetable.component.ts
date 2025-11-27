@@ -13,7 +13,7 @@ import { Utils } from '@Schoolingo/utils';
 import moment from 'moment';
 import { BehaviorSubject, distinctUntilChanged } from 'rxjs';
 import { Theme } from '@Schoolingo/theme';
-import { AlertComponent } from '@Components/Alert';
+import { DropdownManager } from '@Schoolingo/dropdown';
 
 export interface SidebarItem {
     item: string;
@@ -64,7 +64,7 @@ export class TimetableComponent implements OnInit {
   private school = inject(School);
 
   private declare refreshDataTimeout;
-  public dropdown: 'absence' | '' = '';
+  public dropdownManager = inject(DropdownManager)
   public isLoadingTimetable = false;
   public selectedTimetable = new BehaviorSubject<number>(0);
   public selectedTab = new BehaviorSubject<number>(0);

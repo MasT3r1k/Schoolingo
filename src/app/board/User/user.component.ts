@@ -1,19 +1,8 @@
-import { NgClass, NgComponentOutlet, NgStyle } from '@angular/common';
-import { Component, inject, Type } from '@angular/core';
-import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
+import { Component, inject } from '@angular/core';
+import { RouterOutlet } from '@angular/router';
 import { Authentication } from '@Schoolingo/authentication';
 import { IconsModule } from '@Schoolingo/icons';
 import { Locale } from '@Schoolingo/locale';
-import { BehaviorSubject } from 'rxjs';
-import { AccountComponent } from './account/account.component';
-import { SettingsComponent } from './settings/settings.component';
-import { PersonalInformationComponent } from './personal-information/personal-information.component';
-import { ParentsComponent } from './parents/parents.component';
-import { DevicesComponent } from './devices/devices.component';
-import { LoginHistoryComponent } from './login-history/login-history.component';
-import { NotificationsComponent } from './notifications/notifications.component';
-import { ConnectionsComponent } from './connections/connections.component';
-import { GdprComponent } from './gdpr/gdpr.component';
 
 export interface SidebarItem {
   label: string;

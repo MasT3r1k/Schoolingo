@@ -27,6 +27,7 @@ import { ContextMenu } from '@Schoolingo/context-menu';
 import { ScheduleBuilder } from '@Schoolingo/schedule_builder';
 import { Classbook } from '@Schoolingo/classbook';
 import { Documents } from '@Schoolingo/documents';
+import { DropdownManager } from '@Schoolingo/dropdown';
 
 export function initAuth(auth: Authentication): () => void {
   return () => auth.loadState(); // např. HTTP požadavek + setAuthState()
@@ -65,6 +66,7 @@ export const appConfig: ApplicationConfig = {
     ContextMenu,
     ScheduleBuilder,
     Classbook,
-    Documents
+    Documents,
+    DropdownManager
   ]
 };

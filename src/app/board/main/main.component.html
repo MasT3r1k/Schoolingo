@@ -8,7 +8,7 @@
                     <schoolingo-tabs></schoolingo-tabs>
                 </div>
             </div>
-            <div [ngClass]="{'module-body': true, skeleton: timetable() == null}">
+            <div class="module-body" [class.skeleton]="timetable() == null">
                 <ng-container>
                     <ng-container *ngComponentOutlet="timetable()"></ng-container>
                 </ng-container>
@@ -17,22 +17,30 @@
 
         <div class="module">
             <div class="module-header">
-                <h2>{{ l.s("modules.timetable") }}</h2>
+                <h2>{{ l.s("modules.marks") }}</h2>
                 <div class="flex-items">
                     <schoolingo-tabs></schoolingo-tabs>
                 </div>
             </div>
-            <div class="module-body skeleton"></div>
+            <div class="module-body" [class.skeleton]="marks() == null">
+                <ng-container>
+                    <ng-container *ngComponentOutlet="marks()"></ng-container>
+                </ng-container>
+            </div>
         </div>
 
         <div class="module">
             <div class="module-header">
-                <h2>{{ l.s("modules.timetable") }}</h2>
+                <h2>{{ l.s("modules.announcements") }}</h2>
                 <div class="flex-items">
                     <schoolingo-tabs></schoolingo-tabs>
                 </div>
             </div>
-            <div class="module-body skeleton"></div>
+            <div class="module-body" [class.skeleton]="announcements() == null">
+                <ng-container>
+                    <ng-container *ngComponentOutlet="announcements()"></ng-container>
+                </ng-container>
+            </div>
         </div>
 
         <div class="module">
