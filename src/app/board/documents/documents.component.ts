@@ -85,7 +85,8 @@ export class DocumentsComponent implements OnInit {
     if (file.file_id !== null) {
       items.push(
         {
-          text: 'documents.rename_file'
+          text: 'documents.rename_file',
+          action: () => {this.context_menu.hideContextMenu();this.renameFile(file)}
         },
         {
           text: 'documents.permissions_file'
@@ -173,6 +174,34 @@ export class DocumentsComponent implements OnInit {
           {
             type: 'component',
             component: UploadFilesComponent
+          }
+        ]
+      }
+    )
+
+    this.modalManager.addModal(
+      'rename_file',
+      {
+        title: 'documents.rename_file',
+        closeable: true,
+        items: [
+          {
+            type: 'component',
+            component: RenameFileComponent
+          }
+        ]
+      }
+    )
+
+    this.modalManager.addModal(
+      'delete_file',
+      {
+        title: 'documents.delete_file',
+        closeable: true,
+        items: [
+          {
+            type: 'component',
+            component: DeleteFileComponent
           }
         ]
       }
