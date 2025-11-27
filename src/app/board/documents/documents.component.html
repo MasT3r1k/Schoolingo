@@ -2,8 +2,33 @@
     <div class="sidebar">
         <div class="header">
             <h3>{{ l.s('documents.folders') }}</h3>
-            <div class="btn-icon" (click)="openCreationFolder()">
-                <i-tabler name="folder-plus"></i-tabler>
+            <!-- <div class="btn-icon" (click)="openCreationFolder()">
+                <i-tabler name="plus"></i-tabler>
+            </div> -->
+            <div class="item-btn" (click)="$event.stopPropagation();dropdown = (dropdown == 'add') ? '' : 'add'">
+                <div class="icon">
+                    <i-tabler name="plus"></i-tabler>
+                </div>
+                <div class="dropdown" style="min-width: 225px;" [hidden]="dropdown !== 'add'" (click)="$event.stopPropagation()">
+                    <ul>
+                        @for (item of addDropdown; track $index) {
+                            <li [ngClass]="[item.type ? item.type : '']" (click)="dropdown = '';item?.action()">
+                                <div class="item">
+                                    <div class="row">
+                                        @if (item.icon) {
+                                            <div class="icon">
+                                                <i-tabler [name]="item.icon"></i-tabler>
+                                            </div>
+                                        }
+                                        <div class="item-label">
+                                            {{ l.s(item.item) }}
+                                        </div>
+                                    </div>
+                                </div>
+                            </li>
+                        }
+                    </ul>
+                </div>
             </div>
         </div>
         <div class="sidebar-content">
@@ -48,7 +73,7 @@
             </div>
             }
             <div class="explorer" [class.explorer-grid]="layout == 'grid'" [class.explorer-list]="layout == 'list'">
-                @for(file of documents.getFiles();track $index) {
+                @for(file of documents.getFiles(search.value);track $index) {
                 <div class="file-card" [class.selected]="documents.getSelectedFile()?.file_id == file.file_id" (contextmenu)="$event.stopPropagation();rightClickOnItem(file.file_id, $event)" (click)="documents.showProperties(file)"
                     (dblclick)="documents.selectFolder(file)">
                     <div class="icon-wrapper">
@@ -82,6 +107,7 @@
         }
     </div>
 
+    @let file = documents.getSelectedFile();
     <div class="details-panel" [class.open]="file">
         <div class="detail-header header">
             <h3>{{ l.s('documents.file_details') }}</h3>
@@ -117,14 +143,14 @@
                     <i-tabler name="folder-open"></i-tabler> {{ l.s('documents.open_folder') }}
                 </div>
                 }
-                <div class="btn secondary">
+                <div class="btn secondary" (click)="renameFile(file)">
                     <i-tabler name="edit"></i-tabler> {{ l.s('documents.rename_file') }}
                 </div>
                 <div class="btn secondary">
                     <i-tabler name="lock"></i-tabler> {{ l.s('documents.permissions_file') }}
                 </div>
-                <div class="btn danger">
-                    <i-tabler name="trash-x"></i-tabler> {{ l.s('documents.delete_file') }}
+                <div class="btn danger" (click)="deleteFile(file)">
+                    <i-tabler name="trash-x"></i-tabler> {{ l.s('documents.delete') }}
                 </div>
             </div>
         </div>

@@ -10,14 +10,30 @@ import { UploadFilesComponent } from './modals/upload-files/upload-files.compone
 import { ContextMenu, ContextMenuItem } from '@Schoolingo/context-menu';
 import { CreateFileComponent } from './modals/create-file/create-file.component';
 import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { DeleteFileComponent } from './modals/delete-file/delete-file.component';
+import { RenameFileComponent } from './modals/rename-file/rename-file.component';
+import { SidebarItem } from '../board.component';
 
 @Component({
   selector: 'app-documents',
   imports: [CommonModule, IconsModule, FormsModule, ReactiveFormsModule],
   templateUrl: './documents.component.html',
-  styleUrl: './documents.component.css'
+  styleUrls: ['./documents.component.css', '../../Styles/sidebar.css']
 })
 export class DocumentsComponent implements OnInit {
+  public dropdown: '' | 'add' = '';
+  addDropdown: SidebarItem[] = [
+    {
+      icon: 'folder-plus',
+      item: 'documents.create_folder',
+      action: () => { this.dropdown = '';this.openCreationFolder(); }
+    },
+    {
+      icon: 'file-plus',
+      item: 'documents.create_file',
+      action: () => { this.dropdown = '';this.openCreationFile(); }
+    }
+  ];
   public context_menu = inject(ContextMenu);
   public l = inject(Locale);
   public layout: 'list' | 'grid' = 'grid';
@@ -51,7 +67,8 @@ export class DocumentsComponent implements OnInit {
         action: () => { this.context_menu.hideContextMenu();this.openCreationFile(); }
       },
       {
-        text: 'documents.upload_files'
+        text: 'documents.upload_files',
+        action: () => {this.context_menu.hideContextMenu();this.openUploadFiles()}
       }
     )
 
@@ -92,8 +109,9 @@ export class DocumentsComponent implements OnInit {
           text: 'documents.permissions_file'
         },
         {
-          text: 'documents.delete_file',
-          color: 'danger'
+          text: 'documents.delete',
+          color: 'danger',
+          action: () => {this.context_menu.hideContextMenu();this.deleteFile(file)}
         }
       )
     } 
@@ -105,10 +123,11 @@ export class DocumentsComponent implements OnInit {
 
   @HostListener('window:keydown', ['$event'])
   onKeydown(event: KeyboardEvent) {
-    if (this.file == null) return;
+    const selected_file = this.documents.getSelectedFile();
+    if (selected_file == null) return;
     switch (event.key) {
       case 'ArrowUp':
-        let fileUpIndex = this.documents.getFiles().findIndex((file) => file.file_id == this.file?.file_id);
+        let fileUpIndex = this.documents.getFiles().findIndex((file) => file.file_id == selected_file?.file_id);
         if (fileUpIndex <= 0) {
           return;
         }
@@ -117,7 +136,7 @@ export class DocumentsComponent implements OnInit {
         break;
 
       case 'ArrowDown':
-        let fileDownIndex = this.documents.getFiles().findIndex((file) => file.file_id == this.file?.file_id);
+        let fileDownIndex = this.documents.getFiles().findIndex((file) => file.file_id == selected_file?.file_id);
         if (fileDownIndex + 1 >= this.documents.getFiles().length) {
           return;
         }
@@ -126,10 +145,8 @@ export class DocumentsComponent implements OnInit {
         break;
       
       case 'Enter':
-        let fileEnterIndex = this.documents.getFiles().findIndex((file) => file.file_id == this.file?.file_id);
-        let fileEnter = this.documents.getFile(this.file.file_id);
-        if (fileEnter.type == 'folder') {
-          this.documents.selectFolder(fileEnter, 0);
+        if (selected_file.type == 'folder') {
+          this.documents.selectFolder(selected_file, 0);
         }
     }
   }
@@ -230,6 +247,15 @@ export class DocumentsComponent implements OnInit {
 
   public openUploadFiles(): void {
     this.modalManager.openModal('upload_files');
+  }
+
+  public renameFile(file: FileItem | FolderItem): void {
+    this.modalManager.openModal('rename_file');
+  }
+
+  public deleteFile(file: FileItem | FolderItem): void {
+    console.log(file);
+    this.modalManager.openModal('delete_file');
   }
 
   public toggleFolder(item: any, event: Event): void {

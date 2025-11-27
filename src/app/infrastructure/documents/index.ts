@@ -58,6 +58,18 @@ export class Documents {
         return this._selected_file.getValue();
     }
 
+    public renameFile(file_id: number, name: string): void {
+        this.http.post(
+            `${Config.API_URL}/v1/documents/rename_file`,
+            { file_id, name },
+            { withCredentials: true }
+        )
+        .subscribe(
+            (data) => console.log(data),
+            (err) => console.error(err)
+        )
+    }
+
     public loadFiles(parent_id: number | null): void {
         this.http.post<(FileItem | FolderItem)[]>(
             `${Config.API_URL}/v1/documents/files`,
@@ -82,8 +94,9 @@ export class Documents {
         this._files.next([...files, file]);
     }
 
-    public getFiles() {
+    public getFiles(search: string = '') {
         return this._files.getValue()
+            .filter((file) => file.name?.match(search))
             .filter((file) => file.parent_id === (this._current_folder.getValue()?.file_id ?? null))
             .sort((a, b) => {
                 // Nejdřív seřadíme složky
