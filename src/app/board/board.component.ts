@@ -15,6 +15,7 @@ import { Permission, permType } from '@Schoolingo/permission';
 import { School } from '@Schoolingo/school';
 import { Sidebar } from '@Schoolingo/sidebar';
 import { DiaryWeek, Traineeship } from '@Schoolingo/traineeship';
+import { Utils } from '@Schoolingo/utils';
 import moment from 'moment';
 
 export interface SidebarItem {
@@ -29,6 +30,43 @@ export interface SidebarItem {
     action?: Function;
 }
 
+const notification_types: Record<string, any> = {
+  message: {
+    color: "#4aa3ff",
+    icon: "message",
+    title: "Nová zpráva",
+    url: "/messages/received",
+    close_after_action: true,
+    description: "Dostal jste novou zprávu od %name%."
+  },
+  login: {
+    color: "#ff5757",
+    icon: "lock",
+    title: "Neznámé přihlášení",
+    description: "Zaznamenali jsme nové přihlášení z neznámého zařízení."
+  },
+  homework: {
+    color: "#7cd67c",
+    icon: "book-2",
+    title: "Nový domácí úkol",
+    description: "Byl přidán nový úkol z předmětu %subject%."
+  },
+  reward: {
+    color: "#f5d142",
+    icon: "trophy",
+    title: "Nová odměna",
+    description: "Za splněné aktivity máš novou odměnu."
+  }
+}
+
+interface Notification {
+  type: string;
+  data: any;
+  action: any;
+  is_read: boolean;
+  created_at: Date;
+}
+
 @Component({
   standalone: true,
   imports: [IconsModule, RouterLink, RouterLinkActive, NgStyle, NgClass, RouterOutlet],
@@ -38,11 +76,19 @@ export interface SidebarItem {
 export class BoardComponent implements OnInit {
   public dropdownManager = inject(DropdownManager);
   App = Config
+  Utils = Utils;
   sidebarToggled = false;
   public notification_count = 0;
   public cookies_visibled = true;
   private router = inject(Router);
   public sidebar = inject(Sidebar);
+  public sidebarClickHandler(item: SidebarItem, index: number): void {
+    if (item.url) {
+      this.sidebar.sidebarToggled = false;
+      this.dropdownManager.selected_dropdown = '';
+      this.sidebar.toggleDropdown(index)
+    }
+  }
   private marks = inject(MarksManager);
   private messages = inject(MessageManager);
   private http = inject(HttpClient);
@@ -53,6 +99,55 @@ export class BoardComponent implements OnInit {
   
   l = inject(Locale);
   u = inject(Authentication);
+
+  public notifications_types = notification_types;
+  public notifications: Notification[] = [
+    {
+      type: 'message',
+      data: {
+        name: "MgA. Jakub Pizinger"
+      },
+      action: {
+        id: "5"
+      },
+      is_read: false,
+      created_at: new Date()
+    },
+    {
+      type: 'login',
+      data: {},
+      action: {},
+      is_read: true,
+      created_at: new Date()
+    },
+    {
+      type: 'homework',
+      data: {
+        subject: "Matematika"
+      },
+      action: {
+        id: ""
+      },
+      is_read: true,
+      created_at: new Date()
+    },
+    {
+      type: 'reward',
+      data: {},
+      action: {},
+      is_read: true,
+      created_at: new Date()
+    }
+  ];
+
+  public getNotificationText(notification: Notification): string {
+    let text = this.notifications_types[notification.type].description;
+    Object.entries(notification.data).forEach((data) => {
+      text = text.replaceAll(`%${data[0]}%`, data[1]);
+    })
+
+    return text;
+  }
 
   // dropdown: 'add' | 'notification' | 'child' | 'user' | '' = '';
 

@@ -7,6 +7,7 @@ import { Authentication } from '@Schoolingo/authentication';
 import { Utils } from '@Schoolingo/utils';
 import { HttpClient } from '@angular/common/http';
 import { Config } from '@Schoolingo/config';
+import { ActivatedRoute } from '@angular/router';
 
 interface Message {
   message_id: number;
@@ -39,6 +40,7 @@ export class ReceivedComponent implements OnInit {
   public l = inject(Locale);
   public auth = inject(Authentication);
   private http = inject(HttpClient);
+  private route = inject(ActivatedRoute);
 
   public messages: Message[] = [];
   public selectedMessage: Message | null = null;
@@ -51,16 +53,23 @@ export class ReceivedComponent implements OnInit {
     )
     .subscribe((data: any) => {
       this.messages = data.messages;
+      console.log(this.route.snapshot.queryParams)
+      const message_id = this.route.snapshot.queryParams['id'];
+      if (message_id) {
+        this.selectedMessage = this.messages.find((message) => message.message_id == message_id) ?? null;
+      }
       console.log(data);
     })
 
-    // Mock data for now
-    this.messages = [];
+    this.route.queryParams.subscribe((data) => {
+      const message_id = data['id'];
+      this.selectMessage(this.messages.find((message) => message.message_id == message_id) ?? null);
+    })
   }
 
-  public selectMessage(message: Message): void {
+  public selectMessage(message: Message | null): void {
     this.selectedMessage = message;
-    if (!message.read_at) {
+    if (message != null && !message.read_at) {
       message.read_at = new Date();
       this.http.post(
         `${Config.API_URL}/v1/messages/update`,
