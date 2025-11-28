@@ -11,11 +11,13 @@ interface Announcement {
     role: string;
     avatar?: string;
   };
+  headline: string;
   content: string;
   date: Date;
   attachments?: { name: string; type: string }[];
   likes: number;
   comments: number;
+  read: boolean;
 }
 
 @Component({
@@ -35,28 +37,34 @@ export class NoticeboardComponent implements OnInit {
       {
         id: 1,
         author: { name: 'Mgr. Jana Nováková', role: 'teacher' },
+        headline: 'Seminární práce',
         content: 'Vážení studenti, připomínám zítřejší termín odevzdání seminárních prací. Prosím nahrajte je do systému do 23:59.',
         date: new Date(),
         likes: 12,
-        comments: 3
+        comments: 3,
+        read: false
       },
       {
         id: 2,
         author: { name: 'Ředitelství školy', role: 'director' },
+        headline: 'Změna výuky',
         content: 'Z důvodu havárie vody bude zítra 24.11. zkrácené vyučování. Konec výuky ve 12:35.',
         date: new Date(Date.now() - 86400000),
         attachments: [{ name: 'rozhodnuti_reditele.pdf', type: 'pdf' }],
         likes: 45,
-        comments: 0
+        comments: 0,
+        read: true
       },
       {
         id: 3,
         author: { name: 'Školní parlament', role: 'student' },
+        headline: 'Vánoční jarmark',
         content: 'Vánoční jarmark se blíží! Přijďte nás podpořit a nakoupit drobné dárky. Výtěžek půjde na charitu.',
         date: new Date(Date.now() - 172800000),
         attachments: [{ name: 'plakat.jpg', type: 'image' }],
         likes: 89,
-        comments: 15
+        comments: 15,
+        read: false
       }
     ];
   }

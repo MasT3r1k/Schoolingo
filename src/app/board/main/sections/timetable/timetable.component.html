@@ -1,18 +1,36 @@
 <main>
+    <div class="subjects">
+        @for(lesson of getSelectedDateLessons();track $index) {
+        <div class="subject" [class.freetime]="lesson.free">
+            <span class="subjectIndex">{{ lesson.hour }}</span>
+            <div class="subjectName">
+                <span>{{ getLessonSubjectName(lesson) }}</span>
+                <div class="tags"></div>
+            </div>
+            <div class="time">
+                {{ getLessonTime(lesson) }}
+            </div>
+        </div>
+        } @empty {
+        <div class="no-selection">
+            <div class="illustration">
+                <i-tabler name="school"></i-tabler>
+            </div>
+            <h3>{{ l.s("timetable.no_class") }}</h3>
+            <p>{{ l.s("timetable.no_class_desc") }}</p>
+        </div>
+        }
+    </div>
     <div class="shadow"></div>
     <div class="bottom">
         <div class="icon" (click)="selected_date.next(selected_date.getValue().subtract(1, 'day'))">
             <i-tabler name="chevron-left"></i-tabler>
         </div>
-        <div class="label">
-            {{ selected_date.getValue().format("dddd, DD. MM.") }}
+        <div class="date-info">
+            {{ `${l.s('days.' + selected_date.getValue().day())}, ${selected_date.getValue().format("DD. MM.")}` }}
         </div>
         <div class="icon" (click)="selected_date.next(selected_date.getValue().add(1, 'day'))">
             <i-tabler name="chevron-right"></i-tabler>
         </div>
     </div>
 </main>
-
-@for (lesson of getSelectedDateLessons();track $index) {
-    <p>{{ lesson.subjectName }}</p>
-}
