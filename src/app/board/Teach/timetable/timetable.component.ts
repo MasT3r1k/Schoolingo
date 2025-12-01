@@ -68,6 +68,7 @@ export class TimetableComponent implements OnInit {
   public isLoadingTimetable = false;
   public selectedTimetable = new BehaviorSubject<number>(0);
   public selectedTab = new BehaviorSubject<number>(0);
+  public selectedClass = new BehaviorSubject(0);
   public timetableSelectedWeek = new BehaviorSubject<moment.Moment | null>(moment());
   public timetable: any[] = [];
   public isClassService = false;
@@ -125,6 +126,10 @@ export class TimetableComponent implements OnInit {
     }
   }
 
+  public getClassName(class_id: number): string {
+    return this.u.getUser().classes.find((item) => item.classId == class_id)?.className ?? '';
+  }
+
   ngOnInit(): void {
     this.refreshData();
 
@@ -159,7 +164,18 @@ export class TimetableComponent implements OnInit {
 
     this.selectedTimetable
     .pipe(distinctUntilChanged())
-    .subscribe(() => this.refreshData());
+    .subscribe(() => {
+      if (this.selectedClass.getValue() === 0 && this.u.getUser().classes.length) {
+        this.selectedClass.next(this.u.getUser().classes[0].classId)
+      }
+      this.refreshData()}
+    );
+
+    this.selectedClass
+    .pipe(distinctUntilChanged())
+    .subscribe(() => {
+      this.refreshData()
+    })
 
   }
 
@@ -182,7 +198,7 @@ export class TimetableComponent implements OnInit {
       case 1:
         timetableData = {
           type: "class",
-          id: 1
+          id: this.selectedClass.getValue()
         }
     }
 
