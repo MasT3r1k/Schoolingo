@@ -76,7 +76,7 @@ export class TimetableComponent implements OnInit {
       }
     }
 
-      // volná hodina
+      // Konec vyučování
       fullList.push({
         day,
         hour: (fullList[fullList.length - 1].hour || 0) + 1,
@@ -95,12 +95,12 @@ export class TimetableComponent implements OnInit {
   }
 
   public getLessonSubjectName(lesson: TimetableAPI): string {
-    if (lesson.free) {
-      return this.l.s('timetable.free_time');
-    }
-
     if (lesson.end) {
       return this.l.s('timetable.end_class');
+    }
+
+    if (lesson.free) {
+      return this.l.s('timetable.free_time');
     }
 
     return lesson.subjectName;
