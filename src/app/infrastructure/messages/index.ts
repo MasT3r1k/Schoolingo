@@ -42,8 +42,10 @@ export enum messageTypes {
 
 
 export type messageReceiver = {
-  id: number;
-  name: string;
+  person_id: number;
+  full_name: string;
+  first_name: string;
+  last_name: string;
   role: string;
   class?: string;
   classTeacher?: messageReceiver[];
