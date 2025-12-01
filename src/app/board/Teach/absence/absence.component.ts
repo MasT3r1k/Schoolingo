@@ -7,13 +7,23 @@ import { IconsModule } from '@Schoolingo/icons';
 import { Locale } from '@Schoolingo/locale';
 import { School } from '@Schoolingo/school';
 import moment from 'moment';
-import { BehaviorSubject, Subscription } from 'rxjs';
+import { BehaviorSubject, distinctUntilChanged, Subscription } from 'rxjs';
+import { HttpClient } from '@angular/common/http';
+import { Config } from '@Schoolingo/config';
+import { Authentication } from '@Schoolingo/authentication';
 
 export interface Absence {
   type: number;
   subject: number;
   reason: string;
   minutes: number;
+}
+
+interface AbsenceSubjectAPI {
+  subjectId: number;
+  subject: string;
+  absence: number;
+  total_lessons: number;
 }
 
 @Component({
@@ -24,6 +34,8 @@ export interface Absence {
 export class AbsenceComponent implements OnInit {
   public l = inject(Locale);
   public s = inject(School);
+  private http = inject(HttpClient);
+  private u = inject(Authentication);
 
   public absenceConfig: AbsenceConfig[] = absence;
   public absenceSubjects: Record<string, { absence: number, lessons: number }> = {};
@@ -35,10 +47,8 @@ export class AbsenceComponent implements OnInit {
   public monthStatus: boolean[] = [];
   public ignoredAbsence: AbsenceType[] = [AbsenceType.NON_COUNT];
 
-  private timetableSubjects: Record<string, number[]> = {};
-
   public getSubjects(): string[] {
-    return Object.keys(this.timetableSubjects).sort((a: string, b: string) => 
+    return Object.keys(this.absenceSubjects).sort((a: string, b: string) => 
       removeDiacritics(a).localeCompare(removeDiacritics(b))
     );
   }
@@ -121,47 +131,84 @@ export class AbsenceComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.listeners.push(this.selectedTab.subscribe((tab: number) => {
-      if (tab === 0) {
-        this.absenceSubjects = {};
-        this.absence = {};
-        this.selectedPeriod.next(0);
-      }
-    }));
+    this.listeners.push(
+      this.selectedTab.subscribe((tab: number) => {
+        if (tab === 0) {
+          this.absenceSubjects = {};
+          this.absence = {};
+          this.selectedPeriod.next(0);
+        }
+      })
+    );
 
-    this.listeners.push(this.selectedPeriod.subscribe((period: number) => {
-      let school_config = this.s.config.getValue();
-      if (school_config == null) return;
-      let start = moment(school_config.year.start).clone();
-      let midterm = moment(school_config.year.midterm).clone();
-      let end = moment(school_config.year.end).clone();
+    this.listeners.push(
+      this.selectedPeriod
+      .subscribe((period: number) => {
+        this.loadAbsence();
+      })
+    ); 
 
-      switch (period) {
-        case 0:
-          this.absenceDate.start = start.clone().startOf('day');
-          this.absenceDate.end = moment().endOf('day');
-          break;
-        case 1:
-          this.absenceDate.start = start.clone().startOf('day');
-          this.absenceDate.end = midterm.clone().endOf('day');
-          break;
-        case 2:
-          this.absenceDate.start = midterm.clone().startOf('day');
-          this.absenceDate.end = end.clone().endOf('day');
-          break;
-        case 3:
-          this.absenceDate.start = start.clone().startOf('day');
-          this.absenceDate.end = end.clone().endOf('day');
-          break;
-        default:
-          this.absenceDate.start = start.clone().startOf('day');
-          this.absenceDate.end = moment().endOf('day');
-          break;
-      }
-    }));
-    
+    this.listeners.push(
+      this.u.getAuthState()
+      .subscribe((data) => {
+        if (data) {
+          this.loadAbsence()
+        }
+      })
+    )
+
+    this.listeners.push(
+      this.s.config
+      .subscribe((school) => {
+        this.loadAbsence();
+      })
+    )
+  }
+
+  public loadAbsence(): void {
     let school_config = this.s.config.getValue();
-    if (school_config == null) return;
+    if (!school_config) return;
 
+    let start = moment(school_config.year.start).clone();
+    let midterm = moment(school_config.year.midterm).clone();
+    let end = moment(school_config.year.end).clone();
+
+    switch (this.selectedPeriod.getValue()) {
+      case 0:
+        this.absenceDate.start = start.clone().startOf('day');
+        this.absenceDate.end = moment().endOf('day');
+        break;
+      case 1:
+        this.absenceDate.start = start.clone().startOf('day');
+        this.absenceDate.end = midterm.clone().endOf('day');
+        break;
+      case 2:
+        this.absenceDate.start = midterm.clone().startOf('day');
+        this.absenceDate.end = end.clone().endOf('day');
+        break;
+      case 3:
+        this.absenceDate.start = start.clone().startOf('day');
+        this.absenceDate.end = end.clone().endOf('day');
+        break;
+      default:
+        this.absenceDate.start = start.clone().startOf('day');
+        this.absenceDate.end = moment().endOf('day');
+        break;
+    }
+
+    this.http.get(
+      `${Config.API_URL}/v1/absence/${this.u.getId()}?start=${this.absenceDate.start.format('YYYY-MM-DD')}&end=${this.absenceDate.end.format('YYYY-MM-DD')}`,
+      { withCredentials: true }
+    )
+    .subscribe((data) => {
+        if ('lessons' in data) {
+        Object.values(data.lessons as any[]).forEach((absenceSubject: AbsenceSubjectAPI) => {
+          this.absenceSubjects[absenceSubject.subject] = {
+            absence: absenceSubject.absence,
+            lessons: absenceSubject.total_lessons
+          };
+        });
+      }  
+    })
   }
 }
