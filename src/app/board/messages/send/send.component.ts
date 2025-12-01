@@ -17,6 +17,7 @@ import { IconsModule } from '@Schoolingo/icons';
 import { Authentication } from '@Schoolingo/authentication';
 import { TabsComponent } from '../../../Components/Tabs';
 import { HttpClient } from '@angular/common/http';
+import { DropdownManager } from '@Schoolingo/dropdown';
 
 @Component({
   imports: [
@@ -38,6 +39,7 @@ export class SendComponent {
   public l = inject(Locale);
   public perms = inject(Permission);
   public messageManager = inject(MessageManager);
+  public dropdownManager = inject(DropdownManager);
   public homeworks = inject(Homeworks);
   private http = inject(HttpClient);
 
@@ -48,8 +50,6 @@ export class SendComponent {
   public selectedOptionTab = new BehaviorSubject<number>(0);
 
   // === UI ===
-  public showSelect: 'messagetype' | 'homework' | 'children' | 'rating' | null =
-    null;
   public isHiddenRightCard = false;
 
   // === Options ===
@@ -67,7 +67,7 @@ export class SendComponent {
 
   // === Receiver handling ===
   public toggleReceiverSelection(receiver: messageReceiver): void {
-    const index = this.selectedReceivers.findIndex((r) => r.id === receiver.id);
+    const index = this.selectedReceivers.findIndex((r) => r.person_id === receiver.person_id);
     if (index > -1) {
       this.selectedReceivers.splice(index, 1);
     } else {
@@ -85,8 +85,8 @@ export class SendComponent {
         receiver.classTeacher
       ) {
         for (let classteacher of receiver.classTeacher) {
-          if (!receiversMap.has(classteacher.id) && this.auth.getUser().personId != classteacher.id) {
-            receiversMap.set(classteacher.id, {
+          if (!receiversMap.has(classteacher.person_id) && this.auth.getUser().personId != classteacher.person_id) {
+            receiversMap.set(classteacher.person_id, {
               ...classteacher,
               role: 'teacher'
             });
@@ -95,17 +95,17 @@ export class SendComponent {
       }
 
       // přidáme hlavního příjemce
-      receiversMap.set(receiver.id, receiver);
+      receiversMap.set(receiver.person_id, receiver);
 
       // přidáme rodiče
       if (this.messageManager.options.copyToParents && receiver.parents) {
         for (let parent of receiver.parents) {
-          if (!receiversMap.has(parent.id)) {
+          if (!receiversMap.has(parent.person_id)) {
             receiversMap.set(
-              parent.id,
+              parent.person_id,
               {
                 ...parent,
-                child: receiver.name,
+                child: receiver.full_name,
                 role: 'parent',
                 type: 'parent'
               });
@@ -118,16 +118,16 @@ export class SendComponent {
   }
 
   public isReceiverSelected(receiver: messageReceiver): boolean {
-    return this.getSelectedReceivers().some((r) => r.id === receiver.id);
+    return this.getSelectedReceivers().some((r) => r.person_id === receiver.person_id);
   }
 
   public removeSelectedReceiver(id: number): void {
-    const idx = this.selectedReceivers.findIndex((r) => r.id === id);
+    const idx = this.selectedReceivers.findIndex((r) => r.person_id === id);
     if (idx > -1) this.selectedReceivers.splice(idx, 1);
   }
 
   public getReceiverById(id: number): messageReceiver | undefined {
-    return this.receivers.find((r) => r.id === id);
+    return this.receivers.find((r) => r.person_id === id);
   }
 
   public getCountOfReceiverType(type: string): number {
@@ -144,10 +144,12 @@ export class SendComponent {
 
     // Load recipients
     this.http
-      .get<messageReceiver[]>(`${Config.API_URL}/v1/messages/recipients`, {
-        withCredentials: true,
-      })
-      .subscribe((rows) => (this.receivers = rows || []));
+      .post<messageReceiver[]>(
+        `${Config.API_URL}/v1/messages/recipients`,
+        { message_type: this.messageManager.messageType.getValue() },
+        { withCredentials: true }
+      )
+      .subscribe((rows) => (this.receivers = rows));
 
     // Load message config
     this.http
@@ -194,7 +196,7 @@ export class SendComponent {
 
     const payload = {
       content: message,
-      receivers: this.selectedReceivers.map((r) => r.id), // API dostává IDčka
+      receivers: this.selectedReceivers.map((r) => r.person_id), // API dostává IDčka
     };
 
     this.http
