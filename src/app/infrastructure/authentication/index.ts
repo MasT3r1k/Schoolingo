@@ -13,6 +13,7 @@ export class Authentication {
     private http = inject(HttpClient);
     private router = inject(Router);
     private authState$ = new BehaviorSubject<boolean | 'offline' | null>(null);
+    private passwordExpires = new BehaviorSubject(new Date());
     private declare user: User;
     public selectedChild = new BehaviorSubject(0);
 
@@ -33,6 +34,7 @@ export class Authentication {
                 this.user = user as User;
                 this.user.emails = user.emails.map((email) => ({...email, is_created: true}))
                 this.user.phones = user.phones.map((phone) => ({...phone, is_created: true}))
+                this.passwordExpires.next(user.expires);
                 this.setAuthState(true);
                 // user.children = [];
                 this.user.birthday = moment(user.birthday)

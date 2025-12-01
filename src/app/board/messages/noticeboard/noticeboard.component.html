@@ -1,14 +1,16 @@
 <div class="noticeboard-container">
     <div class="noticeboard-header">
         <div class="left">
-            <div class="board-title">Nástěnka</div>
-            <div class="board-description">Aktuální oznámení, zprávy a upomínky</div>
+            <div class="board-title">{{ l.s('sidebar.messages.noticeboard') }}</div>
+            <div class="board-description">{{ l.s('messages.noticeboard_description') }}</div>
         </div>
         <div class="right">
-            <div class="btn primary small">
+            @if (perms.checkPermission(['teacher'])) {
+            <div class="btn primary small" (click)="openNewNote()">
                 <i-tabler name="plus"></i-tabler>
-                Nová zpráva na nástěnku 
+                {{ l.s('messages.new_announcement') }} 
             </div>
+            }
         </div>
     </div>
 
@@ -18,31 +20,25 @@
             <div class="tape"></div>
             <div class="pin"></div>
             <div class="meta">
-                <div class="subject" id="n1-title">{{ note.headline }}</div>
-                <div class="time">27.11.2025</div>
+                <div class="subject" id="n1-title">{{ note.topic }}</div>
+                <div class="time">{{ Utils.formatDateShort(note.sent_at) }}</div>
             </div>
 
             <div class="body">
-                {{ note.content }}
+                {{ note.message }}
             </div>
             <div class="tags">
-                <div class="tag clickable">
-                    <i-tabler name="heart"></i-tabler>
-                    {{ note.likes }}
-                </div>
-                <div class="tag clickable">
-                    <i-tabler name="message-circle"></i-tabler>
-                    {{ note.comments }}
-                </div>
+                <!-- @if (note.attachments?.length) {
                 <div class="tag">
                     <i-tabler name="file"></i-tabler>
-                    {{ note.attachments?.length ?? 0 }}
+                    {{ note.attachments?.length }}
                 </div>
+                } -->
             </div>
-            @if (note.read) {
-                <div class="btn small">Přečteno</div>
+            @if (note.read_at) {
+                <div class="btn small">{{ l.s('messages.marked_as_read') }}</div>
             } @else {
-                <div class="btn small primary">Označit jako přečtené</div>
+                <div class="btn small primary">{{ l.s('messages.mark_as_read') }}</div>
             }
         </article>
         }

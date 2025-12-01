@@ -47,6 +47,7 @@ export interface Child {
 }
 
 export interface UserEmail {
+    type: 'personal' | 'school' | 'work' | 'other';
     email: string;
     description: string;
     is_verified: boolean;

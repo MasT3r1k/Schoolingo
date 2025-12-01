@@ -5,7 +5,7 @@ import { Config } from '@Schoolingo/config';
 import { IconsModule } from '@Schoolingo/icons';
 import { Locale } from '@Schoolingo/locale';
 import { Utils } from '@Schoolingo/utils';
-import { IconEyeglassFilled, IconRectangleRoundedBottom } from 'angular-tabler-icons/icons';
+import { SystemComponent } from './system/system.component';
 
 interface ElysiaVersion {
   current: string;
@@ -71,20 +71,25 @@ type ElysiaSystemAPI = {
 
 enum enumSidebar {
   SYSTEM,
+  LOGIN,
+  LDAP,
   MAIN,
+  EMAIL,
   SCOPES,
   SUBJECTS
 }
 
 @Component({
-  imports: [IconsModule, FormsModule, ReactiveFormsModule],
+  imports: [IconsModule, FormsModule, ReactiveFormsModule, SystemComponent],
   templateUrl: './settings.component.html',
   styleUrl: './settings.component.css'
 })
 export class SettingsComponent implements OnInit {
+  public Config = Config
   public enumSidebar = enumSidebar;
   private http = inject(HttpClient);
   public l = inject(Locale);
+  public showSelect: null | 'emailType' = null;
 
   public input_errors: { [key: string]: string } = {};
 
@@ -96,6 +101,10 @@ export class SettingsComponent implements OnInit {
     is_loading: true,
     error: null
   }
+
+  // === Email settings ===
+  public selected_email_type = 0;
+  public email_types: string[] = ['basic_smtp_server', 'google_smtp_server'];
 
   // === Scopes ===
   public selected_scope: ScopeAPI | undefined = undefined;

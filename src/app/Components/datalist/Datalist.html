@@ -56,15 +56,15 @@
         </div>
         <div class="right">
             @if (!options.hidePagination || getMaxPages() > 1 && this.data.getValue().length) {
-                <div [ngClass]="{page: true, center: true, previous: true, disabled: page.getValue() == 1}" (click)="goPage(page.getValue() - 1)">
+                <div class="page center previous" [class.disabled]="page.getValue() == 1" (click)="goPage(page.getValue() - 1)">
                     <i-tabler name="chevron-left" style="width:18px;height:18px;"></i-tabler>
                 </div>
                 @for (_ of getPageList(); track index;let index = $index;) {
-                    <div [ngClass]="{page: true, center: true, active: page.getValue() === _}" [id]="(page.getValue() == _) ? 'currentPage' : ''" [attr.contenteditable]="(page.getValue() == _) ? isEditingPage : false" (click)="goPage(_)" (keydown.enter)="savePage()">
+                    <div class="page center" [class.active]="page.getValue() === _" [id]="(page.getValue() == _) ? 'currentPage' : ''" (click)="goPage(_)">
                         {{ _ }}
                     </div>
                 }
-                <div [ngClass]="{page: true, center: true, next: true, disabled: page.getValue() == getMaxPages() }" (click)="goPage(page.getValue() + 1)">
+                <div class="page center next" [class.disabled]="page.getValue() == getMaxPages()" (click)="goPage(page.getValue() + 1)">
                     <i-tabler name="chevron-right" style="width:18px;height:18px;"></i-tabler>
                 </div>
             }

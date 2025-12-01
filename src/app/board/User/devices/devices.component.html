@@ -41,7 +41,7 @@ Pokud tu naleznete zařízení, které nepoznáváte. Odhlašte to zařízení a
           <div class="session-meta">
             <!-- IP BLUR + SHOW/HIDE -->
             <span class="ip" [class.blurred]="session.ip != null && !session._showIp">
-              {{ session.ip ? session.ip : l.s('unknown') }}
+              {{ session.ip ? session._showIp ? session.ip : Utils.blurIPAddress(session.ip) : l.s('unknown') }}
             </span>
 
             @if (session.ip != null) {

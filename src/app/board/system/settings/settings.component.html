@@ -6,8 +6,20 @@
             {{ l.s('system.system_settings') }}
         </div>
 
+        <div class="item" [class.active]="sidebar==enumSidebar.LOGIN" (click)="sidebar = enumSidebar.LOGIN">
+            {{ l.s('system.login_settings') }}
+        </div>
+
+        <div class="item" [class.active]="sidebar==enumSidebar.LDAP" (click)="sidebar = enumSidebar.LDAP">
+            {{ l.s('system.ldap_settings') }}
+        </div>
+
         <div class="item" [class.active]="sidebar==enumSidebar.MAIN" (click)="sidebar = enumSidebar.MAIN">
             {{ l.s('system.school_settings') }}
+        </div>
+
+        <div class="item" [class.active]="sidebar==enumSidebar.EMAIL" (click)="sidebar = enumSidebar.EMAIL">
+            {{ l.s('system.email_settings') }}
         </div>
 
         <div class="item" [class.active]="sidebar==enumSidebar.SCOPES" (click)="sidebar = enumSidebar.SCOPES">
@@ -22,48 +34,7 @@
 
         @switch (sidebar) {
             @case(enumSidebar.SYSTEM) {
-    <div class="container-content">
-        @if (version_loading.is_loading) {
-            <div class="alert loading" style="justify-content: center;border-radius: 0;">
-                <div class="loader"></div>
-                <div class="row">
-                    <span>{{ l.s('system.system_update_loading') }}</span>
-                </div>
-            </div>
-        } @else if (version && version_loading.error == null) {
-        <div class="alert"
-        [class.success]="version.isUpToDate"
-        [class.error]="!version.isUpToDate"
-        style="justify-content: center;border-radius: 0;">
-            <div class="row">
-                <i-tabler [name]="version.isUpToDate ? 'check' : 'alert-triangle'" style="margin-right: .5rem;"></i-tabler>
-                <span>{{ l.s(`system.${version.isUpToDate ? 'system_is_up_to_date' : 'system_has_update'}`) }}</span>
-            </div>
-        </div>
-        } @else {
-            <div class="alert error" style="justify-content: center;border-radius: 0;">
-                <div class="row">
-                    <span>{{ l.s('system.system_error_loading_version') }}</span>
-                </div>
-            </div>
-        }
-
-        <div class="panel">
-            <div class="icon">
-                <i-tabler name="check"></i-tabler>
-            </div>
-            <div class="info">
-                <p class="title">
-                    {{ l.s('system.system_has_valid_license') }}
-                </p>
-                <small>Tato škola má licenci: <b>{{ system.settings.license_type }}</b>, platné do doby <b>{{
-                    system.settings.license_until ? system.settings.license_until : 'NEOMEZENO'}}</b>.</small><br />
-                <small>
-                    Využití studentů: <b>{{ system.student_count }} z {{ system.settings.studentsLimit == -1 ? 'NEOMEZENO' : system.settings.studentsLimit }}</b>
-                </small>
-            </div>
-        </div>
-    </div>
+                <system-system style="width: 100%;"></system-system>
             }
 
             @case(enumSidebar.MAIN) {
@@ -161,6 +132,30 @@
         <div class="form-group">
             <div class="btn primary" (click)="update_school()">
                 {{ l.s('system.save_school_info') }}
+            </div>
+        </div>
+    </div>
+            }
+
+            @case(enumSidebar.EMAIL) {
+    <div class="container-content">
+        <h2>Nastavení elektronické pošty</h2>
+        <div class="form-group">
+            <label>{{ l.s("messages.type") }}</label>
+            <div class="custom-select" (click)="$event.stopPropagation(); showSelect = showSelect == 'emailType' ? null : 'emailType'">
+            <div class="selected-value">
+                {{ l.s('system.email_types.' + email_types[selected_email_type]) }}
+                <i-tabler name="chevron-down"></i-tabler>
+            </div>
+            @if (showSelect == 'emailType') {
+                <div class="options-dropdown">
+                    @for (type of email_types; track $index) {
+                    <div class="option" (click)="$event.stopPropagation();showSelect = null;selected_email_type = $index">
+                    {{ l.s('system.email_types.' + type) }}
+                    </div>
+                    }
+                </div>
+            }
             </div>
         </div>
     </div>

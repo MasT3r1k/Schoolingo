@@ -1,0 +1,30 @@
+<div class="form-group">
+    <label for="email">{{ l.s('user.add_email.email') }}</label>
+    <input type="text" name="email" id="email" [(ngModel)]="email" [placeholder]="l.s('user.add_email.email')">
+</div>
+
+<div class="form-group">
+    <label for="type">{{ l.s('user.add_email.type') }}</label>
+    <div class="custom-select" (click)="$event.stopPropagation(); dropdownManager.selected_dropdown = dropdownManager.selected_dropdown == 'add_email_type' ? '' : 'add_email_type'">
+        <div class="selected-value">
+            {{ l.s('user.add_email.types.' + email_types[email_selected]) }}
+            <i-tabler name="chevron-down"></i-tabler>
+        </div>
+    @if (dropdownManager.selected_dropdown == 'add_email_type') {
+        <div class="options-dropdown">
+            @for (type of email_types; track $index) {
+            <div class="option" (click)="$event.stopPropagation();dropdownManager.selected_dropdown = '';email_selected = $index">
+            {{ l.s('user.add_email.types.' + type) }}
+            </div>
+            }
+        </div>
+    }
+    </div>
+</div>
+
+<div class="form-group">
+    <div class="btn primary" (click)="saveEmail()">
+        <i-tabler name="plus"></i-tabler>
+        {{ l.s('user.add_email.save_email') }}
+    </div>
+</div>

@@ -1,10 +1,82 @@
-<div class="card">
+<div class="card" style="height: 100%;">
     <div class="card-top">
     </div>
     <div class="card-header">
-        <h2>{{ l.s('user.login_history') }}</h2>
+        <div>
+            <h2>{{ l.s('user.login_history') }}</h2>
+            <span class="meta muted">
+                Poslední aktivita na účtu — můžete zkontrolovat zařízení a IP adresy
+            </span>
+        </div>
+        <div></div>
     </div>
     <div class="card-body">
-        <schoolingo-datalist (datalist)="subscribeDatalist($event)" [options]="{}" [head]="tableHead" [data]="history" [metadata]="metadata"></schoolingo-datalist>
+        <div class="list">
+            @for (item of history.getValue();track $index) {
+            <div class="item">
+                <div class="icon">
+                    <i-tabler name="device-desktop"></i-tabler>
+                </div>
+                <div class="meta">
+                    <div class="row" style="justify-content: space-between;">
+                        <div class="main">
+                            <div>
+                                <div class="device">
+                                    <img height="24" width="24" class="table-icon" [src]="'/assets/browsers/' + Utils.getBrowserIcon(item.userAgent)" alt="" /> {{ Utils.getBrowser(item.userAgent) }}
+                                    —
+                                    {{ Utils.getOS(item.userAgent) }}
+                                </div>
+                                <div class="muted">
+                                    {{ l.s('login_history.types.' + item.type) }} • 
+                                    <span class="time">{{ Utils.formatDate(item.created) }}</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div style="display:flex;align-items:center;gap:10px">
+                            <div class="ip">{{ item.ip }}</div>
+                            @if (item.success) {
+                            <div class="badge text success">
+                                <span style="width:100%;text-align:center;">
+                                    {{ l.s('login_history.state.success') }}
+                                </span>
+                            </div>
+                            } @else {
+                            <div class="badge text danger">
+                                <span style="width:100%;text-align:center;">
+                                    {{ l.s('login_history.state.' + (item.error ? item.error : 'error')) }}
+                                </span>
+                            </div>
+                            }
+                            <div class="btn small justify-content-space-between" [routerLink]="'./'" [queryParams]="{ id: item.loginId }">
+                                {{ l.s('login_history.buttons.details') }}
+                                <div class="icon-arrow-right"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            }
+        </div>
+        <div class="bottom">
+            <div class="left">
+                Celkem přihlášení: {{ this.metadata.rows }}
+            </div>
+            <div class="right">
+            @if (getMaxPages() > 1 && this.history.getValue().length) {
+                <div class="page center previous" [class.disabled]="page.getValue() == 1" (click)="goPage(page.getValue() - 1)">
+                    <i-tabler name="chevron-left" style="width:18px;height:18px;"></i-tabler>
+                </div>
+                @for (_ of getPageList(); track index;let index = $index;) {
+                    <div class="page center" [class.active]="page.getValue() === _" [id]="(page.getValue() == _) ? 'currentPage' : ''" (click)="goPage(_)">
+                        {{ _ }}
+                    </div>
+                }
+                <div class="page center next" [class.disabled]="page.getValue() == getMaxPages()" (click)="goPage(page.getValue() + 1)">
+                    <i-tabler name="chevron-right" style="width:18px;height:18px;"></i-tabler>
+                </div>
+            }
+        </div>
+        </div>
+        <!-- <schoolingo-datalist (datalist)="subscribeDatalist($event)" [options]="{}" [head]="tableHead" [data]="history" [metadata]="metadata"></schoolingo-datalist> -->
     </div>
 </div>

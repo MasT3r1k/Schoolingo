@@ -147,6 +147,7 @@ export class DocumentsComponent implements OnInit {
 
   ngOnInit(): void {
     this.expandedFolders.add(null)
+    this.documents.selectFolder(null)
 
     this.modalManager.addModal(
       'create_folder',
