@@ -16,6 +16,7 @@ import { Theme } from '@Schoolingo/theme';
 import { BaseAlertManager } from '../../../../infrastructure/alert/alert.manager';
 import { BackupCode } from '../../../../infrastructure/settings/security';
 import { Utils } from '@Schoolingo/utils';
+import { ModalManager } from '@Schoolingo/modal';
 
 @Component({
   selector: 'settings-security',
@@ -27,6 +28,7 @@ import { Utils } from '@Schoolingo/utils';
 export class SecurityComponent implements OnInit {
   public AuthConfig = AuthConfig;
   public moment = moment;
+  public modalManager = inject(ModalManager);
 
   public a = inject(BaseAlertManager);
   public l = inject(Locale);
@@ -425,5 +427,17 @@ export class SecurityComponent implements OnInit {
 
   async ngOnInit(): Promise<void> {
     this.isPasskeySupported = await this.passkey.isSupported();
+
+    this.modalManager.addModal(
+      'add_2FA',
+      {
+        title: 'settings.2fa.title',
+        closeable: true,
+        items: [{
+          type: 'component',
+          component: 
+        }]
+      }
+    )
   }
 }

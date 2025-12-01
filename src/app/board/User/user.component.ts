@@ -1,8 +1,6 @@
-import { Component, inject } from '@angular/core';
+import { Component } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
-import { Authentication } from '@Schoolingo/authentication';
 import { IconsModule } from '@Schoolingo/icons';
-import { Locale } from '@Schoolingo/locale';
 
 export interface SidebarItem {
   label: string;
