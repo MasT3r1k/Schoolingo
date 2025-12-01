@@ -14,15 +14,15 @@
         @if (messageManager.types && messageManager.types.length) {
           <div class="form-group">
             <label>{{ l.s("messages.type") }}</label>
-            <div class="custom-select" (click)="$event.stopPropagation(); showSelect = showSelect == 'messagetype' ? null : 'messagetype'">
+            <div class="custom-select" (click)="$event.stopPropagation(); dropdownManager.selected_dropdown = dropdownManager.selected_dropdown == 'messagetype' ? '' : 'messagetype'">
               <div class="selected-value">
                 {{ l.s('messages.types.' + messageManager.types[messageManager.messageType.getValue()].label) }}
                 <i-tabler name="chevron-down"></i-tabler>
               </div>
-              @if (showSelect == 'messagetype') {
+              @if (dropdownManager.selected_dropdown == 'messagetype') {
                 <div class="options-dropdown">
                   @for (type of getMessageTypes(); track $index) {
-                    <div class="option" (click)="$event.stopPropagation();showSelect = null; messageManager.messageType.next(messageManager.types.indexOf(type))">
+                    <div class="option" (click)="$event.stopPropagation();dropdownManager.selected_dropdown = ''; messageManager.messageType.next(messageManager.types.indexOf(type))">
                       {{ l.s("messages.types." + type.label) }}
                     </div>
                   }
@@ -103,8 +103,8 @@
                                 @if(isReceiverSelected(receiver)) { <i-tabler name="check"></i-tabler> }
                             </div>
                             <div class="receiver-info">
-                                <span class="name">{{ receiver.name }}</span>
-                                <span class="role">{{ l.s("roles." + receiver.role) }}</span>
+                                <span class="name">{{ receiver.full_name }}</span>
+                                <!-- <span class="role">{{ l.s("roles." + receiver.role) }}</span> -->
                             </div>
                         </div>
                     }
@@ -119,7 +119,7 @@
                     <div class="selected-list-overlay">
                         @for(receiver of getSelectedReceivers(); track $index) {
                             <div class="selected-item">
-                                <span>{{ receiver.name }}</span>
+                                <span>{{ receiver.full_name }}</span>
                                 <i-tabler name="x" (click)="toggleReceiverSelection(receiver)"></i-tabler>
                             </div>
                         }

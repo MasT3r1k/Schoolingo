@@ -28,11 +28,10 @@ interface Message {
 }
 
 @Component({
-  selector: 'app-received',
   standalone: true,
   imports: [CommonModule, FormsModule, IconsModule],
   templateUrl: './received.component.html',
-  styleUrl: './received.component.css'
+  styleUrls: ['./received.component.css', '../messages.css']
 })
 export class ReceivedComponent implements OnInit {
   Utils = Utils;
