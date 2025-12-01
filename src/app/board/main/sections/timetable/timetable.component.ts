@@ -116,7 +116,7 @@ export class TimetableComponent implements OnInit {
       Config.API_URL + '/v1/timetable',
       {
         type: 'person',
-        id: this.u.getUser().personId,
+        id: this.u.getId(),
         time: this.selected_date.getValue().format("YYYY-MM-DD")
       },
       { withCredentials: true })
