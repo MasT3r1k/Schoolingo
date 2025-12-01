@@ -1,5 +1,5 @@
 import { inject } from '@angular/core';
-import { SecurityAPI } from './security';
+import { BackupCode, SecurityAPI } from './security';
 import { HttpClient } from '@angular/common/http';
 import { Config } from '@Schoolingo/config';
 import moment from 'moment';
@@ -17,6 +17,10 @@ export class Settings {
   public password = new BehaviorSubject('');
   public passkeyName = this.formBuilder.control('');
   public TFAControl = this.formBuilder.control('');
+  public codes: BackupCode[] = [];
+
+  public selectedPasskey = -1;
+  public action = '';
 
   public checkValidTFA(): boolean {
       return this.TFAControl.valid && this.TFAControl.value != "";

@@ -1,0 +1,28 @@
+<div class="message info">
+    {{ l.s('settings.2fa.descriptions.' + settings.action) }}
+</div>
+
+<form>
+    <div class="form-group">
+        <label for="token">
+            {{ l.s('auth.2fa.authentication_code') }}
+        </label>
+        <input type="text" [placeholder]="l.s('auth.2fa.authentication_code')" id="token" autocomplete="off" [minlength]="AuthConfig.token_length"  [maxlength]="AuthConfig.token_length" [formControl]="settings.TFAControl">
+    </div>
+    <div class="form-group">
+        <div class="btn" [class.primary]="settings.checkValidTFA()" [class.disabled]="!settings.checkValidTFA()" (click)="runAction2FA()">
+            @if (active_action == 'activating_2fa') {
+                <div class="loader"></div>
+                <span>{{ l.s('auth.2fa.verify_code_action') }}</span>
+            } @else {
+                {{ l.s('auth.2fa.verify_code') }}
+            }
+        </div>
+    </div>
+
+    <div class="form-group">
+        <div class="btn" (click)="closeModal()">
+            {{ l.s('close') }}
+        </div>
+    </div>
+</form>

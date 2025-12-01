@@ -70,4 +70,17 @@ export class NoticeboardComponent implements OnInit {
   public openNewNote(): void {
     this.modalManager.openModal('add_message_to_noticeboard');
   }
+
+  public readNoticeboard(message_id: number): void {
+    this.http.post(
+      `${Config.API_URL}/v1/messages/update`,
+      { message_id, read: true },
+      { withCredentials: true }
+    )
+    .subscribe((data: any) => {
+      const note = this.announcements.find((note) => note.message_id == data.message_id);
+      if (!note) return;
+      note.read_at = data.read_at;
+    })
+  }
 }

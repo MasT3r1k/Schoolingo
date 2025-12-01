@@ -1,6 +1,5 @@
-import { NgClass, NgComponentOutlet } from '@angular/common';
+import { NgComponentOutlet } from '@angular/common';
 import { Component, inject, signal, Type } from '@angular/core';
-import { RouterLink } from '@angular/router';
 import { Locale } from '@Schoolingo/locale';
 import { Permission } from '@Schoolingo/permission';
 import { IconsModule } from '@Schoolingo/icons';
@@ -9,7 +8,7 @@ import { TabsComponent } from '../../Components/Tabs';
 @Component({
   selector: 'app-main',
   standalone: true,
-  imports: [RouterLink, NgClass, NgComponentOutlet, IconsModule, TabsComponent],
+  imports: [NgComponentOutlet, IconsModule, TabsComponent],
   templateUrl: './main.component.html',
   styleUrls: ['./main.component.css']
 })
@@ -26,7 +25,7 @@ export class MainComponent {
   }
 
   async loadSections() {
-    // Lazy-load komponenty
+    // Lazy-load komponentů
     const [timetable, marks, announcements] = await Promise.all([
       import('./sections/timetable/timetable.component')
       .then(m => m.TimetableComponent),

@@ -17,11 +17,15 @@ import { BaseAlertManager } from '../../../../infrastructure/alert/alert.manager
 import { BackupCode } from '../../../../infrastructure/settings/security';
 import { Utils } from '@Schoolingo/utils';
 import { ModalManager } from '@Schoolingo/modal';
+import { AddTFAComponent } from './modals/add-tfa/add-tfa.component';
+import { VerifyCodeComponent } from './modals/verify-code/verify-code.component';
+import { BackupCodesComponent } from './modals/backup-codes/backup-codes.component';
+import { UpdatePasskeyComponent } from './modals/update-passkey/update-passkey.component';
 
 @Component({
   selector: 'settings-security',
   standalone: true,
-  imports: [NgClass, ReactiveFormsModule, IconsModule, QRCodeComponent],
+  imports: [NgClass, ReactiveFormsModule, IconsModule],
   templateUrl: './security.component.html',
   styleUrls: ['./security.component.css', '../settings.component.css'],
 })
@@ -43,31 +47,6 @@ export class SecurityComponent implements OnInit {
   public isPasskeySupported: boolean | null = null;
   public codes: BackupCode[] = [];
 
-  public getRemainingCodes(): number {
-    return this.codes.filter((code) => code.used == false).length;
-  }
-
-  public getAllCodes(): number {
-    return this.codes.length;
-  }
-
-  public downloadBackupCodes(): void {
-    const blob = new Blob(
-      [
-        `${this.l.s('settings.2fa.backup_codes.file_header')}\n\n${this.codes
-          .filter((code) => !code.used)
-          .map((code) => code.code)
-          .join('\n')}`,
-      ],
-      { type: 'text/plain' }
-    );
-    const link = document.createElement('a');
-    link.href = URL.createObjectURL(blob);
-    link.download = 'codes-schoolingo.txt';
-    link.click();
-  }
-
-  public selectedPasskey: number = -1;
   public TFA_qrcode?: string;
   public errors: { [key: string]: string } = {};
   public active_action: 'activating_2fa' | '' = '';
@@ -90,188 +69,22 @@ export class SecurityComponent implements OnInit {
   public activate2FA(): void {
     this.errors = {};
     delete this.TFA_qrcode;
-    this.modal = 'add_2fa';
-    this.action = 'add_to_phone';
-    this.http
-      .post<{ qrcode: string }>(
-        `${Config.API_URL}/v1/security`,
-        { method: 'GET_QRCODE_FOR_TFA' },
-        { withCredentials: true }
-      )
-      .subscribe((data: { qrcode: string }): void => {
-        this.TFA_qrcode = data.qrcode;
-      });
-  }
-
-  public verifyActivation2FA(): void {
-    this.active_action = 'activating_2fa';
-    this.errors = {};
-
-    if (!this.settings.checkValidTFA()) {
-      this.errors['token'] = this.l.s('auth.errors.invalid_tfa');
-      this.active_action = '';
-      return;
-    }
-
-    this.http
-      .post(
-        `${Config.API_URL}/v1/security`,
-        { method: 'ACTIVATE_2FA', TFA: this.settings.TFAControl.value },
-        { withCredentials: true }
-      )
-      .subscribe((data) => {
-        this.active_action = '';
-        if ('error' in data && data.error instanceof Array) {
-          if (data.error.includes('Already activated 2FA')) {
-            this.settings.refreshSecurityAPI();
-            this.TFA_qrcode = '';
-            this.action = '';
-            this.modal = '';
-            this.a.alert('error', 'settings.2fa.already_activated');
-            return;
-          }
-
-          if (data.error.includes('Invalid TFA')) {
-            this.errors['token'] = this.l.s('auth.errors.invalid_tfa');
-            return;
-          }
-        }
-
-        if ('status' in data && data.status == true) {
-          this.settings.refreshSecurityAPI();
-          this.TFA_qrcode = '';
-          this.action = '';
-          this.modal = '';
-          this.a.alert('success', 'settings.2fa.successful_activated');
-          return;
-        }
-      });
+    this.modalManager.openModal('add_2FA');
   }
 
   public openDeactivate2FA(): void {
-    this.modal = 'verify_code';
-    this.action = 'deactivate2FA';
+    this.modalManager.openModal('verify_code');
+    this.settings.action = 'deactivate2FA';
   }
 
   public openBackupCodes(): void {
-    this.modal = 'verify_code';
-    this.action = 'show_backup_codes';
-  }
-
-  public runAction2FA(): void {
-    if (this.modal !== 'verify_code') return;
-    if (!this.settings.checkValidTFA()) {
-      this.errors['token'] = this.l.s('auth.errors.invalid_tfa');
-      return;
-    }
-    this.active_action = 'activating_2fa';
-    switch (this.action) {
-      // === SHOW BACKUP CODES ===
-      case 'show_backup_codes':
-        this.http
-          .post(
-            `${Config.API_URL}/v1/security`,
-            { method: 'GET_BACKUP_CODES', TFA: this.settings.TFAControl.value },
-            { withCredentials: true }
-          )
-          .subscribe((data) => {
-            this.active_action = '';
-            if ('codes' in data && data.codes instanceof Array) {
-              this.settings.TFAControl.setValue('');
-              this.codes = data.codes;
-              this.modal = "backup_codes";
-            }
-
-            if ('error' in data && data.error instanceof Array) {
-              if (data.error.includes('Not activated TFA')) {
-                this.settings.refreshSecurityAPI();
-                this.modal = '';
-                this.action = '';
-                return;
-              }
-
-              if (data.error.includes('Invalid TFA')) {
-                this.errors['token'] = this.l.s('auth.errors.invalid_tfa');
-                return;
-              }
-            }
-          });
-        break;
-
-      // === GENERATE NEW BACKUP CODES ===
-      case 'refresh_backup_codes':
-        this.http
-          .post(
-            `${Config.API_URL}/v1/security`,
-            {
-              method: 'GENERATE_BACKUP_CODES',
-              TFA: this.settings.TFAControl.value,
-            },
-            { withCredentials: true }
-          )
-          .subscribe((data) => {
-            this.active_action = '';
-            if ('codes' in data && data.codes instanceof Array) {
-              this.settings.TFAControl.setValue('');
-              this.codes = data.codes.map((code: string) => ({ code, used: false }));
-              this.modal = "backup_codes";
-            }
-
-            if ('error' in data && data.error instanceof Array) {
-              if (data.error.includes('Not activated TFA')) {
-                this.settings.refreshSecurityAPI();
-                this.modal = '';
-                this.action = '';
-                return;
-              }
-
-              if (data.error.includes('Invalid TFA')) {
-                this.errors['token'] = this.l.s('auth.errors.invalid_tfa');
-                return;
-              }
-            }
-          });
-        break;
-
-      // === DEACTIVATION 2FA ===
-      case 'deactivate2FA':
-        this.http
-          .post(
-            `${Config.API_URL}/v1/security`,
-            { method: 'DEACTIVATE_2FA', TFA: this.settings.TFAControl.value },
-            { withCredentials: true }
-          )
-          .subscribe((data) => {
-            this.active_action = '';
-            if ('status' in data && data.status == true) {
-              this.a.alert('success', 'settings.2fa.successful_deactivated');
-              this.settings.refreshSecurityAPI();
-              this.modal = '';
-              this.action = '';
-            }
-
-            if ('error' in data && data.error instanceof Array) {
-              if (data.error.includes('Already deactivated 2FA')) {
-                this.settings.refreshSecurityAPI();
-                this.modal = '';
-                this.action = '';
-
-                return;
-              }
-
-              if (data.error.includes('Invalid TFA')) {
-                this.errors['token'] = this.l.s('auth.errors.invalid_tfa');
-                return;
-              }
-            }
-          });
-        break;
-    }
+    this.modalManager.openModal('verify_code');
+    this.settings.action = 'show_backup_codes';
   }
 
   public refreshBackupCodes(): void {
-    this.modal = 'verify_code';
-    this.action = 'refresh_backup_codes';
+    this.modalManager.openModal('verify_code');
+    this.settings.action = 'refresh_backup_codes';
   }
 
   public async addPasskey(): Promise<void> {
@@ -324,43 +137,9 @@ export class SecurityComponent implements OnInit {
 
   // Open modal to change information about passkey
   public editPasskey(keyId: number): void {
-    this.selectedPasskey = keyId;
+    this.settings.selectedPasskey = keyId;
     this.settings.passkeyName.setValue(this.getPasskeyName(keyId));
-    this.modal = 'update_passkey';
-  }
-
-  // Save information about passkey to database
-  public updatePasskey(): void {
-    if (!this.selectedPasskey) return;
-    this.http
-      .post<{
-        updated: boolean;
-        newName?: string;
-        id?: number;
-        error?: string;
-      }>(
-        Config.ELYSIA_URL + '/update-passkey',
-        { keyId: this.selectedPasskey, name: this.settings.passkeyName.value },
-        { withCredentials: true }
-      )
-      .subscribe((data) => {
-        if (data.updated && data.newName) {
-          this.settings.refreshSecurityAPI();
-          this.modal = '';
-          this.selectedPasskey = -1;
-          Swal.fire({
-            title: this.l.s('settings.passkeys.edit.success_title'),
-            text: this.l
-              .s('settings.passkeys.edit.success_description')
-              .replaceAll('%passkey%', data.newName),
-            icon: 'success',
-            timer: 2500,
-            timerProgressBar: true,
-            showCloseButton: false,
-            showConfirmButton: false,
-          });
-        }
-      });
+    this.modalManager.openModal('update_passkey');
   }
 
   public removePasskey(keyId: number): void {
@@ -435,8 +214,50 @@ export class SecurityComponent implements OnInit {
         closeable: true,
         items: [{
           type: 'component',
-          component: 
+          component: AddTFAComponent
         }]
+      }
+    )
+
+    this.modalManager.addModal(
+      'verify_code',
+      {
+        title: 'settings.2fa.title',
+        closeable: true,
+        items: [
+          {
+            type: 'component',
+            component: VerifyCodeComponent
+          }
+        ]
+      }
+    )
+
+    this.modalManager.addModal(
+      'backup_codes',
+      {
+        title: 'settings.2fa.backup_codes.title',
+        closeable: true,
+        items: [
+          {
+            type: 'component',
+            component: BackupCodesComponent
+          }
+        ]
+      }
+    )
+
+    this.modalManager.addModal(
+      'update_passkey',
+      {
+        title: 'settings.passkeys.edit.title',
+        closeable: true,
+        items: [
+          {
+            type: 'component',
+            component: UpdatePasskeyComponent
+          }
+        ]
       }
     )
   }

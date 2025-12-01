@@ -27,7 +27,7 @@ export interface User {
     xp: number;
     requiredXP: number;
     children: Child[];
-    classes: SchoolClass[]
+    classes: SchoolClass[];
 }
 
 export interface SchoolClass {
@@ -44,6 +44,7 @@ export interface Child {
     firstName: string;
     lastName: string;
     gender: number;
+    classes: SchoolClass[];
 }
 
 export interface UserEmail {

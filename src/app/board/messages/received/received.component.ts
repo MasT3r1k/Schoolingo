@@ -85,8 +85,4 @@ export class ReceivedComponent implements OnInit {
       m.author.full_name.toLowerCase().includes(this.searchText.toLowerCase())
     );
   }
-
-  public getInitials(name: string): string {
-    return name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase();
-  }
 }

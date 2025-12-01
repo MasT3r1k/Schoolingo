@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { IconsModule } from '@Schoolingo/icons';
 import { Locale } from '@Schoolingo/locale';
 import { FormsModule } from '@angular/forms';
+import { Utils } from '@Schoolingo/utils';
 
 interface Group {
   id: number;
@@ -40,6 +41,7 @@ interface Message {
 })
 export class GroupsComponent implements OnInit {
   public l = inject(Locale);
+  Utils = Utils
   public groups: Group[] = [];
   public selectedGroup: Group | null = null;
   public selectedChannel: Channel | null = null;
@@ -97,10 +99,6 @@ export class GroupsComponent implements OnInit {
         date: new Date(Date.now() - 1800000)
       }
     ];
-  }
-
-  public getInitials(name: string): string {
-    return name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase();
   }
 
   public sendMessage(): void {

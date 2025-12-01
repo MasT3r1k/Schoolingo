@@ -298,4 +298,10 @@ export namespace Utils {
   export function removeSecondsFromTime(time: string): string {
     return time ? time.slice(0, 5) : '';
   }
+
+  export function getInitials(name: string): string {
+    // Remove all degrees
+    const name_wo_degree = name.split(' ').filter((word) => !word.includes('.'))
+    return name_wo_degree.map(n => n[0]).join('').substring(0, 2).toUpperCase();
+  }
 }

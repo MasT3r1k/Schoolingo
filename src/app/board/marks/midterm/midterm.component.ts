@@ -46,17 +46,21 @@ export class MidtermComponent implements OnInit {
   };
 
   public getYears(): number {
-    return this.u.getUser().classes[0].scopeYears;
+    if (this.u.getUser().children.length) {
+      return this.u.getUser().children[this.u.selectedChild.getValue()].classes[0].scopeYears;
+    } else {
+      return this.u.getUser().classes[0].scopeYears;
+    }
   }
 
   public getYearText(year: number): string {
     return this.l.s('marks.midterm.year')
-            .replaceAll(
-              '%year%',
-              (this.l.s('marks.midterm.years.' + year) != "[`marks.midterm.years.${$index}`]")
-              ? this.l.s('marks.midterm.years.' + year)
-              : year.toString()
-            );
+      .replaceAll(
+        '%year%',
+        (this.l.s('marks.midterm.years.' + year) != "[`marks.midterm.years.${$index}`]")
+        ? this.l.s('marks.midterm.years.' + year)
+        : year.toString()
+      );
   }
 
   ngOnInit(): void {

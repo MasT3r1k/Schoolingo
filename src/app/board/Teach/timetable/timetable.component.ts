@@ -16,15 +16,15 @@ import { Theme } from '@Schoolingo/theme';
 import { DropdownManager } from '@Schoolingo/dropdown';
 
 export interface SidebarItem {
-    item: string;
-    type?: 'default' | 'danger';
-    icon?: string;
-    url?: string;
-    permission?: permType[];
-    children?: SidebarItem[];
-    badge?: any;
-    modules?: string[];
-    action?: Function;
+  item: string;
+  type?: 'default' | 'danger';
+  icon?: string;
+  url?: string;
+  permission?: permType[];
+  children?: SidebarItem[];
+  badge?: any;
+  modules?: string[];
+  action?: Function;
 }
 
 export interface TimetableLesson {
@@ -49,7 +49,7 @@ export interface TimetableHours {
 }
 
 @Component({
-  imports: [TabsComponent, NgClass, NgStyle, IconsModule],
+  imports: [TabsComponent, NgClass, IconsModule],
   templateUrl: './timetable.component.html',
   styleUrl: './timetable.component.css'
 })

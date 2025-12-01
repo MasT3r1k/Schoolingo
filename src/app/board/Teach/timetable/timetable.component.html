@@ -15,7 +15,7 @@
                 </div>
             }
 
-            <div [ngClass]="{'item-btn': true, text: true}" (click)="$event.stopPropagation();dropdownManager.selected_dropdown = (dropdownManager.selected_dropdown == 'timetable_absence') ? '' : 'timetable_absence'">
+            <div class="item-btn text" (click)="$event.stopPropagation();dropdownManager.selected_dropdown = (dropdownManager.selected_dropdown == 'timetable_absence') ? '' : 'timetable_absence'">
                 <div class="text">
                     {{ l.s('sidebar.absence') }}
                 </div>
@@ -36,7 +36,7 @@
             </div>
 
             @if (selectedTab.getValue() === 3) {
-                <div [ngClass]="{button: true}" (click)="$event.stopPropagation();">
+                <div class="button" (click)="$event.stopPropagation();">
                     <i-tabler name="calendar-month"></i-tabler>
                     {{
                         timetableSelectedWeek.getValue()!.clone().startOf('isoWeek')
@@ -75,7 +75,6 @@
             <div class="hours">
                 <div class="week-type">
                     @if ([0, 1, 3].includes(selectedTab.getValue())) {
-                        <!-- TODO design -->
                         {{ l.s('weeks.' + (Utils.isOdd(timetableSelectedWeek.getValue()?.isoWeek()!) ? 'odd' : 'even')) }}
                     }
                 </div>
@@ -111,8 +110,8 @@
                         </div>
 
 
-                        @if (timetable[index] && timetable[index].length && timetable[index][0].length && timetable[index][1][0].all_day) {
-                            <div class="item all-day" [ngStyle]="{backgroundColor: timetable[index][1][0].color}">
+                        @if (timetable[index] && timetable[index]?.length && timetable[index][0]?.length && timetable[index][1][0]?.all_day) {
+                            <div class="item all-day" [style.backgroundColor]="timetable[index][1][0].color">
                                 <div class="group">
                                     <span></span>
                                 </div>
@@ -128,7 +127,7 @@
                                 <div class="item lesson-hour">
                                     @if (timetable[index]?.[index2]) {
                                         @for (lesson of timetable[index][index2] ?? []; track $index) { 
-                                            <div [ngClass]="getLessonClasses(index, index2, lesson)" [ngStyle]="{backgroundColor: lesson.color}">
+                                            <div [ngClass]="getLessonClasses(index, index2, lesson)" [style.backgroundColor]="lesson.color">
                                                 <div class="group">
                                                     <span>B3.I 2</span>
                                                 </div> 
@@ -187,18 +186,14 @@
                                     }
                                 </div>
                             }
-
                         }
                     </div>
                     }
-
                 }
             </div>
         </div>
         } @else {
             <p>Nemáte tento týden žádné hodiny</p>
         }
-
     </div>
-
 </div>

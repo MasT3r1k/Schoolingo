@@ -144,7 +144,7 @@
 
             </div>
             <div class="user" (click)="$event.stopPropagation();dropdownManager.selected_dropdown = (dropdownManager.selected_dropdown == 'user') ? '' : 'user'">
-                @if (App.ALLOW_AVATARS) {
+                <!-- @if (App.ALLOW_AVATARS) {
                     <div class="avatar golden center">
                         <div class="hexagon">
                             <img [src]="u.getAvatar()" alt="Avatar">
@@ -155,7 +155,11 @@
                             </div>
                         }
                     </div>
-                }
+                } -->
+
+                <div class="avatar">
+                    {{ Utils.getInitials(u.getUser().fullName) }}
+                </div>
 
                 @if (App.ALLOW_LEVEL_SYSTEM) {
                     <div class="xp-bar">

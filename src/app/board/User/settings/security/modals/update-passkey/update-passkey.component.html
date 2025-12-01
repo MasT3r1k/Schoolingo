@@ -1,0 +1,17 @@
+<div class="message info">
+    {{ l.s('settings.passkeys.edit.description') }}
+</div>
+<form (ngSubmit)="updatePasskey()">
+    <input type="submit" value="" style="display: none;">
+    <div class="form-group">
+        <label for="token">
+            {{ l.s('settings.passkeys.edit.form.name.label') }}
+        </label>
+        <input type="text" (keydown.enter)="updatePasskey()" [value]="getPasskeyName(settings.selectedPasskey)" [formControl]="settings.passkeyName" [placeholder]="l.s('settings.passkeys.edit.form.name.placeholder')">
+    </div>
+    <div class="form-group">
+        <div class="btn primary" (click)="updatePasskey()">
+            {{ l.s('settings.passkeys.edit.form.button') }}
+        </div>
+    </div>
+</form>
