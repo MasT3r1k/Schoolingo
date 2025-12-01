@@ -86,6 +86,7 @@ export class BoardComponent implements OnInit {
     if (item.url) {
       this.sidebar.sidebarToggled = false;
       this.dropdownManager.selected_dropdown = '';
+    } else {
       this.sidebar.toggleDropdown(index)
     }
   }
