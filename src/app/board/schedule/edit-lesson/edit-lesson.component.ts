@@ -25,26 +25,22 @@ export class EditLessonComponent implements OnInit {
   public selectedWeek: 'both' | 'odd' | 'even' = 'both';
   public selectedRoom: string = '';
 
-  public types = [
-    'substitution',
-    'cancel',
-    'classroom_lesson',
-    'change_timetable'
-  ];
-  public selected_type = this.types[0];
+  public types: string[] = [];
+  public selected_type = '';
 
   ngOnInit(): void {
     const lesson = this.scheduleBuilder.activeLesson;
-    this.types = ['substitution'];
+    this.types = [];
 
     if (lesson) {
-      this.types.push('cancel');
+      this.types.push('substitution', 'cancel');
       this.selectedSubjectId = lesson.subjectId;
       this.selectedTeacherId = lesson.teacherId;
       this.selectedWeek = lesson.week || 'both';
       this.selectedRoom = lesson.room || '';
     }
     this.types.push('classroom_lesson', 'change_timetable');
+    this.selected_type = this.types[0];
   }
 
   public getSubjectName(subject_id: number): string {
