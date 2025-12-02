@@ -9,7 +9,7 @@
       ></schoolingo-tabs>
     </div>
   </div>
-  <div class="card-body">
+  <div class="card-body" style="overflow: unset;">
     @switch (selectedTab.getValue()) { @case(0) {
     <div class="subjects">
       @for (subject of getMarksPerSubject(); track $index) {
@@ -115,41 +115,66 @@
           <label for="subject">
             {{ l.s("subject") }}
           </label>
-          <select [(ngModel)]="selected_subject">
-            @for(subject of getAllSubjects();track $index) {
-            <option [value]="subject">{{ subject }}</option>
-            }
-          </select>
+
+          <div class="custom-select" (click)="$event.stopPropagation();dropdownManager.selected_dropdown = dropdownManager.selected_dropdown == 'interm_predictor_subject' ? '' : 'interm_predictor_subject'">
+              <div class="selected-value">
+                  {{ selected_subject }}
+                  <i-tabler name="chevron-down"></i-tabler>
+              </div>
+              @if (dropdownManager.selected_dropdown == 'interm_predictor_subject') {
+              <div class="options-dropdown">
+                  @for (subject of getAllSubjects(); track $index) {
+                  <div class="option" style="text-align: left;" (click)="$event.stopPropagation();dropdownManager.selected_dropdown = '';selected_subject = subject">
+                      {{ subject }}
+                  </div>
+                  }
+              </div>
+              }
+          </div>
         </div>
 
         <div class="select select-mark">
           <label for="mark">
             {{ l.s("marks.mark") }}
           </label>
-          <select [(ngModel)]="selected_mark">
-            <option value="1">1</option>
-            <option value="1.5">1-</option>
-            <option value="2">2</option>
-            <option value="2.5">2-</option>
-            <option value="3">3</option>
-            <option value="3.5">3-</option>
-            <option value="4">4</option>
-            <option value="4.5">4-</option>
-            <option value="5">5</option>
-          </select>
+
+          <div class="custom-select" (click)="$event.stopPropagation();dropdownManager.selected_dropdown = dropdownManager.selected_dropdown == 'interm_predictor_mark' ? '' : 'interm_predictor_mark'">
+              <div class="selected-value">
+                  {{ formatMark(selected_mark) }}
+                  <i-tabler name="chevron-down"></i-tabler>
+              </div>
+              @if (dropdownManager.selected_dropdown == 'interm_predictor_mark') {
+              <div class="options-dropdown">
+                  @for (mark of marksManager.getConfig().mark_ids; track $index) {
+                  <div class="option" style="text-align: left;" (click)="$event.stopPropagation();dropdownManager.selected_dropdown = '';selected_mark = mark">
+                      {{ formatMark(mark) }}
+                  </div>
+                  }
+              </div>
+              }
+          </div>
         </div>
 
         <div class="select select-weight">
           <label for="weight">
             {{ l.s("marks.weight") }}
           </label>
-          <select [(ngModel)]="selected_weight">
-            @for (_ of [].constructor(10); track $index) {
-            <option [value]="$index + 1">
-              {{ `${l.s('marks.weight')} ${$index + 1}`}}
-            </option>
-            }
-          </select>
+
+          <div class="custom-select" (click)="$event.stopPropagation();dropdownManager.selected_dropdown = dropdownManager.selected_dropdown == 'interm_predictor_weight' ? '' : 'interm_predictor_weight'">
+              <div class="selected-value">
+                  {{ selected_weight }}
+                  <i-tabler name="chevron-down"></i-tabler>
+              </div>
+              @if (dropdownManager.selected_dropdown == 'interm_predictor_weight') {
+              <div class="options-dropdown">
+                  @for (columnType of [].constructor(10); track $index) {
+                  <div class="option" style="text-align: left;" (click)="$event.stopPropagation();dropdownManager.selected_dropdown = '';selected_weight = $index + 1">
+                      {{ `${l.s('marks.weight')} ${$index + 1}` }}
+                  </div>
+                  }
+              </div>
+              }
+          </div>
         </div>
       </div>
       <div class="buttons">

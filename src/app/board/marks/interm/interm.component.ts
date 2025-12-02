@@ -4,6 +4,7 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { TabsComponent } from '@Components/Tabs';
 import { Authentication } from '@Schoolingo/authentication';
 import { Config } from '@Schoolingo/config';
+import { DropdownManager } from '@Schoolingo/dropdown';
 import { IconsModule } from '@Schoolingo/icons';
 import { Locale } from '@Schoolingo/locale';
 import { MarksManager } from '@Schoolingo/marks';
@@ -56,7 +57,8 @@ export class IntermComponent implements OnInit {
   public l = inject(Locale);
   private http = inject(HttpClient);
   private auth = inject(Authentication);
-  private marksManager = inject(MarksManager);
+  public marksManager = inject(MarksManager);
+  public dropdownManager = inject(DropdownManager);
 
   ngOnInit(): void {
     this.http
