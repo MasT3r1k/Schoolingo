@@ -22,6 +22,7 @@ interface Group {
 }
 
 interface GradeColumn {
+  columnId: number;
   topic: string;
   weight: number;
   type: number;
@@ -65,6 +66,7 @@ export class IntermRecordComponent {
     this.marksManager.setAction(column.isExist ? "edit" : "create");
     this.marksManager.setTopic(column.topic);
     this.marksManager.setWeight(column.weight);
+    this.marksManager.setColumnId(column.columnId);
     this.marksManager.setColumnIndex(columnIndex);
     this.marksManager.setGroupId(this.groups[this.selected_group].groupId);
     this.marksManager.setSubjectId(this.groups[this.selected_group].subjectId);
@@ -83,9 +85,11 @@ export class IntermRecordComponent {
     if (!column.isExist) return;
 
     // === Set Data ==
+    console.log(column);
     this.marksManager.setAction(mark ? "edit" : "create");
     this.marksManager.setTopic(column.topic);
     this.marksManager.setWeight(column.weight);
+    this.marksManager.setColumnId(column.columnId);
     this.marksManager.setColumnIndex(columnIndex);
     this.marksManager.setGroupId(this.groups[this.selected_group].groupId);
     this.marksManager.setSubjectId(this.groups[this.selected_group].subjectId);
@@ -137,7 +141,7 @@ export class IntermRecordComponent {
       this.router.navigate([], {
         relativeTo: this.route,
         queryParams: { subject_id: group.subjectId, group_id: group.groupId },
-        queryParamsHandling: 'merge', // nezruší ostatní parametry v URL
+        queryParamsHandling: 'merge',
       });
       this.http.post(
         `${Config.API_URL}/v1/marks/teacher/group`,
@@ -148,6 +152,7 @@ export class IntermRecordComponent {
           this.gradeColumns = (data.columns as GradeColumn[]).map((column: GradeColumn) => ({ ...column, isExist: true }));
           for(let i = 0;i < this.add_more_columns;i++) {
             this.gradeColumns.push({
+              columnId: -1,
               topic: "",
               weight: 1,
               type: 0,

@@ -14,6 +14,7 @@ import moment from 'moment';
 import { TimetableLesson } from '../../Teach/timetable/timetable.component';
 import { NgClass } from '@angular/common';
 import { DropdownManager } from '@Schoolingo/dropdown';
+import { EditLessonComponent } from '../edit-lesson/edit-lesson.component';
 
 @Component({
   selector: 'app-builder',
@@ -55,6 +56,20 @@ export class BuilderComponent implements OnInit {
           {
             type: 'component',
             component: AddEventComponent
+          }
+        ]
+      }
+    )
+
+    this.modalManager.addModal(
+      'schedule_edit_lesson',
+      {
+        title: 'schedule.builder.edit_lesson',
+        closeable: true,
+        items: [
+          {
+            type: 'component',
+            component: EditLessonComponent
           }
         ]
       }
@@ -123,6 +138,16 @@ export class BuilderComponent implements OnInit {
   public selectClass(class_id: number): void {
     this.scheduleBuilder.selectedClass.next(class_id);
 
+    this.http.get<any[]>(
+      Config.API_URL + '/v1/teachers',
+      { withCredentials: true }
+    )
+    .subscribe((teachers: any[]) => {
+      teachers.forEach((teacher) => {
+        this.scheduleBuilder.teachers[teacher.teacherId] = teacher;
+      }); 
+    })
+
     this.http.post(
       Config.API_URL + '/v1/timetable',
       { type: 'class', id: 1, time: (moment()).format("YYYY-MM-DD")},
@@ -171,6 +196,35 @@ export class BuilderComponent implements OnInit {
     });
   }
 
+  public countUsedSubjectLesson(subject_id: number): number {
+    let used = 0;
+    this.scheduleBuilder.timetable.forEach((day) => {
+        day.forEach((hour) => {
+          for(let i = 0;i < hour.length;i++) {
+            if (hour[i].subjectId == subject_id) {
+              used += hour[i].type == 0 ? 1 : 0.5;
+            }
+          }
+        })
+    })
+    return used;
+  }
+
+  public formatGroupName(lesson: TimetableLesson): string {
+    let group = "";
+    if (lesson.groupName == null) {
+      group = lesson.className;
+    } else {
+      group = lesson.groupName;
+    }
+    if (lesson.groupNum == null) {
+      group += " celá";
+    } else {
+      group += " " + lesson.groupNum;
+    }
+    return group;
+  }
+
   public getLessonClasses(index: number, index2: number, lesson: TimetableLesson): string[] {
   let classes = ['sub-lesson-hour', 'lesson-count-' + this.scheduleBuilder.timetable?.[index]?.[index2]?.length];
   if (lesson.empty) {
@@ -196,5 +250,10 @@ export class BuilderComponent implements OnInit {
 
   public openAddEventModal(): void {
     this.modalManager.openModal('schedule_add_event');
+  }
+
+  public openEditLessonModal(lesson: TimetableLesson | null): void {
+    this.scheduleBuilder.activeLesson = lesson;
+    this.modalManager.openModal('schedule_edit_lesson');
   }
 }

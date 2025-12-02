@@ -12,30 +12,29 @@
         </div>
     </div>
 
-    <div class="item mb">
-        <label class="label">
-            {{ l.s('marks.type') }}
-        </label>
-        <div class="value">
-            <div class="input-select">
-                <input type="text" (click)="$event.stopPropagation();showSelect = showSelect == 'type' ? null : 'type'" name="inputSelect" readonly="true" [value]="l.s('marks.types.' + type)" [disabled]="action == 'edit'" />
-                @if (showSelect == 'type') {
-                    <div class="options">
-                        @for (columnType of types; track $index) {
-                            <div class="option" (click)="$event.stopPropagation();showSelect = null;type = columnType">
-                                {{ l.s('marks.types.' + columnType) }}
-                            </div>
-                        }
-                    </div>
-                }
-                <div class="note">{{ l.s('marks.cant_edit_after_creation') }}</div>
+    <div class="form-group">
+        <label>{{ l.s("marks.type") }}</label>
+        <div class="custom-select" (click)="$event.stopPropagation(); action == 'edit' ? {} : dropdownManager.selected_dropdown = dropdownManager.selected_dropdown == 'interm-record_edit-column_type' ? '' : 'interm-record_edit-column_type'">
+            <div class="selected-value">
+                {{ l.s('marks.types.' + type) }}
+                <i-tabler name="chevron-down"></i-tabler>
             </div>
+            @if (dropdownManager.selected_dropdown == 'interm-record_edit-column_type') {
+            <div class="options-dropdown">
+                @for (columnType of types; track $index) {
+                <div class="option" (click)="$event.stopPropagation();dropdownManager.selected_dropdown = '';type = columnType">
+                    {{ l.s('marks.types.' + columnType) }}
+                </div>
+                }
+            </div>
+            }
         </div>
+        <div class="note">{{ l.s('marks.cant_edit_after_creation') }}</div>
     </div>
 
     @switch (type) {
         @case("marks") {
-            <div class="item mb">
+            <div class="form-group item mb">
                 <label class="label" [class.error-color]="errors['weight']">
                     {{ l.s('marks.weight') }}
                     @if (errors['weight']) {
@@ -48,7 +47,7 @@
             </div>
         }
         @case("points") {
-            <div class="item mb">
+            <div class="form-group item mb">
                 <label class="label" [class.error-color]="errors['points']">
                     {{ l.s('marks.max_points') }}
                     @if (errors['points']) {
@@ -60,7 +59,7 @@
                 </div>
             </div>
 
-            <div class="item mb">
+            <div class="form-group item mb">
                 <label class="label">
                     {{ l.s('marks.include_in_grade_even_if_no_points') }}
                 </label>
@@ -79,7 +78,7 @@
     }
 
     @if (type == "points" && !includeInGradeEvenIfNoPoints || type == "marks") {
-        <div class="item mb">
+        <div class="form-group item mb">
             <label class="label" [class.error-color]="errors['prefill']">
                 {{ l.s('marks.prefill') }}
                 @if (errors['prefill']) {

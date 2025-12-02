@@ -43,7 +43,7 @@
                         <div class="card-content">
                             <div class="subject-name">{{ subject.subjectName }}</div>
                             <div class="subject-meta">
-                                <span class="limit">0 / {{ subject.hours_per_week }}</span>
+                                <span class="limit">{{ countUsedSubjectLesson(subject.subjectId) }} / {{ subject.hours_per_week }}</span>
                                 @for(teacher of scheduleBuilder.getSubject(subject.subjectId)?.teachers; track $index) {
                                 <span class="teacher-name">{{ teacher.teacherName }}</span>
                                 }
@@ -58,18 +58,7 @@
                         <div class="center" style="margin: auto;">
                             <div class="loader bigger"></div>
                         </div>
-                        <!-- @for (_ of [].constructor(5); track $index) {
-                            <div class="subject-card skeleton"></div>
-                        } -->
                     }
-                </div>
-            </div>
-
-            <!-- Actions -->
-            <div class="sidebar-section actions-section">
-                <div class="btn primary" (click)="openAddSubjectModal()">
-                    <i-tabler name="restore"></i-tabler>
-                    {{ 'Vygenerovat rozvrh' }}
                 </div>
             </div>
         </aside>
@@ -83,7 +72,7 @@
                         <label for="class" style="margin: 0;">{{ l.s('schedule.builder.class') }}</label>
                         <div class="custom-select" (click)="$event.stopPropagation(); dropdownManager.selected_dropdown = dropdownManager.selected_dropdown == 'scheduleBuilder_selectClass' ? '' : 'scheduleBuilder_selectClass'">
                         <div class="selected-value">
-                            {{ scheduleBuilder.getClassName(scheduleBuilder.selectedClass.getValue()) }}
+                            <span>{{ scheduleBuilder.getClassName(scheduleBuilder.selectedClass.getValue()) }}</span>
                             <i-tabler name="chevron-down"></i-tabler>
                         </div>
                         @if (dropdownManager.selected_dropdown == 'scheduleBuilder_selectClass') {
@@ -170,7 +159,7 @@
                                 @if (scheduleBuilder.timetable[index] && scheduleBuilder.timetable[index]?.length && scheduleBuilder.timetable[index][0]?.length && scheduleBuilder.timetable[index][1][0]?.all_day) {
                                     <div class="item all-day" [style.backgroundColor]="scheduleBuilder.timetable[index][1][0].color">
                                         <div class="group">
-                                            <span></span>
+                                            <span>A</span>
                                         </div>
                                         <div class="room">
                                             {{ scheduleBuilder.timetable[index][1][0].room }}
@@ -182,32 +171,39 @@
                                 } @else {
                                     @for (hour of [].constructor(scheduleBuilder.hours.length); track index2;let index2 = $index) {
                                         <div class="item lesson-hour">
-                                            @if (scheduleBuilder.timetable[index]?.[index2]) {
-                                                @for (lesson of scheduleBuilder.timetable[index][index2] ?? []; track $index) { 
-                                                    <div [ngClass]="getLessonClasses(index, index2, lesson)" [style.backgroundColor]="lesson.color">
-                                                        <div class="group">
-                                                            <span>{{ lesson.className }}</span>
-                                                        </div> 
-                                                        <div class="room">
-                                                            {{ lesson.room }}
-                                                        </div>
-                                                        <div class="subject">
-                                                            @if (lesson.type !== 0) {
-                                                                {{ l.s('weeks.' + (lesson.type == 1 ? 'odd' : 'even')).charAt(0) + ': ' }}
-                                                            }
-                                                            {{ lesson.subjectShortcut }}
-                                                        </div>
-                                                        <div class="teacher">
-                                                            @if (lesson.className) {
-                                                                {{ lesson.className }}
-                                                            }
-                                                            @if (lesson.lastName) {
-                                                                {{ lesson.lastName }}
-                                                            }
-                                                        </div>
-
+                                            @for (lesson of scheduleBuilder.timetable[index][index2] ?? []; track $index) { 
+                                                <div [ngClass]="getLessonClasses(index, index2, lesson)" (click)="openEditLessonModal(lesson)" [style.backgroundColor]="lesson.color">
+                                                    <div class="group">
+                                                        <span>{{ formatGroupName(lesson) }}</span>
+                                                    </div> 
+                                                    <div class="room">
+                                                        {{ lesson.room }}
                                                     </div>
-                                                }
+                                                    <div class="subject">
+                                                        @if (lesson.type !== 0) {
+                                                            {{ l.s('weeks.' + (lesson.type == 1 ? 'odd' : 'even')).charAt(0) + ': ' }}
+                                                        }
+                                                        {{ lesson.subjectShortcut }}
+                                                    </div>
+                                                    <div class="teacher">
+                                                        @if (lesson.lastName) {
+                                                            {{ lesson.lastName }}
+                                                        }
+                                                    </div>
+
+                                                </div>
+                                            } @empty {
+                                                <div class="sub-lesson-hour empty" (click)="openEditLessonModal(null)">
+                                                    <div class="group">
+                                                        <span></span>
+                                                    </div> 
+                                                    <div class="room">
+                                                    </div>
+                                                    <div class="subject">
+                                                    </div>
+                                                    <div class="teacher"></div>
+
+                                                </div>
                                             }
                                         </div>
                                     }

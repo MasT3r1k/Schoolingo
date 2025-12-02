@@ -10,6 +10,7 @@ import { IconsModule } from '@Schoolingo/icons';
 import { HttpClient } from '@angular/common/http';
 import { Config } from '@Schoolingo/config';
 import { ModalManager } from '@Schoolingo/modal';
+import { DropdownManager } from '@Schoolingo/dropdown';
 
 @Component({
   standalone: true,
@@ -21,6 +22,7 @@ export class EditColumnComponent implements OnInit {
   public l = inject(Locale)
   private modalManager = inject(ModalManager);
   public marksManager = inject(MarksManager);
+  public dropdownManager = inject(DropdownManager);
   private http = inject(HttpClient);
   public alert: Alert | null = null;
 

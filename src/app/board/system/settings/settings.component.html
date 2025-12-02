@@ -313,6 +313,7 @@
                     </thead>
                     <tbody>
                         @for (subject of system.subjects; track $index) {
+                            @if (subject.subjectId && subject_hours[subject.subjectId]) {
                             <tr>
                                 <td>{{ subject.subjectName }}</td>
                                 @for (_ of [].constructor(+selected_scope.years); track $index) {
@@ -323,6 +324,7 @@
                                     </td>
                                 }
                             </tr>
+                            }
                         }
                     </tbody>
                 </table>

@@ -16,17 +16,9 @@ export class AddEventComponent {
   public l = inject(Locale);
 
   public types = [
-    'Třídnická hodina',
     'Doučování',
     'Školní výlet',
-    'Změna učebny',
-    'Změna učitele',
-    'Spojená hodina',
-    'Přesun hodiny na jiný den',
-    'Výpadek učitele',
-    'Zastupování učitele',
-    'Zrušení hodiny',
-    'Individuální výuka / doučování'
+    'Třídnická hodina'
   ];
   public selected_type = this.types[0];
 

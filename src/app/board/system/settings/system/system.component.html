@@ -1,56 +1,3 @@
-<!-- <div class="container-content">
-    @if (version_loading.is_loading) {
-        <div class="alert loading" style="justify-content: center;border-radius: 0;">
-            <div class="loader"></div>
-            <div class="row">
-                <span>{{ l.s('system.system_update_loading') }}</span>
-            </div>
-        </div>
-    } @else if (version && version_loading.error == null) {
-    <div class="alert"
-    [class.success]="version.isUpToDate"
-    [class.error]="!version.isUpToDate"
-    style="justify-content: center;border-radius: 0;">
-        <div class="row">
-            <i-tabler [name]="version.isUpToDate ? 'check' : 'alert-triangle'" style="margin-right: .5rem;"></i-tabler>
-            <span>{{ l.s(`system.${version.isUpToDate ? 'system_is_up_to_date' : 'system_has_update'}`) }}</span>
-        </div>
-    </div>
-    } @else {
-        <div class="alert error" style="justify-content: center;border-radius: 0;">
-            <div class="row">
-                <span>{{ l.s('system.system_error_loading_version') }}</span>
-            </div>
-        </div>
-    }
-
-    <div class="panel">
-        <div class="icon">
-            <i-tabler name="check"></i-tabler>
-        </div>
-        <div class="info">
-            <p class="title">
-                {{ l.s('system.system_has_valid_license') }}
-            </p>
-            <small>Tato škola má licenci: <b>{{ system.settings.license_type }}</b>, platné do doby <b>{{
-                system.settings.license_until ? system.settings.license_until : 'NEOMEZENO'}}</b>.</small><br />
-            <small>
-                Využití studentů: <b>{{ system.student_count }} z {{ system.settings.studentsLimit == -1 ? 'NEOMEZENO' : system.settings.studentsLimit }}</b>
-            </small>
-        </div>
-    </div>
-
-    <div class="form-group">
-        <label for="app_name">Název aplikace</label>
-        <input type="text" name="app_name" id="app_name" disabled [value]="Config.APP_NAME" readonly>
-    </div>
-
-    <div class="form-group">
-        <label for="app_version">{{ l.s('system.version') }}</label>
-        <input type="text" name="app_version" id="app_version" disabled [value]="Config.APP_VERSION" readonly>
-    </div>
-</div> -->
-
 <div class="container-content">
     @if (version_loading.is_loading) {
         <div class="alert loading">
@@ -162,13 +109,16 @@
                         </div>
                         <div class="muted">Spravuje přístup, počet studentů a funkce</div>
                     </div>
+                    @if (system && system.settings) {
                     <div class="muted-block" id="licRemaining">
                         Platnost do: <strong id="licUntil">
                             {{ system.settings.license_until ?? 'NEOMEZENO' }}
                         </strong>
                     </div>
+                    }
                 </div>
 
+                @if (system && system.settings) {
                 <div style="margin-top:12px">
                     <div style="display:flex;justify-content:space-between;align-items:center">
                         <div class="muted">Studenti</div>
@@ -205,6 +155,7 @@
                         </div>
                     </div>
                 </div>
+                }
             </div>
             </div>
 

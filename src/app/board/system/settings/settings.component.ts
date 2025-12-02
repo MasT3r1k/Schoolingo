@@ -104,7 +104,10 @@ export class SettingsComponent implements OnInit {
 
   // === Email settings ===
   public selected_email_type = 0;
-  public email_types: string[] = ['basic_smtp_server', 'google_smtp_server'];
+  public email_types: string[] = [
+    'basic_smtp_server',
+    'google_smtp_server'
+  ];
 
   // === Scopes ===
   public selected_scope: ScopeAPI | undefined = undefined;
@@ -112,6 +115,23 @@ export class SettingsComponent implements OnInit {
 
   public select_scope(scope: ScopeAPI | undefined): void {
     this.selected_scope = JSON.parse(JSON.stringify(scope));
+    this.http.get<any[]>(
+      `${Config.API_URL}/v1/system/scope?scope_id=${scope?.scopeId}`,
+      { withCredentials: true }
+    )
+    .subscribe((data: any[]) => {
+      this.subject_hours = {};
+      data.forEach((item) => {
+        if (!this.subject_hours[item.subject_id]) this.subject_hours[item.subject_id] = [];
+        this.subject_hours[item.subject_id][item.year] = item.hours_per_week;
+      });
+      for(let subject of this.system.subjects) {
+        if (subject.subjectId != null && !this.subject_hours[subject.subjectId]) {
+          this.subject_hours[subject.subjectId] = [0, 0, 0, 0, 0];
+        }
+      }
+
+    })
     this.input_errors = {};
   }
 
@@ -167,8 +187,6 @@ export class SettingsComponent implements OnInit {
     }
     const scope = this.selected_scope;
     if (scope == undefined) return;
-    console.log(scope);
-    console.log(this.subject_hours);
     this.http.post(
       `${Config.API_URL}/v1/system/update_scope`,
       {

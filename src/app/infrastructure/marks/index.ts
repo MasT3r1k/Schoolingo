@@ -15,6 +15,7 @@ export class MarksManager {
     private action: 'edit' | 'create' | '' = '';
     private student: string | null = null;
     private columnIndex = -1;
+    private columnId = -1;
     private groupId = -1;
     private subjectId = -1;
     private subjectName = '';
@@ -47,6 +48,9 @@ export class MarksManager {
 
     public setColumnIndex(columnIndex: number): void { this.columnIndex = columnIndex }
     public getColumnIndex(): typeof this.columnIndex { return this.columnIndex }
+
+    public setColumnId(columnId: number): void { this.columnId = columnId }
+    public getColumnId(): typeof this.columnId { return this.columnId }
 
     public setTopic(topic: string): void { this.topic = topic }
     public getTopic(): typeof this.topic { return this.topic }

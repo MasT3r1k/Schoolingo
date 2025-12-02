@@ -18,6 +18,9 @@ export class ScheduleBuilder {
     public all_subjects: any[] = [];
     public subjects: any[] = [];
     public teachers: { [key: string]: any } = {};
+    public getTeachers(): any[] {
+        return Object.values(this.teachers);
+    }
     public getSubject(subjectId: number): any {
         return this.all_subjects.find((subject) => subject.subjectId == subjectId);
     }
