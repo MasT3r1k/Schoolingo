@@ -1,6 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { BuilderComponent } from './builder.component';
+import { BuilderComponent } from './b/builder.component';
 
 describe('BuilderComponent', () => {
   let component: BuilderComponent;

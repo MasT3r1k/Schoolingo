@@ -5,20 +5,19 @@ import { IconsModule } from '@Schoolingo/icons';
 import { Locale } from '@Schoolingo/locale';
 import { ModalManager } from '@Schoolingo/modal';
 import { ScheduleBuilder } from '@Schoolingo/schedule_builder';
-import { AddSubjectComponent } from '../add-subject/add-subject.component';
-import { AddEventComponent } from '../add-event/add-event.component';
+import { AddSubjectComponent } from '../../add-subject/add-subject.component';
+import { AddEventComponent } from '../../add-event/add-event.component';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import {CdkDrag, CdkDragDrop, moveItemInArray} from '@angular/cdk/drag-drop';
-import { NumberSymbol } from '@angular/common';
+import {CdkDrag, CdkDropList, CdkDropListGroup, CdkDragDrop, moveItemInArray, transferArrayItem} from '@angular/cdk/drag-drop';
+import { EditLessonComponent } from '../../edit-lesson/edit-lesson.component';
 
 @Component({
   selector: 'app-builder',
-  imports: [IconsModule, FormsModule, ReactiveFormsModule, CdkDrag],
+  imports: [IconsModule, FormsModule, ReactiveFormsModule, CdkDrag, CdkDropList, CdkDropListGroup],
   templateUrl: './builder.component.html',
   styleUrl: './builder.component.css'
 })
 export class BuilderComponent implements OnInit {
-  public alerts: any = {};
   public l = inject(Locale);
   public scheduleBuilder = inject(ScheduleBuilder);
   private http = inject(HttpClient);
@@ -51,6 +50,20 @@ export class BuilderComponent implements OnInit {
           {
             type: 'component',
             component: AddEventComponent
+          }
+        ]
+      }
+    )
+
+    this.modalManager.addModal(
+      'schedule_edit_lesson',
+      {
+        title: 'schedule.builder.edit_lesson',
+        closeable: true,
+        items: [
+          {
+            type: 'component',
+            component: EditLessonComponent
           }
         ]
       }
@@ -102,20 +115,6 @@ export class BuilderComponent implements OnInit {
     })
   }
 
-  public clearTimetable(): void {
-    this.scheduleBuilder.subjects = [];
-    this.scheduleBuilder.isTimetableLoading = false;
-    this.scheduleBuilder.isSubjectsLoading = false;
-  }
-
-  public openSettings(): void {
-    this.modalManager.openModal('schedule_settings');
-  }
-
-  public onDrop(event: DragEvent, index: number, index2: number): void {
-    moveItemInArray(this.scheduleBuilder.subjects, index, index2);
-  }
-
   public selectClass(class_id: number): void {
     this.scheduleBuilder.selectedClass.next(class_id);
   }
@@ -126,5 +125,31 @@ export class BuilderComponent implements OnInit {
 
   public openAddEventModal(): void {
     this.modalManager.openModal('schedule_add_event');
+  }
+
+  public drop(event: CdkDragDrop<any[]>, dayIndex: number, hourIndex: number): void {
+    if (event.previousContainer === event.container) {
+      moveItemInArray(event.container.data, event.previousIndex, event.currentIndex);
+    } else {
+      // If dropping from available subjects (which might not be a connected drop list in the same way)
+      // We need to handle it. 
+      // Assuming the sidebar list is a connected drop list or we just use the data from the drag
+      
+      const subject = event.item.data;
+      if (subject) {
+          // Add new lesson to the schedule
+          this.scheduleBuilder.timetable[dayIndex][hourIndex].push({
+              subjectId: subject.subjectId,
+              teacherId: null, // Default or select later
+              week: 'both',
+              room: ''
+          });
+      }
+    }
+  }
+
+  public editLesson(lesson: any): void {
+    this.scheduleBuilder.activeLesson = lesson;
+    this.modalManager.openModal('schedule_edit_lesson');
   }
 }

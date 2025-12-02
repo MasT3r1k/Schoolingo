@@ -3,6 +3,7 @@ import { Component, inject, OnInit } from '@angular/core';
 import { Config } from '@Schoolingo/config';
 import { IconsModule } from '@Schoolingo/icons';
 import { Locale } from '@Schoolingo/locale';
+import { Utils } from '@Schoolingo/utils';
 
 interface ElysiaVersion {
   current: string;
@@ -92,6 +93,16 @@ export class SystemComponent implements OnInit {
   public Config = Config;
 
   ngOnInit(): void {
+    this.http.get<ElysiaSystemAPI>(
+      `${Config.API_URL}/v1/system`,
+      { withCredentials: true }
+    )
+    .subscribe((data) => {
+      this.system = {
+        ...data
+      };
+    });
+
     this.http.get<ElysiaVersion>(
       `${Config.API_URL}/v1/version`
     )
@@ -103,5 +114,10 @@ export class SystemComponent implements OnInit {
       this.version_loading.is_loading = false;
       this.version_loading.error = 'failed_load_version';
     })
+  }
+
+  public getStudentPercentage(): number {
+    if (this.system.settings.studentsLimit == -1) return 100;
+    return this.system.student_count / this.system.settings.studentsLimit * 100;
   }
 }
