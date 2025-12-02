@@ -1,13 +1,12 @@
-import { NgStyle } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { Component, inject, OnInit } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { TabsComponent } from '@Components/Tabs';
-import { Alert } from '@Schoolingo/alert';
 import { Authentication } from '@Schoolingo/authentication';
 import { Config } from '@Schoolingo/config';
 import { IconsModule } from '@Schoolingo/icons';
 import { Locale } from '@Schoolingo/locale';
+import { MarksManager } from '@Schoolingo/marks';
 import { Utils } from '@Schoolingo/utils';
 import { BehaviorSubject } from 'rxjs';
 
@@ -57,6 +56,7 @@ export class IntermComponent implements OnInit {
   public l = inject(Locale);
   private http = inject(HttpClient);
   private auth = inject(Authentication);
+  private marksManager = inject(MarksManager);
 
   ngOnInit(): void {
     this.http
@@ -101,7 +101,7 @@ export class IntermComponent implements OnInit {
 
     const newGrade: PredictorGrade = {
       subjectName: this.selected_subject,
-      mark: parseInt(this.selected_mark.toString()),
+      mark: parseFloat(this.selected_mark.toString()),
       weight: parseInt(this.selected_weight.toString()),
       topic: this.l.s('marks.predictor.title'),
       type: 0,
@@ -229,7 +229,7 @@ export class IntermComponent implements OnInit {
     for (const grade of grades) {
       if (grade.type === 0 && typeof grade.mark === "number") {
         const weight = (typeof grade.weight === "number" ? parseInt(grade.weight) : 0) + 1;
-        total += parseInt(grade.mark) * weight;
+        total += parseFloat(grade.mark) * weight;
         totalDivide += weight;
       }
     }
@@ -237,6 +237,14 @@ export class IntermComponent implements OnInit {
 
     const average = total / totalDivide;
     return average < 1 ? "1.00" : average.toFixed(2);
+  }
+
+  public formatMark(mark_id: number): string {
+    const config = this.marksManager.getConfig();
+    let idIndex = config.mark_ids.findIndex((mark) => mark == mark_id);
+    let displayMark = config.mark_display[idIndex];
+    if (displayMark) return displayMark;
+    return mark_id.toString();
   }
 
   /** Dynamická velikost písma podle váhy */

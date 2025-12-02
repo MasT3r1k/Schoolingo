@@ -29,7 +29,7 @@
             class="grade-item"
             [style.fontSize.px]="getFontSize(mark.weight)"
           >
-            <span class="mark">{{ mark.mark }}</span>
+            <span class="mark">{{ formatMark(mark.mark) }}</span>
             <span class="topic">{{ mark.topic }}</span>
           </div>
           }
@@ -64,7 +64,7 @@
         {{ mark.subjectName }}
       </div>
       <div class="table-mark bold">
-        {{ mark.mark }}
+        {{ formatMark(mark.mark) }}
       </div>
       <div class="table-topic">
         {{ mark.topic }}
@@ -128,9 +128,13 @@
           </label>
           <select [(ngModel)]="selected_mark">
             <option value="1">1</option>
+            <option value="1.5">1-</option>
             <option value="2">2</option>
+            <option value="2.5">2-</option>
             <option value="3">3</option>
+            <option value="3.5">3-</option>
             <option value="4">4</option>
+            <option value="4.5">4-</option>
             <option value="5">5</option>
           </select>
         </div>
@@ -192,7 +196,7 @@
       </div>
       <div class="table-2-mark center">
         <div class="grade-box">
-          {{ mark.mark }}
+          {{ formatMark(mark.mark) }}
         </div>
       </div>
       <div class="table-2-weight center">
