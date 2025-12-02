@@ -15,10 +15,13 @@ import { TimetableLesson } from '../../Teach/timetable/timetable.component';
 import { NgClass } from '@angular/common';
 import { DropdownManager } from '@Schoolingo/dropdown';
 import { EditLessonComponent } from '../edit-lesson/edit-lesson.component';
+import { CalendarComponent } from '@Components/calendar';
+import { CalendarManager } from '@Components/calendar-dropdown';
+import { Utils } from '@Schoolingo/utils';
 
 @Component({
   selector: 'app-builder',
-  imports: [IconsModule, FormsModule, ReactiveFormsModule, CdkDrag, NgClass],
+  imports: [IconsModule, FormsModule, ReactiveFormsModule, CdkDrag, NgClass, CalendarComponent],
   templateUrl: './builder.component.html',
   styleUrl: './builder.component.css'
 })
@@ -29,6 +32,9 @@ export class BuilderComponent implements OnInit {
   private http = inject(HttpClient);
   private modalManager = inject(ModalManager);
   public dropdownManager = inject(DropdownManager);
+  public calendarManager = inject(CalendarManager);
+  public Utils = Utils;
+  public selected_date: moment.Moment = moment();
 
   ngOnInit(): void {
     this.scheduleBuilder.isTimetableLoading = false;
@@ -92,10 +98,10 @@ export class BuilderComponent implements OnInit {
     });
 
     this.scheduleBuilder.selectedClass.subscribe((data) => {
-      this.scheduleBuilder.isTimetableLoading = true;
-      this.scheduleBuilder.isSubjectsLoading = true;
+      if (!data) return;
+      // Load class subjects
       this.http.get(
-        `${Config.API_URL}/v1/schedule/subjects?classId=${data}`,
+        `${Config.API_URL}/v1/schedule/subjects?classId=${this.scheduleBuilder.selectedClass.getValue()}`,
         { withCredentials: true }
       )
       .subscribe((data) => {
@@ -106,6 +112,8 @@ export class BuilderComponent implements OnInit {
           this.scheduleBuilder.isSubjectsLoading = false;
         }
       })
+      // Load timetable
+      this.refreshLoad();
     })
 
     this.http.get(
@@ -119,6 +127,19 @@ export class BuilderComponent implements OnInit {
       }
       console.log(data)
     })
+  }
+
+  ngAfterViewInit(): void {
+    this.calendarManager.getCalendarData('scheduleBuilder_date').selected_date[0].subscribe((new_date) => {
+      this.selected_date = new_date.clone();
+      this.refreshLoad();
+    })
+  }
+
+  public selectWeek(n: number): void {
+    const selectedWeek = this.calendarManager.getCalendarData('scheduleBuilder_date').selected_date[0].getValue().add(n, 'week');
+    this.calendarManager.getCalendarData('scheduleBuilder_date').selected_date[0].next(selectedWeek);
+    this.calendarManager.getCalendarData('scheduleBuilder_date').selected_date[1].next(selectedWeek);
   }
 
   public clearTimetable(): void {
@@ -137,7 +158,11 @@ export class BuilderComponent implements OnInit {
 
   public selectClass(class_id: number): void {
     this.scheduleBuilder.selectedClass.next(class_id);
+  }
 
+  public refreshLoad(): void {
+    if (!this.calendarManager.getCalendarData('scheduleBuilder_date').selected_date[0].getValue()) return;
+    this.scheduleBuilder.isTimetableLoading = true;
     this.http.get<any[]>(
       Config.API_URL + '/v1/teachers',
       { withCredentials: true }
@@ -150,7 +175,11 @@ export class BuilderComponent implements OnInit {
 
     this.http.post(
       Config.API_URL + '/v1/timetable',
-      { type: 'class', id: 1, time: (moment()).format("YYYY-MM-DD")},
+      {
+        type: 'class',
+        id: this.scheduleBuilder.selectedClass.getValue(),
+        time: this.calendarManager.getCalendarData('scheduleBuilder_date').selected_date[0].getValue().format("YYYY-MM-DD")
+      },
       { withCredentials: true })
     .subscribe((data: any) => {
       console.log(data)

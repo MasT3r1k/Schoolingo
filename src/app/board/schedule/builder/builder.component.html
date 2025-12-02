@@ -90,11 +90,11 @@
                     <div class="divider"></div>
 
                     <div class="row" style="gap: 8px">
-                        <div class="btn icon-only">
+                        <div class="btn icon-only" (click)="selectWeek(-1)">
                             <i-tabler name="chevron-left"></i-tabler>
                         </div>
-                        <input type="date">
-                        <div class="btn icon-only">
+                        <app-calendar id="scheduleBuilder_date" size="center"></app-calendar>
+                        <div class="btn icon-only" (click)="selectWeek(1)">
                             <i-tabler name="chevron-right"></i-tabler>
                         </div>
                     </div>
@@ -153,6 +153,13 @@
                             <div class="day">
                                 <div class="name">
                                     {{ l.s('days.' + $index) }}
+                                    <div class="time">
+                                        {{
+                                            Utils
+                                            .getDayOfWeek(selected_date, index)
+                                            .format('D. M.')
+                                        }}
+                                    </div>
                                 </div>
 
 

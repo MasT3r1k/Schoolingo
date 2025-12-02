@@ -1,8 +1,9 @@
 import { NgClass } from '@angular/common';
-import { Component, ElementRef, EventEmitter, inject, OnInit, Output, Renderer2, RendererFactory2 } from '@angular/core';
+import { Component, ElementRef, EventEmitter, inject, Input, OnInit, Output, Renderer2, RendererFactory2 } from '@angular/core';
 import { CalendarManager } from '@Components/calendar-dropdown';
 import { IconsModule } from '@Schoolingo/icons';
 import { Locale } from '@Schoolingo/locale';
+import { Utils } from '@Schoolingo/utils';
 import moment from 'moment';
 import { BehaviorSubject } from 'rxjs';
 
@@ -15,9 +16,12 @@ export type Calendar = {
   selector: 'app-calendar',
   templateUrl: './calendar.html',
   styleUrls: ['./calendar.css'],
-  imports: [IconsModule, NgClass]
+  imports: [IconsModule]
 })
 export class CalendarComponent implements OnInit {
+    @Input() id: string = '';
+    @Input() size: 'full' | 'center' = 'center';
+    Utils = Utils;
     public visible: boolean = false;
     private elementRef = inject(ElementRef);
     private renderer = inject(Renderer2); 
@@ -33,50 +37,62 @@ export class CalendarComponent implements OnInit {
     ngOnInit(): void {
         const el = this.elementRef.nativeElement as HTMLElement;
         const bounds = el.getBoundingClientRect();
-        console.log(el)
-        console.log(el.getBoundingClientRect());
         this.calendarManager.addCalendar(
-            "interm-record",
+            this.id,
             {
-                position: { x: bounds.x, y: bounds.y },
+                id: this.id,
+                size: this.size,
+                position: { x: bounds.x, y: bounds.y, position: 'top' },
                 options: {
-                    multiple_days: true,
+                    multiple_days: false,
                     multiple_hours: false
                 },
                 width: bounds.width,
-                selected_date: [moment(), moment()],
+                selected_date: [new BehaviorSubject(moment()), new BehaviorSubject(moment())],
                 selected_hour: 1
             }
         );
-
+        // this.updateCalendarPosition();
         this.resizeListener = this.renderer.listen('window', 'resize', () => {
-        this.updateCalendarPosition();
+            this.updateCalendarPosition();
         });
     }
 
-    private updateCalendarPosition(): void {
+    public updateCalendarPosition(): void {
         const el = this.elementRef.nativeElement as HTMLElement;
         const bounds = el.getBoundingClientRect();
 
-        this.calendarManager.updateCalendar('interm-record', 'position', {
-        x: bounds.x,
-        y: bounds.y,
-        width: bounds.width,
-        height: bounds.height
-        });
-    }
+        let x = 0;
+        let y = 0;
+        let position = 'top';
+        const calendarDropdown = document.querySelector(".calendar-panel[calendar_id='" + this.id + "']") as HTMLElement;
+        const dropdownBounds = calendarDropdown.getBoundingClientRect();
 
-    @Output() dateSelected = new EventEmitter<moment.Moment>();
-    @Output() hourSelected = new EventEmitter<string>();
+        if (dropdownBounds.height <= bounds.top) {
+            y = bounds.y;
+            position = 'top';
+        }
 
-    onDateChange(date: moment.Moment) {
-        this.selectedDate = date;
-        this.dateSelected.emit(date);
-    }
+        if (dropdownBounds.height > bounds.top) {
+            y = bounds.y + bounds.height + dropdownBounds.height;
+            position = 'bottom';
+        }
 
-    onHourSelect(hour: string) {
-        this.selectedHour = hour;
-        this.hourSelected.emit(hour);
+        if (this.size == 'full') { x = bounds.x }
+        if (this.size == 'center') { x = bounds.x + ((bounds.width - dropdownBounds.width) / 2) }
+
+        this.calendarManager.updateCalendar(
+            this.id,
+            'position',
+            {
+                x: x,
+                y: y,
+                width: bounds.width,
+                height: bounds.height,
+                position,
+                dropdownBounds
+            }
+        );
     }
 
     ngOnDestroy(): void {

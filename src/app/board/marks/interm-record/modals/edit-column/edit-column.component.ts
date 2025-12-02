@@ -38,19 +38,6 @@ export class EditColumnComponent implements OnInit {
   public plannedMark = "";
   public errors: { [key: string]: string } = {};
 
-  selectedDateFromChild: moment.Moment = moment();
-  selectedHourFromChild: string | null = null;
-
-  onDatePicked(date: moment.Moment) {
-    this.selectedDateFromChild = date;
-    console.log('Vybrané datum:', date);
-  }
-
-  onHourPicked(hour: string) {
-    this.selectedHourFromChild = hour;
-    console.log('Vybraná hodina:', hour);
-  }
-
   public showSelect: 'type' | 'weight' | null = null;
 
   public selectedType: typeof this.type = 'marks';

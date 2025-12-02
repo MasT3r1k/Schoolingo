@@ -19,11 +19,17 @@ export class ScheduleBuilder {
     public subjects: any[] = [];
     public teachers: { [key: string]: any } = {};
     public getTeachers(): any[] {
-        return Object.values(this.teachers);
+        return Object.values(this.teachers).sort((a, b) => {
+            const ln = a.lastName.localeCompare(b.lastName, 'cs');
+            if (ln !== 0) return ln;
+            return a.firstName.localeCompare(b.firstName, 'cs');
+        });
     }
+
     public getSubject(subjectId: number): any {
         return this.all_subjects.find((subject) => subject.subjectId == subjectId);
     }
+    
     public selectedSubject = 0;
     public classes: any[] = [];
     public selectedClass = new BehaviorSubject<number>(0);

@@ -1,24 +1,18 @@
 <div class="calendar-wrap" id="calWrap">
     <div
         class="calendar-input input"
-        [class.focus]="calendarManager.isVisibleCalendar('interm-record')"
-        id="calToggle"
-        role="button"
-        aria-haspopup="true"
-        aria-expanded="false"
-        (click)="calendarManager.isVisibleCalendar('interm-record') ? calendarManager.closeCalendar('interm-record') : calendarManager.showCalendar('interm-record')"
+        [class.focus]="calendarManager.isVisibleCalendar(id)"
+        (click)="calendarManager.isVisibleCalendar(id) ? calendarManager.closeCalendar(id) : updateCalendarPosition();calendarManager.showCalendar(id)"
     >
-        <div class="label">
-            {{ l.s('calendar.date') }}
-        </div>
         <div class="value" id="calValue">
-            @if (this.calendarManager.getCalendarData("interm-record")) {
-                
+            @if (this.calendarManager.getCalendarData(id)) {
+                {{ this.calendarManager.getCalendarData(id).selected_date[0].getValue().format('DD. MM. YYYY') }}
+            } @else {
+                {{ l.s('calendar.placeholder') }}
             }
-            {{ l.s('calendar.placeholder') }}
         </div>
         <div class="chev">
-            <i-tabler name="chevron-down"></i-tabler>
+            <i-tabler [name]="calendarManager.getCalendarData(id).position.position == 'top' ? 'chevron-down' : 'chevron-up'"></i-tabler>
         </div>
     </div>
 </div>

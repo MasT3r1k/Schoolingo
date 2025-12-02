@@ -1,6 +1,5 @@
 import { NgClass } from '@angular/common';
-import { Component, EventEmitter, inject, Output } from '@angular/core';
-import { CalendarComponent } from '@Components/calendar';
+import { Component, inject } from '@angular/core';
 import { IconsModule } from '@Schoolingo/icons';
 import { Locale } from '@Schoolingo/locale';
 import moment from 'moment';
@@ -14,14 +13,18 @@ export type Calendar = {
 }
 
 export type CalendarData = {
+    id: string;
+    size: 'full' | 'center';
     position: {
         x: number;
         y: number;
+        position: 'top' | 'bottom';
     };
     options: { [key: 'multiple_days' | 'multiple_hours' | string]: boolean };
     width: number;
-    selected_date: moment.Moment[];
+    selected_date: BehaviorSubject<moment.Moment>[];
     selected_hour: number;
+    dropdownBounds?: any;
 
     visible?: boolean;
 }
@@ -30,9 +33,14 @@ export type CalendarData = {
   selector: 'calendar-dropdowns',
   templateUrl: './calendar.html',
   styleUrls: ['./calendar.css'],
-  imports: [IconsModule, NgClass]
+  imports: [IconsModule]
 })
 export class CalendarManager {
+    public l = inject(Locale);
+    date = new BehaviorSubject<moment.Moment>(moment());
+    selectedDate: moment.Moment = moment();
+    selectedHour: string | null = null;
+    
     public addCalendar(name: string, calendar: CalendarData): void {
         console.log(name, calendar);
         if (!calendar.visible) {
@@ -45,7 +53,11 @@ export class CalendarManager {
         return calendars[name];
     }
 
-    public getCalendars(): any[] {
+    public getCalendars(): CalendarData[] {
+        return Object.entries(calendars).map(([name, calendar]) => ({...calendar, id: name}));
+    }
+
+    public getVisibleCalendars(): CalendarData[] {
         return Object.entries(calendars).filter((calendar) => calendar[1].visible === true).map(([name, calendar]) => ({...calendar, id: name}));
     }
 
@@ -67,40 +79,45 @@ export class CalendarManager {
 
         // Pokud není multi-day výběr povolen → jeden den = start i end stejný
         if (!calendar.options['multiple_days']) {
-            calendar.selected_date = [day.clone(), day.clone()];
+            calendar.selected_date[0].next(day.clone());
+            calendar.selected_date[1].next(day.clone());
+            this.closeCalendar(calendar.id)
             return;
         }
 
         // Je povolený multiple_days
         // 1) Nemám nic vybráno → nastavím start
-        if (!calendar.selected_date || calendar.selected_date.length === 0) {
-            calendar.selected_date = [day.clone()];
+        if (calendar.options['multiple_days'] && (!calendar.selected_date || calendar.selected_date.length === 0)) {
+            calendar.selected_date[0].next(day.clone());
             return;
         }
 
         // 2) Mám jen start → nastavím end
-        if (calendar.selected_date.length === 1) {
+        if (calendar.options['multiple_days'] && calendar.selected_date.length === 1) {
             const start = calendar.selected_date[0];
             const end = day.clone();
 
             // Pokud se klikne na stejný, bereme jako single-day
-            if (start.isSame(end, 'day')) {
-                calendar.selected_date = [start, start];
+            if (start.getValue().isSame(end, 'day')) {
+                calendar.selected_date[0].next(start.getValue());
+                calendar.selected_date[1].next(start.getValue());
                 return;
             }
 
             // Když se klikne na dřívější den → prohodit
-            if (end.isBefore(start)) {
-                calendar.selected_date = [end, start];
+            if (end.isBefore(start.getValue())) {
+                calendar.selected_date[0].next(end);
+                calendar.selected_date[1].next(start.getValue());
             } else {
-                calendar.selected_date = [start, end];
+                calendar.selected_date[0].next(start.getValue());
+                calendar.selected_date[1].next(end);
             }
             return;
         }
 
         // 3) Existuje start i end → restart výběru od nového dne
         if (calendar.selected_date.length === 2) {
-            calendar.selected_date = [day.clone()];
+            calendar.selected_date[0].next(day.clone());
             return;
         }
     }
@@ -115,33 +132,30 @@ export class CalendarManager {
             case "position":
                 calendars[name].position.x = value.x;
                 calendars[name].position.y = value.y;
+                calendars[name].position.position = value.position;
                 calendars[name].width = value.width;
+                calendars[name].dropdownBounds = value.dropdownBounds;
+                break;
+            case "size":
+                calendars[name].size = value.size;
                 break;
         }
     }
-
-    public l = inject(Locale);
-    date = new BehaviorSubject<moment.Moment>(moment());
-    selectedDate: moment.Moment = moment();
-    selectedHour: string | null = null;
 
     public isSameDay(calendar: CalendarData, day: moment.Moment): boolean {
         return (
             calendar.selected_date &&
             calendar.selected_date.length === 2 &&
-            (calendar.selected_date[0].isSame(day, 'day') ||
-            calendar.selected_date[1].isSame(day, 'day'))
+            (calendar.selected_date[0].getValue().isSame(day, 'day') ||
+            calendar.selected_date[1].getValue().isSame(day, 'day'))
         );
     }
 
     public isBetweenDay(calendar: CalendarData, day: moment.Moment): boolean {
         const [start, end] = calendar.selected_date || [];
         if (!start || !end) return false;
-        return day.isBetween(start, end, 'day', '()');
+        return day.isBetween(start.getValue(), end.getValue(), 'day', '()');
     }
-
-  @Output() dateSelected = new EventEmitter<moment.Moment>();
-  @Output() hourSelected = new EventEmitter<string>();
 
   hours: string[] = [
     '08:00',
@@ -193,14 +207,30 @@ export class CalendarManager {
         return calendar;
     }
 
-    onDateChange(date: moment.Moment) {
-        this.selectedDate = date;
-        this.dateSelected.emit(date);
+    public getLeft(calendar: CalendarData): string {
+        switch(calendar.size) {
+            case 'center':
+                return `${calendar.position.x}px`
+            case 'full':
+                return `${calendar.position.x}px`;
+        }
     }
 
-    onHourSelect(hour: string) {
-        this.selectedHour = hour;
-        this.hourSelected.emit(hour);
+    public getWidth(calendar: CalendarData): string {
+        switch(calendar.size) {
+            case 'center':
+                return ''
+            case 'full':
+                return `${calendar.width}px`;
+        }
     }
 
+    public getTransform(calendar: CalendarData): string {
+        switch(calendar.position.position) {
+            case 'top':
+                return 'translateY(calc(-100% - 4px))';
+            case 'bottom':
+                return 'translateY(calc(-100% + 4px))'
+        }
+    }
 }
