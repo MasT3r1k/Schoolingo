@@ -253,7 +253,7 @@ export const config: SidebarGroup[] = [
                     item: 'user.devices',
                     url: 'user/devices'
                 }, {
-                    item: 'user.notifications',
+                    item: 'sidebar.user.notifications',
                     url: 'user/notifications'
                 }, {
                     item: 'sidebar.settings',
