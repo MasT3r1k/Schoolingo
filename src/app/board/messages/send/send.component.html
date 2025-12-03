@@ -3,170 +3,259 @@
   <div class="main-content">
     <div class="card">
       <div class="card-header">
-        <div class="header-content">
-          <h2>{{ l.s("sidebar.messages.send") }}</h2>
-          <p>{{ l.s("messages.send_description") }}</p>
+        <div>
+        <h2>{{ l.s("sidebar.messages.send") }}</h2>
+        <p>{{ l.s("messages.send_description") }}</p>
         </div>
       </div>
 
       <div class="card-body">
         <!-- Message Type Selection -->
         @if (messageManager.types && messageManager.types.length) {
-          <div class="form-group">
-            <label>{{ l.s("messages.type") }}</label>
-            <div class="custom-select" (click)="$event.stopPropagation(); dropdownManager.selected_dropdown = dropdownManager.selected_dropdown == 'messagetype' ? '' : 'messagetype'">
-              <div class="selected-value">
-                {{ l.s('messages.types.' + messageManager.types[messageManager.messageType.getValue()].label) }}
-                <i-tabler name="chevron-down"></i-tabler>
+        <div class="form-group">
+          <label>{{ l.s("messages.type") }}</label>
+          <div class="custom-select"
+            (click)="$event.stopPropagation(); dropdownManager.selected_dropdown = dropdownManager.selected_dropdown == 'messagetype' ? '' : 'messagetype'">
+            <div class="selected-value">
+              <span>{{ l.s('messages.types.' + messageManager.types[messageManager.messageType.getValue()].label)
+                }}</span>
+              <i-tabler name="chevron-down"></i-tabler>
+            </div>
+            @if (dropdownManager.selected_dropdown == 'messagetype') {
+            <div class="options-dropdown">
+              @for (type of getMessageTypes(); track $index) {
+              <div class="option"
+                (click)="$event.stopPropagation();dropdownManager.selected_dropdown = ''; messageManager.messageType.next(messageManager.types.indexOf(type))">
+                {{ l.s("messages.types." + type.label) }}
               </div>
-              @if (dropdownManager.selected_dropdown == 'messagetype') {
-                <div class="options-dropdown">
-                  @for (type of getMessageTypes(); track $index) {
-                    <div class="option" (click)="$event.stopPropagation();dropdownManager.selected_dropdown = ''; messageManager.messageType.next(messageManager.types.indexOf(type))">
-                      {{ l.s("messages.types." + type.label) }}
-                    </div>
-                  }
-                </div>
               }
             </div>
+            }
           </div>
+        </div>
 
-          <!-- Topic Input -->
-          @if (checkMessageType([messageTypes.MESSAGE])) {
-            <div class="form-group">
-              <label [class.error-text]="alerts['topic']">
-                {{ l.s("messages.topic") }}
-                @if (alerts['topic']) { <span>- {{ l.s(alerts["topic"].text) }}</span> }
-              </label>
-              <input type="text" [(ngModel)]="messageManager.topic" [placeholder]="l.s('messages.topic')" [class.input-error]="alerts['topic']">
-            </div>
-          }
+        <!-- Topic Input -->
+        @if (checkMessageType([messageTypes.MESSAGE])) {
+        <div class="form-group">
+          <label [class.error-text]="alerts['topic']">
+            {{ l.s("messages.topic") }}
+            @if (alerts['topic']) { <span>- {{ l.s(alerts["topic"].text) }}</span> }
+          </label>
+          <input type="text" [(ngModel)]="messageManager.topic" [placeholder]="l.s('messages.topic')"
+            [class.input-error]="alerts['topic']">
+        </div>
+        }
 
-          <!-- Message Body -->
-          <div class="form-group mt-4">
-            <label [class.error-text]="alerts['message']">
-              {{ l.s("messages.message") }}
-              @if (alerts['message']) { <span>- {{ l.s(alerts["message"].text) }}</span> }
-            </label>
-            <textarea
-              [(ngModel)]="messageManager.message"
-              [placeholder]="l.s('messages.message_placeholder')"
-              [class.input-error]="alerts['message']"
-            ></textarea>
-          </div>
+        <!-- Message Body -->
+        <div class="form-group">
+          <label [class.error-text]="alerts['message']">
+            {{ l.s("messages.message") }}
+            @if (alerts['message']) { <span>- {{ l.s(alerts["message"].text) }}</span> }
+          </label>
+          <textarea style="min-height: 250px;" [(ngModel)]="messageManager.message" [placeholder]="l.s('messages.message_placeholder')"
+            [class.input-error]="alerts['message']"></textarea>
+        </div>
 
-          <!-- Action Buttons -->
-          <div class="form-group">
-            <div class="btn primary" (click)="sendMessage()">
-              <i-tabler name="send"></i-tabler>
-              {{ l.s("messages.buttons.send_message") }}
-            </div>
+        <!-- Action Buttons -->
+        <div class="form-group">
+          <div class="btn primary" (click)="sendMessage()">
+            <i-tabler name="send"></i-tabler>
+            {{ l.s("messages.buttons.send_message") }}
           </div>
-          <div class="form-group">
-            <div class="privacy-note">
-              <i-tabler name="info-circle"></i-tabler>
-              {{ l.s("messages.privacy").replaceAll("%app%", AppConfig.APP_NAME) }}
+        </div>
+
+        <!-- Privacy Note -->
+        <div class="message info">
+            <div class="row">
+                <i-tabler name="info-circle"></i-tabler>
+                <strong>Zprávy poslané přes Schoolingo nejsou soukromé</strong>
             </div>
-          </div>
+            <p class="info-text">{{ l.s("messages.privacy").replaceAll("%app%", AppConfig.APP_NAME) }}</p>
+        </div>
 
         } @else {
-            <div class="alert error">{{ l.s("messages.sus_error") }}</div>
+        <div class="alert error">{{ l.s("messages.sus_error") }}</div>
         }
       </div>
     </div>
   </div>
 
-  <!-- Sidebar / Settings -->
+  <!-- Unified Sidebar with Tabs -->
   <div class="sidebar">
-    <div class="card h-100">
-      <div class="sidebar-tabs">
-        <schoolingo-tabs
-            [option_width]="'100%'"
-            [options]="['messages.receiver', 'messages.attachments']"
-            [value]="selectedOptionTab"
-        ></schoolingo-tabs>
-      </div>
-
-      <div class="sidebar-content">
-        @switch(selectedOptionTab.getValue()) {
-          @case(MessageSendSecondTab.RECEIVERS) {
-            <div class="receivers-panel">
-                <div class="search-box">
-                    <i-tabler name="search"></i-tabler>
-                    <input type="text" [(ngModel)]="receiverFilter" [placeholder]="l.s('messages.search_receiver')">
-                </div>
-
-                <div class="receivers-list">
-                    @for(receiver of receivers; track $index) {
-                        <div class="receiver-item" [class.active]="isReceiverSelected(receiver)" (click)="toggleReceiverSelection(receiver)">
-                            <div class="checkbox" [class.checked]="isReceiverSelected(receiver)">
-                                @if(isReceiverSelected(receiver)) { <i-tabler name="check"></i-tabler> }
-                            </div>
-                            <div class="receiver-info">
-                                <span class="name">{{ receiver.full_name }}</span>
-                                <!-- <span class="role">{{ l.s("roles." + receiver.role) }}</span> -->
-                            </div>
-                        </div>
-                    }
-                </div>
-                
-                <div class="selected-summary" (click)="showSelectedReceivers = !showSelectedReceivers">
-                    <span>{{ l.s("messages.selected_receivers") }} ({{ getSelectedReceivers().length }})</span>
-                    <i-tabler [name]="showSelectedReceivers ? 'chevron-up' : 'chevron-down'"></i-tabler>
-                </div>
-                
-                @if(showSelectedReceivers) {
-                    <div class="selected-list-overlay">
-                        @for(receiver of getSelectedReceivers(); track $index) {
-                            <div class="selected-item">
-                                <span>{{ receiver.full_name }}</span>
-                                <i-tabler name="x" (click)="toggleReceiverSelection(receiver)"></i-tabler>
-                            </div>
-                        }
-                    </div>
-                }
-            </div>
-          }
-          @case(MessageSendSecondTab.ATTACHMENTS) {
-            <div class="attachments-panel">
-                <div class="upload-zone">
-                    <i-tabler name="cloud-upload"></i-tabler>
-                    <span>{{ l.s("buttons.upload_files") }}</span>
-                    <input type="file" (change)="files = $any($event.target).files">
-                </div>
-                @if(files.length) {
-                    <div class="file-list">
-                        @for(file of files; track $index) {
-                            <div class="file-item">
-                                <i-tabler name="file"></i-tabler>
-                                <span>{{ file.name }}</span>
-                            </div>
-                        }
-                    </div>
-                }
-            </div>
-          }
-        }
-      </div>
-      
-      <!-- Options Toggles -->
-      <div class="options-section">
-        <div class="option-toggle" (click)="messageManager.options.requireConfirmation = !messageManager.options.requireConfirmation">
-            <div class="toggle-checkbox" [class.checked]="messageManager.options.requireConfirmation"></div>
-            <span>{{ l.s("messages.tags.require_confirmation") }}</span>
+    <!-- Main Card with Tabs -->
+    <div class="sidebar-card unified-card">
+      <div class="sidebar-card-header">
+        <div class="header-icon">
+          <i-tabler [name]="selectedOptionTab.getValue() === 0 ? 'users' : 'paperclip'"></i-tabler>
         </div>
-        @if(perms.checkPermission(["teacher"])) {
-            <div class="option-toggle" (click)="messageManager.options.copyToClassTeacher = !messageManager.options.copyToClassTeacher">
-                <div class="toggle-checkbox" [class.checked]="messageManager.options.copyToClassTeacher"></div>
-                <span>{{ l.s("messages.copy_classteacher") }}</span>
-            </div>
-             <div class="option-toggle" (click)="messageManager.options.copyToParents = !messageManager.options.copyToParents">
-                <div class="toggle-checkbox" [class.checked]="messageManager.options.copyToParents"></div>
-                <span>{{ l.s("messages.copy_parents") }}</span>
-            </div>
-        }
+        <div class="header-text">
+          <h3>{{ selectedOptionTab.getValue() === 0 ? l.s("messages.receiver") : l.s("messages.attachments") }}</h3>
+          <p>
+            @if (selectedOptionTab.getValue() === 0) {
+            {{ getSelectedReceivers().length }} vybraných
+            } @else if (files.length > 0) {
+            {{ files.length }} souborů
+            }
+          </p>
+        </div>
       </div>
 
+      <!-- Tabs Navigation -->
+      <div class="tabs-navigation">
+        <div class="tab-button" [class.active]="selectedOptionTab.getValue() === 0" (click)="selectedOptionTab.next(0)">
+          <i-tabler name="users"></i-tabler>
+          <span>Příjemci</span>
+          @if (selectedReceivers.length > 0) {
+          <div class="tab-badge">{{ selectedReceivers.length }}</div>
+          }
+        </div>
+        <div class="tab-button" [class.active]="selectedOptionTab.getValue() === 1" (click)="selectedOptionTab.next(1)">
+          <i-tabler name="paperclip"></i-tabler>
+          <span>Přílohy</span>
+          @if (files.length > 0) {
+          <div class="tab-badge">{{ files.length }}</div>
+          }
+        </div>
+      </div>
+
+      <!-- Tab Content -->
+      <div class="sidebar-card-body">
+        @switch(selectedOptionTab.getValue()) {
+        @case(MessageSendSecondTab.RECEIVERS) {
+        <!-- Recipients Tab -->
+        <div class="tab-content">
+          <!-- Search Box -->
+          <div class="search-box">
+            <i-tabler name="search"></i-tabler>
+            <input type="text" [(ngModel)]="receiverFilter" [placeholder]="l.s('messages.search_receiver')">
+          </div>
+
+          <!-- Selected Recipients Pills -->
+          @if (selectedReceivers.length > 0) {
+          <div class="selected-pills">
+            @for (receiver of selectedReceivers; track receiver.person_id) {
+            <div class="pill">
+              <span>{{ receiver.full_name }}</span>
+              <i-tabler name="x" (click)="toggleReceiverSelection(receiver)"></i-tabler>
+            </div>
+            }
+          </div>
+          }
+
+          <!-- Recipients List -->
+          <div class="recipients-list">
+            @for(receiver of receivers; track receiver.person_id) {
+            <div class="recipient-card" [class.selected]="isReceiverSelected(receiver)"
+              (click)="toggleReceiverSelection(receiver)">
+              <div class="recipient-avatar">
+                {{ Utils.getInitials(receiver.full_name) }}
+              </div>
+              <div class="recipient-info">
+                <div class="recipient-name">{{ receiver.full_name }}</div>
+                <div class="recipient-role">{{ receiver.role }}</div>
+              </div>
+              <div class="recipient-checkbox">
+                <div class="checkbox" [class.checked]="isReceiverSelected(receiver)">
+                  @if(isReceiverSelected(receiver)) {
+                  <i-tabler name="check"></i-tabler>
+                  }
+                </div>
+              </div>
+            </div>
+            } @empty {
+            <div class="empty-state">
+              <i-tabler name="users-off"></i-tabler>
+              <p>Žádní příjemci k dispozici</p>
+            </div>
+            }
+          </div>
+        </div>
+        }
+        @case(MessageSendSecondTab.ATTACHMENTS) {
+        <!-- Attachments Tab -->
+        <div class="tab-content">
+          <div class="upload-area">
+            <i-tabler name="cloud-upload"></i-tabler>
+            <span>{{ l.s("buttons.upload_files") }}</span>
+            <small>Přetáhněte soubory nebo klikněte</small>
+            <input type="file" multiple (change)="files = $any($event.target).files">
+          </div>
+
+          @if(files.length > 0) {
+          <div class="files-list">
+            @for(file of files; track $index) {
+            <div class="file-card">
+              <div class="file-icon">
+                <i-tabler name="file-text"></i-tabler>
+              </div>
+              <div class="file-info">
+                <div class="file-name">{{ file.name }}</div>
+                <div class="file-size">{{ (file.size / 1024).toFixed(1) }} KB</div>
+              </div>
+              <button class="btn-icon-small">
+                <i-tabler name="x"></i-tabler>
+              </button>
+            </div>
+            }
+          </div>
+          } @else {
+          <div class="empty-state">
+            <i-tabler name="file-off"></i-tabler>
+            <p>Žádné přílohy</p>
+          </div>
+          }
+        </div>
+        }
+        }
+      </div>
+    </div>
+
+    <!-- Options Card -->
+    <div class="sidebar-card options-card">
+      <div class="sidebar-card-header">
+        <div class="header-icon">
+          <i-tabler name="settings"></i-tabler>
+        </div>
+        <div class="header-text">
+          <h3>Možnosti</h3>
+        </div>
+      </div>
+
+      <div class="sidebar-card-body">
+        <div class="option-item"
+          (click)="messageManager.options.requireConfirmation = !messageManager.options.requireConfirmation">
+          <div class="option-content">
+            <i-tabler name="check-circle"></i-tabler>
+            <span>{{ l.s("messages.tags.require_confirmation") }}</span>
+          </div>
+          <div class="modern-toggle" [class.active]="messageManager.options.requireConfirmation">
+            <div class="toggle-slider"></div>
+          </div>
+        </div>
+
+        @if(perms.checkPermission(["teacher"])) {
+        <div class="option-item"
+          (click)="messageManager.options.copyToClassTeacher = !messageManager.options.copyToClassTeacher">
+          <div class="option-content">
+            <i-tabler name="user-check"></i-tabler>
+            <span>{{ l.s("messages.copy_classteacher") }}</span>
+          </div>
+          <div class="modern-toggle" [class.active]="messageManager.options.copyToClassTeacher">
+            <div class="toggle-slider"></div>
+          </div>
+        </div>
+
+        <div class="option-item" (click)="messageManager.options.copyToParents = !messageManager.options.copyToParents">
+          <div class="option-content">
+            <i-tabler name="users-group"></i-tabler>
+            <span>{{ l.s("messages.copy_parents") }}</span>
+          </div>
+          <div class="modern-toggle" [class.active]="messageManager.options.copyToParents">
+            <div class="toggle-slider"></div>
+          </div>
+        </div>
+        }
+      </div>
     </div>
   </div>
 </div>

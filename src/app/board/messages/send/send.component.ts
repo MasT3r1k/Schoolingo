@@ -18,6 +18,7 @@ import { Authentication } from '@Schoolingo/authentication';
 import { TabsComponent } from '../../../Components/Tabs';
 import { HttpClient } from '@angular/common/http';
 import { DropdownManager } from '@Schoolingo/dropdown';
+import { Utils } from '@Schoolingo/utils';
 
 @Component({
   imports: [
@@ -42,6 +43,7 @@ export class SendComponent {
   public dropdownManager = inject(DropdownManager);
   public homeworks = inject(Homeworks);
   private http = inject(HttpClient);
+  public Utils = Utils;
 
   // === Alerts ===
   public alerts: Record<string, Alert> = {};
