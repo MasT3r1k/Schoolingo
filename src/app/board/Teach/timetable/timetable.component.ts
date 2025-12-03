@@ -239,7 +239,7 @@ export class TimetableComponent implements OnInit {
           return moment(Utils.getDayOfWeek(this.timetableSelectedWeek.getValue() ?? moment(), item.day)).isBetween(sub.start_date, sub.end_date, 'day', '[]');
         })
 
-        if (substitution && this.timetableSelectedWeek.getValue() != null) {
+        if (substitution && substitution.start_hour >= item.hour && substitution.end_hour <= item.hour && this.timetableSelectedWeek.getValue() != null) {
           timetableBuild[item.day][item.hour - 1].push({
             ...item,
             type: substitution.type,

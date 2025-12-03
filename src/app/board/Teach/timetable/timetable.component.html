@@ -163,10 +163,10 @@
                                                     {{ lesson.subjectShortcut }}
                                                 </div>
                                                 <div class="teacher">
-                                                    @if (lesson.className) {
+                                                    @if (lesson.className && perms.checkPermission(['teacher'])) {
                                                         {{ lesson.className }}
                                                     }
-                                                    @if (lesson.lastName) {
+                                                    @if (lesson.lastName && !perms.checkPermission(['teacher'])) {
                                                         {{ lesson.lastName }}
                                                     }
                                                 </div>
