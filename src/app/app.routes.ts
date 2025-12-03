@@ -30,6 +30,7 @@ import { GroupsComponent } from './board/messages/groups/groups.component';
 import { SettingsComponent as SystemSettings } from './board/system/settings/settings.component';
 import { DocumentsComponent } from './board/documents/documents.component';
 import { MidtermComponent } from './board/marks/midterm/midterm.component';
+import { StudentsComponent } from './board/students/students.component';
 
 
 export const routes: Routes = [
@@ -43,6 +44,9 @@ export const routes: Routes = [
         path: '', component: BoardComponent, canActivate: [UserGuard], children: [
             {
                 path: 'main', component: MainComponent
+            },
+            {
+                path: 'students', component: StudentsComponent
             },
             {
                 path: 'schedule/builder', component: BuilderComponent
