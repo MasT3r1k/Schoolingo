@@ -1,6 +1,8 @@
+import { HttpClient } from '@angular/common/http';
 import { Component, inject, OnInit } from '@angular/core';
 import { TabsComponent } from '@Components/Tabs';
 import { Authentication } from '@Schoolingo/authentication';
+import { Config } from '@Schoolingo/config';
 import { Locale } from '@Schoolingo/locale';
 import { BehaviorSubject } from 'rxjs';
 
@@ -11,6 +13,7 @@ import { BehaviorSubject } from 'rxjs';
   styleUrl: './midterm.component.css'
 })
 export class MidtermComponent implements OnInit {
+  private http = inject(HttpClient);
   private u = inject(Authentication);
   public l = inject(Locale);
   public selectedTab = new BehaviorSubject(0);
@@ -64,5 +67,30 @@ export class MidtermComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    this.http.get(
+      `${Config.API_URL}/v1/marks/midterm?student_id=${this.u.getId()}`,
+      { withCredentials: true }
+    )
+    .subscribe((data: any) => {
+      let mandatorySubjects = data.subjects.filter((subject: any) => subject.is_mandatory == 1);
+      this.midterm_grades['mandatory'] = mandatorySubjects.map((subject: any) => {
+        let semesters = [
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null
+        ];
+        
+        return {
+          subjectName: subject.subjectName,
+          semesters
+        }
+      });
+      console.log(data)
+    })
   }
 }

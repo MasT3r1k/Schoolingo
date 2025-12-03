@@ -28,6 +28,7 @@ export interface SidebarItem {
 }
 
 export interface TimetableLesson {
+  groupId: number;
   groupName: string;
   groupNum: number;
   type: number;

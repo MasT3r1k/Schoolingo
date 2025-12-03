@@ -1,11 +1,15 @@
+import { HttpClient } from '@angular/common/http';
 import { Component, inject, OnInit } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { TitleStrategy } from '@angular/router';
+import { CalendarManager } from '@Components/calendar-dropdown';
+import { Config } from '@Schoolingo/config';
 import { DropdownManager } from '@Schoolingo/dropdown';
 import { IconsModule } from '@Schoolingo/icons';
 import { Locale } from '@Schoolingo/locale';
 import { ModalManager } from '@Schoolingo/modal';
 import { ScheduleBuilder } from '@Schoolingo/schedule_builder';
+import { Utils } from '@Schoolingo/utils';
 
 @Component({
   selector: 'app-edit-lesson',
@@ -18,7 +22,9 @@ export class EditLessonComponent implements OnInit {
   public l = inject(Locale);
   private modalManager = inject(ModalManager);
   public scheduleBuilder = inject(ScheduleBuilder);
+  public calendarManager = inject(CalendarManager);
   public dropdownManager = inject(DropdownManager);
+  private http = inject(HttpClient);
 
   public selectedSubjectId: number | null = null;
   public selectedTeacherId: number | null = null;
@@ -61,5 +67,26 @@ export class EditLessonComponent implements OnInit {
 
   public closeModal(): void {
     this.modalManager.closeModal('schedule_edit_lesson');
+  }
+
+  public updateSubstitution(): void {
+    const currentWeek = this.calendarManager.getCalendarData('scheduleBuilder_date').selected_date[0].getValue();
+    const currentDay = Utils.getDayOfWeek(currentWeek, this.scheduleBuilder.activeLesson.day);
+    this.http.post(
+      `${Config.API_URL}/v1/timetable/substitution`,
+      {
+        group_id: this.scheduleBuilder.activeLesson.groupId,
+        subject_id: this.selectedSubjectId,
+        teacher_id: this.selectedTeacherId,
+        start_date: currentDay.format('YYYY-MM-DD'),
+        start_hour: this.scheduleBuilder.activeLesson.hour + 1,
+        end_date: currentDay.format('YYYY-MM-DD'),
+        end_hour: this.scheduleBuilder.activeLesson.hour + 1
+      },
+      { withCredentials: true }
+    )
+    .subscribe((data) => {
+      console.log(data)
+    })
   }
 }

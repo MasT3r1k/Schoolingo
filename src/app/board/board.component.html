@@ -40,8 +40,8 @@
                     <div class="icon">
                         <i-tabler name="bell"></i-tabler>
                     </div>
-                    @if (notification_count > 0) {
-                        <div class="badge">{{ notification_count }}</div>
+                    @if (dashboard.newNotifications > 0) {
+                        <div class="badge">{{ dashboard.newNotifications }}</div>
                     }
                     <div class="dropdown" style="min-width: 400px;max-height:500px" [hidden]="dropdownManager.selected_dropdown !== 'notification'" (click)="$event.stopPropagation()">
                         <div class="notification-header">Notifikace</div>
@@ -213,6 +213,11 @@
                                         <!-- <div class="badge blue-info">
                                             {{ "NEW" }}
                                         </div> -->
+                                        @if (item.badge && item.badge(dashboard) != '') {
+                                            <div class="badge danger">
+                                                {{ item.badge(dashboard) }}
+                                            </div>
+                                        }
                                         @if (item.children && item.children.length > 0) {
                                             <div class="dropdown-icon" [ngStyle]="{ transform: sidebar.toggledDropdowns.includes($index) ? 'rotate(180deg)' : '' }">
                                                 <svg xmlns="http://www.w3.org/2000/svg" height="16" width="14" viewBox="0 0 448 512">
@@ -232,11 +237,11 @@
                                                             {{ l.s(child.item) }}
                                                         </div>
 
-                                                        <!-- @if (getSidebarBadge(child) != "") {
-                                                            <div class="badge blue-info">
-                                                                {{ getSidebarBadge(child) }}
+                                                        @if (child.badge && child.badge(dashboard) != '') {
+                                                            <div class="badge danger">
+                                                                {{ child.badge(dashboard) }}
                                                             </div>
-                                                        } -->
+                                                        }
                                                     </div>
                                                 </li>
                                             }
@@ -267,7 +272,7 @@
     }
 </div>
 
-<div class="notification" [class.hidden]="!cookies_visibled" id="cookies">
+<div class="notification" [class.hidden]="dashboard.cookies !== 0" id="cookies">
     <div>
         <div class="heading">
             🍪  
@@ -278,9 +283,11 @@
         </p>
     </div>
     <div style="display: flex;flex-direction: column;gap: .625em;justify-content: center;">
-        <div class="btn primary small-border" style="width: max-content;" (click)="cookies_visibled = false">
+        <div class="btn primary small-border" style="width: max-content;" (click)="updateCookies(2)">
             {{ l.s('cookies.consent') }}
         </div>
-        <div class="btn secondary small-border" style="width: 100%;" (click)="cookies_visibled = false">{{ l.s('cookies.only_necessary') }}</div>
+        <div class="btn secondary small-border" style="width: 100%;" (click)="updateCookies(1)">
+            {{ l.s('cookies.only_necessary') }}
+        </div>
     </div>
 </div>

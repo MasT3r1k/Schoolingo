@@ -11,6 +11,7 @@ import { distinctUntilChanged } from 'rxjs';
 import { EditMarkComponent } from './modals/edit-mark/edit-mark.component';
 import { IconsModule } from '@Schoolingo/icons';
 import { EditMarkingScaleComponent } from './modals/edit-marking-scale/edit-marking-scale.component';
+import { EditMidtermComponent } from './modals/edit-midterm/edit-midterm.component';
 
 interface Group {
   groupId: number;
@@ -212,6 +213,17 @@ export class IntermRecordComponent {
       }
     )
 
+    this.modalManager.addModal(
+      'edit_midterm',
+      {
+        title: 'marks.edit_midterm.title_midterm',
+        closeable: true,
+        items: [
+          { type: 'component', component: EditMidtermComponent }
+        ]
+      }
+    )
+
     // === Listen to query params ===
     this.route.queryParams.subscribe(() => {
       const subject_id = this.route.snapshot.queryParamMap.get('subject_id');
@@ -268,5 +280,9 @@ export class IntermRecordComponent {
 
   public openMarkingScale(): void {
     this.modalManager.openModal('edit_marking_scale');
+  }
+
+  public openMidterm(): void {
+    this.modalManager.openModal('edit_midterm');
   }
 }

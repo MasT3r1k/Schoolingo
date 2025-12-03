@@ -1,3 +1,4 @@
+import { Dashboard } from "@Schoolingo/dashboard";
 import { SidebarGroup } from "./index";
 
 export const config: SidebarGroup[] = [
@@ -47,16 +48,8 @@ export const config: SidebarGroup[] = [
                     url: 'marks/midterm',
                     permission: ['student', 'parent'],
                 }, {
-                    item: 'sidebar.marks.interm_record',
+                    item: 'sidebar.marks.marks_record',
                     url: 'marks/intermrecord',
-                    permission: ['teacher'],
-                }, {
-                    item: 'sidebar.marks.midterm_record_timesheet',
-                    url: 'marks/midtermRecordTimesheet',
-                    permission: ['teacher'],
-                }, {
-                    item: 'sidebar.marks.midterm_record_class',
-                    url: 'marks/midtermRecordClass',
                     permission: ['teacher'],
                 }, {
                     item: 'sidebar.marks.education_measures',
@@ -109,7 +102,11 @@ export const config: SidebarGroup[] = [
                 }, {
                     item: 'sidebar.messages.received',
                     url: 'messages/received',
-                    badge: () => {}
+                    badge: (api: any) => {
+                        if (api.unreadMessages == 0) return '';
+                        if (api.unreadMessages >= 10) return '9+';
+                        return api.unreadMessages;
+                    }
                 }, {
                     item: 'sidebar.messages.sent',
                     url: 'messages/sent',

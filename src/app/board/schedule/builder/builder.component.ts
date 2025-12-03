@@ -136,6 +136,53 @@ export class BuilderComponent implements OnInit {
     })
   }
 
+  public timetable_types: any = {
+    teaching: {
+      name: 'Výuka',
+      color: '#3498db'
+    },
+    substitution: {
+      name: 'Suplování',
+      color: '#9b59b6'
+    },
+    cancelled_hour: {
+      name: 'Zrušená hodina',
+      color: '#e74c3c'
+    },
+    trip: {
+      name: 'Výlet',
+      color: '#2ecc71'
+    },
+    holiday: {
+      name: 'Prázdniny',
+      color: '#61B0FF'
+    },
+    tutoring: {
+      name: 'Doučování',
+      color: '#8e44ad'
+    },
+    advice: {
+      name: 'Porada',
+      color: '#1abc9c'
+    },
+    school_event: {
+      name: 'Školní akce',
+      color: '#f39c12'
+    },
+    class_meeting: {
+      name: 'Třídní schůzka',
+      color: '#d35400'
+    },
+    class_lesson: {
+      name: 'Třídní hodina',
+      color: '#4A90E2'
+    },
+    exam: {
+      name: 'Zkouška',
+      color: '#c0392b'
+    }
+  }
+
   public selectWeek(n: number): void {
     const selectedWeek = this.calendarManager.getCalendarData('scheduleBuilder_date').selected_date[0].getValue().add(n, 'week');
     this.calendarManager.getCalendarData('scheduleBuilder_date').selected_date[0].next(selectedWeek);
@@ -208,13 +255,36 @@ export class BuilderComponent implements OnInit {
           timetableBuild[item.day][item.hour - 1] = [];
         }
 
-        timetableBuild[item.day][item.hour - 1].push({
-          ...item,
-          hour: item.hour - 1,
-          subjectName: item.subjectName,
-          subjectShortcut: item.subjectShortcut,
-          empty: false
-        });
+        let substitution = data.substitution.find((sub: any) => {
+          return moment(Utils.getDayOfWeek(this.calendarManager.getCalendarData('scheduleBuilder_date').selected_date[0].getValue() ?? moment(), item.day)).isBetween(sub.start_date, sub.end_date, 'day', '[]');
+        })
+
+        if (substitution && substitution.start_hour >= item.hour && substitution.end_hour <= item.hour) {
+          timetableBuild[item.day][item.hour - 1].push({
+            ...item,
+            type: 0,
+            subjectName: substitution.subjectName,
+            subjectShortcut: substitution.subjectShortcut,
+            all_day: (substitution.start_hour == -1 || substitution.end_hour == -1) ? true : false,
+            color: this.timetable_types[substitution.type]?.color ??  "",
+            teacher: substitution.teacher_id,
+            room: substitution.room,
+            oldTeacher: substitution.old_teacher_id,
+            oldSubject: substitution.old_subjects || [],
+            className: substitution.class_name,
+            group: substitution.group || { id: 0, text: '', num: '' },
+            hour: item.hour - 1,
+            empty: false
+          });
+        } else {
+          timetableBuild[item.day][item.hour - 1].push({
+            ...item,
+            hour: item.hour - 1,
+            subjectName: item.subjectName,
+            subjectShortcut: item.subjectShortcut,
+            empty: false
+          });
+        }
       });
 
       this.scheduleBuilder.timetable = timetableBuild;

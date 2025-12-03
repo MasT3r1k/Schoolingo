@@ -28,6 +28,7 @@ import { ScheduleBuilder } from '@Schoolingo/schedule_builder';
 import { Classbook } from '@Schoolingo/classbook';
 import { Documents } from '@Schoolingo/documents';
 import { DropdownManager } from '@Schoolingo/dropdown';
+import { Dashboard } from '@Schoolingo/dashboard';
 
 export function initAuth(auth: Authentication): () => void {
   return () => auth.loadState(); // např. HTTP požadavek + setAuthState()
@@ -67,6 +68,7 @@ export const appConfig: ApplicationConfig = {
     ScheduleBuilder,
     Classbook,
     Documents,
-    DropdownManager
+    DropdownManager,
+    Dashboard
   ]
 };

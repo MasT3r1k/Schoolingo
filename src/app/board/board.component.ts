@@ -5,6 +5,7 @@ import { Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/rou
 import { Authentication } from '@Schoolingo/authentication';
 import { Config } from '@Schoolingo/config';
 import { ContextMenu } from '@Schoolingo/context-menu';
+import { Dashboard } from '@Schoolingo/dashboard';
 import { DropdownManager } from '@Schoolingo/dropdown';
 import { IconsModule } from '@Schoolingo/icons';
 import { Locale } from '@Schoolingo/locale';
@@ -74,12 +75,12 @@ interface Notification {
   styleUrls: ['./board.component.css', '../styles/sidebar.css']
 })
 export class BoardComponent implements OnInit {
+  public dashboard = inject(Dashboard);
   public dropdownManager = inject(DropdownManager);
   App = Config
   Utils = Utils;
   sidebarToggled = false;
   public notification_count = 0;
-  public cookies_visibled = true;
   private router = inject(Router);
   public sidebar = inject(Sidebar);
   public sidebarClickHandler(item: SidebarItem, index: number): void {
@@ -242,6 +243,17 @@ export class BoardComponent implements OnInit {
         // === Update add dropdown ===
         this.buildAddDropdown();
 
+        // === Get dashboard stats ===
+        this.http.get(
+          `${Config.API_URL}/v1/dashboard`,
+          { withCredentials: true }
+        )
+        .subscribe((data: any) => {
+          this.dashboard.unreadMessages = data.unreadMessages;
+          this.dashboard.newNotifications = data.newNotifications;
+          this.dashboard.cookies = data.cookies;
+        })
+
         // === Get traineeship weeks ===
         this.http.get(
           `${Config.API_URL}/v1/traineeship/diary_weeks`,
@@ -288,6 +300,19 @@ export class BoardComponent implements OnInit {
         })
       }
     })
+  }
+
+  public updateCookies(cookies: number): void {
+    this.dashboard.cookies = cookies;
+    this.http.post(
+      `${Config.API_URL}/v1/cookies`,
+      { cookies },
+      { withCredentials: true }
+    )
+    .subscribe((data) => {
+      if ('success' in data && data.success == true) return;
+      this.dashboard.cookies = 0;
+    });
   }
 
   public getUserRole(): string {
