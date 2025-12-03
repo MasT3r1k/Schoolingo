@@ -1,53 +1,197 @@
 <div class="card">
     <div class="card-header">
-        <h2>{{ l.s('sidebar.teach.homeworks') }}</h2>
+        <div class="left">
+            <h2>{{ l.s('sidebar.teach.homeworks') }}</h2>
+            <p class="page-description">Správa domácích úkolů s přehledem stavu</p>
+        </div>
         <div class="flex-items">
-            <schoolingo-tabs
-                [value]="selectedTab"
-                [options]="options"
-            ></schoolingo-tabs>
+            <div class="btn icon-only" (click)="toggleViewMode()"
+                [title]="viewMode === 'kanban' ? 'Zobrazit seznam' : 'Zobrazit Kanban'">
+                <i-tabler [name]="viewMode === 'kanban' ? 'list' : 'layout-kanban'"></i-tabler>
+            </div>
+            <schoolingo-tabs [value]="selectedTab" [options]="options"></schoolingo-tabs>
         </div>
     </div>
+
     <div class="card-body">
-        @for (item of homework; track $index) {
-            <div class="task-card">
-                <div class="task-header">
-                    <div class="task-subject">
-                        {{ item.subjectName }}
+        @if (loading) {
+        <div class="loading-state">
+            <div class="loader"></div>
+            <p>Načítání úkolů...</p>
+        </div>
+        } @else if (viewMode === 'kanban') {
+        <!-- Kanban Board View -->
+        <div class="kanban-board">
+            <!-- To Do Column -->
+            <div class="kanban-column">
+                <div class="column-header todo">
+                    <div class="column-title">
+                        <i-tabler name="circle"></i-tabler>
+                        <h3>K vypracování</h3>
                     </div>
-                    <div class="task-title">
-                        {{ item.headline }}
-                    </div>
+                    <div class="column-count">{{ getTodoHomework().length }}</div>
                 </div>
-                <div class="task-description">
-                    {{ item.homework }}
-                </div>
-                <div class="task-footer">
-                    <div class="row">
-                        <div class="task-meta">
-                            <small class="muted">Zadání: </small>
-                            <span>{{ Utils.formatDateShort(item.assigned_at) }}</span>
+                <div class="column-content">
+                    @for (hw of getTodoHomework(); track hw.homework_id) {
+                    <div class="homework-card" [attr.data-priority]="hw.priority">
+                        <div class="card-header-mini">
+                            <div class="subject-badge" [style.background]="hw.subjectColor || '#4aa3ff'">
+                                {{ hw.subjectName }}
+                            </div>
+                            @if (hw.priority) {
+                            <div class="priority-badge" [style.background]="getPriorityColor(hw.priority)">
+                                {{ getPriorityLabel(hw.priority) }}
+                            </div>
+                            }
                         </div>
-                        <div class="task-meta">
-                            <small class="muted">Odevzdat: </small>
-                            <span>{{ Utils.formatDateShort(item.due_to) }}</span>
+                        <h4 class="homework-title">{{ hw.headline }}</h4>
+                        <p class="homework-description">{{ hw.homework }}</p>
+                        <div class="homework-meta">
+                            <div class="meta-item">
+                                <i-tabler name="calendar"></i-tabler>
+                                <span>{{ Utils.formatDateShort(hw.due_to) }}</span>
+                            </div>
+                            @if (getDaysUntilDue(hw.due_to) >= 0) {
+                            <div class="meta-item" [class.urgent]="getDaysUntilDue(hw.due_to) <= 1">
+                                <i-tabler name="clock"></i-tabler>
+                                <span>{{ getDaysUntilDue(hw.due_to) }} dní</span>
+                            </div>
+                            }
+                        </div>
+                        <div class="card-actions">
+                            <button class="btn small primary" (click)="moveToInProgress(hw)">
+                                <i-tabler name="player-play"></i-tabler>
+                                Začít pracovat
+                            </button>
                         </div>
                     </div>
-                    <div class="row">
-                        <div class="btn-icon">
-                            <i-tabler name="attachments"></i-tabler>
-                        </div>
-                        @switch (item.type) {
-                            @case(0) {
-                                <div class="btn primary small outline">Mám hotovo</div>
-                            }
-                            @case(1) {
-                                <div class="btn primary small">Odevzdat úkol</div>
-                            }
-                        }
+                    } @empty {
+                    <div class="empty-column">
+                        <i-tabler name="circle-check"></i-tabler>
+                        <p>Žádné úkoly k vypracování</p>
                     </div>
+                    }
                 </div>
             </div>
+
+            <!-- In Progress Column -->
+            <div class="kanban-column">
+                <div class="column-header in-progress">
+                    <div class="column-title">
+                        <i-tabler name="progress"></i-tabler>
+                        <h3>Rozpracované</h3>
+                    </div>
+                    <div class="column-count">{{ getInProgressHomework().length }}</div>
+                </div>
+                <div class="column-content">
+                    @for (hw of getInProgressHomework(); track hw.homework_id) {
+                    <div class="homework-card" [attr.data-priority]="hw.priority">
+                        <div class="card-header-mini">
+                            <div class="subject-badge" [style.background]="hw.subjectColor || '#4aa3ff'">
+                                {{ hw.subjectName }}
+                            </div>
+                            @if (hw.priority) {
+                            <div class="priority-badge" [style.background]="getPriorityColor(hw.priority)">
+                                {{ getPriorityLabel(hw.priority) }}
+                            </div>
+                            }
+                        </div>
+                        <h4 class="homework-title">{{ hw.headline }}</h4>
+                        <p class="homework-description">{{ hw.homework }}</p>
+                        <div class="homework-meta">
+                            <div class="meta-item">
+                                <i-tabler name="calendar"></i-tabler>
+                                <span>{{ Utils.formatDateShort(hw.due_to) }}</span>
+                            </div>
+                            @if (getDaysUntilDue(hw.due_to) >= 0) {
+                            <div class="meta-item" [class.urgent]="getDaysUntilDue(hw.due_to) <= 1">
+                                <i-tabler name="clock"></i-tabler>
+                                <span>{{ getDaysUntilDue(hw.due_to) }} dní</span>
+                            </div>
+                            }
+                        </div>
+                        <div class="card-actions">
+                            <button class="btn small outline" (click)="moveToTodo(hw)">
+                                <i-tabler name="arrow-left"></i-tabler>
+                            </button>
+                            <button class="btn small primary" (click)="moveToDone(hw)">
+                                <i-tabler name="check"></i-tabler>
+                                Odevzdat
+                            </button>
+                        </div>
+                    </div>
+                    } @empty {
+                    <div class="empty-column">
+                        <i-tabler name="pencil"></i-tabler>
+                        <p>Žádné rozpracované úkoly</p>
+                    </div>
+                    }
+                </div>
+            </div>
+
+            <!-- Done Column -->
+            <div class="kanban-column">
+                <div class="column-header done">
+                    <div class="column-title">
+                        <i-tabler name="circle-check"></i-tabler>
+                        <h3>Hotovo</h3>
+                    </div>
+                    <div class="column-count">{{ getDoneHomework().length }}</div>
+                </div>
+                <div class="column-content">
+                    @for (hw of getDoneHomework(); track hw.homework_id) {
+                    <div class="homework-card done">
+                        <div class="card-header-mini">
+                            <div class="subject-badge" [style.background]="hw.subjectColor || '#4aa3ff'">
+                                {{ hw.subjectName }}
+                            </div>
+                            <div class="done-badge">
+                                <i-tabler name="check"></i-tabler>
+                                Odevzdáno
+                            </div>
+                        </div>
+                        <h4 class="homework-title">{{ hw.headline }}</h4>
+                        <p class="homework-description">{{ hw.homework }}</p>
+                        <div class="homework-meta">
+                            <div class="meta-item">
+                                <i-tabler name="calendar"></i-tabler>
+                                <span>{{ Utils.formatDateShort(hw.due_to) }}</span>
+                            </div>
+                        </div>
+                        <div class="card-actions">
+                            <button class="btn small outline" (click)="moveToInProgress(hw)">
+                                <i-tabler name="arrow-left"></i-tabler>
+                                Vrátit
+                            </button>
+                        </div>
+                    </div>
+                    } @empty {
+                    <div class="empty-column">
+                        <i-tabler name="trophy"></i-tabler>
+                        <p>Žádné dokončené úkoly</p>
+                    </div>
+                    }
+                </div>
+            </div>
+        </div>
+        } @else {
+        <!-- List View (fallback) -->
+        <div class="homework-list">
+            @for (hw of homework; track hw.homework_id) {
+            <div class="homework-list-item">
+                <div class="list-item-content">
+                    <div class="subject-badge" [style.background]="hw.subjectColor || '#4aa3ff'">
+                        {{ hw.subjectName }}
+                    </div>
+                    <h4>{{ hw.headline }}</h4>
+                    <p>{{ hw.homework }}</p>
+                </div>
+                <div class="list-item-meta">
+                    <span>{{ Utils.formatDateShort(hw.due_to) }}</span>
+                </div>
+            </div>
+            }
+        </div>
         }
     </div>
 </div>
