@@ -1,0 +1,175 @@
+<div class="card">
+    <div class="card-header">
+        <div class="left">
+            <h2>
+                {{ l.s('user.notifications') }}
+            </h2>
+            <div class="page-description">Spravujte své notifikační pravidla a nastavení</div>
+        </div>
+    </div>
+
+    <!-- Push Notifications Section -->
+    <div class="section push-section">
+        <div class="section-header">
+            <div class="header-content">
+                <i-tabler name="bell-ringing"></i-tabler>
+                <div>
+                    <h3>Push Notifikace</h3>
+                    <p class="header-subtitle">Okamžité upozornění přímo v prohlížeči</p>
+                </div>
+            </div>
+            @if (!pushEnabled) {
+            <button class="btn primary" (click)="enablePushNotifications()">
+                <i-tabler name="bell-plus"></i-tabler>
+                Povolit
+            </button>
+            }
+        </div>
+        <div class="section-content">
+            @if (pushEnabled) {
+            <div class="message success">
+                <div class="row">
+                    <i-tabler name="circle-check"></i-tabler>
+                    <strong>Push notifikace jsou aktivní</strong>
+                </div>
+                <p class="info-text">Budete dostávat upozornění i když není stránka otevřená</p>
+            </div>
+            } @else {
+            <div class="message info">
+                <div class="row">
+                    <i-tabler name="info-circle"></i-tabler>
+                    <strong>Push notifikace nejsou povoleny</strong>
+                </div>
+                <p class="info-text">Povolte push notifikace pro okamžité upozornění na důležité události</p>
+            </div>
+            }
+        </div>
+    </div>
+
+    <!-- Simple Notifications Section -->
+    <div class="section">
+        <div class="section-header">
+            <div class="header-content">
+                <i-tabler name="bell"></i-tabler>
+                <div>
+                    <h3>Jednoduché Notifikace</h3>
+                    <p class="header-subtitle">Rychlé zapnutí/vypnutí základních upozornění</p>
+                </div>
+            </div>
+        </div>
+        <div class="section-content">
+            @if (loading) {
+            <div class="loading">Načítání...</div>
+            } @else {
+            <div class="simple-notifications-grid">
+                @for (type of simpleTypes; track type.id) {
+                @let rule = findRuleByType(type.id);
+                <div class="simple-notification-card" [class.active]="rule?.enabled">
+                    <div class="notification-header">
+                        <div class="notification-icon" [style.background]="type.color + '20'"
+                            [style.color]="type.color">
+                            <i-tabler [name]="type.icon"></i-tabler>
+                        </div>
+                        <label class="toggle-switch">
+                            <input type="checkbox" [checked]="rule?.enabled || false"
+                                (change)="toggleSimpleNotification(type.id, $event)">
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                    <div class="notification-content">
+                        <h4>{{ type.name }}</h4>
+                        <p>{{ type.description }}</p>
+                    </div>
+                </div>
+                }
+            </div>
+            }
+        </div>
+    </div>
+
+    <!-- Advanced Rules Section -->
+    <div class="section">
+        <div class="section-header">
+            <div class="header-content">
+                <i-tabler name="settings"></i-tabler>
+                <div>
+                    <h3>Pokročilá Pravidla</h3>
+                    <p class="header-subtitle">Nastavte podmínky pro specifická upozornění</p>
+                </div>
+            </div>
+        </div>
+        <div class="section-content">
+            @if (loading) {
+            <div class="loading">Načítání...</div>
+            } @else {
+            <!-- Active Advanced Rules -->
+            @let advancedRules = getAdvancedRules();
+            @if (advancedRules.length > 0) {
+            <div class="rules-list">
+                @for (rule of advancedRules; track rule.rule_id) {
+                @let typeConfig = getTypeConfig(rule.type)!;
+                <div class="rule-card" [class.disabled]="!rule.enabled">
+                    <div class="rule-icon" [style.color]="typeConfig?.color">
+                        <i-tabler [name]="typeConfig?.icon || 'bell'"></i-tabler>
+                    </div>
+                    <div class="rule-content">
+                        <div class="rule-name">{{ typeConfig?.name || rule.type }}</div>
+                        @if (typeConfig.hasConditions && rule.conditions) {
+                        <div class="rule-conditions">
+                            @for (field of typeConfig.conditionFields; track field.key) {
+                            <span class="condition-badge">
+                                {{ field.label }}: {{ rule.conditions[field.key] }}
+                            </span>
+                            }
+                        </div>
+                        }
+                    </div>
+                    <div class="rule-actions">
+                        <label class="toggle-switch">
+                            <input type="checkbox" [(ngModel)]="rule.enabled" (change)="toggleRule(rule)">
+                            <span class="slider"></span>
+                        </label>
+                        <button class="btn-icon danger" (click)="deleteRule(rule)" title="Smazat pravidlo">
+                            <i-tabler name="trash-x"></i-tabler>
+                        </button>
+                    </div>
+                </div>
+                }
+            </div>
+            } @else {
+            <div class="empty-state small">
+                <i-tabler name="bell-off"></i-tabler>
+                <p>Nemáte žádná pokročilá pravidla</p>
+            </div>
+            }
+
+            <!-- Add New Advanced Rule -->
+            <div class="add-rule-section">
+                <h4>Přidat pokročilé pravidlo</h4>
+                <div class="available-types">
+                    @for (type of advancedTypes; track type.id) {
+                    <button class="type-card advanced" (click)="addRule(type.id)">
+                        <div class="type-icon" [style.background]="type.color + '20'" [style.color]="type.color">
+                            <i-tabler [name]="type.icon"></i-tabler>
+                        </div>
+                        <div class="type-content">
+                            <div class="type-name">{{ type.name }}</div>
+                            @if (type.conditionFields && type.conditionFields.length > 0) {
+                            <div class="type-conditions">
+                                @for (field of type.conditionFields; track field.key) {
+                                <span class="condition-hint">{{ field.label }}</span>
+                                }
+                            </div>
+                            }
+                        </div>
+                        @if (hasRuleOfType(type.id)) {
+                        <div class="type-badge">Aktivní</div>
+                        }
+                    </button>
+                    }
+                </div>
+            </div>
+            }
+        </div>
+    </div>
+</div>
