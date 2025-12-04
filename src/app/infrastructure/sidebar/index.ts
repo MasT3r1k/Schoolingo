@@ -11,6 +11,7 @@ import { NavigationEnd, Router } from '@angular/router';
 export interface SidebarItem {
     item: string;
     url?: string;
+    icon?: string;
     permission?: permType[];
     children?: SidebarItem[];
     badge?: any;
@@ -80,6 +81,7 @@ export class Sidebar {
             let newItem: SidebarItem = {
               item: item.item,
               url: item.url,
+              icon: item.icon,
               badge: item.badge
             };
             if ((item.permission && !this.perm.checkPermission(item.permission)) || (item.modules && !this.modules.checkModule(item.modules))) return;
@@ -92,7 +94,13 @@ export class Sidebar {
                   return;
                 }
 
-                newItem.children?.push(child)
+                newItem.children?.push({
+                    item: child.item,
+                    url: child.url,
+                    icon: child.icon,
+                    badge: child.badge,
+                    children: child.children
+                })
               });
             }
 

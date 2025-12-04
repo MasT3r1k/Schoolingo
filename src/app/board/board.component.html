@@ -251,6 +251,11 @@
                     [ngClass]="{ opened: item.children && item.children.length > 0 && sidebar.isToggled($index) }"
                     [routerLinkActiveOptions]="{ exact: true, queryParams: 'ignored'}">
                     <div class="item">
+                        @if (item.icon) {
+                        <div class="icon">
+                            <i-tabler [name]="item.icon"></i-tabler>
+                        </div>
+                        }
                         <div class="item-label">
                             {{ l.s(item.item) }}
                         </div>
@@ -283,6 +288,11 @@
                                 [routerLinkActive]="'active'"
                                 [routerLinkActiveOptions]="{ exact: true, queryParams: 'ignored'}">
                                 <div class="item">
+                                    @if (child.icon) {
+                                    <div class="icon">
+                                        <i-tabler [name]="child.icon"></i-tabler>
+                                    </div>
+                                    }
                                     <div class="item-label">
                                         {{ l.s(child.item) }}
                                     </div>

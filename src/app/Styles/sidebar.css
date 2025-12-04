@@ -14,19 +14,19 @@
     box-shadow: rgba(6, 6, 7, 10%) 1px 0 0 0, rgba(2, 2, 2, 2.5%) 1.5px 0 0 0, rgba(6, 6, 7, 2.5%) 2px 0 0 0;
 }
 
-.sidebar > ul {
+.sidebar>ul {
     padding: 8px;
     margin: 0;
 }
 
-.sidebar > ul > li {
+.sidebar>ul>li {
     color: var(--text-muted);
     font-weight: 400;
     text-overflow: ellipsis;
     white-space: nowrap;
 }
 
-.sidebar > ul > li > .item {
+.sidebar>ul>li>.item {
     padding-left: 12px;
     z-index: 99999;
 }
@@ -59,7 +59,7 @@
 }
 
 .sidebar ul li.active {
-    color: var(--text)!important;
+    color: var(--text) !important;
     font-weight: 500;
 }
 
@@ -124,10 +124,14 @@ ul li .item {
     display: flex;
     flex-direction: row;
     align-items: center;
-    justify-content: space-between;
     padding: 8px 16px;
     transition: all .3s;
     z-index: 99999;
+    gap: 8px;
+}
+
+ul li .item .right {
+    margin-left: auto;
 }
 
 ul li .item .item-label {
@@ -135,7 +139,7 @@ ul li .item .item-label {
     overflow: hidden;
 }
 
-ul li .item:hover  {
+ul li .item:hover {
     background-color: var(--hover-bg);
 }
 
@@ -150,11 +154,13 @@ ul li.danger .item:hover {
 ul li .icon {
     height: 24px;
     width: 24px;
-    margin-right: .5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
-li.active > .item,
-li.opened > .item,
+li.active>.item,
+li.opened>.item,
 ul li.opened .dropdown-child {
     background-color: var(--surface-2);
 }
