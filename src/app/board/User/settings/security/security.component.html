@@ -5,7 +5,7 @@
             <div class="item-info">
                 <div class="row">
                     <span class="title">{{ l.s('settings.2fa.title') }}</span>
-                    <div class="badge loading" style="margin-left: 8px;">
+                    <div class="badge btn--loading" style="margin-left: 8px;">
                         {{ l.s('settings.2fa.methods.mobile_app') }}
                     </div>
                 </div>
@@ -14,7 +14,7 @@
                 </p>
             </div>
 
-            <div [ngClass]="{badge: true, action: true, active: settings.getSecurity(), loading: !settings.getSecurity(), skeleton: !settings.getSecurity()}">
+            <div [ngClass]="{btn: true, 'btn--sm': true, 'btn--primary': settings.getSecurity(), loading: !settings.getSecurity(), skeleton: !settings.getSecurity()}">
                 @if (!settings.getSecurity()) {
                     <div class="loader"></div>
                     {{ l.s('loading') }}
@@ -64,7 +64,7 @@
                 </p>
             </div>
 
-            <div [ngClass]="{badge: true, action: true, active: isPasskeySupported == true, loading: isPasskeySupported !== true, skeleton: isPasskeySupported == null}" (click)="$event.stopPropagation();addPasskey()">
+            <div [ngClass]="{btn: true, 'btn--sm': true, 'btn--primary': isPasskeySupported == true, loading: isPasskeySupported !== true, skeleton: isPasskeySupported == null}" (click)="$event.stopPropagation();addPasskey()">
                 @if (!isPasskeySupported == null) {
                     <div class="loader"></div>
                     <span>{{ l.s('loading') }}</span>
@@ -101,13 +101,13 @@
                                     <div class="btn edit" (click)="editPasskey(passkey.id)">
                                         <i-tabler name="edit"></i-tabler>
                                     </div>
-                                    <div class="btn delete danger" (click)="removePasskey(passkey.id)">
+                                    <div class="btn btn--danger delete" (click)="removePasskey(passkey.id)">
                                         <i-tabler name="trash-x"></i-tabler>
                                     </div>
                                 </div>
                             </div>
                         } @empty {
-                            <div class="message error">
+                            <div class="message message--error">
                                 {{ l.s('settings.passkeys.empty') }}
                             </div>
                         }

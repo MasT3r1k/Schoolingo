@@ -1,4 +1,4 @@
-import { NgStyle } from '@angular/common';
+import { NgClass, NgStyle } from '@angular/common';
 import { Component, inject, OnInit } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { Authentication } from '@Schoolingo/authentication';
@@ -12,7 +12,7 @@ import { ModalManager } from '@Schoolingo/modal';
 import { AddEmailComponent } from './modals/add-email/add-email.component';
 
 @Component({
-  imports: [NgStyle, IconsModule, RouterLink, FormsModule, ReactiveFormsModule],
+  imports: [NgClass, IconsModule, RouterLink, FormsModule, ReactiveFormsModule],
   templateUrl: './account.component.html',
   styleUrls: ['./account.component.css', '../../../styles/sidebar.css']
 })

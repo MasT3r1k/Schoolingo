@@ -1,78 +1,76 @@
-<div class="devices-container">
-  <div class="card">
-    <div class="card-header">
-        <div class="header-content">
-            <h2>{{ l.s('user.devices') }}</h2>
-            <p>Zde naleznete veškeré Vaše připojené zařízení, které jsou připojené k Vašemu Schoolingo účtu. Můžete zde odhlásit kterékoliv zařízení nebo všechny.
+<div class="card">
+  <div class="card-header">
+      <div class="header-content">
+          <h2>{{ l.s('user.devices') }}</h2>
+          <p>Zde naleznete veškeré Vaše připojené zařízení, které jsou připojené k Vašemu Schoolingo účtu. Můžete zde odhlásit kterékoliv zařízení nebo všechny.
 
 Pokud tu naleznete zařízení, které nepoznáváte. Odhlašte to zařízení a změňte si heslo!</p>
+      </div>
+
+      <div class="btn btn--danger small outline" (click)="logoutAllOther()">
+          <i-tabler name="logout"></i-tabler>
+          {{ l.s('devices.logout_all_other') }}
+      </div>
+  </div>
+
+  <div class="sessions-list">
+    @for (session of sessions; track session.device_id) {
+    <div class="session-item" [class.current]="session.current">
+      <!-- DEVICE TYPE (PC/MOBILE) -->
+      <div class="device-category">
+        <i-tabler [name]="session.isMobile ? 'device-mobile' : 'device-desktop'"></i-tabler>
+      </div>
+
+      <!-- OS ICON -->
+      <div class="device-icon">
+        <i-tabler [name]="session.icon"></i-tabler>
+      </div>
+
+      <div class="session-info">
+        <div class="device-name">
+          {{ session.browser.toUpperCase() }} - {{ session.os.toUpperCase() }}
+
+          @if (session.current) {
+          <span class="badge badge--success">
+              {{ l.s('devices.current_device') }}
+          </span>
+          }
         </div>
 
-        <div class="btn btn--danger small outline" (click)="logoutAllOther()">
-            <i-tabler name="logout"></i-tabler>
-            {{ l.s('devices.logout_all_other') }}
-        </div>
-    </div>
+        <div class="session-meta">
+          <!-- IP BLUR + SHOW/HIDE -->
+          <span class="ip" [class.blurred]="session.ip != null && !session._showIp">
+            {{ session.ip ? session._showIp ? session.ip : Utils.blurIPAddress(session.ip) : l.s('unknown') }}
+          </span>
 
-    <div class="sessions-list">
-      @for (session of sessions; track session.device_id) {
-      <div class="session-item" [class.current]="session.current">
-        <!-- DEVICE TYPE (PC/MOBILE) -->
-        <div class="device-category">
-          <i-tabler [name]="session.isMobile ? 'device-mobile' : 'device-desktop'"></i-tabler>
-        </div>
-
-        <!-- OS ICON -->
-        <div class="device-icon">
-          <i-tabler [name]="session.icon"></i-tabler>
-        </div>
-
-        <div class="session-info">
-          <div class="device-name">
-            {{ session.browser.toUpperCase() }} - {{ session.os.toUpperCase() }}
-
-            @if (session.current) {
-            <span class="badge badge--success">
-                {{ l.s('devices.current_device') }}
-            </span>
-            }
+          @if (session.ip != null) {
+          <div class="btn icon-only small" (click)="session._showIp = !session._showIp">
+            <i-tabler [name]="session._showIp ? 'eye-off' : 'eye'"></i-tabler>
           </div>
+          }
 
-          <div class="session-meta">
-            <!-- IP BLUR + SHOW/HIDE -->
-            <span class="ip" [class.blurred]="session.ip != null && !session._showIp">
-              {{ session.ip ? session._showIp ? session.ip : Utils.blurIPAddress(session.ip) : l.s('unknown') }}
-            </span>
+          <span class="dot">•</span>
+          @if (session.country_code && session.city) {
+          <span class="location">
+              {{ Utils.getFlagFromCountry(session.country_code) }}
+              {{ `${session.city}, ${session.country_code}` }}
+          </span>
+          }
 
-            @if (session.ip != null) {
-            <div class="btn icon-only small" (click)="session._showIp = !session._showIp">
-              <i-tabler [name]="session._showIp ? 'eye-off' : 'eye'"></i-tabler>
-            </div>
-            }
+          <span class="dot">•</span>
 
-            <span class="dot">•</span>
-            @if (session.country_code && session.city) {
-            <span class="location">
-                {{ Utils.getFlagFromCountry(session.country_code) }}
-                {{ `${session.city}, ${session.country_code}` }}
-            </span>
-            }
-
-            <span class="dot">•</span>
-
-            <span class="last-active">
-              {{ session.current ? l.s('devices.active_now') : Utils.formatDate(session.expires) }}
-            </span>
-          </div>
+          <span class="last-active">
+            {{ session.current ? l.s('devices.active_now') : Utils.formatDate(session.expires) }}
+          </span>
         </div>
+      </div>
 
-        @if (!session.current) {
-        <div class="btn icon-only danger" (click)="logoutSession(session.device_id)">
-          <i-tabler name="trash-x"></i-tabler>
-        </div>
-        }
+      @if (!session.current) {
+      <div class="btn icon-only danger" (click)="logoutSession(session.device_id)">
+        <i-tabler name="trash-x"></i-tabler>
       </div>
       }
     </div>
+    }
   </div>
 </div>
