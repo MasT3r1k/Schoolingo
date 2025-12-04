@@ -5,9 +5,11 @@
             <p class="page-description">Správa domácích úkolů s přehledem stavu</p>
         </div>
         <div class="flex-items">
-            <div class="btn icon-only" (click)="toggleViewMode()"
+            <div class="item-btn" (click)="toggleViewMode()"
                 [title]="viewMode === 'kanban' ? 'Zobrazit seznam' : 'Zobrazit Kanban'">
-                <i-tabler [name]="viewMode === 'kanban' ? 'list' : 'layout-kanban'"></i-tabler>
+                <div class="icon">
+                    <i-tabler [name]="viewMode === 'kanban' ? 'list' : 'layout-kanban'"></i-tabler>
+                </div>
             </div>
             <schoolingo-tabs [value]="selectedTab" [options]="options"></schoolingo-tabs>
         </div>
@@ -33,16 +35,11 @@
                 </div>
                 <div class="column-content">
                     @for (hw of getTodoHomework(); track hw.homework_id) {
-                    <div class="homework-card" [attr.data-priority]="hw.priority">
+                    <div class="homework-card">
                         <div class="card-header-mini">
                             <div class="subject-badge" [style.background]="hw.subjectColor || '#4aa3ff'">
                                 {{ hw.subjectName }}
                             </div>
-                            @if (hw.priority) {
-                            <div class="priority-badge" [style.background]="getPriorityColor(hw.priority)">
-                                {{ getPriorityLabel(hw.priority) }}
-                            </div>
-                            }
                         </div>
                         <h4 class="homework-title">{{ hw.headline }}</h4>
                         <p class="homework-description">{{ hw.homework }}</p>
@@ -85,16 +82,11 @@
                 </div>
                 <div class="column-content">
                     @for (hw of getInProgressHomework(); track hw.homework_id) {
-                    <div class="homework-card" [attr.data-priority]="hw.priority">
+                    <div class="homework-card">
                         <div class="card-header-mini">
                             <div class="subject-badge" [style.background]="hw.subjectColor || '#4aa3ff'">
                                 {{ hw.subjectName }}
                             </div>
-                            @if (hw.priority) {
-                            <div class="priority-badge" [style.background]="getPriorityColor(hw.priority)">
-                                {{ getPriorityLabel(hw.priority) }}
-                            </div>
-                            }
                         </div>
                         <h4 class="homework-title">{{ hw.headline }}</h4>
                         <p class="homework-description">{{ hw.homework }}</p>

@@ -19,7 +19,6 @@ interface Homework {
   due_to: Date;
   type: number; // 0 = todo, 1 = in_progress, 2 = done
   attachments?: any[];
-  priority?: 'low' | 'medium' | 'high';
 }
 
 @Component({
