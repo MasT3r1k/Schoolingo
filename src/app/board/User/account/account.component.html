@@ -3,7 +3,7 @@
         <div class="profile-header">
             <div style="width: 100%;">
                 <h3 class="section-title">
-                    Bezpečnost &amp; aktualizace
+                    Informace o účtě
                 </h3>
                 <div class="section-item" style="flex-direction:column;align-items:stretch;">
                     <div class="setting-row" style="align-items:center;">
@@ -61,7 +61,7 @@
                                 <div class="btn">
                                     <i-tabler name="pencil"></i-tabler>
                                 </div>
-                                <div class="btn danger" (click)="removeEmail($index)">
+                                <div class="btn btn--danger" (click)="removeEmail($index)">
                                     <i-tabler name="trash-x"></i-tabler>
 
                                 </div>
@@ -82,7 +82,7 @@
                                     </p>
                                 </div>
                             </div>
-                            <div class="btn primary" (click)="addEmptyEmail()">
+                            <div class="btn btn--primary" (click)="addEmptyEmail()">
                                 <i-tabler name="plus"></i-tabler>
                                 {{ l.s('buttons.add_email') }}
                             </div>
@@ -126,7 +126,7 @@
                                     </p>
                                 </div>
                             </div>
-                            <div class="btn primary small">
+                            <div class="btn btn--primary small">
                                     <i-tabler name="plus"></i-tabler>
                                     {{ l.s('buttons.add_phone') }}
                                 </div>
@@ -135,7 +135,7 @@
                 </div>
             </div>
             @if (phones.length) {
-            <div class="btn small primary" style="width: fit-content;display: flex;align-items: center;">
+            <div class="btn btn--sm primary" style="width: fit-content;display: flex;align-items: center;">
                 <i-tabler name="plus"></i-tabler>
                 <span>
                     {{ l.s('buttons.add_phone') }}
@@ -172,7 +172,7 @@
                     </div>
                 </div>
             </div>
-            <div class="btn primary small" [routerLink]="['/user/settings']" [queryParams]="{ page: 'changepassword' }">
+            <div class="btn btn--primary" [routerLink]="['/user/settings']" [queryParams]="{ page: 'changepassword' }">
                 <i-tabler name="lock"></i-tabler>
                 {{ l.s('buttons.change_password') }}
             </div>
@@ -187,7 +187,7 @@
                     <h3 class="row" style="gap: 8px;">
                         {{ l.s('user.login_history') }}
                         @if (u.getUser().failedLogins7Days) {
-                        <div class="badge danger">
+                        <div class="badge badge--danger">
                             <i-tabler name="alert-triangle"></i-tabler>
                             {{ l.s('user.unknown_login') }}
                         </div>
@@ -203,7 +203,7 @@
                         </div>
 
                         @if (u.getUser().failedLogins7Days) {
-                        <div class="badge danger">
+                        <div class="badge badge--danger">
                             {{ l.s('user.failed_logins_for_7days') }}: {{ u.getUser().failedLogins7Days }}
                         </div>
                         }
@@ -211,7 +211,7 @@
                 </div>
             </div>
             <div class="right" style="display:flex;flex-direction: column;gap: 8px">
-                <div class="btn small" [class.danger]="u.getUser().failedLogins7Days" [class.primary]="!u.getUser().failedLogins7Days" [routerLink]="['/user/logins']">
+                <div class="btn btn--primary" [class.danger]="u.getUser().failedLogins7Days" [class.primary]="!u.getUser().failedLogins7Days" [routerLink]="['/user/logins']">
                     <i-tabler name="history"></i-tabler>
                     {{ l.s('user.login_history_action') }}
                 </div>
@@ -235,7 +235,7 @@
                     </p>
                 </div>
             </div>
-            <div class="btn primary small" [routerLink]="['/user/settings']" [queryParams]="{ page: 'security' }">
+            <div class="btn btn--primary" [routerLink]="['/user/settings']" [queryParams]="{ page: 'security' }">
                 <i-tabler name="settings"></i-tabler>
                 {{ l.s('buttons.jump_to_2FA_settings') }}
             </div>

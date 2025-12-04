@@ -21,7 +21,7 @@
       @if (!permissions.checkPermission(["manager:traineeship:manage"])) {
       <div
         (click)="requestCompany()"
-        class="btn blue-info"
+        class="btn btn--primary"
         role="button"
       >
         {{ l.s("traineeship.request_add_company") }}
@@ -65,7 +65,7 @@
     @if (alert) {
     <div class="alerts mb">
       @switch (alert) { @case("success_selected_company") {
-      <div class="alert success">
+      <div class="alert alert--success">
         {{
           l
             .s("traineeship.alerts.success_selected_company")
@@ -87,7 +87,7 @@
         </div>
       </div>
       } @case("success_updated_instructor") {
-      <div class="alert success">
+      <div class="alert alert--success">
         {{
           l
             .s("traineeship.alerts.success_updated_instructor")
@@ -109,7 +109,7 @@
         </div>
       </div>
       } @case("too_many_students_in_company") {
-      <div class="alert error">
+      <div class="alert alert--danger">
         {{ l.s("traineeship.alerts.too_many_students_in_company") }}
         <div class="close" (click)="alert = null">
           <i class="ti ti-x"></i>
@@ -126,7 +126,7 @@
           @case('invalid_instructor') {
             {{ l.s('traineeship.alerts.selected_company_deleted_instructor') }}
             <div class="actions">
-              <div class="btn gray" role="button">
+              <div class="btn btn--secondary" role="button">
                 {{ l.s('traineeship.update_instructor') }}
               </div>
             </div>
@@ -134,7 +134,7 @@
         }
       </div>
         } @else {
-      <div class="alert blue-info">
+      <div class="alert alert--info">
         {{
           l
             .s("traineeship.alerts.week_info")
@@ -159,7 +159,7 @@
     } @if (!checkIfCompanyIsSuitableForMe() &&
     permissions.checkPermission(["student"])) {
     <div class="alerts mb">
-      <div class="alert error">
+      <div class="alert alert--danger">
         {{ l.s("traineeship.alerts.company_not_suitable_for_you") }}
       </div>
     </div>
@@ -177,13 +177,13 @@
         </div>
 
         @if (permissions.checkPermission(["student"])) {
-            <div class="btn primary" role="button" (click)="modalManager.openModal('select_company')">
+            <div class="btn btn--primary" role="button" (click)="modalManager.openModal('select_company')">
                 <span>{{ l.s('traineeship.register_to_company') }}</span>
             </div> 
         }
 
         @if (permissions.checkPermission(["manager:traineeship:editCompany"])) {
-            <div class="btn primary" role="button" (click)="modalManager.openModal('edit_company')">
+            <div class="btn btn--primary" role="button" (click)="modalManager.openModal('edit_company')">
                 <i-tabler name="pencil" style="margin-right: 4px;width: 20px;height: 20px;"></i-tabler>
                 <span>{{ l.s('traineeship.edit_company') }}</span>
             </div>
@@ -192,7 +192,7 @@
         @if (permissions.checkPermission(["manager:traineeship:removeCompany"]))
         {
         <div
-          class="btn danger"
+          class="btn btn--danger"
           (click)="removeCompany()"
         >
           <i-tabler
@@ -511,7 +511,7 @@
 
   <div class="card-header mb">
     <div class="row">
-      <div class="btn gray first-margin" (click)="goToList()">
+      <div class="btn btn--secondary first-margin" (click)="goToList()">
         {{ l.s("buttons.back") }}
       </div>
       <h2>

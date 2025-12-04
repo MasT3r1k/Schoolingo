@@ -22,7 +22,7 @@
                                 </div>
                             }
                             @if (traineeship.isWeekOngoing(week)) {
-                                <div class="badge primary">
+                                <div class="badge badge--primary">
                                     <span>{{ l.s('traineeship.diary.status.ongoing') }}</span>
                                 </div>
                             }
@@ -57,7 +57,7 @@
         <div class="card-top">
             @if (traineeship.selectedDairy.companyId) {
                 <div class="alerts mb">
-                    <div class="alert blue-info" style="justify-content: center;">
+                    <div class="alert alert--info" style="justify-content: center;">
                         {{
                             l.s('traineeship.alerts.selected_company')
                             .replaceAll('%companyName%', traineeship.selectedDairy.companyName || "")
@@ -67,7 +67,7 @@
                                         .replaceAll('%instructorName%', traineeship.selectedDairy.instructor ? traineeship.selectedDairy.instructor : ''))
                         }}
                         <div class="actions">
-                            <div class="btn gray" role="button" (click)="modalManager.openModal('select_instructor')">
+                            <div class="btn btn--secondary" role="button" (click)="modalManager.openModal('select_instructor')">
                                 {{ l.s(traineeship.selectedDairy.instructor ? 'traineeship.buttons.change_instructor' : 'traineeship.buttons.select_instructor') }}
                             </div>
                         </div>
@@ -79,7 +79,7 @@
             @if (traineeship.selectedDairy) {
                 <div class="left">
                     <div class="row mb">
-                        <div (click)="selectWeek(null)" class="btn small" style="margin-right: .5rem;" role="button">
+                        <div (click)="selectWeek(null)" class="btn btn--sm" style="margin-right: .5rem;" role="button">
                             <i-tabler
                                 name="chevron-left"
                                 style="margin-right: 4px; width: 20px; height: 20px"
@@ -99,10 +99,10 @@
                     </p>
                 </div>
                 <div class="flex-items">
-                    <div class="btn small primary" role="button" (click)="printContract()">
+                    <div class="btn btn--sm primary" role="button" (click)="printContract()">
                         {{ l.s('traineeship.buttons.print_contract') }}
                     </div>
-                    <div class="btn small primary" role="button">
+                    <div class="btn btn--sm primary" role="button">
                         {{ l.s('traineeship.buttons.print_guide') }}
                     </div>
                 </div>

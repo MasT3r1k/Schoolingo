@@ -3,7 +3,8 @@
         <div class="left">
             <div class="title">
                 <div class="application APP_Logo">
-                    {{ App.APP_NAME }}
+                    <!-- {{ App.APP_NAME }} -->
+                    <img src="/assets/logo/logo_64.webp" alt="Schoolingo">
                 </div>
                 <div class="school" [title]="school.config.getValue()?.shortName">
                     {{ school.config.getValue()?.shortName }}
@@ -112,15 +113,13 @@
                                 (click)="dropdownManager.selected_dropdown = '';item?.action()"
                                 [routerLinkActive]="'active'">
                                 <div class="item">
-                                    <div class="row">
-                                        @if (item.icon) {
-                                        <div class="icon">
-                                            <i-tabler [name]="item.icon"></i-tabler>
-                                        </div>
-                                        }
-                                        <div class="item-label">
-                                            {{ l.s(item.item) }}
-                                        </div>
+                                    @if (item.icon) {
+                                    <div class="icon">
+                                        <i-tabler [name]="item.icon"></i-tabler>
+                                    </div>
+                                    }
+                                    <div class="item-label">
+                                        {{ l.s(item.item) }}
                                     </div>
                                 </div>
                             </li>
@@ -144,17 +143,15 @@
                             @for (item of u.getUser().children; track $index) {
                             <li (click)="dropdownManager.selected_dropdown = '';u.selectedChild.next($index)">
                                 <div class="item">
-                                    <div class="row">
-                                        <div class="icon">
-                                            @if (item.gender === 0) {
-                                            <i-tabler style="color: #90D5FF;" name="gender-male"></i-tabler>
-                                            } @else if (item.gender == 1) {
-                                            <i-tabler style="color: #FFC0CB;" name="gender-female"></i-tabler>
-                                            }
-                                        </div>
-                                        <div class="item-label">
-                                            {{ item.firstName + ' ' + item.lastName }}
-                                        </div>
+                                    <div class="icon">
+                                        @if (item.gender === 0) {
+                                        <i-tabler style="color: #90D5FF;" name="gender-male"></i-tabler>
+                                        } @else if (item.gender == 1) {
+                                        <i-tabler style="color: #FFC0CB;" name="gender-female"></i-tabler>
+                                        }
+                                    </div>
+                                    <div class="item-label">
+                                        {{ item.firstName + ' ' + item.lastName }}
                                     </div>
                                     @if (u.selectedChild.getValue() == $index) {
                                     <i-tabler name="check" style="margin-left:.5rem;color: var(--primary)"></i-tabler>
@@ -224,15 +221,13 @@
                             (click)="dropdownManager.selected_dropdown='';item?.action();" [routerLinkActive]="'active'"
                             [routerLinkActiveOptions]="{ exact: false, queryParams: 'ignored' }">
                             <div class="item">
-                                <div class="row">
-                                    @if (item.icon) {
-                                    <div class="icon">
-                                        <i-tabler [name]="item.icon"></i-tabler>
-                                    </div>
-                                    }
-                                    <div class="item-label">
-                                        {{ l.s(item.item) }}
-                                    </div>
+                                @if (item.icon) {
+                                <div class="icon">
+                                    <i-tabler [name]="item.icon"></i-tabler>
+                                </div>
+                                }
+                                <div class="item-label">
+                                    {{ l.s(item.item) }}
                                 </div>
                             </div>
                         </li>
@@ -264,7 +259,7 @@
                                             {{ "NEW" }}
                                         </div> -->
                             @if (item.badge && item.badge(dashboard) != '') {
-                            <div class="badge danger">
+                            <div class="badge badge--danger">
                                 {{ item.badge(dashboard) }}
                             </div>
                             }
@@ -298,7 +293,7 @@
                                     </div>
 
                                     @if (child.badge && child.badge(dashboard) != '') {
-                                    <div class="badge danger">
+                                    <div class="badge badge--danger">
                                         {{ child.badge(dashboard) }}
                                     </div>
                                     }
@@ -344,10 +339,10 @@
         </p>
     </div>
     <div style="display: flex;flex-direction: column;gap: .625em;justify-content: center;">
-        <div class="btn primary small-border" style="width: max-content;" (click)="updateCookies(2)">
+        <div class="btn btn--primary small-border" style="width: max-content;" (click)="updateCookies(2)">
             {{ l.s('cookies.consent') }}
         </div>
-        <div class="btn secondary small-border" style="width: 100%;" (click)="updateCookies(1)">
+        <div class="btn btn--secondary small-border" style="width: 100%;" (click)="updateCookies(1)">
             {{ l.s('cookies.only_necessary') }}
         </div>
     </div>

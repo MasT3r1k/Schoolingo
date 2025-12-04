@@ -2,7 +2,7 @@
     <div class="top">
         <div></div>
         <div>
-            <div class="btn small-border" (click)="$event.stopPropagation();dropdownManager.selected_dropdown = dropdownManager.selected_dropdown == '' ? 'language' : ''">
+            <div class="btn btn--sm-border" (click)="$event.stopPropagation();dropdownManager.selected_dropdown = dropdownManager.selected_dropdown == '' ? 'language' : ''">
                 <img style="width: 20px;" [src]="l.getLanguage(l.getSelectedLanguage().getValue())?.flag" [alt]="l.getLanguage(l.getSelectedLanguage().getValue())?.name">
                 <span>{{ l.getLanguage(l.getSelectedLanguage().getValue())?.name }}</span>
                 <div class="dropdown" [hidden]="dropdownManager.selected_dropdown != 'language'" (click)="$event.stopPropagation();">
@@ -16,7 +16,7 @@
                     </ul>
                 </div>
             </div>
-            <div class="btn small-border" (click)="$event.stopPropagation();dropdownManager.selected_dropdown = dropdownManager.selected_dropdown == '' ? 'theme' : ''">
+            <div class="btn btn--sm-border" (click)="$event.stopPropagation();dropdownManager.selected_dropdown = dropdownManager.selected_dropdown == '' ? 'theme' : ''">
                 <div [ngStyle]="{width: '20px',height: '20px','background-color': t.getThemeColor() == 'dark' ? '#000' : '#fff','border-radius': '50%','margin-right': '.5rem'}"></div>
                 <span>{{ l.s('themes.' + t.getTheme().getValue()) }}</span>
 
@@ -38,7 +38,7 @@
         </div>
     </div>
     <h1 class="APP_Logo">
-        {{ App.APP_NAME.toUpperCase() }}
+        <img src="/assets/logo/logo_256.webp" alt="Schoolingo">
     </h1>
     <div class="card" [class.no-fastlogin]="!school.config.getValue()?.fastlogin">
         <div class="card-alerts">
@@ -103,7 +103,7 @@
                             </div>
                         </form>
                         <div class="form-group">
-                            <div [ngClass]="{btn: true, primary: loginForm.status == 'VALID', disabled: loginForm.status == 'INVALID'}" (click)="login()">
+                            <div [ngClass]="{btn: true, 'btn--primary': loginForm.status == 'VALID', 'btn--disabled': loginForm.status == 'INVALID'}" (click)="login()">
                                 {{ l.s('auth.login.button') }}
                             </div>
                         </div>
@@ -178,7 +178,7 @@
                         <div class="title">
                             {{ l.s("auth.forgotpass.title") }}
                         </div>
-                        <div class="message info mt">
+                        <div class="message message--info mt">
                             {{ l.s('auth.forgotpass.code_from_email') }}
                         </div>
                         <div class="form-group">

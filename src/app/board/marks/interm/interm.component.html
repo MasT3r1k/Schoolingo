@@ -82,7 +82,7 @@
     } } @case(2) {
     @if (!getAllSubjects().length) {
       <div class="alerts">
-        <div class="alert error">
+        <div class="alert alert--danger">
           {{ l.s("marks.predictor.no_subjects") }}
         </div>
       </div>
@@ -90,7 +90,7 @@
 
     @if (alert == 'already_editing_mark') {
       <div class="alerts mb">
-        <div class="alert error">
+        <div class="alert alert--danger">
           {{ l.s("marks.predictor.already_editing_mark") }}
         </div>
       </div>
@@ -179,22 +179,22 @@
       </div>
       <div class="buttons">
         @if (editingIndex != null) {
-            <div class="btn primary" (click)="updateMark()">
+            <div class="btn btn--primary" (click)="updateMark()">
                 <i-tabler name="edit"></i-tabler>
                 {{ l.s("marks.predictor.edit_mark") }}
             </div>
 
-            <div class="btn primary only-text" (click)="this.editingIndex = null;alert=''">
+            <div class="btn btn--primary only-text" (click)="this.editingIndex = null;alert=''">
                 {{ l.s('marks.predictor.stop_edit_mark') }}
             </div>
         } @else {
-            <div class="btn primary" (click)="addMarkToPredictor()">
+            <div class="btn btn--primary" (click)="addMarkToPredictor()">
                 <i-tabler name="plus"></i-tabler>
                 {{ l.s("marks.predictor.add_mark") }}
             </div>
         }
 
-        <div class="btn secondary only-text" (click)="resetPredictor()">
+        <div class="btn btn--secondary only-text" (click)="resetPredictor()">
           {{ l.s("marks.predictor.reset") }}
         </div>
       </div>
@@ -230,14 +230,14 @@
       <div class="table-2-actions center">
         <div class="buttons">
           <div
-            class="btn only-text"
+            class="btn btn--ghost"
             style="color: var(--primary)"
             (click)="editMark(mark.id)"
           >
             {{ l.s("marks.predictor.edit") }}
           </div>
           <div
-            class="btn only-text"
+            class="btn btn--ghost"
             style="color: var(--danger)"
             (click)="removeMark(mark.id)"
           >

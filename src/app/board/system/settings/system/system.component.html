@@ -1,6 +1,6 @@
 <div class="container-content">
     @if (version_loading.is_loading) {
-        <div class="alert loading">
+        <div class="alert alert--loading">
             <div class="loader"></div>
             <div class="row">
                 <span>{{ l.s('system.system_update_loading') }}</span>
@@ -8,15 +8,15 @@
         </div>
     } @else if (version && version_loading.error == null) {
     <div class="alert"
-    [class.success]="version.isUpToDate"
-    [class.error]="!version.isUpToDate">
+    [class.alert--success]="version.isUpToDate"
+    [class.alert--error]="!version.isUpToDate">
         <div class="row">
             <i-tabler [name]="version.isUpToDate ? 'check' : 'alert-triangle'" style="margin-right: .5rem;"></i-tabler>
             <span>{{ l.s(`system.${version.isUpToDate ? 'system_is_up_to_date' : 'system_has_update'}`) }}</span>
         </div>
     </div>
     } @else {
-        <div class="alert error">
+        <div class="alert alert--danger">
             <div class="row">
                 <span>{{ l.s('system.system_error_loading_version') }}</span>
             </div>

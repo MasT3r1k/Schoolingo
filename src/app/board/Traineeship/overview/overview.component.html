@@ -3,11 +3,11 @@
     <div class="card card-days">
         <div class="card-top">
         </div>
-        <div class="card-header mb">
+        <div class="card__header">
             <div class="left">
                 <h2>{{ l.s('traineeship.overview.nearest_diary') }}</h2>
                 @if (getNearestDiary()) {
-                <p class="description">{{
+                <p class="text--muted">{{
                     l.s('traineeship.overview.diary_week')
                     .replaceAll('%start%', Utils.formatDateShort(getNearestDiary().start))
                     .replaceAll('%end%', Utils.formatDateShort(getNearestDiary().end))
@@ -16,48 +16,43 @@
             </div>
             <div class="flex-items">
                 @if (getNearestDiary()) {
-                <div class="btn small blue-info" role="button">
+                <button class="btn btn--sm btn--primary">
                     {{ l.s('traineeship.buttons.print_contract') }}
-                </div>
-                <div class="btn small blue-info" role="button">
+                </button>
+                <button class="btn btn--sm btn--primary">
                     {{ l.s('traineeship.buttons.print_guide') }}
-                </div>
+                </button>
                 }
             </div>
         </div>
-        <div class="card-body">
+        <div class="card__body">
             @if (!getNearestDiary()) {
-            <div class="alerts mb">
-                <div class="alert error">
-                    {{ l.s('traineeship.overview.no_next_dairy') }}
-                </div>
+            <div class="alert alert--danger">
+                {{ l.s('traineeship.overview.no_next_dairy') }}
             </div>
             } @else {
 
             @if (!getNearestDiary().companyId) {
-            <div class="alerts mb">
-                <div class="alert error">
-                    {{ l.s('traineeship.alerts.no_company') }}
-                </div>
+            <div class="alert alert--danger">
+                {{ l.s('traineeship.alerts.no_company') }}
             </div>
             } @else {
-            <div class="alerts mb">
-                <div class="alert blue-info">
-                    {{
-                    l.s('traineeship.alerts.selected_company')
-                    .replaceAll('%companyName%', getNearestDiary().companyName)
-                    .replaceAll('%instructor%', l.s('traineeship.alerts.' +
-                    (getNearestDiary().instructor ? 'success_selected_company_with_instructor' :
-                    'success_selected_company_no_instructor')
-                    )
-                    .replaceAll('%instructorName%', getNearestDiary().instructor?.toString()!))
-                    }}
-                    @if (!getNearestDiary().instructor) {
-                    <div class="actions">
-                        <div class="btn gray" role="button">{{ l.s('traineeship.buttons.select_instructor') }}</div>
-                    </div>
-                    }
+            <div class="alert alert--info">
+                {{
+                l.s('traineeship.alerts.selected_company')
+                .replaceAll('%companyName%', getNearestDiary().companyName)
+                .replaceAll('%instructor%', l.s('traineeship.alerts.' +
+                (getNearestDiary().instructor ? 'success_selected_company_with_instructor' :
+                'success_selected_company_no_instructor')
+                )
+                .replaceAll('%instructorName%', getNearestDiary().instructor?.toString()!))
+                }}
+                @if (!getNearestDiary().instructor) {
+                <div class="actions">
+                    <button class="btn btn--secondary btn--sm">{{ l.s('traineeship.buttons.select_instructor')
+                        }}</button>
                 </div>
+                }
             </div>
             }
 
@@ -76,10 +71,10 @@
     </div>
     <div class="card">
         <div class="card-top"></div>
-        <div class="card-header mb">
-            <h2>{{ l.s('traineeship.overview.diary_help') }}</h2>
+        <div class="card__header">
+            <h2 class="card__title">{{ l.s('traineeship.overview.diary_help') }}</h2>
         </div>
-        <div class="card-body" style="padding-right: 1rem; height: auto;overflow-y: auto;max-height: 600px;">
+        <div class="card__body" style="padding-right: 1rem; height: auto;overflow-y: auto;max-height: 600px;">
 
             <h3>Konzultace a plánování praxe</h3>
             <ul>
@@ -124,10 +119,8 @@
                 <li>Odevzdej ji ve škole spolu s deníkem praxe.</li>
             </ul>
 
-            <div class="alerts">
-                <div class="alert blue-info">
-                    Využij tuto příležitost a získej cenné zkušenosti do praxe!
-                </div>
+            <div class="alert alert--info">
+                Využij tuto příležitost a získej cenné zkušenosti do praxe!
             </div>
 
         </div>
@@ -135,175 +128,180 @@
 </div>
 } @else if (perms.checkPermission(["manager:traineeship:manage"])) {
 <!-- Admin Dashboard -->
-<div class="admin-dashboard">
-    <div class="dashboard-header">
-        <h1>Přehled praxí</h1>
-        <p class="subtitle">Dashboard pro správu odborných praxí</p>
-    </div>
-
-    <!-- Stats Cards -->
-    <div class="stats-row">
-        <div class="stat-card primary">
-            <div class="stat-icon">
-                <i-tabler name="calendar-event"></i-tabler>
-            </div>
-            <div class="stat-content">
-                <div class="stat-value">{{ adminStats.totalTraineeships }}</div>
-                <div class="stat-label">Celkem praxí</div>
-            </div>
-        </div>
-        <div class="stat-card success">
-            <div class="stat-icon">
-                <i-tabler name="player-play"></i-tabler>
-            </div>
-            <div class="stat-content">
-                <div class="stat-value">{{ adminStats.activeTraineeships }}</div>
-                <div class="stat-label">Probíhající</div>
-            </div>
-        </div>
-        <div class="stat-card warning">
-            <div class="stat-icon">
-                <i-tabler name="file-check"></i-tabler>
-            </div>
-            <div class="stat-content">
-                <div class="stat-value">{{ adminStats.studentsWithContract }}</div>
-                <div class="stat-label">Se smlouvou</div>
-            </div>
-        </div>
-        <div class="stat-card error">
-            <div class="stat-icon">
-                <i-tabler name="file-x"></i-tabler>
-            </div>
-            <div class="stat-content">
-                <div class="stat-value">{{ adminStats.studentsWithoutContract }}</div>
-                <div class="stat-label">Bez smlouvy</div>
-            </div>
+<div class="admin-dashboard card">
+    <div class="dashboard-header card__header">
+        <div>
+            <h1 class="card__title">Přehled praxí</h1>
+            <p class="text--muted">Dashboard pro správu odborných praxí</p>
         </div>
     </div>
 
-    <!-- Quick Actions -->
-    <div class="quick-actions">
-        <h2>Rychlé akce</h2>
-        <div class="actions-grid">
-            <a [routerLink]="['', 'traineeship', 'manage']" class="action-card">
-                <i-tabler name="plus"></i-tabler>
-                <span>Nová praxe</span>
-            </a>
-            <a [routerLink]="['', 'traineeship', 'companies']" class="action-card">
-                <i-tabler name="building"></i-tabler>
-                <span>Firmy</span>
-            </a>
-            <a [routerLink]="['', 'traineeship', 'settings']" class="action-card">
-                <i-tabler name="settings"></i-tabler>
-                <span>Nastavení</span>
-            </a>
-        </div>
-    </div>
-
-    <!-- Two Column Layout -->
-    <div class="dashboard-grid">
-        <!-- Active Traineeships -->
-        <div class="dashboard-card">
-            <div class="card-header">
-                <h3>Probíhající praxe</h3>
-                <a [routerLink]="['', 'traineeship', 'manage']" class="view-all">Zobrazit vše →</a>
-            </div>
-            <div class="card-body">
-                @if (getActiveTraineeships().length === 0) {
-                <div class="empty-state">
-                    <i-tabler name="calendar-off"></i-tabler>
-                    <p>Žádné probíhající praxe</p>
+    <div class="card__body">
+        <!-- Stats Cards -->
+        <div class="stats-row">
+            <div class="stat-card stat-card--primary">
+                <div class="stat-icon">
+                    <i-tabler name="calendar-event"></i-tabler>
                 </div>
-                } @else {
-                @for (week of getActiveTraineeships(); track week.traineeship) {
-                <div class="traineeship-item">
-                    <div class="item-info">
-                        <span class="item-name">{{ week.name }}</span>
-                        <span class="item-date">{{ week.start.format('DD.MM.') }} - {{ week.end.format('DD.MM.YYYY')
-                            }}</span>
+                <div class="stat-content">
+                    <div class="stat-value">{{ adminStats.totalTraineeships }}</div>
+                    <div class="stat-label">Celkem praxí</div>
+                </div>
+            </div>
+            <div class="stat-card stat-card--success">
+                <div class="stat-icon">
+                    <i-tabler name="player-play"></i-tabler>
+                </div>
+                <div class="stat-content">
+                    <div class="stat-value">{{ adminStats.activeTraineeships }}</div>
+                    <div class="stat-label">Probíhající</div>
+                </div>
+            </div>
+            <div class="stat-card stat-card--warning">
+                <div class="stat-icon">
+                    <i-tabler name="file-check"></i-tabler>
+                </div>
+                <div class="stat-content">
+                    <div class="stat-value">{{ adminStats.studentsWithContract }}</div>
+                    <div class="stat-label">Se smlouvou</div>
+                </div>
+            </div>
+            <div class="stat-card stat-card--danger">
+                <div class="stat-icon">
+                    <i-tabler name="file-x"></i-tabler>
+                </div>
+                <div class="stat-content">
+                    <div class="stat-value">{{ adminStats.studentsWithoutContract }}</div>
+                    <div class="stat-label">Bez smlouvy</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="quick-actions">
+            <h2>Rychlé akce</h2>
+            <div class="actions-grid">
+                <a [routerLink]="['', 'traineeship', 'manage']" class="action-card">
+                    <i-tabler name="plus"></i-tabler>
+                    <span>Nová praxe</span>
+                </a>
+                <a [routerLink]="['', 'traineeship', 'companies']" class="action-card">
+                    <i-tabler name="building"></i-tabler>
+                    <span>Firmy</span>
+                </a>
+                <a [routerLink]="['', 'traineeship', 'settings']" class="action-card">
+                    <i-tabler name="settings"></i-tabler>
+                    <span>Nastavení</span>
+                </a>
+            </div>
+        </div>
+
+        <!-- Two Column Layout -->
+        <div class="dashboard-grid">
+            <!-- Active Traineeships -->
+            <div class="dashboard-card card">
+                <div class="card__header">
+                    <h3 class="card__title">Probíhající praxe</h3>
+                    <a [routerLink]="['', 'traineeship', 'manage']" class="view-all">Zobrazit vše →</a>
+                </div>
+                <div class="card__body">
+                    @if (getActiveTraineeships().length === 0) {
+                    <div class="empty-state">
+                        <i-tabler name="calendar-off" class="empty-state__icon"></i-tabler>
+                        <p class="empty-state__description">Žádné probíhající praxe</p>
                     </div>
-                    <div class="item-stats">
-                        <span class="badge success">{{ week.zapsaniStudenti }}/{{ week.celkemStudentu }}</span>
+                    } @else {
+                    @for (week of getActiveTraineeships(); track week.traineeship) {
+                    <div class="traineeship-item">
+                        <div class="item-info">
+                            <span class="item-name">{{ week.name }}</span>
+                            <span class="item-date">{{ week.start.format('DD.MM.') }} - {{ week.end.format('DD.MM.YYYY')
+                                }}</span>
+                        </div>
+                        <div class="item-stats">
+                            <span class="badge badge--success">{{ week.zapsaniStudenti }}/{{ week.celkemStudentu
+                                }}</span>
+                        </div>
                     </div>
+                    }
+                    }
                 </div>
-                }
-                }
+            </div>
+
+            <!-- Upcoming Traineeships -->
+            <div class="dashboard-card card">
+                <div class="card__header">
+                    <h3 class="card__title">Nadcházející praxe</h3>
+                </div>
+                <div class="card__body">
+                    @if (getUpcomingTraineeships().length === 0) {
+                    <div class="empty-state">
+                        <i-tabler name="calendar-plus" class="empty-state__icon"></i-tabler>
+                        <p class="empty-state__description">Žádné naplánované praxe</p>
+                    </div>
+                    } @else {
+                    @for (week of getUpcomingTraineeships(); track week.traineeship) {
+                    <div class="traineeship-item">
+                        <div class="item-info">
+                            <span class="item-name">{{ week.name }}</span>
+                            <span class="item-date">{{ week.start.format('DD.MM.') }} - {{ week.end.format('DD.MM.YYYY')
+                                }}</span>
+                        </div>
+                        <span class="badge badge--primary">Plánováno</span>
+                    </div>
+                    }
+                    }
+                </div>
             </div>
         </div>
 
-        <!-- Upcoming Traineeships -->
-        <div class="dashboard-card">
-            <div class="card-header">
-                <h3>Nadcházející praxe</h3>
+        <!-- Recent Students -->
+        <div class="dashboard-card card">
+            <div class="card__header">
+                <h3 class="card__title">Studenti</h3>
             </div>
-            <div class="card-body">
-                @if (getUpcomingTraineeships().length === 0) {
-                <div class="empty-state">
-                    <i-tabler name="calendar-plus"></i-tabler>
-                    <p>Žádné naplánované praxe</p>
+            <div class="card__body">
+                <div class="table-container">
+                    <table class="table">
+                        <thead class="table__head">
+                            <tr>
+                                <th class="table__th">Jméno</th>
+                                <th class="table__th">Třída</th>
+                                <th class="table__th">Firma</th>
+                                <th class="table__th">Instruktor</th>
+                                <th class="table__th">Smlouva</th>
+                                <th class="table__th">Stav</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @for (student of recentStudents; track student.studentId) {
+                            <tr class="table__row">
+                                <td class="table__td"><strong>{{ student.name }}</strong></td>
+                                <td class="table__td">{{ student.class }}</td>
+                                <td class="table__td">{{ student.company || '—' }}</td>
+                                <td class="table__td">{{ student.instructor || '—' }}</td>
+                                <td class="table__td">
+                                    <span class="badge"
+                                        [ngClass]="{'badge--success': student.hasContract, 'badge--danger': !student.hasContract}">
+                                        {{ student.hasContract ? 'Ano' : 'Ne' }}
+                                    </span>
+                                </td>
+                                <td class="table__td">
+                                    <span class="badge"
+                                        [ngClass]="{'badge--success': student.isProcessed, 'badge--warning': !student.isProcessed}">
+                                        {{ student.isProcessed ? 'Dokončeno' : 'Probíhá' }}
+                                    </span>
+                                </td>
+                            </tr>
+                            }
+                            @if (recentStudents.length === 0) {
+                            <tr>
+                                <td colspan="6" class="table__td text--center text--muted">Žádní studenti</td>
+                            </tr>
+                            }
+                        </tbody>
+                    </table>
                 </div>
-                } @else {
-                @for (week of getUpcomingTraineeships(); track week.traineeship) {
-                <div class="traineeship-item">
-                    <div class="item-info">
-                        <span class="item-name">{{ week.name }}</span>
-                        <span class="item-date">{{ week.start.format('DD.MM.') }} - {{ week.end.format('DD.MM.YYYY')
-                            }}</span>
-                    </div>
-                    <span class="badge planned">Plánováno</span>
-                </div>
-                }
-                }
-            </div>
-        </div>
-    </div>
-
-    <!-- Recent Students -->
-    <div class="dashboard-card full-width">
-        <div class="card-header">
-            <h3>Studenti</h3>
-        </div>
-        <div class="card-body">
-            <div class="table-container">
-                <table class="admin-table">
-                    <thead>
-                        <tr>
-                            <th>Jméno</th>
-                            <th>Třída</th>
-                            <th>Firma</th>
-                            <th>Instruktor</th>
-                            <th>Smlouva</th>
-                            <th>Stav</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @for (student of recentStudents; track student.studentId) {
-                        <tr>
-                            <td><strong>{{ student.name }}</strong></td>
-                            <td>{{ student.class }}</td>
-                            <td>{{ student.company || '—' }}</td>
-                            <td>{{ student.instructor || '—' }}</td>
-                            <td>
-                                <span
-                                    [ngClass]="{'status-badge': true, 'success': student.hasContract, 'error': !student.hasContract}">
-                                    {{ student.hasContract ? 'Ano' : 'Ne' }}
-                                </span>
-                            </td>
-                            <td>
-                                <span
-                                    [ngClass]="{'status-badge': true, 'success': student.isProcessed, 'warning': !student.isProcessed}">
-                                    {{ student.isProcessed ? 'Dokončeno' : 'Probíhá' }}
-                                </span>
-                            </td>
-                        </tr>
-                        }
-                        @if (recentStudents.length === 0) {
-                        <tr>
-                            <td colspan="6" class="empty-cell">Žádní studenti</td>
-                        </tr>
-                        }
-                    </tbody>
-                </table>
             </div>
         </div>
     </div>
