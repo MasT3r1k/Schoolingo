@@ -11,9 +11,11 @@
 
     <div class="card-body">
         <div class="lessons-list">
-            @if (!is_loading) {
-                @for (lesson of timetable; track $index) {
-            <div class="lesson-card" [class.active]="selected_lesson.getValue() == $index" (click)="selected_lesson.next($index)">
+        @if (!is_loading) {
+            @if (timetable.length > 0) {
+            @for (lesson of timetable; track $index) {
+            <div class="lesson-card" [class.active]="selected_lesson.getValue() == $index"
+                (click)="selected_lesson.next($index)">
                 <div class="lesson-index">
                     {{ $index + 1 }}
                 </div>
@@ -22,49 +24,62 @@
                         <span>{{ lesson.subjectName || '' }}</span>
                         <div class="lesson-icons">
                             @if (lesson.lockClassAfterLesson) {
-                                <i-tabler name="key"></i-tabler>
+                            <i-tabler name="key"></i-tabler>
                             }
                         </div>
                     </div>
                     <div class="lesson-meta">
-                        <span class="lesson-time" style="flex: 0 0 100px;">{{ hours[$index].start }} - {{ hours[$index].end }}</span>
-                        <span style="flex: 0 0 72px;">{{ `${lesson.className || ''} ${lesson.groupName ? lesson.groupName : ''}` }}</span>
+                        <span class="lesson-time" style="flex: 0 0 100px;">{{ hours[$index].start }} - {{
+                            hours[$index].end }}</span>
+                        <span style="flex: 0 0 72px;">{{ `${lesson.className || ''} ${lesson.groupName ?
+                            lesson.groupName : ''}` }}</span>
                         <span class="lesson-muted" style="flex: 1">{{ lesson.topic || '' }}</span>
                     </div>
                 </div>
             </div>
-                }
-            } @else {
-                @for (_ of [].constructor(4); track $index) {
-                    <div class="lesson-card skeleton">
-                        <div class="lesson-index">
-                            {{ $index + 1 }}
-                        </div>
-                        <div class="lesson-info">
-                            <div class="lesson-subject skeleton">
-                                <span class="skeleton">‎</span>
-                                <div class="lesson-icons"></div>
-                            </div>
-                            <div class="lesson-meta skeleton">‎
-                            </div>
-                        </div>
-                    </div>
-
-                }
             }
+            } @else {
+            <div class="empty-state-sidebar">
+                <div class="empty-illustration">
+                    <i-tabler name="coffee"></i-tabler>
+                </div>
+                <h3>Volný den!</h3>
+                <p>Dnes nemáte žádné hodiny. Užijte si volno nebo se připravte na zítřek.</p>
+            </div>
+            }
+            } @else {
+            @for (_ of [].constructor(4); track $index) {
+            <div class="lesson-card skeleton">
+                <div class="lesson-index">
+                    {{ $index + 1 }}
+                </div>
+                <div class="lesson-info">
+                    <div class="lesson-subject skeleton">
+                        <span class="skeleton">‎</span>
+                        <div class="lesson-icons"></div>
+                    </div>
+                    <div class="lesson-meta skeleton">‎
+                    </div>
+                </div>
+            </div>
+
+            }
+        }
         </div>
 
         <div class="lesson-details">
             @if (classbook.classbook) {
-            <div class="header" [class.skeleton]="is_lesson_loading"> 
-                <h2>{{  classbook.classbook ? classbook.classbook.subjectName : '' }}</h2>
+            <div class="header" [class.skeleton]="is_lesson_loading">
+                <h2>{{ classbook.classbook ? classbook.classbook.subjectName : '' }}</h2>
                 <div class="lesson-meta">
-                    <span class="lesson-time">{{ hours[selected_lesson.getValue()].start }} - {{ hours[selected_lesson.getValue()].end }}</span>
+                    <span class="lesson-time">{{ hours[selected_lesson.getValue()].start }} - {{
+                        hours[selected_lesson.getValue()].end }}</span>
                     <span>{{ classbook.classbook ? classbook.classbook.className : '' }}</span>
-                    <span>{{ classbook.classbook ? Utils.formatDateShort(classbook.classbook.date) : '' }} ({{ l.s('days.' + Utils.makeMoment(classbook.classbook.date).day()) }})</span>
+                    <span>{{ classbook.classbook ? Utils.formatDateShort(classbook.classbook.date) : '' }} ({{
+                        l.s('days.' + Utils.makeMoment(classbook.classbook.date).day()) }})</span>
                 </div>
                 <div class="lesson-meta lesson-muted">
-                {{ l.s('classbook.class_service') }}: {{ classbook.classbook.classService }}
+                    {{ l.s('classbook.class_service') }}: {{ classbook.classbook.classService }}
                 </div>
             </div>
             <div class="lesson-body">
@@ -90,28 +105,32 @@
                         <label for="lessonNumber">
                             {{ l.s('classbook.lesson_number') }}
                         </label>
-                        <input type="text" [(ngModel)]="classbook.classbook.lessonNumber" readonly [placeholder]="l.s('classbook.placeholder_number')">
+                        <input type="text" [(ngModel)]="classbook.classbook.lessonNumber" readonly
+                            [placeholder]="l.s('classbook.placeholder_number')">
                     </div>
 
                     <div class="form-group">
                         <label for="lessonTopic">
                             {{ l.s('classbook.lesson_topic') }}
                         </label>
-                        <input type="text" [(ngModel)]="classbook.classbook.topic" [placeholder]="l.s('classbook.placeholder_topic')">
+                        <input type="text" [(ngModel)]="classbook.classbook.topic"
+                            [placeholder]="l.s('classbook.placeholder_topic')">
                     </div>
 
                     <div class="form-group">
                         <label for="lessonNote">
                             {{ l.s('classbook.lesson_note') }}
                         </label>
-                        <textarea [(ngModel)]="classbook.classbook.note" [placeholder]="l.s('classbook.placeholder_note')"></textarea>
+                        <textarea [(ngModel)]="classbook.classbook.note"
+                            [placeholder]="l.s('classbook.placeholder_note')"></textarea>
                     </div>
 
                     <div class="form-group">
                         <label for="lessonTeacherNote">
                             {{ l.s('classbook.lesson_teacher_note') }}
                         </label>
-                        <textarea [(ngModel)]="classbook.classbook.internalNote" [placeholder]="l.s('classbook.placeholder_teacher_note')"></textarea>
+                        <textarea [(ngModel)]="classbook.classbook.internalNote"
+                            [placeholder]="l.s('classbook.placeholder_teacher_note')"></textarea>
                         <small class="note">
                             {{ l.s('classbook.lesson_teacher_note_note') }}
                         </small>
@@ -165,157 +184,173 @@
                 }
 
                 @if (selected_tab == 1) {
-                    <div class="stats-bar">
-                        <div class="stat-item">
-                            <div class="stat-value">
-                                {{ get_total_students() }}
-                            </div>
-                            <div class="stat-label">
-                                {{ l.s('classbook.total_students') }}
-                            </div>
+                <div class="stats-bar">
+                    <div class="stat-item">
+                        <div class="stat-value">
+                            {{ get_total_students() }}
                         </div>
-                        <div class="stat-item">
-                            <div class="stat-value">
-                                {{ get_present_students() }}
-                            </div>
-                            <div class="stat-label">
-                                {{ l.s('classbook.present_students') }}
-                            </div>
-                        </div>
-                        <div class="stat-item">
-                            <div class="stat-value">
-                                {{ get_missing_students() }}
-                            </div>
-                            <div class="stat-label">
-                                {{ l.s('classbook.missing_students') }}
-                            </div>
+                        <div class="stat-label">
+                            {{ l.s('classbook.total_students') }}
                         </div>
                     </div>
-
-                    <div class="absence-selector">
-                        <div class="clickable" style="display: flex;align-items: center;color: var(--primary-100)">
-                            <i-tabler style="margin-right: .5rem;" name="copy"></i-tabler>
-                            {{ l.s('classbook.copy_from_previous_lesson') }}
+                    <div class="stat-item">
+                        <div class="stat-value">
+                            {{ get_present_students() }}
                         </div>
-
-                        @for (absence of absenceConfig; track $index) {
-                        <div [ngClass]="['absence-type', 'ab-' + absence.locale]" [class.active]="selected_absence == $index" (click)="selected_absence = $index">
-                            @if (absence.icon) {
-                                <i-tabler [name]="absence.icon"></i-tabler>
-                            }
+                        <div class="stat-label">
+                            {{ l.s('classbook.present_students') }}
                         </div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value">
+                            {{ get_missing_students() }}
+                        </div>
+                        <div class="stat-label">
+                            {{ l.s('classbook.missing_students') }}
+                        </div>
+                    </div>
+                </div>
 
+                <div class="absence-selector">
+                    <div class="clickable" style="display: flex;align-items: center;color: var(--primary-100)">
+                        <i-tabler style="margin-right: .5rem;" name="copy"></i-tabler>
+                        {{ l.s('classbook.copy_from_previous_lesson') }}
+                    </div>
+
+                    @for (absence of absenceConfig; track $index) {
+                    <div [ngClass]="['absence-type', 'ab-' + absence.locale]"
+                        [class.active]="selected_absence == $index" (click)="selected_absence = $index">
+                        @if (absence.icon) {
+                        <i-tabler [name]="absence.icon"></i-tabler>
                         }
-
-                        <div class="absence-type empty" [class.danger]="this.selected_absence == -1" (click)="this.selected_absence = -1">
-                            <i-tabler name="trash-x"></i-tabler>
-                        </div>
                     </div>
 
-                    <div class="table-header">
-                        <div class="student-name"></div>
+                    }
+
+                    <div class="absence-type empty" [class.danger]="this.selected_absence == -1"
+                        (click)="this.selected_absence = -1">
+                        <i-tabler name="trash-x"></i-tabler>
+                    </div>
+                </div>
+
+                <div class="table-header">
+                    <div class="student-name"></div>
+                    <div class="hours">
+                        @for (_ of [].constructor(max_hours); track $index) {
+                        <div class="hour" [class.active]="$index == selected_lesson.getValue()">{{ $index + 1 }}</div>
+                        }
+                    </div>
+                    <div class="absence"></div>
+                </div>
+
+                <div class="students-list">
+                    @for (student of classbook.students; track $index) {
+                    <div class="student-row">
+                        <div class="student-name">
+                            <span class="index">{{ $index + 1 }}. </span>
+                            <span class="name">{{ student.full_name }}</span>
+                        </div>
                         <div class="hours">
                             @for (_ of [].constructor(max_hours); track $index) {
-                                <div class="hour" [class.active]="$index == selected_lesson.getValue()">{{ $index + 1 }}</div>
-                            }
-                        </div>
-                        <div class="absence"></div>
-                    </div>
-
-                    <div class="students-list">
-                        @for (student of classbook.students; track $index) {
-                        <div class="student-row">
-                            <div class="student-name">
-                                <span class="index">{{ $index + 1 }}. </span>
-                                <span class="name">{{ student.full_name }}</span>
-                            </div>
-                            <div class="hours">
-                                @for (_ of [].constructor(max_hours); track $index) {
-                                    <div class="hour" [class.active]="$index == selected_lesson.getValue()" (click)="applyAbsence(student.student_id, $index)">
-                                        @if (student.absence[$index] != undefined) {
-                                            <div [ngClass]="['absence-type', 'ab-' + absenceConfig[student.absence[$index]].locale]">
-                                                <i-tabler [name]="absenceConfig[student.absence[$index]].icon!"></i-tabler>
-                                            </div>
-                                        }
-                                    </div>
+                            <div class="hour" [class.active]="$index == selected_lesson.getValue()"
+                                (click)="applyAbsence(student.student_id, $index)">
+                                @if (student.absence[$index] != undefined) {
+                                <div
+                                    [ngClass]="['absence-type', 'ab-' + absenceConfig[student.absence[$index]].locale]">
+                                    <i-tabler [name]="absenceConfig[student.absence[$index]].icon!"></i-tabler>
+                                </div>
                                 }
                             </div>
-                            <div class="absence muted">
-                                {{ (student.total_absence / classbook.classbook.lessonTotal * 100).toFixed(2) }}% ({{ student.total_absence }} / {{ classbook.classbook.lessonTotal }})
-                            </div>
+                            }
                         </div>
-                        }
+                        <div class="absence muted">
+                            {{ (student.total_absence / classbook.classbook.lessonTotal * 100).toFixed(2) }}% ({{
+                            student.total_absence }} / {{ classbook.classbook.lessonTotal }})
+                        </div>
                     </div>
+                    }
+                </div>
                 }
 
                 @if (selected_tab == 2) {
-                    <div class="add-btn" (click)="newHomework()">
-                        <i-tabler name="plus"></i-tabler>
-                        {{ l.s('classbook.add_homework_btn') }}
-                    </div>
-                    <div class="homework-list">
-                        <div class="homework-item">
-                            <div class="homework-header">
-                                <div>
-                                    <div class="homework-title">Vypočítat příklady 1-15</div>
-                                    <div class="homework-date">
-                                        {{ l.s('classbook.homework_timeline').replaceAll('%start%', '18. 11. 2025').replaceAll('%end%', '22. 11. 2025').replaceAll('%submitted%', '0').replaceAll('%total%', '28') }}
-                                    </div>
+                <div class="add-btn" (click)="newHomework()">
+                    <i-tabler name="plus"></i-tabler>
+                    {{ l.s('classbook.add_homework_btn') }}
+                </div>
+                <div class="homework-list">
+                    <div class="homework-item">
+                        <div class="homework-header">
+                            <div>
+                                <div class="homework-title">Vypočítat příklady 1-15</div>
+                                <div class="homework-date">
+                                    {{ l.s('classbook.homework_timeline').replaceAll('%start%', '18. 11.
+                                    2025').replaceAll('%end%', '22. 11. 2025').replaceAll('%submitted%',
+                                    '0').replaceAll('%total%', '28') }}
                                 </div>
-                            </div>
-                            <div class="homework-desc">
-                                Vyřešit kvadratické rovnice ze sbírky, strana 45. Použít diskriminant a zkontrolovat výsledky dosazením.
                             </div>
                         </div>
-
-                        <div class="homework-item">
-                            <div class="homework-header">
-                                <div>
-                                    <div class="homework-title">Grafické znázornění funkcí</div>
-                                    <div class="homework-date">Zadáno: 15. 11. 2025 | Odevzdat do: 20. 11. 2025</div>
-                                </div>
-                            </div>
-                            <div class="homework-desc">
-                                Nakreslit grafy 5 lineárních funkcí do milimetrového papíru. Označit průsečíky s osami.
-                            </div>
-                        </div>
-
-                        <div class="homework-item">
-                            <div class="homework-header">
-                                <div>
-                                    <div class="homework-title">Příprava na písemnou práci</div>
-                                    <div class="homework-date">Zadáno: 12. 11. 2025 | Odevzdat do: 19. 11. 2025</div>
-                                </div>
-                            </div>
-                            <div class="homework-desc">
-                                Zopakovat látku z kapitol 3-5. Zaměřit se na řešení rovnic a nerovnic.
-                            </div>
+                        <div class="homework-desc">
+                            Vyřešit kvadratické rovnice ze sbírky, strana 45. Použít diskriminant a zkontrolovat
+                            výsledky dosazením.
                         </div>
                     </div>
+
+                    <div class="homework-item">
+                        <div class="homework-header">
+                            <div>
+                                <div class="homework-title">Grafické znázornění funkcí</div>
+                                <div class="homework-date">Zadáno: 15. 11. 2025 | Odevzdat do: 20. 11. 2025</div>
+                            </div>
+                        </div>
+                        <div class="homework-desc">
+                            Nakreslit grafy 5 lineárních funkcí do milimetrového papíru. Označit průsečíky s osami.
+                        </div>
+                    </div>
+
+                    <div class="homework-item">
+                        <div class="homework-header">
+                            <div>
+                                <div class="homework-title">Příprava na písemnou práci</div>
+                                <div class="homework-date">Zadáno: 12. 11. 2025 | Odevzdat do: 19. 11. 2025</div>
+                            </div>
+                        </div>
+                        <div class="homework-desc">
+                            Zopakovat látku z kapitol 3-5. Zaměřit se na řešení rovnic a nerovnic.
+                        </div>
+                    </div>
+                </div>
                 }
 
                 @if (selected_tab == 3) {
-                    <div class="add-btn" (click)="newNote()">
-                        <i-tabler name="plus"></i-tabler>
-                        {{ l.s('classbook.add_note_btn') }}
-                    </div>
-                    <div class="notes-list">
-                        @for(note of classbook.notes;track $index) {
-                        <div class="note-item">
-                            <div class="note-header">
-                                <div class="note-title">{{ note.title || l.s('classbook.add_note.no_title') }}</div>
-                                <div class="note-date">{{ Utils.formatDateShort(note.created_at) }}</div>
-                            </div>
-                            <div class="note-desc">{{ note.note }}</div>
+                <div class="add-btn" (click)="newNote()">
+                    <i-tabler name="plus"></i-tabler>
+                    {{ l.s('classbook.add_note_btn') }}
+                </div>
+                <div class="notes-list">
+                    @for(note of classbook.notes;track $index) {
+                    <div class="note-item">
+                        <div class="note-header">
+                            <div class="note-title">{{ note.title || l.s('classbook.add_note.no_title') }}</div>
+                            <div class="note-date">{{ Utils.formatDateShort(note.created_at) }}</div>
                         </div>
-                        }
+                        <div class="note-desc">{{ note.note }}</div>
                     </div>
+                    }
+                </div>
                 }
                 } @else {
-                    <div class="center">
-                        <div class="loader bigger"></div>
-                    </div>
+                <div class="center">
+                    <div class="loader bigger"></div>
+                </div>
                 }
+            </div>
+            } @else {
+            <div class="no-selection">
+                <div class="illustration">
+                    <i-tabler name="book-2"></i-tabler>
+                </div>
+                <h3>Žádná hodina není vybrána</h3>
+                <p>Zvolte některou z vyučovacích hodin vlevo a zobrazí se zde její obsah.</p>
             </div>
             }
         </div>

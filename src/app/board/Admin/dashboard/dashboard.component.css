@@ -1,0 +1,826 @@
+.card-header {
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 16px;
+}
+
+.view-selector {
+    display: flex;
+    gap: 8px;
+    background: var(--surface-2);
+    padding: 4px;
+    border-radius: var(--radius);
+}
+
+.view-btn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 16px;
+    border-radius: calc(var(--radius) - 2px);
+    cursor: pointer;
+    transition: all 0.2s;
+    color: var(--text-muted);
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.view-btn i-tabler {
+    width: 18px;
+    height: 18px;
+}
+
+.view-btn:hover {
+    background: var(--hover-bg);
+    color: var(--text);
+}
+
+.view-btn.active {
+    background: var(--primary);
+    color: white;
+}
+
+/* Overview Grid */
+.overview-grid {
+    display: grid;
+    gap: 24px;
+}
+
+.stats-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 16px;
+}
+
+.stat-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 20px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    transition: all 0.3s;
+    position: relative;
+    overflow: hidden;
+}
+
+.stat-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 4px;
+    height: 100%;
+    background: var(--accent-color);
+    opacity: 0;
+    transition: opacity 0.3s;
+}
+
+.stat-card:hover::before {
+    opacity: 1;
+}
+
+.stat-card.primary {
+    --accent-color: var(--primary);
+}
+
+.stat-card.success {
+    --accent-color: var(--success);
+}
+
+.stat-card.warning {
+    --accent-color: var(--warning);
+}
+
+.stat-card.danger {
+    --accent-color: var(--danger);
+}
+
+.stat-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+    border-color: var(--accent-color);
+}
+
+.stat-icon {
+    width: 56px;
+    height: 56px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, var(--accent-color), var(--accent-color-dark, var(--accent-color)));
+    color: white;
+}
+
+.stat-card.primary .stat-icon {
+    background: var(--primary-gradient);
+}
+
+.stat-card.success .stat-icon {
+    background: linear-gradient(135deg, var(--success-100), var(--success));
+}
+
+.stat-card.warning .stat-icon {
+    background: linear-gradient(135deg, var(--warning-100), var(--warning));
+}
+
+.stat-card.danger .stat-icon {
+    background: linear-gradient(135deg, var(--danger-100), var(--danger));
+}
+
+.stat-icon i-tabler {
+    width: 28px;
+    height: 28px;
+}
+
+.stat-info {
+    flex: 1;
+}
+
+.stat-value {
+    font-size: 32px;
+    font-weight: 800;
+    color: var(--text);
+    line-height: 1;
+    margin-bottom: 4px;
+}
+
+.stat-value .muted {
+    font-size: 14px;
+    font-weight: normal;
+}
+
+.stat-label {
+    font-size: 13px;
+    color: var(--text-muted);
+    font-weight: 500;
+}
+
+/* Section Card */
+.section-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 24px;
+}
+
+.section-header {
+    margin-bottom: 24px;
+    display: flex;
+    justify-content: space-between;
+    align-items: start;
+    flex-wrap: wrap;
+    gap: 12px;
+}
+
+.section-header h3 {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin: 0 0 8px 0;
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--text);
+}
+
+.section-header h3 i-tabler {
+    width: 24px;
+    height: 24px;
+    color: var(--primary);
+}
+
+.section-header p {
+    margin: 0;
+    font-size: 14px;
+    color: var(--text-muted);
+}
+
+.sort-options {
+    display: flex;
+    gap: 8px;
+}
+
+.btn-sort {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 16px;
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    cursor: pointer;
+    font-size: 13px;
+    color: var(--text-muted);
+    transition: all 0.2s;
+}
+
+.btn-sort:hover {
+    background: var(--hover-bg);
+    border-color: var(--primary);
+    color: var(--primary);
+}
+
+.btn-sort i-tabler {
+    width: 16px;
+    height: 16px;
+}
+
+/* Heatmap */
+.heatmap {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.heatmap-grid {
+    display: inline-block;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+}
+
+.heatmap-header {
+    display: grid;
+    grid-template-columns: 100px repeat(10, 50px);
+    background: var(--surface-2);
+    border-bottom: 1px solid var(--border);
+}
+
+.corner {
+    border-right: 1px solid var(--border);
+}
+
+.hour-label {
+    padding: 12px;
+    text-align: center;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-muted);
+    border-right: 1px solid var(--border);
+}
+
+.hour-label:last-child {
+    border-right: none;
+}
+
+.heatmap-row {
+    display: grid;
+    grid-template-columns: 100px repeat(10, 50px);
+    border-bottom: 1px solid var(--border);
+}
+
+.heatmap-row:last-child {
+    border-bottom: none;
+}
+
+.day-label {
+    padding: 12px;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text);
+    background: var(--surface-2);
+    border-right: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+}
+
+.heatmap-cell {
+    padding: 12px;
+    text-align: center;
+    font-size: 12px;
+    font-weight: 600;
+    border-right: 1px solid var(--border);
+    transition: all 0.2s;
+    cursor: pointer;
+}
+
+.heatmap-cell:last-child {
+    border-right: none;
+}
+
+.heatmap-cell.low {
+    background: rgba(var(--success-rgb), 0.1);
+    color: var(--success);
+}
+
+.heatmap-cell.medium {
+    background: rgba(var(--warning-rgb), 0.3);
+    color: var(--warning-700);
+}
+
+.heatmap-cell.high {
+    background: rgba(var(--danger-rgb), 0.4);
+    color: var(--danger-700);
+}
+
+.heatmap-cell:hover {
+    transform: scale(1.1);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    z-index: 10;
+}
+
+.heatmap-legend {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 13px;
+    color: var(--text-muted);
+}
+
+.legend-gradient {
+    display: flex;
+    gap: 4px;
+}
+
+.legend-item {
+    width: 40px;
+    height: 20px;
+    border-radius: 4px;
+}
+
+.legend-item.low {
+    background: rgba(var(--success-rgb), 0.1);
+}
+
+.legend-item.medium {
+    background: rgba(var(--warning-rgb), 0.3);
+}
+
+.legend-item.high {
+    background: rgba(var(--danger-rgb), 0.4);
+}
+
+/* Risk List */
+.risk-list {
+    display: grid;
+    gap: 12px;
+}
+
+.risk-item {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 16px;
+    background: var(--surface-2);
+    border: 2px solid var(--border);
+    border-left: 4px solid var(--risk-color);
+    border-radius: var(--radius);
+    transition: all 0.2s;
+}
+
+.risk-item.critical {
+    --risk-color: var(--danger);
+}
+
+.risk-item.high {
+    --risk-color: var(--warning);
+}
+
+.risk-item.medium {
+    --risk-color: var(--info);
+}
+
+.risk-item.low {
+    --risk-color: var(--success);
+}
+
+.risk-item:hover {
+    background: var(--hover-bg);
+    transform: translateX(4px);
+}
+
+.risk-badge {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    font-weight: 800;
+    background: var(--risk-color);
+    color: white;
+}
+
+.risk-info {
+    flex: 1;
+}
+
+.risk-name {
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--text);
+    margin-bottom: 4px;
+}
+
+.risk-class {
+    font-size: 13px;
+    color: var(--text-muted);
+}
+
+.risk-factors {
+    display: flex;
+    gap: 16px;
+}
+
+.factor {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 13px;
+    color: var(--text-muted);
+}
+
+.factor i-tabler {
+    width: 16px;
+    height: 16px;
+}
+
+/* Classes Grid */
+.classes-grid {
+    display: grid;
+
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 16px;
+}
+
+.class-card {
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+
+    border-radius: var(--radius);
+    padding: 20px;
+    transition: all 0.3s;
+}
+
+.class-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+    border-color: var(--primary);
+}
+
+.class-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+}
+
+.class-header h4 {
+    margin: 0;
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--text);
+}
+
+.class-header i-tabler {
+    width: 20px;
+    height: 20px;
+}
+
+.trend-up {
+    color: var(--success);
+}
+
+.trend-down {
+    color: var(--danger);
+}
+
+.trend-stable {
+    color: var(--text-muted);
+}
+
+.class-stats {
+    display: grid;
+    gap: 8px;
+    margin-bottom: 12px;
+}
+
+.class-stat {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
+    color: var(--text-muted);
+}
+
+.class-stat i-tabler {
+    width: 16px;
+    height: 16px;
+}
+
+.class-stat.highlight {
+    color: var(--primary);
+    font-weight: 600;
+}
+
+.class-stat.warning {
+    color: var(--warning);
+}
+
+.progress-bar {
+    width: 100%;
+    height: 6px;
+    background: var(--surface);
+    border-radius: 3px;
+    overflow: hidden;
+}
+
+.progress-fill {
+    height: 100%;
+    transition: width 0.3s;
+}
+
+.progress-fill.good {
+    background: var(--success);
+}
+
+.progress-fill.warning {
+    background: var(--warning);
+}
+
+.progress-fill.danger {
+    background: var(--danger);
+}
+
+/* Subjects Table */
+.subjects-table {
+    display: grid;
+    gap: 1px;
+    background: var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+}
+
+.table-header,
+.table-row {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr 1fr 1.5fr;
+    background: var(--surface);
+}
+
+.table-header {
+    background: var(--surface-2);
+    font-weight: 600;
+    font-size: 13px;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.table-header>div,
+.table-row>div {
+    padding: 16px;
+    display: flex;
+    align-items: center;
+}
+
+.table-row {
+    transition: background 0.2s;
+}
+
+.table-row:hover {
+    background: var(--hover-bg);
+}
+
+.col-name {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-weight: 600;
+}
+
+.col-name i-tabler {
+    width: 20px;
+    height: 20px;
+    color: var(--primary);
+}
+
+.grade-badge {
+    padding: 4px 12px;
+    border-radius: 12px;
+    font-weight: 700;
+    font-size: 14px;
+}
+
+.grade-badge.good {
+    background: rgba(var(--success-rgb), 0.15);
+    color: var(--success-700);
+}
+
+.grade-badge.warning {
+    background: rgba(var(--warning-rgb), 0.15);
+    color: var(--warning-700);
+}
+
+.grade-badge.danger {
+    background: rgba(var(--danger-rgb), 0.15);
+    color: var(--danger-700);
+}
+
+.col-difficulty {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.difficulty-bar {
+    flex: 1;
+    height: 8px;
+    background: var(--surface-2);
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.difficulty-fill {
+    height: 100%;
+    background: var(--primary-gradient);
+    transition: width 0.3s;
+}
+
+/* Teachers Grid */
+.teachers-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 16px;
+}
+
+.teacher-card {
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 20px;
+    transition: all 0.3s;
+}
+
+.teacher-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+    border-color: var(--primary);
+}
+
+.teacher-header {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 20px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid var(--border);
+}
+
+.teacher-avatar {
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    background: var(--primary-gradient);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+}
+
+.teacher-avatar i-tabler {
+    width: 28px;
+    height: 28px;
+}
+
+.teacher-info h4 {
+    margin: 0 0 4px 0;
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--text);
+}
+
+.teacher-info p {
+    margin: 0;
+    font-size: 13px;
+    color: var(--text-muted);
+}
+
+.teacher-stats {
+    display: grid;
+    gap: 12px;
+}
+
+.teacher-stat {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.teacher-stat .stat-label {
+    font-size: 13px;
+    color: var(--text-muted);
+}
+
+.teacher-stat .stat-value {
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--text);
+}
+
+.teacher-stat .stat-value.good {
+    color: var(--success);
+}
+
+.teacher-stat .stat-value.warning {
+    color: var(--warning);
+}
+
+.teacher-stat .stat-value.danger {
+    color: var(--danger);
+}
+
+/* Risks Table */
+.risks-table .table-header,
+.risks-table .table-row {
+    grid-template-columns: 80px 2fr 1fr 1fr 1fr 1fr 1.5fr;
+}
+
+.col-rank {
+    justify-content: center;
+}
+
+.rank-badge {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 800;
+    background: var(--risk-color);
+    color: white;
+}
+
+.risks-table .table-row.critical {
+    --risk-color: var(--danger);
+    border-left: 4px solid var(--danger);
+}
+
+.risks-table .table-row.high {
+    --risk-color: var(--warning);
+    border-left: 4px solid var(--warning);
+}
+
+.risks-table .table-row.medium {
+    --risk-color: var(--info);
+    border-left: 4px solid var(--info);
+}
+
+.risks-table .table-row.low {
+    --risk-color: var(--success);
+    border-left: 4px solid var(--success);
+}
+
+.factor-badge {
+    padding: 4px 12px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: 600;
+    background: var(--surface);
+}
+
+.factor-badge.absence {
+    background: rgba(var(--warning-rgb), 0.15);
+    color: var(--warning-700);
+}
+
+.factor-badge.grades {
+    background: rgba(var(--danger-rgb), 0.15);
+    color: var(--danger-700);
+}
+
+.factor-badge.discipline {
+    background: rgba(var(--error-rgb, var(--danger-rgb)), 0.15);
+    color: var(--error-700, var(--danger-700));
+}
+
+.factor-badge.combined {
+    background: rgba(var(--primary-rgb), 0.15);
+    color: var(--primary-700);
+}
+
+/* Responsive */
+@media (max-width: 1024px) {
+    .view-selector {
+        width: 100%;
+    }
+
+    .classes-grid,
+    .teachers-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .table-header,
+    .table-row {
+        grid-template-columns: 1fr;
+        grid-auto-rows: auto;
+    }
+
+    .heatmap-grid {
+        overflow-x: auto;
+    }
+}

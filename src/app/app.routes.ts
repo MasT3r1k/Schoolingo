@@ -32,6 +32,7 @@ import { SettingsComponent as SystemSettings } from './board/system/settings/set
 import { DocumentsComponent } from './board/documents/documents.component';
 import { MidtermComponent } from './board/marks/midterm/midterm.component';
 import { StudentsComponent } from './board/students/students.component';
+import { DashboardComponent } from './board/Admin/dashboard/dashboard.component';
 
 
 export const routes: Routes = [
@@ -45,6 +46,9 @@ export const routes: Routes = [
         path: '', component: BoardComponent, canActivate: [UserGuard], children: [
             {
                 path: 'main', component: MainComponent
+            },
+            {
+                path: 'dashboard', component: DashboardComponent
             },
             {
                 path: 'students', component: StudentsComponent

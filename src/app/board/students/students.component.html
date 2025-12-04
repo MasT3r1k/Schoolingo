@@ -1,1 +1,583 @@
-<p>students works!</p>
+<div class="card">
+    <div class="card-top"></div>
+    <div class="card-header">
+        <h2>Studenti</h2>
+        <div class="header-actions">
+            <div class="btn small primary" (click)="openAddStudentModal()">
+                <i-tabler name="user-plus"></i-tabler>
+                Přidat studenta
+            </div>
+        </div>
+    </div>
+
+    <div class="card-body">
+        <!-- Student Detail View -->
+        @if (selectedStudent) {
+        <div class="detailview">
+            <div class="detail-header">
+                <button class="btn-back" (click)="closeDetail()">
+                    <i-tabler name="arrow-left"></i-tabler>
+                    Zpět na seznam
+                </button>
+                <div class="detail-actions">
+                    <button class="btn-icon">
+                        <i-tabler name="edit"></i-tabler>
+                    </button>
+                    <button class="btn-icon">
+                        <i-tabler name="printer"></i-tabler>
+                    </button>
+                </div>
+            </div>
+
+            <div class="detail-content">
+                <!-- Student Header -->
+                <div class="student-header-card">
+                    <div class="student-avatar-large">
+                        @if (selectedStudent.photoUrl) {
+                        <img [src]="selectedStudent.photoUrl" [alt]="selectedStudent.fullName">
+                        } @else {
+                        <span class="avatar-initials-large">{{ selectedStudent.firstName[0] }}{{
+                            selectedStudent.lastName[0] }}</span>
+                        }
+                    </div>
+                    <div class="student-header-info">
+                        <h1>{{ selectedStudent.fullName }}</h1>
+                        <div class="student-meta">
+                            <span class="badge" [class]="getStatusClass(selectedStudent.status)">
+                                {{ getStatusText(selectedStudent.status) }}
+                            </span>
+                            <span class="meta-item">
+                                <i-tabler name="school"></i-tabler>
+                                {{ selectedStudent.className }} · {{ selectedStudent.fieldOfStudy }}
+                            </span>
+                            <span class="meta-item">
+                                <i-tabler name="calendar"></i-tabler>
+                                {{ selectedStudent.year }}. ročník
+                            </span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tabs Navigation -->
+                <div class="tabs-nav">
+                    <button class="tab-btn" [class.active]="activeTab === 'overview'"
+                        (click)="setActiveTab('overview')">
+                        <i-tabler name="layout-dashboard"></i-tabler>
+                        Přehled
+                    </button>
+                    <button class="tab-btn" [class.active]="activeTab === 'personal'"
+                        (click)="setActiveTab('personal')">
+                        <i-tabler name="user"></i-tabler>
+                        Osobní údaje
+                    </button>
+                    <button class="tab-btn" [class.active]="activeTab === 'parents'" (click)="setActiveTab('parents')">
+                        <i-tabler name="users-group"></i-tabler>
+                        Rodiče
+                    </button>
+                    <button class="tab-btn" [class.active]="activeTab === 'academic'"
+                        (click)="setActiveTab('academic')">
+                        <i-tabler name="school"></i-tabler>
+                        Studium
+                    </button>
+                    <button class="tab-btn" [class.active]="activeTab === 'medical'" (click)="setActiveTab('medical')">
+                        <i-tabler name="medical-cross"></i-tabler>
+                        Zdravotní
+                    </button>
+                    <button class="tab-btn" [class.active]="activeTab === 'notes'" (click)="setActiveTab('notes')">
+                        <i-tabler name="notes"></i-tabler>
+                        Poznámky
+                    </button>
+                </div>
+
+                <!-- Tab Content -->
+                <div class="tab-content">
+                    <!-- Overview Tab -->
+                    @if (activeTab === 'overview') {
+                    <div class="detail-grid">
+                        <div class="detail-card">
+                            <div class="card-title">
+                                <i-tabler name="chart-bar"></i-tabler>
+                                Rychlý přehled
+                            </div>
+                            <div class="stats-row">
+                                <div class="stat-item">
+                                    <div class="stat-value" [class]="getGradeClass(selectedStudent.averageGrade)">
+                                        {{ selectedStudent.averageGrade }}
+                                    </div>
+                                    <div class="stat-label">Průměr</div>
+                                </div>
+                                <div class="stat-item">
+                                    <div class="stat-value" [class.warning]="selectedStudent.absenceRate > 10">
+                                        {{ selectedStudent.absenceRate }}%
+                                    </div>
+                                    <div class="stat-label">Absence</div>
+                                </div>
+                                <div class="stat-item">
+                                    <div class="stat-value" [class.danger]="selectedStudent.disciplinaryIssues > 0">
+                                        {{ selectedStudent.disciplinaryIssues }}
+                                    </div>
+                                    <div class="stat-label">Kázeň</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="detail-card">
+                            <div class="card-title">
+                                <i-tabler name="info-circle"></i-tabler>
+                                Základní info
+                            </div>
+                            <div class="info-grid">
+                                <div class="info-item">
+                                    <span class="label">Email</span>
+                                    <span class="value">{{ selectedStudent.email }}</span>
+                                </div>
+                                <div class="info-item">
+                                    <span class="label">Telefon</span>
+                                    <span class="value">{{ selectedStudent.phone }}</span>
+                                </div>
+                                <div class="info-item">
+                                    <span class="label">Třídní učitel</span>
+                                    <span class="value">Mgr. Jan Novák</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    }
+
+                    <!-- Personal Tab -->
+                    @if (activeTab === 'personal') {
+                    <div class="detail-card full-width">
+                        <div class="card-title">
+                            <i-tabler name="id"></i-tabler>
+                            Osobní informace
+                        </div>
+                        <div class="info-grid-cols">
+                            <div class="info-item">
+                                <span class="label">Jméno a příjmení</span>
+                                <span class="value">{{ selectedStudent.fullName }}</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="label">Datum narození</span>
+                                <span class="value">{{ selectedStudent.dateOfBirth }}</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="label">Rodné číslo</span>
+                                <span class="value">060315/1234</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="label">Místo narození</span>
+                                <span class="value">Praha</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="label">Státní občanství</span>
+                                <span class="value">Česká republika</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="label">Adresa trvalého bydliště</span>
+                                <span class="value">{{ selectedStudent.address }}</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="label">Kontaktní email</span>
+                                <span class="value">{{ selectedStudent.email }}</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="label">Telefonní číslo</span>
+                                <span class="value">{{ selectedStudent.phone }}</span>
+                            </div>
+                        </div>
+                    </div>
+                    }
+
+                    <!-- Parents Tab -->
+                    @if (activeTab === 'parents') {
+                    <div class="detail-card full-width">
+                        <div class="card-title">
+                            <i-tabler name="users-group"></i-tabler>
+                            Zákonní zástupci
+                        </div>
+                        <div class="parents-grid">
+                            @for (parent of selectedStudent.parents; track parent.id) {
+                            <div class="parent-card">
+                                <div class="parent-header">
+                                    <i-tabler name="user"></i-tabler>
+                                    <div>
+                                        <div class="parent-name">{{ parent.firstName }} {{ parent.lastName }}</div>
+                                        <div class="parent-role">{{ parent.relationship === 'mother' ? 'Matka' :
+                                            parent.relationship === 'father' ? 'Otec' : 'Poručník' }}</div>
+                                    </div>
+                                </div>
+                                <div class="parent-info">
+                                    <div class="info-row">
+                                        <i-tabler name="mail"></i-tabler>
+                                        {{ parent.email }}
+                                    </div>
+                                    <div class="info-row">
+                                        <i-tabler name="phone"></i-tabler>
+                                        {{ parent.phone }}
+                                    </div>
+                                    @if (parent.occupation) {
+                                    <div class="info-row">
+                                        <i-tabler name="briefcase"></i-tabler>
+                                        {{ parent.occupation }}
+                                    </div>
+                                    }
+                                </div>
+                            </div>
+                            }
+                        </div>
+                    </div>
+                    }
+
+                    <!-- Academic Tab -->
+                    @if (activeTab === 'academic') {
+                    <div class="detail-grid">
+                        <div class="detail-card full-width">
+                            <div class="card-title">
+                                <i-tabler name="school"></i-tabler>
+                                Informace o studiu
+                            </div>
+                            <div class="info-grid-cols">
+                                <div class="info-item">
+                                    <span class="label">Obor</span>
+                                    <span class="value">{{ selectedStudent.fieldOfStudy }}</span>
+                                </div>
+                                <div class="info-item">
+                                    <span class="label">Třída</span>
+                                    <span class="value">{{ selectedStudent.className }}</span>
+                                </div>
+                                <div class="info-item">
+                                    <span class="label">Ročník</span>
+                                    <span class="value">{{ selectedStudent.year }}.</span>
+                                </div>
+                                <div class="info-item">
+                                    <span class="label">Datum nástupu</span>
+                                    <span class="value">{{ selectedStudent.enrollmentDate }}</span>
+                                </div>
+                                @if (selectedStudent.graduationDate) {
+                                <div class="info-item">
+                                    <span class="label">Datum ukončení</span>
+                                    <span class="value">{{ selectedStudent.graduationDate }}</span>
+                                </div>
+                                }
+                            </div>
+                        </div>
+
+                        <div class="detail-card full-width">
+                            <div class="card-title">
+                                <i-tabler name="calendar-event"></i-tabler>
+                                Rozvrh hodin
+                            </div>
+                            <div class="placeholder">
+                                <i-tabler name="calendar"></i-tabler>
+                                <p>Rozvrh bude dostupný brzy</p>
+                            </div>
+                        </div>
+
+                        <div class="detail-card full-width">
+                            <div class="card-title">
+                                <i-tabler name="trophy"></i-tabler>
+                                Přehled známek
+                            </div>
+                            <div class="placeholder">
+                                <i-tabler name="chart-pie"></i-tabler>
+                                <p>Detailní přehled známek bude dostupný brzy</p>
+                            </div>
+                        </div>
+                    </div>
+                    }
+
+                    <!-- Medical Tab -->
+                    @if (activeTab === 'medical') {
+                    <div class="detail-card full-width">
+                        <div class="card-title">
+                            <i-tabler name="medical-cross"></i-tabler>
+                            Zdravotní záznamy
+                        </div>
+
+                        @if (selectedStudent.allergies?.length || selectedStudent.medicalConditions?.length) {
+                        <div class="medical-info">
+                            @if (selectedStudent.allergies?.length) {
+                            <div class="medical-section">
+                                <strong>Alergie:</strong>
+                                <div class="tag-list">
+                                    @for (allergy of selectedStudent.allergies; track $index) {
+                                    <span class="tag danger">{{ allergy }}</span>
+                                    }
+                                </div>
+                            </div>
+                            }
+                            @if (selectedStudent.medicalConditions?.length) {
+                            <div class="medical-section">
+                                <strong>Zdravotní stavy a omezení:</strong>
+                                <div class="tag-list">
+                                    @for (condition of selectedStudent.medicalConditions; track $index) {
+                                    <span class="tag warning">{{ condition }}</span>
+                                    }
+                                </div>
+                            </div>
+                            }
+                        </div>
+                        } @else {
+                        <div class="empty-section">
+                            <i-tabler name="check"></i-tabler>
+                            <p>Žádné zdravotní záznamy</p>
+                        </div>
+                        }
+                    </div>
+                    }
+
+                    <!-- Notes Tab -->
+                    @if (activeTab === 'notes') {
+                    <div class="detail-card full-width">
+                        <div class="card-title">
+                            <i-tabler name="notes"></i-tabler>
+                            Poznámky
+                        </div>
+                        @if (selectedStudent.notes) {
+                        <p class="notes-text">{{ selectedStudent.notes }}</p>
+                        } @else {
+                        <div class="empty-section">
+                            <i-tabler name="note-off"></i-tabler>
+                            <p>Žádné poznámky</p>
+                        </div>
+                        }
+                    </div>
+                    }
+                </div>
+            </div>
+        </div>
+        } @else {
+        <!-- Students List View -->
+        <div class="students-list-view">
+            <!-- Search and Filters -->
+            <div class="filters-section">
+                <!-- Search Bar -->
+                <div class="search-bar">
+                    <i-tabler name="search"></i-tabler>
+                    <input type="text" placeholder="Hledat studenta..." [(ngModel)]="filters.search">
+                    @if (filters.search) {
+                    <button class="clear-btn" (click)="filters.search = ''">
+                        <i-tabler name="x"></i-tabler>
+                    </button>
+                    }
+                </div>
+
+                <!-- Filters -->
+                <div class="filters-row">
+                    <div class="filter-group">
+                        <label>Status</label>
+                        <select [(ngModel)]="filters.status">
+                            <option value="all">Všichni</option>
+                            <option value="active">Aktivní</option>
+                            <option value="former">Bývalí</option>
+                            <option value="suspended">Pozastaveni</option>
+                        </select>
+                    </div>
+
+                    <div class="filter-group">
+                        <label>Obor</label>
+                        <select [(ngModel)]="filters.fieldOfStudy">
+                            <option value="">Všechny obory</option>
+                            @for (field of fieldsOfStudy; track field) {
+                            <option [value]="field">{{ field }}</option>
+                            }
+                        </select>
+                    </div>
+
+                    <div class="filter-group">
+                        <label>Třída</label>
+                        <select [(ngModel)]="filters.className">
+                            <option value="">Všechny třídy</option>
+                            @for (className of availableClasses; track className) {
+                            <option [value]="className">{{ className }}</option>
+                            }
+                        </select>
+                    </div>
+
+                    <div class="filter-group">
+                        <label>Ročník</label>
+                        <select [(ngModel)]="filters.year">
+                            <option [value]="null">Všechny ročníky</option>
+                            @for (year of years; track year) {
+                            <option [value]="year">{{ year }}. ročník</option>
+                            }
+                        </select>
+                    </div>
+
+                    <button class="btn-clear-filters" (click)="clearFilters()">
+                        <i-tabler name="filter-off"></i-tabler>
+                        Vymazat filtry
+                    </button>
+                </div>
+            </div>
+
+            <!-- Results Summary -->
+            <div class="results-summary">
+                Zobrazeno <strong>{{ filteredStudents.length }}</strong> z <strong>{{ students.length }}</strong>
+                studentů
+            </div>
+
+            <!-- Students Grid -->
+            <div class="students-grid">
+                @for (student of filteredStudents; track student.id) {
+                <div class="student-card" (click)="selectStudent(student)">
+                    <div class="student-card-header">
+                        <div class="student-avatar">
+                            @if (student.photoUrl) {
+                            <img [src]="student.photoUrl" [alt]="student.fullName">
+                            } @else {
+                            <span class="avatar-initials">{{ student.firstName[0] }}{{ student.lastName[0] }}</span>
+                            }
+                        </div>
+                        <div class="student-status-indicator" [class]="student.status"></div>
+                    </div>
+
+                    <div class="student-info">
+                        <h3 class="student-name">{{ student.fullName }}</h3>
+                        <div class="student-primary-info">
+                            <span class="info-badge class-badge">
+                                <i-tabler name="school" class="icon-sm"></i-tabler>
+                                {{ student.className }}
+                            </span>
+                            <span class="info-badge field-badge">
+                                {{ student.fieldOfStudy }}
+                            </span>
+                        </div>
+                    </div>
+
+                    <div class="student-card-footer">
+                        <span class="status-text" [class]="getStatusClass(student.status)">
+                            {{ getStatusText(student.status) }}
+                        </span>
+                        <div class="card-action">
+                            <i-tabler name="chevron-right"></i-tabler>
+                        </div>
+                    </div>
+                </div>
+                }
+
+                @if (filteredStudents.length === 0) {
+                <div class="empty-state">
+                    <div class="empty-icon">
+                        <i-tabler name="search"></i-tabler>
+                    </div>
+                    <h3>Žádní studenti nenalezeni</h3>
+                    <p>Zkuste upravit filtry nebo hledaný výraz</p>
+                </div>
+                }
+            </div>
+        </div>
+        }
+    </div>
+</div>
+
+<!-- Add Student Modal -->
+@if (showAddStudentModal) {
+<div class="modal-overlay" (click)="closeAddStudentModal()">
+    <div class="modal-container" (click)="$event.stopPropagation()">
+        <div class="modal-header">
+            <h2>Přidat nového studenta</h2>
+            <button class="btn-close" (click)="closeAddStudentModal()">
+                <i-tabler name="x"></i-tabler>
+            </button>
+        </div>
+
+        <div class="modal-tabs">
+            <button class="modal-tab" [class.active]="addStudentTab === 'manual'" (click)="setAddStudentTab('manual')">
+                <i-tabler name="pencil"></i-tabler>
+                Ruční zadání
+            </button>
+            <button class="modal-tab" [class.active]="addStudentTab === 'ldap'" (click)="setAddStudentTab('ldap')">
+                <i-tabler name="server"></i-tabler>
+                Active Directory (LDAP)
+            </button>
+            <button class="modal-tab" [class.active]="addStudentTab === 'excel'" (click)="setAddStudentTab('excel')">
+                <i-tabler name="file-spreadsheet"></i-tabler>
+                Import z Excelu
+            </button>
+        </div>
+
+        <div class="modal-content">
+            <!-- Manual Entry -->
+            @if (addStudentTab === 'manual') {
+            <div class="form-grid">
+                <div class="form-group">
+                    <label>Jméno</label>
+                    <input type="text" placeholder="Jan">
+                </div>
+                <div class="form-group">
+                    <label>Příjmení</label>
+                    <input type="text" placeholder="Novák">
+                </div>
+                <div class="form-group">
+                    <label>Email</label>
+                    <input type="email" placeholder="jan.novak@skola.cz">
+                </div>
+                <div class="form-group">
+                    <label>Třída</label>
+                    <select>
+                        <option value="">Vyberte třídu</option>
+                        @for (className of availableClasses; track className) {
+                        <option [value]="className">{{ className }}</option>
+                        }
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Obor</label>
+                    <select>
+                        <option value="">Vyberte obor</option>
+                        @for (field of fieldsOfStudy; track field) {
+                        <option [value]="field">{{ field }}</option>
+                        }
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Datum narození</label>
+                    <input type="date">
+                </div>
+            </div>
+            }
+
+            <!-- LDAP Import -->
+            @if (addStudentTab === 'ldap') {
+            <div class="import-section">
+                <div class="search-bar">
+                    <i-tabler name="search"></i-tabler>
+                    <input type="text" placeholder="Vyhledat uživatele v Active Directory...">
+                </div>
+                <div class="ldap-results placeholder-area">
+                    <i-tabler name="user-search"></i-tabler>
+                    <p>Zadejte jméno nebo login pro vyhledání v AD</p>
+                </div>
+            </div>
+            }
+
+            <!-- Excel Import -->
+            @if (addStudentTab === 'excel') {
+            <div class="import-section">
+                <div class="drop-zone">
+                    <i-tabler name="upload"></i-tabler>
+                    <h3>Přetáhněte soubor sem</h3>
+                    <p>nebo klikněte pro výběr souboru (.xlsx, .csv)</p>
+                    <button class="btn-secondary">Vybrat soubor</button>
+                </div>
+                <div class="template-download">
+                    <a href="#" class="link-with-icon">
+                        <i-tabler name="download"></i-tabler>
+                        Stáhnout šablonu pro import
+                    </a>
+                </div>
+            </div>
+            }
+        </div>
+
+        <div class="modal-footer">
+            <button class="btn-secondary" (click)="closeAddStudentModal()">Zrušit</button>
+            <button class="btn-primary">
+                @if (addStudentTab === 'manual') { Uložit studenta }
+                @else { Importovat }
+            </button>
+        </div>
+    </div>
+</div>
+}

@@ -17,6 +17,11 @@ export const config: SidebarGroup[] = [
                 permission: ['teacher']
             },
             {
+                item: "sidebar.management",
+                url: 'dashboard',
+                permission: ['manager:admin', 'principal']
+            },
+            {
                 item: "sidebar.teachers.list",
                 url: 'teachers',
                 permission: ['student', 'teacher', 'parent']

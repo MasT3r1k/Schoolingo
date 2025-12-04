@@ -1,0 +1,360 @@
+<div class="card">
+    <div class="card-top"></div>
+    <div class="card-header">
+        <h2>
+            {{ l.s('sidebar.management') }}
+        </h2>
+        <div class="view-selector">
+            <div class="view-btn" [class.active]="selectedView === 'overview'" (click)="selectedView = 'overview'">
+                <i-tabler name="dashboard"></i-tabler>
+                Přehled
+            </div>
+            <div class="view-btn" [class.active]="selectedView === 'classes'" (click)="selectedView = 'classes'">
+                <i-tabler name="school"></i-tabler>
+                Třídy
+            </div>
+            <div class="view-btn" [class.active]="selectedView === 'subjects'" (click)="selectedView = 'subjects'">
+                <i-tabler name="book"></i-tabler>
+                Předměty
+            </div>
+            <div class="view-btn" [class.active]="selectedView === 'teachers'" (click)="selectedView = 'teachers'">
+                <i-tabler name="users"></i-tabler>
+                Učitelé
+            </div>
+            <div class="view-btn" [class.active]="selectedView === 'risks'" (click)="selectedView = 'risks'">
+                <i-tabler name="alert-triangle"></i-tabler>
+                Rizika
+            </div>
+        </div>
+    </div>
+
+    <div class="card-body">
+        <!-- OVERVIEW -->
+        @if (selectedView === 'overview') {
+        <div class="overview-grid">
+            <!-- Stats Cards -->
+            <div class="stats-cards">
+                <div class="stat-card primary">
+                    <div class="stat-icon">
+                        <i-tabler name="users"></i-tabler>
+                    </div>
+                    <div class="stat-info">
+                        <div class="stat-value">
+                            {{ schoolStats.totalStudents }}
+                            <span class="muted">ze {{ schoolStats.limitStudents }}</span>
+                        </div>
+                        <div class="stat-label">Celkem studentů</div>
+                    </div>
+                </div>
+
+                <div class="stat-card success">
+                    <div class="stat-icon">
+                        <i-tabler name="trophy"></i-tabler>
+                    </div>
+                    <div class="stat-info">
+                        <div class="stat-value">{{ schoolStats.averageGrade }}</div>
+                        <div class="stat-label">Průměrný prospěch</div>
+                    </div>
+                </div>
+
+                <div class="stat-card warning">
+                    <div class="stat-icon">
+                        <i-tabler name="calendar-x"></i-tabler>
+                    </div>
+                    <div class="stat-info">
+                        <div class="stat-value">{{ schoolStats.absenceRate }}%</div>
+                        <div class="stat-label">Míra absence</div>
+                    </div>
+                </div>
+
+                <div class="stat-card danger">
+                    <div class="stat-icon">
+                        <i-tabler name="alert-triangle"></i-tabler>
+                    </div>
+                    <div class="stat-info">
+                        <div class="stat-value">{{ schoolStats.atRiskStudents }}</div>
+                        <div class="stat-label">Rizikoví studenti</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Absence Heatmap -->
+            <div class="section-card">
+                <div class="section-header">
+                    <h3>
+                        <i-tabler name="calendar-stats"></i-tabler>
+                        Heatmapa absence
+                    </h3>
+                    <p>Kdy studenti nejčastěji chybí</p>
+                </div>
+                <div class="heatmap">
+                    <div class="heatmap-grid">
+                        <div class="heatmap-header">
+                            <div class="corner"></div>
+                            @for (hour of [1,2,3,4,5,6,7,8,9,10]; track $index) {
+                            <div class="hour-label">{{ hour }}</div>
+                            }
+                        </div>
+                        @for (day of [1,2,3,4,5]; track $index) {
+                        <div class="heatmap-row">
+                            <div class="day-label">{{ getDayName(day) }}</div>
+                            @for (hour of [1,2,3,4,5,6,7,8,9,10]; track $index) {
+                            <div class="heatmap-cell" [class]="getHeatmapIntensity(getHeatmapValue(day, hour))">
+                                {{ getHeatmapValue(day, hour) }}
+                            </div>
+                            }
+                        </div>
+                        }
+                    </div>
+                    <div class="heatmap-legend">
+                        <span>Málo</span>
+                        <div class="legend-gradient">
+                            <div class="legend-item low"></div>
+                            <div class="legend-item medium"></div>
+                            <div class="legend-item high"></div>
+                        </div>
+                        <span>Hodně</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Top Risk Students -->
+            <div class="section-card">
+                <div class="section-header">
+                    <h3>
+                        <i-tabler name="alert-circle"></i-tabler>
+                        Top 5 rizikových studentů
+                    </h3>
+                    <p>Studenti vyžadující pozornost</p>
+                </div>
+                <div class="risk-list">
+                    @for (student of riskStudents; track $index) {
+                    <div class="risk-item" [class]="getRiskColor(student.risk_score)">
+                        <div class="risk-badge">{{ student.risk_score }}</div>
+                        <div class="risk-info">
+                            <div class="risk-name">{{ student.full_name }}</div>
+                            <div class="risk-class">{{ student.class_name }}</div>
+                        </div>
+                        <div class="risk-factors">
+                            <span class="factor">
+                                <i-tabler name="calendar-x"></i-tabler>
+                                {{ student.absence_rate }}%
+                            </span>
+                            <span class="factor">
+                                <i-tabler name="report"></i-tabler>
+                                {{ student.grade_average }}
+                            </span>
+                            <span class="factor">
+                                <i-tabler name="alert-triangle"></i-tabler>
+                                {{ student.disciplinary_issues }}
+                            </span>
+                        </div>
+                    </div>
+                    }
+                </div>
+            </div>
+        </div>
+        }
+
+        <!-- CLASSES VIEW -->
+        @if (selectedView === 'classes') {
+        <div class="classes-view">
+            <div class="section-card">
+                <div class="section-header">
+                    <h3>
+                        <i-tabler name="school"></i-tabler>
+                        Statistiky tříd
+                    </h3>
+                    <div class="sort-options">
+                        <button class="btn-sort" (click)="sortClassesByGrade()">
+                            <i-tabler name="sort-ascending"></i-tabler>
+                            Seřadit dle prospěchu
+                        </button>
+                        <button class="btn-sort" (click)="sortClassesByAbsence()">
+                            <i-tabler name="sort-descending"></i-tabler>
+                            Seřadit dle absence
+                        </button>
+                    </div>
+                </div>
+                <div class="classes-grid">
+                    @for (classItem of classStats; track $index) {
+                    <div class="class-card">
+                        <div class="class-header">
+                            <h4>{{ classItem.class_name }}</h4>
+                            <i-tabler [name]="getTrendIcon(classItem.trend)"
+                                [class]="'trend-' + classItem.trend"></i-tabler>
+                        </div>
+                        <div class="class-stats">
+                            <div class="class-stat">
+                                <i-tabler name="users"></i-tabler>
+                                <span>{{ classItem.student_count }} studentů</span>
+                            </div>
+                            <div class="class-stat highlight">
+                                <i-tabler name="trophy"></i-tabler>
+                                <span>Ø {{ classItem.average_grade }}</span>
+                            </div>
+                            <div class="class-stat" [class.warning]="classItem.absence_rate > 10">
+                                <i-tabler name="calendar-x"></i-tabler>
+                                <span>{{ classItem.absence_rate }}% absence</span>
+                            </div>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" [style.width.%]="(5 - classItem.average_grade) * 25"
+                                [class.good]="classItem.average_grade < 2.5"
+                                [class.warning]="classItem.average_grade >= 2.5 && classItem.average_grade < 3.5"
+                                [class.danger]="classItem.average_grade >= 3.5"></div>
+                        </div>
+                    </div>
+                    }
+                </div>
+            </div>
+        </div>
+        }
+
+        <!-- SUBJECTS VIEW -->
+        @if (selectedView === 'subjects') {
+        <div class="subjects-view">
+            <div class="section-card">
+                <div class="section-header">
+                    <h3>
+                        <i-tabler name="book"></i-tabler>
+                        Statistiky předmětů
+                    </h3>
+                    <button class="btn-sort" (click)="sortSubjectsByDifficulty()">
+                        <i-tabler name="sort-descending"></i-tabler>
+                        Seřadit dle obtížnosti
+                    </button>
+                </div>
+                <div class="subjects-table">
+                    <div class="table-header">
+                        <div class="col-name">Předmět</div>
+                        <div class="col-avg">Ø Známka</div>
+                        <div class="col-teachers">Učitelé</div>
+                        <div class="col-students">Studenti</div>
+                        <div class="col-difficulty">Obtížnost</div>
+                    </div>
+                    @for (subject of subjectStats; track $index) {
+                    <div class="table-row">
+                        <div class="col-name">
+                            <i-tabler name="book-2"></i-tabler>
+                            {{ subject.subject_name }}
+                        </div>
+                        <div class="col-avg">
+                            <span class="grade-badge" [class.good]="subject.average_grade < 2.5"
+                                [class.warning]="subject.average_grade >= 2.5 && subject.average_grade < 3.5"
+                                [class.danger]="subject.average_grade >= 3.5">
+                                {{ subject.average_grade }}
+                            </span>
+                        </div>
+                        <div class="col-teachers">{{ subject.teacher_count }}</div>
+                        <div class="col-students">{{ subject.student_count }}</div>
+                        <div class="col-difficulty">
+                            <div class="difficulty-bar">
+                                <div class="difficulty-fill" [style.width.%]="subject.difficulty_rating * 10"></div>
+                            </div>
+                            <span>{{ subject.difficulty_rating }}/10</span>
+                        </div>
+                    </div>
+                    }
+                </div>
+            </div>
+        </div>
+        }
+
+        <!-- TEACHERS VIEW -->
+        @if (selectedView === 'teachers') {
+        <div class="teachers-view">
+            <div class="section-card">
+                <div class="section-header">
+                    <h3>
+                        <i-tabler name="users"></i-tabler>
+                        Statistiky učitelů
+                    </h3>
+                    <p>Srovnání výkonu učitelů</p>
+                </div>
+                <div class="teachers-grid">
+                    @for (teacher of teacherStats; track $index) {
+                    <div class="teacher-card">
+                        <div class="teacher-header">
+                            <div class="teacher-avatar">
+                                <i-tabler name="user"></i-tabler>
+                            </div>
+                            <div class="teacher-info">
+                                <h4>{{ teacher.full_name }}</h4>
+                                <p>{{ teacher.subject }}</p>
+                            </div>
+                        </div>
+                        <div class="teacher-stats">
+                            <div class="teacher-stat">
+                                <div class="stat-label">Ø známka tříd</div>
+                                <div class="stat-value" [class.good]="teacher.class_average < 2.5"
+                                    [class.warning]="teacher.class_average >= 2.5 && teacher.class_average < 3.5"
+                                    [class.danger]="teacher.class_average >= 3.5">
+                                    {{ teacher.class_average }}
+                                </div>
+                            </div>
+                            <div class="teacher-stat">
+                                <div class="stat-label">Počet studentů</div>
+                                <div class="stat-value">{{ teacher.student_count }}</div>
+                            </div>
+                            <div class="teacher-stat">
+                                <div class="stat-label">Absence v hodinách</div>
+                                <div class="stat-value" [class.warning]="teacher.absence_in_classes > 8">
+                                    {{ teacher.absence_in_classes }}%
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    }
+                </div>
+            </div>
+        </div>
+        }
+
+        <!-- RISKS VIEW -->
+        @if (selectedView === 'risks') {
+        <div class="risks-view">
+            <div class="section-card">
+                <div class="section-header">
+                    <h3>
+                        <i-tabler name="alert-triangle"></i-tabler>
+                        Predikce rizikových studentů
+                    </h3>
+                    <p>AI analýza identifikuje studenty, kteří mohou potřebovat podporu</p>
+                </div>
+                <div class="risks-table">
+                    <div class="table-header">
+                        <div class="col-rank">Riziko</div>
+                        <div class="col-student">Student</div>
+                        <div class="col-class">Třída</div>
+                        <div class="col-absence">Absence</div>
+                        <div class="col-grades">Známky</div>
+                        <div class="col-discipline">Kázeň</div>
+                        <div class="col-factor">Hlavní faktor</div>
+                    </div>
+                    @for (student of riskStudents; track $index) {
+                    <div class="table-row" [class]="getRiskColor(student.risk_score)">
+                        <div class="col-rank">
+                            <div class="rank-badge">{{ student.risk_score }}</div>
+                        </div>
+                        <div class="col-student">{{ student.full_name }}</div>
+                        <div class="col-class">{{ student.class_name }}</div>
+                        <div class="col-absence">{{ student.absence_rate }}%</div>
+                        <div class="col-grades">{{ student.grade_average }}</div>
+                        <div class="col-discipline">{{ student.disciplinary_issues }}</div>
+                        <div class="col-factor">
+                            <span class="factor-badge" [class]="student.risk_factor">
+                                @if (student.risk_factor === 'absence') { Absence }
+                                @if (student.risk_factor === 'grades') { Prospěch }
+                                @if (student.risk_factor === 'discipline') { Kázeň }
+                                @if (student.risk_factor === 'combined') { Kombinované }
+                            </span>
+                        </div>
+                    </div>
+                    }
+                </div>
+            </div>
+        </div>
+        }
+    </div>
+</div>

@@ -2,7 +2,7 @@ import { NgModule } from '@angular/core';
 
 import { TablerIconsModule } from 'angular-tabler-icons';
 // import { IconMenu2, IconBrandDiscord, IconSettings, IconUsers } from 'angular-tabler-icons/icons';
-import { IconAlertCircle, IconAlertTriangle, IconAlertTriangleFilled, IconAmbulance, IconArrowBackUpDouble, IconArrowBigRight, IconArrowLeft, IconAuth2fa, IconBaselineDensityMedium, IconBell, IconBellFilled, IconBellOff, IconBellPlus, IconBellRinging, IconBook2, IconBox, IconBrandAndroid, IconBrandApple, IconBrandDiscord, IconBrandUbuntu, IconBrandWindows, IconBriefcase2, IconBuilding, IconBuildingPlus, IconCalendar, IconCalendarMonth, IconCalendarPlus, IconCalendarSearch, IconCalendarWeek, IconCalendarX, IconCaretLeftFilled, IconCategoryPlus, IconChalkboard, IconCheck, IconChevronDown, IconChevronLeft, IconChevronRight, IconChevronsLeft, IconChevronsRight, IconChevronUp, IconCircle, IconCircleCheck, IconClick, IconClipboardPlus, IconClock, IconClockExclamation, IconClockHour4, IconCloudUpload, IconColorPicker, IconCookie, IconCopy, IconCornerDownRight, IconCornerUpLeft, IconDeviceDesktop, IconDeviceFloppy, IconDeviceMobile, IconDeviceUnknown, IconDots, IconDotsVertical, IconDownload, IconEdit, IconExclamationMark, IconEye, IconEyeOff, IconFile, IconFileExport, IconFileImport, IconFilePencil, IconFilePlus, IconFileReport, IconFileText, IconFileTypePdf, IconFilter, IconFlag3Filled, IconFolder, IconFolderFilled, IconFolderOff, IconFolderOpen, IconFolderPlus, IconForms, IconGenderFemale, IconGenderMale, IconGift, IconGripVertical, IconHash, IconHeart, IconHistory, IconHomePlus, IconInbox, IconInfinity, IconInfoCircle, IconKey, IconKeyFilled, IconLayoutGrid, IconLayoutKanban, IconLayoutList, IconLetterD, IconLetterN, IconLetterO, IconLetterP, IconList, IconLock, IconLogout, IconMail, IconMailboxOff, IconMapPin, IconMeat, IconMenu2, IconMessage, IconMessageCircle, IconMessages, IconMinus, IconMoodSmile, IconMovie, IconNote, IconNotes, IconNumber1, IconOld, IconPaperclip, IconPasswordUser, IconPencil, IconPhone, IconPhoneOff, IconPhoto, IconPinned, IconPlayerPlay, IconPlus, IconPrinter, IconProgress, IconProgressAlert, IconQuestionMark, IconRefresh, IconRestore, IconRocket, IconSchool, IconSearch, IconSettings, IconSettings2, IconShare, IconShield, IconSlash, IconSparkles, IconSquareForbid, IconStar, IconStarFilled, IconStarHalfFilled, IconStars, IconSticker, IconTable, IconTags, IconTelescope, IconThumbUp, IconTimeDuration5, IconTrashX, IconTrashXFilled, IconTrendingDown, IconTrendingUp, IconTrophy, IconUpload, IconUser, IconUserOff, IconUsers, IconUserScreen, IconUserX, IconWindowMaximize, IconWindowMinimize, IconX } from 'angular-tabler-icons/icons';
+import { IconAlertCircle, IconAlertTriangle, IconAlertTriangleFilled, IconAmbulance, IconArrowBackUpDouble, IconArrowBigRight, IconArrowLeft, IconAuth2fa, IconBaselineDensityMedium, IconBell, IconBellFilled, IconBellOff, IconBellPlus, IconBellRinging, IconBook, IconBook2, IconBox, IconBrandAndroid, IconBrandApple, IconBrandDiscord, IconBrandUbuntu, IconBrandWindows, IconBriefcase, IconBriefcase2, IconBuilding, IconBuildingPlus, IconCalendar, IconCalendarEvent, IconCalendarMonth, IconCalendarPlus, IconCalendarSearch, IconCalendarStats, IconCalendarWeek, IconCalendarX, IconCaretLeftFilled, IconCategoryPlus, IconChalkboard, IconChartBar, IconChartPie, IconCheck, IconChevronDown, IconChevronLeft, IconChevronRight, IconChevronsLeft, IconChevronsRight, IconChevronUp, IconCircle, IconCircleCheck, IconClick, IconClipboardPlus, IconClock, IconClockExclamation, IconClockHour4, IconCloudUpload, IconCoffee, IconColorPicker, IconCookie, IconCopy, IconCornerDownRight, IconCornerUpLeft, IconDashboard, IconDeviceDesktop, IconDeviceFloppy, IconDeviceMobile, IconDeviceUnknown, IconDots, IconDotsVertical, IconDownload, IconEdit, IconExclamationMark, IconEye, IconEyeOff, IconFile, IconFileExport, IconFileImport, IconFilePencil, IconFilePlus, IconFileReport, IconFileSpreadsheet, IconFileText, IconFileTypePdf, IconFilter, IconFilterOff, IconFlag3Filled, IconFolder, IconFolderFilled, IconFolderOff, IconFolderOpen, IconFolderPlus, IconForms, IconGenderFemale, IconGenderMale, IconGift, IconGripVertical, IconHash, IconHeart, IconHistory, IconHomePlus, IconId, IconInbox, IconInfinity, IconInfoCircle, IconKey, IconKeyFilled, IconLayoutDashboard, IconLayoutGrid, IconLayoutKanban, IconLayoutList, IconLetterD, IconLetterN, IconLetterO, IconLetterP, IconList, IconLock, IconLogout, IconMail, IconMailboxOff, IconMapPin, IconMeat, IconMedicalCross, IconMenu2, IconMessage, IconMessageCircle, IconMessages, IconMinus, IconMoodSmile, IconMovie, IconNote, IconNotes, IconNumber1, IconOld, IconPaperclip, IconPasswordUser, IconPencil, IconPhone, IconPhoneOff, IconPhoto, IconPinned, IconPlayerPlay, IconPlus, IconPrinter, IconProgress, IconProgressAlert, IconQuestionMark, IconRefresh, IconReport, IconRestore, IconRocket, IconSchool, IconSearch, IconServer, IconSettings, IconSettings2, IconShare, IconShield, IconSlash, IconSortAscending, IconSortDescending, IconSparkles, IconSquareForbid, IconStar, IconStarFilled, IconStarHalfFilled, IconStars, IconSticker, IconTable, IconTags, IconTelescope, IconThumbUp, IconTimeDuration5, IconTrashX, IconTrashXFilled, IconTrendingDown, IconTrendingUp, IconTrophy, IconUpload, IconUser, IconUserOff, IconUserPlus, IconUsers, IconUserScreen, IconUserSearch, IconUsersGroup, IconUserX, IconWindowMaximize, IconWindowMinimize, IconX } from 'angular-tabler-icons/icons';
 
 // Select some icons (use an object, not an array)
 const icons = {
@@ -172,7 +172,27 @@ const icons = {
   IconProgress,
   IconArrowLeft,
   IconList,
-  IconLayoutKanban
+  IconLayoutKanban,
+  IconCoffee,
+  IconDashboard,
+  IconBook,
+  IconReport,
+  IconChartBar,
+  IconCalendarStats,
+  IconSortAscending,
+  IconSortDescending,
+  IconFilterOff,
+  IconChartPie,
+  IconCalendarEvent,
+  IconUsersGroup,
+  IconId,
+  IconUserPlus,
+  IconBriefcase,
+  IconLayoutDashboard,
+  IconMedicalCross,
+  IconServer,
+  IconUserSearch,
+  IconFileSpreadsheet
 };
 
 @NgModule({
