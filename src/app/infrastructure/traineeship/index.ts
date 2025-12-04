@@ -1,12 +1,16 @@
-import { Data } from "@Components/datalist";
-import { DiaryWeek, DiaryDay, TraineeshipData } from "./index.d";
-import moment from "moment";
-import { BehaviorSubject } from "rxjs";
-export type { DiaryWeek, DiaryDay, TraineeshipData };
+import { Injectable } from '@angular/core';
+import { DiaryDay, DiaryWeek, StudentTraineeshipStatus, TraineeshipData } from './index.d';
+export type { DiaryWeek, DiaryDay, StudentTraineeshipStatus, TraineeshipData };
+import { BehaviorSubject } from 'rxjs';
+import moment from 'moment';
 
+type Data = { value: string, localePrefix?: string, isLocale: boolean };
+
+@Injectable({
+    providedIn: 'root'
+})
 export class Traineeship {
-    public selectedCompany: any;
-    public instructors: number[] = [];
+    public selectedCompany: any = null;
     public selectedInstructor: number | null = null;
 
     public scopes: any[] = [];
@@ -123,7 +127,17 @@ export class Traineeship {
 
     public getRating(company: any): string {
         return company.rating != null ? Number(company.rating).toFixed(1) : 'traineeship.no_rating';
-    } 
+    }
 
-
+    public getStudentsForTraineeship(traineeshipId: number): StudentTraineeshipStatus[] {
+        // Mock data
+        const students: StudentTraineeshipStatus[] = [
+            { studentId: 1, name: 'Jan Novák', class: '4.A', company: 'Tech Corp', instructor: 'Petr Svoboda', hasContract: true, isProcessed: true },
+            { studentId: 2, name: 'Petr Pavel', class: '4.A', company: null, instructor: null, hasContract: false, isProcessed: false },
+            { studentId: 3, name: 'Eva Dvořáková', class: '4.B', company: 'Soft s.r.o.', instructor: 'Jana Malá', hasContract: true, isProcessed: false },
+            { studentId: 4, name: 'Adam Černý', class: '4.B', company: 'WebDesign', instructor: null, hasContract: false, isProcessed: false },
+            { studentId: 5, name: 'Lucie Bílá', class: '4.A', company: 'Tech Corp', instructor: 'Petr Svoboda', hasContract: true, isProcessed: true },
+        ];
+        return students;
+    }
 }

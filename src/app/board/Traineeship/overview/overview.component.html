@@ -1,153 +1,313 @@
 @if(!traineeship.selectedDay && perms.checkPermission(['student'])) {
-    <div class="row" style="align-items: normal">
-        <div class="card card-days">
-            <div class="card-top">
-            </div>
-            <div class="card-header mb">
-                <div class="left">
-                    <h2>{{ l.s('traineeship.overview.nearest_diary') }}</h2>
-                    @if (getNearestDiary()) {
-                        <p class="description">{{
-                            l.s('traineeship.overview.diary_week')
-                            .replaceAll('%start%', Utils.formatDateShort(getNearestDiary().start))
-                            .replaceAll('%end%', Utils.formatDateShort(getNearestDiary().end))
-                        }}</p>
-                    }
-                </div>
-                <div class="flex-items">
-                    @if (getNearestDiary()) {
-                        <div class="btn small blue-info" role="button">
-                            {{ l.s('traineeship.buttons.print_contract') }}
-                        </div>
-                        <div class="btn small blue-info" role="button">
-                            {{ l.s('traineeship.buttons.print_guide') }}
-                        </div>
-                    }
-                </div>
-            </div>
-            <div class="card-body">
-                @if (!getNearestDiary()) {
-                    <div class="alerts mb">
-                        <div class="alert error">
-                            {{ l.s('traineeship.overview.no_next_dairy') }}
-                        </div>
-                    </div>
-                } @else {
-    
-                    @if (!getNearestDiary().companyId) {
-                        <div class="alerts mb">
-                            <div class="alert error">
-                                {{ l.s('traineeship.alerts.no_company') }}
-                            </div>
-                        </div>
-                    } @else {
-                        <div class="alerts mb">
-                            <div class="alert blue-info">
-                                {{
-                                    l.s('traineeship.alerts.selected_company')
-                                    .replaceAll('%companyName%', getNearestDiary().companyName)
-                                    .replaceAll('%instructor%', l.s('traineeship.alerts.' +
-                                                    (getNearestDiary().instructor ? 'success_selected_company_with_instructor' : 'success_selected_company_no_instructor')
-                                                )
-                                                .replaceAll('%instructorName%', getNearestDiary().instructor?.toString()!))
-                                }}
-                                @if (!getNearestDiary().instructor) {
-                                    <div class="actions">
-                                        <div class="btn gray" role="button">{{ l.s('traineeship.buttons.select_instructor') }}</div>
-                                    </div>
-                                }
-                            </div>
-                        </div>
-                    }
-    
-                    @for (day of getDaysOfDairy(getNearestDiary()); track $index) {
-                        <div class="dairy-day" (click)="traineeship.selectDay(day)">
-                        {{ `${($index + 1)}. ${l.s('traineeship.day')} - ${Utils.formatDateShort(day)} - ${l.s('days.' + day.day())}` }}
-                        </div>
-                    }
-    
+<div class="row" style="align-items: normal">
+    <div class="card card-days">
+        <div class="card-top">
+        </div>
+        <div class="card-header mb">
+            <div class="left">
+                <h2>{{ l.s('traineeship.overview.nearest_diary') }}</h2>
+                @if (getNearestDiary()) {
+                <p class="description">{{
+                    l.s('traineeship.overview.diary_week')
+                    .replaceAll('%start%', Utils.formatDateShort(getNearestDiary().start))
+                    .replaceAll('%end%', Utils.formatDateShort(getNearestDiary().end))
+                    }}</p>
                 }
-    
-    
-    
+            </div>
+            <div class="flex-items">
+                @if (getNearestDiary()) {
+                <div class="btn small blue-info" role="button">
+                    {{ l.s('traineeship.buttons.print_contract') }}
+                </div>
+                <div class="btn small blue-info" role="button">
+                    {{ l.s('traineeship.buttons.print_guide') }}
+                </div>
+                }
             </div>
         </div>
-        <div class="card">
-            <div class="card-top"></div>
-            <div class="card-header mb">
-                <h2>{{ l.s('traineeship.overview.diary_help') }}</h2>
+        <div class="card-body">
+            @if (!getNearestDiary()) {
+            <div class="alerts mb">
+                <div class="alert error">
+                    {{ l.s('traineeship.overview.no_next_dairy') }}
+                </div>
             </div>
-            <div class="card-body" style="padding-right: 1rem; height: auto;overflow-y: auto;max-height: 600px;">
-    
-    <h3>Konzultace a plánování praxe</h3>
-    <ul>
-        <li>
-            Konzultuj plán své odborné praxe s vyučujícími předmětu Praktická cvičení. Dbejte na požadavky školy, například zaměření na podnikání, druh činnosti, dlouhodobou spolupráci firmy se školou, možnosti uplatnění studentů nebo pravidlo, že praxi nelze absolvovat 2× ve stejné firmě.
-        </li>
-    </ul>
-    
-    <h3>Výběr organizace a příprava smlouvy</h3>
-    <ul>
-        <li class="clickable" [routerLink]="['', 'traineeship', 'companies']">Vyber si firmu ze seznamu firem a vyber si instruktora.</li>
-        <li>Stáhni si smlouvu a vytiskni ve dvou kopiích.</li>
-    </ul>
-    
-    <h3>Potvrzení smlouvy</h3>
-    <ul>
-        <li>Nech si smlouvu potvrdit ve firmě.</li>
-        <li>Jedna kopie je pro firmu, druhou kopii odevzdej ve škole.</li>
-    </ul>
-    
-    <h3>Průběh praxe</h3>
-    <ul>
-        <li>Absolvuj praxi ve sjednaném termínu, odpracuj {{ getDaysOfDairy(getNearestDiary()).length }} dní v kuse.</li>
-        <li>Případné absence 1–2 dny omluv ve firmě i škole a nahraď je ihned po termínu.</li>
-        @if (getDaysOfDairy(getNearestDiary()).length > 5) {
-            <li>Při absenci nad 5 dní vykonej náhradní praxi o prázdninách.</li>
-        }
-    </ul>
-    
-    <h3>Vedení dokumentace</h3>
-    <ul>
-        <li>Během praxe elektronicky zpracovávej deník a pracovní listy.</li>
-    </ul>
-    
-    <h3>Ukončení praxe</h3>
-    <ul>
-        <li>Nech si zaměstnavatelem vyplnit průvodku odborné praxe.</li>
-        <li>Odevzdej ji ve škole spolu s deníkem praxe.</li>
-    </ul>
-    
-    <div class="alerts">
-        <div class="alert blue-info">
-            Využij tuto příležitost a získej cenné zkušenosti do praxe!
+            } @else {
+
+            @if (!getNearestDiary().companyId) {
+            <div class="alerts mb">
+                <div class="alert error">
+                    {{ l.s('traineeship.alerts.no_company') }}
+                </div>
+            </div>
+            } @else {
+            <div class="alerts mb">
+                <div class="alert blue-info">
+                    {{
+                    l.s('traineeship.alerts.selected_company')
+                    .replaceAll('%companyName%', getNearestDiary().companyName)
+                    .replaceAll('%instructor%', l.s('traineeship.alerts.' +
+                    (getNearestDiary().instructor ? 'success_selected_company_with_instructor' :
+                    'success_selected_company_no_instructor')
+                    )
+                    .replaceAll('%instructorName%', getNearestDiary().instructor?.toString()!))
+                    }}
+                    @if (!getNearestDiary().instructor) {
+                    <div class="actions">
+                        <div class="btn gray" role="button">{{ l.s('traineeship.buttons.select_instructor') }}</div>
+                    </div>
+                    }
+                </div>
+            </div>
+            }
+
+            @for (day of getDaysOfDairy(getNearestDiary()); track $index) {
+            <div class="dairy-day" (click)="traineeship.selectDay(day)">
+                {{ `${($index + 1)}. ${l.s('traineeship.day')} - ${Utils.formatDateShort(day)} - ${l.s('days.' +
+                day.day())}` }}
+            </div>
+            }
+
+            }
+
+
+
         </div>
     </div>
-    
+    <div class="card">
+        <div class="card-top"></div>
+        <div class="card-header mb">
+            <h2>{{ l.s('traineeship.overview.diary_help') }}</h2>
+        </div>
+        <div class="card-body" style="padding-right: 1rem; height: auto;overflow-y: auto;max-height: 600px;">
+
+            <h3>Konzultace a plánování praxe</h3>
+            <ul>
+                <li>
+                    Konzultuj plán své odborné praxe s vyučujícími předmětu Praktická cvičení. Dbejte na požadavky
+                    školy, například zaměření na podnikání, druh činnosti, dlouhodobou spolupráci firmy se školou,
+                    možnosti uplatnění studentů nebo pravidlo, že praxi nelze absolvovat 2× ve stejné firmě.
+                </li>
+            </ul>
+
+            <h3>Výběr organizace a příprava smlouvy</h3>
+            <ul>
+                <li class="clickable" [routerLink]="['', 'traineeship', 'companies']">Vyber si firmu ze seznamu firem a
+                    vyber si instruktora.</li>
+                <li>Stáhni si smlouvu a vytiskni ve dvou kopiích.</li>
+            </ul>
+
+            <h3>Potvrzení smlouvy</h3>
+            <ul>
+                <li>Nech si smlouvu potvrdit ve firmě.</li>
+                <li>Jedna kopie je pro firmu, druhou kopii odevzdej ve škole.</li>
+            </ul>
+
+            <h3>Průběh praxe</h3>
+            <ul>
+                <li>Absolvuj praxi ve sjednaném termínu, odpracuj {{ getDaysOfDairy(getNearestDiary()).length }} dní v
+                    kuse.</li>
+                <li>Případné absence 1–2 dny omluv ve firmě i škole a nahraď je ihned po termínu.</li>
+                @if (getDaysOfDairy(getNearestDiary()).length > 5) {
+                <li>Při absenci nad 5 dní vykonej náhradní praxi o prázdninách.</li>
+                }
+            </ul>
+
+            <h3>Vedení dokumentace</h3>
+            <ul>
+                <li>Během praxe elektronicky zpracovávej deník a pracovní listy.</li>
+            </ul>
+
+            <h3>Ukončení praxe</h3>
+            <ul>
+                <li>Nech si zaměstnavatelem vyplnit průvodku odborné praxe.</li>
+                <li>Odevzdej ji ve škole spolu s deníkem praxe.</li>
+            </ul>
+
+            <div class="alerts">
+                <div class="alert blue-info">
+                    Využij tuto příležitost a získej cenné zkušenosti do praxe!
+                </div>
             </div>
+
         </div>
     </div>
+</div>
 } @else if (perms.checkPermission(["manager:traineeship:manage"])) {
-    <div class="boxes mb">
-        @for (data of this.traineeship.boxData; track $index) {
-            <div class="box">
-                <div class="left">
-                    <i-tabler [name]="boxes[data.data].icon"></i-tabler>
-                </div>
-                <div class="right">
-                    <div class="box-name">{{ l.s('traineeship.overview.boxes.' + data.data) }}</div>
-                    <div class="box-value">{{ data.count }}</div>
-                </div>
-            </div>
-        }
+<!-- Admin Dashboard -->
+<div class="admin-dashboard">
+    <div class="dashboard-header">
+        <h1>Přehled praxí</h1>
+        <p class="subtitle">Dashboard pro správu odborných praxí</p>
     </div>
 
-    <div class="card">
-        <div class="card-header">
-            <h2>{{ l.s('sidebar.traineeship.overview') }}</h2>
+    <!-- Stats Cards -->
+    <div class="stats-row">
+        <div class="stat-card primary">
+            <div class="stat-icon">
+                <i-tabler name="calendar-event"></i-tabler>
+            </div>
+            <div class="stat-content">
+                <div class="stat-value">{{ adminStats.totalTraineeships }}</div>
+                <div class="stat-label">Celkem praxí</div>
+            </div>
         </div>
-        <div class="card-body"></div>
+        <div class="stat-card success">
+            <div class="stat-icon">
+                <i-tabler name="player-play"></i-tabler>
+            </div>
+            <div class="stat-content">
+                <div class="stat-value">{{ adminStats.activeTraineeships }}</div>
+                <div class="stat-label">Probíhající</div>
+            </div>
+        </div>
+        <div class="stat-card warning">
+            <div class="stat-icon">
+                <i-tabler name="file-check"></i-tabler>
+            </div>
+            <div class="stat-content">
+                <div class="stat-value">{{ adminStats.studentsWithContract }}</div>
+                <div class="stat-label">Se smlouvou</div>
+            </div>
+        </div>
+        <div class="stat-card error">
+            <div class="stat-icon">
+                <i-tabler name="file-x"></i-tabler>
+            </div>
+            <div class="stat-content">
+                <div class="stat-value">{{ adminStats.studentsWithoutContract }}</div>
+                <div class="stat-label">Bez smlouvy</div>
+            </div>
+        </div>
     </div>
+
+    <!-- Quick Actions -->
+    <div class="quick-actions">
+        <h2>Rychlé akce</h2>
+        <div class="actions-grid">
+            <a [routerLink]="['', 'traineeship', 'manage']" class="action-card">
+                <i-tabler name="plus"></i-tabler>
+                <span>Nová praxe</span>
+            </a>
+            <a [routerLink]="['', 'traineeship', 'companies']" class="action-card">
+                <i-tabler name="building"></i-tabler>
+                <span>Firmy</span>
+            </a>
+            <a [routerLink]="['', 'traineeship', 'settings']" class="action-card">
+                <i-tabler name="settings"></i-tabler>
+                <span>Nastavení</span>
+            </a>
+        </div>
+    </div>
+
+    <!-- Two Column Layout -->
+    <div class="dashboard-grid">
+        <!-- Active Traineeships -->
+        <div class="dashboard-card">
+            <div class="card-header">
+                <h3>Probíhající praxe</h3>
+                <a [routerLink]="['', 'traineeship', 'manage']" class="view-all">Zobrazit vše →</a>
+            </div>
+            <div class="card-body">
+                @if (getActiveTraineeships().length === 0) {
+                <div class="empty-state">
+                    <i-tabler name="calendar-off"></i-tabler>
+                    <p>Žádné probíhající praxe</p>
+                </div>
+                } @else {
+                @for (week of getActiveTraineeships(); track week.traineeship) {
+                <div class="traineeship-item">
+                    <div class="item-info">
+                        <span class="item-name">{{ week.name }}</span>
+                        <span class="item-date">{{ week.start.format('DD.MM.') }} - {{ week.end.format('DD.MM.YYYY')
+                            }}</span>
+                    </div>
+                    <div class="item-stats">
+                        <span class="badge success">{{ week.zapsaniStudenti }}/{{ week.celkemStudentu }}</span>
+                    </div>
+                </div>
+                }
+                }
+            </div>
+        </div>
+
+        <!-- Upcoming Traineeships -->
+        <div class="dashboard-card">
+            <div class="card-header">
+                <h3>Nadcházející praxe</h3>
+            </div>
+            <div class="card-body">
+                @if (getUpcomingTraineeships().length === 0) {
+                <div class="empty-state">
+                    <i-tabler name="calendar-plus"></i-tabler>
+                    <p>Žádné naplánované praxe</p>
+                </div>
+                } @else {
+                @for (week of getUpcomingTraineeships(); track week.traineeship) {
+                <div class="traineeship-item">
+                    <div class="item-info">
+                        <span class="item-name">{{ week.name }}</span>
+                        <span class="item-date">{{ week.start.format('DD.MM.') }} - {{ week.end.format('DD.MM.YYYY')
+                            }}</span>
+                    </div>
+                    <span class="badge planned">Plánováno</span>
+                </div>
+                }
+                }
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent Students -->
+    <div class="dashboard-card full-width">
+        <div class="card-header">
+            <h3>Studenti</h3>
+        </div>
+        <div class="card-body">
+            <div class="table-container">
+                <table class="admin-table">
+                    <thead>
+                        <tr>
+                            <th>Jméno</th>
+                            <th>Třída</th>
+                            <th>Firma</th>
+                            <th>Instruktor</th>
+                            <th>Smlouva</th>
+                            <th>Stav</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @for (student of recentStudents; track student.studentId) {
+                        <tr>
+                            <td><strong>{{ student.name }}</strong></td>
+                            <td>{{ student.class }}</td>
+                            <td>{{ student.company || '—' }}</td>
+                            <td>{{ student.instructor || '—' }}</td>
+                            <td>
+                                <span
+                                    [ngClass]="{'status-badge': true, 'success': student.hasContract, 'error': !student.hasContract}">
+                                    {{ student.hasContract ? 'Ano' : 'Ne' }}
+                                </span>
+                            </td>
+                            <td>
+                                <span
+                                    [ngClass]="{'status-badge': true, 'success': student.isProcessed, 'warning': !student.isProcessed}">
+                                    {{ student.isProcessed ? 'Dokončeno' : 'Probíhá' }}
+                                </span>
+                            </td>
+                        </tr>
+                        }
+                        @if (recentStudents.length === 0) {
+                        <tr>
+                            <td colspan="6" class="empty-cell">Žádní studenti</td>
+                        </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
 }
 
 <schoolingo-traineeship-writeDairy></schoolingo-traineeship-writeDairy>

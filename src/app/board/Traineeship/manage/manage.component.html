@@ -1,73 +1,188 @@
-<div class="card">
-    <div class="card-top">
-    </div>
-    <div class="card-header mb">
+<div class="traineeship-container card">
+    <!-- Header with Create Button -->
+    <div class="page-header card-header">
         <h2>{{ l.s('sidebar.traineeship.manage') }}</h2>
-        <div class="flex-items">
-            <div class="btn small primary" role="button">
-                {{ l.s('traineeship.manage.new_traineeship') }}
+        <button class="btn-primary" (click)="openCreateModal()">
+            + {{ l.s('traineeship.manage.new_traineeship') }}
+        </button>
+    </div>
+
+    <!-- List View -->
+    @if (!selectedWeek) {
+    <div class="deniky-container">
+        @for (week of traineeship.diaryWeeks | async; track week.traineeship) {
+        <div class="denik-card" (click)="selectWeek(week)">
+            <div class="denik-header">
+                <div class="denik-info">
+                    <span class="denik-date">
+                        {{ week.start.format('DD. MM. YYYY') }} – {{ week.end.format('DD. MM. YYYY') }}
+                    </span>
+                    <span class="denik-firma">{{ week.name }}</span>
+                </div>
+                <div [ngClass]="{
+                    'status-badge': true,
+                    'planned': traineeship.getStateOfTraineeship(week) == 'planned',
+                    'ongoing': traineeship.getStateOfTraineeship(week) == 'ongoing',
+                    'finished': traineeship.getStateOfTraineeship(week) == 'finished',
+                    'canceled': traineeship.getStateOfTraineeship(week) == 'canceled'
+                }">
+                    {{ l.s('traineeship.diary.status.' + traineeship.getStateOfTraineeship(week)) }}
+                </div>
+            </div>
+            <div class="denik-extra">
+                <span>
+                    <b>👨‍🎓 {{ l.s('traineeship.manage.enrolled_students') }}:</b>
+                    {{ week.zapsaniStudenti }}
+                </span>
+                <span>
+                    <b>👨‍🎓 {{ l.s('traineeship.manage.total_students') }}:</b>
+                    {{ week.celkemStudentu }}
+                </span>
+                <span>
+                    <b>⏳ {{ l.s('traineeship.number_of_days') }}:</b>
+                    {{ traineeship.getDays(week) }}
+                </span>
             </div>
         </div>
+        }
     </div>
-    <div class="card-body">
-        <h2>
-            {{
-            l.s('traineeship.manage.title')
-            .replaceAll('%year%',
-                Utils.makeMoment(school.config.getValue()?.year?.start?.toString()!).year()
-                + "/" +
-                Utils.makeMoment(school.config.getValue()?.year?.end?.toString()!).year().toString().slice(2)
-            )
-            }}
-        </h2>
-        <div class="card-body deniky-container">
-            @for (week of traineeship.diaryWeeks.getValue(); track $index) {
-                <div class="denik-card" (click)="selectWeek(week)">
-                    <div class="denik-header">
-                        <div class="denik-info">
-                            <span class="denik-date">
-                                {{ week.start.format('DD. MM. YYYY') }} – {{ week.end.format('DD. MM. YYYY') }}
-                            </span>
-                            <span class="denik-firma">{{ week.name }}</span>
-                        </div>
-                        <div class="badges">
-                            @if (week.ignoredDays == ['6', '7']) {
-                                <div class="badge">
-                                    {{ l.s('traineeship.only_working_days') }}
-                                </div>
-                            }
+    }
 
-                            <div [ngClass]="{
-                                badge: true,
-                                primary: traineeship.getStateOfTraineeship(week) == 'ongoing',
-                                success: traineeship.getStateOfTraineeship(week) == 'finished',
-                                error: traineeship.getStateOfTraineeship(week) == 'canceled',
-                                }">
-                                {{ l.s('traineeship.diary.status.' + traineeship.getStateOfTraineeship(week)) }}
-                            </div>
-                        </div>
-                    </div>
+    <!-- Detail View -->
+    @if (selectedWeek) {
+    <div class="detail-view">
+        <button class="btn-back" (click)="backToList()">
+            ← {{ l.s('back') }}
+        </button>
 
-                    <div class="denik-extra">
-                        <span>
-                            <b>👨‍🎓 {{ l.s('traineeship.manage.enrolled_students') }}:</b>
-                            {{ week.zapsaniStudenti }}
-                        </span>
-                        <span>
-                            <b>👨‍🎓 {{ l.s('traineeship.manage.done_students') }}:</b>
-                            {{ week.celkemStudentu }}
-                        </span>
-                        <span>
-                            <b>👨‍🎓 {{ l.s('traineeship.manage.total_students') }}:</b>
-                            {{ week.celkemStudentu }}
-                        </span>
-                        <span>
-                            <b>⏳ {{ l.s('traineeship.number_of_days') }}:</b>
-                            {{ l.s('traineeship.number_of_days_value').replace('%days%', traineeship.getDays(week).toString()) }}
-                        </span>
-                    </div>
+        <div class="detail-header-info">
+            <h3>{{ selectedWeek.name }}</h3>
+            <div class="detail-meta">
+                <span class="date-range">
+                    {{ selectedWeek.start.format('DD. MM. YYYY') }} – {{ selectedWeek.end.format('DD. MM. YYYY') }}
+                </span>
+                <span [ngClass]="{
+                    'status-badge': true,
+                    'planned': traineeship.getStateOfTraineeship(selectedWeek) == 'planned',
+                    'ongoing': traineeship.getStateOfTraineeship(selectedWeek) == 'ongoing',
+                    'finished': traineeship.getStateOfTraineeship(selectedWeek) == 'finished',
+                    'canceled': traineeship.getStateOfTraineeship(selectedWeek) == 'canceled'
+                }">
+                    {{ l.s('traineeship.diary.status.' + traineeship.getStateOfTraineeship(selectedWeek)) }}
+                </span>
+            </div>
+        </div>
+
+        <div class="stats-grid mb-large">
+            <div class="stat-card">
+                <div class="stat-value">{{ selectedWeek.zapsaniStudenti }}</div>
+                <div class="stat-label">{{ l.s('traineeship.manage.enrolled_students') }}</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value">{{ selectedWeek.celkemStudentu }}</div>
+                <div class="stat-label">{{ l.s('traineeship.manage.total_students') }}</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value">{{ traineeship.getDays(selectedWeek) }}</div>
+                <div class="stat-label">{{ l.s('traineeship.number_of_days') }}</div>
+            </div>
+        </div>
+
+        <h4>{{ l.s('traineeship.student_list') }}</h4>
+        <div class="table-container">
+            <table class="student-table">
+                <thead>
+                    <tr>
+                        <th>{{ l.s('name') }}</th>
+                        <th>{{ l.s('class') }}</th>
+                        <th>{{ l.s('traineeship.company') }}</th>
+                        <th>{{ l.s('traineeship.instructor') }}</th>
+                        <th>{{ l.s('traineeship.contract') }}</th>
+                        <th>{{ l.s('traineeship.processed') }}</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @for (student of students; track student.studentId) {
+                    <tr>
+                        <td>{{ student.name }}</td>
+                        <td>{{ student.class }}</td>
+                        <td>{{ student.company || '—' }}</td>
+                        <td>{{ student.instructor || '—' }}</td>
+                        <td>
+                            <span
+                                [ngClass]="{'status-dot': true, 'success': student.hasContract, 'error': !student.hasContract}"></span>
+                            {{ student.hasContract ? l.s('yes') : l.s('no') }}
+                        </td>
+                        <td>
+                            <span
+                                [ngClass]="{'status-dot': true, 'success': student.isProcessed, 'error': !student.isProcessed}"></span>
+                            {{ student.isProcessed ? l.s('yes') : l.s('no') }}
+                        </td>
+                    </tr>
+                    }
+                    @if (students.length === 0) {
+                    <tr>
+                        <td colspan="6" class="no-data">{{ l.s('no_data') }}</td>
+                    </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+    }
+</div>
+
+<!-- Create Modal -->
+<div class="modal-overlay" *ngIf="isCreateModalOpen" (click)="closeCreateModal()">
+    <div class="modal-content" (click)="$event.stopPropagation()">
+        <div class="modal-header">
+            <h3>{{ l.s('traineeship.manage.new_traineeship') }}</h3>
+            <button class="close-btn" (click)="closeCreateModal()">×</button>
+        </div>
+        <div class="modal-body">
+            <div class="form-group">
+                <label>Název praxe</label>
+                <input type="text" [(ngModel)]="newTraineeship.name" placeholder="Zadejte název praxe">
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Od</label>
+                    <input type="date" [(ngModel)]="newTraineeship.start">
                 </div>
-            }
+                <div class="form-group">
+                    <label>Do</label>
+                    <input type="date" [(ngModel)]="newTraineeship.end">
+                </div>
+            </div>
+            <div class="form-group">
+                <label>Pro třídy</label>
+                <div class="selection-container">
+                    @for (group of availableGroups; track group) {
+                    <span (click)="toggleGroup(group)" [class.selected]="newTraineeship.groups.includes(group)"
+                        class="selection-badge">
+                        {{ group }}
+                    </span>
+                    }
+                </div>
+            </div>
+            <div class="form-group">
+                <label>Ignorované dny</label>
+                <div class="selection-container">
+                    @for (day of daysOfWeek; track day.id) {
+                    <span (click)="toggleDay(day.id)" [class.selected]="newTraineeship.ignoredDays.includes(day.id)"
+                        class="selection-badge">
+                        {{ day.label }}
+                    </span>
+                    }
+                </div>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn-secondary" (click)="closeCreateModal()">Zrušit</button>
+            <button class="btn-primary" (click)="createTraineeship()"
+                [disabled]="!newTraineeship.name || !newTraineeship.start || !newTraineeship.end">
+                Vytvořit
+            </button>
         </div>
     </div>
 </div>

@@ -1,4 +1,6 @@
 /** Traineeship */
+import moment from 'moment';
+
 export type DiaryWeek = {
     activity: string;
     traineeship: number;
@@ -36,4 +38,14 @@ export type DiaryDay = {
 export type TraineeshipData = {
     data: string;
     count: number;
+}
+
+export type StudentTraineeshipStatus = {
+    studentId: number;
+    name: string;
+    class: string;
+    company: string | null;
+    instructor: string | null;
+    hasContract: boolean;
+    isProcessed: boolean;
 }

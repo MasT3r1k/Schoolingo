@@ -6,8 +6,9 @@ import { Subscription } from 'rxjs';
 import { IconsModule } from '@Schoolingo/icons';
 import { Permission } from '@Schoolingo/permission';
 import { writeDairyComponent } from '../writeDairy/writeDairy.component';
-import { DiaryWeek, Traineeship, TraineeshipData } from '@Schoolingo/traineeship';
+import { DiaryWeek, Traineeship, TraineeshipData, StudentTraineeshipStatus } from '@Schoolingo/traineeship';
 import { Locale } from '@Schoolingo/locale';
+import { NgClass } from '@angular/common';
 
 type Box = {
   icon: string;
@@ -15,7 +16,7 @@ type Box = {
 
 @Component({
   standalone: true,
-  imports: [RouterLink, writeDairyComponent, IconsModule],
+  imports: [RouterLink, writeDairyComponent, IconsModule, NgClass],
   templateUrl: './overview.component.html',
   styleUrls: ['./overview.component.css']
 })
@@ -25,6 +26,18 @@ export class OverviewComponent implements OnInit {
   public traineeship = inject(Traineeship);
   Utils = Utils;
   public perms = inject(Permission);
+
+  // Admin dashboard data
+  public adminStats = {
+    totalTraineeships: 0,
+    activeTraineeships: 0,
+    studentsWithContract: 0,
+    studentsWithoutContract: 0,
+    completedStudents: 0,
+    pendingStudents: 0
+  };
+
+  public recentStudents: StudentTraineeshipStatus[] = [];
 
   constructor() {}
 
@@ -44,23 +57,49 @@ export class OverviewComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    // this.schoolingo.socketService.emit('traineeship:getOverview');
-    // this.listeners.push(
-    //   this.schoolingo.socketService.addFunction("connect").subscribe(() => {
-    //     this.schoolingo.socketService.emit('traineeship:getOverview');
-    //   })
-    // )
-    // this.listeners.push(
-    //   this.schoolingo.socketService.addFunction("traineeship:getOverview").subscribe((data: TraineeshipData[]) => {
-    //     this.traineeship.boxData = data;
-    //   })
-    // );
-
+    this.loadAdminStats();
+    this.loadRecentStudents();
   }
 
   ngOnDestroy(): void {
     this.traineeship.selectDay(null);
     this.listeners.forEach((sub: Subscription) => sub.unsubscribe());
+  }
+
+  private loadAdminStats(): void {
+    const weeks = this.traineeship.diaryWeeks.getValue();
+    this.adminStats.totalTraineeships = weeks.length;
+    this.adminStats.activeTraineeships = weeks.filter(w => 
+      this.traineeship.getStateOfTraineeship(w) === 'ongoing'
+    ).length;
+
+    // Mock student stats - in real app, this would come from API
+    const allStudents = this.getAllStudents();
+    this.adminStats.studentsWithContract = allStudents.filter(s => s.hasContract).length;
+    this.adminStats.studentsWithoutContract = allStudents.filter(s => !s.hasContract).length;
+    this.adminStats.completedStudents = allStudents.filter(s => s.isProcessed).length;
+    this.adminStats.pendingStudents = allStudents.filter(s => !s.isProcessed).length;
+  }
+
+  private loadRecentStudents(): void {
+    this.recentStudents = this.getAllStudents().slice(0, 10);
+  }
+
+  private getAllStudents(): StudentTraineeshipStatus[] {
+    // Mock - aggregate students from all traineeships
+    return this.traineeship.getStudentsForTraineeship(0);
+  }
+
+  public getActiveTraineeships(): DiaryWeek[] {
+    return this.traineeship.diaryWeeks.getValue().filter(w => 
+      this.traineeship.getStateOfTraineeship(w) === 'ongoing'
+    );
+  }
+
+  public getUpcomingTraineeships(): DiaryWeek[] {
+    return this.traineeship.diaryWeeks.getValue().filter(w => 
+      this.traineeship.getStateOfTraineeship(w) === 'planned'
+    ).slice(0, 5);
   }
 
   public getNearestDiary(): DiaryWeek {
