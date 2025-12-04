@@ -40,8 +40,8 @@
                     </div>
                     <div class="stat-info">
                         <div class="stat-value">
-                            {{ schoolStats.totalStudents }}
-                            <span class="muted">ze {{ schoolStats.limitStudents }}</span>
+                            {{ Utils.formatNumber(schoolStats.totalStudents) }}
+                            <span class="muted">ze {{ schoolStats.limitStudents == -1 ? 'NEOMEZENO' : schoolStats.limitStudents }}</span>
                         </div>
                         <div class="stat-label">Celkem studentů</div>
                     </div>
@@ -52,7 +52,7 @@
                         <i-tabler name="trophy"></i-tabler>
                     </div>
                     <div class="stat-info">
-                        <div class="stat-value">{{ schoolStats.averageGrade }}</div>
+                        <div class="stat-value">{{ Utils.formatNumber(schoolStats.averageGrade, 2) }}</div>
                         <div class="stat-label">Průměrný prospěch</div>
                     </div>
                 </div>
@@ -62,7 +62,7 @@
                         <i-tabler name="calendar-x"></i-tabler>
                     </div>
                     <div class="stat-info">
-                        <div class="stat-value">{{ schoolStats.absenceRate }}%</div>
+                        <div class="stat-value">{{ Utils.formatNumber(schoolStats.absenceRate, 2) }}%</div>
                         <div class="stat-label">Míra absence</div>
                     </div>
                 </div>
@@ -72,7 +72,7 @@
                         <i-tabler name="alert-triangle"></i-tabler>
                     </div>
                     <div class="stat-info">
-                        <div class="stat-value">{{ schoolStats.atRiskStudents }}</div>
+                        <div class="stat-value">{{ Utils.formatNumber(schoolStats.atRiskStudents) }}</div>
                         <div class="stat-label">Rizikoví studenti</div>
                     </div>
                 </div>
@@ -97,7 +97,7 @@
                         </div>
                         @for (day of [1,2,3,4,5]; track $index) {
                         <div class="heatmap-row">
-                            <div class="day-label">{{ getDayName(day) }}</div>
+                            <div class="day-label">{{ l.s('days.' + day) }}</div>
                             @for (hour of [1,2,3,4,5,6,7,8,9,10]; track $index) {
                             <div class="heatmap-cell" [class]="getHeatmapIntensity(getHeatmapValue(day, hour))">
                                 {{ getHeatmapValue(day, hour) }}
@@ -130,24 +130,32 @@
                 <div class="risk-list">
                     @for (student of riskStudents; track $index) {
                     <div class="risk-item" [class]="getRiskColor(student.risk_score)">
-                        <div class="risk-badge">{{ student.risk_score }}</div>
+                        @if (student.risk_score) {
+                        <div class="risk-badge">{{ Utils.formatNumber(student.risk_score) }}</div>
+                        }
                         <div class="risk-info">
                             <div class="risk-name">{{ student.full_name }}</div>
-                            <div class="risk-class">{{ student.class_name }}</div>
+                            <div class="risk-class">{{ student?.class_name ?? '' }}</div>
                         </div>
                         <div class="risk-factors">
+                            @if (student.absence_rate) {
                             <span class="factor">
                                 <i-tabler name="calendar-x"></i-tabler>
-                                {{ student.absence_rate }}%
+                                {{ Utils.formatNumber(student.absence_rate, 2) }}%
                             </span>
+                            }
+                            @if (student.grade_average) {
                             <span class="factor">
                                 <i-tabler name="report"></i-tabler>
-                                {{ student.grade_average }}
+                                {{ Utils.formatNumber(student.grade_average, 2) }}
                             </span>
+                            }
+                            @if (student.disciplinary_issues) {
                             <span class="factor">
                                 <i-tabler name="alert-triangle"></i-tabler>
-                                {{ student.disciplinary_issues }}
+                                {{ Utils.formatNumber(student.disciplinary_issues) }}
                             </span>
+                            }
                         </div>
                     </div>
                     }
@@ -335,13 +343,13 @@
                     @for (student of riskStudents; track $index) {
                     <div class="table-row" [class]="getRiskColor(student.risk_score)">
                         <div class="col-rank">
-                            <div class="rank-badge">{{ student.risk_score }}</div>
+                            <div class="rank-badge">{{ Utils.formatNumber(student.risk_score) }}</div>
                         </div>
                         <div class="col-student">{{ student.full_name }}</div>
                         <div class="col-class">{{ student.class_name }}</div>
-                        <div class="col-absence">{{ student.absence_rate }}%</div>
-                        <div class="col-grades">{{ student.grade_average }}</div>
-                        <div class="col-discipline">{{ student.disciplinary_issues }}</div>
+                        <div class="col-absence">{{ Utils.formatNumber(student.absence_rate, 2) }}%</div>
+                        <div class="col-grades">{{ Utils.formatNumber(student.grade_average, 2) }}</div>
+                        <div class="col-discipline">{{ Utils.formatNumber(student.disciplinary_issues) }}</div>
                         <div class="col-factor">
                             <span class="factor-badge" [class]="student.risk_factor">
                                 @if (student.risk_factor === 'absence') { Absence }

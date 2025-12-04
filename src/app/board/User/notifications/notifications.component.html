@@ -64,15 +64,14 @@
             <div class="simple-notifications-grid">
                 @for (type of simpleTypes; track type.id) {
                 @let rule = findRuleByType(type.id);
-                <div class="simple-notification-card" [class.active]="rule?.enabled">
+                <div class="simple-notification-card" [class.active]="rule?.enabled" (click)="toggleSimpleNotification(type.id)">
                     <div class="notification-header">
                         <div class="notification-icon" [style.background]="type.color + '20'"
                             [style.color]="type.color">
                             <i-tabler [name]="type.icon"></i-tabler>
                         </div>
                         <label class="toggle-switch">
-                            <input type="checkbox" [checked]="rule?.enabled || false"
-                                (change)="toggleSimpleNotification(type.id, $event)">
+                            <input type="checkbox" [checked]="rule?.enabled || false">
                             <span class="slider"></span>
                         </label>
                     </div>
@@ -125,8 +124,8 @@
                         }
                     </div>
                     <div class="rule-actions">
-                        <label class="toggle-switch">
-                            <input type="checkbox" [(ngModel)]="rule.enabled" (change)="toggleRule(rule)">
+                        <label class="toggle-switch" (click)="toggleRule(rule)">
+                            <input type="checkbox" [(ngModel)]="rule.enabled">
                             <span class="slider"></span>
                         </label>
                         <button class="btn-icon danger" (click)="deleteRule(rule)" title="Smazat pravidlo">

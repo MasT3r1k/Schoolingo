@@ -77,6 +77,11 @@ export namespace Utils {
     return 'https';
   }
 
+  export function formatNumber(number: string | number, decimals: number = 0): string {
+    if (isNaN(Number(number))) return '';
+    return Number(number).toFixed(decimals)
+  }
+
   export function formatWeb(web: string, hideProtocol: boolean = false): string {
     if (web.startsWith('http://') || web.startsWith('https://')) {
       if (hideProtocol) {

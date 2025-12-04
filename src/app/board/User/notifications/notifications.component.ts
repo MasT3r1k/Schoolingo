@@ -14,7 +14,6 @@ interface NotificationRule {
 }
 
 @Component({
-  selector: 'app-notifications',
   standalone: true,
   imports: [CommonModule, FormsModule, IconsModule],
   templateUrl: './notifications.component.html',
@@ -90,7 +89,7 @@ export class NotificationsComponent implements OnInit {
   // Advanced notification types (with conditions)
   public advancedTypes = [
     { 
-      id: 'grade_average_above', 
+      id: 'advanced_grade_average_above', 
       name: 'Průměr vyšší než',
       icon: 'trending-up',
       color: '#4caf50',
@@ -100,7 +99,7 @@ export class NotificationsComponent implements OnInit {
       ]
     },
     { 
-      id: 'grade_average_below', 
+      id: 'advanced_grade_average_below', 
       name: 'Průměr nižší než',
       icon: 'trending-down',
       color: '#ff5757',
@@ -110,17 +109,18 @@ export class NotificationsComponent implements OnInit {
       ]
     },
     { 
-      id: 'absence_count_above', 
+      id: 'advanced_absence_count_above', 
       name: 'Absence vyšší než',
       icon: 'alert-circle',
       color: '#ff5757',
       hasConditions: true,
       conditionFields: [
-        { key: 'value', label: 'Počet hodin', type: 'number', default: 10, min: 1 }
+        { key: 'value', label: 'Počet hodin', type: 'number', default: 10, min: 1 },
+        { key: 'value', label: 'Absence v %', type: 'number', default: 30, min: 1, max: 100 },
       ]
     },
     { 
-      id: 'homework_deadline_soon', 
+      id: 'advanced_homework_deadline_soon', 
       name: 'Blížící se termín úkolu',
       icon: 'clock-exclamation',
       color: '#ff9800',
@@ -139,7 +139,7 @@ export class NotificationsComponent implements OnInit {
       reg.pushManager.getSubscription().then((subscription) => {
         if (!subscription) return;
         const options = subscription.options;
-        this.notificationApplicationServerKey =options.applicationServerKey; // the public key
+        this.notificationApplicationServerKey = options.applicationServerKey; // the public key
       });
     });
 
@@ -169,15 +169,13 @@ export class NotificationsComponent implements OnInit {
     });
   }
 
-  public toggleSimpleNotification(typeId: string, event: any): void {
-    const isEnabled = event.target.checked;
+  public toggleSimpleNotification(typeId: string): void {
     const existingRule = this.rules.find(r => r.type === typeId);
 
     if (existingRule) {
       // Update existing rule
-      existingRule.enabled = isEnabled;
       this.toggleRule(existingRule);
-    } else if (isEnabled) {
+    } else {
       // Create new rule
       this.addRule(typeId);
     }
@@ -185,6 +183,8 @@ export class NotificationsComponent implements OnInit {
 
   public toggleRule(rule: NotificationRule): void {
     if (!rule.rule_id) return;
+
+    rule.enabled = !rule.enabled;
 
     this.http.put(
       `${Config.API_URL}/v1/notifications/rules/${rule.rule_id}`,
@@ -201,7 +201,7 @@ export class NotificationsComponent implements OnInit {
   }
 
   public addRule(type: string): void {
-    const typeConfig = this.advancedTypes.find((t: any) => t.id === type);
+    const typeConfig = this.getTypeConfig(type);
     if (!typeConfig) return;
 
     const conditions: any = {};

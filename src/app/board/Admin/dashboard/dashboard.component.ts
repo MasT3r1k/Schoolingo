@@ -2,6 +2,9 @@ import { Component, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Locale } from '@Schoolingo/locale';
 import { IconsModule } from '@Schoolingo/icons';
+import { HttpClient } from '@angular/common/http';
+import { Config } from '@Schoolingo/config';
+import { Utils } from '@Schoolingo/utils';
 
 interface StudentRisk {
   student_id: number;
@@ -55,70 +58,21 @@ interface AbsenceHeatmap {
 })
 export class DashboardComponent implements OnInit {
   public l = inject(Locale);
+  private http = inject(HttpClient);
+  public Utils = Utils
 
   // Overall school stats
   public schoolStats = {
-    totalStudents: 847,
-    limitStudents: 1200,
-    averageGrade: 2.34,
-    absenceRate: 8.2,
-    disciplinaryIssues: 23,
-    atRiskStudents: 42
+    totalStudents: 0,
+    limitStudents: 0,
+    averageGrade: 1.00,
+    absenceRate: 0,
+    disciplinaryIssues: 0,
+    atRiskStudents: 0
   };
 
   // Risk students
-  public riskStudents: StudentRisk[] = [
-    {
-      student_id: 1,
-      full_name: 'Jan Novák',
-      class_name: 'B4.A',
-      risk_score: 85,
-      risk_factor: 'combined',
-      absence_rate: 22.5,
-      grade_average: 3.8,
-      disciplinary_issues: 5
-    },
-    {
-      student_id: 2,
-      full_name: 'Petra Svobodová',
-      class_name: 'B3.B',
-      risk_score: 78,
-      risk_factor: 'absence',
-      absence_rate: 28.3,
-      grade_average: 2.9,
-      disciplinary_issues: 1
-    },
-    {
-      student_id: 3,
-      full_name: 'Martin Dvořák',
-      class_name: 'B4.A',
-      risk_score: 72,
-      risk_factor: 'grades',
-      absence_rate: 12.1,
-      grade_average: 4.2,
-      disciplinary_issues: 2
-    },
-    {
-      student_id: 4,
-      full_name: 'Lucie Černá',
-      class_name: 'B2.C',
-      risk_score: 68,
-      risk_factor: 'discipline',
-      absence_rate: 9.4,
-      grade_average: 3.1,
-      disciplinary_issues: 8
-    },
-    {
-      student_id: 5,
-      full_name: 'Tomáš Procházka',
-      class_name: 'B3.A',
-      risk_score: 65,
-      risk_factor: 'combined',
-      absence_rate: 18.7,
-      grade_average: 3.5,
-      disciplinary_issues: 4
-    }
-  ];
+  public riskStudents: StudentRisk[] = [];
 
   // Class statistics
   public classStats: ClassStats[] = [
@@ -161,6 +115,19 @@ export class DashboardComponent implements OnInit {
 
   ngOnInit(): void {
     this.generateAbsenceHeatmap();
+    this.http.get(
+      `${Config.API_URL}/v1/dashboard/admin`,
+      { withCredentials: true }
+    )
+    .subscribe((data: any) => {
+      console.log(data)
+      if ('schoolStats' in data) {
+        this.schoolStats = data.schoolStats;
+      }
+      if ('riskStudents' in data) {
+        this.riskStudents = data.riskStudents;
+      }
+    })
   }
 
   private generateAbsenceHeatmap(): void {
@@ -199,11 +166,6 @@ export class DashboardComponent implements OnInit {
     if (trend === 'up') return 'trending-up';
     if (trend === 'down') return 'trending-down';
     return 'minus';
-  }
-
-  public getDayName(day: number): string {
-    const days = ['', 'Pondělí', 'Úterý', 'Středa', 'Čtvrtek', 'Pátek'];
-    return days[day] || '';
   }
 
   public sortClassesByGrade(): void {
