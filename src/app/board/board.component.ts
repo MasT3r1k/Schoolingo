@@ -151,6 +151,11 @@ export class BoardComponent implements OnInit {
     return text;
   }
 
+  public markAllAsRead(): void {
+    this.notifications.forEach(n => n.is_read = true);
+    this.dashboard.newNotifications = 0;
+  }
+
   // dropdown: 'add' | 'notification' | 'child' | 'user' | '' = '';
 
   private addDropdownConfig: SidebarItem[] = [

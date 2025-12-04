@@ -10,7 +10,8 @@
                 </div>
             </div>
             <div class="options">
-                <div class="item-btn show-sidebar" (click)="$event.stopPropagation();sidebar.sidebarToggled = !sidebar.sidebarToggled">
+                <div class="item-btn show-sidebar"
+                    (click)="$event.stopPropagation();sidebar.sidebarToggled = !sidebar.sidebarToggled">
                     <div class="icon">
                         <i-tabler name="menu-2"></i-tabler>
                     </div>
@@ -36,106 +37,143 @@
         </div>
         <div class="right">
             <div class="options">
-                <div class="item-btn" (click)="$event.stopPropagation();dropdownManager.selected_dropdown = (dropdownManager.selected_dropdown == 'notification') ? '' : 'notification'">
+                <div class="item-btn"
+                    (click)="$event.stopPropagation();dropdownManager.selected_dropdown = (dropdownManager.selected_dropdown == 'notification') ? '' : 'notification'">
                     <div class="icon">
                         <i-tabler name="bell"></i-tabler>
                     </div>
                     @if (dashboard.newNotifications > 0) {
-                        <div class="badge">{{ dashboard.newNotifications }}</div>
+                    <div class="badge">{{ dashboard.newNotifications }}</div>
                     }
-                    <div class="dropdown" style="min-width: 400px;max-height:500px" [hidden]="dropdownManager.selected_dropdown !== 'notification'" (click)="$event.stopPropagation()">
-                        <div class="notification-header">Notifikace</div>
+                    <div class="dropdown notification-dropdown"
+                        [hidden]="dropdownManager.selected_dropdown !== 'notification'"
+                        (click)="$event.stopPropagation()">
+                        <div class="notification-header">
+                            <span class="title">{{ l.s('notifications.title') }}</span>
+                            <div class="header-actions">
+                                @if (notifications.length > 0) {
+                                <button class="header-btn" (click)="markAllAsRead()"
+                                    [title]="l.s('notifications.mark_all_read')">
+                                    <i-tabler name="list-check"></i-tabler>
+                                </button>
+                                }
+                                <button class="header-btn" (click)="dropdownManager.selected_dropdown = ''"
+                                    [routerLink]="['', 'user', 'notifications']" [title]="l.s('sidebar.settings')">
+                                    <i-tabler name="settings"></i-tabler>
+                                </button>
+                            </div>
+                        </div>
                         <div class="notification-list">
                             @for (notification of notifications; track $index) {
                             @let config = notifications_types[notification.type];
-                            <div class="notification-item" (click)="config.close_after_action ? dropdownManager.selected_dropdown = '' : {}" [routerLink]="config.url" [queryParams]="{ id: notification.action.id }">
-                                <div class="notification-icon center" [style.color]="config.color">
+                            <div class="notification-item" [class.unread]="!notification.is_read"
+                                (click)="config.close_after_action ? dropdownManager.selected_dropdown = '' : {}; notification.is_read = true"
+                                [routerLink]="config.url" [queryParams]="{ id: notification.action.id }">
+                                <div class="notification-icon center" [style.color]="config.color"
+                                    [style.background]="config.color + '1a'">
                                     <i-tabler [name]="config.icon"></i-tabler>
                                 </div>
                                 <div class="notification-content">
-                                    <div class="notification-title">
-                                        <span>{{ config.title }}</span>
+                                    <div class="notification-top">
+                                        <span class="notification-title">{{ config.title }}</span>
                                         <span class="time">{{ Utils.formatDateShort(notification.created_at) }}</span>
                                     </div>
                                     <div class="notification-text">
                                         {{ getNotificationText(notification) }}
                                     </div>
                                 </div>
+                                @if (!notification.is_read) {
+                                <div class="unread-indicator"></div>
+                                }
+                            </div>
+                            } @empty {
+                            <div class="empty-state">
+                                <div class="empty-icon">
+                                    <i-tabler name="bell-off"></i-tabler>
+                                </div>
+                                <p>{{ l.s('notifications.empty') }}</p>
                             </div>
                             }
                         </div>
                     </div>
                 </div>
 
-                <div class="item-btn" (click)="$event.stopPropagation();dropdownManager.selected_dropdown = (dropdownManager.selected_dropdown == 'navbar_add') ? '' : 'navbar_add'">
+                <div class="item-btn"
+                    (click)="$event.stopPropagation();dropdownManager.selected_dropdown = (dropdownManager.selected_dropdown == 'navbar_add') ? '' : 'navbar_add'">
                     <div class="icon">
                         <i-tabler name="plus"></i-tabler>
                     </div>
-                    <div class="dropdown" style="min-width: 225px;" [hidden]="dropdownManager.selected_dropdown !== 'navbar_add'" (click)="$event.stopPropagation()">
+                    <div class="dropdown" style="min-width: 225px;"
+                        [hidden]="dropdownManager.selected_dropdown !== 'navbar_add'"
+                        (click)="$event.stopPropagation()">
                         <ul>
                             @for (item of addDropdown; track $index) {
-                                <li [routerLink]="item.url" [ngClass]="[item.type ? item.type : '']" (click)="dropdownManager.selected_dropdown = '';item?.action()" [routerLinkActive]="'active'">
-                                    <div class="item">
-                                        <div class="row">
-                                            @if (item.icon) {
-                                                <div class="icon">
-                                                    <i-tabler [name]="item.icon"></i-tabler>
-                                                </div>
-                                            }
-                                            <div class="item-label">
-                                                {{ l.s(item.item) }}
-                                            </div>
+                            <li [routerLink]="item.url" [ngClass]="[item.type ? item.type : '']"
+                                (click)="dropdownManager.selected_dropdown = '';item?.action()"
+                                [routerLinkActive]="'active'">
+                                <div class="item">
+                                    <div class="row">
+                                        @if (item.icon) {
+                                        <div class="icon">
+                                            <i-tabler [name]="item.icon"></i-tabler>
+                                        </div>
+                                        }
+                                        <div class="item-label">
+                                            {{ l.s(item.item) }}
                                         </div>
                                     </div>
-                                </li>
+                                </div>
+                            </li>
                             }
                         </ul>
                     </div>
                 </div>
 
                 @if (u.getUser().children.length) {
-                <div class="item-btn" (click)="$event.stopPropagation();dropdownManager.selected_dropdown = (dropdownManager.selected_dropdown == 'child') ? '' : 'child'">
+                <div class="item-btn"
+                    (click)="$event.stopPropagation();dropdownManager.selected_dropdown = (dropdownManager.selected_dropdown == 'child') ? '' : 'child'">
                     <div class="icon">
                         <i-tabler name="users"></i-tabler>
                     </div>
-                    <div class="dropdown" style="min-width: 225px;" [hidden]="dropdownManager.selected_dropdown !== 'child'" (click)="$event.stopPropagation()">
+                    <div class="dropdown" style="min-width: 225px;"
+                        [hidden]="dropdownManager.selected_dropdown !== 'child'" (click)="$event.stopPropagation()">
                         <label style="user-select: none;padding: .75rem 1rem .25rem;margin: 0;">
                             {{ l.s('dropdown.child.label') }}
                         </label>
                         <ul>
                             @for (item of u.getUser().children; track $index) {
-                                <li (click)="dropdownManager.selected_dropdown = '';u.selectedChild.next($index)">
-                                    <div class="item">
-                                        <div class="row">
-                                            <div class="icon">
-                                                @if (item.gender === 0) {
-                                                    <i-tabler style="color: #90D5FF;" name="gender-male"></i-tabler>
-                                                } @else if (item.gender == 1) {
-                                                    <i-tabler style="color: #FFC0CB;" name="gender-female"></i-tabler>
-                                                }
-                                            </div>
-                                            <div class="item-label">
-                                                {{ item.firstName + ' ' + item.lastName }}
-                                            </div>
+                            <li (click)="dropdownManager.selected_dropdown = '';u.selectedChild.next($index)">
+                                <div class="item">
+                                    <div class="row">
+                                        <div class="icon">
+                                            @if (item.gender === 0) {
+                                            <i-tabler style="color: #90D5FF;" name="gender-male"></i-tabler>
+                                            } @else if (item.gender == 1) {
+                                            <i-tabler style="color: #FFC0CB;" name="gender-female"></i-tabler>
+                                            }
                                         </div>
-                                        @if (u.selectedChild.getValue() == $index) {
-                                            <i-tabler name="check" style="margin-left:.5rem;color: var(--primary)"></i-tabler>
-                                        }
+                                        <div class="item-label">
+                                            {{ item.firstName + ' ' + item.lastName }}
+                                        </div>
                                     </div>
-                                </li>
+                                    @if (u.selectedChild.getValue() == $index) {
+                                    <i-tabler name="check" style="margin-left:.5rem;color: var(--primary)"></i-tabler>
+                                    }
+                                </div>
+                            </li>
                             } @empty {
-                                <li class="danger disabled">
-                                    <div class="item">
-                                        <div class="row">
-                                            <div class="icon">
-                                                <i-tabler name="x"></i-tabler>
-                                            </div>
-                                            <div class="item-label">
-                                                {{ l.s("dropdown.child.empty") }}
-                                            </div>
+                            <li class="danger disabled">
+                                <div class="item">
+                                    <div class="row">
+                                        <div class="icon">
+                                            <i-tabler name="x"></i-tabler>
+                                        </div>
+                                        <div class="item-label">
+                                            {{ l.s("dropdown.child.empty") }}
                                         </div>
                                     </div>
-                                </li>
+                                </div>
+                            </li>
                             }
                         </ul>
                     </div>
@@ -143,7 +181,8 @@
                 }
 
             </div>
-            <div class="user" (click)="$event.stopPropagation();dropdownManager.selected_dropdown = (dropdownManager.selected_dropdown == 'user') ? '' : 'user'">
+            <div class="user"
+                (click)="$event.stopPropagation();dropdownManager.selected_dropdown = (dropdownManager.selected_dropdown == 'user') ? '' : 'user'">
                 <!-- @if (App.ALLOW_AVATARS) {
                     <div class="avatar golden center">
                         <div class="hexagon">
@@ -162,9 +201,10 @@
                 </div>
 
                 @if (App.ALLOW_LEVEL_SYSTEM) {
-                    <div class="xp-bar">
-                        <div class="progress" [ngStyle]="{width: (u.getUser().xp / u.getUser().requiredXP * 100) + '%'}"></div>
+                <div class="xp-bar">
+                    <div class="progress" [ngStyle]="{width: (u.getUser().xp / u.getUser().requiredXP * 100) + '%'}">
                     </div>
+                </div>
                 }
 
                 <div class="info">
@@ -176,23 +216,26 @@
                     </p>
                 </div>
 
-                <div class="dropdown" style="min-width: 250px;" [hidden]="dropdownManager.selected_dropdown !== 'user'" (click)="$event.stopPropagation()">
+                <div class="dropdown" style="min-width: 250px;" [hidden]="dropdownManager.selected_dropdown !== 'user'"
+                    (click)="$event.stopPropagation()">
                     <ul>
                         @for (item of userDropdown; track $index) {
-                            <li [routerLink]="item.url" [ngClass]="[item.type ? item.type : '']" (click)="dropdownManager.selected_dropdown='';item?.action();" [routerLinkActive]="'active'" [routerLinkActiveOptions]="{ exact: false, queryParams: 'ignored' }">
-                                <div class="item">
-                                        <div class="row">
-                                            @if (item.icon) {
-                                                <div class="icon">
-                                                    <i-tabler [name]="item.icon"></i-tabler>
-                                                </div>
-                                            }
-                                            <div class="item-label">
-                                                {{ l.s(item.item) }}
-                                            </div>
-                                        </div>
+                        <li [routerLink]="item.url" [ngClass]="[item.type ? item.type : '']"
+                            (click)="dropdownManager.selected_dropdown='';item?.action();" [routerLinkActive]="'active'"
+                            [routerLinkActiveOptions]="{ exact: false, queryParams: 'ignored' }">
+                            <div class="item">
+                                <div class="row">
+                                    @if (item.icon) {
+                                    <div class="icon">
+                                        <i-tabler [name]="item.icon"></i-tabler>
+                                    </div>
+                                    }
+                                    <div class="item-label">
+                                        {{ l.s(item.item) }}
+                                    </div>
                                 </div>
-                            </li>
+                            </div>
+                        </li>
                         }
                     </ul>
                 </div>
@@ -202,56 +245,63 @@
     <div class="content">
         <div [ngClass]="{sidebar: true, active: sidebar.sidebarToggled}">
             @for (section of sidebar.data; track $index) {
-                    <ul>
-                        @for (item of section.items; track $index) {
-                            <li [routerLink]="item.url" (click)="sidebarClickHandler(item, $index)"  [routerLinkActive]="'active'" [ngClass]="{ opened: item.children && item.children.length > 0 && sidebar.isToggled($index) }" [routerLinkActiveOptions]="{ exact: true, queryParams: 'ignored'}">
-                                <div class="item">
-                                    <div class="item-label">
-                                        {{ l.s(item.item) }}
-                                    </div>
-                                    <div class="right">
-                                        <!-- <div class="badge blue-info">
+            <ul>
+                @for (item of section.items; track $index) {
+                <li [routerLink]="item.url" (click)="sidebarClickHandler(item, $index)" [routerLinkActive]="'active'"
+                    [ngClass]="{ opened: item.children && item.children.length > 0 && sidebar.isToggled($index) }"
+                    [routerLinkActiveOptions]="{ exact: true, queryParams: 'ignored'}">
+                    <div class="item">
+                        <div class="item-label">
+                            {{ l.s(item.item) }}
+                        </div>
+                        <div class="right">
+                            <!-- <div class="badge blue-info">
                                             {{ "NEW" }}
                                         </div> -->
-                                        @if (item.badge && item.badge(dashboard) != '') {
-                                            <div class="badge danger">
-                                                {{ item.badge(dashboard) }}
-                                            </div>
-                                        }
-                                        @if (item.children && item.children.length > 0) {
-                                            <div class="dropdown-icon" [ngStyle]="{ transform: sidebar.toggledDropdowns.includes($index) ? 'rotate(180deg)' : '' }">
-                                                <svg xmlns="http://www.w3.org/2000/svg" height="16" width="14" viewBox="0 0 448 512">
-                                                    <path fill="currentColor" d="M201.4 342.6c12.5 12.5 32.8 12.5 45.3 0l160-160c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L224 274.7 86.6 137.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l160 160z"/>
-                                                </svg>
-                                            </div>
-                                        }
+                            @if (item.badge && item.badge(dashboard) != '') {
+                            <div class="badge danger">
+                                {{ item.badge(dashboard) }}
+                            </div>
+                            }
+                            @if (item.children && item.children.length > 0) {
+                            <div class="dropdown-icon"
+                                [ngStyle]="{ transform: sidebar.toggledDropdowns.includes($index) ? 'rotate(180deg)' : '' }">
+                                <svg xmlns="http://www.w3.org/2000/svg" height="16" width="14" viewBox="0 0 448 512">
+                                    <path fill="currentColor"
+                                        d="M201.4 342.6c12.5 12.5 32.8 12.5 45.3 0l160-160c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L224 274.7 86.6 137.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l160 160z" />
+                                </svg>
+                            </div>
+                            }
+                        </div>
+                    </div>
+                    @if (item.children && item.children.length > 0) {
+                    <div class="dropdown-child" [ngStyle]="{height: sidebar.isToggled($index) ? 'auto' : '0px'}"
+                        (click)="$event.stopPropagation()">
+                        <ul>
+                            @for (child of item.children; track $index) {
+                            <li (click)="sidebarClickHandler(child, -1)" [routerLink]="child.url"
+                                [routerLinkActive]="'active'"
+                                [routerLinkActiveOptions]="{ exact: true, queryParams: 'ignored'}">
+                                <div class="item">
+                                    <div class="item-label">
+                                        {{ l.s(child.item) }}
                                     </div>
-                                </div>
-                                @if (item.children && item.children.length > 0) {
-                                    <div class="dropdown-child" [ngStyle]="{height: sidebar.isToggled($index) ? 'auto' : '0px'}" (click)="$event.stopPropagation()">
-                                        <ul>
-                                            @for (child of item.children; track $index) {
-                                                <li (click)="sidebarClickHandler(child, -1)" [routerLink]="child.url" [routerLinkActive]="'active'" [routerLinkActiveOptions]="{ exact: true, queryParams: 'ignored'}" >
-                                                    <div class="item">
-                                                        <div class="item-label">
-                                                            {{ l.s(child.item) }}
-                                                        </div>
 
-                                                        @if (child.badge && child.badge(dashboard) != '') {
-                                                            <div class="badge danger">
-                                                                {{ child.badge(dashboard) }}
-                                                            </div>
-                                                        }
-                                                    </div>
-                                                </li>
-                                            }
-                                        </ul>
+                                    @if (child.badge && child.badge(dashboard) != '') {
+                                    <div class="badge danger">
+                                        {{ child.badge(dashboard) }}
                                     </div>
-                                }
+                                    }
+                                </div>
                             </li>
-                        }
-                    </ul>
+                            }
+                        </ul>
+                    </div>
+                    }
+                </li>
                 }
+            </ul>
+            }
         </div>
         <div class="main-content" (click)="sidebarToggled = false;">
             <router-outlet></router-outlet>
@@ -259,23 +309,24 @@
     </div>
 </div>
 
-<div id="context-menu" [style.display]="context_menu.isVisibleContextMenu() ? 'flex' : 'none'" [style.top.px]="context_menu.getPosition().y" [style.left.px]="context_menu.getPosition().x">
+<div id="context-menu" [style.display]="context_menu.isVisibleContextMenu() ? 'flex' : 'none'"
+    [style.top.px]="context_menu.getPosition().y" [style.left.px]="context_menu.getPosition().x">
     @for(item of context_menu.getItems();track $index) {
-        @if (item.text != undefined) {
-            <div class="menu-item" [class.danger]="item.color == 'danger'" (click)="item?.action()">
-                {{ l.s(item.text) }}
-            </div>
-        }
-        @if (item.type == 'split') {
-            <div class="menu-separator"></div>
-        }
+    @if (item.text != undefined) {
+    <div class="menu-item" [class.danger]="item.color == 'danger'" (click)="item?.action()">
+        {{ l.s(item.text) }}
+    </div>
+    }
+    @if (item.type == 'split') {
+    <div class="menu-separator"></div>
+    }
     }
 </div>
 
 <div class="notification" [class.hidden]="dashboard.cookies !== 0" id="cookies">
     <div>
         <div class="heading">
-            🍪  
+            🍪
             {{ l.s('cookies.title') }}
         </div>
         <p style="color: var(--text-muted)">

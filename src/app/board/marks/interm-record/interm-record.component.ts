@@ -48,6 +48,7 @@ export class IntermRecordComponent {
   private marksManager = inject(MarksManager);
 
   public add_more_columns = 16;
+  public isDropdownOpen = false;
 
   public selected_group: number = -1;
   public l = inject(Locale);
@@ -284,5 +285,9 @@ export class IntermRecordComponent {
 
   public openMidterm(): void {
     this.modalManager.openModal('edit_midterm');
+  }
+
+  public toggleDropdown(): void {
+    this.isDropdownOpen = !this.isDropdownOpen;
   }
 }
