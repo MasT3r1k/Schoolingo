@@ -58,6 +58,7 @@ export class AuthComponent implements OnInit {
   private route = inject(ActivatedRoute);
   public passkey = inject(Passkey);
   public isPasskeySupport = false;
+  public isPasskeyLoading = false;
 
   public qrcode = new BehaviorSubject('');
   public showInstallModal = false;
@@ -369,6 +370,7 @@ export class AuthComponent implements OnInit {
   }
 
   public async loginPasskey(): Promise<void> {
+    this.isPasskeyLoading = true;
     this.http
       .get<PublicKeyCredentialRequestOptionsJSON>(
         Config.ELYSIA_URL + '/auth-passkey'
@@ -395,8 +397,10 @@ export class AuthComponent implements OnInit {
                   this.auth.loadState();
                   return;
                 }
+                this.isPasskeyLoading = false;
               });
           } catch (err: unknown) {
+            this.isPasskeyLoading = false;
             const error = err as Error;
             const msg = error?.message || '';
 
@@ -415,6 +419,7 @@ export class AuthComponent implements OnInit {
           }
         },
         (err) => {
+          this.isPasskeyLoading = false;
           this.a.alert('error', 'auth.errors.429');
           console.error('❌ Nepodařilo se komunikovat se serverem ');
         }

@@ -1,53 +1,100 @@
 <main (click)="dropdownManager.selected_dropdown = ''">
     <div class="top">
         <div></div>
-        <div>
-            <div class="btn btn--sm-border" (click)="$event.stopPropagation();dropdownManager.selected_dropdown = dropdownManager.selected_dropdown == '' ? 'language' : ''">
-                <img style="width: 20px;" [src]="l.getLanguage(l.getSelectedLanguage().getValue())?.flag" [alt]="l.getLanguage(l.getSelectedLanguage().getValue())?.name">
-                <span>{{ l.getLanguage(l.getSelectedLanguage().getValue())?.name }}</span>
-                <div class="dropdown" [hidden]="dropdownManager.selected_dropdown != 'language'" (click)="$event.stopPropagation();">
+        <div class="top-controls">
+            <!-- Language Dropdown -->
+            <div class="control-dropdown"
+                (click)="$event.stopPropagation();dropdownManager.selected_dropdown = dropdownManager.selected_dropdown == '' ? 'language' : ''">
+                <div class="control-trigger">
+                    <img class="control-flag" [src]="l.getLanguage(l.getSelectedLanguage().getValue())?.flag"
+                        [alt]="l.getLanguage(l.getSelectedLanguage().getValue())?.name">
+                    <span class="control-label">{{ l.getLanguage(l.getSelectedLanguage().getValue())?.name }}</span>
+                    <i-tabler name="chevron-down" class="control-chevron"
+                        [class.open]="dropdownManager.selected_dropdown == 'language'"></i-tabler>
+                </div>
+                <div class="dropdown-menu" [hidden]="dropdownManager.selected_dropdown != 'language'"
+                    (click)="$event.stopPropagation();">
                     <ul>
                         @for (language of l.getLanguages(); track $index) {
-                            <li class="btn" style="justify-content: flex-start;" (click)="$event.stopPropagation();l.setLanguage(language)">
-                                <img style="width: 20px;" [src]="l.getLanguage(language)?.flag" [alt]="l.getLanguage(language)?.name">
-                                <span>{{ l.getLanguage(language)?.name }}</span>
-                            </li>
+                        <li class="dropdown-item" [class.active]="l.getSelectedLanguage().getValue() == language"
+                            (click)="$event.stopPropagation();l.setLanguage(language);dropdownManager.selected_dropdown = ''">
+                            <img class="dropdown-flag" [src]="l.getLanguage(language)?.flag"
+                                [alt]="l.getLanguage(language)?.name">
+                            <span>{{ l.getLanguage(language)?.name }}</span>
+                            @if (l.getSelectedLanguage().getValue() == language) {
+                            <i-tabler name="check" class="dropdown-check"></i-tabler>
+                            }
+                        </li>
                         }
                     </ul>
                 </div>
             </div>
-            <div class="btn btn--sm-border" (click)="$event.stopPropagation();dropdownManager.selected_dropdown = dropdownManager.selected_dropdown == '' ? 'theme' : ''">
-                <div [ngStyle]="{width: '20px',height: '20px','background-color': t.getThemeColor() == 'dark' ? '#000' : '#fff','border-radius': '50%','margin-right': '.5rem'}"></div>
-                <span>{{ l.s('themes.' + t.getTheme().getValue()) }}</span>
 
-                <div class="dropdown" [hidden]="dropdownManager.selected_dropdown != 'theme'" (click)="$event.stopPropagation();">
+            <!-- Theme Dropdown -->
+            <div class="control-dropdown"
+                (click)="$event.stopPropagation();dropdownManager.selected_dropdown = dropdownManager.selected_dropdown == '' ? 'theme' : ''">
+                <div class="control-trigger">
+                    <div class="theme-indicator" [class.dark]="t.getThemeColor() == 'dark'">
+                        @if (t.getTheme().getValue() == 'system') {
+                        <i-tabler name="device-desktop" size="14"></i-tabler>
+                        } @else if (t.getTheme().getValue() == 'dark') {
+                        <i-tabler name="moon" size="14"></i-tabler>
+                        } @else {
+                        <i-tabler name="sun" size="14"></i-tabler>
+                        }
+                    </div>
+                    <span class="control-label">{{ l.s('themes.' + t.getTheme().getValue()) }}</span>
+                    <i-tabler name="chevron-down" class="control-chevron"
+                        [class.open]="dropdownManager.selected_dropdown == 'theme'"></i-tabler>
+                </div>
+                <div class="dropdown-menu" [hidden]="dropdownManager.selected_dropdown != 'theme'"
+                    (click)="$event.stopPropagation();">
                     <ul>
                         @for (theme of t.getThemes(); track $index) {
-                            <li class="btn" style="justify-content: flex-start;" (click)="t.updateTheme(theme)">
-                                <div class="item">
-                                    <div class="row">
-                                        <div [ngStyle]="{width: '20px',height: '20px','background-color': theme == 'system' ? (t.getSystemColor() == 'dark' ? '#000' : '#fff') : theme == 'dark' ? '#000' : '#fff','border-radius': '50%','margin-right': '.5rem'}"></div>
-                                        <span>{{ l.s('themes.' + theme) }}</span>
-                                    </div>
-                                </div>
-                            </li>
+                        <li class="dropdown-item" [class.active]="t.getTheme().getValue() == theme"
+                            (click)="t.updateTheme(theme);dropdownManager.selected_dropdown = ''">
+                            <div class="theme-indicator-menu"
+                                [class.dark]="theme == 'dark' || (theme == 'system' && t.getSystemColor() == 'dark')">
+                                @if (theme == 'system') {
+                                <i-tabler name="device-desktop" size="14"></i-tabler>
+                                } @else if (theme == 'dark') {
+                                <i-tabler name="moon" size="14"></i-tabler>
+                                } @else {
+                                <i-tabler name="sun" size="14"></i-tabler>
+                                }
+                            </div>
+                            <span>{{ l.s('themes.' + theme) }}</span>
+                            @if (t.getTheme().getValue() == theme) {
+                            <i-tabler name="check" class="dropdown-check"></i-tabler>
+                            }
+                        </li>
                         }
                     </ul>
                 </div>
             </div>
         </div>
     </div>
-    <h1 class="APP_Logo">
-        <img src="/assets/logo/logo_256.webp" alt="Schoolingo" draggable="false">
-    </h1>
+    <div class="logo-container">
+        <img class="logo-image" src="/assets/logo/logo_256.webp" alt="Schoolingo" draggable="false">
+    </div>
     <div class="card" [class.no-fastlogin]="!school.config.getValue()?.fastlogin">
+        <!-- Passkey Loading Overlay -->
+        @if (isPasskeyLoading) {
+        <div class="passkey-loading-overlay">
+            <div class="passkey-loading-content">
+                <div class="passkey-loading-spinner"></div>
+                <i-tabler name="fingerprint" class="passkey-loading-icon"></i-tabler>
+                <span class="passkey-loading-text">Probíhá přihlášení pomocí passkey</span>
+            </div>
+        </div>
+        }
         <div class="card-alerts">
             @for (alert of a.getAlerts(); track $index) {
-                <alert [alert]="alert"></alert>
+            <alert [alert]="alert"></alert>
             }
         </div>
         @if (isLoading) {
-            <div class="loader"></div>
+        <div class="loader"></div>
         } @else {
         <div class="card-top">
             <h2 class="title">
@@ -56,283 +103,297 @@
             <p [ngClass]="{school: true, skeleton: isLoading}">
                 {{ school.config.getValue()?.name || "" }}
             </p>
-
         </div>
         <div class="card-row">
             <div class="left" [ngStyle]="{ width: school.config.getValue()?.fastlogin ? '50%' : '100%' }">
                 @if (school.config.getValue()?.fastlogin && ["login", "2fa"].includes(page)) {
-                    <div class="title">
-                        {{ l.s("auth.login.subtitle.0") }}
-                    </div>
+                <div class="title">
+                    {{ l.s("auth.login.subtitle.0") }}
+                </div>
                 }
                 @switch (page) {
-                    @case ("login") {
-                        <form [formGroup]="loginForm" (ngSubmit)="login()">
-                            <input type="submit" value="" style="display: none" />
+                @case ("login") {
+                <form [formGroup]="loginForm" (ngSubmit)="login()">
+                    <input type="submit" value="" style="display: none" />
 
-                            <div class="form-group">
-                                <label for="username" [ngClass]="{ 'error-color': getInputError('username') !== '' }">
-                                    {{ l.s('auth.login.username') }}
-                                    @if (getInputError("username") !== "") {
-                                        <span class="label-error">
-                                            - {{ getInputError("username") }}
-                                        </span>
-                                    }
-                                </label>
-                                <div class="value">
-                                    <input type="text" [class.input-error]="getInputError('username')" id="username" name="username" formControlName="username" [placeholder]="l.s('auth.login.username_placeholder')" required />
-                                </div>
-                            </div>
-                            <div class="form-group">
-                                <label for="password" [ngClass]="{ 'error-color': getInputError('password') !== '' }">
-                                    {{ l.s('auth.login.password') }}
-                                    @if (getInputError("password") !== "") {
-                                        <span class="label-error">
-                                            - {{ getInputError("password") }}
-                                        </span>
-                                    }
-                                </label>
-                                <div class="value">
-                                    <input type="password" [class.input-error]="getInputError('password')" id="password" name="password" formControlName="password" [placeholder]="l.s('auth.login.password_placeholder')" required />
-                                </div>
-                            </div>
-                            <div class="form-group">
-                                <a class="clickable" (click)="forgotPassword()">
-                                    {{ l.s('auth.forgotpass.click') }}
-                                </a>
-                            </div>
-                        </form>
-                        <div class="form-group">
-                            <div [ngClass]="{btn: true, 'btn--primary': loginForm.status == 'VALID', 'btn--disabled': loginForm.status == 'INVALID'}" (click)="login()">
-                                {{ l.s('auth.login.button') }}
-                            </div>
-                        </div>
-
-                        @if (isPasskeySupport) {
-                            <div class="splitter horizontal">
-                                <span>{{ l.s('or') }}</span>
-                            </div>
-
-                            <div class="btn" (click)="loginPasskey()">
-                                <i-tabler name="password-user"></i-tabler>
-                                <span>{{ l.s('auth.login.login_with_passkey') }}</span>
-                            </div>
-                        }
-                    }
-
-                    @case ("2fa") {
-                        <form [formGroup]="loginForm" (ngSubmit)="login()">
-                            <input type="submit" value="" style="display: none" />
-
-                            <div class="form-group">
-                                <label for="token" [ngClass]="{ 'error-color': getInputError('token') !== '' }">
-                                    {{ l.s('auth.2fa.authentication_code') }}
-                                    @if (getInputError("token") !== "") {
-                                        <span class="label-error">
-                                            - {{ getInputError("token") }}
-                                        </span>
-                                    }
-                                </label>
-                                <div class="value">
-                                    <input type="text" [class.input-error]="getInputError('token')" id="token" [minlength]="AuthConfig.token_length" [maxlength]="AuthConfig.token_length" name="token" autocomplete="off" autocorrect="off" formControlName="token" required />
-                                </div>
-                            </div>
-                            <div class="form-group">
-                                <span>{{ l.s('auth.2fa.note') }}</span>
-                            </div>
-                        </form>
-                        <div class="form-group">
-                            <div [ngClass]="{btn: true, primary: loginForm.status == 'VALID', disabled: loginForm.status == 'INVALID'}" (click)="login()">
-                                {{ l.s('auth.2fa.verify_code') }}
-                            </div>
-                        </div>
-                    }
-
-                    @case ("forgotpass_email") {
-                        <div class="title">
-                            {{ l.s("auth.forgotpass.title") }}
-                        </div>
-                        <div class="note mt">
-                            {{ l.s('auth.forgotpass.select_email') }}
-                        </div>
-                        <div class="input-select input-column">
-                            @for (email of emails; track $index) {
-                                <div [ngClass]="{'input-select-option': true, active: this.selectedEmail == $index}" (click)="this.selectedEmail = $index">
-                                    {{ email }}
-                                </div>
+                    <div class="form-group">
+                        <label for="username" [ngClass]="{ 'error-color': getInputError('username') !== '' }">
+                            {{ l.s('auth.login.username') }}
+                            @if (getInputError("username") !== "") {
+                            <span class="label-error">
+                                - {{ getInputError("username") }}
+                            </span>
                             }
+                        </label>
+                        <div class="value">
+                            <input type="text" [class.input-error]="getInputError('username')" id="username"
+                                name="username" formControlName="username"
+                                [placeholder]="l.s('auth.login.username_placeholder')" required />
                         </div>
-                        <div class="form-group">
-                            <div [ngClass]="{btn: true, primary: this.selectedEmail != undefined, disabled: this.selectedEmail == undefined}" (click)="forgotPassword()">
-                                {{ l.s('auth.forgotpass.send_email') }}
-                            </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="password" [ngClass]="{ 'error-color': getInputError('password') !== '' }">
+                            {{ l.s('auth.login.password') }}
+                            @if (getInputError("password") !== "") {
+                            <span class="label-error">
+                                - {{ getInputError("password") }}
+                            </span>
+                            }
+                        </label>
+                        <div class="value">
+                            <input type="password" [class.input-error]="getInputError('password')" id="password"
+                                name="password" formControlName="password"
+                                [placeholder]="l.s('auth.login.password_placeholder')" required />
                         </div>
-                        <div class="form-group">
-                            <div [ngClass]="{btn: true}" (click)="resetForgotPassword()">
-                                {{ l.s('auth.login.back_to_login') }}
-                            </div>
+                    </div>
+                    <div class="form-group">
+                        <a class="clickable" (click)="forgotPassword()">
+                            {{ l.s('auth.forgotpass.click') }}
+                        </a>
+                    </div>
+                </form>
+                <div class="form-group">
+                    <div [ngClass]="{btn: true, 'btn--primary': loginForm.status == 'VALID', 'btn--disabled': loginForm.status == 'INVALID'}"
+                        (click)="login()">
+                        {{ l.s('auth.login.button') }}
+                    </div>
+                </div>
+
+                @if (isPasskeySupport) {
+                <div class="splitter horizontal">
+                    <span>{{ l.s('or') }}</span>
+                </div>
+
+                <div class="btn" (click)="loginPasskey()">
+                    <i-tabler name="password-user"></i-tabler>
+                    <span>{{ l.s('auth.login.login_with_passkey') }}</span>
+                </div>
+                }
+                }
+
+                @case ("2fa") {
+                <form [formGroup]="loginForm" (ngSubmit)="login()">
+                    <input type="submit" value="" style="display: none" />
+
+                    <div class="form-group">
+                        <label for="token" [ngClass]="{ 'error-color': getInputError('token') !== '' }">
+                            {{ l.s('auth.2fa.authentication_code') }}
+                            @if (getInputError("token") !== "") {
+                            <span class="label-error">
+                                - {{ getInputError("token") }}
+                            </span>
+                            }
+                        </label>
+                        <div class="value">
+                            <input type="text" [class.input-error]="getInputError('token')" id="token"
+                                [minlength]="AuthConfig.token_length" [maxlength]="AuthConfig.token_length" name="token"
+                                autocomplete="off" autocorrect="off" formControlName="token" required />
                         </div>
+                    </div>
+                    <div class="form-group">
+                        <span>{{ l.s('auth.2fa.note') }}</span>
+                    </div>
+                </form>
+                <div class="form-group">
+                    <div [ngClass]="{btn: true, primary: loginForm.status == 'VALID', disabled: loginForm.status == 'INVALID'}"
+                        (click)="login()">
+                        {{ l.s('auth.2fa.verify_code') }}
+                    </div>
+                </div>
+                }
+
+                @case ("forgotpass_email") {
+                <div class="title">
+                    {{ l.s("auth.forgotpass.title") }}
+                </div>
+                <div class="note mt">
+                    {{ l.s('auth.forgotpass.select_email') }}
+                </div>
+                <div class="input-select input-column">
+                    @for (email of emails; track $index) {
+                    <div [ngClass]="{'input-select-option': true, active: this.selectedEmail == $index}"
+                        (click)="this.selectedEmail = $index">
+                        {{ email }}
+                    </div>
                     }
+                </div>
+                <div class="form-group">
+                    <div [ngClass]="{btn: true, primary: this.selectedEmail != undefined, disabled: this.selectedEmail == undefined}"
+                        (click)="forgotPassword()">
+                        {{ l.s('auth.forgotpass.send_email') }}
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div [ngClass]="{btn: true}" (click)="resetForgotPassword()">
+                        {{ l.s('auth.login.back_to_login') }}
+                    </div>
+                </div>
+                }
 
-                    @case ("forgotpass_code") {
-                        <div class="title">
-                            {{ l.s("auth.forgotpass.title") }}
-                        </div>
-                        <div class="message message--info mt">
-                            {{ l.s('auth.forgotpass.code_from_email') }}
-                        </div>
-                        <div class="form-group">
-                            <label for="email_code" [ngClass]="{ 'error-color': getInputError('email_code') !== '' }">
-                                {{ l.s('auth.2fa.authentication_code') }}
-                                @if (getInputError("email_code") !== "") {
-                                    <span class="label-error">
-                                        - {{ getInputError("email_code") }}
-                                    </span>
-                                }
-                            </label>
-                            <div class="value">
-                                <input type="text" [class.input-error]="getInputError('email_code')" id="email_code" [(ngModel)]="emailCode" [minlength]="8" [maxlength]="8" name="email_code" autocomplete="off" autocorrect="off" required placeholder="XXXXXXXX" />
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <div [ngClass]="{btn: true, primary: this.emailCode?.length == 8, disabled: this.emailCode?.length != 8}" (click)="forgotPassword()">
-                                {{ l.s('auth.forgotpass.verify_code') }}
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <div [ngClass]="{btn: true}" (click)="resetForgotPassword()">
-                                {{ l.s('auth.login.back_to_login') }}
-                            </div>
-                        </div>
-                    }
+                @case ("forgotpass_code") {
+                <div class="title">
+                    {{ l.s("auth.forgotpass.title") }}
+                </div>
+                <div class="message message--info mt">
+                    {{ l.s('auth.forgotpass.code_from_email') }}
+                </div>
+                <div class="form-group">
+                    <label for="email_code" [ngClass]="{ 'error-color': getInputError('email_code') !== '' }">
+                        {{ l.s('auth.2fa.authentication_code') }}
+                        @if (getInputError("email_code") !== "") {
+                        <span class="label-error">
+                            - {{ getInputError("email_code") }}
+                        </span>
+                        }
+                    </label>
+                    <div class="value">
+                        <input type="text" [class.input-error]="getInputError('email_code')" id="email_code"
+                            [(ngModel)]="emailCode" [minlength]="8" [maxlength]="8" name="email_code" autocomplete="off"
+                            autocorrect="off" required placeholder="XXXXXXXX" />
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div [ngClass]="{btn: true, primary: this.emailCode?.length == 8, disabled: this.emailCode?.length != 8}"
+                        (click)="forgotPassword()">
+                        {{ l.s('auth.forgotpass.verify_code') }}
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div [ngClass]="{btn: true}" (click)="resetForgotPassword()">
+                        {{ l.s('auth.login.back_to_login') }}
+                    </div>
+                </div>
+                }
 
-                    @case("forgotpass_password") {
-                        <div class="title">
-                            {{ l.s("auth.forgotpass.title") }}
-                        </div>
+                @case("forgotpass_password") {
+                <div class="title">
+                    {{ l.s("auth.forgotpass.title") }}
+                </div>
 
-                        <div class="note mt">
-                            {{ l.s('auth.forgotpass.new_password') }}
-                        </div>
+                <div class="note mt">
+                    {{ l.s('auth.forgotpass.new_password') }}
+                </div>
 
-                        <div class="form-group">
-                            <label for="new_password" [ngClass]="{ 'error-color': getInputError('new_password') !== '' }">
-                                {{ l.s('settings.passwords.new_password') }}
-                                @if (getInputError("new_password") !== "") {
-                                    <span class="label-error">
-                                        - {{ getInputError("new_password") }}
-                                    </span>
-                                }
-                            </label>
-                            <div class="value">
-                                <input type="password" [class.input-error]="getInputError('new_password')" id="new_password" [(ngModel)]="newPassword" name="new_password" autocomplete="off" autocorrect="off" [placeholder]="l.s('settings.passwords.new_password')" />
-                            </div>
-                        </div>
+                <div class="form-group">
+                    <label for="new_password" [ngClass]="{ 'error-color': getInputError('new_password') !== '' }">
+                        {{ l.s('settings.passwords.new_password') }}
+                        @if (getInputError("new_password") !== "") {
+                        <span class="label-error">
+                            - {{ getInputError("new_password") }}
+                        </span>
+                        }
+                    </label>
+                    <div class="value">
+                        <input type="password" [class.input-error]="getInputError('new_password')" id="new_password"
+                            [(ngModel)]="newPassword" name="new_password" autocomplete="off" autocorrect="off"
+                            [placeholder]="l.s('settings.passwords.new_password')" />
+                    </div>
+                </div>
 
-                        <div class="form-group">
-                            <label for="new_again_password" [ngClass]="{ 'error-color': getInputError('new_again_password') !== '' }">
-                                {{ l.s('settings.passwords.again_new_password') }}
-                                @if (getInputError("new_again_password") !== "") {
-                                    <span class="label-error">
-                                        - {{ getInputError("new_again_password") }}
-                                    </span>
-                                }
-                            </label>
-                            <div class="value">
-                                <input type="password" [class.input-error]="getInputError('new_again_password')" id="new_again_password" [(ngModel)]="newAgainPassword" name="new_again_password" autocomplete="off" autocorrect="off" [placeholder]="l.s('settings.passwords.again_new_password')" />
-                            </div>
-                        </div>
+                <div class="form-group">
+                    <label for="new_again_password"
+                        [ngClass]="{ 'error-color': getInputError('new_again_password') !== '' }">
+                        {{ l.s('settings.passwords.again_new_password') }}
+                        @if (getInputError("new_again_password") !== "") {
+                        <span class="label-error">
+                            - {{ getInputError("new_again_password") }}
+                        </span>
+                        }
+                    </label>
+                    <div class="value">
+                        <input type="password" [class.input-error]="getInputError('new_again_password')"
+                            id="new_again_password" [(ngModel)]="newAgainPassword" name="new_again_password"
+                            autocomplete="off" autocorrect="off"
+                            [placeholder]="l.s('settings.passwords.again_new_password')" />
+                    </div>
+                </div>
 
-                        <div class="form-group">
-                            <div [ngClass]="{btn: true, primary: newPassword == newAgainPassword && (newPassword?.length ?? 0) > 0}" (click)="forgotPassword()">
-                                {{ l.s('auth.forgotpass.request_new_password') }}
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <div class="btn" (click)="resetForgotPassword()">
-                                {{ l.s('auth.login.back_to_login') }}
-                            </div>
-                        </div>
-                    }
+                <div class="form-group">
+                    <div [ngClass]="{btn: true, primary: newPassword == newAgainPassword && (newPassword?.length ?? 0) > 0}"
+                        (click)="forgotPassword()">
+                        {{ l.s('auth.forgotpass.request_new_password') }}
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="btn" (click)="resetForgotPassword()">
+                        {{ l.s('auth.login.back_to_login') }}
+                    </div>
+                </div>
+                }
 
-                    @case ("forgotpass_2fa") {
-                        <div class="title">
-                            {{ l.s("auth.forgotpass.title") }}
-                        </div>
+                @case ("forgotpass_2fa") {
+                <div class="title">
+                    {{ l.s("auth.forgotpass.title") }}
+                </div>
 
-                        <div class="note mt">
-                            {{ l.s('auth.2fa.description') }}
-                        </div>
+                <div class="note mt">
+                    {{ l.s('auth.2fa.description') }}
+                </div>
 
-                        <div class="form-group">
-                            <label for="emailTFA" [ngClass]="{ 'error-color': getInputError('emailTFA') !== '' }">
-                                {{ l.s('auth.2fa.authentication_code') }}
-                                @if (getInputError("emailTFA") !== "") {
-                                    <span class="label-error">
-                                        - {{ getInputError("emailTFA") }}
-                                    </span>
-                                }
-                            </label>
-                            <div class="value">
-                                <input type="text" id="emailTFA" [class.input-error]="getInputError('emailTFA')" [(ngModel)]="emailTFA" name="emailTFA" autocomplete="off" autocorrect="off" [placeholder]="l.s('auth.2fa.authentication_code')" />
-                            </div>
-                        </div>
+                <div class="form-group">
+                    <label for="emailTFA" [ngClass]="{ 'error-color': getInputError('emailTFA') !== '' }">
+                        {{ l.s('auth.2fa.authentication_code') }}
+                        @if (getInputError("emailTFA") !== "") {
+                        <span class="label-error">
+                            - {{ getInputError("emailTFA") }}
+                        </span>
+                        }
+                    </label>
+                    <div class="value">
+                        <input type="text" id="emailTFA" [class.input-error]="getInputError('emailTFA')"
+                            [(ngModel)]="emailTFA" name="emailTFA" autocomplete="off" autocorrect="off"
+                            [placeholder]="l.s('auth.2fa.authentication_code')" />
+                    </div>
+                </div>
 
-                        <div class="form-group">
-                            <div [ngClass]="{btn: true, primary: (emailTFA?.length ?? 0) == 6}" (click)="forgotPassword()">
-                                {{ l.s('auth.2fa.verify_code') }}
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <div class="btn" (click)="resetForgotPassword()">
-                                {{ l.s('auth.login.back_to_login') }}
-                            </div>
-                        </div>
-                    }
+                <div class="form-group">
+                    <div [ngClass]="{btn: true, primary: (emailTFA?.length ?? 0) == 6}" (click)="forgotPassword()">
+                        {{ l.s('auth.2fa.verify_code') }}
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="btn" (click)="resetForgotPassword()">
+                        {{ l.s('auth.login.back_to_login') }}
+                    </div>
+                </div>
+                }
                 }
             </div>
             @if (school.config.getValue()?.fastlogin) {
-                <div class="splitter">
-                    <span>{{ l.s('or') }}</span>
+            <div class="splitter">
+                <span>{{ l.s('or') }}</span>
+            </div>
+            <div class="right qrcode">
+                <div class="title">
+                    {{ l.s("auth.login.subtitle.1") }}
                 </div>
-                <div class="right qrcode">
-                    <div class="title">
-                        {{ l.s("auth.login.subtitle.1") }}
+                <div class="qrcode">
+                    @if (qrcode.getValue() == '') {
+                    <div class="skeleton" [ngStyle]="{ width: 'var(--qrcode-size)', height: 'var(--qrcode-size)' }">
                     </div>
-                    <div class="qrcode">
-                        @if (qrcode.getValue() == '') {
-                            <div class="skeleton" [ngStyle]="{ width: 'var(--qrcode-size)', height: 'var(--qrcode-size)' }"></div>
-                        } @else {
-                            <qrcode
-                            [allowEmptyString]="false"
-                            [width]="200"
-                            [margin]="0"
-                            [elementType]="'canvas'"
-                            [errorCorrectionLevel]="'M'"
-                            [title]="'SCHOOLINGO QR Fastlogin'"
-                            [imageSrc]="'./assets/logo.webp'"
-                            [imageHeight]="56"
-                            [imageWidth]="56"
-                            [qrdata]="qrcode.getValue()"
-                            [colorDark]="t.getTheme().getValue() == 'light' ? '#000000' : '#ffffff'"
-                            [colorLight]="t.getTheme().getValue() == 'light' ? '#ffffff' : '#000000'"
-                            ></qrcode>
-                        }
-                    </div>
-                    <div style="text-align: center">
-                        {{ l.s('auth.login.qrcode') }}
-                    </div>
+                    } @else {
+                    <qrcode [allowEmptyString]="false" [width]="200" [margin]="0" [elementType]="'canvas'"
+                        [errorCorrectionLevel]="'M'" [title]="'SCHOOLINGO QR Fastlogin'"
+                        [imageSrc]="'./assets/logo.webp'" [imageHeight]="56" [imageWidth]="56"
+                        [qrdata]="qrcode.getValue()"
+                        [colorDark]="t.getTheme().getValue() == 'light' ? '#000000' : '#ffffff'"
+                        [colorLight]="t.getTheme().getValue() == 'light' ? '#ffffff' : '#000000'"></qrcode>
+                    }
                 </div>
+                <div style="text-align: center">
+                    {{ l.s('auth.login.qrcode') }}
+                </div>
+            </div>
             }
-        </div> 
+        </div>
         }
     </div>
     @if (App.SHOW_DOWNLOAD_BUTTON) {
-        <div class="row" id="downloadApp">
-            <div id="downloadApp" class="btn add-phone small-border" (click)="openInstallModal()">
-                {{ l.s('auth.login.downloadApp').replaceAll('%app%', App.APP_NAME) }}
-            </div>
+    <div class="row" id="downloadApp">
+        <div id="downloadApp" class="btn add-phone small-border" (click)="openInstallModal()">
+            {{ l.s('auth.login.downloadApp').replaceAll('%app%', App.APP_NAME) }}
         </div>
+    </div>
     }
 </main>
 <div class="bottom">
@@ -347,5 +408,5 @@
 </div>
 
 @if (showInstallModal && App.SHOW_DOWNLOAD_BUTTON) {
-    <install-app-modal (closeModal)="closeInstallModal()"></install-app-modal>
+<install-app-modal (closeModal)="closeInstallModal()"></install-app-modal>
 }
