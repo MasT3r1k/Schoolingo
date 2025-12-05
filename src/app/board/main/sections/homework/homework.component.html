@@ -17,22 +17,22 @@
     <div class="section-list">
         @for (hw of homework; track $index) {
         <div class="section-item" [ngClass]="getUrgencyClass(hw.due_date)">
-            <div class="hw-checkbox" [class.completed]="hw.completed">
-                @if (hw.completed) {
+            <div class="hw-checkbox" [class.completed]="hw.finished">
+                @if (hw.finished) {
                 <i-tabler name="check"></i-tabler>
                 }
             </div>
             <div class="item-content">
                 <div class="item-header">
-                    <span class="hw-subject badge badge--primary">{{ hw.subject_name }}</span>
+                    <span class="hw-subject badge badge--primary">{{ hw.subjectName }}</span>
                     <span class="hw-deadline badge" [ngClass]="getUrgencyClass(hw.due_date)">
                         <i-tabler name="clock" size="12"></i-tabler>
                         {{ getDaysLeftText(hw.due_date) }}
                     </span>
                 </div>
-                <span class="item-title">{{ hw.title }}</span>
-                @if (hw.description) {
-                <p class="item-description">{{ hw.description }}</p>
+                <span class="item-title">{{ hw.headline }}</span>
+                @if (hw.homework) {
+                <p class="item-description">{{ hw.homework }}</p>
                 }
             </div>
         </div>

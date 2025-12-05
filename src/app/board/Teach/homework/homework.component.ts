@@ -68,7 +68,7 @@ export class HomeworkComponent implements OnInit {
     });
   }
 
-  private calculatePriority(dueDate: Date): 'low' | 'medium' | 'high' {
+  public calculatePriority(dueDate: Date): 'low' | 'medium' | 'high' {
     const now = new Date();
     const due = new Date(dueDate);
     const daysUntilDue = Math.ceil((due.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
@@ -77,6 +77,16 @@ export class HomeworkComponent implements OnInit {
     if (daysUntilDue <= 3) return 'medium';
     return 'low';
   }
+
+  public getStatusClass(type: number): string {
+    switch (type) {
+      case 0: return 'todo';
+      case 1: return 'in-progress';
+      case 2: return 'done';
+      default: return 'todo';
+    }
+  }
+
 
   public getHomeworkByStatus(status: number): Homework[] {
     return this.homework.filter(hw => hw.type === status);

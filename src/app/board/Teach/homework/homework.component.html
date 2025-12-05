@@ -56,7 +56,7 @@
                             }
                         </div>
                         <div class="card-actions">
-                            <button class="btn btn--sm primary" (click)="moveToInProgress(hw)">
+                            <button class="btn btn--sm btn--primary" (click)="moveToInProgress(hw)">
                                 <i-tabler name="player-play"></i-tabler>
                                 Začít pracovat
                             </button>
@@ -103,10 +103,10 @@
                             }
                         </div>
                         <div class="card-actions">
-                            <button class="btn btn--sm outline" (click)="moveToTodo(hw)">
+                            <button class="btn btn--sm btn--outline" (click)="moveToTodo(hw)">
                                 <i-tabler name="arrow-left"></i-tabler>
                             </button>
-                            <button class="btn btn--sm primary" (click)="moveToDone(hw)">
+                            <button class="btn btn--sm btn--primary" (click)="moveToDone(hw)">
                                 <i-tabler name="check"></i-tabler>
                                 Odevzdat
                             </button>
@@ -151,7 +151,7 @@
                             </div>
                         </div>
                         <div class="card-actions">
-                            <button class="btn btn--sm outline" (click)="moveToInProgress(hw)">
+                            <button class="btn btn--sm btn--outline" (click)="moveToInProgress(hw)">
                                 <i-tabler name="arrow-left"></i-tabler>
                                 Vrátit
                             </button>
@@ -167,20 +167,102 @@
             </div>
         </div>
         } @else {
-        <!-- List View (fallback) -->
+        <!-- List View -->
         <div class="homework-list">
             @for (hw of homework; track hw.homework_id) {
-            <div class="homework-list-item">
-                <div class="list-item-content">
-                    <div class="subject-badge" [style.background]="hw.subjectColor || '#4aa3ff'">
-                        {{ hw.subjectName }}
+            <div class="list-card" [class.done]="hw.type === 2" [attr.data-priority]="calculatePriority(hw.due_to)">
+                <div class="list-card-left">
+                    <div class="status-indicator" [class]="getStatusClass(hw.type)">
+                        @if (hw.type === 2) {
+                        <i-tabler name="check"></i-tabler>
+                        } @else if (hw.type === 1) {
+                        <i-tabler name="progress"></i-tabler>
+                        } @else {
+                        <i-tabler name="circle"></i-tabler>
+                        }
                     </div>
-                    <h4>{{ hw.headline }}</h4>
-                    <p>{{ hw.homework }}</p>
                 </div>
-                <div class="list-item-meta">
-                    <span>{{ Utils.formatDateShort(hw.due_to) }}</span>
+                <div class="list-card-content">
+                    <div class="list-card-header">
+                        <div class="badges">
+                            <span class="subject-badge" [style.background]="hw.subjectColor || '#4aa3ff'">
+                                {{ hw.subjectName }}
+                            </span>
+                            @if (hw.type === 2) {
+                            <span class="status-badge done">
+                                <i-tabler name="check" size="12"></i-tabler>
+                                Odevzdáno
+                            </span>
+                            } @else if (hw.type === 1) {
+                            <span class="status-badge in-progress">
+                                <i-tabler name="progress" size="12"></i-tabler>
+                                Rozpracováno
+                            </span>
+                            } @else {
+                            <span class="status-badge todo">
+                                <i-tabler name="circle" size="12"></i-tabler>
+                                K vypracování
+                            </span>
+                            }
+                        </div>
+                        <div class="list-card-meta">
+                            <span class="meta-item" [class.urgent]="getDaysUntilDue(hw.due_to) <= 1 && hw.type !== 2">
+                                <i-tabler name="calendar" size="14"></i-tabler>
+                                {{ Utils.formatDateShort(hw.due_to) }}
+                            </span>
+                            @if (getDaysUntilDue(hw.due_to) >= 0 && hw.type !== 2) {
+                            <span class="meta-item days" [class.urgent]="getDaysUntilDue(hw.due_to) <= 1">
+                                <i-tabler name="clock" size="14"></i-tabler>
+                                @if (getDaysUntilDue(hw.due_to) === 0) {
+                                Dnes
+                                } @else if (getDaysUntilDue(hw.due_to) === 1) {
+                                Zítra
+                                } @else {
+                                {{ getDaysUntilDue(hw.due_to) }} dní
+                                }
+                            </span>
+                            }
+                        </div>
+                    </div>
+                    <h4 class="list-card-title">{{ hw.headline }}</h4>
+                    <p class="list-card-description">{{ hw.homework }}</p>
+                    @if (hw.attachments && hw.attachments.length > 0) {
+                    <div class="list-card-attachments">
+                        <i-tabler name="paperclip" size="14"></i-tabler>
+                        <span>{{ hw.attachments.length }} {{ hw.attachments.length === 1 ? 'příloha' : 'přílohy'
+                            }}</span>
+                    </div>
+                    }
                 </div>
+                <div class="list-card-actions">
+                    @if (hw.type === 0) {
+                    <button class="btn btn--sm btn--primary" (click)="moveToInProgress(hw)">
+                        <i-tabler name="player-play" size="14"></i-tabler>
+                        Začít
+                    </button>
+                    } @else if (hw.type === 1) {
+                    <button class="btn btn--sm btn--ghost" (click)="moveToTodo(hw)">
+                        <i-tabler name="arrow-left" size="14"></i-tabler>
+                    </button>
+                    <button class="btn btn--sm btn--success" (click)="moveToDone(hw)">
+                        <i-tabler name="check" size="14"></i-tabler>
+                        Odevzdat
+                    </button>
+                    } @else {
+                    <button class="btn btn--sm btn--ghost" (click)="moveToInProgress(hw)">
+                        <i-tabler name="arrow-left" size="14"></i-tabler>
+                        Vrátit
+                    </button>
+                    }
+                </div>
+            </div>
+            } @empty {
+            <div class="empty-list">
+                <div class="empty-icon">
+                    <i-tabler name="notebook-off"></i-tabler>
+                </div>
+                <h3>Žádné domácí úkoly</h3>
+                <p>Zatím nemáte žádné zadané domácí úkoly.</p>
             </div>
             }
         </div>
