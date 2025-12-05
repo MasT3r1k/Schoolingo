@@ -1,0 +1,42 @@
+<div class="section-container">
+    @if (isLoading) {
+    <div class="section-list">
+        @for (_ of [1,2,3]; track $index) {
+        <div class="section-item skeleton"></div>
+        }
+    </div>
+    } @else if (homework.length === 0) {
+    <div class="no-selection">
+        <div class="illustration">
+            <i-tabler name="notebook"></i-tabler>
+        </div>
+        <h3>{{ l.s("homework.no_homework") }}</h3>
+        <p>{{ l.s("homework.no_homework_desc") }}</p>
+    </div>
+    } @else {
+    <div class="section-list">
+        @for (hw of homework; track $index) {
+        <div class="section-item" [ngClass]="getUrgencyClass(hw.due_date)">
+            <div class="hw-checkbox" [class.completed]="hw.completed">
+                @if (hw.completed) {
+                <i-tabler name="check"></i-tabler>
+                }
+            </div>
+            <div class="item-content">
+                <div class="item-header">
+                    <span class="hw-subject badge badge--primary">{{ hw.subject_name }}</span>
+                    <span class="hw-deadline badge" [ngClass]="getUrgencyClass(hw.due_date)">
+                        <i-tabler name="clock" size="12"></i-tabler>
+                        {{ getDaysLeftText(hw.due_date) }}
+                    </span>
+                </div>
+                <span class="item-title">{{ hw.title }}</span>
+                @if (hw.description) {
+                <p class="item-description">{{ hw.description }}</p>
+                }
+            </div>
+        </div>
+        }
+    </div>
+    }
+</div>

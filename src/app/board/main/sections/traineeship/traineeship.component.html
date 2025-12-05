@@ -1,0 +1,52 @@
+<div class="section-container">
+    @if (isLoading) {
+    <div class="section-list">
+        @for (_ of [1,2]; track $index) {
+        <div class="section-item skeleton"></div>
+        }
+    </div>
+    } @else if (traineeships.length === 0) {
+    <div class="no-selection">
+        <div class="illustration">
+            <i-tabler name="briefcase"></i-tabler>
+        </div>
+        <h3>{{ l.s("traineeship.no_traineeship") }}</h3>
+        <p>{{ l.s("traineeship.no_traineeship_desc") }}</p>
+    </div>
+    } @else {
+    <div class="section-list">
+        @for (traineeship of traineeships; track $index) {
+        <div class="section-item traineeship-card">
+            <div class="item-content">
+                <div class="item-header">
+                    <span class="item-title">{{ traineeship.company_name }}</span>
+                    <span class="status badge" [ngClass]="getStatusClass(traineeship.status)">
+                        {{ getStatusLabel(traineeship.status) }}
+                    </span>
+                </div>
+                <span class="traineeship-dates">{{ formatDateRange(traineeship.start_date, traineeship.end_date)
+                    }}</span>
+                <div class="hours-progress">
+                    <div class="progress-info">
+                        <span class="progress-label">Odpracováno</span>
+                        <span class="progress-value">{{ traineeship.completed_hours || 0 }} / {{ traineeship.total_hours
+                            }} hod</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill"
+                            [style.width.%]="getHoursProgress(traineeship.completed_hours, traineeship.total_hours)">
+                        </div>
+                    </div>
+                </div>
+                @if (traineeship.supervisor) {
+                <span class="supervisor-info">
+                    <i-tabler name="user-circle" size="14"></i-tabler>
+                    {{ traineeship.supervisor }}
+                </span>
+                }
+            </div>
+        </div>
+        }
+    </div>
+    }
+</div>

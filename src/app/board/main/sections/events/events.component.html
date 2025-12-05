@@ -1,0 +1,48 @@
+<div class="section-container">
+    @if (isLoading) {
+    <div class="section-list">
+        @for (_ of [1,2,3]; track $index) {
+        <div class="section-item skeleton"></div>
+        }
+    </div>
+    } @else if (events.length === 0) {
+    <div class="no-selection">
+        <div class="illustration">
+            <i-tabler name="calendar-off"></i-tabler>
+        </div>
+        <h3>{{ l.s("events.no_events") }}</h3>
+        <p>{{ l.s("events.no_events_desc") }}</p>
+    </div>
+    } @else {
+    <div class="section-list">
+        @for (event of events; track $index) {
+        <div class="section-item" [ngClass]="getEventTypeClass(event.type)">
+            <div class="event-date-badge" [ngClass]="getEventTypeClass(event.type)">
+                <span class="date-day">{{ formatDate(event.date).split('.')[0] }}</span>
+                <span class="date-month">{{ formatDate(event.date).split('.')[1] }}.</span>
+            </div>
+            <div class="item-content">
+                <span class="item-title">{{ event.title }}</span>
+                <div class="event-details">
+                    @if (event.time) {
+                    <span class="event-meta">
+                        <i-tabler name="clock" size="12"></i-tabler>
+                        {{ formatTime(event.time) }}
+                    </span>
+                    }
+                    @if (event.location) {
+                    <span class="event-meta">
+                        <i-tabler name="map-pin" size="12"></i-tabler>
+                        {{ event.location }}
+                    </span>
+                    }
+                </div>
+            </div>
+            <div class="event-type-icon">
+                <i-tabler [name]="getEventTypeIcon(event.type)"></i-tabler>
+            </div>
+        </div>
+        }
+    </div>
+    }
+</div>

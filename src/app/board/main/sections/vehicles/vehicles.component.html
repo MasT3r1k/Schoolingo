@@ -1,0 +1,51 @@
+<div class="section-container">
+    @if (isLoading) {
+    <div class="section-list">
+        @for (_ of [1,2]; track $index) {
+        <div class="section-item skeleton"></div>
+        }
+    </div>
+    } @else if (reservations.length === 0) {
+    <div class="no-selection">
+        <div class="illustration">
+            <i-tabler name="car"></i-tabler>
+        </div>
+        <h3>{{ l.s("vehicles.no_reservations") }}</h3>
+        <p>{{ l.s("vehicles.no_reservations_desc") }}</p>
+    </div>
+    } @else {
+    <div class="section-list">
+        @for (reservation of reservations; track $index) {
+        <div class="section-item">
+            <div class="vehicle-icon" [ngClass]="reservation.vehicle_type">
+                <i-tabler [name]="getVehicleIcon(reservation.vehicle_type)"></i-tabler>
+            </div>
+            <div class="item-content">
+                <div class="item-header">
+                    <span class="item-title">{{ reservation.vehicle_name }}</span>
+                    <span class="status badge" [ngClass]="getStatusClass(reservation.status)">
+                        {{ getStatusLabel(reservation.status) }}
+                    </span>
+                </div>
+                <div class="reservation-details">
+                    <span class="detail-item">
+                        <i-tabler name="calendar" size="12"></i-tabler>
+                        {{ formatDate(reservation.date) }}
+                    </span>
+                    <span class="detail-item">
+                        <i-tabler name="clock" size="12"></i-tabler>
+                        {{ formatTime(reservation.start_time, reservation.end_time) }}
+                    </span>
+                </div>
+                @if (reservation.destination) {
+                <span class="detail-item destination">
+                    <i-tabler name="map-pin" size="12"></i-tabler>
+                    {{ reservation.destination }}
+                </span>
+                }
+            </div>
+        </div>
+        }
+    </div>
+    }
+</div>

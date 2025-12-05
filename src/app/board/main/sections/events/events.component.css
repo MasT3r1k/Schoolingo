@@ -22,6 +22,7 @@
     border-radius: var(--radius);
     border: 1px solid var(--border);
     transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    align-items: center;
 }
 
 .section-item:hover {
@@ -30,7 +31,7 @@
 }
 
 .section-item.skeleton {
-    height: 76px;
+    height: 56px;
     animation: pulse 1.5s infinite;
 }
 
@@ -46,47 +47,57 @@
     }
 }
 
-/* Priority styles */
-.section-item.priority-high {
-    border-left: 3px solid var(--danger);
-}
-
-.section-item.priority-medium {
-    border-left: 3px solid var(--warning);
-}
-
-.section-item.priority-normal {
-    border-left: 3px solid var(--primary);
-}
-
-.item-icon {
-    width: 34px;
-    height: 34px;
+.event-date-badge {
+    width: 42px;
+    height: 42px;
+    background: rgba(var(--primary-rgb), 0.1);
+    border-radius: var(--radius);
     display: flex;
+    flex-direction: column;
     align-items: center;
     justify-content: center;
-    border-radius: var(--radius);
     flex-shrink: 0;
 }
 
-.item-icon i-tabler {
-    width: 16px;
-    height: 16px;
+.date-day {
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--primary);
+    line-height: 1;
 }
 
-.item-icon.priority-high {
+.date-month {
+    font-size: 0.65rem;
+    color: var(--primary);
+    opacity: 0.8;
+}
+
+/* Event type colors */
+.event-date-badge.event-type-exam {
     background: rgba(239, 68, 68, 0.1);
+}
+
+.event-date-badge.event-type-exam .date-day,
+.event-date-badge.event-type-exam .date-month {
     color: var(--danger);
 }
 
-.item-icon.priority-medium {
-    background: rgba(234, 179, 8, 0.1);
-    color: var(--warning);
+.event-date-badge.event-type-meeting {
+    background: rgba(59, 130, 246, 0.1);
 }
 
-.item-icon.priority-normal {
-    background: rgba(var(--primary-rgb), 0.1);
-    color: var(--primary);
+.event-date-badge.event-type-meeting .date-day,
+.event-date-badge.event-type-meeting .date-month {
+    color: #3b82f6;
+}
+
+.event-date-badge.event-type-trip {
+    background: rgba(34, 197, 94, 0.1);
+}
+
+.event-date-badge.event-type-trip .date-day,
+.event-date-badge.event-type-trip .date-month {
+    color: var(--success);
 }
 
 .item-content {
@@ -95,13 +106,6 @@
     display: flex;
     flex-direction: column;
     gap: 4px;
-}
-
-.item-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-    gap: 8px;
 }
 
 .item-title {
@@ -113,36 +117,39 @@
     text-overflow: ellipsis;
 }
 
-.item-meta {
-    font-size: 0.75rem;
-    color: var(--text-muted);
-    white-space: nowrap;
-    flex-shrink: 0;
+.event-details {
+    display: flex;
+    gap: 12px;
 }
 
-.item-description {
-    font-size: 0.8rem;
-    color: var(--text-muted);
-    line-height: 1.4;
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-    margin: 0;
-}
-
-.item-author {
+.event-meta {
     display: flex;
     align-items: center;
     gap: 4px;
-    font-size: 0.7rem;
+    font-size: 0.75rem;
     color: var(--text-muted);
-    margin-top: 2px;
 }
 
-.item-author i-tabler {
+.event-meta i-tabler {
     width: 12px;
     height: 12px;
+}
+
+.event-type-icon {
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--surface);
+    border-radius: var(--radius);
+    flex-shrink: 0;
+}
+
+.event-type-icon i-tabler {
+    width: 16px;
+    height: 16px;
+    color: var(--text-muted);
 }
 
 /* Empty state */

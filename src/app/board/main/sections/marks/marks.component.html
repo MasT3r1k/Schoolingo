@@ -1,3 +1,35 @@
-@for (mark of marks; track $index) {
-<p>Známka: {{ mark.mark }}</p>
-}
+<div class="marks-container">
+    @if (marks.length === 0) {
+    <div class="no-selection">
+        <div class="illustration">
+            <i-tabler name="report-analytics"></i-tabler>
+        </div>
+        <h3>{{ l.s("marks.no_marks") }}</h3>
+        <p>{{ l.s("marks.no_marks_desc") }}</p>
+    </div>
+    } @else {
+    <div class="marks-list">
+        @for (mark of marks; track $index) {
+        <div class="mark-item">
+            <div class="mark-value" [class]="'grade-' + mark.mark">
+                {{ formatMark(mark.mark) }}
+            </div>
+            <div class="mark-info">
+                <span class="mark-subject">{{ mark.subject_name || 'Předmět' }}</span>
+                <span class="mark-topic">{{ mark.topic || 'Téma hodnocení' }}</span>
+            </div>
+            <div class="mark-meta">
+                <span class="mark-date">
+                    <i-tabler name="calendar" size="14"></i-tabler>
+                    {{ formatDate(mark.date) }}
+                </span>
+                <span class="mark-weight badge badge--neutral">
+                    <i-tabler name="scale" size="12"></i-tabler>
+                    {{ mark.weight || 1 }}
+                </span>
+            </div>
+        </div>
+        }
+    </div>
+    }
+</div>

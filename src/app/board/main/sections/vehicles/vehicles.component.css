@@ -8,7 +8,7 @@
 .section-list {
     display: flex;
     flex-direction: column;
-    gap: 6px;
+    gap: 8px;
     padding: .75rem 1rem;
     overflow-y: auto;
     height: 100%;
@@ -17,7 +17,7 @@
 .section-item {
     display: flex;
     gap: 12px;
-    padding: 10px 12px;
+    padding: 12px;
     background: var(--surface-2);
     border-radius: var(--radius);
     border: 1px solid var(--border);
@@ -26,11 +26,11 @@
 
 .section-item:hover {
     background: var(--hover-bg);
-    transform: translateX(2px);
+    border-color: var(--primary-200);
 }
 
 .section-item.skeleton {
-    height: 76px;
+    height: 86px;
     animation: pulse 1.5s infinite;
 }
 
@@ -46,47 +46,39 @@
     }
 }
 
-/* Priority styles */
-.section-item.priority-high {
-    border-left: 3px solid var(--danger);
-}
-
-.section-item.priority-medium {
-    border-left: 3px solid var(--warning);
-}
-
-.section-item.priority-normal {
-    border-left: 3px solid var(--primary);
-}
-
-.item-icon {
-    width: 34px;
-    height: 34px;
+.vehicle-icon {
+    width: 44px;
+    height: 44px;
     display: flex;
     align-items: center;
     justify-content: center;
     border-radius: var(--radius);
     flex-shrink: 0;
-}
-
-.item-icon i-tabler {
-    width: 16px;
-    height: 16px;
-}
-
-.item-icon.priority-high {
-    background: rgba(239, 68, 68, 0.1);
-    color: var(--danger);
-}
-
-.item-icon.priority-medium {
-    background: rgba(234, 179, 8, 0.1);
-    color: var(--warning);
-}
-
-.item-icon.priority-normal {
     background: rgba(var(--primary-rgb), 0.1);
+}
+
+.vehicle-icon i-tabler {
+    width: 22px;
+    height: 22px;
     color: var(--primary);
+}
+
+.vehicle-icon.bus {
+    background: rgba(59, 130, 246, 0.1);
+}
+
+.vehicle-icon.bus i-tabler {
+    color: #3b82f6;
+}
+
+.vehicle-icon.van,
+.vehicle-icon.car {
+    background: rgba(34, 197, 94, 0.1);
+}
+
+.vehicle-icon.van i-tabler,
+.vehicle-icon.car i-tabler {
+    color: #22c55e;
 }
 
 .item-content {
@@ -94,53 +86,63 @@
     overflow: hidden;
     display: flex;
     flex-direction: column;
-    gap: 4px;
+    gap: 6px;
 }
 
 .item-header {
     display: flex;
     justify-content: space-between;
-    align-items: flex-start;
+    align-items: center;
     gap: 8px;
 }
 
 .item-title {
     font-weight: 600;
-    font-size: 0.875rem;
+    font-size: 0.9rem;
     color: var(--text);
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
 }
 
-.item-meta {
-    font-size: 0.75rem;
-    color: var(--text-muted);
-    white-space: nowrap;
-    flex-shrink: 0;
+.status {
+    font-size: 0.65rem;
+    padding: 2px 8px;
 }
 
-.item-description {
-    font-size: 0.8rem;
-    color: var(--text-muted);
-    line-height: 1.4;
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-    margin: 0;
+.status.status-confirmed {
+    background: rgba(34, 197, 94, 0.1);
+    color: var(--success);
 }
 
-.item-author {
+.status.status-pending {
+    background: rgba(234, 179, 8, 0.1);
+    color: var(--warning);
+}
+
+.status.status-cancelled {
+    background: rgba(239, 68, 68, 0.1);
+    color: var(--danger);
+}
+
+.reservation-details {
+    display: flex;
+    gap: 12px;
+}
+
+.detail-item {
     display: flex;
     align-items: center;
     gap: 4px;
-    font-size: 0.7rem;
+    font-size: 0.75rem;
     color: var(--text-muted);
+}
+
+.detail-item.destination {
     margin-top: 2px;
 }
 
-.item-author i-tabler {
+.detail-item i-tabler {
     width: 12px;
     height: 12px;
 }

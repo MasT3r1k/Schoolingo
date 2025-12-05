@@ -1,0 +1,48 @@
+<div class="section-container">
+    @if (isLoading) {
+    <div class="section-content">
+        <div class="balance-card skeleton"></div>
+        <div class="section-list">
+            @for (_ of [1,2,3]; track $index) {
+            <div class="section-item skeleton"></div>
+            }
+        </div>
+    </div>
+    } @else if (menu.length === 0) {
+    <div class="no-selection">
+        <div class="illustration">
+            <i-tabler name="soup"></i-tabler>
+        </div>
+        <h3>{{ l.s("cafeteria.no_menu") }}</h3>
+        <p>{{ l.s("cafeteria.no_menu_desc") }}</p>
+    </div>
+    } @else {
+    <div class="section-content">
+        <div class="balance-card">
+            <div class="balance-info">
+                <span class="balance-label">Kredit</span>
+                <span class="balance-value">{{ formatPrice(balance) }}</span>
+            </div>
+            <i-tabler name="wallet"></i-tabler>
+        </div>
+        <div class="section-list">
+            @for (day of menu; track $index) {
+            <div class="section-item menu-item" [ngClass]="getOrderStatusClass(day)">
+                <div class="menu-date">
+                    <span class="date-label">{{ formatDate(day.date) }}</span>
+                </div>
+                <div class="item-content">
+                    <span class="item-title">{{ day.meal_name }}</span>
+                    @if (day.allergens) {
+                    <span class="menu-allergens">Alergeny: {{ day.allergens }}</span>
+                    }
+                </div>
+                <div class="menu-action" [ngClass]="getOrderStatusClass(day)">
+                    <i-tabler [name]="getOrderStatusIcon(day)"></i-tabler>
+                </div>
+            </div>
+            }
+        </div>
+    </div>
+    }
+</div>

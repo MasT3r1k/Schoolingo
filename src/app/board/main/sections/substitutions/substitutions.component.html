@@ -1,0 +1,56 @@
+<div class="section-container">
+    @if (isLoading) {
+    <div class="section-list">
+        @for (_ of [1,2,3]; track $index) {
+        <div class="section-item skeleton"></div>
+        }
+    </div>
+    } @else if (substitutions.length === 0) {
+    <div class="no-selection">
+        <div class="illustration">
+            <i-tabler name="calendar-check"></i-tabler>
+        </div>
+        <h3>{{ l.s("substitutions.no_substitutions") }}</h3>
+        <p>{{ l.s("substitutions.no_substitutions_desc") }}</p>
+    </div>
+    } @else {
+    <div class="section-list">
+        @for (sub of substitutions; track $index) {
+        <div class="section-item" [ngClass]="getSubstitutionType(sub)">
+            <div class="sub-hour">
+                <span class="hour-num">{{ sub.hour }}</span>
+                <span class="hour-label">hod.</span>
+            </div>
+            <div class="item-content">
+                <div class="item-header">
+                    <span class="item-title">{{ sub.subject_name }}</span>
+                    <span class="sub-badge badge" [ngClass]="getSubstitutionType(sub)">
+                        <i-tabler [name]="getTypeIcon(sub)" size="12"></i-tabler>
+                        {{ getTypeLabel(sub) }}
+                    </span>
+                </div>
+                <div class="sub-details">
+                    @if (sub.cancelled) {
+                    <span class="sub-info cancelled">Hodina odpadá</span>
+                    } @else {
+                    @if (sub.new_teacher) {
+                    <span class="sub-info">
+                        <i-tabler name="user" size="12"></i-tabler>
+                        {{ sub.new_teacher }}
+                    </span>
+                    }
+                    @if (sub.new_room) {
+                    <span class="sub-info">
+                        <i-tabler name="door" size="12"></i-tabler>
+                        {{ sub.new_room }}
+                    </span>
+                    }
+                    }
+                </div>
+            </div>
+            <span class="sub-date">{{ formatDate(sub.date) }}</span>
+        </div>
+        }
+    </div>
+    }
+</div>

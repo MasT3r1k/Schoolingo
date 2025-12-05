@@ -22,6 +22,7 @@
     border-radius: var(--radius);
     border: 1px solid var(--border);
     transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    align-items: center;
 }
 
 .section-item:hover {
@@ -30,7 +31,7 @@
 }
 
 .section-item.skeleton {
-    height: 76px;
+    height: 56px;
     animation: pulse 1.5s infinite;
 }
 
@@ -46,47 +47,46 @@
     }
 }
 
-/* Priority styles */
-.section-item.priority-high {
+/* Type colors */
+.section-item.cancelled {
     border-left: 3px solid var(--danger);
 }
 
-.section-item.priority-medium {
+.section-item.room-change {
     border-left: 3px solid var(--warning);
 }
 
-.section-item.priority-normal {
+.section-item.teacher-change {
     border-left: 3px solid var(--primary);
 }
 
-.item-icon {
-    width: 34px;
-    height: 34px;
+.section-item.other {
+    border-left: 3px solid var(--text-muted);
+}
+
+.sub-hour {
+    width: 38px;
+    height: 38px;
+    background: var(--surface);
+    border-radius: var(--radius);
     display: flex;
+    flex-direction: column;
     align-items: center;
     justify-content: center;
-    border-radius: var(--radius);
     flex-shrink: 0;
+    border: 1px solid var(--border);
 }
 
-.item-icon i-tabler {
-    width: 16px;
-    height: 16px;
-}
-
-.item-icon.priority-high {
-    background: rgba(239, 68, 68, 0.1);
-    color: var(--danger);
-}
-
-.item-icon.priority-medium {
-    background: rgba(234, 179, 8, 0.1);
-    color: var(--warning);
-}
-
-.item-icon.priority-normal {
-    background: rgba(var(--primary-rgb), 0.1);
+.hour-num {
+    font-size: 0.95rem;
+    font-weight: 700;
     color: var(--primary);
+    line-height: 1;
+}
+
+.hour-label {
+    font-size: 0.55rem;
+    color: var(--text-muted);
 }
 
 .item-content {
@@ -100,7 +100,7 @@
 .item-header {
     display: flex;
     justify-content: space-between;
-    align-items: flex-start;
+    align-items: center;
     gap: 8px;
 }
 
@@ -113,36 +113,61 @@
     text-overflow: ellipsis;
 }
 
-.item-meta {
-    font-size: 0.75rem;
-    color: var(--text-muted);
-    white-space: nowrap;
-    flex-shrink: 0;
-}
-
-.item-description {
-    font-size: 0.8rem;
-    color: var(--text-muted);
-    line-height: 1.4;
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-    margin: 0;
-}
-
-.item-author {
+.sub-badge {
     display: flex;
     align-items: center;
     gap: 4px;
-    font-size: 0.7rem;
-    color: var(--text-muted);
-    margin-top: 2px;
+    font-size: 0.65rem;
+    padding: 2px 6px;
 }
 
-.item-author i-tabler {
+.sub-badge i-tabler {
     width: 12px;
     height: 12px;
+}
+
+.sub-badge.cancelled {
+    background: rgba(239, 68, 68, 0.1);
+    color: var(--danger);
+}
+
+.sub-badge.room-change {
+    background: rgba(234, 179, 8, 0.1);
+    color: var(--warning);
+}
+
+.sub-badge.teacher-change {
+    background: rgba(var(--primary-rgb), 0.1);
+    color: var(--primary);
+}
+
+.sub-details {
+    display: flex;
+    gap: 12px;
+}
+
+.sub-info {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 0.75rem;
+    color: var(--text-muted);
+}
+
+.sub-info.cancelled {
+    color: var(--danger);
+    font-style: italic;
+}
+
+.sub-info i-tabler {
+    width: 12px;
+    height: 12px;
+}
+
+.sub-date {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    white-space: nowrap;
 }
 
 /* Empty state */

@@ -1,1 +1,40 @@
-<p>announcements works!</p>
+<div class="section-container">
+    @if (isLoading) {
+    <div class="section-list">
+        @for (_ of [1,2,3]; track $index) {
+        <div class="section-item skeleton"></div>
+        }
+    </div>
+    } @else if (announcements.length === 0) {
+    <div class="no-selection">
+        <div class="illustration">
+            <i-tabler name="bell-off"></i-tabler>
+        </div>
+        <h3>{{ l.s("announcements.no_announcements") }}</h3>
+        <p>{{ l.s("announcements.no_announcements_desc") }}</p>
+    </div>
+    } @else {
+    <div class="section-list">
+        @for (announcement of announcements; track $index) {
+        <div class="section-item" [class]="getPriorityClass(announcement.priority)">
+            <div class="item-icon" [class]="getPriorityClass(announcement.priority)">
+                <i-tabler [name]="getPriorityIcon(announcement.priority)"></i-tabler>
+            </div>
+            <div class="item-content">
+                <div class="item-header">
+                    <span class="item-title">{{ announcement.title }}</span>
+                    <span class="item-meta">{{ formatDate(announcement.created_at) }}</span>
+                </div>
+                <p class="item-description">{{ announcement.content }}</p>
+                @if (announcement.author) {
+                <span class="item-author">
+                    <i-tabler name="user" size="12"></i-tabler>
+                    {{ announcement.author }}
+                </span>
+                }
+            </div>
+        </div>
+        }
+    </div>
+    }
+</div>
