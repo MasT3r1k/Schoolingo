@@ -122,6 +122,31 @@ export const routes: Routes = [
             ]
             },
             {
+                path: 'fleetvehicles',
+                children: [
+                    {
+                        path: 'overview',
+                        loadComponent: () => import('./board/FleetVehicles/overview/overview.component').then(m => m.OverviewComponent)
+                    },
+                    {
+                        path: 'vehicles',
+                        loadComponent: () => import('./board/FleetVehicles/vehicles/vehicles.component').then(m => m.VehiclesComponent)
+                    },
+                    {
+                        path: 'vehicles/:id',
+                        loadComponent: () => import('./board/FleetVehicles/vehicles/vehicles.component').then(m => m.VehiclesComponent)
+                    },
+                    {
+                        path: 'reservations',
+                        loadComponent: () => import('./board/FleetVehicles/reservations/reservations.component').then(m => m.ReservationsComponent)
+                    },
+                    {
+                        path: 'settings',
+                        loadComponent: () => import('./board/FleetVehicles/settings/settings.component').then(m => m.SettingsComponent)
+                    }
+                ]
+            },
+            {
                 path: 'messages', children: [
                     {
                         path: 'send', component: SendComponent

@@ -467,18 +467,6 @@ small {
     /* Older Safari and Chromium */
 }
 
-.header-content h2 {
-    font-size: 1.25rem;
-    font-weight: 700;
-    color: var(--text);
-}
-
-.header-content p {
-    font-size: 0.875rem;
-    color: var(--text-muted);
-    margin-top: 0.25rem;
-}
-
 .APP_Logo {
     font-size: 0px;
     user-select: none;
@@ -1030,11 +1018,15 @@ input:disabled {
 .item-btn.text {
     min-width: 36px;
     width: fit-content;
+    background-color: var(--surface-2);
+    padding: 8px 16px;
 }
 
 .item-btn.text i,
 .item-btn.text i-tabler {
     margin-right: .5rem;
+    width: 22px;
+    height: 22px;
 }
 
 .item-btn>div {
@@ -1043,10 +1035,10 @@ input:disabled {
 
 .item-btn>.icon,
 .item-btn .text {
-    font-size: 22px;
+    background-color: var(--surface-2);
+    font-size: 16px;
     display: flex;
     justify-content: center;
-    background-color: var(--surface-2);
     align-items: center;
     border-radius: inherit;
 }
@@ -1115,4 +1107,277 @@ input:disabled {
 
 .ab-distance {
     --absence-color: hsl(56deg, 69%, 45%);
+}
+
+/* Context menu */
+#context-menu {
+    position: absolute;
+    display: none;
+    flex-direction: column;
+    min-width: 180px;
+    background: var(--surface);
+    color: var(--text);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    box-shadow: var(--shadow);
+    overflow: hidden;
+    z-index: 999999999999;
+    padding: 4px 0;
+    font-family: "Inter", sans-serif;
+    font-size: 14px;
+    animation: fadeIn 0.12s ease-out;
+}
+
+#context-menu .menu-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 14px;
+    cursor: pointer;
+    transition: background 0.15s;
+    user-select: none;
+}
+
+#context-menu .menu-item.danger {
+    color: var(--danger);
+}
+
+#context-menu .menu-item:hover {
+    background: var(--hover-bg);
+}
+
+#content-menu .menu-item.danger:hover {
+    color: #fff;
+    background-color: var(--danger-700);
+}
+
+#context-menu .menu-item:active {
+    background: var(--active-bg);
+}
+
+#context-menu .menu-item .icon {
+    font-size: 16px;
+    opacity: 0.9;
+    width: 18px;
+    text-align: center;
+}
+
+#context-menu .menu-separator {
+    height: 1px;
+    background: var(--border);
+    margin: 4px 0;
+}
+
+#context-menu .menu-item.danger {
+    color: var(--danger);
+}
+
+#context-menu .menu-item.danger:hover {
+    background: rgba(231, 76, 60, 0.1);
+}
+
+.stats-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 16px;
+}
+
+.stat-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 20px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    transition: all 0.3s;
+    position: relative;
+    overflow: hidden;
+}
+
+.stat-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 4px;
+    height: 100%;
+    background: var(--accent-color);
+    opacity: 0;
+    transition: opacity 0.3s;
+}
+
+.stat-card:hover::before {
+    opacity: 1;
+}
+
+.stat-card.stat--primary {
+    --accent-color: var(--primary);
+}
+
+.stat-card.stat--success {
+    --accent-color: var(--success);
+}
+
+.stat-card.stat--warning {
+    --accent-color: var(--warning);
+}
+
+.stat-card.stat--danger {
+    --accent-color: var(--danger);
+}
+
+.stat-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+    border-color: var(--accent-color);
+}
+
+.stat-icon {
+    width: 56px;
+    height: 56px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: var(--accent-color);
+    color: white;
+}
+
+.stat-icon i-tabler {
+    width: 28px;
+    height: 28px;
+}
+
+.stat-info {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.stat-value {
+    font-size: 32px;
+    font-weight: 800;
+    color: var(--text);
+    line-height: 1;
+    margin-bottom: 4px;
+}
+
+.stat-value .muted {
+    font-size: 14px;
+    font-weight: normal;
+}
+
+.stat-label {
+    font-size: 13px;
+    color: var(--text-muted);
+    font-weight: 500;
+}
+
+/* Quick Stats */
+.quick-stats {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.quick-stats .stat-card {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.875rem 1rem;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    transition: all 0.2s ease;
+}
+
+.quick-stats .stat-card:hover {
+    border-color: var(--primary);
+}
+
+.quick-stats .stat-icon {
+    width: 2.25rem;
+    height: 2.25rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--surface-2);
+    border-radius: var(--radius);
+    color: var(--text-muted);
+}
+
+.quick-stats .stat-icon i-tabler {
+    width: 1.125rem;
+    height: 1.125rem;
+}
+
+.quick-stats .stat-info {
+    display: flex;
+    flex-direction: column;
+}
+
+.quick-stats .stat-info .stat-value {
+    font-size: 1.125rem;
+    font-weight: 700;
+    color: var(--text);
+}
+
+.quick-stats .stat-info .stat-label {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+}
+
+.quick-stats .stat-card.grade-excellent .stat-icon {
+    color: var(--success);
+    background: rgba(34, 197, 94, 0.1);
+}
+
+.quick-stats .stat-card.grade-excellent .stat-value {
+    color: var(--success);
+}
+
+.quick-stats .stat-card.grade-good .stat-icon {
+    color: var(--primary);
+    background: rgba(74, 163, 255, 0.1);
+}
+
+.quick-stats .stat-card.grade-good .stat-value {
+    color: var(--primary);
+}
+
+.quick-stats .stat-card.grade-fair .stat-icon {
+    color: var(--warning);
+    background: rgba(251, 191, 36, 0.1);
+}
+
+.quick-stats .stat-card.grade-fair .stat-value {
+    color: var(--warning);
+}
+
+.quick-stats .stat-card.grade-poor .stat-icon {
+    color: var(--danger);
+    background: rgba(239, 68, 68, 0.1);
+}
+
+.quick-stats .stat-card.grade-poor .stat-value {
+    color: var(--danger);
+}
+
+.quick-stats .stat-card.warning .stat-icon {
+    color: var(--warning);
+    background: rgba(251, 191, 36, 0.1);
+}
+
+.quick-stats .stat-card.warning .stat-value {
+    color: var(--warning);
+}
+
+.quick-stats .stat-card.danger .stat-icon {
+    color: var(--danger);
+    background: rgba(239, 68, 68, 0.1);
+}
+
+.quick-stats .stat-card.danger .stat-value {
+    color: var(--danger);
 }

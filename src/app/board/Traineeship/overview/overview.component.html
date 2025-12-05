@@ -3,15 +3,15 @@
     <div class="card card-days">
         <div class="card-top">
         </div>
-        <div class="card__header">
+        <div class="card-header">
             <div class="left">
                 <h2>{{ l.s('traineeship.overview.nearest_diary') }}</h2>
                 @if (getNearestDiary()) {
-                <p class="text--muted">{{
+                <span class="meta muted">{{
                     l.s('traineeship.overview.diary_week')
                     .replaceAll('%start%', Utils.formatDateShort(getNearestDiary().start))
                     .replaceAll('%end%', Utils.formatDateShort(getNearestDiary().end))
-                    }}</p>
+                    }}</span>
                 }
             </div>
             <div class="flex-items">
@@ -72,7 +72,7 @@
     <div class="card">
         <div class="card-top"></div>
         <div class="card__header">
-            <h2 class="card__title">{{ l.s('traineeship.overview.diary_help') }}</h2>
+            <h3>{{ l.s('traineeship.overview.diary_help') }}</h3>
         </div>
         <div class="card__body" style="padding-right: 1rem; height: auto;overflow-y: auto;max-height: 600px;">
 
@@ -128,49 +128,49 @@
 </div>
 } @else if (perms.checkPermission(["manager:traineeship:manage"])) {
 <!-- Admin Dashboard -->
-<div class="admin-dashboard card">
-    <div class="dashboard-header card__header">
+<div class="card">
+    <div class="card-header" style="margin: 0">
         <div>
-            <h1 class="card__title">Přehled praxí</h1>
-            <p class="text--muted">Dashboard pro správu odborných praxí</p>
+            <h3>Přehled praxí</h3>
+            <span class="meta muted">Dashboard pro správu odborných praxí</span>
         </div>
     </div>
 
     <div class="card__body">
         <!-- Stats Cards -->
-        <div class="stats-row">
-            <div class="stat-card stat-card--primary">
+        <div class="stats-cards">
+            <div class="stat-card stat--primary">
                 <div class="stat-icon">
                     <i-tabler name="calendar-event"></i-tabler>
                 </div>
-                <div class="stat-content">
+                <div class="stat-info">
                     <div class="stat-value">{{ adminStats.totalTraineeships }}</div>
                     <div class="stat-label">Celkem praxí</div>
                 </div>
             </div>
-            <div class="stat-card stat-card--success">
+            <div class="stat-card stat--success">
                 <div class="stat-icon">
                     <i-tabler name="player-play"></i-tabler>
                 </div>
-                <div class="stat-content">
+                <div class="stat-info">
                     <div class="stat-value">{{ adminStats.activeTraineeships }}</div>
                     <div class="stat-label">Probíhající</div>
                 </div>
             </div>
-            <div class="stat-card stat-card--warning">
+            <div class="stat-card stat--warning">
                 <div class="stat-icon">
                     <i-tabler name="file-check"></i-tabler>
                 </div>
-                <div class="stat-content">
+                <div class="stat-info">
                     <div class="stat-value">{{ adminStats.studentsWithContract }}</div>
                     <div class="stat-label">Se smlouvou</div>
                 </div>
             </div>
-            <div class="stat-card stat-card--danger">
+            <div class="stat-card stat--danger">
                 <div class="stat-icon">
                     <i-tabler name="file-x"></i-tabler>
                 </div>
-                <div class="stat-content">
+                <div class="stat-info">
                     <div class="stat-value">{{ adminStats.studentsWithoutContract }}</div>
                     <div class="stat-label">Bez smlouvy</div>
                 </div>
@@ -206,9 +206,11 @@
                 </div>
                 <div class="card__body">
                     @if (getActiveTraineeships().length === 0) {
-                    <div class="empty-state">
-                        <i-tabler name="calendar-off" class="empty-state__icon"></i-tabler>
-                        <p class="empty-state__description">Žádné probíhající praxe</p>
+                    <div class="no-selection">
+                        <div class="illustration">
+                            <i-tabler name="calendar-off"></i-tabler>
+                        </div>
+                        <p>Žádné probíhající praxe</p>
                     </div>
                     } @else {
                     @for (week of getActiveTraineeships(); track week.traineeship) {
@@ -235,9 +237,11 @@
                 </div>
                 <div class="card__body">
                     @if (getUpcomingTraineeships().length === 0) {
-                    <div class="empty-state">
-                        <i-tabler name="calendar-plus" class="empty-state__icon"></i-tabler>
-                        <p class="empty-state__description">Žádné naplánované praxe</p>
+                    <div class="no-selection">
+                        <div class="illustration">
+                            <i-tabler name="calendar-plus"></i-tabler>
+                        </div>
+                        <p>Žádné naplánované praxe</p>
                     </div>
                     } @else {
                     @for (week of getUpcomingTraineeships(); track week.traineeship) {

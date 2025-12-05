@@ -1,138 +1,21 @@
 <div class="dashboard">
     <div class="modules">
-        <!-- Rozvrh -->
+        @for (module of modules; track module.id) {
         <div class="module">
             <div class="module-header">
-                <h2>{{ l.s("modules.timetable") }}</h2>
+                <h2>{{ l.s(module.titleKey) }}</h2>
                 <div class="flex-items">
                     <schoolingo-tabs></schoolingo-tabs>
                 </div>
             </div>
-            <div class="module-body" [class.skeleton]="timetable() == null">
-                <ng-container>
-                    <ng-container *ngComponentOutlet="timetable()"></ng-container>
-                </ng-container>
+            <div class="module-body" [class.skeleton]="module.component() == null">
+                @if (module.component() == null) {
+                <div class="loader"></div>
+                } @else {
+                <ng-container *ngComponentOutlet="module.component()"></ng-container>
+                }
             </div>
         </div>
-
-        <!-- Známky -->
-        <div class="module">
-            <div class="module-header">
-                <h2>{{ l.s("modules.marks") }}</h2>
-                <div class="flex-items">
-                    <schoolingo-tabs></schoolingo-tabs>
-                </div>
-            </div>
-            <div class="module-body" [class.skeleton]="marks() == null">
-                <ng-container>
-                    <ng-container *ngComponentOutlet="marks()"></ng-container>
-                </ng-container>
-            </div>
-        </div>
-
-        <!-- Oznámení -->
-        <div class="module">
-            <div class="module-header">
-                <h2>{{ l.s("modules.announcements") }}</h2>
-                <div class="flex-items">
-                    <schoolingo-tabs></schoolingo-tabs>
-                </div>
-            </div>
-            <div class="module-body" [class.skeleton]="announcements() == null">
-                <ng-container>
-                    <ng-container *ngComponentOutlet="announcements()"></ng-container>
-                </ng-container>
-            </div>
-        </div>
-
-        <!-- Domácí úkoly -->
-        <div class="module">
-            <div class="module-header">
-                <h2>{{ l.s("modules.homework") }}</h2>
-                <div class="flex-items">
-                    <schoolingo-tabs></schoolingo-tabs>
-                </div>
-            </div>
-            <div class="module-body" [class.skeleton]="homework() == null">
-                <ng-container>
-                    <ng-container *ngComponentOutlet="homework()"></ng-container>
-                </ng-container>
-            </div>
-        </div>
-
-        <!-- Plán akcí -->
-        <div class="module">
-            <div class="module-header">
-                <h2>{{ l.s("modules.events") }}</h2>
-                <div class="flex-items">
-                    <schoolingo-tabs></schoolingo-tabs>
-                </div>
-            </div>
-            <div class="module-body" [class.skeleton]="events() == null">
-                <ng-container>
-                    <ng-container *ngComponentOutlet="events()"></ng-container>
-                </ng-container>
-            </div>
-        </div>
-
-        <!-- Suplování -->
-        <div class="module">
-            <div class="module-header">
-                <h2>{{ l.s("modules.substitutions") }}</h2>
-                <div class="flex-items">
-                    <schoolingo-tabs></schoolingo-tabs>
-                </div>
-            </div>
-            <div class="module-body" [class.skeleton]="substitutions() == null">
-                <ng-container>
-                    <ng-container *ngComponentOutlet="substitutions()"></ng-container>
-                </ng-container>
-            </div>
-        </div>
-
-        <!-- Odborné praxe -->
-        <div class="module">
-            <div class="module-header">
-                <h2>{{ l.s("modules.traineeship") }}</h2>
-                <div class="flex-items">
-                    <schoolingo-tabs></schoolingo-tabs>
-                </div>
-            </div>
-            <div class="module-body" [class.skeleton]="traineeship() == null">
-                <ng-container>
-                    <ng-container *ngComponentOutlet="traineeship()"></ng-container>
-                </ng-container>
-            </div>
-        </div>
-
-        <!-- Jídelna -->
-        <div class="module">
-            <div class="module-header">
-                <h2>{{ l.s("modules.cafeteria") }}</h2>
-                <div class="flex-items">
-                    <schoolingo-tabs></schoolingo-tabs>
-                </div>
-            </div>
-            <div class="module-body" [class.skeleton]="cafeteria() == null">
-                <ng-container>
-                    <ng-container *ngComponentOutlet="cafeteria()"></ng-container>
-                </ng-container>
-            </div>
-        </div>
-
-        <!-- Vozový park -->
-        <div class="module">
-            <div class="module-header">
-                <h2>{{ l.s("modules.vehicles") }}</h2>
-                <div class="flex-items">
-                    <schoolingo-tabs></schoolingo-tabs>
-                </div>
-            </div>
-            <div class="module-body" [class.skeleton]="vehicles() == null">
-                <ng-container>
-                    <ng-container *ngComponentOutlet="vehicles()"></ng-container>
-                </ng-container>
-            </div>
-        </div>
+        }
     </div>
 </div>

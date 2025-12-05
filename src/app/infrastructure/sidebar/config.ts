@@ -25,24 +25,6 @@ export const config: SidebarGroup[] = [
                 permission: ['manager:admin', 'principal']
             },
             {
-                item: "sidebar.teachers.list",
-                url: 'teachers',
-                icon: 'school',
-                permission: ['student', 'teacher', 'parent']
-            },
-            {
-                item: 'sidebar.manage_class',
-                url: 'manageclass',
-                icon: 'chalkboard',
-                permission: ['teacher']
-            },
-            {
-                item: 'sidebar.manage_users',
-                url: 'users',
-                icon: 'user-cog',
-                permission: ['manager:system:admin']
-            },
-            {
                 item: 'sidebar.schedule_builder',
                 url: 'schedule/builder',
                 icon: 'calendar-plus',
@@ -227,20 +209,32 @@ export const config: SidebarGroup[] = [
                 }]
             },
             {
-                item: "sidebar/fleetVehicles/main",
+                item: "sidebar.fleetVehicles.main",
                 icon: 'car',
-                modules: ['fleetVehicles'],
+                // modules: ['fleetVehicles'],
                 children: [{
-                    item: "sidebar/fleetVehicles/overview",
+                    item: "sidebar.fleetVehicles.overview",
                     url: "fleetvehicles/overview",
                     icon: 'dashboard',
                     permission: ['teacher']
                 },
                 {
-                    item: "sidebar/fleetVehicles/vehicles",
+                    item: "sidebar.fleetVehicles.vehicles",
                     url: "fleetvehicles/vehicles",
                     icon: 'car',
                     permission: ['teacher']
+                },
+                {
+                    item: "sidebar.fleetVehicles.reservations",
+                    url: "fleetvehicles/reservations",
+                    icon: 'calendar-event',
+                    permission: ['teacher']
+                },
+                {
+                    item: "sidebar.fleetVehicles.settings",
+                    url: "fleetvehicles/settings",
+                    icon: 'settings',
+                    permission: ['manager:fleetVehicles:settings']
                 }]
             },
             {

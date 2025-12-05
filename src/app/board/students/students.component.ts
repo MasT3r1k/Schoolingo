@@ -69,6 +69,12 @@ export class StudentsComponent {
   showAddStudentModal = false;
   addStudentTab: 'manual' | 'ldap' | 'excel' = 'manual';
   
+  // Detail Modals
+  showGradesModal = false;
+  showAbsenceModal = false;
+  showDisciplineModal = false;
+  showAddDisciplineForm = false;
+  
   // Filters
   filters: StudentFilters = {
     search: '',
