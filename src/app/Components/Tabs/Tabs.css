@@ -1,16 +1,20 @@
+/* ========================================
+   TABS - Enhanced with Design Tokens
+   ======================================== */
+
 .tabs {
     display: flex;
     position: relative;
     border-radius: var(--radius);
     background-color: var(--surface-2);
     overflow: hidden;
-    gap: 8px;
-    padding: 4px;
+    gap: var(--space-2);
+    padding: var(--space-1);
 }
 
 .tabs.no-bottom-border {
-    border-bottom-left-radius: 0px;
-    border-bottom-right-radius: 0px;
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
 }
 
 .tabs .options {
@@ -19,41 +23,42 @@
     justify-content: space-between;
 }
 
-.tabs > .options > .tab {
+.tabs>.options>.tab {
     display: flex;
     align-items: center;
     justify-content: center;
     text-align: center;
-    gap: 8px;
+    gap: var(--space-2);
     z-index: 5;
     font-weight: 500;
-    font-size: 14px;
-    padding: 8px 16px;
+    font-size: var(--text-sm);
+    padding: var(--space-2) var(--space-4);
     border-radius: var(--radius);
     cursor: pointer;
     color: var(--text-muted);
-    transition: all 0.15s ease-in;
+    transition: all var(--transition-fast);
 }
 
-.tabs > .options > .tab:hover {
+.tabs>.options>.tab:hover {
     background-color: var(--hover-bg);
+    color: var(--text);
 }
 
-.tabs > .options > .tab.active {
+.tabs>.options>.tab.active {
     color: #fff;
 }
 
-.tabs > .options > .tab:first-child {
+.tabs>.options>.tab:first-child {
     border-top-left-radius: var(--radius);
     border-bottom-left-radius: var(--radius);
 }
 
-.tabs > .options > .tab:last-child {
+.tabs>.options>.tab:last-child {
     border-top-right-radius: var(--radius);
     border-bottom-right-radius: var(--radius);
 }
 
-.tabs > .glider {
+.tabs>.glider {
     position: absolute;
     display: flex;
     width: 100px;
@@ -62,5 +67,5 @@
     background-color: var(--primary);
     z-index: 1;
     border-radius: var(--radius);
-    transition: 0.25s all ease-out;
+    transition: var(--transition-slow) all ease-out;
 }

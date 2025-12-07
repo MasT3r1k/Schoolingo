@@ -1,21 +1,23 @@
 /**
  * UNIFIED COMPONENT SYSTEM - 2025
+ * Enhanced with Sajid's design principles
  * 
  * Design System s konzistentním názvoslovím
  * BEM-based naming: .component--modifier
  */
 
 /* ========================================
-   BUTTONS
+   BUTTONS - Enhanced with micro-interactions
    ======================================== */
 
 .btn {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    gap: 0.5rem;
-    padding: 0.625rem 1.25rem;
-    font-size: 0.9375rem;
+    gap: var(--space-2);
+    padding: var(--space-3) var(--space-5);
+    font-family: var(--font-family);
+    font-size: var(--text-sm);
     font-weight: 600;
     line-height: 1.5;
     text-align: center;
@@ -25,13 +27,34 @@
     border-radius: var(--radius);
     cursor: pointer;
     user-select: none;
-    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    transition:
+        transform var(--transition-fast),
+        box-shadow var(--transition-fast),
+        background-color var(--transition-fast),
+        border-color var(--transition-fast);
     background: var(--surface-2);
     color: var(--text);
+    position: relative;
+    overflow: hidden;
+}
+
+/* Subtle gradient overlay for depth */
+.btn::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.1) 0%, transparent 50%);
+    opacity: 0;
+    transition: opacity var(--transition-fast);
+    pointer-events: none;
+}
+
+.btn:hover::before {
+    opacity: 1;
 }
 
 .btn.icon-only {
-    padding: 8px;
+    padding: var(--space-2);
 }
 
 .btn.icon-only i-tabler {
@@ -42,12 +65,18 @@
 }
 
 .btn:hover {
-    transform: translateY(-1px);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
 }
 
 .btn:active {
     transform: translateY(0);
+    box-shadow: var(--shadow-sm);
+}
+
+.btn:focus-visible {
+    outline: none;
+    box-shadow: var(--focus-ring);
 }
 
 .btn.btn--disabled,
@@ -55,27 +84,46 @@
     opacity: 0.5;
     cursor: not-allowed;
     transform: none !important;
+    box-shadow: none !important;
+}
+
+.btn.btn--disabled::before,
+.btn:disabled::before {
+    display: none;
 }
 
 /* Button Variants */
 .btn--primary {
-    background-color: var(--primary);
+    background: var(--primary);
     color: white;
     border-color: var(--primary);
 }
 
 .btn--primary:hover {
-    box-shadow: 0 4px 16px rgba(var(--primary-rgb), 0.3);
+    background: var(--primary-strong);
+    box-shadow: 0 4px 20px rgba(var(--primary-rgb), 0.35);
+}
+
+/* Gradient primary - premium look */
+.btn--gradient {
+    background: var(--primary-gradient);
+    color: white;
+    border: none;
+}
+
+.btn--gradient:hover {
+    box-shadow: 0 6px 24px rgba(var(--primary-rgb), 0.4);
 }
 
 .btn--success {
-    background-color:var(--success);
+    background-color: var(--success);
     color: white;
     border-color: var(--success);
 }
 
 .btn--success:hover {
-    box-shadow: 0 4px 16px rgba(var(--success-rgb), 0.3);
+    background-color: var(--success-hover, var(--success-700));
+    box-shadow: 0 4px 20px rgba(var(--success-rgb), 0.35);
 }
 
 .btn--danger {
@@ -85,13 +133,19 @@
 }
 
 .btn--danger:hover {
-    box-shadow: 0 4px 16px rgba(var(--danger-rgb), 0.3);
+    background-color: var(--danger-hover, var(--danger-700));
+    box-shadow: 0 4px 20px rgba(var(--danger-rgb), 0.35);
 }
 
 .btn--warning {
     background-color: var(--warning);
-    color: white;
+    color: #1a1a1a;
     border-color: var(--warning);
+}
+
+.btn--warning:hover {
+    background-color: var(--warning-hover, var(--warning-700));
+    box-shadow: 0 4px 20px rgba(var(--warning-rgb), 0.35);
 }
 
 .btn--secondary {
@@ -101,16 +155,33 @@
 }
 
 .btn--secondary:hover {
-    background-color: var(--hover-bg);
+    background-color: var(--surface-3, var(--hover-bg));
+    border-color: var(--border-hover, var(--border));
 }
 
 .btn--ghost {
     background: transparent;
     color: var(--text-muted);
+    border-color: transparent;
 }
 
 .btn--ghost:hover {
     background: var(--hover-bg);
+    color: var(--text);
+}
+
+/* Glass button - Glassmorphism effect */
+.btn--glass {
+    background: var(--glass-bg, rgba(255, 255, 255, 0.1));
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border: 1px solid var(--glass-border, rgba(255, 255, 255, 0.1));
+    color: var(--text);
+}
+
+.btn--glass:hover {
+    background: var(--glass-1);
+    border-color: var(--glass-2);
 }
 
 .btn--outline-primary {
@@ -121,27 +192,55 @@
 
 .btn--outline-primary:hover {
     background: rgba(var(--primary-rgb), 0.1);
+    border-color: var(--primary-strong);
+}
+
+.btn--outline-danger {
+    background: transparent;
+    color: var(--danger);
+    border-color: var(--danger);
+}
+
+.btn--outline-danger:hover {
+    background: rgba(var(--danger-rgb), 0.1);
+    border-color: var(--danger-hover, var(--danger-700));
 }
 
 /* Button Sizes */
+.btn--xs {
+    padding: var(--space-1) var(--space-2);
+    font-size: var(--text-xs);
+    border-radius: var(--radius-sm);
+}
+
 .btn--sm {
-    padding: 0.375rem 0.875rem;
-    font-size: 0.875rem;
+    padding: var(--space-2) var(--space-3);
+    font-size: var(--text-sm);
 }
 
 .btn--lg {
-    padding: 0.875rem 1.75rem;
-    font-size: 1.0625rem;
+    padding: var(--space-4) var(--space-6);
+    font-size: var(--text-md);
+}
+
+.btn--xl {
+    padding: var(--space-5) var(--space-8);
+    font-size: var(--text-lg);
 }
 
 .btn--icon {
-    padding: 0.5rem;
+    padding: var(--space-2);
     aspect-ratio: 1;
 }
 
 .btn--block {
     width: 100%;
     display: flex;
+}
+
+/* Rounded pill button */
+.btn--pill {
+    border-radius: var(--radius-full);
 }
 
 /* ========================================

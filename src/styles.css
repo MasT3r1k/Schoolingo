@@ -1,8 +1,15 @@
-/* You can add global styles to this file, and also import other style files */
-/* Main */
-@import url('https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
-@import './app/styles/components.css';
+/* ============================================
+   SCHOOLINGO DESIGN SYSTEM 2025
+   Based on Sajid's UI Design Principles
+   ============================================ */
 
+/* === FONTS === */
+/* Inter - Modern, highly legible UI font (Sajid's recommendation) */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+@import './app/styles/components.css';
+@import './app/styles/animations.css';
+
+/* === RESET & BASE === */
 *,
 *::before,
 *::after {
@@ -12,7 +19,8 @@
 
 *::-webkit-scrollbar,
 ::-webkit-scrollbar {
-    width: 5px;
+    width: 6px;
+    height: 6px;
 }
 
 /* Track */
@@ -22,209 +30,501 @@
 }
 
 /* Handle */
-*::-webkit-scrollbar-thumbm,
+*::-webkit-scrollbar-thumb,
 ::-webkit-scrollbar-thumb {
-    background-color: hsl(240deg, 0%, 0%);
+    background-color: var(--scrollbar-thumb, rgba(136, 136, 136, 0.4));
+    border-radius: 10px;
 }
 
 /* Handle on hover */
 *::-webkit-scrollbar-thumb:hover,
 ::-webkit-scrollbar-thumb:hover {
-    background-color: hsl(0deg, 0%, 8%);
+    background-color: var(--scrollbar-thumb-hover, rgba(136, 136, 136, 0.6));
 }
 
 a {
     text-decoration: none;
-    color: var(--primary-700);
+    color: var(--primary);
+    transition: color var(--transition-fast);
 }
 
+a:hover {
+    color: var(--primary-strong);
+}
+
+/* === DESIGN TOKENS === */
 :root {
+    /* --- Primary Colors --- */
     --primary: #5865f2;
     --primary-rgb: 88, 101, 242;
-    --primary-strong: #4654c0;
-    --primary-gradient: linear-gradient(45deg, var(--primary), var(--primary-strong));
+    --primary-strong: #4752d9;
+    --primary-hover: #6875f5;
+    --primary-gradient: linear-gradient(135deg, #5865f2 0%, #4752d9 50%, #3640b8 100%);
+    --primary-gradient-soft: linear-gradient(135deg, rgba(88, 101, 242, 0.15) 0%, rgba(70, 84, 192, 0.1) 100%);
+
+    /* --- Legacy colors (kept for compatibility) --- */
     --red: hsl(0deg, 63%, 43%);
     --error: var(--red);
-    --green: hsl(134deg, 62%, 41%);
-    --green-darker: hsl(135deg, 65%, 31%);
+    --green: hsl(142deg, 71%, 45%);
+    --green-darker: hsl(142deg, 76%, 36%);
+
+    /* --- Spacing Scale (4px base - Sajid's recommendation) --- */
+    --space-0: 0;
+    --space-1: 0.25rem;
+    /* 4px */
+    --space-2: 0.5rem;
+    /* 8px */
+    --space-3: 0.75rem;
+    /* 12px */
+    --space-4: 1rem;
+    /* 16px */
+    --space-5: 1.25rem;
+    /* 20px */
+    --space-6: 1.5rem;
+    /* 24px */
+    --space-8: 2rem;
+    /* 32px */
+    --space-10: 2.5rem;
+    /* 40px */
+    --space-12: 3rem;
+    /* 48px */
+    --space-16: 4rem;
+    /* 64px */
+
+    /* --- Border Radius Scale --- */
+    --radius-xs: 4px;
+    --radius-sm: 6px;
     --radius: 8px;
+    --radius-md: 10px;
+    --radius-lg: 12px;
+    --radius-xl: 16px;
+    --radius-2xl: 20px;
+    --radius-full: 9999px;
+
+    /* --- Shadow System (Layered for depth - Sajid's approach) --- */
+    --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.04);
+    --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.06), 0 1px 2px rgba(0, 0, 0, 0.04);
+    --shadow-md: 0 4px 8px rgba(0, 0, 0, 0.08), 0 2px 4px rgba(0, 0, 0, 0.04);
+    --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.12), 0 4px 8px rgba(0, 0, 0, 0.06);
+    --shadow-xl: 0 16px 48px rgba(0, 0, 0, 0.16), 0 8px 16px rgba(0, 0, 0, 0.08);
+    --shadow-2xl: 0 24px 64px rgba(0, 0, 0, 0.20), 0 12px 24px rgba(0, 0, 0, 0.10);
+    --shadow-glow: 0 0 20px rgba(88, 101, 242, 0.3);
+    --shadow-inner: inset 0 2px 4px rgba(0, 0, 0, 0.06);
+
+    /* --- Transitions (Sajid's smooth interactions) --- */
+    --transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-base: 200ms cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-slow: 300ms cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-slower: 400ms cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-bounce: 500ms cubic-bezier(0.68, -0.55, 0.265, 1.55);
+
+    /* --- Typography Scale (1.25 Major Third - Sajid's recommendation) --- */
+    --font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    --font-mono: 'JetBrains Mono', 'Fira Code', 'Consolas', monospace;
+
+    --text-xs: clamp(0.7rem, 0.65rem + 0.25vw, 0.75rem);
+    /* 11-12px */
+    --text-sm: clamp(0.8rem, 0.75rem + 0.25vw, 0.875rem);
+    /* 12-14px */
+    --text-base: clamp(0.875rem, 0.85rem + 0.2vw, 1rem);
+    /* 14-16px */
+    --text-md: clamp(1rem, 0.95rem + 0.25vw, 1.125rem);
+    /* 16-18px */
+    --text-lg: clamp(1.125rem, 1rem + 0.5vw, 1.25rem);
+    /* 18-20px */
+    --text-xl: clamp(1.25rem, 1.1rem + 0.75vw, 1.5rem);
+    /* 20-24px */
+    --text-2xl: clamp(1.5rem, 1.25rem + 1vw, 1.875rem);
+    /* 24-30px */
+    --text-3xl: clamp(1.875rem, 1.5rem + 1.5vw, 2.25rem);
+    /* 30-36px */
+    --text-4xl: clamp(2.25rem, 1.75rem + 2vw, 3rem);
+    /* 36-48px */
+
+    --leading-tight: 1.25;
+    --leading-snug: 1.375;
+    --leading-normal: 1.5;
+    --leading-relaxed: 1.625;
+    --leading-loose: 2;
+
+    --tracking-tighter: -0.05em;
+    --tracking-tight: -0.025em;
+    --tracking-normal: 0;
+    --tracking-wide: 0.025em;
+    --tracking-wider: 0.05em;
+
+    /* --- Z-Index Scale --- */
+    --z-dropdown: 100;
+    --z-sticky: 200;
+    --z-fixed: 300;
+    --z-modal-backdrop: 400;
+    --z-modal: 500;
+    --z-popover: 600;
+    --z-tooltip: 700;
+    --z-notification: 800;
+
+    /* --- Layout --- */
+    --sidebar-width: 275px;
+    --navbar-height: 64px;
+    --container-max: 1400px;
+
+    /* --- Legacy (kept for compatibility) --- */
     --polygon: polygon(4px 0, 100% 0%, calc(100% - 4px) 100%, 0% 100%);
     --tag-color: hsl(228deg 6% 25% / 85%);
-    --swal2-confirm-button-background-color: var(var(--primary));
+    --swal2-confirm-button-background-color: var(--primary);
     --swal2-color: var(--text) !important;
     --swal2-background: var(--surface) !important;
     --swal2-validation-message-background: var(--red) !important;
     --swal2-validation-message-color: #fff !important;
     --swal2-input-background: var(--surface-2) !important;
     --swal2-timer-progress-bar-background: var(--surface) !important;
-
-    --sidebar-width: 275px;
 }
 
 
+/* ============================================
+   DARK THEME - Enhanced Edition
+   Optimized for readability and visual depth
+   ============================================ */
 .dark {
-    /* --- Base (tmavý skoro černý vzhled) --- */
-    --bg: #0a0a0c;
-    /* hlavní pozadí – téměř černé */
-    --surface: #111114;
-    /* panely, karty */
-    --surface-2: #1a1a1e;
-    /* zvýrazněné povrchy */
-    --elevated: #131317;
-    /* hoverované / aktivní pozadí */
-    --border: #2a2a2f;
-    /* decentní ohraničení */
-    --shadow: 0 6px 18px rgba(0, 0, 0, 0.6);
-    --header-shadow: rgba(2, 2, 2, .2) 0 1px 0 0, rgba(6, 6, 7, .05) 0 1.5px 0 0, rgba(2, 2, 2, .05) 0 2px 0 0;
+    /* --- Scrollbar --- */
+    --scrollbar-thumb: rgba(100, 100, 110, 0.4);
+    --scrollbar-thumb-hover: rgba(100, 100, 110, 0.6);
 
-    /* --- Texty --- */
-    --text: #f1f1f2;
-    /* hlavní světlý text */
-    --text-muted: #b4b4b8;
-    /* sekundární text */
-    --muted: #8c8c91;
-    /* slabší text */
-    --icon: #d8d8dd;
-    /* ikony */
+    /* --- Base Surfaces --- */
+    --bg: #09090b;
+    --bg-rgb: 9, 9, 11;
+    --surface: #111113;
+    --surface-2: #18181b;
+    --surface-3: #1f1f23;
+    --elevated: #141416;
+    --elevated-2: #1c1c20;
 
-    /* --- Primární modrá (hlavní akcent) --- */
+    /* --- Borders --- */
+    --border: #27272a;
+    --border-hover: #3f3f46;
+    --border-subtle: #1f1f23;
+
+    /* --- Shadows (darker for true depth) --- */
+    --shadow: 0 8px 24px rgba(0, 0, 0, 0.5), 0 4px 8px rgba(0, 0, 0, 0.3);
+    --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.3);
+    --shadow-lg: 0 16px 48px rgba(0, 0, 0, 0.6);
+    --header-shadow: rgba(0, 0, 0, 0.25) 0 1px 0 0, rgba(0, 0, 0, 0.1) 0 2px 4px 0;
+
+    /* --- Typography --- */
+    --text: #fafafa;
+    --text-rgb: 250, 250, 250;
+    --text-secondary: #e4e4e7;
+    --text-muted: #a1a1aa;
+    --muted: #71717a;
+    --icon: #d4d4d8;
+
+    /* --- Primary (original Discord blue) --- */
     --primary: #5865f2;
     --primary-rgb: 88, 101, 242;
-    /* základ */
     --primary-strong: #4752d9;
-    /* hover / strong */
+    --primary-hover: #6d78f5;
     --primary-700: #3640b8;
     --primary-900: #1f265f;
     --primary-200: #8a92f7;
-    /* světlejší tón (tagy, badge) */
     --primary-100: #c1c5ff;
     --primary-50: #eef0ff;
 
-    /* --- Sekundární modrá (accent) --- */
-    --accent: #4654c0;
-    --accent-700: #38449b;
-    --accent-900: #262d5c;
-    --accent-200: #707be0;
-    --accent-100: #a2a8ef;
-    --accent-50: #d5d7f8;
+    /* --- Accent (complementary purple) --- */
+    --accent: #8b5cf6;
+    --accent-rgb: 139, 92, 246;
+    --accent-700: #6d28d9;
+    --accent-900: #4c1d95;
+    --accent-200: #c4b5fd;
+    --accent-100: #ddd6fe;
+    --accent-50: #f5f3ff;
 
-    /* --- Semantic colors --- */
+    /* --- Semantic Colors (original) --- */
     --success: #2ecc71;
     --success-rgb: 46, 204, 113;
+    --success-hover: #27ae60;
+    --success-muted: rgba(46, 204, 113, 0.15);
     --success-700: #1e8a50;
 
     --warning: #f1c40f;
     --warning-rgb: 241, 196, 15;
+    --warning-hover: #d4ac0d;
+    --warning-muted: rgba(241, 196, 15, 0.15);
     --warning-700: #b8930b;
 
     --danger: #e74c3c;
     --danger-rgb: 231, 76, 60;
+    --danger-hover: #c0392b;
+    --danger-muted: rgba(231, 76, 60, 0.15);
     --danger-700: #a83428;
 
     --info: var(--primary);
+    --info-rgb: var(--primary-rgb);
 
-    /* --- UI helpers --- */
-    --surface-glow: linear-gradient(90deg, rgba(255, 255, 255, 0.02), rgba(255, 255, 255, 0.01));
+    /* --- Glassmorphism & Effects --- */
+    --glass-bg: rgba(24, 24, 27, 0.8);
+    --glass-border: rgba(255, 255, 255, 0.08);
     --glass-0: rgba(255, 255, 255, 0.02);
     --glass-1: rgba(255, 255, 255, 0.04);
+    --glass-2: rgba(255, 255, 255, 0.06);
+    --surface-glow: linear-gradient(180deg, rgba(255, 255, 255, 0.03) 0%, transparent 100%);
+    --card-gradient: linear-gradient(145deg, rgba(255, 255, 255, 0.02) 0%, transparent 50%);
 
-    /* --- Focus / hover states --- */
-    --focus-ring: 0 0 0 4px rgba(88, 101, 242, 0.25);
-    --hover-bg: rgba(255, 255, 255, 0.04);
-    --active-bg: rgba(255, 255, 255, 0.06);
+    /* --- Interactive States --- */
+    --focus-ring: 0 0 0 3px rgba(99, 102, 241, 0.4);
+    --hover-bg: rgba(255, 255, 255, 0.05);
+    --active-bg: rgba(255, 255, 255, 0.08);
+    --selected-bg: rgba(99, 102, 241, 0.15);
 
-    /* --- Messages --- */
-    --message-info-bg: oklab(0.70 -0.03 -0.10 / 0.15);
-    --message-info-border: oklab(0.70 -0.03 -0.10 / 0.4);
-    --message-info-color: oklch(0.80 0.12 250);
+    /* --- Sidebar --- */
+    --sidebar-arrow: #3f3f46;
 
-    --message-error-bg: oklab(0.68 0.14 0.07 / 0.15);
-    --message-error-border: oklab(0.68 0.14 0.07 / 0.4);
-    --message-error-color: oklch(0.78 0.15 20);
+    /* --- Messages & Alerts --- */
+    --message-info-bg: rgba(99, 102, 241, 0.12);
+    --message-info-border: rgba(99, 102, 241, 0.3);
+    --message-info-color: #a5b4fc;
 
-    --message-success-bg: oklab(0.74 -0.12 0.10 / 0.15);
-    --message-success-border: oklab(0.74 -0.12 0.10 / 0.4);
-    --message-success-color: rgb(110, 220, 160);
+    --message-error-bg: rgba(239, 68, 68, 0.12);
+    --message-error-border: rgba(239, 68, 68, 0.3);
+    --message-error-color: #fca5a5;
+
+    --message-success-bg: rgba(34, 197, 94, 0.12);
+    --message-success-border: rgba(34, 197, 94, 0.3);
+    --message-success-color: #86efac;
+
+    --message-warning-bg: rgba(234, 179, 8, 0.12);
+    --message-warning-border: rgba(234, 179, 8, 0.3);
+    --message-warning-color: #fde047;
 }
 
+/* ============================================
+   LIGHT THEME - Enhanced Edition  
+   Clean, professional, and easy on the eyes
+   ============================================ */
 .light {
-    /* --- Base (světlý vzhled) --- */
+    /* --- Scrollbar --- */
+    --scrollbar-thumb: rgba(0, 0, 0, 0.2);
+    --scrollbar-thumb-hover: rgba(0, 0, 0, 0.35);
+
+    /* --- Base Surfaces (improved contrast) --- */
     --bg: #f5f6f8;
-    /* hlavní pozadí */
+    --bg-rgb: 245, 246, 248;
     --surface: #ffffff;
-    /* panely, karty */
-    --surface-2: #f0f1f4;
-    /* sekundární povrch */
+    --surface-2: #eef0f4;
+    --surface-3: #e0e3e9;
     --elevated: #ffffff;
-    /* zvýrazněné/hoverované prvky */
-    --border: #d5d7de;
-    /* jemné ohraničení */
-    --shadow: 0 6px 16px rgba(0, 0, 0, 0.06);
-    --header-shadow: rgba(2, 2, 2, .2) 0 1px 0 0, rgba(6, 6, 7, .05) 0 1.5px 0 0, rgba(2, 2, 2, .05) 0 2 0 0;
+    --elevated-2: #f5f6f8;
 
-    /* --- Texty --- */
-    --text: #1b1d21;
-    /* hlavní tmavý text */
-    --text-muted: #51545a;
-    /* sekundární text */
-    --muted: #6c6f75;
-    /* slabší text */
-    --icon: #3a3d42;
-    /* ikony */
+    /* --- Borders --- */
+    --border: #d5d8e0;
+    --border-hover: #b8bcc8;
+    --border-subtle: #eef0f4;
 
-    /* --- Primární modrá (zůstává stejná) --- */
+    /* --- Shadows (softer for light mode) --- */
+    --shadow: 0 4px 12px rgba(0, 0, 0, 0.1), 0 2px 4px rgba(0, 0, 0, 0.05);
+    --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.08);
+    --shadow-lg: 0 10px 30px rgba(0, 0, 0, 0.12);
+    --header-shadow: 0 1px 3px rgba(0, 0, 0, 0.06), 0 1px 2px rgba(0, 0, 0, 0.04);
+
+    /* --- Typography (stronger contrast) --- */
+    --text: #1a1a2e;
+    --text-rgb: 26, 26, 46;
+    --text-secondary: #2d2d44;
+    --text-muted: #5a5a72;
+    --muted: #8888a0;
+    --icon: #3d3d56;
+
+    /* --- Primary (slightly adjusted for light mode visibility) --- */
     --primary: #5865f2;
     --primary-rgb: 88, 101, 242;
     --primary-strong: #4752d9;
+    --primary-hover: #4752d9;
     --primary-700: #3640b8;
     --primary-900: #1f265f;
-    --primary-200: #8a92f7;
-    --primary-100: #c1c5ff;
-    --primary-50: #eef0ff;
+    --primary-200: #a5b4fc;
+    --primary-100: #c7d2fe;
+    --primary-50: #eef2ff;
 
-    /* --- Sekundární modrá (accent) --- */
-    --accent: #4654c0;
-    --accent-700: #38449b;
-    --accent-900: #262d5c;
-    --accent-200: #707be0;
-    --accent-100: #a2a8ef;
-    --accent-50: #d5d7f8;
+    /* --- Accent --- */
+    --accent: #7c3aed;
+    --accent-rgb: 124, 58, 237;
+    --accent-700: #6d28d9;
+    --accent-900: #4c1d95;
+    --accent-200: #c4b5fd;
+    --accent-100: #ddd6fe;
+    --accent-50: #f5f3ff;
 
-    /* --- Semantic colors --- */
+    /* --- Semantic Colors (original) --- */
     --success: #2ecc71;
     --success-rgb: 46, 204, 113;
+    --success-hover: #27ae60;
+    --success-muted: rgba(46, 204, 113, 0.1);
     --success-700: #1e8a50;
 
     --warning: #f1c40f;
     --warning-rgb: 241, 196, 15;
+    --warning-hover: #d4ac0d;
+    --warning-muted: rgba(241, 196, 15, 0.1);
     --warning-700: #b8930b;
 
     --danger: #e74c3c;
     --danger-rgb: 231, 76, 60;
+    --danger-hover: #c0392b;
+    --danger-muted: rgba(231, 76, 60, 0.1);
     --danger-700: #a83428;
 
     --info: var(--primary);
+    --info-rgb: var(--primary-rgb);
 
-    /* --- UI helpers --- */
-    --surface-glow: linear-gradient(90deg, rgba(0, 0, 0, 0.02), rgba(0, 0, 0, 0.01));
+    /* --- Glassmorphism & Effects --- */
+    --glass-bg: rgba(255, 255, 255, 0.8);
+    --glass-border: rgba(0, 0, 0, 0.05);
     --glass-0: rgba(0, 0, 0, 0.02);
     --glass-1: rgba(0, 0, 0, 0.04);
+    --glass-2: rgba(0, 0, 0, 0.06);
+    --surface-glow: linear-gradient(180deg, rgba(255, 255, 255, 0.8) 0%, transparent 100%);
+    --card-gradient: linear-gradient(145deg, rgba(255, 255, 255, 0.5) 0%, transparent 50%);
 
-    /* --- Focus / hover states --- */
-    --focus-ring: 0 0 0 4px rgba(88, 101, 242, 0.25);
-    --hover-bg: rgba(0, 0, 0, 0.04);
-    --active-bg: rgba(0, 0, 0, 0.06);
+    /* --- Interactive States (stronger for visibility) --- */
+    --focus-ring: 0 0 0 3px rgba(88, 101, 242, 0.35);
+    --hover-bg: rgba(0, 0, 0, 0.06);
+    --active-bg: rgba(0, 0, 0, 0.08);
+    --selected-bg: rgba(88, 101, 242, 0.12);
 
-    /* --- Messages --- */
-    --message-info-bg: oklab(0.623 -0.0378409 -0.210628 / 0.1);
-    --message-info-border: oklab(0.623 -0.0378409 -0.210628 / 0.25);
-    --message-info-color: oklch(0.546 0.245 262.881);
-    --message-error-bg: oklab(0.637 0.214213 0.1014 / 0.1);
-    --message-error-border: oklab(0.637 0.214213 0.1014 / 0.25);
-    --message-error-color: oklch(0.577 0.245 27.325);
-    --message-success-bg: oklab(0.711349 -0.161865 0.0801783 / 0.1);
-    --message-success-border: oklab(0.711349 -0.161865 0.0801783 / 0.25);
-    --message-success-color: rgb(0, 161, 85);
+    /* --- Sidebar --- */
+    --sidebar-arrow: #cbd5e1;
+
+    /* --- Messages & Alerts --- */
+    --message-info-bg: rgba(88, 101, 242, 0.08);
+    --message-info-border: rgba(88, 101, 242, 0.2);
+    --message-info-color: #4752d9;
+
+    --message-error-bg: rgba(220, 38, 38, 0.08);
+    --message-error-border: rgba(220, 38, 38, 0.2);
+    --message-error-color: #b91c1c;
+
+    --message-success-bg: rgba(22, 163, 74, 0.08);
+    --message-success-border: rgba(22, 163, 74, 0.2);
+    --message-success-color: #15803d;
+
+    --message-warning-bg: rgba(202, 138, 4, 0.08);
+    --message-warning-border: rgba(202, 138, 4, 0.2);
+    --message-warning-color: #a16207;
+}
+
+/* ============================================
+   MOON THEME - OLED Optimized Edition
+   True black background for OLED displays
+   Maximum battery savings on AMOLED screens
+   ============================================ */
+.moon {
+    /* --- Scrollbar --- */
+    --scrollbar-thumb: rgba(80, 80, 90, 0.5);
+    --scrollbar-thumb-hover: rgba(80, 80, 90, 0.7);
+
+    /* --- Base Surfaces (TRUE BLACK for OLED) --- */
+    --bg: #000000;
+    --bg-rgb: 0, 0, 0;
+    --surface: #0a0a0a;
+    --surface-2: #121212;
+    --surface-3: #1a1a1a;
+    --elevated: #0d0d0d;
+    --elevated-2: #151515;
+
+    /* --- Borders (subtle, minimal) --- */
+    --border: #1f1f1f;
+    --border-hover: #2d2d2d;
+    --border-subtle: #141414;
+
+    /* --- Shadows (very subtle on OLED - pure black blends) --- */
+    --shadow: 0 4px 20px rgba(0, 0, 0, 0.8);
+    --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.6);
+    --shadow-lg: 0 12px 40px rgba(0, 0, 0, 0.9);
+    --header-shadow: rgba(0, 0, 0, 0.4) 0 1px 0 0;
+
+    /* --- Typography (high contrast for OLED) --- */
+    --text: #f5f5f5;
+    --text-rgb: 245, 245, 245;
+    --text-secondary: #e0e0e0;
+    --text-muted: #9ca3af;
+    --muted: #6b7280;
+    --icon: #d1d5db;
+
+    /* --- Primary (brighter for OLED contrast) --- */
+    --primary: #818cf8;
+    --primary-rgb: 129, 140, 248;
+    --primary-strong: #6366f1;
+    --primary-hover: #a5b4fc;
+    --primary-700: #4f46e5;
+    --primary-900: #3730a3;
+    --primary-200: #c7d2fe;
+    --primary-100: #e0e7ff;
+    --primary-50: #eef2ff;
+
+    /* --- Accent (bright purple for OLED pop) --- */
+    --accent: #a78bfa;
+    --accent-rgb: 167, 139, 250;
+    --accent-700: #7c3aed;
+    --accent-900: #5b21b6;
+    --accent-200: #ddd6fe;
+    --accent-100: #ede9fe;
+    --accent-50: #f5f3ff;
+
+    /* --- Semantic Colors (brighter for OLED) --- */
+    --success: #4ade80;
+    --success-rgb: 74, 222, 128;
+    --success-hover: #22c55e;
+    --success-muted: rgba(74, 222, 128, 0.12);
+    --success-700: #16a34a;
+
+    --warning: #fbbf24;
+    --warning-rgb: 251, 191, 36;
+    --warning-hover: #f59e0b;
+    --warning-muted: rgba(251, 191, 36, 0.12);
+    --warning-700: #d97706;
+
+    --danger: #f87171;
+    --danger-rgb: 248, 113, 113;
+    --danger-hover: #ef4444;
+    --danger-muted: rgba(248, 113, 113, 0.12);
+    --danger-700: #dc2626;
+
+    --info: var(--primary);
+    --info-rgb: var(--primary-rgb);
+
+    /* --- Glassmorphism & Effects (subtle for OLED) --- */
+    --glass-bg: rgba(10, 10, 10, 0.9);
+    --glass-border: rgba(255, 255, 255, 0.06);
+    --glass-0: rgba(255, 255, 255, 0.02);
+    --glass-1: rgba(255, 255, 255, 0.04);
+    --glass-2: rgba(255, 255, 255, 0.06);
+    --surface-glow: linear-gradient(180deg, rgba(255, 255, 255, 0.02) 0%, transparent 100%);
+    --card-gradient: linear-gradient(145deg, rgba(255, 255, 255, 0.015) 0%, transparent 50%);
+
+    /* --- Interactive States --- */
+    --focus-ring: 0 0 0 3px rgba(129, 140, 248, 0.35);
+    --hover-bg: rgba(255, 255, 255, 0.04);
+    --active-bg: rgba(255, 255, 255, 0.07);
+    --selected-bg: rgba(129, 140, 248, 0.12);
+
+    /* --- Sidebar --- */
+    --sidebar-arrow: #2d2d2d;
+
+    /* --- Messages & Alerts (softer backgrounds for OLED) --- */
+    --message-info-bg: rgba(129, 140, 248, 0.1);
+    --message-info-border: rgba(129, 140, 248, 0.25);
+    --message-info-color: #a5b4fc;
+
+    --message-error-bg: rgba(248, 113, 113, 0.1);
+    --message-error-border: rgba(248, 113, 113, 0.25);
+    --message-error-color: #fca5a5;
+
+    --message-success-bg: rgba(74, 222, 128, 0.1);
+    --message-success-border: rgba(74, 222, 128, 0.25);
+    --message-success-color: #86efac;
+
+    --message-warning-bg: rgba(251, 191, 36, 0.1);
+    --message-warning-border: rgba(251, 191, 36, 0.25);
+    --message-warning-color: #fcd34d;
 }
 
 div:where(.swal2-container) div:where(.swal2-timer-progress-bar) {
@@ -317,6 +617,11 @@ hr {
     right: 0
 }
 
+/* ============================================
+   TYPOGRAPHY SYSTEM
+   Based on 1.25 Major Third scale (Sajid's recommendation)
+   ============================================ */
+
 h1,
 h2,
 h3,
@@ -327,103 +632,535 @@ p {
     margin: 0;
 }
 
+/* Display sizes - for hero sections and large headings */
+.display-lg {
+    font-size: var(--text-4xl);
+    line-height: var(--leading-tight);
+    letter-spacing: var(--tracking-tight);
+    font-weight: 800;
+}
+
+.display-md {
+    font-size: var(--text-3xl);
+    line-height: var(--leading-tight);
+    letter-spacing: var(--tracking-tight);
+    font-weight: 800;
+}
+
+/* Legacy support */
 .lg {
-    font-size: 2.44rem;
-    line-height: 1.55;
-    letter-spacing: 0.015em;
+    font-size: var(--text-4xl);
+    line-height: var(--leading-tight);
+    letter-spacing: var(--tracking-tight);
     font-weight: 800;
 }
 
 .md {
-    font-size: 2.18rem;
-    line-height: 1.55;
-    letter-spacing: 0.015em;
+    font-size: var(--text-3xl);
+    line-height: var(--leading-tight);
+    letter-spacing: var(--tracking-tight);
     font-weight: 800;
 }
 
+/* Heading hierarchy with fluid typography */
 h1 {
-    font-size: 1.95rem;
-    line-height: 1.55;
-    letter-spacing: 0.02em;
+    font-size: var(--text-2xl);
+    line-height: var(--leading-snug);
+    letter-spacing: var(--tracking-tight);
     font-weight: 700;
 }
 
 h2 {
-    font-size: 1.56rem;
-    line-height: 1.55;
-    letter-spacing: 0.02em;
+    font-size: var(--text-xl);
+    line-height: var(--leading-snug);
+    letter-spacing: var(--tracking-tight);
     font-weight: 600;
 }
 
 h3 {
-    font-size: 1.4rem;
-    line-height: 1.6;
-    letter-spacing: 0.025em;
+    font-size: var(--text-lg);
+    line-height: var(--leading-normal);
+    letter-spacing: var(--tracking-normal);
     font-weight: 600;
 }
 
 h4 {
-    font-size: 1.25rem;
-    line-height: 1.6;
-    letter-spacing: 0.025em;
-    font-weight: 500;
+    font-size: var(--text-md);
+    line-height: var(--leading-normal);
+    letter-spacing: var(--tracking-normal);
+    font-weight: 600;
 }
 
 h5 {
-    font-size: 1.18rem;
-    line-height: 1.6;
-    letter-spacing: 0.03em;
-    font-weight: 500;
+    font-size: var(--text-base);
+    line-height: var(--leading-normal);
+    letter-spacing: var(--tracking-normal);
+    font-weight: 600;
 }
 
 h6 {
-    font-size: 1.12rem;
-    line-height: 1.6;
-    letter-spacing: 0.03em;
-    font-weight: 500;
+    font-size: var(--text-sm);
+    line-height: var(--leading-normal);
+    letter-spacing: var(--tracking-wide);
+    font-weight: 600;
+    text-transform: uppercase;
 }
 
+/* Body styling with Inter font */
 body {
     min-height: 100vh;
     max-height: 100vh;
     height: 100vh;
     max-width: 100vw;
     margin: 0;
-    font-family: "Twemoji Country Flags", "Roboto", "sans-serif";
-    background-color: var(--surface);
+    font-family: var(--font-family);
+    background-color: var(--bg);
     color: var(--text);
     overflow: hidden;
     display: flex;
     flex-direction: column;
-    font-size: 1rem;
-    line-height: 1.6;
-    letter-spacing: 0.03em;
+    font-size: var(--text-base);
+    line-height: var(--leading-normal);
+    letter-spacing: var(--tracking-normal);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
 }
 
+/* Small text */
 small {
-    font-size: 0.95rem;
-    line-height: 1.65;
-    letter-spacing: 0.03em;
+    font-size: var(--text-sm);
+    line-height: var(--leading-relaxed);
+    letter-spacing: var(--tracking-normal);
 }
 
-.first-margin {
-    margin-right: 8px !important;
+/* Text size utilities */
+.text-xs {
+    font-size: var(--text-xs);
 }
 
-.last-margin {
-    margin-left: 8px !important;
+.text-sm {
+    font-size: var(--text-sm);
 }
 
-.mt {
-    margin-top: 1rem !important;
+.text-base {
+    font-size: var(--text-base);
 }
 
-.mb {
-    margin-bottom: 1rem !important;
+.text-md {
+    font-size: var(--text-md);
+}
+
+.text-lg {
+    font-size: var(--text-lg);
+}
+
+.text-xl {
+    font-size: var(--text-xl);
+}
+
+.text-2xl {
+    font-size: var(--text-2xl);
+}
+
+.text-3xl {
+    font-size: var(--text-3xl);
+}
+
+.text-4xl {
+    font-size: var(--text-4xl);
+}
+
+/* Font weight utilities */
+.font-light {
+    font-weight: 300;
+}
+
+.font-normal {
+    font-weight: 400;
+}
+
+.font-medium {
+    font-weight: 500;
+}
+
+.font-semibold {
+    font-weight: 600;
+}
+
+.font-bold {
+    font-weight: 700;
+}
+
+.font-extrabold {
+    font-weight: 800;
+}
+
+/* ============================================
+   SPACING UTILITIES
+   Based on 4px scale (Sajid's recommendation)
+   ============================================ */
+
+/* Margin utilities */
+.m-0 {
+    margin: 0 !important;
+}
+
+.m-1 {
+    margin: var(--space-1) !important;
+}
+
+.m-2 {
+    margin: var(--space-2) !important;
+}
+
+.m-3 {
+    margin: var(--space-3) !important;
+}
+
+.m-4 {
+    margin: var(--space-4) !important;
+}
+
+.m-6 {
+    margin: var(--space-6) !important;
+}
+
+.m-8 {
+    margin: var(--space-8) !important;
+}
+
+.m-auto {
+    margin: auto !important;
+}
+
+.mt-0 {
+    margin-top: 0 !important;
+}
+
+.mt-1 {
+    margin-top: var(--space-1) !important;
+}
+
+.mt-2 {
+    margin-top: var(--space-2) !important;
+}
+
+.mt-3 {
+    margin-top: var(--space-3) !important;
+}
+
+.mt-4 {
+    margin-top: var(--space-4) !important;
+}
+
+.mt-6 {
+    margin-top: var(--space-6) !important;
+}
+
+.mt-8 {
+    margin-top: var(--space-8) !important;
+}
+
+.mb-0 {
+    margin-bottom: 0 !important;
+}
+
+.mb-1 {
+    margin-bottom: var(--space-1) !important;
 }
 
 .mb-2 {
-    margin-bottom: 2rem !important;
+    margin-bottom: var(--space-2) !important;
+}
+
+.mb-3 {
+    margin-bottom: var(--space-3) !important;
+}
+
+.mb-4 {
+    margin-bottom: var(--space-4) !important;
+}
+
+.mb-6 {
+    margin-bottom: var(--space-6) !important;
+}
+
+.mb-8 {
+    margin-bottom: var(--space-8) !important;
+}
+
+.ml-0 {
+    margin-left: 0 !important;
+}
+
+.ml-1 {
+    margin-left: var(--space-1) !important;
+}
+
+.ml-2 {
+    margin-left: var(--space-2) !important;
+}
+
+.ml-3 {
+    margin-left: var(--space-3) !important;
+}
+
+.ml-4 {
+    margin-left: var(--space-4) !important;
+}
+
+.ml-auto {
+    margin-left: auto !important;
+}
+
+.mr-0 {
+    margin-right: 0 !important;
+}
+
+.mr-1 {
+    margin-right: var(--space-1) !important;
+}
+
+.mr-2 {
+    margin-right: var(--space-2) !important;
+}
+
+.mr-3 {
+    margin-right: var(--space-3) !important;
+}
+
+.mr-4 {
+    margin-right: var(--space-4) !important;
+}
+
+.mr-auto {
+    margin-right: auto !important;
+}
+
+.mx-0 {
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+}
+
+.mx-1 {
+    margin-left: var(--space-1) !important;
+    margin-right: var(--space-1) !important;
+}
+
+.mx-2 {
+    margin-left: var(--space-2) !important;
+    margin-right: var(--space-2) !important;
+}
+
+.mx-4 {
+    margin-left: var(--space-4) !important;
+    margin-right: var(--space-4) !important;
+}
+
+.mx-auto {
+    margin-left: auto !important;
+    margin-right: auto !important;
+}
+
+.my-0 {
+    margin-top: 0 !important;
+    margin-bottom: 0 !important;
+}
+
+.my-1 {
+    margin-top: var(--space-1) !important;
+    margin-bottom: var(--space-1) !important;
+}
+
+.my-2 {
+    margin-top: var(--space-2) !important;
+    margin-bottom: var(--space-2) !important;
+}
+
+.my-4 {
+    margin-top: var(--space-4) !important;
+    margin-bottom: var(--space-4) !important;
+}
+
+/* Padding utilities */
+.p-0 {
+    padding: 0 !important;
+}
+
+.p-1 {
+    padding: var(--space-1) !important;
+}
+
+.p-2 {
+    padding: var(--space-2) !important;
+}
+
+.p-3 {
+    padding: var(--space-3) !important;
+}
+
+.p-4 {
+    padding: var(--space-4) !important;
+}
+
+.p-6 {
+    padding: var(--space-6) !important;
+}
+
+.p-8 {
+    padding: var(--space-8) !important;
+}
+
+.pt-0 {
+    padding-top: 0 !important;
+}
+
+.pt-1 {
+    padding-top: var(--space-1) !important;
+}
+
+.pt-2 {
+    padding-top: var(--space-2) !important;
+}
+
+.pt-4 {
+    padding-top: var(--space-4) !important;
+}
+
+.pt-6 {
+    padding-top: var(--space-6) !important;
+}
+
+.pb-0 {
+    padding-bottom: 0 !important;
+}
+
+.pb-1 {
+    padding-bottom: var(--space-1) !important;
+}
+
+.pb-2 {
+    padding-bottom: var(--space-2) !important;
+}
+
+.pb-4 {
+    padding-bottom: var(--space-4) !important;
+}
+
+.pb-6 {
+    padding-bottom: var(--space-6) !important;
+}
+
+.pl-0 {
+    padding-left: 0 !important;
+}
+
+.pl-2 {
+    padding-left: var(--space-2) !important;
+}
+
+.pl-4 {
+    padding-left: var(--space-4) !important;
+}
+
+.pr-0 {
+    padding-right: 0 !important;
+}
+
+.pr-2 {
+    padding-right: var(--space-2) !important;
+}
+
+.pr-4 {
+    padding-right: var(--space-4) !important;
+}
+
+.px-0 {
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+}
+
+.px-2 {
+    padding-left: var(--space-2) !important;
+    padding-right: var(--space-2) !important;
+}
+
+.px-4 {
+    padding-left: var(--space-4) !important;
+    padding-right: var(--space-4) !important;
+}
+
+.px-6 {
+    padding-left: var(--space-6) !important;
+    padding-right: var(--space-6) !important;
+}
+
+.py-0 {
+    padding-top: 0 !important;
+    padding-bottom: 0 !important;
+}
+
+.py-2 {
+    padding-top: var(--space-2) !important;
+    padding-bottom: var(--space-2) !important;
+}
+
+.py-4 {
+    padding-top: var(--space-4) !important;
+    padding-bottom: var(--space-4) !important;
+}
+
+.py-6 {
+    padding-top: var(--space-6) !important;
+    padding-bottom: var(--space-6) !important;
+}
+
+/* Gap utilities (for flex/grid) */
+.gap-0 {
+    gap: 0 !important;
+}
+
+.gap-1 {
+    gap: var(--space-1) !important;
+}
+
+.gap-2 {
+    gap: var(--space-2) !important;
+}
+
+.gap-3 {
+    gap: var(--space-3) !important;
+}
+
+.gap-4 {
+    gap: var(--space-4) !important;
+}
+
+.gap-6 {
+    gap: var(--space-6) !important;
+}
+
+.gap-8 {
+    gap: var(--space-8) !important;
+}
+
+/* Legacy margin support */
+.first-margin {
+    margin-right: var(--space-2) !important;
+}
+
+.last-margin {
+    margin-left: var(--space-2) !important;
+}
+
+/* Legacy aliases */
+.mt {
+    margin-top: var(--space-4) !important;
+}
+
+.mb {
+    margin-bottom: var(--space-4) !important;
 }
 
 .center {
@@ -604,7 +1341,7 @@ h1.APP_Logo img {
     display: flex;
     justify-content: space-between;
     margin-bottom: 1rem;
-    color: var(--primary-100)
+    color: var(--primary)
 }
 
 .card-header p.description {
@@ -1011,7 +1748,7 @@ input:disabled {
     position: relative;
     margin: 0 8px;
     overflow: visible;
-    color: #fff;
+    color: var(--text);
     border-radius: var(--radius);
 }
 

@@ -1,33 +1,36 @@
+/* ========================================
+   MODALS - Enhanced with Design Tokens
+   ======================================== */
+
 .modals {
     width: 100vw;
     height: 100vh;
     position: fixed;
-    top: 0;
-    left: 0;
-    bottom: 0;
-    right: 0;
-    z-index: 9999999;
+    inset: 0;
+    z-index: var(--z-modal);
     display: flex;
     align-items: center;
     justify-content: center;
-    background: rgba(0, 0, 0, 0.5);
-    backdrop-filter: blur(4px);
-    animation: fadeIn 0.2s ease-out;
+    background: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    animation: fadeIn var(--transition-base) ease-out;
 }
 
-.modals > .modal {
+.modals>.modal {
     position: relative;
-    z-index: 500;
+    z-index: calc(var(--z-modal) + 1);
     background-color: var(--surface);
     border: 1px solid var(--border);
-    border-radius: var(--radius);
-    box-shadow: var(--shadow);
-    padding: 1.5rem;
-    gap: 8px;
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-xl);
+    padding: var(--space-6);
+    gap: var(--space-2);
     width: var(--width, 500px);
+    max-width: calc(100vw - var(--space-8));
     max-height: 90vh;
-    /* transition: transform 0.25s ease; */
-} 
+    animation: scaleIn var(--transition-base) ease-out;
+}
 
 .modal--lg {
     max-width: 700px;
@@ -37,98 +40,96 @@
     max-width: 900px;
 }
 
-/* .modals > .modal::after {
-    content: '';
-    position: absolute;
-    bottom: 4px;
-    width: calc(100% - 2rem);
-    border-radius: 8px;
-    height: 3px;
-    background-color: var(--primary);
-    transform: translateX(-50%);
-    left: 50%;
-    z-index: 99999999;
-} */
-
 .modal .modal-grabber {
     width: 100px;
-    height: 6px;
-    background-color: var(--text);
+    height: 5px;
+    background-color: var(--border);
     position: absolute;
-    top: 16px;
+    top: var(--space-3);
     left: 50%;
     transform: translateX(-50%);
-    border-radius: var(--radius);
+    border-radius: var(--radius-full);
     cursor: pointer;
+    transition: background-color var(--transition-fast);
+}
+
+.modal .modal-grabber:hover {
+    background-color: var(--text-muted);
 }
 
 .modal-darkening {
     width: 100%;
     height: 100%;
-    background-color: rgba(0, 0, 0, .48);
+    background-color: rgba(0, 0, 0, 0.48);
     position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
+    inset: 0;
 }
 
-.modals > .modal > .modal-close {
+.modals>.modal>.modal-close {
     position: absolute;
-    top: 15px;
-    right: 15px;
+    top: var(--space-4);
+    right: var(--space-4);
     font-size: 24px;
     cursor: pointer;
     color: var(--text-muted);
-    transition: color .3s;
-    z-index: 99999999;
+    transition: all var(--transition-fast);
+    z-index: 10;
+    padding: var(--space-1);
+    border-radius: var(--radius);
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
-.modals > .modal > .modal-close:hover {
+.modals>.modal>.modal-close:hover {
     color: var(--text);
+    background: var(--hover-bg);
 }
 
-.modal > .modal-header {
-    padding: 1rem;
+.modal>.modal-header {
+    padding: var(--space-4);
     min-height: 60px;
     display: flex;
     flex-direction: row;
     align-items: center;
     position: relative;
-    /* border-bottom: 1px solid var(--border); */
 }
 
-.modal > .modal-header h2 {
-    font-size: 20px;
-}
-
-.modal > .modal-header span {
-    font-size: 24px;
+.modal>.modal-header h2 {
+    font-size: var(--text-lg);
     font-weight: 600;
+    margin: 0;
+}
+
+.modal>.modal-header span {
+    font-size: var(--text-xl);
+    font-weight: 700;
     text-transform: uppercase;
     position: absolute;
     left: 50%;
     transform: translateX(-50%);
 }
 
-.modals > .modal > .modal-header i-tabler {
+.modals>.modal>.modal-header i-tabler {
     width: 28px;
     height: 28px;
-    margin-right: 8px;
+    margin-right: var(--space-2);
 }
 
-.modals > .modal > .modal-center {
+.modals>.modal>.modal-center {
     display: flex;
     justify-content: center;
 }
 
-.modals > .modal .modal-body,
+.modals>.modal .modal-body,
 .modal-body-external {
-    margin: 1rem 2rem;
+    margin: var(--space-4) var(--space-8);
     border: 1px solid var(--border);
-    background-color: var(--hover-bg);
-    width: calc(100% - 4rem);
+    background-color: var(--surface-2);
+    border-radius: var(--radius);
+    width: calc(100% - var(--space-16));
     height: 25rem;
+    overflow: auto;
 }
 
 .modal-body-external {
@@ -136,67 +137,109 @@
     width: 100%;
 }
 
-.modals > .modal > .alert {
-    padding: 8px 16px;
+.modals>.modal>.alert {
+    padding: var(--space-2) var(--space-4);
     text-align: center;
     display: flex;
     justify-content: center;
     align-items: center;
     position: relative;
-    margin: 8px 0;
+    margin: var(--space-2) 0;
 }
 
-.modals > .modal > .modal-center > .modal-body .child {
+.modals>.modal>.modal-center>.modal-body .child {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 16px;
+    padding: var(--space-4);
     background-color: var(--surface);
-    transition: all .3s;
+    transition: all var(--transition-fast);
 }
 
-.modals > .modal > .modal-center > .modal-body .child .child-name {
-    font-weight: bold;
-}
-
-.modals > .modal > .modal-center > .modal-body .child .child-info {
-    color: var(--text-muted);
-}
-
-.modals > .modal > .modal-center > .modal-body .child .btn {
-    padding: 8px 16px;
-    cursor: pointer;
-    transition: all .3s;
-    border: 1px solid var(--border);
-}
-
-.modals > .modal > .modal-center > .modal-body .child .btn:hover {
+.modals>.modal>.modal-center>.modal-body .child:hover {
     background-color: var(--hover-bg);
 }
 
-.modals > .modal .modal-icon {
+.modals>.modal>.modal-center>.modal-body .child .child-name {
+    font-weight: 600;
+}
+
+.modals>.modal>.modal-center>.modal-body .child .child-info {
+    color: var(--text-muted);
+}
+
+.modals>.modal>.modal-center>.modal-body .child .btn {
+    padding: var(--space-2) var(--space-4);
+    cursor: pointer;
+    transition: all var(--transition-fast);
+    border: 1px solid var(--border);
+}
+
+.modals>.modal>.modal-center>.modal-body .child .btn:hover {
+    background-color: var(--hover-bg);
+}
+
+.modals>.modal .modal-icon {
     margin: 0 auto;
 }
 
-.modals > .modal .modal-icon i-tabler {
+.modals>.modal .modal-icon i-tabler {
     width: 28px;
     height: 28px;
 }
 
-.size-1 { --width: 1000px; }
-.size-2 { --width: 550px; }
+/* Modal sizes */
+.size-1 {
+    --width: 1000px;
+}
+
+.size-2 {
+    --width: 550px;
+}
 
 .modal-item {
     display: flex;
     flex-direction: row;
     align-items: center;
-    padding: .75rem 1rem;
+    padding: var(--space-3) var(--space-4);
+    border-bottom: 1px solid var(--border);
 }
 
-.modal-item > div {
+.modal-item:last-child {
+    border-bottom: none;
+}
+
+.modal-item>div {
     width: 50%;
 }
 
-.modal-item > div:first-child {
-    font-weight: bold;
+.modal-item>div:first-child {
+    font-weight: 600;
+    color: var(--text-muted);
+}
+
+/* Modal footer */
+.modal-footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: var(--space-3);
+    padding-top: var(--space-4);
+    margin-top: var(--space-4);
+    border-top: 1px solid var(--border);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .modals>.modal {
+        width: 100%;
+        max-width: none;
+        margin: var(--space-4);
+        max-height: calc(100vh - var(--space-8));
+    }
+
+    .modal-body-external,
+    .modals>.modal .modal-body {
+        margin: var(--space-2);
+        width: calc(100% - var(--space-4));
+    }
 }

@@ -4,7 +4,7 @@ import { Authentication } from '@Schoolingo/authentication';
 import { Config } from '@Schoolingo/config';
 import { BehaviorSubject } from 'rxjs';
 
-export type themes = 'system' | 'light' | 'dark';
+export type themes = 'system' | 'light' | 'dark' | 'moon';
 
 @Injectable()
 export class Theme {
@@ -16,7 +16,7 @@ export class Theme {
   private http = inject(HttpClient);
 
   private theme = new BehaviorSubject<themes>('system');
-  private themes: themes[] = ['system', 'dark', 'light'];
+  private themes: themes[] = ['system', 'dark', 'moon', 'light'];
 
   private action: 'selected' | 'saving' | 'error' = 'selected';
 
@@ -74,7 +74,7 @@ export class Theme {
     }
     this.renderer.removeClass(document.body.parentElement, 'light');
     this.renderer.removeClass(document.body.parentElement, 'dark');
-    // this.renderer.removeClass(document.body.parentElement, 'moonlight');
+    this.renderer.removeClass(document.body.parentElement, 'moon');
     this.renderer.addClass(
       document.body.parentElement,
       this.getThemeColor().toString()
