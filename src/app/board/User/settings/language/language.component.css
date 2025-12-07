@@ -1,23 +1,153 @@
-.flag {
-    width: 42px;
-    margin-right: 12px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
+/* ========================================
+   LANGUAGE SELECTOR - Modern Design
+   Matching theme selector style
+   ======================================== */
 
-.meta {
+.panel {
+    width: 100%;
     display: flex;
     flex-direction: column;
+    gap: var(--space-6);
+    padding: var(--space-6);
 }
 
-.name {
-    font-weight: 600;
+/* Header */
+.language-selector h2 {
+    margin: 0 0 var(--space-2) 0;
+    font-size: var(--text-xl);
+    font-weight: 700;
+    color: var(--text);
 }
 
-.subname {
-    font-weight: 400;
+.language-selector>p {
+    margin: 0 0 var(--space-6) 0;
     color: var(--text-muted);
-    opacity: .7;
-    font-size: 14px;
+    font-size: var(--text-sm);
+}
+
+/* Language Options - Full width, stacked */
+.language-options-grid {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+}
+
+/* Language Option Card */
+.language-option {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: var(--space-4);
+    padding: var(--space-4);
+    border-radius: var(--radius-lg);
+    cursor: pointer;
+    border: 2px solid var(--border);
+    transition: all var(--transition-fast);
+    background: var(--surface);
+}
+
+.language-option:hover {
+    border-color: var(--border-hover);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+}
+
+.language-option.selected {
+    border-color: var(--primary);
+    background: linear-gradient(90deg, rgba(var(--primary-rgb), 0.08) 0%, rgba(var(--primary-rgb), 0.02) 100%);
+    box-shadow: 0 0 0 4px rgba(var(--primary-rgb), 0.1);
+}
+
+/* Flag container */
+.flag-container {
+    width: 56px;
+    height: 40px;
+    border-radius: var(--radius);
+    overflow: hidden;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    box-shadow: var(--shadow-sm);
+}
+
+.flag-container img {
+    width: 40px;
+    height: 28px;
+    object-fit: cover;
+    border-radius: 2px;
+}
+
+/* Language info */
+.language-info {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    flex: 1;
+    min-width: 0;
+}
+
+.language-name {
+    font-weight: 600;
+    font-size: var(--text-md);
+    color: var(--text);
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+}
+
+.language-native {
+    font-size: var(--text-sm);
+    color: var(--text-muted);
+}
+
+/* Selected checkmark */
+.selected-indicator {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background: var(--primary);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transform: scale(0.5);
+    transition: all var(--transition-fast);
+    flex-shrink: 0;
+}
+
+.language-option.selected .selected-indicator {
+    opacity: 1;
+    transform: scale(1);
+}
+
+.selected-indicator i-tabler {
+    width: 14px;
+    height: 14px;
+}
+
+/* Status badge */
+.language-option .badge {
+    position: absolute;
+    top: var(--space-2);
+    right: var(--space-2);
+    font-size: var(--text-xs);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .panel {
+        padding: var(--space-4);
+    }
+
+    .language-options-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .language-option {
+        padding: var(--space-3);
+    }
 }

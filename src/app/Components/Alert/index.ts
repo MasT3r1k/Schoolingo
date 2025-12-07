@@ -8,7 +8,7 @@ import { IconsModule } from "@Schoolingo/icons";
     selector: 'alert',
     templateUrl: './Alert.html',
     standalone: true,
-    imports: [NgClass, NgStyle, IconsModule],
+    imports: [IconsModule],
     styleUrl: './Alert.css'
 })
 export class AlertComponent {

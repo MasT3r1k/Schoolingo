@@ -35,12 +35,19 @@
                 (click)="$event.stopPropagation();dropdownManager.selected_dropdown = dropdownManager.selected_dropdown == '' ? 'theme' : ''">
                 <div class="control-trigger">
                     <div class="theme-indicator" [class.dark]="t.getThemeColor() == 'dark'">
-                        @if (t.getTheme().getValue() == 'system') {
-                        <i-tabler name="device-desktop" size="14"></i-tabler>
-                        } @else if (t.getTheme().getValue() == 'dark') {
-                        <i-tabler name="moon" size="14"></i-tabler>
-                        } @else {
-                        <i-tabler name="sun" size="14"></i-tabler>
+                        @switch (t.getTheme().getValue()) {
+                        @case('system') {
+                        <i-tabler name="device-desktop"></i-tabler>
+                        }
+                        @case('moon') {
+                        <i-tabler name="moon-stars"></i-tabler>
+                        }
+                        @case('dark') {
+                        <i-tabler name="moon"></i-tabler>
+                        }
+                        @case('light') {
+                        <i-tabler name="sun"></i-tabler>
+                        }
                         }
                     </div>
                     <span class="control-label">{{ l.s('themes.' + t.getTheme().getValue()) }}</span>
@@ -53,14 +60,20 @@
                         @for (theme of t.getThemes(); track $index) {
                         <li class="dropdown-item" [class.active]="t.getTheme().getValue() == theme"
                             (click)="t.updateTheme(theme);dropdownManager.selected_dropdown = ''">
-                            <div class="theme-indicator-menu"
-                                [class.dark]="theme == 'dark' || (theme == 'system' && t.getSystemColor() == 'dark')">
-                                @if (theme == 'system') {
-                                <i-tabler name="device-desktop" size="14"></i-tabler>
-                                } @else if (theme == 'dark') {
-                                <i-tabler name="moon" size="14"></i-tabler>
-                                } @else {
-                                <i-tabler name="sun" size="14"></i-tabler>
+                            <div class="theme-indicator-menu">
+                                @switch (theme) {
+                                @case('system') {
+                                <i-tabler name="device-desktop"></i-tabler>
+                                }
+                                @case('moon') {
+                                <i-tabler name="moon-stars"></i-tabler>
+                                }
+                                @case('dark') {
+                                <i-tabler name="moon"></i-tabler>
+                                }
+                                @case('light') {
+                                <i-tabler name="sun"></i-tabler>
+                                }
                                 }
                             </div>
                             <span>{{ l.s('themes.' + theme) }}</span>
@@ -82,9 +95,18 @@
         @if (isPasskeyLoading) {
         <div class="passkey-loading-overlay">
             <div class="passkey-loading-content">
-                <div class="passkey-loading-spinner"></div>
+                <!-- Animated ring around fingerprint -->
+                <div class="passkey-loading-ring"></div>
+                <div class="passkey-loading-ring passkey-loading-ring-2"></div>
+
+                <!-- Fingerprint icon with pulse -->
                 <i-tabler name="fingerprint" class="passkey-loading-icon"></i-tabler>
-                <span class="passkey-loading-text">Probíhá přihlášení pomocí passkey</span>
+
+                <!-- Status text -->
+                <div class="passkey-loading-text-wrapper">
+                    <span class="passkey-loading-title">{{ l.s('auth.passkey.authenticating') }}</span>
+                    <span class="passkey-loading-subtitle">{{ l.s('auth.passkey.use_device') }}</span>
+                </div>
             </div>
         </div>
         }
@@ -153,20 +175,18 @@
                     </div>
                 </form>
                 <div class="form-group">
-                    <div [ngClass]="{btn: true, 'btn--primary': loginForm.status == 'VALID', 'btn--disabled': loginForm.status == 'INVALID'}"
-                        (click)="login()">
+                    <div class="btn btn--primary" (click)="login()">
                         {{ l.s('auth.login.button') }}
                     </div>
                 </div>
 
                 @if (isPasskeySupport) {
-                <div class="splitter horizontal">
-                    <span>{{ l.s('or') }}</span>
-                </div>
 
-                <div class="btn" (click)="loginPasskey()">
-                    <i-tabler name="password-user"></i-tabler>
-                    <span>{{ l.s('auth.login.login_with_passkey') }}</span>
+                <div class="form-group">
+                    <div class="btn btn--outline-secondary" (click)="loginPasskey()">
+                        <i-tabler name="fingerprint"></i-tabler>
+                        <span>{{ l.s('auth.login.login_with_passkey') }}</span>
+                    </div>
                 </div>
                 }
                 }
@@ -367,12 +387,12 @@
                 <div class="title">
                     {{ l.s("auth.login.subtitle.1") }}
                 </div>
-                <div class="qrcode">
+                <div class="qrcode-box">
                     @if (qrcode.getValue() == '') {
-                    <div class="skeleton" [ngStyle]="{ width: 'var(--qrcode-size)', height: 'var(--qrcode-size)' }">
-                    </div>
+                    <div class="skeleton"></div>
                     } @else {
-                    <qrcode [allowEmptyString]="false" [width]="200" [margin]="0" [elementType]="'canvas'"
+                    <div class="qr-scanner-line"></div>
+                    <qrcode [allowEmptyString]="false" [width]="200" [elementType]="'canvas'"
                         [errorCorrectionLevel]="'M'" [title]="'SCHOOLINGO QR Fastlogin'"
                         [imageSrc]="'./assets/logo.webp'" [imageHeight]="56" [imageWidth]="56"
                         [qrdata]="qrcode.getValue()"
@@ -380,8 +400,11 @@
                         [colorLight]="t.getTheme().getValue() == 'light' ? '#ffffff' : '#000000'"></qrcode>
                     }
                 </div>
-                <div style="text-align: center">
+                <div class="qr-text">
                     {{ l.s('auth.login.qrcode') }}
+                </div>
+                <div class="qr-hint">
+                    {{ l.s('auth.login.qrcode_hint') }}
                 </div>
             </div>
             }

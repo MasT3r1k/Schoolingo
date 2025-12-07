@@ -2,109 +2,78 @@
   <div class="theme-selector">
     <div>
       <h2>{{ l.s('settings.theme') }}</h2>
-      <p style="margin: 6px 0 12px 0; color: var(--text-muted); opacity: 0.7">
-        {{ l.s('settings.themes.selector.description') }}
-      </p>
+      <p>{{ l.s('settings.themes.selector.description') }}</p>
     </div>
 
-    @for (theme of t.getThemes(); track $index) {
-    <div
-      [ngClass]="{
-        'theme-option': true,
-        selected: t.getTheme().getValue() == theme
-      }"
-      (click)="t.updateTheme(theme)"
-    >
-      <div class="preview-thumb">
-        <div class="thumb-inner" style="background: transparent">
-          <div
-            class="thumb-bar"
-            [ngStyle]="{
-              background:
-                t.getThemeColorFromTheme(theme) == 'light'
-                  ? '#e7e8e3'
-                  : '#0f1720'
-            }"
-          ></div>
-          <div
-            class="thumb-bar"
-            [ngStyle]="{
-              background:
-                t.getThemeColorFromTheme(theme) == 'light'
-                  ? '#ebebed'
-                  : '#111827',
-              height: '10px'
-            }"
-          ></div>
+    <div class="theme-options-grid">
+      @for (theme of t.getThemes(); track $index) {
+      <div [ngClass]="{
+          'theme-option': true,
+          selected: t.getTheme().getValue() == theme
+        }" (click)="t.updateTheme(theme)">
+        <!-- Visual Preview with actual theme class -->
+        <div class="theme-preview" [ngClass]="theme">
+          <!-- Sidebar -->
+          <div class="preview-sidebar">
+            <div class="preview-nav-item"></div>
+            <div class="preview-nav-item"></div>
+            <div class="preview-nav-item"></div>
+            <div class="preview-nav-item"></div>
+          </div>
+
+          <!-- Navbar -->
+          <div class="preview-navbar">
+            <div class="preview-nav-dot"></div>
+            <div class="preview-nav-text"></div>
+          </div>
+
+          <!-- Content -->
+          <div class="preview-content">
+            <div class="preview-card">
+              <div class="preview-text"></div>
+              <div class="preview-text-muted"></div>
+              <div class="preview-text-muted" style="width: 60%;"></div>
+              <div class="preview-btn"></div>
+            </div>
+          </div>
+
+          <!-- Selected checkmark -->
+          @if (t.getTheme().getValue() == theme) {
+          <div class="selected-check">
+            <i-tabler name="check"></i-tabler>
+          </div>
+          }
         </div>
-      </div>
-      <div class="option-info">
-        <span class="option-title">
+
+        <!-- Info -->
+        <div class="option-info">
+          <span class="option-title">
             {{ l.s("themes." + theme) }}
-        </span>
-        <span class="option-desc">
+            @if (theme == 'moon') {
+            <span class="badge badge--primary" style="font-size: 10px;">OLED</span>
+            }
+          </span>
+          <span class="option-desc">
             {{ l.s("settings.themes_description." + theme) }}
-        </span>
-      </div>
-      @if (t.getTheme().getValue() == theme) {
-        <div [ngClass]="{badge: true, 'badge--primary': t.getAction() == 'selected', 'badge--loading': t.getAction() == 'saving', 'badge--danger': t.getAction() == 'error'}">
-            @if (t.getAction() == "selected") {
-                {{ l.s("selected") }}
-            }
-            @if (t.getAction() == 'saving') {
-                <div class="loader"></div>
-                {{ l.s('settings.themes.saving') }}
-            }
-            @if (t.getAction() == 'error') {
-                <i-tabler name="x"></i-tabler>
-                {{ l.s('settings.themes.error') }}
-            }
+          </span>
         </div>
+
+        <!-- Status badge -->
+        @if (t.getTheme().getValue() == theme && t.getAction() != 'selected') {
+        <div
+          [ngClass]="{badge: true, 'badge--loading': t.getAction() == 'saving', 'badge--danger': t.getAction() == 'error'}">
+          @if (t.getAction() == 'saving') {
+          <div class="loader"></div>
+          {{ l.s('settings.themes.saving') }}
+          }
+          @if (t.getAction() == 'error') {
+          <i-tabler name="x"></i-tabler>
+          {{ l.s('settings.themes.error') }}
+          }
+        </div>
+        }
+      </div>
       }
-    </div>
-    }
-  </div>
-  <div
-    [ngClass]="{
-      'preview-area': true,
-      dark: t.getTheme().getValue() == 'dark',
-      light: t.getTheme().getValue() == 'light'
-    }"
-  >
-    <div
-      style="display: flex; justify-content: space-between; align-items: center"
-    >
-      <div>
-        <h2>{{ l.s('settings.themes.preview.title') }}</h2>
-        <p style="margin: 6px 0 0 0; color: var(--text-muted); opacity: 0.7">
-          {{ l.s('settings.themes.preview.description') }}
-        </p>
-      </div>
-    </div>
-
-    <div class="sample-card" id="sampleCard">
-      <h3>{{ l.s('settings.themes.sample.title') }}</h3>
-      <p>{{ l.s('settings.themes.sample.description') }}</p>
-      <div class="btn-row">
-        <div class="btn btn--primary">
-            {{ l.s('settings.themes.sample.actions.0') }}
-        </div>
-        <div class="btn">
-            {{ l.s('settings.themes.sample.actions.1') }}
-        </div>
-      </div>
-
-      <div
-        class="contrast"
-        id="contrastBlock"
-        title="Jednoduché zprávy o kontrastu"
-      >
-        {{ l.s('settings.themes.sample.contrast') }}
-      </div>
-    </div>
-
-    <div class="footer">
-      {{ l.s('settings.themes.sample.footer') }}
     </div>
   </div>
 </div>

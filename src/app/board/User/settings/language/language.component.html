@@ -1,34 +1,55 @@
-<h2 class="small mb">
-    {{ l.s('settings.language') }}
-</h2>
-<div class="language">
-    <div class="items">
-        @for (language of l.getLanguages(); track $index) {
-            <div [ngClass]="{item: true, active: l.getSelectedLanguage().getValue() == language}" (click)="l.setLanguage(language);l.saveLanguage()">
-                <div class="flag">
-                    <img [src]="l.getLanguage(language)?.flag" [alt]="l.getLanguage(language)?.name" width="27" height="18">
+<div class="panel">
+    <div class="language-selector">
+        <h2>{{ l.s('settings.language') }}</h2>
+        <p>{{ l.s('settings.languages.selector.description') }}</p>
+
+        <div class="language-options-grid">
+            @for (language of l.getLanguages(); track $index) {
+            <div [ngClass]="{
+            'language-option': true, 
+            'selected': l.getSelectedLanguage().getValue() == language
+          }" (click)="l.setLanguage(language); l.saveLanguage()">
+                <!-- Flag -->
+                <div class="flag-container">
+                    <img [src]="l.getLanguage(language)?.flag" [alt]="l.getLanguage(language)?.name">
                 </div>
-                <div class="meta">
-                    <span class="name">
+
+                <!-- Language info -->
+                <div class="language-info">
+                    <span class="language-name">
                         {{ l.getLanguage(language)?.name }}
-                        <span class="subname">
-                            ({{ l.getSelectedLanguage().getValue() == language ? l.getLanguage(language)?.name : l.s('languages.' + l.getLanguage(language)?.iso) }})
-                        </span>
                     </span>
+                    @if (l.getSelectedLanguage().getValue() != language) {
+                    <span class="language-native">
+                        {{ l.s('languages.' + l.getLanguage(language)?.iso) }}
+                    </span>
+                    }
                 </div>
-                @if (l.getSelectedLanguage().getValue() == language) {
-                    <div [ngClass]="{badge: true, 'badge--primary': l.getState() == 'loaded', 'badge--loading': l.getState() == 'loading', 'badge--danger': l.getState() == 'error'}">
-                        @if (l.getState() == "error") {
-                            <i-tabler name="x"></i-tabler>
-                            {{ l.s('settings.languages.error') }}
-                        }
-                        @if (l.getState() == "loading") {
-                            <div class="loader"></div>
-                        }
-                        {{ l.s(l.getState() == 'loaded' ? 'selected' : 'loading') }}
-                    </div>
+
+                <!-- Selected indicator -->
+                <div class="selected-indicator">
+                    <i-tabler name="check"></i-tabler>
+                </div>
+
+                <!-- Status badge -->
+                @if (l.getSelectedLanguage().getValue() == language && l.getState() != 'loaded') {
+                <div [ngClass]="{
+              'badge': true, 
+              'badge--loading': l.getState() == 'loading', 
+              'badge--danger': l.getState() == 'error'
+            }">
+                    @if (l.getState() == 'error') {
+                    <i-tabler name="x"></i-tabler>
+                    {{ l.s('settings.languages.error') }}
+                    }
+                    @if (l.getState() == 'loading') {
+                    <div class="loader"></div>
+                    {{ l.s('loading') }}
+                    }
+                </div>
                 }
             </div>
-        }
+            }
+        </div>
     </div>
 </div>
