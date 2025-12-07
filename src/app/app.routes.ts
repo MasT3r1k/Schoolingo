@@ -64,7 +64,7 @@ export const routes: Routes = [
                 path: 'documents', component: DocumentsComponent
             },
             {
-                path: 'polls',
+                path: 'tests',
                 children: [
                     {
                         path: '',

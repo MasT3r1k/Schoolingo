@@ -26,7 +26,8 @@ export class SessionExpiredService {
     
     // Close token warning modal if it's open
     this.modalManager.closeModal('token-warning');
-    
+    this.modalManager.closeAllModals();
+
     // Set logout reason for display on login page
     sessionStorage.setItem('logoutReason', 'session_expired');
     

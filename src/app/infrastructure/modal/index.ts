@@ -42,14 +42,20 @@ export class ModalManager {
         this.modals[name].dropdown = null
     }
 
-    public openModal(name: string) {
+    public openModal(name: string): void {
         if (!this.modals[name]) return
         this.modals[name].isOpen = true
     }
-    public closeModal(name: string) { 
+
+    public closeModal(name: string): void { 
         if (!this.modals[name]) return
         this.modals[name].isOpen = false
     }
     
+    public closeAllModals(): void {
+        Object.values(this.modals).forEach((modal) => {
+            modal.isOpen = false;
+        })
+    }
 
 }

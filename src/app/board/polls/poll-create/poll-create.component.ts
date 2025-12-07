@@ -20,7 +20,7 @@ export class PollCreateComponent {
   pollForm: FormGroup = this.fb.group({
     title: ['', Validators.required],
     description: [''],
-    type: ['feedback', Validators.required],
+    type: ['test', Validators.required],
     active_from: [''],
     active_to: [''],
     time_limit: [null],
@@ -67,7 +67,7 @@ export class PollCreateComponent {
     this.pollsService.createPoll(this.pollForm.value).subscribe({
       next: (res) => {
         if (res.success) {
-          this.router.navigate(['/polls']);
+          this.router.navigate(['/tests']);
         }
       },
       error: (err) => console.error(err)

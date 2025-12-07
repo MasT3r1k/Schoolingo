@@ -32,6 +32,7 @@ import { Dashboard } from '@Schoolingo/dashboard';
 import { TokenExpirationService } from './infrastructure/token-expiration/token-expiration.service';
 import { MonitoringService } from './infrastructure/monitoring/monitoring.service';
 import { SessionExpiredService } from './infrastructure/session/session-expired.service';
+import { AlertManager } from '@Schoolingo/alert';
 
 export function initAuth(auth: Authentication): () => void {
   return () => auth.loadState(); // např. HTTP požadavek + setAuthState()
@@ -75,6 +76,7 @@ export const appConfig: ApplicationConfig = {
     Dashboard,
     TokenExpirationService,
     MonitoringService,
-    SessionExpiredService
+    SessionExpiredService,
+    AlertManager
   ]
 };

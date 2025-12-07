@@ -63,6 +63,7 @@ export class AuthComponent implements OnInit {
   public isPasskeyLoading = false;
   public isLoggingIn = false;
   public isLoginSuccess = false;
+  public isForgotPasswordLoading = false;
 
   public qrcode = new BehaviorSubject('');
   public showInstallModal = false;
@@ -222,6 +223,9 @@ export class AuthComponent implements OnInit {
       return;
     }
 
+    // Start loading
+    this.isForgotPasswordLoading = true;
+
     // 🔹 Odeslání požadavku na server
     this.http
       .post(
@@ -238,6 +242,9 @@ export class AuthComponent implements OnInit {
       )
       .subscribe(
         (data: any) => {
+          // Stop loading on any response
+          this.isForgotPasswordLoading = false;
+          
           // 🔸 chyba
           if ('error' in data && data.error instanceof Array) {
             const errors = data.error as string[];
@@ -327,6 +334,7 @@ export class AuthComponent implements OnInit {
           }
         },
         (err) => {
+          this.isForgotPasswordLoading = false;
           console.error(err);
           this.a.alert('error', 'auth.forgotpass.http_error');
         }
@@ -432,25 +440,29 @@ export class AuthComponent implements OnInit {
             this.isPasskeyLoading = false;
             const error = err as Error;
             const msg = error?.message || '';
+            console.log(err);
 
             if (
               msg.includes('The operation either timed out or was not allowed')
             ) {
               console.error('🟡 Uživatelsky zrušené přihlášení nebo timeout.');
+              this.a.alert('info', 'auth.passkey.cancelled').closeable(true)
             } else if (
               msg.includes('not supported') ||
               msg.includes('not allowed')
             ) {
               console.error('❌ Prohlížeč nepodporuje WebAuthn nebo Passkeys.');
+              this.a.alert('error', 'settings.passkeys.alerts.not_supported').closeable(true)
             } else {
               console.error('❗ Neočekávaná chyba:', err);
+              this.a.alert('error', 'auth.passkey.error').closeable(true)
             }
           }
         },
         (err) => {
           this.isPasskeyLoading = false;
           this.a.alert('error', 'auth.errors.429');
-          console.error('❌ Nepodařilo se komunikovat se serverem ');
+          console.error('❌ Nepodařilo se komunikovat se serverem');
         }
       );
   }

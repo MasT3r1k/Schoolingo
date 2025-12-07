@@ -13,7 +13,8 @@ export class MarksManager {
     }
 
     private action: 'edit' | 'create' | '' = '';
-    private student: string | null = null;
+    private student: string = '';
+    private studentId: number = -1;
     private columnIndex = -1;
     private columnId = -1;
     private groupId = -1;
@@ -24,6 +25,7 @@ export class MarksManager {
     private weight = 1;
     private mark_types: string[] = ['marks', 'points'];
     private type: string | null = null;
+    private studentAverage: string = '';
 
     public updateColumn$ = new BehaviorSubject<any>({});
     public updateMark$ = new BehaviorSubject<any>({});
@@ -33,6 +35,9 @@ export class MarksManager {
 
     public setStudent(student: typeof this.student): void { this.student = student }
     public getSelectedStudent(): typeof this.student { return this.student }
+
+    public setStudentId(studentId: typeof this.studentId): void { this.studentId = studentId }
+    public getSelectedStudentId(): typeof this.studentId { return this.studentId }
 
     public setGroupId(groupId: number): void { this.groupId = groupId }
     public getGroupId(): typeof this.groupId { return this.groupId }
@@ -68,4 +73,7 @@ export class MarksManager {
     public getType(): typeof this.type {
         return this.type;
     }
+
+    public setStudentAverage(average: string): void { this.studentAverage = average }
+    public getStudentAverage(): typeof this.studentAverage { return this.studentAverage }
 }

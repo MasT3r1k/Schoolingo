@@ -32,6 +32,7 @@ interface GradeColumn {
 }
 
 interface Student {
+  studentId: number;
   name: string;
   quarter: number | null;
   marks: (string | null)[];
@@ -283,7 +284,19 @@ export class IntermRecordComponent {
     this.modalManager.openModal('edit_marking_scale');
   }
 
-  public openMidterm(): void {
+  public openMidterm(studentIndex: number): void {
+    const student = this.students[studentIndex];
+    if (!student) return;
+
+    // Set data for modal
+    this.marksManager.setStudent(student.name);
+    this.marksManager.setStudentId(student.studentId);
+    this.marksManager.setMark(student.quarter?.toString() || null);
+    this.marksManager.setGroupId(this.groups[this.selected_group].groupId);
+    this.marksManager.setSubjectId(this.groups[this.selected_group].subjectId);
+    this.marksManager.setSubjectName(this.groups[this.selected_group].subject);
+    this.marksManager.setStudentAverage(this.getStudentAverage(studentIndex));
+
     this.modalManager.openModal('edit_midterm');
   }
 

@@ -15,19 +15,20 @@ export class PollsComponent implements OnInit {
   private pollsService = inject(PollsService);
   private router = inject(Router);
 
-  public polls: Poll[] = [];
+  public tests: Poll[] = [];
   public canCreate = false;
   public loading = true;
 
   ngOnInit(): void {
-    this.loadPolls();
+    this.loadTests();
   }
 
-  loadPolls() {
+  loadTests() {
     this.loading = true;
     this.pollsService.getPolls().subscribe({
       next: (data) => {
-        this.polls = data.polls;
+        // Filter only tests
+        this.tests = data.polls.filter(p => p.type === 'test');
         this.canCreate = data.canCreate;
         this.loading = false;
       },

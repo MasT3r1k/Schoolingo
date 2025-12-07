@@ -113,7 +113,7 @@
         <div class="login-success-overlay">
             <div class="login-success-content">
                 <div class="success-checkmark">
-                    <svg class="checkmark" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52">
                         <circle class="checkmark-circle" cx="26" cy="26" r="25" fill="none" />
                         <path class="checkmark-check" fill="none" d="M14.1 27.2l7.1 7.2 16.7-16.8" />
                     </svg>
@@ -186,8 +186,12 @@
                         </div>
                     </div>
                     <div class="form-group">
-                        <a class="clickable" (click)="forgotPassword()">
+                        <a class="clickable forgot-password-link" [class.loading]="isForgotPasswordLoading"
+                            (click)="!isForgotPasswordLoading && forgotPassword()">
                             {{ l.s('auth.forgotpass.click') }}
+                            @if (isForgotPasswordLoading) {
+                            <span class="inline-spinner"></span>
+                            }
                         </a>
                     </div>
                 </form>
@@ -259,9 +263,14 @@
                     }
                 </div>
                 <div class="form-group">
-                    <div [ngClass]="{btn: true, primary: this.selectedEmail != undefined, disabled: this.selectedEmail == undefined}"
-                        (click)="forgotPassword()">
-                        {{ l.s('auth.forgotpass.send_email') }}
+                    <div class="btn btn--primary" [class.btn--loading]="isForgotPasswordLoading"
+                        [class.btn--disabled]="isForgotPasswordLoading || this.selectedEmail == undefined"
+                        (click)="!isForgotPasswordLoading && this.selectedEmail != undefined && forgotPassword()">
+                        @if (isForgotPasswordLoading) {
+                        <span class="btn-spinner"></span>
+                        }
+                        <span [class.btn-text-hidden]="isForgotPasswordLoading">{{ l.s('auth.forgotpass.send_email')
+                            }}</span>
                     </div>
                 </div>
                 <div class="form-group">
@@ -290,13 +299,19 @@
                     <div class="value">
                         <input type="text" [class.input-error]="getInputError('email_code')" id="email_code"
                             [(ngModel)]="emailCode" [minlength]="8" [maxlength]="8" name="email_code" autocomplete="off"
-                            autocorrect="off" required placeholder="XXXXXXXX" />
+                            autocorrect="off" required placeholder="" />
                     </div>
                 </div>
                 <div class="form-group">
-                    <div [ngClass]="{btn: true, primary: this.emailCode?.length == 8, disabled: this.emailCode?.length != 8}"
-                        (click)="forgotPassword()">
-                        {{ l.s('auth.forgotpass.verify_code') }}
+                    <div class="btn btn--primary" [class.btn--loading]="isForgotPasswordLoading"
+                        [class.btn--disabled]="isForgotPasswordLoading || this.emailCode?.length != 8"
+                        (click)="!isForgotPasswordLoading && this.emailCode?.length == 8 && forgotPassword()">
+                        @if (isForgotPasswordLoading) {
+                        <span class="btn-spinner"></span>
+                        }
+                        <span [class.btn-text-hidden]="isForgotPasswordLoading">{{
+                            l.s('auth.forgotpass.verify_code')
+                            }}</span>
                     </div>
                 </div>
                 <div class="form-group">
@@ -350,9 +365,14 @@
                 </div>
 
                 <div class="form-group">
-                    <div [ngClass]="{btn: true, primary: newPassword == newAgainPassword && (newPassword?.length ?? 0) > 0}"
-                        (click)="forgotPassword()">
-                        {{ l.s('auth.forgotpass.request_new_password') }}
+                    <div class="btn btn--primary" [class.btn--loading]="isForgotPasswordLoading"
+                        [class.btn--disabled]="isForgotPasswordLoading || newPassword != newAgainPassword || (newPassword?.length ?? 0) == 0"
+                        (click)="!isForgotPasswordLoading && newPassword == newAgainPassword && (newPassword?.length ?? 0) > 0 && forgotPassword()">
+                        @if (isForgotPasswordLoading) {
+                        <span class="btn-spinner"></span>
+                        }
+                        <span [class.btn-text-hidden]="isForgotPasswordLoading">{{
+                            l.s('auth.forgotpass.request_new_password') }}</span>
                     </div>
                 </div>
                 <div class="form-group">
@@ -388,8 +408,14 @@
                 </div>
 
                 <div class="form-group">
-                    <div [ngClass]="{btn: true, primary: (emailTFA?.length ?? 0) == 6}" (click)="forgotPassword()">
-                        {{ l.s('auth.2fa.verify_code') }}
+                    <div class="btn btn--primary" [class.btn--loading]="isForgotPasswordLoading"
+                        [class.btn--disabled]="isForgotPasswordLoading || (emailTFA?.length ?? 0) != 6"
+                        (click)="!isForgotPasswordLoading && (emailTFA?.length ?? 0) == 6 && forgotPassword()">
+                        @if (isForgotPasswordLoading) {
+                        <span class="btn-spinner"></span>
+                        }
+                        <span [class.btn-text-hidden]="isForgotPasswordLoading">{{ l.s('auth.2fa.verify_code')
+                            }}</span>
                     </div>
                 </div>
                 <div class="form-group">

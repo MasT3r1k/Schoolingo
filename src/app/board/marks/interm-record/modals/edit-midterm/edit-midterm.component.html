@@ -1,1 +1,91 @@
-<p>edit-midterm works!</p>
+<div class="items">
+    @if (alert != null) {
+    <alert [alert]="alert"></alert>
+    }
+
+    <!-- Student Info -->
+    <div class="item mb">
+        <label>{{ l.s('roles.student') }}</label>
+        <div class="value">
+            <input type="text" [value]="marksManager.getSelectedStudent()" readonly>
+        </div>
+    </div>
+
+    <!-- Subject Info -->
+    <div class="item mb">
+        <label>{{ l.s('subject') }}</label>
+        <div class="value">
+            <input type="text" [value]="marksManager.getSubjectName() || l.s('unknown')" readonly>
+        </div>
+    </div>
+
+    <!-- Student Average -->
+    @if (marksManager.getStudentAverage()) {
+    <div class="average-card">
+        <div class="average-label">Průměr žáka z předmětu</div>
+        <div class="average-value" [class.good]="parseFloat(marksManager.getStudentAverage()) <= 2.5"
+            [class.bad]="parseFloat(marksManager.getStudentAverage()) >= 3.5">
+            Ø {{ marksManager.getStudentAverage() }}
+        </div>
+    </div>
+    }
+
+    <!-- Quarter Selection -->
+    <div class="item mb">
+        <label>{{ l.s('marks.quarter') }}</label>
+        <div class="quarter-selector">
+            @for (quarter of quarters; track quarter.id) {
+            <div class="quarter-option" [class.selected]="selectedQuarter === quarter.id"
+                [class.current]="quarter.isCurrent" [class.disabled]="!quarter.isCurrent"
+                [class.has-grade]="quarter.grade !== null"
+                (click)="quarter.isCurrent ? selectedQuarter = quarter.id : null">
+                @if (quarter.isCurrent) {
+                <span class="current-badge">Aktuální</span>
+                }
+                @if (quarter.grade !== null) {
+                <span class="existing-grade" [class.grade-1]="quarter.grade == 1" [class.grade-2]="quarter.grade == 2"
+                    [class.grade-3]="quarter.grade == 3" [class.grade-4]="quarter.grade == 4"
+                    [class.grade-5]="quarter.grade == 5">
+                    {{ quarter.grade }}
+                </span>
+                }
+                <span class="quarter-number">{{ quarter.id }}</span>
+                <span class="quarter-label">{{ quarter.label }}</span>
+                <span class="quarter-months">{{ quarter.months }}</span>
+            </div>
+            }
+        </div>
+    </div>
+
+    <!-- Grade Selection -->
+    <div class="item mb">
+        <label [class.error-color]="errors['grade']">
+            {{ l.s('marks.midterm_grade') }}
+            @if (errors['grade']) {
+            - {{ errors['grade'] }}
+            }
+        </label>
+        <div class="grade-selector">
+            @for (grade of grades; track grade) {
+            <div class="grade-option" [class.selected]="selectedGrade === grade" [class.grade-1]="grade === 1"
+                [class.grade-2]="grade === 2" [class.grade-3]="grade === 3" [class.grade-4]="grade === 4"
+                [class.grade-5]="grade === 5" (click)="selectGrade(grade)">
+                <span class="grade-value">{{ grade }}</span>
+                <span class="grade-label">{{ getGradeLabel(grade) }}</span>
+            </div>
+            }
+        </div>
+    </div>
+
+    <!-- Actions -->
+    <div class="form-group">
+        @if (action === 'edit') {
+        <div class="btn btn--danger" (click)="deleteMidterm()" [class.loading]="isLoading">
+            <span>{{ l.s('marks.edit_midterm.delete_midterm') }}</span>
+        </div>
+        }
+        <div class="btn" [class.btn--primary]="isButtonActivated()" [class.loading]="isLoading" (click)="saveMidterm()">
+            <span>{{ l.s(action === 'edit' ? 'marks.edit_midterm.edit_midterm' : 'marks.edit_midterm.save_midterm') }}</span>
+        </div>
+    </div>
+</div>

@@ -1,71 +1,69 @@
-<div class="vote-page">
+<div class="card">
     @if (loading) {
     <div class="loading-state">
-        <div class="spinner"></div>
-        <p>Načítání ankety...</p>
+        <div class="loader"></div>
+        <p>Načítání testu...</p>
     </div>
     } @else if (poll) {
-    <div class="page-header">
-        <div class="header-content">
-            <button routerLink="/polls" class="btn-back">
-                <i-tabler name="arrow-left" class="icon"></i-tabler>
-                <span>Zpět na přehled</span>
+
+    <div class="card-header">
+        <div class="left">
+            <h2>{{ poll.title }}</h2>
+            @if (poll.description) {
+            <p class="meta muted">{{ poll.description }}</p>
+            }
+        </div>
+        <div class="flex-items">
+            <button routerLink="/tests" class="btn btn--ghost">
+                <i-tabler name="arrow-left"></i-tabler>
+                Zpět
             </button>
-            <div class="poll-info">
-                <div class="poll-badge">
-                    <i-tabler [name]="poll.type === 'test' ? 'clipboard-check' : 'message-circle'"
-                        class="badge-icon"></i-tabler>
-                    <span>{{ poll.type === 'feedback' ? 'Anketa' : 'Test' }}</span>
-                </div>
-                <h1>{{ poll.title }}</h1>
-                @if (poll.description) {
-                <p class="description">{{ poll.description }}</p>
-                }
-            </div>
         </div>
     </div>
 
-    <div class="page-content">
+    <div class="card-body">
         @if (submitted) {
+        <!-- Submitted State -->
         <div class="submitted-card">
             <div class="success-icon-wrapper">
                 <i-tabler name="circle-check" class="success-icon"></i-tabler>
             </div>
-            <h2>Anketa již byla odeslána</h2>
-            <p>Děkujeme za vyplnění ankety. Vaše odpovědi byly úspěšně uloženy.</p>
+            <h2>Test již byl odeslán</h2>
+            <p>Děkujeme za vyplnění testu. Vaše odpovědi byly úspěšně uloženy.</p>
             <div class="submitted-actions">
-                <button routerLink="/polls" class="btn-primary">
+                <button routerLink="/tests" class="btn btn--ghost">
                     Zpět na přehled
                 </button>
-                @if (poll.type === 'test') {
-                <button [routerLink]="['/polls', poll.id, 'results']" class="btn-secondary">
+                <button [routerLink]="['/tests', poll.id, 'results']" class="btn btn--primary">
                     Zobrazit výsledky
                 </button>
-                }
             </div>
         </div>
         } @else {
+
+        <!-- Vote Form -->
         <form [formGroup]="voteForm" (ngSubmit)="submit()" class="vote-form">
             <div formArrayName="answers" class="questions-container">
                 @for (answer of answers.controls; track $index; let i = $index) {
                 <div [formGroupName]="i" class="question-card">
                     <div class="question-header">
-                        <div class="question-number">{{ i + 1 }}</div>
-                        <div class="question-title">
-                            <h3>{{ questions[i].title }}</h3>
-                            @if (questions[i].points > 0) {
-                            <span class="points-badge">{{ questions[i].points }} bodů</span>
-                            }
-                        </div>
+                        <div class="question-number">Otázka {{ i + 1 }}</div>
+                        @if (questions[i].points > 0) {
+                        <span class="points-badge">{{ questions[i].points }} bodů</span>
+                        }
                     </div>
 
                     <div class="question-content">
+                        <h3 class="question-title">{{ questions[i].title }}</h3>
+
                         @if (questions[i].type === 'text') {
+                        <!-- Text Answer -->
                         <textarea formControlName="answerText" placeholder="Vaše odpověď..." class="answer-textarea"
                             rows="4"></textarea>
                         }
 
                         @if (questions[i].type === 'single') {
+                        <!-- Single Choice -->
                         <div class="options-list">
                             @for (option of questions[i].options; track option.id) {
                             <label class="option-radio">
@@ -79,6 +77,7 @@
                         }
 
                         @if (questions[i].type === 'multiple') {
+                        <!-- Multiple Choice -->
                         <div class="options-list">
                             @for (option of questions[i].options; track option.id) {
                             <label class="option-checkbox">
@@ -96,12 +95,12 @@
             </div>
 
             <div class="form-actions">
-                <button type="button" routerLink="/polls" class="btn-cancel">
+                <button type="button" routerLink="/tests" class="btn btn--ghost">
                     Zrušit
                 </button>
-                <button type="submit" [disabled]="voteForm.invalid" class="btn-submit">
-                    <i-tabler name="send" class="icon"></i-tabler>
-                    <span>Odeslat odpovědi</span>
+                <button type="submit" [disabled]="voteForm.invalid" class="btn btn--primary">
+                    <i-tabler name="send"></i-tabler>
+                    Odeslat odpovědi
                 </button>
             </div>
         </form>
