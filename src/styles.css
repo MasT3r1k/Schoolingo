@@ -49,7 +49,7 @@ a {
 }
 
 a:hover {
-    color: var(--primary-strong);
+    color: var(--primary-hover);
 }
 
 /* === DESIGN TOKENS === */
@@ -57,8 +57,7 @@ a:hover {
     /* --- Primary Colors --- */
     --primary: #5865f2;
     --primary-rgb: 88, 101, 242;
-    --primary-strong: #4752d9;
-    --primary-hover: #6875f5;
+    --primary-hover: #4752d9;
     --primary-gradient: linear-gradient(135deg, #5865f2 0%, #4752d9 50%, #3640b8 100%);
     --primary-gradient-soft: linear-gradient(135deg, rgba(88, 101, 242, 0.15) 0%, rgba(70, 84, 192, 0.1) 100%);
 
@@ -221,8 +220,7 @@ a:hover {
     /* --- Primary (original Discord blue) --- */
     --primary: #5865f2;
     --primary-rgb: 88, 101, 242;
-    --primary-strong: #4752d9;
-    --primary-hover: #6d78f5;
+    --primary-hover: #4752d9;
     --primary-700: #3640b8;
     --primary-900: #1f265f;
     --primary-200: #8a92f7;
@@ -336,7 +334,6 @@ a:hover {
     /* --- Primary (slightly adjusted for light mode visibility) --- */
     --primary: #5865f2;
     --primary-rgb: 88, 101, 242;
-    --primary-strong: #4752d9;
     --primary-hover: #4752d9;
     --primary-700: #3640b8;
     --primary-900: #1f265f;
@@ -450,10 +447,9 @@ a:hover {
     --icon: #d1d5db;
 
     /* --- Primary (brighter for OLED contrast) --- */
-    --primary: #818cf8;
-    --primary-rgb: 129, 140, 248;
-    --primary-strong: #6366f1;
-    --primary-hover: #a5b4fc;
+    --primary: #5865f2;
+    --primary-rgb: 88, 101, 242;
+    --primary-hover: #4752d9;
     --primary-700: #4f46e5;
     --primary-900: #3730a3;
     --primary-200: #c7d2fe;
@@ -561,60 +557,53 @@ hr {
 
 .splitter {
     display: flex;
-    position: relative;
-    justify-content: center !important;
+    align-items: center;
+    justify-content: center;
     color: var(--text);
     opacity: .85;
 }
 
+/* Vertical splitter (default) - between left and right columns */
 .splitter:not(.horizontal) {
-    margin: auto 1rem;
+    flex-direction: column;
+    margin: 0 1rem;
     height: 100%;
     width: fit-content !important;
-}
-
-.splitter.horizontal {
-    margin: 1rem auto;
-    width: 100%;
-    height: fit-content !important;
+    align-self: stretch;
 }
 
 .splitter:not(.horizontal)::before,
 .splitter:not(.horizontal)::after {
     content: '';
-    position: absolute;
-    left: 50%;
-    transform: translateX(-50%);
-    height: calc(50% - 24px);
-    width: 2px !important;
-    background-color: #444;
+    flex: 1;
+    width: 2px;
+    min-height: 20px;
+    background-color: var(--border);
+}
+
+.splitter:not(.horizontal) span {
+    padding: 0.75rem 0;
+    white-space: nowrap;
+}
+
+/* Horizontal splitter - between form sections */
+.splitter.horizontal {
+    flex-direction: row;
+    margin: 1rem auto;
+    width: 100%;
+    height: fit-content !important;
 }
 
 .splitter.horizontal::before,
 .splitter.horizontal::after {
     content: '';
-    position: absolute;
-    top: 50%;
-    transform: translateY(-50%);
-    width: calc(50% - 24px);
-    height: 2px !important;
-    background-color: #444;
+    flex: 1;
+    height: 2px;
+    background-color: var(--border);
 }
 
-.splitter:not(.horizontal)::before {
-    top: 0
-}
-
-.splitter:not(.horizontal)::after {
-    bottom: 0
-}
-
-.splitter.horizontal::before {
-    left: 0
-}
-
-.splitter.horizontal::after {
-    right: 0
+.splitter.horizontal span {
+    padding: 0 1rem;
 }
 
 /* ============================================
@@ -1400,7 +1389,7 @@ h1.APP_Logo img {
 }
 
 .select-item.active:hover {
-    background-color: var(--primary-strong);
+    background-color: var(--primary-hover);
 }
 
 h2.small {

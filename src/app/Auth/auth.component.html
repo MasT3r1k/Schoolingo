@@ -367,12 +367,12 @@
                 <div class="title">
                     {{ l.s("auth.login.subtitle.1") }}
                 </div>
-                <div class="qrcode">
+                <div class="qrcode-box">
                     @if (qrcode.getValue() == '') {
-                    <div class="skeleton" [ngStyle]="{ width: 'var(--qrcode-size)', height: 'var(--qrcode-size)' }">
-                    </div>
+                    <div class="skeleton"></div>
                     } @else {
-                    <qrcode [allowEmptyString]="false" [width]="200" [margin]="0" [elementType]="'canvas'"
+                    <div class="qr-scanner-line"></div>
+                    <qrcode [allowEmptyString]="false" [width]="200" [elementType]="'canvas'"
                         [errorCorrectionLevel]="'M'" [title]="'SCHOOLINGO QR Fastlogin'"
                         [imageSrc]="'./assets/logo.webp'" [imageHeight]="56" [imageWidth]="56"
                         [qrdata]="qrcode.getValue()"
@@ -380,7 +380,7 @@
                         [colorLight]="t.getTheme().getValue() == 'light' ? '#ffffff' : '#000000'"></qrcode>
                     }
                 </div>
-                <div style="text-align: center">
+                <div class="qr-text">
                     {{ l.s('auth.login.qrcode') }}
                 </div>
             </div>
