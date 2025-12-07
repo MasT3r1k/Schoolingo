@@ -1,0 +1,153 @@
+<div class="card">
+    <div class="card-header">
+        <div class="left">
+            <h2>Odměny k vyzvednutí</h2>
+            <p class="meta muted">Přehled odměn čekajících na vyzvednutí v kanceláři školy</p>
+        </div>
+        @if (isTeacher) {
+        <div class="flex-items">
+            <button class="btn btn--primary" (click)="openAddReward()">
+                <i-tabler name="plus"></i-tabler>
+                <span>Přidat odměnu</span>
+            </button>
+        </div>
+        }
+    </div>
+
+    <div class="card-body">
+        <!-- Info Banner for Students -->
+        @if (!isTeacher && pendingCount > 0) {
+        <div class="info-banner">
+            <div class="banner-icon">
+                <i-tabler name="gift"></i-tabler>
+            </div>
+            <div class="banner-content">
+                <strong>Máte {{ pendingCount }} {{ pendingCount === 1 ? 'odměnu' : 'odměny' }} k vyzvednutí!</strong>
+                <p>Navštivte kancelář školy pro vyzvednutí.</p>
+            </div>
+        </div>
+        }
+
+        <!-- Stats -->
+        <div class="stats-row">
+            <div class="stat-card stat--warning">
+                <div class="stat-icon">
+                    <i-tabler name="clock-hour-4"></i-tabler>
+                </div>
+                <div class="stat-info">
+                    <span class="stat-value">{{ pendingCount }}</span>
+                    <span class="stat-label">Čeká na vyzvednutí</span>
+                </div>
+            </div>
+            <div class="stat-card stat--success">
+                <div class="stat-icon">
+                    <i-tabler name="cash"></i-tabler>
+                </div>
+                <div class="stat-info">
+                    <span class="stat-value">{{ totalPendingAmount | number }} Kč</span>
+                    <span class="stat-label">Celkem finanční odměny</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Filters -->
+        <div class="filters-bar">
+            <div class="filter-tabs">
+                <button class="filter-tab" [class.active]="filterStatus === 'all'" (click)="setFilter('all')">
+                    Všechny
+                </button>
+                <button class="filter-tab" [class.active]="filterStatus === 'pending'" (click)="setFilter('pending')">
+                    <i-tabler name="clock-hour-4"></i-tabler>
+                    K vyzvednutí
+                </button>
+                <button class="filter-tab" [class.active]="filterStatus === 'collected'"
+                    (click)="setFilter('collected')">
+                    <i-tabler name="check"></i-tabler>
+                    Vyzvednuto
+                </button>
+            </div>
+        </div>
+
+        <!-- Loading State -->
+        @if (loading) {
+        <div class="loading-state">
+            <div class="loader"></div>
+            <p>Načítání odměn...</p>
+        </div>
+        } @else {
+
+        <!-- Rewards List -->
+        <div class="rewards-list">
+            @for (reward of filteredRewards; track reward.id) {
+            <div class="reward-card" [class.reward-card--collected]="reward.status === 'collected'">
+                <div class="reward-type-icon" [attr.data-type]="reward.type">
+                    <i-tabler [name]="getTypeIcon(reward.type)"></i-tabler>
+                </div>
+
+                <div class="reward-content">
+                    <div class="reward-header">
+                        <div class="reward-info">
+                            <span class="reward-type-badge">{{ getTypeLabel(reward.type) }}</span>
+                            <h3 class="reward-title">{{ reward.title }}</h3>
+                        </div>
+                        @if (reward.amount) {
+                        <div class="reward-amount">
+                            {{ reward.amount | number }} Kč
+                        </div>
+                        }
+                    </div>
+
+                    <p class="reward-description">{{ reward.description }}</p>
+
+                    <div class="reward-meta">
+                        @if (isTeacher && reward.studentName) {
+                        <span class="meta-item">
+                            <i-tabler name="user"></i-tabler>
+                            {{ reward.studentName }}
+                        </span>
+                        }
+                        <span class="meta-item">
+                            <i-tabler name="calendar"></i-tabler>
+                            Vytvořeno: {{ reward.createdAt | date:'dd.MM.yyyy' }}
+                        </span>
+                        @if (reward.status === 'collected' && reward.collectedAt) {
+                        <span class="meta-item meta-item--success">
+                            <i-tabler name="check"></i-tabler>
+                            Vyzvednuto: {{ reward.collectedAt | date:'dd.MM.yyyy' }}
+                        </span>
+                        }
+                    </div>
+                </div>
+
+                <div class="reward-status">
+                    @if (reward.status === 'pending') {
+                    <span class="status-badge status-badge--pending">
+                        <i-tabler name="clock-hour-4"></i-tabler>
+                        K vyzvednutí
+                    </span>
+                    @if (isTeacher) {
+                    <button class="btn btn--success btn--sm" (click)="markAsCollected(reward)">
+                        <i-tabler name="check"></i-tabler>
+                        Označit jako vyzvednuto
+                    </button>
+                    }
+                    } @else {
+                    <span class="status-badge status-badge--collected">
+                        <i-tabler name="check"></i-tabler>
+                        Vyzvednuto
+                    </span>
+                    }
+                </div>
+            </div>
+            }
+            @empty {
+            <div class="empty-state">
+                <i-tabler name="gift-off" class="empty-icon"></i-tabler>
+                <h3>Žádné odměny</h3>
+                <p>Momentálně nejsou evidovány žádné odměny k vyzvednutí.</p>
+            </div>
+            }
+        </div>
+        }
+    </div>
+</div>

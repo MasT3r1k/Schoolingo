@@ -1,0 +1,28 @@
+<div class="token-warning-container">
+    <div class="warning-header">
+        <div class="warning-icon">
+            <i-tabler name="clock-exclamation"></i-tabler>
+        </div>
+        <div class="warning-content">
+            <h3 class="warning-message">{{ l.s('auth.session_expires_in').replaceAll('%time%', timeRemaining) }}</h3>
+            <p class="warning-description">{{ l.s('auth.session_expiring_description') }}</p>
+        </div>
+    </div>
+
+    <div class="progress-container">
+        <div class="progress-bar" [style.width.%]="progressPercentage"></div>
+    </div>
+
+    <div class="warning-actions">
+        <button class="btn btn--secondary" (click)="logout()" [disabled]="isRefreshing">
+            <i-tabler name="logout"></i-tabler>
+            {{ l.s('user.logout') }}
+        </button>
+
+        <button class="btn btn--primary" (click)="extendSession()" [disabled]="isRefreshing">
+            <i-tabler name="refresh" *ngIf="!isRefreshing"></i-tabler>
+            <i-tabler name="loader-2" class="spinning" *ngIf="isRefreshing"></i-tabler>
+            {{ l.s('auth.extend_session') }}
+        </button>
+    </div>
+</div>

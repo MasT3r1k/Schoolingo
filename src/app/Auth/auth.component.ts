@@ -29,6 +29,7 @@ export function isoBase64URLBuffer(buffer: Uint8Array): string {
 
 import { Passkey } from '@Schoolingo/passkey';
 import { DropdownManager } from '@Schoolingo/dropdown';
+import { SessionExpiredService } from '../infrastructure/session/session-expired.service';
 
 @Component({
   standalone: true,
@@ -57,6 +58,7 @@ export class AuthComponent implements OnInit {
   private router = inject(Router);
   private route = inject(ActivatedRoute);
   public passkey = inject(Passkey);
+  private sessionExpiredService = inject(SessionExpiredService);
   public isPasskeySupport = false;
   public isPasskeyLoading = false;
 
@@ -339,6 +341,17 @@ export class AuthComponent implements OnInit {
     this.school.config.subscribe((data) => {
       if (data == null) return;
       this.isLoading = false;
+      
+      // Check for session expiration alert ONLY when school config is loaded
+      // and clear it immediately to prevent showing on refresh
+      const logoutReason = this.sessionExpiredService.getLogoutReason();
+      if (logoutReason === 'session_expired') {
+        this.sessionExpiredService.clearLogoutReason();
+        this.a.alert('success', 'auth.session_expired_alert');
+      } else if (logoutReason === 'user_logout') {
+        this.sessionExpiredService.clearLogoutReason();
+        this.a.alert('success', 'auth.logout_success_alert');
+      }
     });
 
     this.auth.getAuthState().subscribe((data) => {

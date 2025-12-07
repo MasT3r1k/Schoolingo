@@ -29,6 +29,9 @@ import { Classbook } from '@Schoolingo/classbook';
 import { Documents } from '@Schoolingo/documents';
 import { DropdownManager } from '@Schoolingo/dropdown';
 import { Dashboard } from '@Schoolingo/dashboard';
+import { TokenExpirationService } from './infrastructure/token-expiration/token-expiration.service';
+import { MonitoringService } from './infrastructure/monitoring/monitoring.service';
+import { SessionExpiredService } from './infrastructure/session/session-expired.service';
 
 export function initAuth(auth: Authentication): () => void {
   return () => auth.loadState(); // např. HTTP požadavek + setAuthState()
@@ -69,6 +72,9 @@ export const appConfig: ApplicationConfig = {
     Classbook,
     Documents,
     DropdownManager,
-    Dashboard
+    Dashboard,
+    TokenExpirationService,
+    MonitoringService,
+    SessionExpiredService
   ]
 };

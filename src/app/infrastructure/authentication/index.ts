@@ -1,6 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { inject } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
+import { tap, map } from 'rxjs/operators';
 import { Config } from '../config';
 import { handleHttpException } from '../http/http';
 import { User } from './user';
@@ -8,10 +9,12 @@ import { createAvatar } from '@dicebear/core';
 import { avataaarsNeutral } from '@dicebear/collection';
 import moment from 'moment';
 import { Router } from '@angular/router';
+import { TokenExpirationService } from '../token-expiration/token-expiration.service';
 
 export class Authentication {
     private http = inject(HttpClient);
     private router = inject(Router);
+    private tokenExpirationService = inject(TokenExpirationService);
     private authState$ = new BehaviorSubject<boolean | 'offline' | null>(null);
     private passwordExpires = new BehaviorSubject(new Date());
     private declare user: User;
@@ -21,25 +24,34 @@ export class Authentication {
         this.authState$.next(state);
     }
 
+    public isAuthenticated(): boolean {
+        return this.authState$.value === true;
+    }
+
     public loadState(): void {
         this.http.get<User | { error: string }>(Config.API_URL + '/v1/user', { withCredentials: true })
         .subscribe((user: User | { error: string }) => {
-            if ('error' in user) {
-                switch(user.error) {
-                    case "no_user":
-                        this.setAuthState(false);
-                        break;
-                }
-            } else if ('username' in user) {
+            if ('username' in user) {
                 this.user = user as User;
                 this.user.emails = user.emails.map((email) => ({...email, is_created: true}))
                 this.user.phones = user.phones.map((phone) => ({...phone, is_created: true}))
                 this.passwordExpires.next(user.expires);
+                
+                // Initialize token expiration tracking
+                this.tokenExpirationService.setTokenExpiration(user.expires);
+                
                 this.setAuthState(true);
                 // user.children = [];
                 this.user.birthday = moment(user.birthday)
             }
         }, (err) => {
+            console.log(err)
+            if (err.status === 401) {
+                this.setAuthState(false);
+                // this.tokenExpirationService.clearExpiration();
+                this.router.navigate(['', 'login']);
+                return;
+            }
             this.setAuthState('offline')
             handleHttpException(err);
         })
@@ -48,9 +60,24 @@ export class Authentication {
     public logout(): void {
         this.http.get(Config.API_URL + '/logout', { withCredentials: true })
         .subscribe((data) => {
+            sessionStorage.setItem('logoutReason', 'user_logout');
             this.setAuthState(false);
+            this.tokenExpirationService.clearExpiration();
             this.router.navigate(['', 'login']);
         });
+    }
+
+    public refreshToken(): Observable<void> {
+        return this.http.post<{ success: boolean; expires: string }>(
+            Config.API_URL + '/v1/sessionexpand',
+            {},
+            { withCredentials: true }
+        ).pipe(
+            tap(response => {
+                this.tokenExpirationService.setTokenExpiration(response.expires);
+            }),
+            map(() => void 0)
+        );
     }
 
     public getUser(): typeof this.user {

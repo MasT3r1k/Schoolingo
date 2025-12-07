@@ -1,0 +1,153 @@
+.token-warning-container {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+    padding: 0.5rem;
+}
+
+.warning-header {
+    display: flex;
+    gap: 1.5rem;
+    align-items: flex-start;
+}
+
+.warning-icon {
+    flex-shrink: 0;
+    width: 56px;
+    height: 56px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, rgba(255, 193, 7, 0.1), rgba(255, 152, 0, 0.1));
+    border-radius: 16px;
+    border: 2px solid rgba(255, 193, 7, 0.3);
+    color: var(--warning);
+    animation: pulse 2s ease-in-out infinite;
+}
+
+.warning-icon i-tabler {
+    width: 32px;
+    height: 32px;
+}
+
+@keyframes pulse {
+
+    0%,
+    100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+
+    50% {
+        transform: scale(1.05);
+        opacity: 0.8;
+    }
+}
+
+.warning-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.warning-message {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--warning);
+    margin: 0;
+    font-variant-numeric: tabular-nums;
+}
+
+.warning-description {
+    font-size: 0.875rem;
+    color: var(--text-muted);
+    margin: 0;
+    line-height: 1.5;
+}
+
+.progress-container {
+    width: 100%;
+    height: 6px;
+    background: var(--elevated);
+    border-radius: 10px;
+    overflow: hidden;
+    position: relative;
+}
+
+.progress-bar {
+    height: 100%;
+    background: linear-gradient(90deg,
+            var(--primary) 0%,
+            var(--primary-strong) 50%
+        );
+    border-radius: 10px;
+    transition: width 1s linear;
+    box-shadow: 0 0 10px rgba(var(--primary-rgb), 0.3);
+    position: relative;
+    overflow: hidden;
+}
+
+.progress-bar::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    background: linear-gradient(90deg,
+            transparent,
+            rgba(255, 255, 255, 0.3),
+            transparent);
+    animation: shimmer 2s infinite;
+}
+
+@keyframes shimmer {
+    0% {
+        transform: translateX(-100%);
+    }
+
+    100% {
+        transform: translateX(100%);
+    }
+}
+
+.warning-actions {
+    display: flex;
+    gap: 1rem;
+    padding-top: 0.5rem;
+}
+
+.btn {
+    flex: 1;
+}
+
+.spinning {
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    from {
+        transform: rotate(0deg);
+    }
+
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+@media (max-width: 600px) {
+    .warning-header {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+    }
+
+    .warning-actions {
+        flex-direction: column;
+    }
+
+    .btn {
+        width: 100%;
+    }
+}

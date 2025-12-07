@@ -33,6 +33,7 @@ import { DocumentsComponent } from './board/documents/documents.component';
 import { MidtermComponent } from './board/marks/midterm/midterm.component';
 import { StudentsComponent } from './board/students/students.component';
 import { DashboardComponent } from './board/Admin/dashboard/dashboard.component';
+import { PollsComponent } from './board/polls/polls.component';
 
 
 export const routes: Routes = [
@@ -63,6 +64,27 @@ export const routes: Routes = [
                 path: 'documents', component: DocumentsComponent
             },
             {
+                path: 'polls',
+                children: [
+                    {
+                        path: '',
+                        component: PollsComponent
+                    },
+                    {
+                        path: 'create',
+                        loadComponent: () => import('./board/polls/poll-create/poll-create.component').then(m => m.PollCreateComponent)
+                    },
+                    {
+                         path: ':id',
+                         loadComponent: () => import('./board/polls/poll-vote/poll-vote.component').then(m => m.PollVoteComponent)
+                    },
+                    {
+                         path: ':id/results',
+                         loadComponent: () => import('./board/polls/poll-results/poll-results.component').then(m => m.PollResultsComponent)
+                    }
+                ]
+            },
+            {
                 path: 'marks', children: [
                     {
                         path: 'interm', component: IntermComponent
@@ -89,6 +111,14 @@ export const routes: Routes = [
                     },
                     {
                         path: 'classbook', component: ClassbookComponent
+                    },
+                    {
+                        path: 'rewards',
+                        loadComponent: () => import('./board/Teach/rewards/rewards.component').then(m => m.RewardsComponent)
+                    },
+                    {
+                        path: 'subjects',
+                        loadComponent: () => import('./board/Teach/subjects/subjects.component').then(m => m.SubjectsComponent)
                     }
                 ]
             },

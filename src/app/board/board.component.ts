@@ -1,6 +1,6 @@
 import { NgClass, NgStyle } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, inject, OnInit, OnDestroy } from '@angular/core';
 import { Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { Authentication } from '@Schoolingo/authentication';
 import { Config } from '@Schoolingo/config';
@@ -18,6 +18,11 @@ import { Sidebar } from '@Schoolingo/sidebar';
 import { DiaryWeek, Traineeship } from '@Schoolingo/traineeship';
 import { Utils } from '@Schoolingo/utils';
 import moment from 'moment';
+import { TokenExpirationService } from '../infrastructure/token-expiration/token-expiration.service';
+import { SessionExpiredService } from '../infrastructure/session/session-expired.service';
+import { ModalManager } from '@Schoolingo/modal';
+import { TokenWarningModalComponent } from '@Components/token-warning-modal/token-warning-modal.component';
+import { Subscription } from 'rxjs';
 
 export interface SidebarItem {
     item: string;
@@ -74,9 +79,13 @@ interface Notification {
   templateUrl: './board.component.html',
   styleUrls: ['./board.component.css', '../styles/sidebar.css']
 })
-export class BoardComponent implements OnInit {
+export class BoardComponent implements OnInit, OnDestroy {
   public dashboard = inject(Dashboard);
   public dropdownManager = inject(DropdownManager);
+  private tokenExpirationService = inject(TokenExpirationService);
+  private sessionExpiredService = inject(SessionExpiredService);
+  private modalManager = inject(ModalManager);
+  private subscriptions: Subscription[] = [];
   App = Config
   Utils = Utils;
   sidebarToggled = false;
@@ -242,6 +251,25 @@ export class BoardComponent implements OnInit {
   ];
 
   ngOnInit(): void {
+    // Register token warning modal
+    this.modalManager.addModal('token-warning', {
+      title: '',
+      closeable: false,
+      items: [{ type: 'component', component: TokenWarningModalComponent }]
+    });
+
+    // Subscribe to token expiration warnings
+    const warningSubscription = this.tokenExpirationService.warningThreshold$.subscribe(() => {
+      this.modalManager.openModal('token-warning');
+    });
+    this.subscriptions.push(warningSubscription);
+
+    // Subscribe to token expiration events
+    const expiredSubscription = this.tokenExpirationService.expired$.subscribe(() => {
+      this.sessionExpiredService.handleSessionExpired();
+    });
+    this.subscriptions.push(expiredSubscription);
+    
     this.u.getAuthState().subscribe((data) => {
       this.sidebar.build();    
       if (data) {
@@ -305,6 +333,11 @@ export class BoardComponent implements OnInit {
         })
       }
     })
+  }
+
+  ngOnDestroy(): void {
+    // Unsubscribe from all subscriptions
+    this.subscriptions.forEach(sub => sub.unsubscribe());
   }
 
   public updateCookies(cookies: number): void {

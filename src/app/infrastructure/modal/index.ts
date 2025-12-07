@@ -33,11 +33,23 @@ export class ModalManager {
         }
     }
 
-    public openDropdown(name: string, dropdown: string | null): void { this.modals[name].dropdown = dropdown }
-    public closeDropdown(name: string): void { this.modals[name].dropdown = null }
+    public openDropdown(name: string, dropdown: string | null): void {
+        if (!this.modals[name]) return
+        this.modals[name].dropdown = dropdown
+    }
+    public closeDropdown(name: string): void {
+        if (!this.modals[name]) return
+        this.modals[name].dropdown = null
+    }
 
-    public openModal(name: string) { this.modals[name].isOpen = true }
-    public closeModal(name: string) { this.modals[name].isOpen = false}
+    public openModal(name: string) {
+        if (!this.modals[name]) return
+        this.modals[name].isOpen = true
+    }
+    public closeModal(name: string) { 
+        if (!this.modals[name]) return
+        this.modals[name].isOpen = false
+    }
     
 
 }

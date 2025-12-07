@@ -82,6 +82,10 @@ export namespace Utils {
     return Number(number).toFixed(decimals)
   }
 
+  export function formatAsNumber(number: string | number): number {
+    return parseFloat(number.toString())
+  }
+
   export function formatWeb(web: string, hideProtocol: boolean = false): string {
     if (web.startsWith('http://') || web.startsWith('https://')) {
       if (hideProtocol) {

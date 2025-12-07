@@ -99,6 +99,11 @@ export const config: SidebarGroup[] = [
                     url: 'teach/rewards',
                     icon: 'trophy',
                     permission: ['student', 'teacher']
+                }, {
+                    item: 'sidebar.polls',
+                    url: 'polls', // Using top-level route based on plan, or maybe 'teach/polls'? Plan said new top level 'polls' or 'board/polls'
+                    icon: 'chart-bar',
+                    permission: ['student', 'teacher', 'admin']
                 }]
             },
             {

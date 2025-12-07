@@ -59,7 +59,7 @@
                             <span class="stat-label">Průměr</span>
                         </div>
                     </div>
-                    <div class="stat-card clickable" [class.warning]="selectedStudent.absenceRate > 10"
+                    <div class="stat-card clickable" [class.warning]="Utils.formatAsNumber(selectedStudent.absenceRate) > 10"
                         (click)="showAbsenceModal = true">
                         <div class="stat-icon">
                             <i-tabler name="calendar-off"></i-tabler>
@@ -545,7 +545,6 @@
         <!-- Page Header -->
         <div class="card-header">
             <h2>Seznam studentů</h2>
-            <p>{{ filteredStudents.length }} z {{ students.length }} studentů</p>
         </div>
         <div class="row" style="justify-content: space-between; margin-bottom: 20px;">
             <div class="form-group search">
@@ -559,7 +558,29 @@
             </div>
         </div>
 
+        <!-- Loading State -->
+        @if (isLoading) {
+        <div class="loading-state">
+            <div class="loading-spinner"></div>
+            <p>Načítání studentů...</p>
+        </div>
+        }
+
+        <!-- Error State -->
+        @else if (loadError) {
+        <div class="error-state">
+            <i-tabler name="alert-circle"></i-tabler>
+            <h3>Chyba načítání</h3>
+            <p>{{ loadError }}</p>
+            <button class="btn btn--primary" (click)="loadStudents()">
+                <i-tabler name="refresh"></i-tabler>
+                Zkusit znovu
+            </button>
+        </div>
+        }
+
         <!-- Students Table -->
+        @else if (filteredStudents.length > 0) {
         <div class="students-table-wrapper">
             <table class="students-table">
                 <thead>
@@ -601,7 +622,7 @@
                             </span>
                         </td>
                         <td class="col-absence">
-                            <span class="absence-value" [class.warning]="student.absenceRate > 10">
+                            <span class="absence-value" [class.warning]="Utils.formatAsNumber(student.absenceRate) > 10">
                                 {{ student.absenceRate }}%
                             </span>
                         </td>
@@ -633,6 +654,7 @@
                 Resetovat filtry
             </button>
         </div>
+        }
         }
     </div>
     }

@@ -1,0 +1,74 @@
+<div class="card">
+    <div class="card-header">
+        <div class="left">
+            <h2>Ankety a Testy</h2>
+            <p class="meta muted">Vyplňte ankety a testy od učitelů</p>
+        </div>
+        @if (canCreate) {
+        <div class="flex-items">
+            <button class="btn btn--primary" routerLink="create">
+                <i-tabler name="plus"></i-tabler>
+                <span>Vytvořit novou</span>
+            </button>
+        </div>
+        }
+    </div>
+
+    <div class="card-body">
+        @if (loading) {
+        <div class="loading-state">
+            <div class="loader"></div>
+            <p>Načítání anket...</p>
+        </div>
+        } @else {
+        <div class="polls-grid">
+            @for (poll of polls; track poll.id) {
+            <div class="poll-card" [class.poll-test]="poll.type === 'test'">
+                <div class="card-badge">
+                    <i-tabler [name]="poll.type === 'test' ? 'clipboard-check' : 'message-circle'"></i-tabler>
+                    <span>{{ poll.type === 'feedback' ? 'Anketa' : 'Test' }}</span>
+                </div>
+
+                <div class="card-content">
+                    <h3 class="poll-title">{{ poll.title }}</h3>
+                    <p class="poll-description">{{ poll.description || 'Žádný popis k dispozici' }}</p>
+                </div>
+
+                <div class="card-meta">
+                    <div class="meta-item">
+                        <i-tabler name="user"></i-tabler>
+                        <span>{{ poll.authorName }}</span>
+                    </div>
+                    @if (poll.active_to) {
+                    <div class="meta-item">
+                        <i-tabler name="clock"></i-tabler>
+                        <span>{{ poll.active_to | date:'short' }}</span>
+                    </div>
+                    }
+                </div>
+
+                <div class="card-actions">
+                    <button class="btn btn--sm btn--primary" [routerLink]="[poll.id]">
+                        <i-tabler name="edit"></i-tabler>
+                        <span>Vyplnit</span>
+                    </button>
+                    @if (poll.type === 'test' || canCreate) {
+                    <button class="btn btn--sm btn--ghost" [routerLink]="[poll.id, 'results']">
+                        <i-tabler name="chart-bar"></i-tabler>
+                        <span>Výsledky</span>
+                    </button>
+                    }
+                </div>
+            </div>
+            }
+            @empty {
+            <div class="empty-state">
+                <i-tabler name="inbox" class="empty-icon"></i-tabler>
+                <h3>Žádné aktivní ankety</h3>
+                <p>Momentálně nejsou k dispozici žádné ankety ani testy.</p>
+            </div>
+            }
+        </div>
+        }
+    </div>
+</div>

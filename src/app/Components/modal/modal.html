@@ -1,15 +1,19 @@
 @for (modal of modalManager.getModals(); track $index) {
 <div class="modals" (click)="context_menu.hideContextMenu()">
     <div class="modal" [id]="modal.id" [style.overflow]="getOverflowStyle()">
+        @if (modal.title != '') {
         <div class="modal-header">
             <h2>{{ l.s(modal.title) }}</h2>
         </div>
+        }
 
+        @if (modal.closeable) {
         <div class="modal-close" (click)="modalManager.closeModal(modal.id)">
             <i-tabler name="x"></i-tabler>
         </div>
+        }
         
-        <div style="padding-top: 2rem;">
+        <div>
             @for (item of modal.items; track $index) {
                 @switch(item.type) {
                     @case("component") {

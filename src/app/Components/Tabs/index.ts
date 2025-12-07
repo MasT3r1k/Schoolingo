@@ -79,9 +79,9 @@ export class TabsComponent implements OnInit {
             let tab = document.querySelectorAll(".tabs#" + this.name + " .options .tab")[this.value.getValue() || 0] as HTMLElement;
             if (!tab) return;
             
-            this.gliderStyles["width"] = tab.clientWidth; 
+            this.gliderStyles["width"] = tab.clientWidth - 8; 
             this.gliderStyles["height"] = tab.clientHeight;
-            this.gliderStyles["transform"] = 'translate(' + tab.offsetLeft + 'px, ' + tab.offsetTop + 'px)';
+            this.gliderStyles["transform"] = 'translateX(' + tab.offsetLeft + 'px)';
         } catch(err) {
             console.error(err);
         }

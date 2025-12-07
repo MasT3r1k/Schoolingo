@@ -1,0 +1,174 @@
+<div class="create-page">
+    <div class="page-header">
+        <div class="header-content">
+            <div class="back-section">
+                <button routerLink="/polls" class="btn-back">
+                    <i-tabler name="arrow-left" class="icon"></i-tabler>
+                    <span>Zpět na přehled</span>
+                </button>
+            </div>
+            <div class="title-section">
+                <h1>Vytvořit novou anketu</h1>
+                <p class="subtitle">Vytvořte anketu nebo test pro studenty</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="page-content">
+        <form [formGroup]="pollForm" (ngSubmit)="submit()" class="poll-form">
+            <!-- Basic Information -->
+            <div class="section-card">
+                <div class="section-header">
+                    <i-tabler name="info-circle" class="section-icon"></i-tabler>
+                    <h2>Základní informace</h2>
+                </div>
+
+                <div class="form-grid">
+                    <div class="form-field full-width">
+                        <label for="title" class="field-label">
+                            Název <span class="required">*</span>
+                        </label>
+                        <input id="title" type="text" formControlName="title"
+                            placeholder="Zadejte název ankety nebo testu" class="field-input" />
+                    </div>
+
+                    <div class="form-field full-width">
+                        <label for="description" class="field-label">Popis</label>
+                        <textarea id="description" formControlName="description" placeholder="Volitelný popis ankety"
+                            class="field-textarea" rows="3"></textarea>
+                    </div>
+
+                    <div class="form-field">
+                        <label for="type" class="field-label">
+                            Typ <span class="required">*</span>
+                        </label>
+                        <select id="type" formControlName="type" class="field-select">
+                            <option value="feedback">Anketa</option>
+                            <option value="test">Test</option>
+                        </select>
+                    </div>
+
+                    <div class="form-field">
+                        <label for="time_limit" class="field-label">Časový limit (minuty)</label>
+                        <input id="time_limit" type="number" formControlName="time_limit" placeholder="Neomezeno"
+                            class="field-input" />
+                    </div>
+
+                    <div class="form-field">
+                        <label for="active_from" class="field-label">Aktivní od</label>
+                        <input id="active_from" type="datetime-local" formControlName="active_from"
+                            class="field-input" />
+                    </div>
+
+                    <div class="form-field">
+                        <label for="active_to" class="field-label">Aktivní do</label>
+                        <input id="active_to" type="datetime-local" formControlName="active_to" class="field-input" />
+                    </div>
+                </div>
+            </div>
+
+            <!-- Questions Section -->
+            <div class="section-card">
+                <div class="section-header">
+                    <i-tabler name="list-check" class="section-icon"></i-tabler>
+                    <h2>Otázky</h2>
+                    <button type="button" (click)="addQuestion()" class="btn-add-question">
+                        <i-tabler name="plus" class="icon"></i-tabler>
+                        <span>Přidat otázku</span>
+                    </button>
+                </div>
+
+                <div formArrayName="questions" class="questions-list">
+                    @for (question of questions.controls; track $index; let i = $index) {
+                    <div [formGroupName]="i" class="question-card">
+                        <div class="question-header">
+                            <div class="question-number">{{ i + 1 }}</div>
+                            <button type="button" (click)="removeQuestion(i)" class="btn-remove"
+                                title="Odstranit otázku">
+                                <i-tabler name="trash-x" class="icon"></i-tabler>
+                            </button>
+                        </div>
+
+                        <div class="question-body">
+                            <div class="form-field full-width">
+                                <label class="field-label">
+                                    Text otázky <span class="required">*</span>
+                                </label>
+                                <input type="text" formControlName="title" placeholder="Zadejte text otázky"
+                                    class="field-input" />
+                            </div>
+
+                            <div class="form-row">
+                                <div class="form-field">
+                                    <label class="field-label">Typ otázky</label>
+                                    <select formControlName="type" class="field-select">
+                                        <option value="text">Textová odpověď</option>
+                                        <option value="single">Jedna správná</option>
+                                        <option value="multiple">Více správných</option>
+                                    </select>
+                                </div>
+
+                                <div class="form-field">
+                                    <label class="field-label">Body</label>
+                                    <input type="number" formControlName="points" placeholder="0" class="field-input" />
+                                </div>
+                            </div>
+
+                            @if (question.get('type')!.value !== 'text') {
+                            <div class="options-section">
+                                <div class="options-header">
+                                    <label class="field-label">Možnosti odpovědí</label>
+                                    <button type="button" (click)="addOption(i)" class="btn-add-option">
+                                        <i-tabler name="plus" class="icon-sm"></i-tabler>
+                                        <span>Přidat možnost</span>
+                                    </button>
+                                </div>
+
+                                <div formArrayName="options" class="options-list">
+                                    @for (option of getOptions(i).controls; track $index; let j = $index) {
+                                    <div [formGroupName]="j" class="option-item">
+                                        <label class="checkbox-wrapper">
+                                            <input type="checkbox" formControlName="is_correct" class="checkbox" />
+                                            <span class="checkmark"></span>
+                                            <span class="checkbox-label">Správná</span>
+                                        </label>
+                                        <input type="text" formControlName="label" placeholder="Text možnosti"
+                                            class="field-input flex-1" />
+                                        <button type="button" (click)="removeOption(i, j)" class="btn-icon-remove"
+                                            title="Odstranit">
+                                            <i-tabler name="x" class="icon-sm"></i-tabler>
+                                        </button>
+                                    </div>
+                                    }
+                                </div>
+                            </div>
+                            }
+                        </div>
+                    </div>
+                    }
+                    @empty {
+                    <div class="empty-questions">
+                        <i-tabler name="file-text" class="empty-icon"></i-tabler>
+                        <p>Zatím nebyly přidány žádné otázky</p>
+                        <button type="button" (click)="addQuestion()" class="btn-add-first">
+                            <i-tabler name="plus" class="icon"></i-tabler>
+                            <span>Přidat první otázku</span>
+                        </button>
+                    </div>
+                    }
+                </div>
+            </div>
+
+            <!-- Submit Section -->
+            <div class="form-actions">
+                <button type="button" routerLink="/polls" class="btn-cancel">
+                    Zrušit
+                </button>
+                <button type="submit" [disabled]="pollForm.invalid" class="btn-submit">
+                    <i-tabler name="check" class="icon"></i-tabler>
+                    <span>Vytvořit anketu</span>
+                </button>
+            </div>
+        </form>
+    </div>
+</div>

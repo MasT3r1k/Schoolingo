@@ -1,0 +1,192 @@
+<div class="results-page">
+    @if (loading) {
+    <div class="loading-state">
+        <div class="spinner"></div>
+        <p>Načítání výsledků...</p>
+    </div>
+    } @else {
+
+    <!-- Header -->
+    <div class="page-header">
+        <div class="header-content">
+            @if (!selectedSubmission) {
+            <button routerLink="/polls" class="btn-back">
+                <i-tabler name="arrow-left" class="icon"></i-tabler>
+                <span>Zpět na přehled</span>
+            </button>
+            } @else {
+            <button (click)="selectedSubmission = null" class="btn-back">
+                <i-tabler name="arrow-left" class="icon"></i-tabler>
+                <span>Zpět na výsledky</span>
+            </button>
+            }
+            <div class="title-section">
+                <h1>{{ selectedSubmission ? 'Detail odpovědí studenta' : 'Výsledky' }}</h1>
+                @if (!selectedSubmission && responses.length > 0) {
+                <p class="subtitle">Celkem {{ responses.length }} odevzdaných odpovědí</p>
+                }
+            </div>
+        </div>
+    </div>
+
+    <div class="page-content">
+        @if (selectedSubmission) {
+        <!-- Student Detail View -->
+        <div class="detail-view">
+            <div class="score-summary">
+                <div class="score-card">
+                    <div class="score-label">Celkové skóre</div>
+                    <div class="score-value">{{ selectedSubmission.percentage }}%</div>
+                    <div class="score-points">{{ selectedSubmission.total_score }} / {{
+                        selectedSubmission.total_max_score }} bodů</div>
+                </div>
+            </div>
+
+            <div class="answers-section">
+                <h2>Odpovědi studenta</h2>
+                <div class="answers-grid">
+                    @for (ans of selectedAnswers; track ans.id) {
+                    <div class="answer-card">
+                        <div class="answer-header">
+                            <div class="question-label">
+                                <i-tabler name="help-circle" class="icon-sm"></i-tabler>
+                                <span>Otázka #{{ ans.question_id }}</span>
+                            </div>
+                            <div class="points-control">
+                                <label>Body:</label>
+                                <input type="number" [value]="ans.points_awarded" (change)="updateGrade(ans.id, $event)"
+                                    class="points-input" min="0" />
+                                @if (ans.is_manually_graded) {
+                                <span class="manual-badge">Ručně</span>
+                                }
+                            </div>
+                        </div>
+                        <div class="answer-content">
+                            @if (ans.answer_text) {
+                            <div class="text-answer">{{ ans.answer_text }}</div>
+                            } @else if (ans.option_ids) {
+                            <div class="choice-answer">
+                                <i-tabler name="checkbox" class="icon-sm"></i-tabler>
+                                <span>Výběr více možností</span>
+                            </div>
+                            } @else {
+                            <div class="choice-answer">
+                                <i-tabler name="circle-dot" class="icon-sm"></i-tabler>
+                                <span>Výběr jedné možnosti</span>
+                            </div>
+                            }
+                        </div>
+                    </div>
+                    }
+                </div>
+            </div>
+        </div>
+
+        } @else if (responses.length > 0) {
+        <!-- Teacher Results Overview -->
+        <div class="overview">
+            <div class="stats-cards">
+                <div class="stat-card">
+                    <div class="stat-icon success">
+                        <i-tabler name="check"></i-tabler>
+                    </div>
+                    <div class="stat-content">
+                        <div class="stat-value">{{ responses.length }}</div>
+                        <div class="stat-label">Odevzdáno</div>
+                    </div>
+                    <table class="results-table">
+                        <thead>
+                            <tr>
+                                <th>Student</th>
+                                <th>Odevzdáno</th>
+                                <th>Skóre</th>
+                                <th>Procenta</th>
+                                <th>Akce</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @for (res of responses; track res.id) {
+                            <tr class="table-row">
+                                <td class="student-cell">
+                                    <div class="student-info">
+                                        <div class="student-avatar">
+                                            {{ res.studentName.charAt(0) }}
+                                        </div>
+                                        <span>{{ res.studentName }}</span>
+                                    </div>
+                                </td>
+                                <td class="date-cell">
+                                    <div class="date-wrapper">
+                                        <i-tabler name="clock" class="icon-xs"></i-tabler>
+                                        <span>{{ res.submitted_at | date:'dd.MM.yyyy HH:mm' }}</span>
+                                    </div>
+                                </td>
+                                <td class="score-cell">
+                                    <span class="score-text">{{ res.total_score }} / {{ res.total_max_score }}</span>
+                                </td>
+                                <td class="percentage-cell">
+                                    <span class="percentage-badge" [class.excellent]="res.percentage >= 90"
+                                        [class.good]="res.percentage >= 70 && res.percentage < 90"
+                                        [class.average]="res.percentage >= 50 && res.percentage < 70"
+                                        [class.poor]="res.percentage < 50">
+                                        {{ res.percentage }}%
+                                    </span>
+                                </td>
+                                <td class="action-cell">
+                                    <button (click)="viewSubmission(res.studentId)" class="btn-view"
+                                        title="Zobrazit detail">
+                                        <i-tabler name="eye" class="icon-sm"></i-tabler>
+                                        <span>Detail</span>
+                                    </button>
+                                </td>
+                            </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        } @else if (questions.length > 0) {
+            <!-- Student Results View -->
+            <div class="student-results">
+                <div class="info-card">
+                    <i-tabler name="info-circle" class="info-icon"></i-tabler>
+                    <p>Zde jsou správné odpovědi na otázky z testu</p>
+                </div>
+
+                <div class="questions-list">
+                    @for (q of questions; track q.id; let i = $index) {
+                    <div class="question-result">
+                        <div class="question-header">
+                            <div class="question-number">{{ i + 1 }}</div>
+                            <h3>{{ q.title }}</h3>
+                        </div>
+                        <div class="options-list">
+                            @for (opt of q.options; track opt.id) {
+                            <div class="option-item" [class.correct]="opt.is_correct">
+                                @if (opt.is_correct) {
+                                <i-tabler name="circle-check" class="check-icon"></i-tabler>
+                                } @else {
+                                <i-tabler name="circle" class="circle-icon"></i-tabler>
+                                }
+                                <span>{{ opt.label }}</span>
+                            </div>
+                            }
+                        </div>
+                    </div>
+                    }
+                </div>
+            </div>
+
+            } @else {
+            <!-- Empty State -->
+            <div class="empty-state">
+                <i-tabler name="chart-bar" class="empty-icon"></i-tabler>
+                <h3>Zatím žádné výsledky</h3>
+                <p>Když studenti odevzdají odpovědi, zobrazí se zde.</p>
+            </div>
+            }
+        </div>
+        }
+    </div>

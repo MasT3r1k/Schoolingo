@@ -1,0 +1,111 @@
+<div class="vote-page">
+    @if (loading) {
+    <div class="loading-state">
+        <div class="spinner"></div>
+        <p>Načítání ankety...</p>
+    </div>
+    } @else if (poll) {
+    <div class="page-header">
+        <div class="header-content">
+            <button routerLink="/polls" class="btn-back">
+                <i-tabler name="arrow-left" class="icon"></i-tabler>
+                <span>Zpět na přehled</span>
+            </button>
+            <div class="poll-info">
+                <div class="poll-badge">
+                    <i-tabler [name]="poll.type === 'test' ? 'clipboard-check' : 'message-circle'"
+                        class="badge-icon"></i-tabler>
+                    <span>{{ poll.type === 'feedback' ? 'Anketa' : 'Test' }}</span>
+                </div>
+                <h1>{{ poll.title }}</h1>
+                @if (poll.description) {
+                <p class="description">{{ poll.description }}</p>
+                }
+            </div>
+        </div>
+    </div>
+
+    <div class="page-content">
+        @if (submitted) {
+        <div class="submitted-card">
+            <div class="success-icon-wrapper">
+                <i-tabler name="circle-check" class="success-icon"></i-tabler>
+            </div>
+            <h2>Anketa již byla odeslána</h2>
+            <p>Děkujeme za vyplnění ankety. Vaše odpovědi byly úspěšně uloženy.</p>
+            <div class="submitted-actions">
+                <button routerLink="/polls" class="btn-primary">
+                    Zpět na přehled
+                </button>
+                @if (poll.type === 'test') {
+                <button [routerLink]="['/polls', poll.id, 'results']" class="btn-secondary">
+                    Zobrazit výsledky
+                </button>
+                }
+            </div>
+        </div>
+        } @else {
+        <form [formGroup]="voteForm" (ngSubmit)="submit()" class="vote-form">
+            <div formArrayName="answers" class="questions-container">
+                @for (answer of answers.controls; track $index; let i = $index) {
+                <div [formGroupName]="i" class="question-card">
+                    <div class="question-header">
+                        <div class="question-number">{{ i + 1 }}</div>
+                        <div class="question-title">
+                            <h3>{{ questions[i].title }}</h3>
+                            @if (questions[i].points > 0) {
+                            <span class="points-badge">{{ questions[i].points }} bodů</span>
+                            }
+                        </div>
+                    </div>
+
+                    <div class="question-content">
+                        @if (questions[i].type === 'text') {
+                        <textarea formControlName="answerText" placeholder="Vaše odpověď..." class="answer-textarea"
+                            rows="4"></textarea>
+                        }
+
+                        @if (questions[i].type === 'single') {
+                        <div class="options-list">
+                            @for (option of questions[i].options; track option.id) {
+                            <label class="option-radio">
+                                <input type="radio" [value]="option.id" formControlName="optionId"
+                                    class="radio-input" />
+                                <span class="radio-custom"></span>
+                                <span class="option-label">{{ option.label }}</span>
+                            </label>
+                            }
+                        </div>
+                        }
+
+                        @if (questions[i].type === 'multiple') {
+                        <div class="options-list">
+                            @for (option of questions[i].options; track option.id) {
+                            <label class="option-checkbox">
+                                <input type="checkbox" (change)="onCheckboxChange(i, option.id, $event)"
+                                    class="checkbox-input" />
+                                <span class="checkbox-custom"></span>
+                                <span class="option-label">{{ option.label }}</span>
+                            </label>
+                            }
+                        </div>
+                        }
+                    </div>
+                </div>
+                }
+            </div>
+
+            <div class="form-actions">
+                <button type="button" routerLink="/polls" class="btn-cancel">
+                    Zrušit
+                </button>
+                <button type="submit" [disabled]="voteForm.invalid" class="btn-submit">
+                    <i-tabler name="send" class="icon"></i-tabler>
+                    <span>Odeslat odpovědi</span>
+                </button>
+            </div>
+        </form>
+        }
+    </div>
+    }
+</div>

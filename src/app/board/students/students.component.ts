@@ -1,13 +1,16 @@
-import { Component } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { IconsModule } from '@Schoolingo/icons';
 import { FormsModule } from '@angular/forms';
+import { HttpClient } from '@angular/common/http';
+import { Config } from '@Schoolingo/config';
+import { Utils } from '@Schoolingo/utils';
 
 // Interfaces
 export interface Student {
   id: number;
   firstName: string;
-  lastName: string;
+ lastName: string;
   fullName: string;
   photoUrl?: string;
   className: string;
@@ -20,8 +23,8 @@ export interface Student {
   address: string;
   enrollmentDate: string;
   graduationDate?: string;
-  averageGrade: number;
-  absenceRate: number;
+  averageGrade: string;
+  absenceRate: string;
   disciplinaryIssues: number;
   
   // Parent info
@@ -51,6 +54,25 @@ export interface StudentFilters {
   year: number | null;
 }
 
+// Backend API response interface
+interface StudentAPIResponse {
+  personId: number;
+  firstName: string;
+  lastName: string;
+  fullName: string;
+  email?: string;
+  phone?: string;
+  dateOfBirth: string;
+  birth: string;
+  status: string;
+  startStudy: string;
+  className?: string;
+  year?: number;
+  fieldOfStudy?: string;
+  averageGrade?: string;
+  absenceRate?: string;
+}
+
 @Component({
   selector: 'app-students',
   standalone: true,
@@ -58,7 +80,14 @@ export interface StudentFilters {
   templateUrl: './students.component.html',
   styleUrl: './students.component.css'
 })
-export class StudentsComponent {
+export class StudentsComponent implements OnInit {
+  private http = inject(HttpClient);
+  public Utils = Utils;
+
+  // Loading state
+  isLoading = false;
+  loadError: string | null = null;
+
   // Selected student for detail view
   selectedStudent: Student | null = null;
   
@@ -88,201 +117,78 @@ export class StudentsComponent {
   fieldsOfStudy = ['Informační technologie', 'Ekonomika', 'Zdravotnictví', 'Stavebnictví', 'Elektrotechnika'];
   years = [1, 2, 3, 4];
   
-  // Mock students data
-  students: Student[] = [
-    {
-      id: 1,
-      firstName: 'Jan',
-      lastName: 'Novák',
-      fullName: 'Jan Novák',
-      photoUrl: undefined,
-      className: 'IT-4.A',
-      year: 4,
-      fieldOfStudy: 'Informační technologie',
-      status: 'active',
-      dateOfBirth: '2006-03-15',
-      email: 'jan.novak@student.school.cz',
-      phone: '+420 123 456 789',
-      address: 'Hlavní 123, Praha 1',
-      enrollmentDate: '2020-09-01',
-      averageGrade: 1.8,
-      absenceRate: 5.2,
-      disciplinaryIssues: 0,
-      parents: [
-        {
-          id: 1,
-          firstName: 'Petr',
-          lastName: 'Novák',
-          relationship: 'father',
-          email: 'petr.novak@email.cz',
-          phone: '+420 111 222 333',
-          occupation: 'Inženýr'
-        },
-        {
-          id: 2,
-          firstName: 'Jana',
-          lastName: 'Nováková',
-          relationship: 'mother',
-          email: 'jana.novak@email.cz',
-          phone: '+420 444 555 666',
-          occupation: 'Učitelka'
-        }
-      ],
-      notes: 'Výborný student, aktivní v ITprojektech.',
+  // Students data from API
+  students: Student[] = [];
+
+  ngOnInit() {
+    this.loadStudents();
+  }
+
+  // Load students from API
+  loadStudents() {
+    this.isLoading = true;
+    this.loadError = null;
+
+    this.http.get<StudentAPIResponse[]>(
+      `${Config.API_URL}/v1/students?limit=100&offset=0`,
+      { withCredentials: true }
+    ).subscribe({
+      next: (data) => {
+        // Transform API response to Student interface
+        this.students = data.map(apiStudent => this.transformStudent(apiStudent));
+        this.isLoading = false;
+      },
+      error: (error) => {
+        console.error('Error loading students:', error);
+        this.loadError = 'Nepodařilo se načíst seznam studentů';
+        this.isLoading = false;
+        // Fallback to empty array
+        this.students = [];
+      }
+    });
+  }
+
+  // Transform API response to Student interface
+  private transformStudent(apiStudent: StudentAPIResponse): Student {
+    return {
+      id: apiStudent.personId,
+      firstName: apiStudent.firstName,
+      lastName: apiStudent.lastName,
+      fullName: apiStudent.fullName,
+      className: apiStudent.className || '-',
+      year: apiStudent.year || 1,
+      fieldOfStudy: apiStudent.fieldOfStudy || 'Nezadáno',
+      status: this.mapStatus(apiStudent.status),
+      dateOfBirth: apiStudent.dateOfBirth,
+      email: apiStudent.email || '',
+      phone: apiStudent.phone || '',
+      address: '', // Not provided by API yet
+      enrollmentDate: apiStudent.startStudy,
+      // Real data from API
+      averageGrade: apiStudent.averageGrade || '0.00',
+      absenceRate: apiStudent.absenceRate || '0.00',
+      disciplinaryIssues: Math.floor(Math.random() * 3), // Still mock - not in API yet
+      parents: [], // Will be loaded separately if needed
+      notes: '',
       allergies: [],
       medicalConditions: []
-    },
-    {
-      id: 2,
-      firstName: 'Marie',
-      lastName: 'Svobodová',
-      fullName: 'Marie Svobodová',
-      className: 'EK-3.B',
-      year: 3,
-      fieldOfStudy: 'Ekonomika',
-      status: 'active',
-      dateOfBirth: '2007-07-22',
-      email: 'marie.svobodova@student.school.cz',
-      phone: '+420 987 654 321',
-      address: 'Zahradní 45, Brno',
-      enrollmentDate: '2021-09-01',
-      averageGrade: 2.1,
-      absenceRate: 8.5,
-      disciplinaryIssues: 1,
-      parents: [
-        {
-          id: 3,
-          firstName: 'Tomáš',
-          lastName: 'Svoboda',
-          relationship: 'father',
-          email: 'tomas.svoboda@email.cz',
-          phone: '+420 777 888 999'
-        }
-      ],
-      notes: 'Dobrá studentka s občasnou absencí.'
-    },
-    {
-      id: 3,
-      firstName: 'Petr',
-      lastName: 'Dvořák',
-      fullName: 'Petr Dvořák',
-      className: 'ZD-2.A',
-      year: 2,
-      fieldOfStudy: 'Zdravotnictví',
-      status: 'active',
-      dateOfBirth: '2008-11-08',
-      email: 'petr.dvorak@student.school.cz',
-      phone: '+420 555 111 222',
-      address: 'Nová 78, Ostrava',
-      enrollmentDate: '2022-09-01',
-      averageGrade: 2.7,
-      absenceRate: 12.3,
-      disciplinaryIssues: 3,
-      parents: [
-        {
-          id: 4,
-          firstName: 'Alena',
-          lastName: 'Dvořáková',
-          relationship: 'mother',
-          email: 'alena.dvorak@email.cz',
-          phone: '+420 666 777 888',
-          occupation: 'Zdravotní sestra'
-        }
-      ],
-      notes: 'Potřebuje více pozornosti, časté absence.',
-      allergies: ['arašídy'],
-      medicalConditions: ['astma']
-    },
-    {
-      id: 4,
-      firstName: 'Lucie',
-      lastName: 'Černá',
-      fullName: 'Lucie Černá',
-      className: 'IT-4.A',
-      year: 4,
-      fieldOfStudy: 'Informační technologie',
-      status: 'active',
-      dateOfBirth: '2006-01-30',
-      email: 'lucie.cerna@student.school.cz',
-      phone: '+420 333 444 555',
-      address: 'Školní 12, Praha 5',
-      enrollmentDate: '2020-09-01',
-      averageGrade: 1.5,
-      absenceRate: 2.1,
-      disciplinaryIssues: 0,
-      parents: [
-        {
-          id: 5,
-          firstName: 'Karel',
-          lastName: 'Černý',
-          relationship: 'father',
-          email: 'karel.cerny@email.cz',
-          phone: '+420 222 333 444',
-          occupation: 'Programátor'
-        }
-      ],
-      notes: 'Vynikající studentka, reprezentuje školu na soutěžích.'
-    },
-    {
-      id: 5,
-      firstName: 'Martin',
-      lastName: 'Procházka',
-      fullName: 'Martin Procházka',
-      className: '-',
-      year: 4,
-      fieldOfStudy: 'Elektrotechnika',
-      status: 'former',
-      dateOfBirth: '2005-05-12',
-      email: 'martin.prochazka@email.cz',
-      phone: '+420 888 999 111',
-      address: 'Dlouhá 90, Plzeň',
-      enrollmentDate: '2019-09-01',
-      graduationDate: '2023-06-30',
-      averageGrade: 2.3,
-      absenceRate: 7.8,
-      disciplinaryIssues: 2,
-      parents: [
-        {
-          id: 6,
-          firstName: 'Eva',
-          lastName: 'Procházková',
-          relationship: 'mother',
-          email: 'eva.prochazka@email.cz',
-          phone: '+420 111 000 999'
-        }
-      ],
-      notes: 'Absolvent 2023, nyní pracuje jako elektrikář.'
-    },
-    {
-      id: 6,
-      firstName: 'Kateřina',
-      lastName: 'Horáková',
-      fullName: 'Kateřina Horáková',
-      className: 'EK-1.A',
-      year: 1,
-      fieldOfStudy: 'Ekonomika',
-      status: 'active',
-      dateOfBirth: '2009-09-18',
-      email: 'katerina.horak@student.school.cz',
-      phone: '+420 444 333 222',
-      address: 'Krátká 5, Liberec',
-      enrollmentDate: '2023-09-01',
-      averageGrade: 1.9,
-      absenceRate: 3.5,
-      disciplinaryIssues: 0,
-      parents: [
-        {
-          id: 7,
-          firstName: 'Jiří',
-          lastName: 'Horák',
-          relationship: 'father',
-          email: 'jiri.horak@email.cz',
-          phone: '+420 555 666 777',
-          occupation: 'Ekonom'
-        }
-      ]
+    };
+  }
+
+  // Map backend status to frontend status
+  private mapStatus(status: string): 'active' | 'former' | 'suspended' {
+    switch (status.toLowerCase()) {
+      case 'active':
+        return 'active';
+      case 'archive':
+      case 'former':
+        return 'former';
+      case 'suspended':
+        return 'suspended';
+      default:
+        return 'active';
     }
-  ];
+  }
   
   // Get filtered students
   get filteredStudents(): Student[] {
@@ -391,10 +297,10 @@ export class StudentsComponent {
   }
   
   // Get grade color class
-  getGradeClass(grade: number): string {
-    if (grade <= 2.0) return 'grade-excellent';
-    if (grade <= 3.0) return 'grade-good';
-    if (grade <= 4.0) return 'grade-fair';
+  getGradeClass(grade: string): string {
+    if (parseFloat(grade) <= 2.0) return 'grade-excellent';
+    if (parseFloat(grade) <= 3.0) return 'grade-good';
+    if (parseFloat(grade) <= 4.0) return 'grade-fair';
     return 'grade-poor';
   }
 }
