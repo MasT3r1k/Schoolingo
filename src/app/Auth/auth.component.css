@@ -247,6 +247,146 @@ a {
     }
 }
 
+/* ===== Login Success Overlay ===== */
+.login-success-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(var(--bg-rgb), 0.95);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 100;
+    border-radius: var(--radius-xl);
+    animation: overlay-fade-in 0.3s ease-out;
+}
+
+.login-success-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2rem;
+    padding: 2rem;
+}
+
+/* Animated checkmark */
+.success-checkmark {
+    width: 80px;
+    height: 80px;
+    position: relative;
+}
+
+.checkmark {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    display: block;
+    stroke-width: 2;
+    stroke: var(--success);
+    stroke-miterlimit: 10;
+    box-shadow: inset 0 0 0 var(--success);
+    animation: checkmark-fill 0.4s ease-in-out 0.4s forwards, checkmark-scale 0.3s ease-in-out 0.9s both;
+}
+
+.checkmark-circle {
+    stroke-dasharray: 166;
+    stroke-dashoffset: 166;
+    stroke-width: 2;
+    stroke-miterlimit: 10;
+    stroke: var(--success);
+    fill: none;
+    animation: checkmark-stroke 0.6s cubic-bezier(0.65, 0, 0.45, 1) forwards;
+}
+
+.checkmark-check {
+    transform-origin: 50% 50%;
+    stroke-dasharray: 48;
+    stroke-dashoffset: 48;
+    stroke: var(--success);
+    stroke-width: 3;
+    stroke-linecap: round;
+    animation: checkmark-stroke 0.3s cubic-bezier(0.65, 0, 0.45, 1) 0.8s forwards;
+}
+
+@keyframes checkmark-stroke {
+    100% {
+        stroke-dashoffset: 0;
+    }
+}
+
+@keyframes checkmark-scale {
+
+    0%,
+    100% {
+        transform: none;
+    }
+
+    50% {
+        transform: scale3d(1.1, 1.1, 1);
+    }
+}
+
+@keyframes checkmark-fill {
+    100% {
+        box-shadow: inset 0 0 0 40px var(--success);
+    }
+}
+
+/* Success text */
+.login-success-text-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    max-width: 320px;
+}
+
+.login-success-title {
+    font-size: var(--text-lg);
+    font-weight: 600;
+    color: var(--success);
+    text-align: center;
+}
+
+.login-success-subtitle {
+    font-size: var(--text-sm);
+    font-weight: 400;
+    color: var(--text-muted);
+    text-align: center;
+    line-height: 1.5;
+    animation: passkey-fade 2s ease-in-out infinite;
+}
+
+/* ===== Button Loading States ===== */
+.btn--loading {
+    position: relative;
+    pointer-events: none;
+}
+
+.btn-spinner {
+    width: 18px;
+    height: 18px;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-top-color: white;
+    border-radius: 50%;
+    animation: btn-spin 0.6s linear infinite;
+    position: absolute;
+}
+
+@keyframes btn-spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.btn-text-hidden {
+    opacity: 0;
+}
+
 /* ===== Top Controls (Language/Theme Dropdowns) ===== */
 .top,
 .bottom {

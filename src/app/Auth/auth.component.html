@@ -95,14 +95,11 @@
         @if (isPasskeyLoading) {
         <div class="passkey-loading-overlay">
             <div class="passkey-loading-content">
-                <!-- Animated ring around fingerprint -->
                 <div class="passkey-loading-ring"></div>
                 <div class="passkey-loading-ring passkey-loading-ring-2"></div>
 
-                <!-- Fingerprint icon with pulse -->
                 <i-tabler name="fingerprint" class="passkey-loading-icon"></i-tabler>
 
-                <!-- Status text -->
                 <div class="passkey-loading-text-wrapper">
                     <span class="passkey-loading-title">{{ l.s('auth.passkey.authenticating') }}</span>
                     <span class="passkey-loading-subtitle">{{ l.s('auth.passkey.use_device') }}</span>
@@ -110,6 +107,26 @@
             </div>
         </div>
         }
+
+        <!-- Login Success Overlay -->
+        @if (isLoginSuccess) {
+        <div class="login-success-overlay">
+            <div class="login-success-content">
+                <div class="success-checkmark">
+                    <svg class="checkmark" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52">
+                        <circle class="checkmark-circle" cx="26" cy="26" r="25" fill="none" />
+                        <path class="checkmark-check" fill="none" d="M14.1 27.2l7.1 7.2 16.7-16.8" />
+                    </svg>
+                </div>
+
+                <div class="login-success-text-wrapper">
+                    <span class="login-success-title">{{ l.s('auth.login.success') }}</span>
+                    <span class="login-success-subtitle">{{ l.s('auth.login.loading_data') }}</span>
+                </div>
+            </div>
+        </div>
+        }
+
         <div class="card-alerts">
             @for (alert of a.getAlerts(); track $index) {
             <alert [alert]="alert"></alert>
@@ -175,8 +192,12 @@
                     </div>
                 </form>
                 <div class="form-group">
-                    <div class="btn btn--primary" (click)="login()">
-                        {{ l.s('auth.login.button') }}
+                    <div class="btn btn--primary" [class.btn--loading]="isLoggingIn" [class.btn--disabled]="isLoggingIn"
+                        (click)="!isLoggingIn && login()">
+                        @if (isLoggingIn) {
+                        <span class="btn-spinner"></span>
+                        }
+                        <span [class.btn-text-hidden]="isLoggingIn">{{ l.s('auth.login.button') }}</span>
                     </div>
                 </div>
 

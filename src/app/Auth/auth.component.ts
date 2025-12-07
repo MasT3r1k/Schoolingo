@@ -61,6 +61,8 @@ export class AuthComponent implements OnInit {
   private sessionExpiredService = inject(SessionExpiredService);
   public isPasskeySupport = false;
   public isPasskeyLoading = false;
+  public isLoggingIn = false;
+  public isLoginSuccess = false;
 
   public qrcode = new BehaviorSubject('');
   public showInstallModal = false;
@@ -105,6 +107,8 @@ export class AuthComponent implements OnInit {
     this.formSubmitted = true;
     if (this.loginForm.invalid) return;
 
+    this.isLoggingIn = true;
+
     this.http
       .post(
         Config.ELYSIA_URL + '/auth',
@@ -118,10 +122,19 @@ export class AuthComponent implements OnInit {
       .subscribe(
         (data) => {
           if ('username' in data) {
+            // Show success state
+            this.isLoggingIn = false;
+            this.isLoginSuccess = true;
+            
+            // Load user state
             this.auth.loadState();
             this.a.getAlerts().forEach((alert) => this.a.removeAlert(alert));
             return;
           }
+          
+          // Handle errors
+          this.isLoggingIn = false;
+          
           if ('error' in data && data.error instanceof Array) {
             if (data.error?.includes('Invalid username')) {
               this.errors['username'] = this.l.s(
@@ -161,7 +174,10 @@ export class AuthComponent implements OnInit {
             }
           }
         },
-        (err) => this.a.alert('error', 'auth.errors.429')
+        (err) => {
+          this.isLoggingIn = false;
+          this.a.alert('error', 'auth.errors.429');
+        }
       );
   }
 
