@@ -14,6 +14,8 @@ interface ElysiaVersion {
   current: string;
   latest: string;
   isUpToDate: boolean;
+  version: string;
+  remoteVersion?: string;
 }
 
 interface ElysiaVersionLoading {
@@ -144,6 +146,18 @@ export class SettingsComponent implements OnInit {
   public version_loading: ElysiaVersionLoading = {
     is_loading: true,
     error: null
+  }
+
+  public checkUpdate(): void {
+    this.version_loading.is_loading = true;
+    this.http.post<ElysiaVersion>(`${Config.API_URL}/v1/refresh`, {}, { withCredentials: true }).subscribe((data) => {
+        this.version = data;
+        Config.APP_VERSION = data.version;
+        this.version_loading.is_loading = false;
+    }, () => {
+        this.version_loading.error = 'failed_load_version';
+        this.version_loading.is_loading = false;
+    });
   }
 
   public getStudentPercentage(): number {
@@ -359,10 +373,12 @@ export class SettingsComponent implements OnInit {
       this.version_loading.error = 'failed_load_version';
     })
 
+    this.checkUpdate();
+
     this.modalManager.addModal(
       'changelog',
       {
-        title: '',
+        title: 'system.changelog',
         closeable: true,
         items: [
           { type: 'component', component: ChangelogModalComponent }

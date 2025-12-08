@@ -68,46 +68,42 @@
         <div class="form-section">
             <h3 class="section-title">Stav systému</h3>
 
-            @if (version_loading.is_loading) {
-            <div class="status-card loading">
-                <div class="loader"></div>
-                <div class="status-card__content">
-                    <h4>{{ l.s('system.system_update_loading') }}</h4>
-                </div>
-            </div>
-            } @else if (version && version_loading.error == null) {
-            <div class="status-card" [class.success]="version.isUpToDate" [class.warning]="!version.isUpToDate">
+            <div class="status-card" [class.success]="version?.isUpToDate"
+                [class.warning]="version && !version.isUpToDate">
                 <div class="status-card__icon">
+                    @if (version) {
                     <i-tabler [name]="version.isUpToDate ? 'check' : 'alert-triangle'"></i-tabler>
+                    } @else {
+                    <i-tabler name="server"></i-tabler>
+                    }
                 </div>
                 <div class="status-card__content">
+                    @if (version) {
                     <h4>{{ l.s(version.isUpToDate ? 'system.system_is_up_to_date' : 'system.system_has_update') }}</h4>
                     <div class="status-meta">
-                        <span>{{ l.s('system.version') }}: <strong>{{ Config.APP_VERSION }}</strong> ({{ version.current
-                            }})</span>
+                        <span>{{ l.s('system.version') }}: <strong>{{ Config.APP_VERSION }}</strong></span>
                         @if (!version.isUpToDate) {
-                        <span class="update-tag">Dostupná verze: {{ version.latest }}</span>
+                        <span class="update-tag">{{ l.s('system.version_available') }}: {{ version.remoteVersion ?
+                            version.remoteVersion : version.latest }}</span>
                         }
                     </div>
+                    } @else {
+                    <h4>{{ l.s('system.system_update_loading') }}</h4>
+                    }
                 </div>
                 <div class="status-card__actions">
-                    <button class="btn btn--secondary btn--small" (click)="options.auto_update = !options.auto_update">
+                    <button class="btn btn--secondary btn--small" (click)="checkUpdate()"
+                        [disabled]="version_loading.is_loading">
+                        @if (version_loading.is_loading) {
+                        <i-tabler name="loader" class="animate-spin"></i-tabler>
+                        Ověřuji...
+                        } @else {
                         <i-tabler name="refresh"></i-tabler>
                         Ověřit
+                        }
                     </button>
                 </div>
             </div>
-            } @else {
-            <div class="status-card error">
-                <div class="status-card__icon">
-                    <i-tabler name="x"></i-tabler>
-                </div>
-                <div class="status-card__content">
-                    <h4>{{ l.s('system.system_error_loading_version') }}</h4>
-                    <p>Nepodařilo se načíst informace o verzi.</p>
-                </div>
-            </div>
-            }
 
             <div class="form-grid">
                 <div class="form-group">
