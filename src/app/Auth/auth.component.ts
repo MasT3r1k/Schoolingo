@@ -30,6 +30,7 @@ export function isoBase64URLBuffer(buffer: Uint8Array): string {
 import { Passkey } from '@Schoolingo/passkey';
 import { DropdownManager } from '@Schoolingo/dropdown';
 import { SessionExpiredService } from '../infrastructure/session/session-expired.service';
+import { WsService } from '@Schoolingo/websocket';
 
 @Component({
   standalone: true,
@@ -57,6 +58,7 @@ export class AuthComponent implements OnInit {
   private http = inject(HttpClient);
   private router = inject(Router);
   private route = inject(ActivatedRoute);
+  private ws = inject(WsService)
   public passkey = inject(Passkey);
   private sessionExpiredService = inject(SessionExpiredService);
   public isPasskeySupport = false;
@@ -356,7 +358,6 @@ export class AuthComponent implements OnInit {
     this.errors = {};
 
     this.isPasskeySupport = await this.passkey.isSupported();
-
     const encodedReturnUrl = this.route.snapshot.queryParamMap.get('returnUrl');
     const returnUrl = encodedReturnUrl
       ? decodeURIComponent(encodedReturnUrl)
@@ -389,6 +390,24 @@ export class AuthComponent implements OnInit {
     });
 
     // Error while too long loading
+    this.ws.connect();
+    this.ws.connected$.subscribe(connected => {
+      console.log('WS connected state:', connected);
+
+      if (connected) {
+        // třeba hned po připojení pošli QR request
+        this.ws.send({ type: 'qrcode_request' });
+      }
+    });
+
+    this.ws.onMessage('qrcode_result').subscribe(res => {
+      this.qrcode.next(res.payload)
+    });
+
+    setInterval(() => {
+      this.ws.send({ type: 'qrcode_request' });
+    }, 5000)
+
     if (this.school.config.getValue()?.fastlogin) {
       setTimeout(() => {
         if (this.qrcode.getValue() == '' && !this.isLoading) {
@@ -402,8 +421,12 @@ export class AuthComponent implements OnInit {
         }
       }, 5000);
 
-      setTimeout(() => this.qrcode.next('QR kód data'), 10000);
+      setTimeout(() => this.qrcode.next('Naskejnute QR kód v mobilní aplikaci pro rychlé přihlášení'), 10000);
     }
+  }
+
+  public ngOnDestroy(): void {
+    this.ws.close();
   }
 
   public async loginPasskey(): Promise<void> {
