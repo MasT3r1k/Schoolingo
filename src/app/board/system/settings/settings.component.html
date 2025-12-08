@@ -37,7 +37,107 @@
                 <system-system style="width: 100%;"></system-system>
             }
 
-            @case (enumSidebar.LOGIN) {
+            @case(enumSidebar.MAIN) {
+    <div class="container-content">
+        <h2>{{ l.s('system.school_settings') }}</h2>
+        <div class="form-group">
+            <label for="name">
+                {{ l.s('system.school_name') }}
+            </label>
+            <input type="text" id="name" [(ngModel)]="system.settings.name">
+        </div>
+
+        <div class="form-group">
+            <label for="shortcut">
+                {{ l.s('system.school_short_name') }}
+            </label>
+            <input type="text" id="shortcut" [(ngModel)]="system.settings.shortName">
+        </div>
+
+        <div class="form-group">
+            <label for="code">
+                {{ l.s('system.school_code') }}
+            </label>
+            <input type="text" [(ngModel)]="system.settings.code" id="code" class="disabled" readonly disabled>
+        </div>
+
+        <div class="form-group">
+            <label for="district">
+                {{ l.s('system.school_district') }}
+            </label>
+            <select id="district" class="selected-value" [(ngModel)]="system.settings.district">
+                <option class="option" value=""></option>
+                @for (district of system.districts; track $index) {
+                    <option [value]="district.district">
+                        {{ district.district }}
+                    </option>
+                }
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="lesson_start">
+                {{ l.s('system.school_start') }}
+            </label>
+            <input type="time" id="lesson_start" [(ngModel)]="system.lesson_hour">
+        </div>
+
+        <div class="form-group">
+            <label for="length_lesson">
+                {{ l.s('system.school_lesson_length') }}
+            </label>
+            <input type="time" id="length_lesson" [(ngModel)]="system.lesson_length">
+        </div>
+
+        <div class="form-group">
+            <label for="default_length_break">
+                {{ l.s('system.school_break_length') }}
+            </label>
+            <input type="time" id="default_length_break" [(ngModel)]="system.break_time">
+        </div>
+
+        <div class="form-group">
+            <label for="warn_absence">
+                {{ l.s('system.warn_above_absence') }}
+            </label>
+            <input type="number" min="1" max="100" [(ngModel)]="system.settings.warningAbsencePercent" id="warn_absence">
+        </div>
+
+        <div class="form-group">
+            <label for="fastlogin">
+                {{ l.s('system.school_fastlogin') }}
+            </label>
+            <select id="fastlogin" class="selected-value" [(ngModel)]="system.settings.fastlogin">
+                @for (_ of [0, 1]; track $index) {
+                    <option [value]="_">
+                        {{ l.s(_ ? 'system.activated' : 'system.deactivated') }}
+                    </option>
+                }
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="reset_password">
+                {{ l.s('system.school_reset_password_with_email') }}
+            </label>
+            <select id="reset_password" class="selected-value" [(ngModel)]="system.settings.resetPasswordWithEmail">
+                @for (_ of [0, 1]; track $index) {
+                    <option [value]="_">
+                        {{ l.s(_ ? 'system.activated' : 'system.deactivated') }}
+                    </option>
+                }
+            </select>
+        </div>
+
+        <div class="form-group">
+            <div class="btn primary" (click)="update_school()">
+                {{ l.s('system.save_school_info') }}
+            </div>
+        </div>
+    </div>
+            }
+
+            @case(enumSidebar.LOGIN) {
 <div class="container-content">
         <div class="settings-header">
             <h1>{{ l.s('system.login_settings') }}</h1>
@@ -155,205 +255,6 @@
     </div>
             }
 
-@case(enumSidebar.LDAP) {
-    <div class="container-content">
-        <div class="settings-header">
-            <h1>{{ l.s('system.ldap_settings') }}</h1>
-            <p class="settings-subtitle">Konfigurace LDAP/Active Directory pro autentizaci</p>
-        </div>
-
-        <div class="alert alert--info">
-            <i-tabler name="info-circle"></i-tabler>
-            <div>
-                <strong>Důležité:</strong> LDAP umožňuje centralizovanou správu uživatelů. Po aktivaci mohou uživatelé
-                použít své firemní přihlašovací údaje.
-            </div>
-        </div>
-
-        <div class="form-section">
-            <h3 class="section-title">Typ LDAP serveru</h3>
-
-            <div class="ldap-type-selector">
-                <div class="ldap-option selected">
-                    <div class="ldap-option__icon">
-                        <i-tabler name="brand-windows"></i-tabler>
-                    </div>
-                    <div class="ldap-option__content">
-                        <h4>Active Directory</h4>
-                        <p>Microsoft Active Directory</p>
-                    </div>
-                </div>
-                <div class="ldap-option">
-                    <div class="ldap-option__icon">
-                        <i-tabler name="server"></i-tabler>
-                    </div>
-                    <div class="ldap-option__content">
-                        <h4>OpenLDAP</h4>
-                        <p>Open-source LDAP implementace</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="form-section">
-            <h3 class="section-title">Připojení k serveru</h3>
-
-            <div class="form-grid">
-                <div class="form-group">
-                    <label for="ldap-host">IP adresa / Hostname serveru</label>
-                    <input type="text" id="ldap-host" placeholder="ldap.example.com nebo 192.168.1.10">
-                </div>
-
-                <div class="form-group">
-                    <label for="ldap-port">Port</label>
-                    <input type="number" id="ldap-port" value="389" style="max-width: 150px;">
-                </div>
-            </div>
-
-            <div class="form-group">
-                <label>
-                    <input type="checkbox" checked>
-                    Použít SSL/TLS (LDAPS - port 636)
-                </label>
-            </div>
-        </div>
-
-        <div class="form-section">
-            <h3 class="section-title">Přihlašovací údaje</h3>
-
-            <div class="form-group">
-                <label for="ldap-bind-dn">Bind DN (Distinguished Name)</label>
-                <input type="text" id="ldap-bind-dn" placeholder="cn=admin,dc=example,dc=com">
-                <small class="note">Uživatel s oprávněními pro čtení z LDAP</small>
-            </div>
-
-            <div class="form-group">
-                <label for="ldap-password">Heslo</label>
-                <input type="password" id="ldap-password" placeholder="••••••••">
-            </div>
-        </div>
-
-        <div class="form-section">
-            <h3 class="section-title">Pokročilé nastavení</h3>
-
-            <div class="form-group">
-                <label for="ldap-base-dn">Base DN</label>
-                <input type="text" id="ldap-base-dn" placeholder="dc=example,dc=com">
-                <small class="note">Výchozí vyhledávací cesta</small>
-            </div>
-
-            <div class="form-group">
-                <label for="ldap-user-filter">Filtr uživatelů</label>
-                <input type="text" id="ldap-user-filter" placeholder="(objectClass=person)">
-            </div>
-
-            <div class="form-group">
-                <label for="ldap-username-attr">Atribut uživatelského jména</label>
-                <input type="text" id="ldap-username-attr" value="sAMAccountName">
-            </div>
-
-            <div class="form-group">
-                <label for="ldap-timeout">Timeout připojení (sekundy)</label>
-                <input type="number" id="ldap-timeout" value="10" min="5" max="60" style="max-width: 150px;">
-            </div>
-        </div>
-
-        <div class="form-section">
-            <div class="form-actions">
-                <button class="btn btn--secondary">
-                    <i-tabler name="plug-connected"></i-tabler>
-                    Otestovat připojení
-                </button>
-                <button class="btn btn--primary">
-                    <i-tabler name="device-floppy"></i-tabler>
-                    Uložit LDAP konfiguraci
-                </button>
-            </div>
-        </div>
-    </div>
-    }
-    @case(enumSidebar.MAIN) {
-    <div class="container-content">
-        <div class="settings-header">
-            <h1>{{ l.s('system.school_settings') }}</h1>
-            <p class="settings-subtitle">Základní informace a nastavení školy</p>
-        </div>
-
-        <div class="form-section">
-            <h3 class="section-title">Základní údaje školy</h3>
-
-            <div class="form-grid">
-                <div class="form-group">
-                    <label for="name">{{ l.s('system.school_name') }}</label>
-                    <input type="text" id="name" [(ngModel)]="system.settings.name">
-                </div>
-
-                <div class="form-group">
-                    <label for="shortcut">{{ l.s('system.school_short_name') }}</label>
-                    <input type="text" id="shortcut" [(ngModel)]="system.settings.shortName">
-                </div>
-            </div>
-
-            <div class="form-grid">
-                <div class="form-group">
-                    <label for="code">{{ l.s('system.school_code') }}</label>
-                    <input type="text" [(ngModel)]="system.settings.code" id="code" class="disabled" readonly disabled>
-                </div>
-
-                <div class="form-group">
-                    <label for="district">{{ l.s('system.school_district') }}</label>
-                    <select id="district" [(ngModel)]="system.settings.district">
-                        <option value=""></option>
-                        @for (district of system.districts; track $index) {
-                        <option [value]="district.district">
-                            {{ district.district }}
-                        </option>
-                        }
-                    </select>
-                </div>
-            </div>
-        </div>
-
-        <div class="form-section">
-            <h3 class="section-title">Rozvrh hodin</h3>
-
-            <div class="form-grid-3">
-                <div class="form-group">
-                    <label for="lesson_start">{{ l.s('system.school_start') }}</label>
-                    <input type="time" id="lesson_start" [(ngModel)]="system.lesson_hour">
-                </div>
-
-                <div class="form-group">
-                    <label for="length_lesson">{{ l.s('system.school_lesson_length') }}</label>
-                    <input type="time" id="length_lesson" [(ngModel)]="system.lesson_length">
-                </div>
-
-                <div class="form-group">
-                    <label for="default_length_break">{{ l.s('system.school_break_length') }}</label>
-                    <input type="time" id="default_length_break" [(ngModel)]="system.break_time">
-                </div>
-            </div>
-        </div>
-
-        <div class="form-section">
-            <h3 class="section-title">Pokročilé nastavení</h3>
-
-            <div class="form-group">
-                <label for="warn_absence">{{ l.s('system.warn_above_absence') }} (%)</label>
-                <input type="number" min="1" max="100" [(ngModel)]="system.settings.warningAbsencePercent"
-                    id="warn_absence" style="max-width: 200px;">
-            </div>
-        </div>
-
-        <div class="form-section">
-            <button class="btn btn--primary" (click)="update_school()">
-                <i-tabler name="device-floppy"></i-tabler>
-                {{ l.s('system.save_school_info') }}
-            </button>
-        </div>
-    </div>
-    }
-
             @case(enumSidebar.EMAIL) {
     <div class="container-content">
         <h2>Nastavení elektronické pošty</h2>
@@ -388,7 +289,7 @@
                 </small>
             </div>
             <div style="margin-left:auto">
-                <div id="btnAdd" class="btn btn--sm primary" (click)="new_scope()">
+                <div id="btnAdd" class="btn small primary" (click)="new_scope()">
                     <i-tabler name="plus"></i-tabler>
                     {{ l.s('system.add_scope') }}
                 </div>
@@ -447,7 +348,7 @@
                             {{ l.s('system.remove_scope') }}
                         </span>
                     }
-                    <div class="btn btn--sm primary" (click)="update_scope()">
+                    <div class="btn small primary" (click)="update_scope()">
                         <i-tabler [name]="selected_scope.scopeId != null ? 'device-floppy' : 'plus'"></i-tabler>
                         {{ l.s('system.' + (selected_scope.scopeId != null ? 'save_scope' : 'create_scope')) }}
                     </div>
@@ -568,7 +469,7 @@
                 </small>
             </div>
             <div style="margin-left:auto">
-                <div class="btn btn--sm primary" (click)="new_subject()">
+                <div class="btn small primary" (click)="new_subject()">
                     <i-tabler name="plus"></i-tabler>
                     {{ l.s('system.add_subject') }}
                 </div>
@@ -605,7 +506,7 @@
                 </div>
             </div>
             <div style="display:flex; gap:8px; align-items:center">
-                <div id="btnSave" class="btn btn--sm primary">
+                <div id="btnSave" class="btn small primary">
                     <i-tabler [name]="system.subjects[selected_subject].subjectId != null ? 'device-floppy' : 'plus'"></i-tabler>
                     {{ l.s('system.' + (system.subjects[selected_subject].subjectId != null ? 'save_subject' : 'create_subject')) }}
                 </div>
@@ -614,7 +515,7 @@
 
         @if (checkCollisionSubject()) {
             <div class="alerts">
-                <div class="alert alert--danger">Nastala kolize s předměty</div>
+                <div class="alert error">Nastala kolize s předměty</div>
             </div>
         }
 
@@ -648,7 +549,7 @@
                     <h1 id="detailName">
                         {{ 'Oprávnění učitelé učit tento předmět' }}
                     </h1>
-                    <div class="btn btn--primary small">{{ l.s('system.add_teacher') }}</div>
+                    <div class="btn primary small">{{ l.s('system.add_teacher') }}</div>
                 </div>
 
                 <div class="teachers-list">
@@ -657,7 +558,7 @@
                             Jožko Evelyn
                         </div>
                         <div class="teacher-actions">
-                            <div class="btn btn--danger icon-only">
+                            <div class="btn danger icon-only">
                                 <i-tabler name="trash-x"></i-tabler>
                             </div>
                         </div>
@@ -668,7 +569,7 @@
                             Jožko Evelyn
                         </div>
                         <div class="teacher-actions">
-                            <div class="btn btn--danger icon-only">
+                            <div class="btn danger icon-only">
                                 <i-tabler name="trash-x"></i-tabler>
                             </div>
                         </div>

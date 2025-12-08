@@ -1,0 +1,106 @@
+<div class="card">
+    <div class="card-top"></div>
+    <div class="card-header">
+        <h2 class="flex" style="align-items: center;">
+            <i-tabler name="database-export"></i-tabler>
+            <span style="margin-left: 8px;">{{ l.s('backup.title') || 'Zálohy databáze' }}</span>
+        </h2>
+        <div class="flex-items">
+            <button class="btn btn--primary" (click)="createBackup()" [disabled]="creating">
+                @if (!creating) {
+                <i-tabler name="plus"></i-tabler>
+                } @else {
+                <i-tabler name="loader" class="spin"></i-tabler>
+                }
+                {{ creating ? 'Vytvářím...' : 'Nová záloha' }}
+            </button>
+        </div>
+    </div>
+    <div class="card-body">
+        <!-- Warning banner -->
+        <div class="message message--warning row">
+            <i-tabler name="alert-triangle"></i-tabler>
+            <div>
+                <strong>Upozornění:</strong> Zálohy obsahují citlivá data. Stahujte je pouze na zabezpečená
+                zařízení a nikdy je nesdílejte.
+            </div>
+        </div>
+
+        <!-- Loading state -->
+        @if (loading) {
+        <div class="loading-state">
+            @for (i of [1,2,3]; track $index) {
+            <div class="skeleton-row skeleton"></div>
+            }
+        </div>
+        }
+
+        <!-- Backups list -->
+        @if (!loading) {
+        <div class="backups-list">
+            @for (backup of backups; track backup.filename) {
+            <div class="backup-card">
+                <div class="backup-icon">
+                    <i-tabler name="file-zip"></i-tabler>
+                </div>
+                <div class="backup-info">
+                    <h3 class="backup-name">{{ backup.filename }}</h3>
+                    <div class="backup-meta">
+                        <span class="meta-item">
+                            <i-tabler name="calendar"></i-tabler>
+                            {{ formatDate(backup.createdAt) }}
+                        </span>
+                        <span class="meta-item">
+                            <i-tabler name="clock"></i-tabler>
+                            {{ getRelativeTime(backup.createdAt) }}
+                        </span>
+                        <span class="meta-item">
+                            <i-tabler name="file"></i-tabler>
+                            {{ formatSize(backup.size) }}
+                        </span>
+                        @if (backup.compressed) {
+                        <span class="badge badge--success">
+                            <i-tabler name="archive"></i-tabler>
+                            Komprimováno
+                        </span>
+                        }
+                    </div>
+                </div>
+                <div class="buttons">
+                    <button class="btn btn--secondary btn--sm" (click)="downloadBackup(backup)" title="Stáhnout">
+                        <i-tabler name="download"></i-tabler>
+                        Stáhnout
+                    </button>
+                    <button class="btn btn--warning btn--sm" (click)="restoreBackup(backup)" title="Obnovit">
+                        <i-tabler name="rotate"></i-tabler>
+                        Obnovit
+                    </button>
+                    <button class="btn btn--ghost btn--icon" (click)="deleteBackup(backup)" title="Smazat">
+                        <i-tabler name="trash"></i-tabler>
+                    </button>
+                </div>
+            </div>
+            } @empty {
+            <div class="no-selection">
+                <div class="illustration">
+                    <i-tabler name="database-off"></i-tabler>
+                </div>
+                <h3>Žádné zálohy</h3>
+                <p class="note">Zatím nebyly vytvořeny žádné zálohy. Klikněte na "Nová záloha" pro vytvoření první
+                    zálohy.</p>
+            </div>
+            }
+        </div>
+        }
+
+        <!-- Info section -->
+        <div class="message message--info row mt-4">
+            <i-tabler name="info-circle"></i-tabler>
+            <div>
+                <strong>Automatické zálohy</strong><br>
+                <span class="note">Systém automaticky vytváří zálohy každý den v 3:00. Poslední {{ backups.length }}
+                    záloh je uchováno.</span>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,53 +1,83 @@
-.fleet-overview {
-    display: flex;
-    flex-direction: column;
-    gap: 1.5rem;
-    padding: 1rem;
+/* FleetVehicles Overview Component Styles */
+
+/* Stats Row */
+.stats-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+    margin-bottom: 1.5rem;
 }
 
-/* Quick Actions */
-.quick-actions {
+.stat-card {
     display: flex;
-    gap: 0.75rem;
-    flex-wrap: wrap;
-}
-
-.action-btn {
-    display: inline-flex;
     align-items: center;
-    gap: 0.5rem;
-    padding: 0.625rem 1rem;
+    gap: 1rem;
+    padding: 1.25rem;
     background: var(--surface);
+    border-radius: var(--radius-md);
     border: 1px solid var(--border);
-    border-radius: var(--radius);
-    font-size: 0.875rem;
-    font-weight: 500;
-    color: var(--text);
-    text-decoration: none;
-    transition: all 0.2s ease;
-    cursor: pointer;
+    transition: var(--transition-base);
 }
 
-.action-btn:hover {
-    border-color: var(--primary);
+.stat-card:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+}
+
+.stat-icon {
+    width: 48px;
+    height: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: var(--radius-md);
+    background: var(--surface-raised);
+}
+
+.stat-card.stat--primary .stat-icon {
+    background: var(--primary-100);
     color: var(--primary);
 }
 
-.action-btn.primary {
-    background: var(--primary);
-    border-color: var(--primary);
-    color: white;
+.stat-card.stat--success .stat-icon {
+    background: var(--success-100);
+    color: var(--success);
 }
 
-.action-btn.primary:hover {
-    background: var(--primary-hover);
-    border-color: var(--primary-hover);
-    color: white;
+.stat-card.stat--warning .stat-icon {
+    background: var(--warning-100);
+    color: var(--warning);
 }
 
-.action-btn.small {
-    padding: 0.5rem 0.75rem;
-    font-size: 0.8125rem;
+.stat-card.stat--danger .stat-icon {
+    background: var(--danger-100);
+    color: var(--danger);
+}
+
+.stat-info {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+.stat-value {
+    font-size: 1.75rem;
+    font-weight: 700;
+    line-height: 1;
+    color: var(--text-primary);
+}
+
+.stat-label {
+    font-size: 0.875rem;
+    color: var(--text-muted);
+}
+
+/* Quick Actions Bar */
+.quick-actions-bar {
+    display: flex;
+    gap: 0.75rem;
+    margin-bottom: 1.5rem;
+    flex-wrap: wrap;
 }
 
 /* Content Grid */
@@ -57,116 +87,48 @@
     gap: 1rem;
 }
 
-/* Section Card */
-.section-card {
+/* Nested Card */
+.card.nested {
     background: var(--surface);
     border: 1px solid var(--border);
-    border-radius: var(--radius);
-    overflow: hidden;
 }
 
-.section-card.alert {
+.card.nested.alert {
     border-color: var(--warning);
-    background: rgba(251, 191, 36, 0.05);
+    background: var(--warning-surface);
 }
 
-.section-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 1rem 1.25rem;
+.card.nested .card-header {
+    background: var(--surface-raised);
     border-bottom: 1px solid var(--border);
-    background: var(--surface-2);
+    padding: 0.875rem 1rem;
 }
 
-.section-header h3 {
+.card.nested .card-header h3 {
     display: flex;
     align-items: center;
     gap: 0.5rem;
-    margin: 0;
-    font-size: 1rem;
+    font-size: 0.9375rem;
     font-weight: 600;
-    color: var(--text);
+    margin: 0;
 }
 
-.section-header h3 i-tabler {
-    width: 1.25rem;
-    height: 1.25rem;
-    color: var(--primary);
-}
-
-.view-all {
+.view-all-link {
     display: inline-flex;
     align-items: center;
     gap: 0.25rem;
     font-size: 0.8125rem;
     color: var(--primary);
     text-decoration: none;
+    transition: var(--transition-base);
 }
 
-.view-all:hover {
+.view-all-link:hover {
     text-decoration: underline;
 }
 
-.section-content {
-    padding: 1rem 1.25rem;
-}
-
-/* Badge */
-.badge {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    min-width: 1.5rem;
-    height: 1.5rem;
-    padding: 0 0.5rem;
-    font-size: 0.75rem;
-    font-weight: 600;
-    border-radius: 999px;
-}
-
-.badge.danger {
-    background: rgba(239, 68, 68, 0.15);
-    color: var(--danger);
-}
-
-.badge.warning {
-    background: rgba(251, 191, 36, 0.15);
-    color: var(--warning);
-}
-
-/* Empty State */
-.no-selection {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    padding: 2rem;
-    text-align: center;
-}
-
-.no-selection .illustration {
-    width: 3rem;
-    height: 3rem;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: var(--surface-2);
-    border-radius: 50%;
-    margin-bottom: 0.75rem;
-    color: var(--text-muted);
-    font-size: 1.25rem;
-}
-
-.no-selection.success .illustration {
-    background: rgba(34, 197, 94, 0.15);
-    color: var(--success);
-}
-
-.no-selection p {
-    margin: 0;
-    font-size: 0.875rem;
-    color: var(--text-muted);
+.card.nested .card-body {
+    padding: 1rem;
 }
 
 /* Reservation List */
@@ -181,13 +143,15 @@
     align-items: center;
     gap: 1rem;
     padding: 0.875rem;
-    background: var(--surface-2);
-    border-radius: var(--radius);
-    transition: all 0.2s ease;
+    background: var(--surface-raised);
+    border-radius: var(--radius-md);
+    border: 1px solid var(--border);
+    transition: var(--transition-base);
 }
 
 .reservation-item:hover {
-    background: var(--hover-bg);
+    box-shadow: var(--shadow-sm);
+    transform: translateY(-1px);
 }
 
 .reservation-vehicle {
@@ -202,25 +166,26 @@
     height: 2rem;
     padding: 0.375rem;
     background: var(--surface);
-    border-radius: var(--radius);
+    border-radius: var(--radius-sm);
     color: var(--primary);
 }
 
 .vehicle-info {
     display: flex;
     flex-direction: column;
+    gap: 0.125rem;
 }
 
 .vehicle-name {
     font-size: 0.875rem;
     font-weight: 600;
-    color: var(--text);
+    color: var(--text-primary);
 }
 
 .vehicle-plate {
     font-size: 0.75rem;
     color: var(--text-muted);
-    font-family: monospace;
+    font-family: var(--font-mono, monospace);
 }
 
 .reservation-details {
@@ -235,35 +200,12 @@
     align-items: center;
     gap: 0.375rem;
     font-size: 0.8125rem;
-    color: var(--text);
+    color: var(--text-primary);
 }
 
 .reservation-purpose {
     font-size: 0.75rem;
     color: var(--text-muted);
-}
-
-.reservation-status {
-    padding: 0.25rem 0.625rem;
-    font-size: 0.6875rem;
-    font-weight: 600;
-    text-transform: uppercase;
-    border-radius: 999px;
-}
-
-.reservation-status.pending {
-    background: rgba(251, 191, 36, 0.15);
-    color: var(--warning);
-}
-
-.reservation-status.approved {
-    background: rgba(34, 197, 94, 0.15);
-    color: var(--success);
-}
-
-.reservation-status.active {
-    background: rgba(74, 163, 255, 0.15);
-    color: var(--primary);
 }
 
 /* Document List */
@@ -278,9 +220,10 @@
     align-items: center;
     gap: 0.75rem;
     padding: 0.875rem;
-    background: var(--surface-2);
-    border-radius: var(--radius);
+    background: var(--surface-raised);
+    border-radius: var(--radius-md);
     border-left: 3px solid var(--border);
+    transition: var(--transition-base);
 }
 
 .document-item.normal {
@@ -293,7 +236,7 @@
 
 .document-item.critical {
     border-left-color: var(--danger);
-    background: rgba(239, 68, 68, 0.05);
+    background: var(--danger-surface);
 }
 
 .document-icon {
@@ -303,7 +246,7 @@
     align-items: center;
     justify-content: center;
     background: var(--surface);
-    border-radius: var(--radius);
+    border-radius: var(--radius-sm);
     color: var(--text-muted);
 }
 
@@ -317,7 +260,7 @@
 .document-type {
     font-size: 0.875rem;
     font-weight: 500;
-    color: var(--text);
+    color: var(--text-primary);
 }
 
 .document-country {
@@ -335,7 +278,7 @@
 .expiry-date {
     font-size: 0.8125rem;
     font-weight: 500;
-    color: var(--text);
+    color: var(--text-primary);
 }
 
 .expiry-days {
@@ -352,12 +295,13 @@
 .alert-message {
     margin: 0 0 1rem 0;
     font-size: 0.875rem;
-    color: var(--text);
+    color: var(--text-primary);
+    line-height: 1.5;
 }
 
 /* Responsive */
 @media (max-width: 768px) {
-    .stats-grid {
+    .stats-row {
         grid-template-columns: repeat(2, 1fr);
     }
 
@@ -373,27 +317,14 @@
     .reservation-vehicle {
         min-width: auto;
     }
-
-    .reservation-status {
-        align-self: flex-start;
-    }
 }
 
 @media (max-width: 480px) {
-    .fleet-overview {
-        padding: 0.75rem;
-    }
-
-    .stats-grid {
+    .stats-row {
         grid-template-columns: 1fr;
     }
 
-    .quick-actions {
+    .quick-actions-bar {
         flex-direction: column;
-    }
-
-    .action-btn {
-        width: 100%;
-        justify-content: center;
     }
 }

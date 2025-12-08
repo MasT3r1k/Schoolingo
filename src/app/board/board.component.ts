@@ -23,6 +23,7 @@ import { SessionExpiredService } from '../infrastructure/session/session-expired
 import { ModalManager } from '@Schoolingo/modal';
 import { TokenWarningModalComponent } from '@Components/token-warning-modal/token-warning-modal.component';
 import { Subscription } from 'rxjs';
+import { WsService, NotificationPayload } from '@Schoolingo/websocket';
 
 export interface SidebarItem {
     item: string;
@@ -85,6 +86,7 @@ export class BoardComponent implements OnInit, OnDestroy {
   private tokenExpirationService = inject(TokenExpirationService);
   private sessionExpiredService = inject(SessionExpiredService);
   private modalManager = inject(ModalManager);
+  private wsService = inject(WsService);
   private subscriptions: Subscription[] = [];
   App = Config
   Utils = Utils;
@@ -273,6 +275,31 @@ export class BoardComponent implements OnInit, OnDestroy {
     this.u.getAuthState().subscribe((data) => {
       this.sidebar.build();    
       if (data) {
+        // === Connect to WebSocket for real-time notifications ===
+        this.wsService.connect();
+        
+        // Subscribe to real-time notifications
+        const notifSubscription = this.wsService.getNotifications().subscribe((notification) => {
+          // Add to notifications list
+          this.notifications.unshift({
+            type: notification.type.replace('_new', ''),
+            data: notification.data || {},
+            action: { url: notification.url },
+            is_read: false,
+            created_at: new Date()
+          });
+          
+          // Update dashboard count
+          this.dashboard.newNotifications++;
+        });
+        this.subscriptions.push(notifSubscription);
+        
+        // Subscribe to unread count updates
+        const unreadSubscription = this.wsService.getUnreadCount().subscribe((count) => {
+          this.dashboard.newNotifications = count;
+        });
+        this.subscriptions.push(unreadSubscription);
+        
         // === Update add dropdown ===
         this.buildAddDropdown();
 
@@ -338,6 +365,8 @@ export class BoardComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     // Unsubscribe from all subscriptions
     this.subscriptions.forEach(sub => sub.unsubscribe());
+    // Close WebSocket connection
+    this.wsService.close();
   }
 
   public updateCookies(cookies: number): void {

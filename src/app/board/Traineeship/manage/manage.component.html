@@ -1,7 +1,7 @@
 <div class="traineeship-container card">
     <!-- Header with Create Button -->
-    <div class="page-header card__header">
-        <h2 class="card__title">{{ l.s('sidebar.traineeship.manage') }}</h2>
+    <div class="card-header">
+        <h2>{{ l.s('sidebar.traineeship.manage') }}</h2>
         <button class="btn btn--primary" (click)="openCreateModal()">
             + {{ l.s('traineeship.manage.new_traineeship') }}
         </button>
@@ -9,7 +9,7 @@
 
     <!-- List View -->
     @if (!selectedWeek) {
-    <div class="deniky-container card__body">
+    <div class="card-body">
         @for (week of traineeship.diaryWeeks | async; track week.traineeship) {
         <div class="denik-card card--hover" (click)="selectWeek(week)">
             <div class="denik-header">
@@ -19,13 +19,10 @@
                     </span>
                     <span class="denik-firma">{{ week.name }}</span>
                 </div>
-                <div [ngClass]="{
-                    'badge': true,
-                    'badge--warning': traineeship.getStateOfTraineeship(week) == 'planned',
-                    'badge--primary': traineeship.getStateOfTraineeship(week) == 'ongoing',
-                    'badge--success': traineeship.getStateOfTraineeship(week) == 'finished',
-                    'badge--danger': traineeship.getStateOfTraineeship(week) == 'canceled'
-                }">
+                <div class="badge" [class.badge--warning]="traineeship.getStateOfTraineeship(week) == 'planned'"
+                    [class.badge--primary]="traineeship.getStateOfTraineeship(week) == 'ongoing'"
+                    [class.badge--success]="traineeship.getStateOfTraineeship(week) == 'finished'"
+                    [class.badge--danger]="traineeship.getStateOfTraineeship(week) == 'canceled'">
                     {{ l.s('traineeship.diary.status.' + traineeship.getStateOfTraineeship(week)) }}
                 </div>
             </div>
@@ -50,7 +47,7 @@
 
     <!-- Detail View -->
     @if (selectedWeek) {
-    <div class="detail-view card__body">
+    <div class="card-body">
         <button class="btn btn--ghost btn--sm" (click)="backToList()">
             ← {{ l.s('back') }}
         </button>
@@ -61,13 +58,11 @@
                 <span class="text--muted">
                     {{ selectedWeek.start.format('DD. MM. YYYY') }} – {{ selectedWeek.end.format('DD. MM. YYYY') }}
                 </span>
-                <span [ngClass]="{
-                    'badge': true,
-                    'badge--warning': traineeship.getStateOfTraineeship(selectedWeek) == 'planned',
-                    'badge--primary': traineeship.getStateOfTraineeship(selectedWeek) == 'ongoing',
-                    'badge--success': traineeship.getStateOfTraineeship(selectedWeek) == 'finished',
-                    'badge--danger': traineeship.getStateOfTraineeship(selectedWeek) == 'canceled'
-                }">
+                <span class="badge"
+                    [class.badge--warning]="traineeship.getStateOfTraineeship(selectedWeek) == 'planned'"
+                    [class.badge--primary]="traineeship.getStateOfTraineeship(selectedWeek) == 'ongoing'"
+                    [class.badge--success]="traineeship.getStateOfTraineeship(selectedWeek) == 'finished'"
+                    [class.badge--danger]="traineeship.getStateOfTraineeship(selectedWeek) == 'canceled'">
                     {{ l.s('traineeship.diary.status.' + traineeship.getStateOfTraineeship(selectedWeek)) }}
                 </span>
             </div>
@@ -91,44 +86,43 @@
         <h4>{{ l.s('traineeship.student_list') }}</h4>
         <div class="table-container">
             <table class="table">
-                <thead class="table__head">
+                <thead>
                     <tr>
-                        <th class="table__th">{{ l.s('name') }}</th>
-                        <th class="table__th">{{ l.s('class') }}</th>
-                        <th class="table__th">{{ l.s('traineeship.company') }}</th>
-                        <th class="table__th">{{ l.s('traineeship.instructor') }}</th>
-                        <th class="table__th">{{ l.s('traineeship.contract') }}</th>
-                        <th class="table__th">{{ l.s('traineeship.processed') }}</th>
+                        <th>{{ l.s('name') }}</th>
+                        <th>{{ l.s('class') }}</th>
+                        <th>{{ l.s('traineeship.company') }}</th>
+                        <th>{{ l.s('traineeship.instructor') }}</th>
+                        <th>{{ l.s('traineeship.contract') }}</th>
+                        <th>{{ l.s('traineeship.processed') }}</th>
                     </tr>
                 </thead>
                 <tbody>
                     @for (student of students; track student.studentId) {
-                    <tr class="table__row">
-                        <td class="table__td"><strong>{{ student.name }}</strong></td>
-                        <td class="table__td">{{ student.class }}</td>
-                        <td class="table__td">{{ student.company || '—' }}</td>
-                        <td class="table__td">{{ student.instructor || '—' }}</td>
-                        <td class="table__td">
-                            <span class="badge badge--with-dot"
-                                [ngClass]="{'badge--success': student.hasContract, 'badge--danger': !student.hasContract}">
-                                <span class="badge-dot"
-                                    [ngClass]="{'badge-dot--success': student.hasContract, 'badge-dot--danger': !student.hasContract}"></span>
+                    <tr>
+                        <td><strong>{{ student.name }}</strong></td>
+                        <td>{{ student.class }}</td>
+                        <td>{{ student.company || '—' }}</td>
+                        <td>{{ student.instructor || '—' }}</td>
+                        <td>
+                            <span class="badge badge--with-dot" [class.badge--success]="student.hasContract"
+                                [class.badge--danger]="!student.hasContract">
+                                <span class="badge-dot" [class.badge-dot--success]="student.hasContract"
+                                    [class.badge-dot--danger]="!student.hasContract"></span>
                                 {{ student.hasContract ? l.s('yes') : l.s('no') }}
                             </span>
                         </td>
-                        <td class="table__td">
-                            <span class="badge badge--with-dot"
-                                [ngClass]="{'badge--success': student.isProcessed, 'badge--warning': !student.isProcessed}">
-                                <span class="badge-dot"
-                                    [ngClass]="{'badge-dot--success': student.isProcessed, 'badge-dot--warning': !student.isProcessed}"></span>
+                        <td>
+                            <span class="badge badge--with-dot" [class.badge--success]="student.isProcessed"
+                                [class.badge--warning]="!student.isProcessed">
+                                <span class="badge-dot" [class.badge-dot--success]="student.isProcessed"
+                                    [class.badge-dot--warning]="!student.isProcessed"></span>
                                 {{ student.isProcessed ? l.s('yes') : l.s('no') }}
                             </span>
                         </td>
                     </tr>
-                    }
-                    @if (students.length === 0) {
+                    } @empty {
                     <tr>
-                        <td colspan="6" class="table__td text--center text--muted">{{ l.s('no_data') }}</td>
+                        <td colspan="6" style="text-align: center; color: var(--text-muted);">{{ l.s('no_data') }}</td>
                     </tr>
                     }
                 </tbody>
@@ -139,7 +133,8 @@
 </div>
 
 <!-- Create Modal -->
-<div class="modal-overlay" *ngIf="isCreateModalOpen" (click)="closeCreateModal()">
+@if (isCreateModalOpen) {
+<div class="modal-overlay" (click)="closeCreateModal()">
     <div class="modal" (click)="$event.stopPropagation()">
         <div class="modal__header">
             <h3 class="modal__title">{{ l.s('traineeship.manage.new_traineeship') }}</h3>
@@ -193,3 +188,4 @@
         </div>
     </div>
 </div>
+}

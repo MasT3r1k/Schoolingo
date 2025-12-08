@@ -25,7 +25,7 @@
                 }
             </div>
         </div>
-        <div class="card__body">
+        <div class="card-body">
             @if (!getNearestDiary()) {
             <div class="alert alert--danger">
                 {{ l.s('traineeship.overview.no_next_dairy') }}
@@ -71,10 +71,10 @@
     </div>
     <div class="card">
         <div class="card-top"></div>
-        <div class="card__header">
+        <div class="card-header">
             <h3>{{ l.s('traineeship.overview.diary_help') }}</h3>
         </div>
-        <div class="card__body" style="padding-right: 1rem; height: auto;overflow-y: auto;max-height: 600px;">
+        <div class="card-body" style="padding-right: 1rem; height: auto;overflow-y: auto;max-height: 600px;">
 
             <h3>Konzultace a plánování praxe</h3>
             <ul>
@@ -136,7 +136,7 @@
         </div>
     </div>
 
-    <div class="card__body">
+    <div class="card-body">
         <!-- Stats Cards -->
         <div class="stats-cards">
             <div class="stat-card stat--primary">
@@ -200,11 +200,11 @@
         <div class="dashboard-grid">
             <!-- Active Traineeships -->
             <div class="dashboard-card card">
-                <div class="card__header">
-                    <h3 class="card__title">Probíhající praxe</h3>
+                <div class="card-header">
+                    <h3>Probíhající praxe</h3>
                     <a [routerLink]="['', 'traineeship', 'manage']" class="view-all">Zobrazit vše →</a>
                 </div>
-                <div class="card__body">
+                <div class="card-body">
                     @if (getActiveTraineeships().length === 0) {
                     <div class="no-selection">
                         <div class="illustration">
@@ -232,10 +232,10 @@
 
             <!-- Upcoming Traineeships -->
             <div class="dashboard-card card">
-                <div class="card__header">
-                    <h3 class="card__title">Nadcházející praxe</h3>
+                <div class="card-header">
+                    <h3>Nadcházející praxe</h3>
                 </div>
-                <div class="card__body">
+                <div class="card-body">
                     @if (getUpcomingTraineeships().length === 0) {
                     <div class="no-selection">
                         <div class="illustration">
@@ -261,38 +261,38 @@
 
         <!-- Recent Students -->
         <div class="dashboard-card card">
-            <div class="card__header">
-                <h3 class="card__title">Studenti</h3>
+            <div class="card-header">
+                <h3>Studenti</h3>
             </div>
-            <div class="card__body">
+            <div class="card-body">
                 <div class="table-container">
                     <table class="table">
-                        <thead class="table__head">
+                        <thead>
                             <tr>
-                                <th class="table__th">Jméno</th>
-                                <th class="table__th">Třída</th>
-                                <th class="table__th">Firma</th>
-                                <th class="table__th">Instruktor</th>
-                                <th class="table__th">Smlouva</th>
-                                <th class="table__th">Stav</th>
+                                <th>Jméno</th>
+                                <th>Třída</th>
+                                <th>Firma</th>
+                                <th>Instruktor</th>
+                                <th>Smlouva</th>
+                                <th>Stav</th>
                             </tr>
                         </thead>
                         <tbody>
                             @for (student of recentStudents; track student.studentId) {
-                            <tr class="table__row">
-                                <td class="table__td"><strong>{{ student.name }}</strong></td>
-                                <td class="table__td">{{ student.class }}</td>
-                                <td class="table__td">{{ student.company || '—' }}</td>
-                                <td class="table__td">{{ student.instructor || '—' }}</td>
-                                <td class="table__td">
-                                    <span class="badge"
-                                        [ngClass]="{'badge--success': student.hasContract, 'badge--danger': !student.hasContract}">
+                            <tr>
+                                <td><strong>{{ student.name }}</strong></td>
+                                <td>{{ student.class }}</td>
+                                <td>{{ student.company || '—' }}</td>
+                                <td>{{ student.instructor || '—' }}</td>
+                                <td>
+                                    <span class="badge" [class.badge--success]="student.hasContract"
+                                        [class.badge--danger]="!student.hasContract">
                                         {{ student.hasContract ? 'Ano' : 'Ne' }}
                                     </span>
                                 </td>
-                                <td class="table__td">
-                                    <span class="badge"
-                                        [ngClass]="{'badge--success': student.isProcessed, 'badge--warning': !student.isProcessed}">
+                                <td>
+                                    <span class="badge" [class.badge--success]="student.isProcessed"
+                                        [class.badge--warning]="!student.isProcessed">
                                         {{ student.isProcessed ? 'Dokončeno' : 'Probíhá' }}
                                     </span>
                                 </td>
@@ -300,7 +300,8 @@
                             }
                             @if (recentStudents.length === 0) {
                             <tr>
-                                <td colspan="6" class="table__td text--center text--muted">Žádní studenti</td>
+                                <td colspan="6" style="text-align: center; color: var(--text-muted);">Žádní studenti
+                                </td>
                             </tr>
                             }
                         </tbody>

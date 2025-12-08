@@ -44,13 +44,26 @@ export class OverviewComponent implements OnInit {
   private loadDashboard(): void {
     this.loading = true;
 
-    // Load stats
-    this.http.get<FleetStats>(
-      `${Config.API_URL}/v1/fleetvehicles/stats`,
+    // Load stats from overview endpoint
+    this.http.get<{ stats: FleetStats }>(
+      `${Config.API_URL}/v1/fleet/overview`,
       { withCredentials: true }
     ).subscribe({
-      next: (data) => {
-        this.stats = data;
+      next: (response) => {
+        // API returns { stats: { totalVehicles, monthlyTrips, monthlyExpenses, monthlyDistance } }
+        const apiStats = response.stats as any;
+        this.stats = {
+          totalVehicles: apiStats.totalVehicles || 0,
+          availableVehicles: apiStats.totalVehicles || 0,
+          reservedVehicles: 0,
+          maintenanceVehicles: 0,
+          upcomingReservations: apiStats.monthlyTrips || 0,
+          expiringDocuments: 0,
+          pendingApprovals: 0,
+          monthlyTrips: apiStats.monthlyTrips || 0,
+          monthlyExpenses: apiStats.monthlyExpenses || 0,
+          monthlyDistance: apiStats.monthlyDistance || 0
+        };
         this.loading = false;
       },
       error: () => {
@@ -68,32 +81,31 @@ export class OverviewComponent implements OnInit {
       }
     });
 
-    // Load upcoming reservations
-    this.http.get<Reservation[]>(
-      `${Config.API_URL}/v1/fleetvehicles/reservations?upcoming=true&limit=5`,
+    // Load recent trips as upcoming reservations
+    this.http.get<{ trips: any[] }>(
+      `${Config.API_URL}/v1/fleet/trips`,
       { withCredentials: true }
     ).subscribe({
-      next: (data) => {
-        this.upcomingReservations = data;
+      next: (response) => {
+        this.upcomingReservations = response.trips.map((t: any) => ({
+          reservationId: t.tripId,
+          vehicleId: t.vehicleId,
+          vehicleName: t.plate || 'Unknown',
+          userId: t.driverId,
+          userName: 'Driver',
+          startDate: new Date(t.start_date),
+          endDate: t.end_date ? new Date(t.end_date) : new Date(),
+          purpose: t.purpose,
+          status: 'approved' as const
+        }));
       },
       error: () => {
-        // Mock data
         this.upcomingReservations = [];
       }
     });
 
-    // Load expiring documents
-    this.http.get<VehicleDocument[]>(
-      `${Config.API_URL}/v1/fleetvehicles/documents/expiring?days=30`,
-      { withCredentials: true }
-    ).subscribe({
-      next: (data) => {
-        this.expiringDocuments = data;
-      },
-      error: () => {
-        this.expiringDocuments = [];
-      }
-    });
+    // Documents expiring - keep as is (no API yet)
+    this.expiringDocuments = [];
   }
 
   public formatDate(date: Date): string {

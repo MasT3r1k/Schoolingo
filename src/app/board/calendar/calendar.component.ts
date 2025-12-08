@@ -2,6 +2,7 @@ import { Component, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { IconsModule } from '@Schoolingo/icons';
 import { Locale } from '@Schoolingo/locale';
+import { CalendarService, CalendarEvent as ApiCalendarEvent } from '../../infrastructure/calendar/calendar.service';
 
 interface CalendarEvent {
   id: number;
@@ -23,6 +24,8 @@ interface CalendarEvent {
 })
 export class CalendarComponent implements OnInit {
   public l = inject(Locale);
+  public calendarService = inject(CalendarService);
+  
   public currentDate: Date = new Date();
   public today = new Date();
   public weekDays: Date[] = [];
@@ -31,10 +34,11 @@ export class CalendarComponent implements OnInit {
     (_, i) => i + 7
   ); // 7:00 - 19:00
   public events: CalendarEvent[] = [];
+  public loading = false;
 
   ngOnInit(): void {
     this.generateWeekDays();
-    this.loadMockEvents();
+    this.loadEvents();
   }
 
   private generateWeekDays(): void {
@@ -51,6 +55,58 @@ export class CalendarComponent implements OnInit {
     const day = d.getDay();
     const diff = d.getDate() - day + (day === 0 ? -6 : 1); // Adjust when day is Sunday
     return new Date(d.setDate(diff));
+  }
+
+  private loadEvents(): void {
+    this.loading = true;
+    const startOfWeek = this.getStartOfWeek(this.currentDate);
+    const endOfWeek = new Date(startOfWeek);
+    endOfWeek.setDate(startOfWeek.getDate() + 4);
+
+    const startStr = startOfWeek.toISOString().split('T')[0];
+    const endStr = endOfWeek.toISOString().split('T')[0];
+
+    this.calendarService.loadEvents(startStr, endStr).subscribe({
+      next: (apiEvents) => {
+        if (apiEvents.length > 0) {
+          // Map API events to component format
+          this.events = apiEvents.map((e, index) => ({
+            id: e.event_id,
+            title: e.name,
+            type: this.mapEventType(e.type),
+            start: new Date(e.date),
+            end: new Date(new Date(e.date).getTime() + 45 * 60000), // Default 45 min duration
+            description: e.description,
+            color: this.getEventColor(e.type)
+          }));
+        } else {
+          // Fallback to mock if no API data
+          this.loadMockEvents();
+        }
+        this.loading = false;
+      },
+      error: () => {
+        this.loadMockEvents();
+        this.loading = false;
+      }
+    });
+  }
+
+  private mapEventType(type: string): 'lesson' | 'event' | 'exam' {
+    if (type === 'exam' || type === 'test') return 'exam';
+    if (type === 'lesson') return 'lesson';
+    return 'event';
+  }
+
+  private getEventColor(type: string): string {
+    const colors: Record<string, string> = {
+      'lesson': 'var(--primary)',
+      'exam': 'var(--danger)',
+      'test': 'var(--danger)',
+      'event': 'var(--success)',
+      'holiday': 'var(--accent)'
+    };
+    return colors[type] || 'var(--primary)';
   }
 
   private loadMockEvents(): void {
@@ -130,12 +186,13 @@ export class CalendarComponent implements OnInit {
   public previousWeek(): void {
     this.currentDate.setDate(this.currentDate.getDate() - 7);
     this.generateWeekDays();
-    this.loadMockEvents(); // Reload/regenerate mock events for the new week if needed
+    this.loadEvents();
   }
 
   public nextWeek(): void {
     this.currentDate.setDate(this.currentDate.getDate() + 7);
     this.generateWeekDays();
-    this.loadMockEvents();
+    this.loadEvents();
   }
 }
+

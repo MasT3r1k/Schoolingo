@@ -1,14 +1,19 @@
-<div class="settings-page">
-    <div class="page-header">
-        <h1>{{ l.s('fleetvehicles.settings') }}</h1>
-        <button class="btn btn--primary" (click)="saveSettings()" [disabled]="saving">
-            @if (saving) {
-            <div class="loader-sm"></div>
-            } @else {
-            <i-tabler name="device-floppy"></i-tabler>
-            }
-            {{ l.s('buttons.save') }}
-        </button>
+<div class="card">
+    <div class="card-header">
+        <div class="left">
+            <h2>{{ l.s('fleetvehicles.settings') }}</h2>
+            <p class="meta muted">{{ l.s('fleetvehicles.settings_desc') }}</p>
+        </div>
+        <div class="flex-items">
+            <button class="btn btn--primary" (click)="saveSettings()" [disabled]="saving">
+                @if (saving) {
+                <div class="loader-sm"></div>
+                } @else {
+                <i-tabler name="device-floppy"></i-tabler>
+                }
+                {{ l.s('buttons.save') }}
+            </button>
+        </div>
     </div>
 
     @if (loading) {
@@ -16,205 +21,207 @@
         <div class="loader"></div>
     </div>
     } @else {
-    <div class="settings-sections">
-        <!-- Approval Settings -->
-        <div class="settings-section">
-            <div class="section-header">
-                <i-tabler name="clipboard-check"></i-tabler>
-                <div>
-                    <h2>{{ l.s('fleetvehicles.settings.approval') }}</h2>
-                    <p>{{ l.s('fleetvehicles.settings.approval_desc') }}</p>
+    <div class="card-body">
+        <div class="settings-sections">
+            <!-- Approval Settings -->
+            <div class="card nested">
+                <div class="card-header">
+                    <h3>
+                        <i-tabler name="clipboard-check"></i-tabler>
+                        {{ l.s('fleetvehicles.settings.approval') }}
+                    </h3>
+                </div>
+                <div class="card-body">
+                    <p class="section-desc">{{ l.s('fleetvehicles.settings.approval_desc') }}</p>
+                    <div class="form-group">
+                        <label>{{ l.s('fleetvehicles.approval_mode') }}</label>
+                        <div class="approval-options">
+                            @for (mode of approvalModes; track mode) {
+                            <label class="radio-card" [class.active]="settings.approvalMode === mode">
+                                <input type="radio" name="approvalMode" [value]="mode"
+                                    [(ngModel)]="settings.approvalMode" />
+                                <div class="radio-content">
+                                    <span class="radio-title">{{ l.s('fleetvehicles.approval_mode.' + mode) }}</span>
+                                    <span class="radio-desc">{{ getApprovalModeDescription(mode) }}</span>
+                                </div>
+                            </label>
+                            }
+                        </div>
+                    </div>
                 </div>
             </div>
-            <div class="section-content">
-                <div class="form-group">
-                    <label>{{ l.s('fleetvehicles.approval_mode') }}</label>
-                    <div class="approval-options">
-                        @for (mode of approvalModes; track mode) {
-                        <label class="radio-card" [ngClass]="{active: settings.approvalMode === mode}">
-                            <input type="radio" name="approvalMode" [value]="mode"
-                                [(ngModel)]="settings.approvalMode" />
-                            <div class="radio-content">
-                                <span class="radio-title">{{ l.s('fleetvehicles.approval_mode.' + mode) }}</span>
-                                <span class="radio-desc">{{ getApprovalModeDescription(mode) }}</span>
+
+            <!-- Default Manager -->
+            <div class="card nested">
+                <div class="card-header">
+                    <h3>
+                        <i-tabler name="user-cog"></i-tabler>
+                        {{ l.s('fleetvehicles.settings.default_manager') }}
+                    </h3>
+                </div>
+                <div class="card-body">
+                    <p class="section-desc">{{ l.s('fleetvehicles.settings.default_manager_desc') }}</p>
+                    <div class="form-group">
+                        <label>{{ l.s('fleetvehicles.default_manager') }}</label>
+                        @if (settings.defaultManagerName) {
+                        <div class="selected-manager">
+                            <i-tabler name="user"></i-tabler>
+                            <span>{{ settings.defaultManagerName }}</span>
+                            <button class="btn btn--sm btn--ghost" (click)="clearManager()">
+                                <i-tabler name="x"></i-tabler>
+                            </button>
+                        </div>
+                        } @else {
+                        <div class="manager-search">
+                            <input type="text" [(ngModel)]="managerSearchQuery" (input)="searchManager()"
+                                placeholder="{{ l.s('fleetvehicles.search_manager') }}" />
+                            @if (managerSearchResults.length > 0) {
+                            <div class="search-results">
+                                @for (user of managerSearchResults; track user.userId) {
+                                <button class="search-result" (click)="selectManager(user)">
+                                    {{ user.fullName }}
+                                </button>
+                                }
                             </div>
+                            }
+                        </div>
+                        }
+                    </div>
+                </div>
+            </div>
+
+            <!-- Reservation Settings -->
+            <div class="card nested">
+                <div class="card-header">
+                    <h3>
+                        <i-tabler name="calendar-stats"></i-tabler>
+                        {{ l.s('fleetvehicles.settings.reservations') }}
+                    </h3>
+                </div>
+                <div class="card-body">
+                    <p class="section-desc">{{ l.s('fleetvehicles.settings.reservations_desc') }}</p>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>{{ l.s('fleetvehicles.max_reservation_days') }}</label>
+                            <input type="number" [(ngModel)]="settings.maxReservationDays" min="1" max="365" />
+                            <span class="form-hint">{{ l.s('fleetvehicles.max_reservation_days_hint') }}</span>
+                        </div>
+                        <div class="form-group">
+                            <label>{{ l.s('fleetvehicles.advance_booking_days') }}</label>
+                            <input type="number" [(ngModel)]="settings.advanceBookingDays" min="1" max="365" />
+                            <span class="form-hint">{{ l.s('fleetvehicles.advance_booking_days_hint') }}</span>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="checkbox-label">
+                            <input type="checkbox" [(ngModel)]="settings.requirePurpose" />
+                            <span>{{ l.s('fleetvehicles.require_purpose') }}</span>
+                        </label>
+                    </div>
+                    <div class="form-group">
+                        <label class="checkbox-label">
+                            <input type="checkbox" [(ngModel)]="settings.requireDestination" />
+                            <span>{{ l.s('fleetvehicles.require_destination') }}</span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Vehicle Types -->
+            <div class="card nested">
+                <div class="card-header">
+                    <h3>
+                        <i-tabler name="car"></i-tabler>
+                        {{ l.s('fleetvehicles.settings.vehicle_types') }}
+                    </h3>
+                </div>
+                <div class="card-body">
+                    <p class="section-desc">{{ l.s('fleetvehicles.settings.vehicle_types_desc') }}</p>
+                    <div class="vehicle-types-grid">
+                        @for (type of vehicleTypes; track type) {
+                        <label class="vehicle-type-card" [class.active]="isVehicleTypeEnabled(type)">
+                            <input type="checkbox" [checked]="isVehicleTypeEnabled(type)"
+                                (change)="toggleVehicleType(type)" />
+                            <i-tabler [name]="fleet.getVehicleTypeIcon(type)"></i-tabler>
+                            <span>{{ l.s(fleet.getVehicleTypeLabel(type)) }}</span>
                         </label>
                         }
                     </div>
                 </div>
             </div>
-        </div>
 
-        <!-- Default Manager -->
-        <div class="settings-section">
-            <div class="section-header">
-                <i-tabler name="user-cog"></i-tabler>
-                <div>
-                    <h2>{{ l.s('fleetvehicles.settings.default_manager') }}</h2>
-                    <p>{{ l.s('fleetvehicles.settings.default_manager_desc') }}</p>
+            <!-- Notification Settings -->
+            <div class="card nested">
+                <div class="card-header">
+                    <h3>
+                        <i-tabler name="bell"></i-tabler>
+                        {{ l.s('fleetvehicles.settings.notifications') }}
+                    </h3>
                 </div>
-            </div>
-            <div class="section-content">
-                <div class="form-group">
-                    <label>{{ l.s('fleetvehicles.default_manager') }}</label>
-                    @if (settings.defaultManagerName) {
-                    <div class="selected-manager">
-                        <i-tabler name="user"></i-tabler>
-                        <span>{{ settings.defaultManagerName }}</span>
-                        <button class="remove-btn" (click)="clearManager()">
-                            <i-tabler name="x"></i-tabler>
-                        </button>
-                    </div>
-                    } @else {
-                    <div class="manager-search">
-                        <input type="text" [(ngModel)]="managerSearchQuery" (input)="searchManager()"
-                            placeholder="{{ l.s('fleetvehicles.search_manager') }}" />
-                        @if (managerSearchResults.length > 0) {
-                        <div class="search-results">
-                            @for (user of managerSearchResults; track user.userId) {
-                            <button class="search-result" (click)="selectManager(user)">
-                                {{ user.fullName }}
-                            </button>
-                            }
-                        </div>
-                        }
-                    </div>
-                    }
-                </div>
-            </div>
-        </div>
-
-        <!-- Reservation Settings -->
-        <div class="settings-section">
-            <div class="section-header">
-                <i-tabler name="calendar-stats"></i-tabler>
-                <div>
-                    <h2>{{ l.s('fleetvehicles.settings.reservations') }}</h2>
-                    <p>{{ l.s('fleetvehicles.settings.reservations_desc') }}</p>
-                </div>
-            </div>
-            <div class="section-content">
-                <div class="form-row">
+                <div class="card-body">
+                    <p class="section-desc">{{ l.s('fleetvehicles.settings.notifications_desc') }}</p>
                     <div class="form-group">
-                        <label>{{ l.s('fleetvehicles.max_reservation_days') }}</label>
-                        <input type="number" [(ngModel)]="settings.maxReservationDays" min="1" max="365" />
-                        <span class="form-hint">{{ l.s('fleetvehicles.max_reservation_days_hint') }}</span>
+                        <label>{{ l.s('fleetvehicles.document_reminder_days') }}</label>
+                        <input type="number" [(ngModel)]="settings.documentReminderDays" min="1" max="90" />
+                        <span class="form-hint">{{ l.s('fleetvehicles.document_reminder_days_hint') }}</span>
                     </div>
                     <div class="form-group">
-                        <label>{{ l.s('fleetvehicles.advance_booking_days') }}</label>
-                        <input type="number" [(ngModel)]="settings.advanceBookingDays" min="1" max="365" />
-                        <span class="form-hint">{{ l.s('fleetvehicles.advance_booking_days_hint') }}</span>
+                        <label class="checkbox-label">
+                            <input type="checkbox" [(ngModel)]="settings.notifyOnReservation" />
+                            <span>{{ l.s('fleetvehicles.notify_on_reservation') }}</span>
+                        </label>
+                    </div>
+                    <div class="form-group">
+                        <label class="checkbox-label">
+                            <input type="checkbox" [(ngModel)]="settings.notifyOnApproval" />
+                            <span>{{ l.s('fleetvehicles.notify_on_approval') }}</span>
+                        </label>
+                    </div>
+                    <div class="form-group">
+                        <label class="checkbox-label">
+                            <input type="checkbox" [(ngModel)]="settings.notifyOnDocumentExpiry" />
+                            <span>{{ l.s('fleetvehicles.notify_on_document_expiry') }}</span>
+                        </label>
                     </div>
                 </div>
-                <div class="form-group">
-                    <label class="checkbox-label">
-                        <input type="checkbox" [(ngModel)]="settings.requirePurpose" />
-                        <span>{{ l.s('fleetvehicles.require_purpose') }}</span>
-                    </label>
-                </div>
-                <div class="form-group">
-                    <label class="checkbox-label">
-                        <input type="checkbox" [(ngModel)]="settings.requireDestination" />
-                        <span>{{ l.s('fleetvehicles.require_destination') }}</span>
-                    </label>
-                </div>
             </div>
-        </div>
 
-        <!-- Vehicle Types -->
-        <div class="settings-section">
-            <div class="section-header">
-                <i-tabler name="car"></i-tabler>
-                <div>
-                    <h2>{{ l.s('fleetvehicles.settings.vehicle_types') }}</h2>
-                    <p>{{ l.s('fleetvehicles.settings.vehicle_types_desc') }}</p>
+            <!-- Highway Sticker Info -->
+            <div class="card nested info">
+                <div class="card-header">
+                    <h3>
+                        <i-tabler name="road"></i-tabler>
+                        {{ l.s('fleetvehicles.settings.highway_stickers') }}
+                    </h3>
                 </div>
-            </div>
-            <div class="section-content">
-                <div class="vehicle-types-grid">
-                    @for (type of vehicleTypes; track type) {
-                    <label class="vehicle-type-card" [ngClass]="{active: isVehicleTypeEnabled(type)}">
-                        <input type="checkbox" [checked]="isVehicleTypeEnabled(type)"
-                            (change)="toggleVehicleType(type)" />
-                        <i-tabler [name]="fleet.getVehicleTypeIcon(type)"></i-tabler>
-                        <span>{{ l.s(fleet.getVehicleTypeLabel(type)) }}</span>
-                    </label>
-                    }
-                </div>
-            </div>
-        </div>
-
-        <!-- Document Reminders -->
-        <div class="settings-section">
-            <div class="section-header">
-                <i-tabler name="bell"></i-tabler>
-                <div>
-                    <h2>{{ l.s('fleetvehicles.settings.notifications') }}</h2>
-                    <p>{{ l.s('fleetvehicles.settings.notifications_desc') }}</p>
-                </div>
-            </div>
-            <div class="section-content">
-                <div class="form-group">
-                    <label>{{ l.s('fleetvehicles.document_reminder_days') }}</label>
-                    <input type="number" [(ngModel)]="settings.documentReminderDays" min="1" max="90" />
-                    <span class="form-hint">{{ l.s('fleetvehicles.document_reminder_days_hint') }}</span>
-                </div>
-                <div class="form-group">
-                    <label class="checkbox-label">
-                        <input type="checkbox" [(ngModel)]="settings.notifyOnReservation" />
-                        <span>{{ l.s('fleetvehicles.notify_on_reservation') }}</span>
-                    </label>
-                </div>
-                <div class="form-group">
-                    <label class="checkbox-label">
-                        <input type="checkbox" [(ngModel)]="settings.notifyOnApproval" />
-                        <span>{{ l.s('fleetvehicles.notify_on_approval') }}</span>
-                    </label>
-                </div>
-                <div class="form-group">
-                    <label class="checkbox-label">
-                        <input type="checkbox" [(ngModel)]="settings.notifyOnDocumentExpiry" />
-                        <span>{{ l.s('fleetvehicles.notify_on_document_expiry') }}</span>
-                    </label>
-                </div>
-            </div>
-        </div>
-
-        <!-- Highway Sticker Info -->
-        <div class="settings-section info">
-            <div class="section-header">
-                <i-tabler name="road"></i-tabler>
-                <div>
-                    <h2>{{ l.s('fleetvehicles.settings.highway_stickers') }}</h2>
-                    <p>{{ l.s('fleetvehicles.settings.highway_stickers_desc') }}</p>
-                </div>
-            </div>
-            <div class="section-content">
-                <div class="countries-info">
-                    <div class="country-group">
-                        <h4>{{ l.s('fleetvehicles.countries_with_sticker') }}</h4>
-                        <div class="country-tags">
-                            @for (country of highwayStickerCountries; track country.code) {
-                            <span class="country-tag required">{{ country.code }} - {{ country.name }}</span>
-                            }
+                <div class="card-body">
+                    <p class="section-desc">{{ l.s('fleetvehicles.settings.highway_stickers_desc') }}</p>
+                    <div class="countries-info">
+                        <div class="country-group">
+                            <h4>{{ l.s('fleetvehicles.countries_with_sticker') }}</h4>
+                            <div class="country-tags">
+                                @for (country of highwayStickerCountries; track country.code) {
+                                <span class="country-tag required">{{ country.code }} - {{ country.name }}</span>
+                                }
+                            </div>
                         </div>
-                    </div>
-                    <div class="country-group">
-                        <h4>{{ l.s('fleetvehicles.countries_toll_free') }}</h4>
-                        <p class="country-note">{{ l.s('fleetvehicles.toll_free_note') }}</p>
-                        <div class="country-tags">
-                            @for (country of tollFreeCountries; track country.code) {
-                            <span class="country-tag free">{{ country.code }} - {{ country.name }}</span>
-                            }
+                        <div class="country-group">
+                            <h4>{{ l.s('fleetvehicles.countries_toll_free') }}</h4>
+                            <p class="country-note">{{ l.s('fleetvehicles.toll_free_note') }}</p>
+                            <div class="country-tags">
+                                @for (country of tollFreeCountries; track country.code) {
+                                <span class="country-tag free">{{ country.code }} - {{ country.name }}</span>
+                                }
+                            </div>
                         </div>
-                    </div>
-                    <div class="country-group">
-                        <h4>{{ l.s('fleetvehicles.countries_pay_per_use') }}</h4>
-                        <p class="country-note">{{ l.s('fleetvehicles.pay_per_use_note') }}</p>
-                        <div class="country-tags">
-                            @for (country of tollPayPerUseCountries; track country.code) {
-                            <span class="country-tag pay">{{ country.code }} - {{ country.name }}</span>
-                            }
+                        <div class="country-group">
+                            <h4>{{ l.s('fleetvehicles.countries_pay_per_use') }}</h4>
+                            <p class="country-note">{{ l.s('fleetvehicles.pay_per_use_note') }}</p>
+                            <div class="country-tags">
+                                @for (country of tollPayPerUseCountries; track country.code) {
+                                <span class="country-tag pay">{{ country.code }} - {{ country.name }}</span>
+                                }
+                            </div>
                         </div>
                     </div>
                 </div>

@@ -89,12 +89,15 @@ export const routes: Routes = [
                     {
                         path: 'interm', component: IntermComponent
                     },
-
                     {
                         path: 'intermrecord', component: IntermRecordComponent
                     },
                     {
                         path: 'midterm', component: MidtermComponent
+                    },
+                    {
+                        path: 'educationmeasures',
+                        loadComponent: () => import('./board/Teach/measures/measures.component').then(m => m.MeasuresComponent)
                     }
                 ]
             },
@@ -119,6 +122,14 @@ export const routes: Routes = [
                     {
                         path: 'subjects',
                         loadComponent: () => import('./board/Teach/subjects/subjects.component').then(m => m.SubjectsComponent)
+                    },
+                    {
+                        path: 'substitution',
+                        loadComponent: () => import('./board/Teach/substitution/substitution.component').then(m => m.SubstitutionComponent)
+                    },
+                    {
+                        path: 'tutoring',
+                        loadComponent: () => import('./board/schedule/tutoring/tutoring.component').then(m => m.TutoringComponent)
                     }
                 ]
             },
@@ -185,6 +196,10 @@ export const routes: Routes = [
                         path: 'received', component: ReceivedComponent
                     },
                     {
+                        path: 'sent',
+                        loadComponent: () => import('./board/messages/sent/sent.component').then(m => m.SentComponent)
+                    },
+                    {
                         path: 'noticeboard', component: NoticeboardComponent
                     },
                     {
@@ -228,6 +243,18 @@ export const routes: Routes = [
                     {
                         path: 'settings', component: SystemSettings
                     },
+                ]
+            },
+            {
+                path: 'archive',
+                loadComponent: () => import('./board/Admin/archive/archive.component').then(m => m.ArchiveComponent)
+            },
+            {
+                path: 'admin', children: [
+                    {
+                        path: 'backup',
+                        loadComponent: () => import('./board/Admin/backup/backup.component').then(m => m.BackupComponent)
+                    }
                 ]
             }
         ]

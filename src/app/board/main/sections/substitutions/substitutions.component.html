@@ -23,26 +23,26 @@
             </div>
             <div class="item-content">
                 <div class="item-header">
-                    <span class="item-title">{{ sub.subject_name }}</span>
+                    <span class="item-title">{{ sub.subjectName }}</span>
                     <span class="sub-badge badge" [ngClass]="getSubstitutionType(sub)">
                         <i-tabler [name]="getTypeIcon(sub)" size="12"></i-tabler>
                         {{ getTypeLabel(sub) }}
                     </span>
                 </div>
                 <div class="sub-details">
-                    @if (sub.cancelled) {
+                    @if (sub.type == 'cancelled') {
                     <span class="sub-info cancelled">Hodina odpadá</span>
                     } @else {
-                    @if (sub.new_teacher) {
+                    @if (sub.originalTeacher != sub.substituteTeacher) {
                     <span class="sub-info">
                         <i-tabler name="user" size="12"></i-tabler>
-                        {{ sub.new_teacher }}
+                        {{ sub.substituteTeacher }}
                     </span>
                     }
-                    @if (sub.new_room) {
+                    @if (sub.type == 'room_change') {
                     <span class="sub-info">
                         <i-tabler name="door" size="12"></i-tabler>
-                        {{ sub.new_room }}
+                        {{ '' }}
                     </span>
                     }
                     }

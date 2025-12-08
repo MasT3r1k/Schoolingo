@@ -133,6 +133,9 @@ export interface FleetStats {
   upcomingReservations: number;
   expiringDocuments: number;
   pendingApprovals: number;
+  monthlyTrips?: number;
+  monthlyExpenses?: number;
+  monthlyDistance?: number;
 }
 
 // Service class placeholder

@@ -1,0 +1,181 @@
+<div class="card">
+    <div class="card-header">
+        <div class="left">
+            <h2>{{ l.s('sidebar.teach.substitution') }}</h2>
+            <p class="meta muted">{{ formatDateDisplay() }} · {{ formattedDate() }}</p>
+        </div>
+        <div class="flex-items">
+            <div class="date-controls">
+                <button class="btn btn--ghost btn--sm" (click)="previousDay()">
+                    <i-tabler name="chevron-left"></i-tabler>
+                </button>
+                <button class="btn btn--ghost btn--sm" (click)="goToToday()">
+                    {{ l.s('substitution.today') }}
+                </button>
+                <button class="btn btn--ghost btn--sm" (click)="nextDay()">
+                    <i-tabler name="chevron-right"></i-tabler>
+                </button>
+            </div>
+            @if (canManageSubstitutions()) {
+            <button class="btn btn--primary" (click)="openCreateModal()">
+                <i-tabler name="plus"></i-tabler>
+                <span>{{ l.s('substitution.create') }}</span>
+            </button>
+            }
+        </div>
+    </div>
+
+    <div class="card-body">
+        <!-- Stats Cards -->
+        <div class="stats-row">
+            <div class="stat-card stat--primary">
+                <div class="stat-icon">
+                    <i-tabler name="list"></i-tabler>
+                </div>
+                <div class="stat-info">
+                    <span class="stat-value">{{ getTotalCount() }}</span>
+                    <span class="stat-label">{{ l.s('substitution.total') }}</span>
+                </div>
+            </div>
+            <div class="stat-card stat--danger">
+                <div class="stat-icon">
+                    <i-tabler name="x"></i-tabler>
+                </div>
+                <div class="stat-info">
+                    <span class="stat-value">{{ getCancelledCount() }}</span>
+                    <span class="stat-label">{{ l.s('substitution.types.cancelled') }}</span>
+                </div>
+            </div>
+            <div class="stat-card stat--warning">
+                <div class="stat-icon">
+                    <i-tabler name="user-check"></i-tabler>
+                </div>
+                <div class="stat-info">
+                    <span class="stat-value">{{ getSubstitutionCount() }}</span>
+                    <span class="stat-label">{{ l.s('substitution.types.substitution') }}</span>
+                </div>
+            </div>
+            <div class="stat-card stat--info">
+                <div class="stat-icon">
+                    <i-tabler name="door"></i-tabler>
+                </div>
+                <div class="stat-info">
+                    <span class="stat-value">{{ getRoomChangeCount() }}</span>
+                    <span class="stat-label">{{ l.s('substitution.types.room_change') }}</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Filters -->
+        <div class="filters-bar">
+            <div class="form-group search">
+                <input type="text" [(ngModel)]="searchQuery" (input)="searchQuery.set($any($event.target).value)"
+                    [placeholder]="l.s('substitution.search')">
+            </div>
+            <div class="filter-tabs">
+                <button class="filter-tab" [class.active]="selectedType() === 'all'" (click)="selectedType.set('all')">
+                    {{ l.s('substitution.filters.all') }}
+                </button>
+                <button class="filter-tab" [class.active]="selectedType() === 'cancelled'"
+                    (click)="selectedType.set('cancelled')">
+                    <i-tabler name="x"></i-tabler>
+                    {{ l.s('substitution.types.cancelled') }}
+                </button>
+                <button class="filter-tab" [class.active]="selectedType() === 'substitution'"
+                    (click)="selectedType.set('substitution')">
+                    <i-tabler name="user-check"></i-tabler>
+                    {{ l.s('substitution.types.substitution') }}
+                </button>
+                <button class="filter-tab" [class.active]="selectedType() === 'room_change'"
+                    (click)="selectedType.set('room_change')">
+                    <i-tabler name="door"></i-tabler>
+                    {{ l.s('substitution.types.room_change') }}
+                </button>
+            </div>
+        </div>
+
+        <!-- Loading State -->
+        @if (loading()) {
+        <div class="loading-state">
+            <div class="loader"></div>
+            <p>{{ l.s('substitution.loading') }}</p>
+        </div>
+        }
+
+        <!-- Substitutions List -->
+        @else if (getFilteredSubstitutions().length === 0) {
+        <div class="no-selection">
+            <div class="illustration">
+                <i-tabler name="calendar-check"></i-tabler>
+            </div>
+            <h3>{{ l.s('substitution.no_substitutions') }}</h3>
+            <p>{{ l.s('substitution.no_substitutions_desc') }}</p>
+        </div>
+        } @else {
+        <div class="table-container">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>{{ l.s('substitution.hour') }}</th>
+                        <th>{{ l.s('substitution.class') }}</th>
+                        <th>{{ l.s('substitution.subject') }}</th>
+                        <th>{{ l.s('substitution.type') }}</th>
+                        <th>{{ l.s('substitution.original_teacher') }}</th>
+                        <th>{{ l.s('substitution.substitute_teacher') }}</th>
+                        <th>{{ l.s('substitution.room') }}</th>
+                        @if (canManageSubstitutions()) {
+                        <th>{{ l.s('actions') }}</th>
+                        }
+                    </tr>
+                </thead>
+                <tbody>
+                    @for (sub of getFilteredSubstitutions(); track sub.substitution_id) {
+                    <tr>
+                        <td>
+                            <span class="hour-badge">{{ sub.hour }}</span>
+                        </td>
+                        <td>
+                            <strong>{{ sub.className }}</strong>
+                        </td>
+                        <td>{{ sub.subjectName }}</td>
+                        <td>
+                            <span class="badge" [ngClass]="getTypeClass(sub.type)">
+                                <i-tabler [name]="getTypeIcon(sub.type)" size="14"></i-tabler>
+                                {{ getTypeLabel(sub.type) }}
+                            </span>
+                        </td>
+                        <td>{{ sub.originalTeacher || '—' }}</td>
+                        <td>
+                            @if (sub.type === 'cancelled') {
+                            <span class="text--muted">—</span>
+                            } @else {
+                            {{ sub.substituteTeacher || sub.originalTeacher }}
+                            }
+                        </td>
+                        <td>
+                            @if (sub.type === 'room_change') {
+                            <span class="room-change">
+                                <i-tabler name="arrow-right" size="12"></i-tabler>
+                                {{ sub.note }}
+                            </span>
+                            } @else {
+                            —
+                            }
+                        </td>
+                        @if (canManageSubstitutions()) {
+                        <td>
+                            <div class="table-actions">
+                                <button class="btn btn--sm btn--ghost" (click)="openEditModal(sub)">
+                                    <i-tabler name="edit"></i-tabler>
+                                </button>
+                            </div>
+                        </td>
+                        }
+                    </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+        }
+    </div>
+</div>

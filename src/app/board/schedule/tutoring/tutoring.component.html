@@ -1,0 +1,121 @@
+<div class="card">
+    <div class="card-top"></div>
+    <div class="card-header">
+        <h2 class="flex" style="align-items: center;">
+            <i-tabler name="school"></i-tabler>
+            <span style="margin-left: 8px;">{{ l.s('sidebar.teach.tutoring') || 'Doučování' }}</span>
+        </h2>
+        <div class="flex-items">
+            @if (perm.checkPermission(['teacher'])) {
+            <button class="btn btn--primary" (click)="toggleCreateForm()">
+                <i-tabler name="plus"></i-tabler>
+                {{ showCreateForm ? 'Zrušit' : 'Nová lekce' }}
+            </button>
+            }
+        </div>
+    </div>
+    <div class="card-body">
+        <!-- Create form -->
+        @if (showCreateForm) {
+        <div class="create-form">
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Název lekce *</label>
+                    <input type="text" [(ngModel)]="newSession.title"
+                        placeholder="např. Příprava na maturitu z matematiky">
+                </div>
+                <div class="form-group">
+                    <label>Datum a čas *</label>
+                    <input type="datetime-local" [(ngModel)]="newSession.date">
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Místnost</label>
+                    <input type="text" [(ngModel)]="newSession.room" placeholder="např. U12">
+                </div>
+                <div class="form-group">
+                    <label>Max. počet studentů</label>
+                    <input type="number" [(ngModel)]="newSession.maxStudents" min="1" max="30">
+                </div>
+            </div>
+            <div class="form-group">
+                <label>Popis</label>
+                <textarea [(ngModel)]="newSession.description" rows="3" placeholder="Detaily o lekci..."></textarea>
+            </div>
+            <div class="buttons end mt-4">
+                <button class="btn btn--secondary" (click)="toggleCreateForm()">Zrušit</button>
+                <button class="btn btn--primary" (click)="createSession()"
+                    [disabled]="!newSession.title || !newSession.date">
+                    <i-tabler name="check"></i-tabler> Vytvořit lekci
+                </button>
+            </div>
+        </div>
+        }
+
+        <!-- Loading state -->
+        @if (loading) {
+        <div class="loading-state">
+            @for (i of [1,2,3]; track $index) {
+            <div class="skeleton-card skeleton"></div>
+            }
+        </div>
+        }
+
+        <!-- Sessions list -->
+        @if (!loading) {
+        <div class="sessions-grid">
+            @for (session of sessions; track session.sessionId) {
+            <div class="session-card" [class.past]="!isUpcoming(session.date)">
+                <div class="session-header">
+                    @if (session.subject) {
+                    <span class="badge badge--primary">{{ session.subject }}</span>
+                    }
+                    <span class="badge" [class.badge--success]="isUpcoming(session.date)"
+                        [class.badge--neutral]="!isUpcoming(session.date)">
+                        {{ isUpcoming(session.date) ? 'Nadcházející' : 'Proběhlo' }}
+                    </span>
+                </div>
+                <h3 class="session-title">{{ session.title }}</h3>
+                <div class="session-meta">
+                    <span class="meta-item">
+                        <i-tabler name="calendar"></i-tabler>
+                        {{ formatDate(session.date) }}
+                    </span>
+                    @if (session.teacher) {
+                    <span class="meta-item">
+                        <i-tabler name="user"></i-tabler>
+                        {{ session.teacher }}
+                    </span>
+                    }
+                    @if (session.room) {
+                    <span class="meta-item">
+                        <i-tabler name="door"></i-tabler>
+                        {{ session.room }}
+                    </span>
+                    }
+                </div>
+                @if (session.description) {
+                <p class="note">{{ session.description }}</p>
+                }
+                @if (perm.checkPermission(['teacher']) && isUpcoming(session.date)) {
+                <div class="buttons end mt-2">
+                    <button class="btn btn--danger btn--sm" (click)="cancelSession(session)">
+                        <i-tabler name="x"></i-tabler> Zrušit
+                    </button>
+                </div>
+                }
+            </div>
+            } @empty {
+            <div class="no-selection">
+                <div class="illustration">
+                    <i-tabler name="school-off"></i-tabler>
+                </div>
+                <h3>Žádné lekce</h3>
+                <p class="note">Momentálně nejsou k dispozici žádné lekce doučování.</p>
+            </div>
+            }
+        </div>
+        }
+    </div>
+</div>

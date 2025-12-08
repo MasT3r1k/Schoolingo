@@ -5,14 +5,35 @@ import { tap } from 'rxjs/operators';
 import { TokenExpirationService } from '../token-expiration/token-expiration.service';
 import { MonitoringService } from '../monitoring/monitoring.service';
 import { SessionExpiredService } from '../session/session-expired.service';
+import { CsrfService } from '../csrf/csrf.service';
 
 export const httpInterceptor: HttpInterceptorFn = (req, next) => {
   const router = inject(Router);
   const tokenExpirationService = inject(TokenExpirationService);
   const monitoringService = inject(MonitoringService);
   const sessionExpiredService = inject(SessionExpiredService);
+  const csrfService = inject(CsrfService);
 
-  return next(req).pipe(
+  // Add CSRF token for state-changing requests
+  let modifiedReq = req;
+  const method = req.method.toUpperCase();
+  
+  if (['POST', 'PUT', 'DELETE', 'PATCH'].includes(method)) {
+    // Skip CSRF for certain endpoints
+    const skipUrls = ['/csrf-token', '/locales', '/version', '/auth'];
+    const shouldSkip = skipUrls.some(url => req.url.includes(url));
+    
+    if (!shouldSkip) {
+      const csrfToken = csrfService.getToken();
+      if (csrfToken) {
+        modifiedReq = req.clone({
+          headers: req.headers.set('X-CSRF-Token', csrfToken)
+        });
+      }
+    }
+  }
+
+  return next(modifiedReq).pipe(
     tap({
       next: (event) => {
         // Track token expiration on successful responses
@@ -29,6 +50,13 @@ export const httpInterceptor: HttpInterceptorFn = (req, next) => {
         }
       },
       error: (error) => {
+        // Handle CSRF token errors - refresh token and retry is handled by user
+        if (error.error?.error === 'csrf_token_invalid' || error.error?.error === 'csrf_token_missing') {
+          csrfService.refreshToken();
+          monitoringService.logAuthError('other', error);
+          return;
+        }
+        
         // Handle no_user error
         if (error.error?.error === 'no_user') {
           router.navigate(['/login']);

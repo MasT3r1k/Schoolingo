@@ -1,9 +1,8 @@
 import { Component, inject, OnInit } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { Config } from '@Schoolingo/config';
 import { Locale } from '@Schoolingo/locale';
 import { IconsModule } from '@Schoolingo/icons';
 import { NgClass } from '@angular/common';
+import { SubstitutionService, Substitution } from '../../../../infrastructure/substitution/substitution.service';
 import moment from 'moment';
 
 @Component({
@@ -14,9 +13,10 @@ import moment from 'moment';
   styleUrl: './substitutions.component.css'
 })
 export class SubstitutionsComponent implements OnInit {
-  private http = inject(HttpClient);
+  public substitutionService = inject(SubstitutionService);
   public l = inject(Locale);
-  public substitutions: any[] = [];
+  
+  public substitutions: Substitution[] = [];
   public isLoading = true;
 
   ngOnInit(): void {
@@ -24,14 +24,10 @@ export class SubstitutionsComponent implements OnInit {
   }
 
   public loadSubstitutions(): void {
-    this.http.get(
-      `${Config.API_URL}/v1/substitutions?limit=5`,
-      { withCredentials: true }
-    ).subscribe({
-      next: (data: any) => {
-        if ('substitutions' in data) {
-          this.substitutions = data.substitutions;
-        }
+    this.isLoading = true;
+    this.substitutionService.loadSubstitutions().subscribe({
+      next: (data) => {
+        this.substitutions = data.slice(0, 5); // Limit to 5 for dashboard
         this.isLoading = false;
       },
       error: () => {
@@ -50,24 +46,25 @@ export class SubstitutionsComponent implements OnInit {
     return d.format('D. M.');
   }
 
-  public getSubstitutionType(sub: any): string {
-    if (sub.cancelled) return 'cancelled';
-    if (sub.room_change) return 'room-change';
-    if (sub.teacher_change) return 'teacher-change';
+  public getSubstitutionType(sub: Substitution): string {
+    if (sub.type === 'cancelled') return 'cancelled';
+    if (sub.type === 'room_change') return 'room-change';
+    if (sub.type === 'substitution') return 'teacher-change';
     return 'other';
   }
 
-  public getTypeIcon(sub: any): string {
-    if (sub.cancelled) return 'calendar-x';
-    if (sub.room_change) return 'door';
-    if (sub.teacher_change) return 'user-minus';
+  public getTypeIcon(sub: Substitution): string {
+    if (sub.type === 'cancelled') return 'calendar-x';
+    if (sub.type === 'room_change') return 'door';
+    if (sub.type === 'substitution') return 'user-minus';
     return 'refresh';
   }
 
-  public getTypeLabel(sub: any): string {
-    if (sub.cancelled) return 'Odpadá';
-    if (sub.room_change) return 'Změna místnosti';
-    if (sub.teacher_change) return 'Suplování';
+  public getTypeLabel(sub: Substitution): string {
+    if (sub.type === 'cancelled') return 'Odpadá';
+    if (sub.type === 'room_change') return 'Změna místnosti';
+    if (sub.type === 'substitution') return 'Suplování';
     return 'Změna';
   }
 }
+

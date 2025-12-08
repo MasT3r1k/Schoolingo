@@ -1,0 +1,163 @@
+<div class="card">
+    <div class="card-top"></div>
+    <div class="card-header">
+        <h2 class="flex" style="align-items: center;">
+            <i-tabler name="archive"></i-tabler>
+            <span style="margin-left: 8px;">{{ l.s('sidebar.archive') || 'Archiv' }}</span>
+        </h2>
+        <div class="flex-items">
+            @if (selectedYear) {
+            <button class="btn btn--secondary" (click)="backToYears()">
+                <i-tabler name="arrow-left"></i-tabler>
+                Zpět na roky
+            </button>
+            }
+        </div>
+    </div>
+    <div class="card-body">
+        <!-- Tabs -->
+        @if (selectedYear) {
+        <div class="select-items mb-4">
+            <div class="select-item" [class.active]="activeTab === 'grades'" (click)="setTab('grades')">
+                <i-tabler name="certificate"></i-tabler>
+                <span style="margin-left: 6px;">Známky</span>
+            </div>
+            <div class="select-item" [class.active]="activeTab === 'classbook'" (click)="setTab('classbook')">
+                <i-tabler name="book"></i-tabler>
+                <span style="margin-left: 6px;">Třídní kniha</span>
+            </div>
+            @if (perm.checkPermission(['admin'])) {
+            <div class="select-item" [class.active]="activeTab === 'audit'" (click)="loadAuditLog()">
+                <i-tabler name="history"></i-tabler>
+                <span style="margin-left: 6px;">Audit log</span>
+            </div>
+            }
+        </div>
+        }
+
+        <!-- Loading -->
+        @if (loading) {
+        <div class="years-grid">
+            @for (i of [1,2,3]; track $index) {
+            <div class="skeleton-card skeleton"></div>
+            }
+        </div>
+        }
+
+        <!-- Years list -->
+        @if (!loading && !selectedYear && activeTab === 'years') {
+        <div class="years-grid">
+            @for (year of years; track year.year_id) {
+            <div class="year-card" (click)="selectYear(year)" [class.current]="year.is_current">
+                <div class="year-icon">
+                    <i-tabler name="calendar"></i-tabler>
+                </div>
+                <div class="year-info">
+                    <h3>{{ year.name }}</h3>
+                    <p class="note">{{ formatDate(year.start_date) }} - {{ formatDate(year.end_date) }}</p>
+                </div>
+                @if (year.is_current) {
+                <span class="badge badge--success">Aktuální</span>
+                }
+                <i-tabler name="chevron-right" style="color: var(--text-muted);"></i-tabler>
+            </div>
+            } @empty {
+            <div class="no-selection">
+                <div class="illustration">
+                    <i-tabler name="archive-off"></i-tabler>
+                </div>
+                <h3>Žádné archivy</h3>
+                <p class="note">Zatím nejsou k dispozici žádné archivované školní roky.</p>
+            </div>
+            }
+        </div>
+        }
+
+        <!-- Grades tab -->
+        @if (selectedYear && activeTab === 'grades') {
+        <h2 class="small mb-4">Známky za {{ selectedYear.name }}</h2>
+        @if (grades.length > 0) {
+        <table style="width: 100%;">
+            <thead class="table-row">
+                <th class="table-item">Předmět</th>
+                <th class="table-item">Pololetí</th>
+                <th class="table-item">Známka</th>
+            </thead>
+            <tbody>
+                @for (grade of grades; track $index) {
+                <tr class="table-row">
+                    <td class="table-item" style="width: 100%;">{{ grade.subjectName }}</td>
+                    <td class="table-item">{{ grade.semester }}. pololetí</td>
+                    <td class="table-item">
+                        <span class="grade-badge">{{ grade.grade }}</span>
+                    </td>
+                </tr>
+                }
+            </tbody>
+        </table>
+        } @else {
+        <div class="no-selection">
+            <p class="note">Žádné známky pro tento rok.</p>
+        </div>
+        }
+        }
+
+        <!-- Classbook tab -->
+        @if (selectedYear && activeTab === 'classbook') {
+        <h2 class="small mb-4">Třídní kniha za {{ selectedYear.name }}</h2>
+        <div class="classbook-list">
+            @for (entry of classbook; track $index) {
+            <div class="classbook-entry">
+                <div class="entry-date">
+                    <div class="date">{{ formatDate(entry.date) }}</div>
+                    <div class="hour">{{ entry.hour }}. hodina</div>
+                </div>
+                <div class="entry-content">
+                    <div class="row gap-2 mb-2">
+                        <span class="badge badge--primary">{{ entry.className }}</span>
+                        <span class="text--muted">{{ entry.subjectName }}</span>
+                    </div>
+                    <p style="margin: 0;">{{ entry.content }}</p>
+                    @if (entry.note) {
+                    <p class="note mt-2">{{ entry.note }}</p>
+                    }
+                </div>
+            </div>
+            } @empty {
+            <div class="no-selection">
+                <p class="note">Žádné záznamy v třídní knize.</p>
+            </div>
+            }
+        </div>
+        }
+
+        <!-- Audit log tab -->
+        @if (activeTab === 'audit') {
+        <h2 class="small mb-4">Historie změn</h2>
+        <table style="width: 100%;">
+            <thead class="table-row">
+                <th class="table-item">Čas</th>
+                <th class="table-item">Typ</th>
+                <th class="table-item">Uživatel</th>
+                <th class="table-item">Data</th>
+                <th class="table-item">IP</th>
+            </thead>
+            <tbody>
+                @for (log of auditLogs; track $index) {
+                <tr class="table-row">
+                    <td class="table-item">{{ formatDateTime(log.created) }}</td>
+                    <td class="table-item"><span class="badge badge--neutral">{{ log.type }}</span></td>
+                    <td class="table-item">{{ log.userName || '—' }}</td>
+                    <td class="table-item"><code>{{ log.data }}</code></td>
+                    <td class="table-item">{{ log.ip || '—' }}</td>
+                </tr>
+                } @empty {
+                <tr>
+                    <td colspan="5" class="table-item text--muted" style="text-align: center;">Žádné záznamy</td>
+                </tr>
+                }
+            </tbody>
+        </table>
+        }
+    </div>
+</div>

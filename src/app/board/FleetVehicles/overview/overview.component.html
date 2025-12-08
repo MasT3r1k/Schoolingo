@@ -1,203 +1,215 @@
-<div class="fleet-overview">
-    <!-- Stats Cards -->
-    <div class="stats-cards">
-        <div class="stat-card stat--primary">
-            <div class="stat-icon">
-                <i-tabler name="car"></i-tabler>
-            </div>
-            <div class="stat-info">
-                <div class="stat-value">{{ stats.totalVehicles }}</div>
-                <div class="stat-label">{{ l.s('fleetvehicles.stats.total') }}</div>
-            </div>
+<div class="card">
+    <div class="card-header">
+        <div class="left">
+            <h2>{{ l.s('fleetvehicles.overview') }}</h2>
+            <p class="meta muted">{{ l.s('fleetvehicles.overview_desc') }}</p>
         </div>
-
-        <div class="stat-card stat--success">
-            <div class="stat-icon">
-                <i-tabler name="circle-check"></i-tabler>
-            </div>
-            <div class="stat-info">
-                <div class="stat-value">{{ stats.availableVehicles }}</div>
-                <div class="stat-label">{{ l.s('fleetvehicles.stats.available') }}</div>
-            </div>
-        </div>
-
-        <div class="stat-card stat--warning">
-            <div class="stat-icon">
-                <i-tabler name="calendar-event"></i-tabler>
-            </div>
-            <div class="stat-info">
-                <div class="stat-value">{{ stats.reservedVehicles }}</div>
-                <div class="stat-label">{{ l.s('fleetvehicles.stats.reserved') }}</div>
-            </div>
-        </div>
-
-        <div class="stat-card stat--danger">
-            <div class="stat-icon">
-                <i-tabler name="tool"></i-tabler>
-            </div>
-            <div class="stat-info">
-                <div class="stat-value">{{ stats.maintenanceVehicles }}</div>
-                <div class="stat-label">{{ l.s('fleetvehicles.stats.maintenance') }}</div>
-            </div>
+        <div class="flex-items">
+            <button class="btn btn--primary" routerLink="/fleetvehicles/reservations">
+                <i-tabler name="calendar-plus"></i-tabler>
+                <span>{{ l.s('fleetvehicles.new_reservation') }}</span>
+            </button>
         </div>
     </div>
 
-    <!-- Quick Actions -->
-    <div class="quick-actions">
-        <a routerLink="/fleetvehicles/reservations" class="action-btn primary">
-            <i-tabler name="calendar-plus"></i-tabler>
-            <span>{{ l.s('fleetvehicles.new_reservation') }}</span>
-        </a>
-        <a routerLink="/fleetvehicles/vehicles" class="action-btn">
-            <i-tabler name="list"></i-tabler>
-            <span>{{ l.s('fleetvehicles.view_vehicles') }}</span>
-        </a>
-        @if (perm.checkPermission(['manager:fleetVehicles:settings'])) {
-        <a routerLink="/fleetvehicles/settings" class="action-btn">
-            <i-tabler name="settings"></i-tabler>
-            <span>{{ l.s('fleetvehicles.settings') }}</span>
-        </a>
-        }
-    </div>
-
-    <div class="content-grid">
-        <!-- Upcoming Reservations -->
-        <div class="section-card">
-            <div class="section-header">
-                <h3>
-                    <i-tabler name="calendar-event"></i-tabler>
-                    {{ l.s('fleetvehicles.upcoming_reservations') }}
-                </h3>
-                <a routerLink="/fleetvehicles/reservations" class="view-all">
-                    {{ l.s('buttons.view_all') }}
-                    <i-tabler name="chevron-right"></i-tabler>
-                </a>
-            </div>
-            <div class="section-content">
-                @if (upcomingReservations.length === 0) {
-                <div class="no-selection">
-                    <div class="illustration">
-                        <i-tabler name="calendar-off"></i-tabler>
-                    </div>
-                    <p>{{ l.s('fleetvehicles.no_upcoming_reservations') }}</p>
+    <div class="card-body">
+        <!-- Stats Cards -->
+        <div class="stats-row">
+            <div class="stat-card stat--primary">
+                <div class="stat-icon">
+                    <i-tabler name="car"></i-tabler>
                 </div>
-                } @else {
-                <div class="reservation-list">
-                    @for (reservation of upcomingReservations; track reservation.reservationId) {
-                    <div class="reservation-item">
-                        <div class="reservation-vehicle">
-                            <i-tabler [name]="fleet.getVehicleTypeIcon('car')"></i-tabler>
-                            <div class="vehicle-info">
-                                <span class="vehicle-name">{{ reservation.vehicleName }}</span>
-                                <span class="vehicle-plate">{{ reservation.vehicleLicensePlate }}</span>
+                <div class="stat-info">
+                    <span class="stat-value">{{ stats.totalVehicles }}</span>
+                    <span class="stat-label">{{ l.s('fleetvehicles.stats.total') }}</span>
+                </div>
+            </div>
+
+            <div class="stat-card stat--success">
+                <div class="stat-icon">
+                    <i-tabler name="circle-check"></i-tabler>
+                </div>
+                <div class="stat-info">
+                    <span class="stat-value">{{ stats.availableVehicles }}</span>
+                    <span class="stat-label">{{ l.s('fleetvehicles.stats.available') }}</span>
+                </div>
+            </div>
+
+            <div class="stat-card stat--warning">
+                <div class="stat-icon">
+                    <i-tabler name="calendar-event"></i-tabler>
+                </div>
+                <div class="stat-info">
+                    <span class="stat-value">{{ stats.reservedVehicles }}</span>
+                    <span class="stat-label">{{ l.s('fleetvehicles.stats.reserved') }}</span>
+                </div>
+            </div>
+
+            <div class="stat-card stat--danger">
+                <div class="stat-icon">
+                    <i-tabler name="tool"></i-tabler>
+                </div>
+                <div class="stat-info">
+                    <span class="stat-value">{{ stats.maintenanceVehicles }}</span>
+                    <span class="stat-label">{{ l.s('fleetvehicles.stats.maintenance') }}</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="quick-actions-bar">
+            <a routerLink="/fleetvehicles/vehicles" class="btn btn--outline">
+                <i-tabler name="list"></i-tabler>
+                <span>{{ l.s('fleetvehicles.view_vehicles') }}</span>
+            </a>
+            @if (perm.checkPermission(['manager:fleetVehicles:settings'])) {
+            <a routerLink="/fleetvehicles/settings" class="btn btn--outline">
+                <i-tabler name="settings"></i-tabler>
+                <span>{{ l.s('fleetvehicles.settings') }}</span>
+            </a>
+            }
+        </div>
+
+        <!-- Content Grid -->
+        <div class="content-grid">
+            <!-- Upcoming Reservations Card -->
+            <div class="card nested">
+                <div class="card-header">
+                    <h3>
+                        <i-tabler name="calendar-event"></i-tabler>
+                        {{ l.s('fleetvehicles.upcoming_reservations') }}
+                    </h3>
+                    <a routerLink="/fleetvehicles/reservations" class="view-all-link">
+                        {{ l.s('buttons.view_all') }}
+                        <i-tabler name="chevron-right"></i-tabler>
+                    </a>
+                </div>
+                <div class="card-body">
+                    @if (upcomingReservations.length === 0) {
+                    <div class="no-selection">
+                        <div class="illustration">
+                            <i-tabler name="calendar-off"></i-tabler>
+                        </div>
+                        <p>{{ l.s('fleetvehicles.no_upcoming_reservations') }}</p>
+                    </div>
+                    } @else {
+                    <div class="reservation-list">
+                        @for (reservation of upcomingReservations; track reservation.reservationId) {
+                        <div class="reservation-item">
+                            <div class="reservation-vehicle">
+                                <i-tabler [name]="fleet.getVehicleTypeIcon('car')"></i-tabler>
+                                <div class="vehicle-info">
+                                    <span class="vehicle-name">{{ reservation.vehicleName }}</span>
+                                    <span class="vehicle-plate">{{ reservation.vehicleLicensePlate }}</span>
+                                </div>
+                            </div>
+                            <div class="reservation-details">
+                                <span class="reservation-date">
+                                    <i-tabler name="calendar" size="14"></i-tabler>
+                                    {{ formatDateRange(reservation.startDate, reservation.endDate) }}
+                                </span>
+                                <span class="reservation-purpose">{{ reservation.purpose }}</span>
+                            </div>
+                            <span class="badge" [ngClass]="'badge--' + reservation.status">
+                                {{ l.s('fleetvehicles.status.' + reservation.status) }}
+                            </span>
+                        </div>
+                        }
+                    </div>
+                    }
+                </div>
+            </div>
+
+            <!-- Expiring Documents Card -->
+            <div class="card nested">
+                <div class="card-header">
+                    <h3>
+                        <i-tabler name="alert-triangle"></i-tabler>
+                        {{ l.s('fleetvehicles.expiring_documents') }}
+                    </h3>
+                    @if (stats.expiringDocuments > 0) {
+                    <span class="badge badge--danger">{{ stats.expiringDocuments }}</span>
+                    }
+                </div>
+                <div class="card-body">
+                    @if (expiringDocuments.length === 0) {
+                    <div class="no-selection success">
+                        <div class="illustration">
+                            <i-tabler name="circle-check"></i-tabler>
+                        </div>
+                        <p>{{ l.s('fleetvehicles.no_expiring_documents') }}</p>
+                    </div>
+                    } @else {
+                    <div class="document-list">
+                        @for (doc of expiringDocuments; track doc.documentId) {
+                        <div class="document-item" [ngClass]="getExpiryClass(doc.validTo)">
+                            <div class="document-icon">
+                                @switch (doc.type) {
+                                @case ('highway_sticker') {
+                                <i-tabler name="road"></i-tabler>
+                                }
+                                @case ('insurance') {
+                                <i-tabler name="shield-check"></i-tabler>
+                                }
+                                @case ('inspection') {
+                                <i-tabler name="certificate"></i-tabler>
+                                }
+                                @case ('emission') {
+                                <i-tabler name="leaf"></i-tabler>
+                                }
+                                @default {
+                                <i-tabler name="file"></i-tabler>
+                                }
+                                }
+                            </div>
+                            <div class="document-info">
+                                <span class="document-type">{{ l.s(fleet.getDocumentTypeLabel(doc.type)) }}</span>
+                                @if (doc.country) {
+                                <span class="document-country">{{ doc.country }}</span>
+                                }
+                            </div>
+                            <div class="document-expiry">
+                                <span class="expiry-date">{{ formatDate(doc.validTo) }}</span>
+                                <span class="expiry-days">
+                                    @if (getDaysUntilExpiry(doc.validTo) === 0) {
+                                    {{ l.s('fleetvehicles.expires_today') }}
+                                    } @else if (getDaysUntilExpiry(doc.validTo) === 1) {
+                                    {{ l.s('fleetvehicles.expires_tomorrow') }}
+                                    } @else {
+                                    {{ getDaysUntilExpiry(doc.validTo) }} {{ l.s('fleetvehicles.days_left') }}
+                                    }
+                                </span>
                             </div>
                         </div>
-                        <div class="reservation-details">
-                            <span class="reservation-date">
-                                <i-tabler name="calendar" size="14"></i-tabler>
-                                {{ formatDateRange(reservation.startDate, reservation.endDate) }}
-                            </span>
-                            <span class="reservation-purpose">{{ reservation.purpose }}</span>
-                        </div>
-                        <div class="reservation-status" [ngClass]="reservation.status">
-                            {{ l.s('fleetvehicles.status.' + reservation.status) }}
-                        </div>
+                        }
                     </div>
                     }
                 </div>
-                }
             </div>
-        </div>
 
-        <!-- Expiring Documents Alert -->
-        <div class="section-card">
-            <div class="section-header">
-                <h3>
-                    <i-tabler name="alert-triangle"></i-tabler>
-                    {{ l.s('fleetvehicles.expiring_documents') }}
-                </h3>
-                @if (stats.expiringDocuments > 0) {
-                <span class="badge danger">{{ stats.expiringDocuments }}</span>
-                }
-            </div>
-            <div class="section-content">
-                @if (expiringDocuments.length === 0) {
-                <div class="no-selection success">
-                    <div class="illustration">
-                        <i-tabler name="circle-check"></i-tabler>
-                    </div>
-                    <p>{{ l.s('fleetvehicles.no_expiring_documents') }}</p>
+            <!-- Pending Approvals Card -->
+            @if (perm.checkPermission(['manager:fleetVehicles:approve']) && stats.pendingApprovals > 0) {
+            <div class="card nested alert">
+                <div class="card-header">
+                    <h3>
+                        <i-tabler name="clock"></i-tabler>
+                        {{ l.s('fleetvehicles.pending_approvals') }}
+                    </h3>
+                    <span class="badge badge--warning">{{ stats.pendingApprovals }}</span>
                 </div>
-                } @else {
-                <div class="document-list">
-                    @for (doc of expiringDocuments; track doc.documentId) {
-                    <div class="document-item" [ngClass]="getExpiryClass(doc.validTo)">
-                        <div class="document-icon">
-                            @switch (doc.type) {
-                            @case ('highway_sticker') {
-                            <i-tabler name="road"></i-tabler>
-                            }
-                            @case ('insurance') {
-                            <i-tabler name="shield-check"></i-tabler>
-                            }
-                            @case ('inspection') {
-                            <i-tabler name="certificate"></i-tabler>
-                            }
-                            @case ('emission') {
-                            <i-tabler name="leaf"></i-tabler>
-                            }
-                            @default {
-                            <i-tabler name="file"></i-tabler>
-                            }
-                            }
-                        </div>
-                        <div class="document-info">
-                            <span class="document-type">{{ l.s(fleet.getDocumentTypeLabel(doc.type)) }}</span>
-                            @if (doc.country) {
-                            <span class="document-country">{{ doc.country }}</span>
-                            }
-                        </div>
-                        <div class="document-expiry">
-                            <span class="expiry-date">{{ formatDate(doc.validTo) }}</span>
-                            <span class="expiry-days">
-                                @if (getDaysUntilExpiry(doc.validTo) === 0) {
-                                {{ l.s('fleetvehicles.expires_today') }}
-                                } @else if (getDaysUntilExpiry(doc.validTo) === 1) {
-                                {{ l.s('fleetvehicles.expires_tomorrow') }}
-                                } @else {
-                                {{ getDaysUntilExpiry(doc.validTo) }} {{ l.s('fleetvehicles.days_left') }}
-                                }
-                            </span>
-                        </div>
-                    </div>
-                    }
+                <div class="card-body">
+                    <p class="alert-message">
+                        {{ l.s('fleetvehicles.pending_approvals_message').replace('%count%',
+                        stats.pendingApprovals.toString()) }}
+                    </p>
+                    <a routerLink="/fleetvehicles/reservations" [queryParams]="{status: 'pending'}"
+                        class="btn btn--primary btn--sm">
+                        {{ l.s('fleetvehicles.review_requests') }}
+                        <i-tabler name="arrow-right"></i-tabler>
+                    </a>
                 </div>
-                }
             </div>
+            }
         </div>
-
-        <!-- Pending Approvals -->
-        @if (perm.checkPermission(['manager:fleetVehicles:approve']) && stats.pendingApprovals > 0) {
-        <div class="section-card alert">
-            <div class="section-header">
-                <h3>
-                    <i-tabler name="clock"></i-tabler>
-                    {{ l.s('fleetvehicles.pending_approvals') }}
-                </h3>
-                <span class="badge warning">{{ stats.pendingApprovals }}</span>
-            </div>
-            <div class="section-content">
-                <p class="alert-message">
-                    {{ l.s('fleetvehicles.pending_approvals_message').replace('%count%',
-                    stats.pendingApprovals.toString()) }}
-                </p>
-                <a routerLink="/fleetvehicles/reservations" [queryParams]="{status: 'pending'}"
-                    class="action-btn small">
-                    {{ l.s('fleetvehicles.review_requests') }}
-                    <i-tabler name="arrow-right"></i-tabler>
-                </a>
-            </div>
-        </div>
-        }
     </div>
 </div>

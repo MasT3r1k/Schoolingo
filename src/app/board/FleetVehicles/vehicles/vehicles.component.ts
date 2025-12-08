@@ -83,12 +83,26 @@ export class VehiclesComponent implements OnInit {
 
   private loadVehicles(): void {
     this.loading = true;
-    this.http.get<Vehicle[]>(
-      `${Config.API_URL}/v1/fleetvehicles/vehicles`,
+    this.http.get<{ vehicles: any[] }>(
+      `${Config.API_URL}/v1/fleet/vehicles`,
       { withCredentials: true }
     ).subscribe({
-      next: (data) => {
-        this.vehicles = data;
+      next: (response) => {
+        // Map API response to Vehicle interface
+        this.vehicles = response.vehicles.map(v => ({
+          vehicleId: v.vehicleId,
+          name: `${v.manufacture} ${v.model}`,
+          licensePlate: v.plate,
+          brand: v.manufacture,
+          model: v.model,
+          year: v.year_manufacture,
+          type: 'car' as const,
+          status: 'available' as const,
+          color: '',
+          fuelType: v.fuel,
+          mileage: v.mileage,
+          capacity: 5
+        }));
         this.filterVehicles();
         this.loading = false;
       },

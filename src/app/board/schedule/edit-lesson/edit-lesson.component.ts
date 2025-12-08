@@ -1,7 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Component, inject, OnInit } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { TitleStrategy } from '@angular/router';
 import { CalendarManager } from '@Components/calendar-dropdown';
 import { Config } from '@Schoolingo/config';
 import { DropdownManager } from '@Schoolingo/dropdown';
@@ -38,13 +37,17 @@ export class EditLessonComponent implements OnInit {
     const lesson = this.scheduleBuilder.activeLesson;
     this.types = [];
 
-    if (lesson) {
-      this.types.push('substitution', 'cancel');
+    if (lesson && !lesson.empty) {
+      if (lesson.lessonId) {
+          this.types.push('substitution', 'cancel');
+      }
+      
       this.selectedSubjectId = lesson.subjectId;
       this.selectedTeacherId = lesson.teacherId;
       this.selectedWeek = lesson.week || 'both';
-      this.selectedRoom = lesson.room || '';
+      this.selectedRoom = lesson.room ? String(lesson.room) : '';
     }
+    
     this.types.push('classroom_lesson', 'change_timetable');
     this.selected_type = this.types[0];
   }
@@ -54,15 +57,66 @@ export class EditLessonComponent implements OnInit {
   }
 
   public save(): void {
-    if (this.scheduleBuilder.activeLesson) {
-        this.scheduleBuilder.activeLesson.subjectId = this.selectedSubjectId;
-        this.scheduleBuilder.activeLesson.teacherId = this.selectedTeacherId;
-        this.scheduleBuilder.activeLesson.week = this.selectedWeek;
-        this.scheduleBuilder.activeLesson.room = this.selectedRoom;
-        
-        // Trigger an update if necessary, or just rely on object reference
+    if (!this.scheduleBuilder.activeLesson) return;
+
+    // Pokud je vybrána suplování
+    if (this.selected_type === 'substitution') {
+        this.updateSubstitution();
+        return;
     }
-    this.closeModal();
+
+    const lesson = this.scheduleBuilder.activeLesson;
+    const action = lesson.lessonId ? 'update' : 'create';
+
+    this.http.post(
+        `${Config.API_URL}/v1/timetable/manage`,
+        {
+            action: action,
+            lessonId: lesson.lessonId,
+            day: lesson.day,
+            hour: lesson.hour,
+            subjectId: this.selectedSubjectId,
+            teacherId: this.selectedTeacherId,
+            roomId: this.selectedRoom ? parseInt(this.selectedRoom) : null,
+            groupId: lesson.groupId
+        },
+        { withCredentials: true }
+    ).subscribe({
+        next: (res: any) => {
+            if (res.success) {
+                this.closeModal();
+                // Refresh
+                const currentClass = this.scheduleBuilder.selectedClass.getValue();
+                this.scheduleBuilder.selectedClass.next(currentClass); 
+            } else {
+                alert(this.l.s('messages.error_save') + ': ' + (res.error || 'Unknown'));
+            }
+        },
+        error: (err) => {
+            console.error(err);
+            alert('Error saving lesson');
+        }
+    });
+  }
+
+  public deleteLesson(): void {
+    if (!this.scheduleBuilder.activeLesson?.lessonId) return;
+    if (!confirm(this.l.s('messages.confirm_delete'))) return;
+
+    this.http.post(
+        `${Config.API_URL}/v1/timetable/manage`,
+        {
+            action: 'delete',
+            lessonId: this.scheduleBuilder.activeLesson.lessonId
+        },
+        { withCredentials: true }
+    ).subscribe((res: any) => {
+        if (res.success) {
+            this.closeModal();
+            const currentClass = this.scheduleBuilder.selectedClass.getValue();
+            this.scheduleBuilder.selectedClass.next(currentClass);
+        }
+    });
   }
 
   public closeModal(): void {
@@ -70,6 +124,7 @@ export class EditLessonComponent implements OnInit {
   }
 
   public updateSubstitution(): void {
+    if (!this.scheduleBuilder.activeLesson) return;
     const currentWeek = this.calendarManager.getCalendarData('scheduleBuilder_date').selected_date[0].getValue();
     const currentDay = Utils.getDayOfWeek(currentWeek, this.scheduleBuilder.activeLesson.day);
     this.http.post(
@@ -86,7 +141,9 @@ export class EditLessonComponent implements OnInit {
       { withCredentials: true }
     )
     .subscribe((data) => {
-      console.log(data)
+      this.closeModal();
+      const currentClass = this.scheduleBuilder.selectedClass.getValue();
+      this.scheduleBuilder.selectedClass.next(currentClass);
     })
   }
 }

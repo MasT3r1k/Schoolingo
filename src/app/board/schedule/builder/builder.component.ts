@@ -7,8 +7,8 @@ import { ModalManager } from '@Schoolingo/modal';
 import { ScheduleBuilder } from '@Schoolingo/schedule_builder';
 import { AddSubjectComponent } from '../add-subject/add-subject.component';
 import { AddEventComponent } from '../add-event/add-event.component';
+import { CdkDrag, CdkDropList, CdkDropListGroup, CdkDragDrop } from '@angular/cdk/drag-drop';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import {CdkDrag, moveItemInArray} from '@angular/cdk/drag-drop';
 
 import moment from 'moment';
 import { TimetableLesson } from '../../Teach/timetable/timetable.component';
@@ -21,7 +21,7 @@ import { Utils } from '@Schoolingo/utils';
 
 @Component({
   selector: 'app-builder',
-  imports: [IconsModule, FormsModule, ReactiveFormsModule, CdkDrag, NgClass, CalendarComponent],
+  imports: [IconsModule, FormsModule, ReactiveFormsModule, CdkDrag, CdkDropList, CdkDropListGroup, NgClass, CalendarComponent],
   templateUrl: './builder.component.html',
   styleUrl: './builder.component.css'
 })
@@ -199,8 +199,27 @@ export class BuilderComponent implements OnInit {
     this.modalManager.openModal('schedule_settings');
   }
 
-  public onDrop(event: DragEvent, index: number, index2: number): void {
-    moveItemInArray(this.scheduleBuilder.subjects, index, index2);
+  public drop(event: CdkDragDrop<any[]>, dayIndex?: number, hourIndex?: number): void {
+    if (event.previousContainer === event.container) return;
+
+    if (dayIndex !== undefined && hourIndex !== undefined && event.item.data) {
+        const subject = event.item.data;
+        const newLesson = {
+            lessonId: null,
+            day: dayIndex,
+            hour: hourIndex,
+            subjectId: subject.subjectId,
+            subjectName: subject.subjectName,
+            subjectShortcut: subject.subjectShortcut,
+            teacherId: null, // Will be selected in modal
+            room: '',
+            groupId: this.scheduleBuilder.classes.find(c => c.classId == this.scheduleBuilder.selectedClass.getValue())?.groupId || 0,
+            type: 0,
+            week: 'both',
+            empty: false
+        };
+        this.openEditLessonModal(newLesson as any);
+    }
   }
 
   public selectClass(class_id: number): void {

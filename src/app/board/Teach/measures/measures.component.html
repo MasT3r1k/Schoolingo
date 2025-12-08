@@ -1,0 +1,143 @@
+<div class="card">
+    <div class="card-top"></div>
+    <div class="card-header">
+        <h2 class="flex" style="align-items: center;">
+            <i-tabler name="gavel"></i-tabler>
+            <span style="margin-left: 8px;">{{ l.s('sidebar.marks.education_measures') || 'Výchovná opatření' }}</span>
+        </h2>
+        <div class="flex-items">
+            @if (perm.checkPermission(['teacher'])) {
+            <button class="btn btn--primary" (click)="toggleCreateForm()">
+                <i-tabler name="plus"></i-tabler>
+                {{ showCreateForm ? 'Zrušit' : 'Nové opatření' }}
+            </button>
+            }
+        </div>
+    </div>
+    <div class="card-body">
+        <!-- Create form -->
+        @if (showCreateForm) {
+        <div class="create-form">
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Typ opatření *</label>
+                    <select [(ngModel)]="newMeasure.type">
+                        @for (type of measureTypes; track type) {
+                        <option [value]="type">{{ getTypeLabel(type) }}</option>
+                        }
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Datum *</label>
+                    <input type="date" [(ngModel)]="newMeasure.date">
+                </div>
+                <div class="form-group">
+                    <label>ID Studenta *</label>
+                    <input type="number" [(ngModel)]="newMeasure.studentId" placeholder="ID studenta">
+                </div>
+            </div>
+            <div class="form-group">
+                <label>Důvod *</label>
+                <textarea [(ngModel)]="newMeasure.reason" rows="3"
+                    placeholder="Důvod pro udělení opatření..."></textarea>
+            </div>
+            <div class="form-group">
+                <label>Poznámka</label>
+                <input type="text" [(ngModel)]="newMeasure.note" placeholder="Volitelná poznámka">
+            </div>
+            <div class="buttons end mt-4">
+                <button class="btn btn--secondary" (click)="toggleCreateForm()">Zrušit</button>
+                <button class="btn btn--primary" (click)="createMeasure()"
+                    [disabled]="!newMeasure.reason || !newMeasure.studentId">
+                    <i-tabler name="check"></i-tabler> Udělit opatření
+                </button>
+            </div>
+        </div>
+        }
+
+        <!-- Filter bar -->
+        <div class="filter-bar">
+            <div class="filter-group">
+                <label style="margin: 0;">Filtr:</label>
+                <select [(ngModel)]="filterType" style="width: auto; min-width: 150px;">
+                    <option value="all">Všechny</option>
+                    @for (type of measureTypes; track type) {
+                    <option [value]="type">{{ getTypeLabel(type) }}</option>
+                    }
+                </select>
+            </div>
+            <div class="flex-items">
+                <span class="badge badge--success">
+                    <i-tabler name="star"></i-tabler>
+                    {{ praiseCount }} pochval
+                </span>
+                <span class="badge badge--danger">
+                    <i-tabler name="alert-triangle"></i-tabler>
+                    {{ otherCount }} ostatních
+                </span>
+            </div>
+        </div>
+
+        <!-- Loading state -->
+        @if (loading) {
+        <div class="loading-state">
+            @for (i of [1,2,3,4,5]; track $index) {
+            <div class="skeleton-row skeleton"></div>
+            }
+        </div>
+        }
+
+        <!-- Measures list -->
+        @if (!loading) {
+        <div class="measures-list">
+            @for (measure of filteredMeasures; track measure.id) {
+            <div class="measure-card" [class.positive]="measure.type === 'praise'"
+                [class.negative]="measure.type !== 'praise'">
+                <div class="measure-icon" [class.positive]="measure.type === 'praise'"
+                    [class.negative]="measure.type !== 'praise'">
+                    <i-tabler [name]="getTypeIcon(measure.type)"></i-tabler>
+                </div>
+                <div class="measure-content">
+                    <div class="measure-header">
+                        <span class="badge" [class.badge--success]="measure.type === 'praise'"
+                            [class.badge--danger]="measure.type !== 'praise'">
+                            {{ getTypeLabel(measure.type) }}
+                        </span>
+                        <span class="text--muted">{{ formatDate(measure.date) }}</span>
+                    </div>
+                    @if (measure.studentName) {
+                    <div class="measure-student">
+                        <i-tabler name="user"></i-tabler> {{ measure.studentName }}
+                    </div>
+                    }
+                    <p class="measure-reason">{{ measure.reason }}</p>
+                    @if (measure.note) {
+                    <p class="note">{{ measure.note }}</p>
+                    }
+                    @if (measure.issuedByName) {
+                    <div class="measure-footer">
+                        <span class="text--muted">Udělil: {{ measure.issuedByName }}</span>
+                    </div>
+                    }
+                </div>
+                @if (perm.checkPermission(['admin'])) {
+                <div class="measure-actions">
+                    <button class="btn btn--ghost btn--icon" (click)="deleteMeasure(measure)" title="Smazat">
+                        <i-tabler name="trash"></i-tabler>
+                    </button>
+                </div>
+                }
+            </div>
+            } @empty {
+            <div class="no-selection">
+                <div class="illustration">
+                    <i-tabler name="gavel"></i-tabler>
+                </div>
+                <h3>Žádná opatření</h3>
+                <p class="note">Zatím nebyla udělena žádná výchovná opatření.</p>
+            </div>
+            }
+        </div>
+        }
+    </div>
+</div>
