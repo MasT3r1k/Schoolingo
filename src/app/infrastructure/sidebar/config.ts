@@ -243,28 +243,19 @@ export const config: SidebarGroup[] = [
                 }]
             },
             {
-                item: 'sidebar/library/main',
+                item: 'sidebar.library.main',
                 icon: 'books',
                 permission: ['all'],
-                modules: ['library'],
                 children: [{
-                    item: 'sidebar/library/loans',
-                    url: 'library/loans',
-                    icon: 'book-upload',
-                }, {
-                    item: 'sidebar/library/books',
-                    url: 'library/books',
+                    item: 'sidebar.library.catalog',
+                    url: 'library',
                     icon: 'book',
+                    permission: ['all']
                 }, {
-                    item: 'sidebar/library/managebooks',
-                    url: 'library/managebooks',
+                    item: 'sidebar.library.manage',
+                    url: 'library/manage',
                     icon: 'edit',
-                    permission: ['manager:library:managebooks']
-                }, {
-                    item: 'settings',
-                    url: 'library/settings',
-                    icon: 'settings',
-                    permission: ['manager:library:settings']
+                    permission: ['manager:library:manage']
                 }]
             },
             {

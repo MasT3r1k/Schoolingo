@@ -1,0 +1,206 @@
+.library-catalog {
+    padding: var(--space-6);
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-6);
+}
+
+.catalog-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.header-content h1 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin-bottom: var(--space-1);
+    color: var(--text-primary);
+}
+
+.header-content p {
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+}
+
+/* Search */
+.search-box {
+    position: relative;
+    width: 300px;
+}
+
+.search-box i-tabler {
+    position: absolute;
+    left: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--text-muted);
+    width: 18px;
+    height: 18px;
+}
+
+.search-box input {
+    width: 100%;
+    padding: 10px 10px 10px 40px;
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--border-color);
+    background: var(--surface-card);
+    color: var(--text-primary);
+    font-size: 0.9rem;
+    transition: all var(--transition-fast);
+}
+
+.search-box input:focus {
+    outline: none;
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px var(--primary-translucent);
+}
+
+/* Tabs */
+.genre-tabs {
+    display: flex;
+    gap: var(--space-2);
+    overflow-x: auto;
+    padding-bottom: var(--space-2);
+    scrollbar-width: none;
+}
+
+.tab {
+    padding: 8px 16px;
+    background: var(--surface-card);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-lg);
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: var(--text-secondary);
+    cursor: pointer;
+    white-space: nowrap;
+    transition: all var(--transition-fast);
+}
+
+.tab:hover {
+    background: var(--surface-hover);
+    color: var(--text-primary);
+}
+
+.tab.active {
+    background: var(--primary);
+    color: white;
+    border-color: var(--primary);
+}
+
+/* Grid */
+.book-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: var(--space-5);
+    flex: 1;
+    overflow-y: auto;
+    padding-right: var(--space-2);
+}
+
+/* Card Overrides */
+.book-card {
+    /* Dimensions or specific grid behavior if needed */
+    /* .card provides bg, border, radius, shadow */
+}
+
+/* Cover */
+.book-cover {
+    height: 280px;
+    background: var(--surface-ground);
+    position: relative;
+    overflow: hidden;
+    /* Cover is flush with top, so no padding changes needed for .book-cover itself 
+       but standard .card overflow:hidden handles the corners.
+    */
+}
+
+.book-cover img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform var(--transition-base);
+}
+
+.book-card:hover .book-cover img {
+    transform: scale(1.05);
+}
+
+.cover-placeholder {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-muted);
+}
+
+.cover-placeholder i-tabler {
+    width: 64px;
+    height: 64px;
+    opacity: 0.5;
+}
+
+.book-badges {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    display: flex;
+    gap: 5px;
+}
+
+.badge {
+    font-size: 0.75rem;
+    padding: 4px 8px;
+    border-radius: var(--radius-sm);
+    font-weight: 600;
+    backdrop-filter: blur(4px);
+}
+
+.badge.success {
+    background: rgba(var(--green-rgb), 0.9);
+    color: white;
+}
+
+.badge.danger {
+    background: rgba(var(--red-rgb), 0.9);
+    color: white;
+}
+
+/* Info */
+.book-card .card-body {
+    padding: var(--space-4);
+}
+
+.book-title {
+    font-size: 1rem;
+    font-weight: 700;
+    margin: 0 0 4px 0;
+    color: var(--text-primary);
+    line-height: 1.3;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.book-author {
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+    margin: 0 0 8px 0;
+}
+
+.book-meta {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.8rem;
+    color: var(--text-muted);
+}
+
+.dot {
+    opacity: 0.5;
+}

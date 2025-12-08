@@ -1,0 +1,103 @@
+<div class="library-manager">
+    <div class="manager-header">
+        <h1>{{ l.s('library.librarian_dashboard') }}</h1>
+
+        <div class="manager-tabs">
+            <button class="tab-btn" [class.active]="activeTab() === 'loans'" (click)="switchTab('loans')">
+                <i-tabler name="exchange"></i-tabler> {{ l.s('library.loans') }}
+            </button>
+            <button class="tab-btn" [class.active]="activeTab() === 'books'" (click)="switchTab('books')">
+                <i-tabler name="book-2"></i-tabler> {{ l.s('library.books') }}
+            </button>
+        </div>
+    </div>
+
+    @if (loanMessage()) {
+    <div class="toast" [class.success]="loanMessage()!.type === 'success'"
+        [class.error]="loanMessage()!.type === 'error'">
+        {{ loanMessage()!.text }}
+    </div>
+    }
+
+    <!-- LOANS TAB -->
+    @if (activeTab() === 'loans') {
+    <div class="card loan-console">
+        <div class="card-header">
+            <h2>{{ l.s('library.loan_console') }}</h2>
+        </div>
+        <div class="card-body">
+            <div class="console-grid">
+                <div class="input-group">
+                    <label>{{ l.s('library.user_id') }}</label>
+                    <input type="number" [(ngModel)]="userIdInput" placeholder="User ID">
+                </div>
+                <div class="input-group">
+                    <label>{{ l.s('library.copy_barcode') }}</label>
+                    <input type="number" [(ngModel)]="copyIdInput" placeholder="Barcode / Copy ID">
+                </div>
+            </div>
+            <div class="actions">
+                <button class="btn btn-primary" (click)="borrowBook()" [disabled]="!userIdInput() || !copyIdInput()">
+                    <i-tabler name="arrow-up-right"></i-tabler> {{ l.s('library.borrow') }}
+                </button>
+                <button class="btn btn-secondary" (click)="returnBook()" [disabled]="!copyIdInput()">
+                    <i-tabler name="arrow-down-left"></i-tabler> {{ l.s('library.return') }}
+                </button>
+            </div>
+        </div>
+    </div>
+    }
+
+    <!-- BOOKS TAB -->
+    @if (activeTab() === 'books') {
+    <div class="card add-book-card">
+        <div class="card-header">
+            <h2>{{ l.s('library.add_new_book') }}</h2>
+        </div>
+        <div class="card-body">
+            <div class="lookup-section">
+                <div class="search-box">
+                    <input type="text" [(ngModel)]="isbnInput" placeholder="ISBN (e.g. 9780123456789)"
+                        (keyup.enter)="lookupBook()">
+                    <button class="btn btn-primary" (click)="lookupBook()" [disabled]="lookupLoading()">
+                        @if (lookupLoading()) { <span class="spinner"></span> } @else { {{ l.s('library.lookup') }} }
+                    </button>
+                </div>
+            </div>
+
+            @if (manualBook().title || foundBook()) {
+            <div class="book-form">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Title</label>
+                        <input [(ngModel)]="manualBook().title">
+                    </div>
+                    <div class="form-group">
+                        <label>Author</label>
+                        <input [(ngModel)]="manualBook().author">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Publisher</label>
+                        <input [(ngModel)]="manualBook().publisher">
+                    </div>
+                    <div class="form-group">
+                        <label>Year</label>
+                        <input type="number" [(ngModel)]="manualBook().published_year">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Initial Copies</label>
+                    <input type="number" [(ngModel)]="manualBook().copies">
+                </div>
+
+                <button class="btn btn-success full-width" (click)="addBook()">
+                    <i-tabler name="plus"></i-tabler> {{ l.s('library.save_book') }}
+                </button>
+            </div>
+            }
+        </div>
+    </div>
+    }
+</div>

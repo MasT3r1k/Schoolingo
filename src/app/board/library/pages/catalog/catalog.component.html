@@ -1,0 +1,104 @@
+<div class="library-catalog">
+    <div class="catalog-header">
+        <div class="header-content">
+            <h1>{{ l.s('library.catalog') }}</h1>
+            <p>{{ l.s('library.catalog_subtitle') }}</p>
+        </div>
+        <div class="header-actions">
+            <!-- Search -->
+            <div class="search-box">
+                <i-tabler name="search"></i-tabler>
+                <input type="text" [placeholder]="l.s('library.search_placeholder')" [ngModel]="searchQuery()"
+                    (ngModelChange)="searchQuery.set($event)">
+            </div>
+        </div>
+    </div>
+
+    <!-- Filters (Tabs) -->
+    <div class="genre-tabs">
+        <div class="tab" [class.active]="!showMyBooks() && selectedGenreId() === null"
+            (click)="showMyBooks.set(false); selectedGenreId.set(null)">
+            {{ l.s('library.all_genres') }}
+        </div>
+        <div class="tab" [class.active]="showMyBooks()" (click)="showMyBooks.set(true)">
+            {{ l.s('library.my_books') }}
+        </div>
+        @for (genre of genres(); track genre.genreId) {
+        <div class="tab" [class.active]="!showMyBooks() && selectedGenreId() === genre.genreId"
+            (click)="showMyBooks.set(false); selectedGenreId.set(genre.genreId)">
+            {{ genre.genreName }}
+        </div>
+        }
+    </div>
+
+    <!-- Book Grid -->
+    <div class="book-grid">
+        @if (isLoading()) {
+        <div class="loading-state">
+            <div class="loader"></div>
+            <p>{{ l.s('general.loading') }}</p>
+        </div>
+        } @else if (showMyBooks()) {
+        @if (myLoans().length === 0) {
+        <div class="empty-state">
+            <i-tabler name="book-2"></i-tabler>
+            <h3>{{ l.s('library.no_active_loans') }}</h3>
+        </div>
+        } @else {
+        @for (loan of myLoans(); track loan.loanId) {
+        <div class="card book-card card--hover">
+            <div class="book-cover">
+                @if (loan.coverUrl) { <img [src]="loan.coverUrl" [alt]="loan.title"> }
+                @else { <div class="cover-placeholder"><i-tabler name="book"></i-tabler></div> }
+                <div class="book-badges">
+                    <span class="badge danger">{{ l.s('library.return_by') }} {{ loan.dueDate | date }}</span>
+                </div>
+            </div>
+            <div class="card-body">
+                <h3 class="book-title">{{ loan.title }}</h3>
+                <p class="book-author">{{ loan.author }}</p>
+            </div>
+        </div>
+        }
+        }
+        } @else if (filteredBooks().length === 0) {
+        <div class="empty-state">
+            <i-tabler name="books-off"></i-tabler>
+            <h3>{{ l.s('library.no_books_found') }}</h3>
+            <p>{{ l.s('library.try_adjusting_filters') }}</p>
+        </div>
+        } @else {
+        @for (book of filteredBooks(); track book.bookId) {
+        <div class="card book-card card--hover">
+            <div class="book-cover">
+                @if (book.coverUrl) {
+                <img [src]="book.coverUrl" [alt]="book.title">
+                } @else {
+                <div class="cover-placeholder">
+                    <i-tabler name="book"></i-tabler>
+                </div>
+                }
+                <div class="book-badges">
+                    @if (book.available_copies > 0) {
+                    <span class="badge success">{{ book.available_copies }} {{ l.s('library.available') }}</span>
+                    } @else {
+                    <span class="badge danger">{{ l.s('library.unavailable') }}</span>
+                    }
+                </div>
+            </div>
+            <div class="card-body">
+                <h3 class="book-title">{{ book.title }}</h3>
+                <p class="book-author">{{ book.author }}</p>
+                <div class="book-meta">
+                    <span class="year">{{ book.published_year }}</span>
+                    @if (book.genreId) {
+                    <span class="dot">·</span>
+                    <span class="genre">{{ getGenreName(book.genreId) }}</span>
+                    }
+                </div>
+            </div>
+        </div>
+        }
+        }
+    </div>
+</div>

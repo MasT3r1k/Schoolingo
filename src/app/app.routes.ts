@@ -256,6 +256,19 @@ export const routes: Routes = [
                         loadComponent: () => import('./board/Admin/backup/backup.component').then(m => m.BackupComponent)
                     }
                 ]
+            },
+            {
+                path: 'library',
+                children: [
+                    {
+                        path: '',
+                        loadComponent: () => import('./board/library/pages/catalog/catalog.component').then(m => m.CatalogComponent)
+                    },
+                    {
+                        path: 'manage',
+                        loadComponent: () => import('./board/library/pages/manager/manager.component').then(m => m.ManagerComponent)
+                    }
+                ]
             }
         ]
     }
