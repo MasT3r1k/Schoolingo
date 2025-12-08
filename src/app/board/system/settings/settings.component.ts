@@ -120,7 +120,7 @@ enum enumSidebar {
 @Component({
   imports: [IconsModule, FormsModule, ReactiveFormsModule, CommonModule],
   templateUrl: './settings.component.html',
-  styleUrl: './settings.component.css'
+  styleUrls: ['./settings.component.css', '../../../styles/sidebar.css']
 })
 export class SettingsComponent implements OnInit {
   public Config = Config

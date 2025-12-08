@@ -1,35 +1,59 @@
 <div class="container">
-    <div class="container-sidebar">
-        <label>{{ l.s('system.section_main') }}</label>
+    <div class="sidebar">
+        <ul>
+            <li class="section-label">{{ l.s('system.section_main') }}</li>
 
-        <div class="item" [class.active]="sidebar==enumSidebar.SYSTEM" (click)="sidebar = enumSidebar.SYSTEM">
-            {{ l.s('system.system_settings') }}
-        </div>
+            <li [class.active]="sidebar==enumSidebar.SYSTEM" (click)="sidebar = enumSidebar.SYSTEM">
+                <div class="item">
+                    <div class="icon"><i-tabler name="settings"></i-tabler></div>
+                    <div class="item-label">{{ l.s('system.system_settings') }}</div>
+                </div>
+            </li>
 
-        <div class="item" [class.active]="sidebar==enumSidebar.LOGIN" (click)="sidebar = enumSidebar.LOGIN">
-            {{ l.s('system.login_settings') }}
-        </div>
+            <li [class.active]="sidebar==enumSidebar.LOGIN" (click)="sidebar = enumSidebar.LOGIN">
+                <div class="item">
+                    <div class="icon"><i-tabler name="key"></i-tabler></div>
+                    <div class="item-label">{{ l.s('system.login_settings') }}</div>
+                </div>
+            </li>
 
-        <div class="item" [class.active]="sidebar==enumSidebar.LDAP" (click)="sidebar = enumSidebar.LDAP">
-            {{ l.s('system.ldap_settings') }}
-        </div>
+            <li [class.active]="sidebar==enumSidebar.LDAP" (click)="sidebar = enumSidebar.LDAP">
+                <div class="item">
+                    <div class="icon"><i-tabler name="server"></i-tabler></div>
+                    <div class="item-label">{{ l.s('system.ldap_settings') }}</div>
+                </div>
+            </li>
 
-        <div class="item" [class.active]="sidebar==enumSidebar.MAIN" (click)="sidebar = enumSidebar.MAIN">
-            {{ l.s('system.school_settings') }}
-        </div>
+            <li [class.active]="sidebar==enumSidebar.MAIN" (click)="sidebar = enumSidebar.MAIN">
+                <div class="item">
+                    <div class="icon"><i-tabler name="school"></i-tabler></div>
+                    <div class="item-label">{{ l.s('system.school_settings') }}</div>
+                </div>
+            </li>
 
-        <div class="item" [class.active]="sidebar==enumSidebar.EMAIL" (click)="sidebar = enumSidebar.EMAIL">
-            {{ l.s('system.email_settings') }}
-        </div>
+            <li [class.active]="sidebar==enumSidebar.EMAIL" (click)="sidebar = enumSidebar.EMAIL">
+                <div class="item">
+                    <div class="icon"><i-tabler name="mail"></i-tabler></div>
+                    <div class="item-label">{{ l.s('system.email_settings') }}</div>
+                </div>
+            </li>
 
-        <div class="item" [class.active]="sidebar==enumSidebar.SCOPES" (click)="sidebar = enumSidebar.SCOPES">
-            {{ l.s('system.list_scopes') }}
-        </div>
+            <li [class.active]="sidebar==enumSidebar.SCOPES" (click)="sidebar = enumSidebar.SCOPES">
+                <div class="item">
+                    <div class="icon"><i-tabler name="list"></i-tabler></div>
+                    <div class="item-label">{{ l.s('system.list_scopes') }}</div>
+                </div>
+            </li>
 
-        <div class="item" [class.active]="sidebar==enumSidebar.SUBJECTS" (click)="sidebar = enumSidebar.SUBJECTS">
-            {{ l.s('system.list_subjects') }}
-        </div>
-        <label>{{ l.s('system.section_modules') }}</label>
+            <li [class.active]="sidebar==enumSidebar.SUBJECTS" (click)="sidebar = enumSidebar.SUBJECTS">
+                <div class="item">
+                    <div class="icon"><i-tabler name="book"></i-tabler></div>
+                    <div class="item-label">{{ l.s('system.list_subjects') }}</div>
+                </div>
+            </li>
+
+            <li class="section-label">{{ l.s('system.section_modules') }}</li>
+        </ul>
     </div>
 
     @switch (sidebar) {
@@ -975,16 +999,17 @@
         </div>
     </div>
 
-        <div class="row" style="gap: 8px">
-            <div class="form-group" style="width:50%">
-                <label for="studentsPerClass">{{ l.s('system.scope_capacity_students_in_one_class') }}</label>
-                <input id="studentsPerClass" [(ngModel)]="selected_scope.students_per_class" type="number" min="1" value="30">
-            </div>
-            <div class="form-group" style="width:50%">
-                <label for="classesPerYear">{{ l.s('system.scope_count_classes_in_year') }}</label>
-                <input id="classesPerYear" [(ngModel)]="selected_scope.number_of_classes" type="number" min="0" value="1">
-            </div>
+    <div class="row" style="gap: 8px">
+        <div class="form-group" style="width:50%">
+            <label for="studentsPerClass">{{ l.s('system.scope_capacity_students_in_one_class') }}</label>
+            <input id="studentsPerClass" [(ngModel)]="selected_scope.students_per_class" type="number" min="1"
+                value="30">
         </div>
+        <div class="form-group" style="width:50%">
+            <label for="classesPerYear">{{ l.s('system.scope_count_classes_in_year') }}</label>
+            <input id="classesPerYear" [(ngModel)]="selected_scope.number_of_classes" type="number" min="0" value="1">
+        </div>
+    </div>
 
     <!-- předměty -->
     <section class="grid">
@@ -1021,133 +1046,133 @@
             </tbody>
         </table>
     </section>
-        }
     }
-    
+    }
 
-@case(enumSidebar.SUBJECTS) {
-<aside class="panel-list">
-    <div class="panel-header">
+
+    @case(enumSidebar.SUBJECTS) {
+    <aside class="panel-list">
+        <div class="panel-header">
+            <div>
+                <h2>{{ l.s('system.list_subjects') }}</h2>
+                <small style="font-size: 13px;color: var(--text-muted);">
+                    {{ l.s('system.subject_details').replaceAll('%subjects%', system.subjects.length.toString()) }}
+                </small>
+            </div>
+            <div style="margin-left:auto">
+                <div class="btn small primary" (click)="new_subject()">
+                    <i-tabler name="plus"></i-tabler>
+                    {{ l.s('system.add_subject') }}
+                </div>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <input id="search" [placeholder]="l.s('system.search_subjects')">
+        </div>
+
+        <div id="list">
+            @for (subject of system.subjects; track $index) {
+            <div class="panel-item" [class.active]="selected_subject == $index" (click)="selected_subject = $index">
+                <div class="panel-meta">
+                    <div class="panel-title">
+                        <h3>
+                            {{ subject.subjectName || l.s('system.subject_no_name') }}
+                        </h3>
+                    </div>
+                </div>
+            </div>
+            }
+        </div>
+    </aside>
+    <main class="panel-detail">
+        <div class="header">
+            <div class="detail-left">
+                <div class="detail-title">
+                    <div>
+                        <h1 id="detailName">
+                            {{ system.subjects[selected_subject].subjectName || l.s('system.subject_no_name') }}
+                        </h1>
+                    </div>
+                </div>
+            </div>
+            <div style="display:flex; gap:8px; align-items:center">
+                <div id="btnSave" class="btn small primary">
+                    <i-tabler
+                        [name]="system.subjects[selected_subject].subjectId != null ? 'device-floppy' : 'plus'"></i-tabler>
+                    {{ l.s('system.' + (system.subjects[selected_subject].subjectId != null ? 'save_subject' :
+                    'create_subject')) }}
+                </div>
+            </div>
+        </div>
+
+        @if (checkCollisionSubject()) {
+        <div class="alerts">
+            <div class="alert error">Nastala kolize s předměty</div>
+        </div>
+        }
+
+        <!-- základní pole -->
         <div>
-            <h2>{{ l.s('system.list_subjects') }}</h2>
-            <small style="font-size: 13px;color: var(--text-muted);">
-                {{ l.s('system.subject_details').replaceAll('%subjects%', system.subjects.length.toString()) }}
-            </small>
-        </div>
-        <div style="margin-left:auto">
-            <div class="btn small primary" (click)="new_subject()">
-                <i-tabler name="plus"></i-tabler>
-                {{ l.s('system.add_subject') }}
+            <div class="form-group">
+                <label for="name">{{ l.s('system.subject_name') }}</label>
+                <input id="name" placeholder="Např. Informační technologie"
+                    [(ngModel)]="system.subjects[selected_subject].subjectName" (input)="onInputSubjectName()">
             </div>
-        </div>
-    </div>
 
-    <div class="form-group">
-        <input id="search" [placeholder]="l.s('system.search_subjects')">
-    </div>
-
-    <div id="list">
-        @for (subject of system.subjects; track $index) {
-        <div class="panel-item" [class.active]="selected_subject == $index" (click)="selected_subject = $index">
-            <div class="panel-meta">
-                <div class="panel-title">
-                    <h3>
-                        {{ subject.subjectName || l.s('system.subject_no_name') }}
-                    </h3>
-                </div>
+            <div class="form-group">
+                <label for="translateSubject">{{ l.s('system.subject_traslate') }}</label>
+                <select id="translateSubject" [(ngModel)]="translate_subject">
+                    <option></option>
+                    @for (subject of get_translate_subjects(); track $index) {
+                    <option [value]="subject[0]">{{ subject[1] }}</option>
+                    }
+                </select>
+                <small class="note">{{ l.s('system.subject_traslate_note') }}</small>
             </div>
-        </div>
-        }
-    </div>
-</aside>
-<main class="panel-detail">
-    <div class="header">
-        <div class="detail-left">
-            <div class="detail-title">
-                <div>
+
+            <div class="form-group">
+                <label for="shortcut">{{ l.s('system.subject_shortcut') }}</label>
+                <input id="shortcut" [(ngModel)]="system.subjects[selected_subject].shortcut" placeholder="IT"
+                    maxlength="6">
+            </div>
+
+            <hr>
+
+            <section class="grid">
+                <div class="grid-header">
                     <h1 id="detailName">
-                        {{ system.subjects[selected_subject].subjectName || l.s('system.subject_no_name') }}
+                        {{ 'Oprávnění učitelé učit tento předmět' }}
                     </h1>
+                    <div class="btn primary small">{{ l.s('system.add_teacher') }}</div>
                 </div>
-            </div>
-        </div>
-        <div style="display:flex; gap:8px; align-items:center">
-            <div id="btnSave" class="btn small primary">
-                <i-tabler
-                    [name]="system.subjects[selected_subject].subjectId != null ? 'device-floppy' : 'plus'"></i-tabler>
-                {{ l.s('system.' + (system.subjects[selected_subject].subjectId != null ? 'save_subject' :
-                'create_subject')) }}
-            </div>
-        </div>
-    </div>
 
-    @if (checkCollisionSubject()) {
-    <div class="alerts">
-        <div class="alert error">Nastala kolize s předměty</div>
-    </div>
+                <div class="teachers-list">
+                    <div class="teacher-row">
+                        <div class="teacher-name">
+                            Jožko Evelyn
+                        </div>
+                        <div class="teacher-actions">
+                            <div class="btn danger icon-only">
+                                <i-tabler name="trash-x"></i-tabler>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="teacher-row">
+                        <div class="teacher-name">
+                            Jožko Evelyn
+                        </div>
+                        <div class="teacher-actions">
+                            <div class="btn danger icon-only">
+                                <i-tabler name="trash-x"></i-tabler>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </main>
     }
-
-    <!-- základní pole -->
-    <div>
-        <div class="form-group">
-            <label for="name">{{ l.s('system.subject_name') }}</label>
-            <input id="name" placeholder="Např. Informační technologie"
-                [(ngModel)]="system.subjects[selected_subject].subjectName" (input)="onInputSubjectName()">
-        </div>
-
-        <div class="form-group">
-            <label for="translateSubject">{{ l.s('system.subject_traslate') }}</label>
-            <select id="translateSubject" [(ngModel)]="translate_subject">
-                <option></option>
-                @for (subject of get_translate_subjects(); track $index) {
-                <option [value]="subject[0]">{{ subject[1] }}</option>
-                }
-            </select>
-            <small class="note">{{ l.s('system.subject_traslate_note') }}</small>
-        </div>
-
-        <div class="form-group">
-            <label for="shortcut">{{ l.s('system.subject_shortcut') }}</label>
-            <input id="shortcut" [(ngModel)]="system.subjects[selected_subject].shortcut" placeholder="IT"
-                maxlength="6">
-        </div>
-
-        <hr>
-
-        <section class="grid">
-            <div class="grid-header">
-                <h1 id="detailName">
-                    {{ 'Oprávnění učitelé učit tento předmět' }}
-                </h1>
-                <div class="btn primary small">{{ l.s('system.add_teacher') }}</div>
-            </div>
-
-            <div class="teachers-list">
-                <div class="teacher-row">
-                    <div class="teacher-name">
-                        Jožko Evelyn
-                    </div>
-                    <div class="teacher-actions">
-                        <div class="btn danger icon-only">
-                            <i-tabler name="trash-x"></i-tabler>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="teacher-row">
-                    <div class="teacher-name">
-                        Jožko Evelyn
-                    </div>
-                    <div class="teacher-actions">
-                        <div class="btn danger icon-only">
-                            <i-tabler name="trash-x"></i-tabler>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
-    </div>
-</main>
-}
-}
+    }
 </div>
