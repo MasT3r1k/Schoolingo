@@ -6,6 +6,9 @@ import { IconsModule } from '@Schoolingo/icons';
 import { Locale } from '@Schoolingo/locale';
 import { Utils } from '@Schoolingo/utils';
 import { DropdownManager } from '@Schoolingo/dropdown';
+import { ModalManager } from '@Schoolingo/modal';
+import { CommonModule } from '@angular/common';
+import { ChangelogModalComponent } from './modals/changelog/changelog.component';
 
 interface ElysiaVersion {
   current: string;
@@ -47,6 +50,18 @@ interface LdapConfig {
   enabled: boolean;
 }
 
+interface EmailConfig {
+  provider: string; // 'basic_smtp', 'google_smtp', 'ses', etc.
+  host: string;
+  port: number;
+  username: string | null;
+  password: string | null;
+  encryption: 'none' | 'ssl' | 'tls';
+  from_email: string;
+  from_name: string;
+  enabled: boolean;
+}
+
 type ElysiaSystemAPI = {
   settings: {
     name: string;
@@ -74,6 +89,7 @@ type ElysiaSystemAPI = {
   };
 
   ldap_config: LdapConfig | null;
+  email_config: EmailConfig | null;
 
   districts: {
     districtId: number;
@@ -102,7 +118,7 @@ enum enumSidebar {
 }
 
 @Component({
-  imports: [IconsModule, FormsModule, ReactiveFormsModule],
+  imports: [IconsModule, FormsModule, ReactiveFormsModule, CommonModule],
   templateUrl: './settings.component.html',
   styleUrl: './settings.component.css'
 })
@@ -112,6 +128,7 @@ export class SettingsComponent implements OnInit {
   private http = inject(HttpClient);
   public l = inject(Locale);
   public dropdownManager = inject(DropdownManager);
+  public modalManager = inject(ModalManager);
   public selected_interval_backup = 0;
   public interval_backups = ['daily', 'weekly', 'monthly']
   public options: any = {
@@ -140,6 +157,11 @@ export class SettingsComponent implements OnInit {
     'basic_smtp_server',
     'google_smtp_server'
   ];
+
+  // === Changelog ===
+  public openChangelog(): void {
+    this.modalManager.openModal('changelog');
+  }
 
   // === Scopes ===
   public selected_scope: ScopeAPI | undefined = undefined;
@@ -304,6 +326,20 @@ export class SettingsComponent implements OnInit {
         break_time: this.format_time_by_minutes(data.settings.breakTime)
       };
 
+      if (!this.system.email_config) {
+        this.system.email_config = {
+          provider: this.email_types[0],
+          host: '',
+          port: 587,
+          username: '',
+          password: '',
+          encryption: 'tls',
+          from_email: '',
+          from_name: 'Schoolingo',
+          enabled: true
+        }
+      }
+
       for(let subject of data.subjects) {
         if (subject.subjectId != null) {
           this.subject_hours[subject.subjectId] = [0, 0, 0, 0, 0];
@@ -322,6 +358,17 @@ export class SettingsComponent implements OnInit {
       this.version_loading.is_loading = false;
       this.version_loading.error = 'failed_load_version';
     })
+
+    this.modalManager.addModal(
+      'changelog',
+      {
+        title: '',
+        closeable: true,
+        items: [
+          { type: 'component', component: ChangelogModalComponent }
+        ]
+      }
+    )
   }
 
   // === Save School information ===
@@ -396,6 +443,36 @@ export class SettingsComponent implements OnInit {
     )
     .subscribe((data) => {
       console.log('LDAP settings updated', data);
+    });
+  }
+
+  // === Email ===
+  public update_email(): void {
+    if (!this.system.email_config) {
+        // Init default
+        this.system.email_config = {
+            provider: this.email_types[this.selected_email_type],
+            host: '',
+            port: 587,
+            username: '',
+            password: '',
+            encryption: 'tls',
+            from_email: 'noreply@schoolingo.cz',
+            from_name: 'Schoolingo',
+            enabled: false
+        };
+    }
+
+    // Ensure provider is synced
+    this.system.email_config.provider = this.email_types[this.selected_email_type];
+
+    this.http.post(
+      `${Config.API_URL}/v1/system/update_email`,
+      this.system.email_config,
+      { withCredentials: true }
+    )
+    .subscribe((data) => {
+      console.log('Email settings updated', data);
     });
   }
 }

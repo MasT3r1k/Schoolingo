@@ -147,7 +147,7 @@
                     <div class="setting-desc">Zobrazí historii verzí a seznam novinek v systému.</div>
                 </div>
                 <div class="setting-control">
-                    <button class="btn btn--secondary btn--small" onclick="alert('Novinky')">
+                    <button class="btn btn--secondary btn--small" (click)="openChangelog()">
                         <i-tabler name="history"></i-tabler>
                         Zobrazit seznam změn
                     </button>
@@ -167,7 +167,8 @@
                     <div>
                         <div class="license-type">{{ system.settings.license_type || 'FREE' }} LICENSE</div>
                         <div class="license-status">
-                            {{ system.settings.license_until ? 'Platné do ' + system.settings.license_until : 'Trvalá licence' }}
+                            {{ system.settings.license_until ? 'Platné do ' + system.settings.license_until : 'Trvalá
+                            licence' }}
                         </div>
                     </div>
                     <div style="margin-left: auto;">
@@ -409,8 +410,8 @@
         </div>
 
         <div class="alert alert--info">
-            <i-tabler name="info-circle"></i-tabler>
-            <div>
+            <div class="center" style="gap: 8px;margin: auto;">
+                <i-tabler name="info-circle"></i-tabler>
                 <strong>Důležité:</strong> LDAP umožňuje centralizovanou správu uživatelů. Po aktivaci mohou uživatelé
                 použít své firemní přihlašovací údaje.
             </div>
@@ -521,27 +522,130 @@
 
     @case(enumSidebar.EMAIL) {
     <div class="container-content">
-        <h2>Nastavení elektronické pošty</h2>
-        <div class="form-group">
-            <label>{{ l.s("messages.type") }}</label>
-            <div class="custom-select"
-                (click)="$event.stopPropagation(); dropdownManager.selected_dropdown = dropdownManager.selected_dropdown == 'emailType' ? '' : 'emailType'">
-                <div class="selected-value">
-                    {{ l.s('system.email_types.' + email_types[selected_email_type]) }}
-                    <i-tabler name="chevron-down"></i-tabler>
-                </div>
-                @if (dropdownManager.selected_dropdown == 'emailType') {
-                <div class="options-dropdown">
-                    @for (type of email_types; track $index) {
-                    <div class="option"
-                        (click)="$event.stopPropagation();dropdownManager.selected_dropdown = '';selected_email_type = $index">
-                        {{ l.s('system.email_types.' + type) }}
+        <div class="settings-header">
+            <h1>{{ l.s('system.email_settings') }}</h1>
+            <p class="settings-subtitle">Nastavení SMTP serveru pro odesílání systémových e-mailů a notifikací</p>
+        </div>
+
+        @if (!system.email_config) {
+        <div class="empty-state">
+            <div class="empty-state-icon">
+                <i-tabler name="mail-off"></i-tabler>
+            </div>
+            <h3>E-mail není nastaven</h3>
+            <p>Pro odesílání e-mailů je nutné nakonfigurovat SMTP server.</p>
+            <button class="btn btn--primary"
+                (click)="system.email_config = {provider: email_types[0], host: '', port: 587, username: '', password: '', encryption: 'tls', from_email: '', from_name: 'Schoolingo', enabled: true}">
+                <i-tabler name="plus"></i-tabler>
+                Nakonfigurovat e-mail
+            </button>
+        </div>
+        } @else {
+        <div class="form-section">
+            <h3 class="section-title">Poskytovatel e-mailu</h3>
+
+            <div class="form-group">
+                <label>{{ l.s("messages.type") }}</label>
+                <div class="custom-select"
+                    (click)="$event.stopPropagation(); dropdownManager.selected_dropdown = dropdownManager.selected_dropdown == 'emailType' ? '' : 'emailType'">
+                    <div class="selected-value">
+                        {{ l.s('system.email_types.' + email_types[selected_email_type]) }}
+                        <i-tabler name="chevron-down"></i-tabler>
+                    </div>
+                    @if (dropdownManager.selected_dropdown == 'emailType') {
+                    <div class="options-dropdown">
+                        @for (type of email_types; track $index) {
+                        <div class="option"
+                            (click)="$event.stopPropagation();dropdownManager.selected_dropdown = '';selected_email_type = $index">
+                            {{ l.s('system.email_types.' + type) }}
+                        </div>
+                        }
                     </div>
                     }
                 </div>
-                }
             </div>
         </div>
+
+        <div class="form-section">
+            <h3 class="section-title">SMTP Nastavení</h3>
+
+            <div class="form-grid">
+                <div class="form-group">
+                    <label>SMTP Host</label>
+                    <input type="text" [(ngModel)]='system.email_config!.host' placeholder="smtp.example.com">
+                </div>
+                <div class="form-group">
+                    <label>Port</label>
+                    <input type="number" [(ngModel)]='system.email_config!.port' placeholder="587">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>Zabezpečení (Encryption)</label>
+                <!-- Custom select for encryption -->
+                <div class="custom-select"
+                    (click)="$event.stopPropagation(); dropdownManager.selected_dropdown = dropdownManager.selected_dropdown == 'encType' ? '' : 'encType'">
+                    <div class="selected-value">
+                        {{ system.email_config!.encryption | uppercase }}
+                        <i-tabler name="chevron-down"></i-tabler>
+                    </div>
+                    @if (dropdownManager.selected_dropdown == 'encType') {
+                    <div class="options-dropdown">
+                        @for (type of ['none', 'ssl', 'tls']; track $index) {
+                        <div class="option"
+                            (click)="$event.stopPropagation();dropdownManager.selected_dropdown = '';system.email_config!.encryption = $any(type)">
+                            {{ type | uppercase }}
+                        </div>
+                        }
+                    </div>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <div class="form-section">
+            <h3 class="section-title">Autentizace</h3>
+            <div class="form-grid">
+                <div class="form-group">
+                    <label>Uživatelské jméno</label>
+                    <input type="text" [(ngModel)]='system.email_config!.username' placeholder="user@example.com">
+                </div>
+                <div class="form-group">
+                    <label>Heslo</label>
+                    <input type="password" [(ngModel)]='system.email_config!.password' placeholder="••••••••">
+                </div>
+            </div>
+        </div>
+
+        <div class="form-section">
+            <h3 class="section-title">Odesílatel</h3>
+            <div class="form-grid">
+                <div class="form-group">
+                    <label>E-mail odesílatele (From)</label>
+                    <input type="email" [(ngModel)]='system.email_config!.from_email'
+                        placeholder="noreply@schoolingo.cz">
+                </div>
+                <div class="form-group">
+                    <label>Jméno odesílatele</label>
+                    <input type="text" [(ngModel)]='system.email_config!.from_name' placeholder="Schoolingo">
+                </div>
+            </div>
+        </div>
+
+        <div class="form-section">
+            <div class="form-actions">
+                <button class="btn btn--secondary">
+                    <i-tabler name="mail-forward"></i-tabler>
+                    Odeslat testovací e-mail
+                </button>
+                <button class="btn btn--primary" (click)="update_email()">
+                    <i-tabler name="device-floppy"></i-tabler>
+                    Uložit nastavení e-mailu
+                </button>
+            </div>
+        </div>
+
+        }
     </div>
     }
 
@@ -734,7 +838,7 @@
     </main>
     }
 
-    @case(enumSidebar.SUBJECTS) {
+    @case(enumSidebar.SCOPES) {
     <aside class="panel-list">
         <div class="panel-header">
             <div>
@@ -769,7 +873,9 @@
             }
         </div>
     </aside>
-    <main class="panel-detail">
+    @if (selected_scope) {
+
+    <div class="panel-detail">
         <div class="header">
             <div class="detail-left">
                 <div class="detail-title">
@@ -856,7 +962,192 @@
                 </div>
             </section>
         </div>
-    </main>
+
+        <div class="form-group" style="width:200px">
+            <label for="years">{{ l.s('system.scope_number_years_study') }}</label>
+            <select id="years" [(ngModel)]="selected_scope.years" [value]="3">
+                <option [value]="1">1</option>
+                <option [value]="2">2</option>
+                <option [value]="3">3</option>
+                <option [value]="4">4</option>
+                <option [value]="5">5</option>
+            </select>
+        </div>
+    </div>
+
+        <div class="row" style="gap: 8px">
+            <div class="form-group" style="width:50%">
+                <label for="studentsPerClass">{{ l.s('system.scope_capacity_students_in_one_class') }}</label>
+                <input id="studentsPerClass" [(ngModel)]="selected_scope.students_per_class" type="number" min="1" value="30">
+            </div>
+            <div class="form-group" style="width:50%">
+                <label for="classesPerYear">{{ l.s('system.scope_count_classes_in_year') }}</label>
+                <input id="classesPerYear" [(ngModel)]="selected_scope.number_of_classes" type="number" min="0" value="1">
+            </div>
+        </div>
+
+    <!-- předměty -->
+    <section class="grid">
+        <div class="grid-header">
+            <h1 id="detailName">
+                {{ l.s('system.table_subjects') }}
+            </h1>
+        </div>
+
+        <table>
+            <thead>
+                <th>{{ l.s('subject') }}</th>
+                @for (_ of [].constructor(+(selected_scope.years)); track $index) {
+                <th class="hour">
+                    {{ l.s('system.hours_per_week_for_year').replaceAll('%year%', ($index + 1).toString()) }}
+                </th>
+                }
+            </thead>
+            <tbody>
+                @for (subject of system.subjects; track $index) {
+                @if (subject.subjectId && subject_hours[subject.subjectId]) {
+                <tr>
+                    <td>{{ subject.subjectName }}</td>
+                    @for (_ of [].constructor(+selected_scope.years); track $index) {
+                    <td class="hour">
+                        @if (subject.subjectId != null) {
+                        <input type="number" [(ngModel)]="subject_hours[subject.subjectId][$index]">
+                        }
+                    </td>
+                    }
+                </tr>
+                }
+                }
+            </tbody>
+        </table>
+    </section>
+        }
     }
+    
+
+@case(enumSidebar.SUBJECTS) {
+<aside class="panel-list">
+    <div class="panel-header">
+        <div>
+            <h2>{{ l.s('system.list_subjects') }}</h2>
+            <small style="font-size: 13px;color: var(--text-muted);">
+                {{ l.s('system.subject_details').replaceAll('%subjects%', system.subjects.length.toString()) }}
+            </small>
+        </div>
+        <div style="margin-left:auto">
+            <div class="btn small primary" (click)="new_subject()">
+                <i-tabler name="plus"></i-tabler>
+                {{ l.s('system.add_subject') }}
+            </div>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <input id="search" [placeholder]="l.s('system.search_subjects')">
+    </div>
+
+    <div id="list">
+        @for (subject of system.subjects; track $index) {
+        <div class="panel-item" [class.active]="selected_subject == $index" (click)="selected_subject = $index">
+            <div class="panel-meta">
+                <div class="panel-title">
+                    <h3>
+                        {{ subject.subjectName || l.s('system.subject_no_name') }}
+                    </h3>
+                </div>
+            </div>
+        </div>
+        }
+    </div>
+</aside>
+<main class="panel-detail">
+    <div class="header">
+        <div class="detail-left">
+            <div class="detail-title">
+                <div>
+                    <h1 id="detailName">
+                        {{ system.subjects[selected_subject].subjectName || l.s('system.subject_no_name') }}
+                    </h1>
+                </div>
+            </div>
+        </div>
+        <div style="display:flex; gap:8px; align-items:center">
+            <div id="btnSave" class="btn small primary">
+                <i-tabler
+                    [name]="system.subjects[selected_subject].subjectId != null ? 'device-floppy' : 'plus'"></i-tabler>
+                {{ l.s('system.' + (system.subjects[selected_subject].subjectId != null ? 'save_subject' :
+                'create_subject')) }}
+            </div>
+        </div>
+    </div>
+
+    @if (checkCollisionSubject()) {
+    <div class="alerts">
+        <div class="alert error">Nastala kolize s předměty</div>
+    </div>
     }
+
+    <!-- základní pole -->
+    <div>
+        <div class="form-group">
+            <label for="name">{{ l.s('system.subject_name') }}</label>
+            <input id="name" placeholder="Např. Informační technologie"
+                [(ngModel)]="system.subjects[selected_subject].subjectName" (input)="onInputSubjectName()">
+        </div>
+
+        <div class="form-group">
+            <label for="translateSubject">{{ l.s('system.subject_traslate') }}</label>
+            <select id="translateSubject" [(ngModel)]="translate_subject">
+                <option></option>
+                @for (subject of get_translate_subjects(); track $index) {
+                <option [value]="subject[0]">{{ subject[1] }}</option>
+                }
+            </select>
+            <small class="note">{{ l.s('system.subject_traslate_note') }}</small>
+        </div>
+
+        <div class="form-group">
+            <label for="shortcut">{{ l.s('system.subject_shortcut') }}</label>
+            <input id="shortcut" [(ngModel)]="system.subjects[selected_subject].shortcut" placeholder="IT"
+                maxlength="6">
+        </div>
+
+        <hr>
+
+        <section class="grid">
+            <div class="grid-header">
+                <h1 id="detailName">
+                    {{ 'Oprávnění učitelé učit tento předmět' }}
+                </h1>
+                <div class="btn primary small">{{ l.s('system.add_teacher') }}</div>
+            </div>
+
+            <div class="teachers-list">
+                <div class="teacher-row">
+                    <div class="teacher-name">
+                        Jožko Evelyn
+                    </div>
+                    <div class="teacher-actions">
+                        <div class="btn danger icon-only">
+                            <i-tabler name="trash-x"></i-tabler>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="teacher-row">
+                    <div class="teacher-name">
+                        Jožko Evelyn
+                    </div>
+                    <div class="teacher-actions">
+                        <div class="btn danger icon-only">
+                            <i-tabler name="trash-x"></i-tabler>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+</main>
+}
+}
 </div>

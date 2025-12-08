@@ -1,0 +1,30 @@
+<div class="changelog-list">
+    @if (isLoading) {
+    <div class="loading-state">
+        Načítání seznamu změn...
+    </div>
+    } @else {
+    @for (release of changelog; track release.version) {
+    <div class="release-item">
+        <div class="release-header">
+            <div class="release-version">
+                <span class="version-badge" [class]="release.type">{{ release.version }}</span>
+                <span class="release-date">{{ release.date }}</span>
+            </div>
+        </div>
+        <ul class="release-changes">
+            @for (change of release.changes; track $index) {
+            <li>{{ change }}</li>
+            }
+        </ul>
+    </div>
+    }
+    }
+</div>
+
+<div class="modal-footer-custom">
+    <div class="system-info">
+        Schoolingo v{{ Config.APP_VERSION }}
+    </div>
+    <button class="btn btn--primary" (click)="close()">Zavřít</button>
+</div>
