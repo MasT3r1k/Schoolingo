@@ -3,21 +3,20 @@ import { Component, inject, signal, Type, WritableSignal } from '@angular/core';
 import { Locale } from '@Schoolingo/locale';
 import { Permission } from '@Schoolingo/permission';
 import { IconsModule } from '@Schoolingo/icons';
-import { TabsComponent } from '../../Components/Tabs';
 
 interface DashboardModule {
   id: string;
   titleKey: string;
   import: () => Promise<Type<any>>;
   component: WritableSignal<Type<any> | null>;
-  permission?: string;
+  permission?: string[];
   icon?: string;
 }
 
 @Component({
   selector: 'app-main',
   standalone: true,
-  imports: [NgComponentOutlet, IconsModule, TabsComponent],
+  imports: [NgComponentOutlet, IconsModule],
   templateUrl: './main.component.html',
   styleUrls: ['./main.component.css']
 })
@@ -25,7 +24,7 @@ export class MainComponent {
   public perm = inject(Permission);
   public l = inject(Locale);
 
-  modules: DashboardModule[] = [
+  public modules: DashboardModule[] = [
     {
       id: 'timetable',
       titleKey: 'modules.timetable',
@@ -37,6 +36,7 @@ export class MainComponent {
       id: 'marks',
       titleKey: 'modules.marks',
       icon: 'school',
+      permission: ['student', 'parent'],
       import: () => import('./sections/marks/marks.component').then(m => m.MarksComponent),
       component: signal(null)
     },
@@ -51,6 +51,7 @@ export class MainComponent {
       id: 'homework',
       titleKey: 'modules.homework',
       icon: 'notebook',
+      permission: ['student', 'parent'],
       import: () => import('./sections/homework/homework.component').then(m => m.HomeworkComponent),
       component: signal(null)
     },
@@ -72,6 +73,7 @@ export class MainComponent {
       id: 'traineeship',
       titleKey: 'modules.traineeship',
       icon: 'briefcase',
+      permission: ['student', 'parent'],
       import: () => import('./sections/traineeship/traineeship.component').then(m => m.TraineeshipComponent),
       component: signal(null)
     },
@@ -86,6 +88,7 @@ export class MainComponent {
       id: 'vehicles',
       titleKey: 'modules.vehicles',
       icon: 'car',
+      permission: ['teacher'],
       import: () => import('./sections/vehicles/vehicles.component').then(m => m.VehiclesComponent),
       component: signal(null)
     }
@@ -96,6 +99,7 @@ export class MainComponent {
   }
 
   async loadModules() {
+    this.modules = this.modules.filter((module) => (module.permission && this.perm.checkPermission(module.permission)) || !module.permission);
     // Load all modules in parallel
     const loadedModules = await Promise.all(
       this.modules.map(m => m.import())
