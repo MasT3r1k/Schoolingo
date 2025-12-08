@@ -100,7 +100,7 @@ export const config: SidebarGroup[] = [
                     icon: 'trophy',
                     permission: ['student', 'teacher']
                 }, {
-                    item: 'sidebar.tests',
+                    item: 'sidebar.teach.tests',
                     url: 'tests',
                     icon: 'clipboard-check',
                     permission: ['student', 'teacher', 'admin']
@@ -331,7 +331,7 @@ export const config: SidebarGroup[] = [
             {
                 item: 'sidebar.archive',
                 icon: 'archive',
-                permission: ['principal'],
+                permission: ['principal', 'manager:system:admin'],
                 url: 'archive'
             },
             {

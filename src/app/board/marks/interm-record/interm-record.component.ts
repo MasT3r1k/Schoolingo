@@ -12,6 +12,7 @@ import { EditMarkComponent } from './modals/edit-mark/edit-mark.component';
 import { IconsModule } from '@Schoolingo/icons';
 import { EditMarkingScaleComponent } from './modals/edit-marking-scale/edit-marking-scale.component';
 import { EditMidtermComponent } from './modals/edit-midterm/edit-midterm.component';
+import { DropdownManager } from '@Schoolingo/dropdown';
 
 interface Group {
   groupId: number;
@@ -47,6 +48,7 @@ export class IntermRecordComponent {
   EditColumnComponent = EditColumnComponent;
   private modalManager = inject(ModalManager);
   private marksManager = inject(MarksManager);
+  public dropdownManager = inject(DropdownManager);
 
   public add_more_columns = 16;
   public isDropdownOpen = false;

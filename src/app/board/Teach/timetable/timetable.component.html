@@ -151,7 +151,10 @@
                                         @for (lesson of timetable[index][index2] ?? []; track $index) { 
                                             <div [ngClass]="getLessonClasses(index, index2, lesson)" [style.backgroundColor]="lesson.color">
                                                 <div class="group">
-                                                    <span>B3.I 2</span>
+                                                    <span>{{ 
+                                                        (lesson.groupName ? lesson.groupName : lesson.className) + ' ' +
+                                                        lesson.groupNum ? lesson.groupNum : ''
+                                                        }}</span>
                                                 </div> 
                                                 <div class="room">
                                                     {{ lesson.room }}

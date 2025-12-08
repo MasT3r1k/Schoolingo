@@ -3,30 +3,26 @@
         <div class="header-content">
             <div class="header-left">
                 <h2>{{ l.s("marks.interm_record.select_group") }}</h2>
-                <div class="custom-select-container">
-                    <div class="custom-select-trigger" (click)="toggleDropdown()" [class.active]="isDropdownOpen">
+                <div class="custom-select" (click)="$event.stopPropagation();dropdownManager.selected_dropdown = dropdownManager.selected_dropdown == 'interm_record_select_group' ? '' : 'interm_record_select_group'">
+                    <div class="selected-value">
+                        <div>
                         @if (selected_group !== -1) {
-                        <div class="selected-value">
-                            <span class="subject-name">{{ groups[selected_group].subject }}</span>
-                            <span class="class-name">{{ groups[selected_group].className }}</span>
+                                <span class="subject-name">{{ groups[selected_group].subject }}</span>
+                                -
+                                <span class="class-name">{{ groups[selected_group].className }}</span>
+                            } @else {
+                                <span class="placeholder">{{ l.s("marks.interm_record.select_group_placeholder") }}</span>
+                            }
                         </div>
-                        } @else {
-                        <span class="placeholder">{{ l.s("marks.interm_record.select_group_placeholder") }}</span>
-                        }
-                        <i-tabler name="chevron-down" class="chevron"></i-tabler>
+                        <i-tabler name="chevron-down"></i-tabler>
                     </div>
-
-                    @if (isDropdownOpen) {
-                    <div class="custom-options">
+                    @if (dropdownManager.selected_dropdown == 'interm_record_select_group') {
+                    <div class="options-dropdown">
                         @for (group of groups; track $index) {
-                        <div class="custom-option"
-                            (click)="selected_group = $index; updateGroup(); isDropdownOpen = false"
-                            [class.selected]="selected_group === $index">
-                            <div class="option-content">
-                                <span class="subject">{{ group.subject }}</span>
-                                <span class="class">{{ group.className }}</span>
-                            </div>
-                            <span class="count">{{ group.studentCount }} {{ l.s('roles.student') }}</span>
+                        <div class="option" style="text-align: left;" (click)="$event.stopPropagation();dropdownManager.selected_dropdown = '';selected_group = $index;updateGroup();">
+                            <span class="subject">{{ group.subject }}</span>
+                            -
+                            <span class="class">{{ group.className }}</span>
                         </div>
                         }
                     </div>
