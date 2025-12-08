@@ -5,7 +5,7 @@ import { Config } from '@Schoolingo/config';
 import { IconsModule } from '@Schoolingo/icons';
 import { Locale } from '@Schoolingo/locale';
 import { Utils } from '@Schoolingo/utils';
-import { SystemComponent } from './system/system.component';
+import { DropdownManager } from '@Schoolingo/dropdown';
 
 interface ElysiaVersion {
   current: string;
@@ -34,6 +34,19 @@ interface ScopeAPI {
   students_per_class: number;
 }
 
+interface LdapConfig {
+  config_id: number;
+  server_url: string;
+  bind_dn: string | null;
+  bind_password: string | null;
+  search_base: string;
+  user_filter: string | null;
+  mapping_username: string | null;
+  mapping_email: string | null;
+  mapping_name: string | null;
+  enabled: boolean;
+}
+
 type ElysiaSystemAPI = {
   settings: {
     name: string;
@@ -51,7 +64,16 @@ type ElysiaSystemAPI = {
     license_until: Date | null;
     studentsLimit: number;
     modules: string;
+    // Auth
+    auth_classic: boolean;
+    auth_ldap: boolean;
+    auth_qr: boolean;
+    auth_passkeys: boolean;
+    session_lifetime_minutes: number;
+    max_login_attempts: number;
   };
+
+  ldap_config: LdapConfig | null;
 
   districts: {
     districtId: number;
@@ -80,7 +102,7 @@ enum enumSidebar {
 }
 
 @Component({
-  imports: [IconsModule, FormsModule, ReactiveFormsModule, SystemComponent],
+  imports: [IconsModule, FormsModule, ReactiveFormsModule],
   templateUrl: './settings.component.html',
   styleUrl: './settings.component.css'
 })
@@ -89,7 +111,12 @@ export class SettingsComponent implements OnInit {
   public enumSidebar = enumSidebar;
   private http = inject(HttpClient);
   public l = inject(Locale);
-  public showSelect: null | 'emailType' = null;
+  public dropdownManager = inject(DropdownManager);
+  public selected_interval_backup = 0;
+  public interval_backups = ['daily', 'weekly', 'monthly']
+  public options: any = {
+    auto_updates: false
+  }
 
   public input_errors: { [key: string]: string } = {};
 
@@ -100,6 +127,11 @@ export class SettingsComponent implements OnInit {
   public version_loading: ElysiaVersionLoading = {
     is_loading: true,
     error: null
+  }
+
+  public getStudentPercentage(): number {
+    if (this.system.settings.studentsLimit == -1) return 100;
+    return this.system.student_count / this.system.settings.studentsLimit * 100;
   }
 
   // === Email settings ===
@@ -317,5 +349,53 @@ export class SettingsComponent implements OnInit {
       console.log(data);
     })
 
+  }
+
+  // === Auth & LDAP ===
+  public update_login(): void {
+    this.http.post(
+      `${Config.API_URL}/v1/system/update_login`,
+      {
+        auth_classic: this.system.settings.auth_classic,
+        auth_ldap: this.system.settings.auth_ldap,
+        auth_qr: this.system.settings.auth_qr,
+        auth_passkeys: this.system.settings.auth_passkeys,
+        session_lifetime_minutes: this.system.settings.session_lifetime_minutes,
+        max_login_attempts: this.system.settings.max_login_attempts
+      },
+      { withCredentials: true }
+    )
+    .subscribe((data) => {
+      console.log('Login settings updated', data);
+    });
+  }
+
+  public update_ldap(): void {
+    if (!this.system.ldap_config) {
+        // Init default if null
+        this.system.ldap_config = {
+            config_id: 0,
+            server_url: 'ldap://',
+            bind_dn: '',
+            bind_password: '',
+            search_base: '',
+            user_filter: '(uid=%u)',
+            mapping_username: 'uid',
+            mapping_email: 'mail',
+            mapping_name: 'cn',
+            enabled: false
+        } as any; // Using any to bypass strict checks if new object doesn't fully match but it should
+    }
+    const config = this.system.ldap_config;
+    if (!config) return;
+
+    this.http.post(
+      `${Config.API_URL}/v1/system/update_ldap`,
+      config,
+      { withCredentials: true }
+    )
+    .subscribe((data) => {
+      console.log('LDAP settings updated', data);
+    });
   }
 }
