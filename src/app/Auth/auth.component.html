@@ -139,12 +139,12 @@
             <h2 class="title">
                 {{ l.s("auth.login.title") }}
             </h2>
-            <p [ngClass]="{school: true, skeleton: isLoading}">
+            <p class="school" [class.skeleton]="isLoading">
                 {{ school.config.getValue()?.name || "" }}
             </p>
         </div>
         <div class="card-row">
-            <div class="left" [ngStyle]="{ width: school.config.getValue()?.fastlogin ? '50%' : '100%' }">
+            <div class="left" [style.width.%]="school.config.getValue()?.fastlogin ? '50' : '100'">
                 @if (school.config.getValue()?.fastlogin && ["login", "2fa"].includes(page)) {
                 <div class="title">
                     {{ l.s("auth.login.subtitle.0") }}
@@ -156,7 +156,7 @@
                     <input type="submit" value="" style="display: none" />
 
                     <div class="form-group">
-                        <label for="username" [ngClass]="{ 'error-color': getInputError('username') !== '' }">
+                        <label for="username" [class.error-color]="getInputError('username') !== ''">
                             {{ l.s('auth.login.username') }}
                             @if (getInputError("username") !== "") {
                             <span class="label-error">
@@ -171,7 +171,7 @@
                         </div>
                     </div>
                     <div class="form-group">
-                        <label for="password" [ngClass]="{ 'error-color': getInputError('password') !== '' }">
+                        <label for="password" [class.error-color]="getInputError('password') !== ''">
                             {{ l.s('auth.login.password') }}
                             @if (getInputError("password") !== "") {
                             <span class="label-error">
@@ -240,7 +240,7 @@
                     </div>
                 </form>
                 <div class="form-group">
-                    <div [ngClass]="{btn: true, primary: loginForm.status == 'VALID', disabled: loginForm.status == 'INVALID'}"
+                    <div class="btn" [class.btn--primary]="loginForm.status == 'VALID'"
                         (click)="login()">
                         {{ l.s('auth.2fa.verify_code') }}
                     </div>
@@ -274,7 +274,7 @@
                     </div>
                 </div>
                 <div class="form-group">
-                    <div [ngClass]="{btn: true}" (click)="resetForgotPassword()">
+                    <div class="btn" (click)="resetForgotPassword()">
                         {{ l.s('auth.login.back_to_login') }}
                     </div>
                 </div>

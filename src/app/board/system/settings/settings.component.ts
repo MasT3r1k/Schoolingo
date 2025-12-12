@@ -41,6 +41,7 @@ interface ScopeAPI {
 
 interface LdapConfig {
   config_id: number;
+  type: number;
   server_url: string;
   bind_dn: string | null;
   bind_password: string | null;
@@ -354,6 +355,22 @@ export class SettingsComponent implements OnInit {
         }
       }
 
+      if (!this.system.ldap_config) {
+        this.system.ldap_config = {
+            config_id: 0,
+            type: 0,
+            server_url: 'ldap://',
+            bind_dn: '',
+            bind_password: '',
+            search_base: '',
+            user_filter: '(uid=%u)',
+            mapping_username: 'uid',
+            mapping_email: 'mail',
+            mapping_name: 'cn',
+            enabled: false
+        }
+      }
+
       for(let subject of data.subjects) {
         if (subject.subjectId != null) {
           this.subject_hours[subject.subjectId] = [0, 0, 0, 0, 0];
@@ -438,6 +455,7 @@ export class SettingsComponent implements OnInit {
         // Init default if null
         this.system.ldap_config = {
             config_id: 0,
+            type: 0,
             server_url: 'ldap://',
             bind_dn: '',
             bind_password: '',

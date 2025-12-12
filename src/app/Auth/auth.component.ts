@@ -8,7 +8,7 @@ import { School } from '@Schoolingo/school';
 import { Theme } from '@Schoolingo/theme';
 import { AuthAlertManager } from '../infrastructure/alert/auth.alert.manager';
 import { AlertComponent } from '@Components/Alert';
-import { BehaviorSubject } from 'rxjs';
+import { BehaviorSubject, interval } from 'rxjs';
 import { AuthConfig } from '../infrastructure/authentication/config';
 import { HttpClient } from '@angular/common/http';
 import { Authentication } from '@Schoolingo/authentication';
@@ -404,9 +404,9 @@ export class AuthComponent implements OnInit {
       this.qrcode.next(res.payload)
     });
 
-    setInterval(() => {
+    interval(5000).subscribe(() => {
       this.ws.send({ type: 'qrcode_request' });
-    }, 5000)
+    })
 
     if (this.school.config.getValue()?.fastlogin) {
       setTimeout(() => {

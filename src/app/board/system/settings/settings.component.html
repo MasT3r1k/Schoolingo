@@ -58,6 +58,7 @@
 
     @switch (sidebar) {
     @case(enumSidebar.SYSTEM) {
+        @if (this.system) {
     <div class="container-content">
         <div class="settings-header">
             <h1>{{ l.s('system.system_settings') }}</h1>
@@ -68,7 +69,7 @@
         <div class="form-section">
             <h3 class="section-title">Stav systému</h3>
 
-            <div class="status-card" [class.success]="version?.isUpToDate"
+            <div class="status-card" [class.success]="version.isUpToDate"
                 [class.warning]="version && !version.isUpToDate">
                 <div class="status-card__icon">
                     @if (version) {
@@ -187,8 +188,7 @@
                     <div>
                         <div class="license-type">{{ system.settings.license_type || 'FREE' }} LICENSE</div>
                         <div class="license-status">
-                            {{ system.settings.license_until ? 'Platné do ' + system.settings.license_until : 'Trvalá
-                            licence' }}
+                            {{ system.settings.license_until ? 'Platné do ' + system.settings.license_until : 'Trvalá licence' }}
                         </div>
                     </div>
                     <div style="margin-left: auto;">
@@ -216,16 +216,17 @@
         </div>
 
         <footer class="system-footer">
-            Schoolingo {{ Config.APP_VERSION }} &bull; Build #b2f4 &bull; {{ l.s('system.system_settings') }}
+            {{ Config.APP_NAME }} {{ Config.APP_VERSION }} &bull; Build #b2f4 &bull; {{ l.s('system.system_settings') }}
         </footer>
     </div>
+}
     }
 
     @case(enumSidebar.MAIN) {
     <div class="container-content">
         <div class="settings-header">
             <h1>{{ l.s('system.school_settings') }}</h1>
-            <p class="settings-subtitle">Základní informace o škole a globální nastavení systému</p>
+            <p class="settings-subtitle">Základní informace o škole</p>
         </div>
 
         <div class="form-section">
@@ -423,6 +424,8 @@
     }
 
     @case(enumSidebar.LDAP) {
+        @if (this.system.ldap_config) {
+
     <div class="container-content">
         <div class="settings-header">
             <h1>{{ l.s('system.ldap_settings') }}</h1>
@@ -441,7 +444,7 @@
             <h3 class="section-title">Typ LDAP serveru</h3>
 
             <div class="ldap-type-selector">
-                <div class="ldap-option selected">
+                <div class="ldap-option" (click)="this.system.ldap_config!.type = 0" [class.selected]="this.system.ldap_config.type == 0">
                     <div class="ldap-option__icon">
                         <i-tabler name="brand-windows"></i-tabler>
                     </div>
@@ -450,7 +453,7 @@
                         <p>Microsoft Active Directory</p>
                     </div>
                 </div>
-                <div class="ldap-option">
+                <div class="ldap-option" (click)="this.system.ldap_config!.type = 1" [class.selected]="this.system.ldap_config.type == 1">
                     <div class="ldap-option__icon">
                         <i-tabler name="server"></i-tabler>
                     </div>
@@ -538,6 +541,7 @@
             </div>
         </div>
     </div>
+        }
     }
 
     @case(enumSidebar.EMAIL) {

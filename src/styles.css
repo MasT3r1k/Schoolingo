@@ -1904,8 +1904,14 @@ input:disabled {
 
 .stats-cards {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
     gap: 16px;
+}
+
+@media (max-width: 768px) {
+    .stat-cards {
+        grid-template-columns: 1fr;
+    }
 }
 
 .stat-card {
@@ -1953,6 +1959,10 @@ input:disabled {
     --accent-color: var(--danger);
 }
 
+.stat-card.stat--info {
+    --accent-color: var(--accent);
+}
+
 .stat-card:hover {
     transform: translateY(-2px);
     box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
@@ -1982,7 +1992,7 @@ input:disabled {
 }
 
 .stat-value {
-    font-size: 32px;
+    font-size: 28px;
     font-weight: 800;
     color: var(--text);
     line-height: 1;
