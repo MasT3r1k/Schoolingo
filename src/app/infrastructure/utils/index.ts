@@ -277,6 +277,10 @@ export namespace Utils {
     return browser;
   }
 
+  export function MathMin(numbers: number[]): number {
+    return Math.min(...numbers)
+  }
+
   export function copyTextToClipboard(text: string): void {
     if (navigator.clipboard && window.isSecureContext) {
       navigator.clipboard.writeText(text).catch(err => {
@@ -312,5 +316,18 @@ export namespace Utils {
     // Remove all degrees
     const name_wo_degree = name.split(' ').filter((word) => !word.includes('.'))
     return name_wo_degree.map(n => n[0]).join('').substring(0, 2).toUpperCase();
+  }
+
+  export function formatBytes(bytes: number): string {
+    if (bytes === 0) return '0 B';
+    if (!Number.isFinite(bytes)) return '—';
+
+    const k = 1024;
+    const sizes = ['B', 'KB', 'MB', 'GB', 'TB', 'PB'];
+
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    const value = bytes / Math.pow(k, i);
+
+    return `${value.toFixed(2)} ${sizes[i]}`;
   }
 }

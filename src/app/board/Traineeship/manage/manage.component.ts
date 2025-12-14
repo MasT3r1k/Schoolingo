@@ -1,6 +1,7 @@
 import { NgClass, NgIf, AsyncPipe } from '@angular/common';
 import { Component, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { IconsModule } from '@Schoolingo/icons';
 import { Locale } from '@Schoolingo/locale';
 import { School } from '@Schoolingo/school';
 import { DiaryWeek, Traineeship, StudentTraineeshipStatus } from '@Schoolingo/traineeship';
@@ -8,7 +9,7 @@ import { Utils } from '@Schoolingo/utils';
 
 @Component({
   standalone: true,
-  imports: [NgClass, NgIf, FormsModule, AsyncPipe],
+  imports: [NgClass, NgIf, FormsModule, AsyncPipe, IconsModule],
   templateUrl: './manage.component.html',
   styleUrls: ['./manage.component.css']
 })

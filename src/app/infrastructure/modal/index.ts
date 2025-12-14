@@ -7,6 +7,7 @@ interface ModalItem {
 
 interface Modal {
     title: string;
+    width?: number;
     closeable: boolean;
     items: ModalItem[];
     isOpen: boolean;
@@ -30,6 +31,8 @@ export class ModalManager {
             case "title":
                 modal.title = value;
                 break;
+            case "width":
+                modal.width = value;
         }
     }
 

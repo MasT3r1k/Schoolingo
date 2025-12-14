@@ -13,6 +13,8 @@ import { FleetVehicles } from '@Schoolingo/fleetvehicles';
 import { ModalManager } from '@Schoolingo/modal';
 import { TabsComponent } from '@Components/Tabs';
 import moment from 'moment';
+import { Utils } from '@Schoolingo/utils';
+import { NewVehicleComponent } from '../modals/new-vehicle/new-vehicle.component';
 
 @Component({
   standalone: true,
@@ -20,7 +22,7 @@ import moment from 'moment';
   templateUrl: './vehicles.component.html',
   styleUrls: ['./vehicles.component.css']
 })
-export class VehiclesComponent implements OnInit {
+export class FleetVehiclesComponent implements OnInit {
   public l = inject(Locale);
   public perm = inject(Permission);
   public fleet = inject(FleetVehicles);
@@ -56,6 +58,18 @@ export class VehiclesComponent implements OnInit {
 
   ngOnInit(): void {
     this.loadVehicles();
+
+    this.modalManager.addModal(
+      'add_vehicle',
+      {
+        title: 'fleetvehicles.add_vehicle_title',
+        width: 800,
+        closeable: true,
+        items: [
+          { type: 'component', component: NewVehicleComponent }
+        ]
+      }
+    )
     
     this.listeners.push(
       this.route.params.subscribe(() => {
@@ -159,6 +173,8 @@ export class VehiclesComponent implements OnInit {
   }
 
   public filterVehicles(): void {
+    this.checkRouteParams();
+
     this.filteredVehicles = this.vehicles.filter(v => {
       // Status filter
       if (this.statusFilter !== 'all' && v.status !== this.statusFilter) return false;
@@ -254,7 +270,7 @@ export class VehiclesComponent implements OnInit {
   }
 
   public formatDate(date: Date): string {
-    return moment(date).format('D. M. YYYY');
+    return Utils.formatDateShort(date);
   }
 
   public getStatusClass(status: VehicleStatus): string {

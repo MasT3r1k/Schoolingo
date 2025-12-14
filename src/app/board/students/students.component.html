@@ -59,7 +59,8 @@
                             <span class="stat-label">Průměr</span>
                         </div>
                     </div>
-                    <div class="stat-card clickable" [class.warning]="Utils.formatAsNumber(selectedStudent.absenceRate) > 10"
+                    <div class="stat-card clickable"
+                        [class.warning]="Utils.formatAsNumber(selectedStudent.absenceRate) > 10"
                         (click)="showAbsenceModal = true">
                         <div class="stat-icon">
                             <i-tabler name="calendar-off"></i-tabler>
@@ -544,17 +545,116 @@
     <div class="list-view">
         <!-- Page Header -->
         <div class="card-header">
-            <h2>Seznam studentů</h2>
-        </div>
-        <div class="row" style="justify-content: space-between; margin-bottom: 20px;">
-            <div class="form-group search">
-                <input type="search" placeholder="Hledat studenta..." [(ngModel)]="filters.search">
-            </div>
+            <h2>{{ selectedStudent ? 'Detail studenta' : 'Seznam studentů' }}</h2>
             <div class="header-actions">
                 <button class="btn btn--sm btn--primary" (click)="openAddStudentModal()">
                     <i-tabler name="user-plus"></i-tabler>
                     Přidat studenta
                 </button>
+            </div>
+        </div>
+
+        <!-- Search & Filter Row -->
+        <div class="filters-row-container">
+            <div class="search-wrapper full-width">
+                <i-tabler name="search"></i-tabler>
+                <input type="search" placeholder="Hledat studenta..." [(ngModel)]="filters.search"
+                    (ngModelChange)="onFilterChange()">
+            </div>
+
+            <div class="filter-dropdown-wrapper">
+                <button class="btn btn--secondary btn--icon"
+                    [class.active]="dropdownManager.selected_dropdown === 'students_filter'"
+                    (click)="$event.stopPropagation(); dropdownManager.selected_dropdown = (dropdownManager.selected_dropdown === 'students_filter' ? '' : 'students_filter')">
+                    <i-tabler name="adjustments-horizontal"></i-tabler>
+                </button>
+
+                <div class="dropdown-menu filters-dropdown"
+                    [hidden]="dropdownManager.selected_dropdown !== 'students_filter'"
+                    (click)="$event.stopPropagation()">
+
+                    <h3>Filtrování studentů</h3>
+
+                    <div class="filters-grid">
+                        <!-- Status Filter -->
+                        <div class="filter-group">
+                            <label>Status studenta</label>
+                            <select [(ngModel)]="filters.status" (change)="onFilterChange()" class="form-select">
+                                <option value="all">Všichni</option>
+                                <option value="active">Aktivní</option>
+                                <option value="former">Bývalí</option>
+                                <option value="suspended">Pozastavení</option>
+                            </select>
+                        </div>
+
+                        <!-- Class Filter -->
+                        <div class="filter-group">
+                            <label>Třída</label>
+                            <select [(ngModel)]="filters.classId" (change)="onFilterChange()" class="form-select">
+                                <option [ngValue]="null">Všechny třídy</option>
+                                @for (cls of availableClasses; track cls.id) {
+                                <option [ngValue]="cls.id">{{ cls.name }}</option>
+                                }
+                            </select>
+                        </div>
+
+                        <!-- Field of Study Filter -->
+                        <div class="filter-group">
+                            <label>Obor</label>
+                            <select [(ngModel)]="filters.scopeId" (change)="onFilterChange()" class="form-select">
+                                <option [ngValue]="null">Všechny obory</option>
+                                @for (scope of availableScopes; track scope.id) {
+                                <option [ngValue]="scope.id">{{ scope.name }}</option>
+                                }
+                            </select>
+                        </div>
+
+                        <!-- Grade Average Range -->
+                        <div class="filter-group">
+                            <label>Průměr známek</label>
+                            <div class="range-inputs">
+                                <input type="number" placeholder="Od" step="0.1" min="1" max="5"
+                                    [(ngModel)]="filters.avgGradeDates.from" (change)="onFilterChange()"
+                                    class="form-input">
+                                <span class="range-sep">-</span>
+                                <input type="number" placeholder="Do" step="0.1" min="1" max="5"
+                                    [(ngModel)]="filters.avgGradeDates.to" (change)="onFilterChange()"
+                                    class="form-input">
+                            </div>
+                        </div>
+
+                        <!-- Absence Range -->
+                        <div class="filter-group">
+                            <label>Absence (%)</label>
+                            <div class="range-inputs">
+                                <input type="number" placeholder="Od" min="0" max="100"
+                                    [(ngModel)]="filters.absenceRates.from" (change)="onFilterChange()"
+                                    class="form-input">
+                                <span class="range-sep">-</span>
+                                <input type="number" placeholder="Do" min="0" max="100"
+                                    [(ngModel)]="filters.absenceRates.to" (change)="onFilterChange()"
+                                    class="form-input">
+                            </div>
+                        </div>
+
+                        <!-- Missing Info Toggle -->
+                        <div class="filter-group full-width">
+                            <label class="checkbox-label">
+                                <input type="checkbox" [(ngModel)]="filters.missingInfo" (change)="onFilterChange()">
+                                <span class="checkbox-text">Zobrazit pouze studenty s chybějícími údaji</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="dropdown-footer">
+                        <button class="btn btn--ghost btn--sm" (click)="clearFilters()">
+                            Vymazat filtry
+                        </button>
+                        <button class="btn btn--primary btn--sm" (click)="dropdownManager.selected_dropdown = ''">
+                            Hotovo
+                        </button>
+                    </div>
+                </div>
             </div>
         </div>
 
@@ -622,7 +722,8 @@
                             </span>
                         </td>
                         <td class="col-absence">
-                            <span class="absence-value" [class.warning]="Utils.formatAsNumber(student.absenceRate) > 10">
+                            <span class="absence-value"
+                                [class.warning]="Utils.formatAsNumber(student.absenceRate) > 10">
                                 {{ student.absenceRate }}%
                             </span>
                         </td>
@@ -655,6 +756,37 @@
             </button>
         </div>
         }
+
+        <!-- Pagination Controls -->
+        <!-- Pagination Controls -->
+        @if (totalItems > 0) {
+        <div class="bottom">
+            <div class="left">
+                <span class="pagination-info">
+                    Zobrazeno {{ (currentPage - 1) * pageSize + 1 }} - {{ Utils.MathMin([currentPage * pageSize,
+                    totalItems]) }} z {{ totalItems }} studentů
+                </span>
+            </div>
+            <div class="right">
+                @if (totalPages > 1) {
+                <div class="page center previous" [class.disabled]="currentPage == 1"
+                    (click)="currentPage > 1 && loadStudents(currentPage - 1)">
+                    <i-tabler name="chevron-left" style="width:18px;height:18px;"></i-tabler>
+                </div>
+                @for (p of getPageList(); track $index) {
+                <div class="page center" [class.active]="currentPage === p" (click)="loadStudents(p)">
+                    {{ p }}
+                </div>
+                }
+                <div class="page center next" [class.disabled]="currentPage == totalPages"
+                    (click)="currentPage < totalPages && loadStudents(currentPage + 1)">
+                    <i-tabler name="chevron-right" style="width:18px;height:18px;"></i-tabler>
+                </div>
+                }
+            </div>
+        </div>
+        }
+
         }
     </div>
     }
@@ -714,8 +846,8 @@
                     <label>Obor</label>
                     <select>
                         <option value="">Vyberte obor</option>
-                        @for (field of fieldsOfStudy; track field) {
-                        <option [value]="field">{{ field }}</option>
+                        @for (field of availableScopes; track field) {
+                        <option [value]="field.id">{{ field.name }}</option>
                         }
                     </select>
                 </div>

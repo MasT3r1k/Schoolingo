@@ -16,7 +16,7 @@ import moment from 'moment';
   templateUrl: './overview.component.html',
   styleUrls: ['./overview.component.css']
 })
-export class OverviewComponent implements OnInit {
+export class FleetVehiclesOverviewComponent implements OnInit {
   public l = inject(Locale);
   public perm = inject(Permission);
   public fleet = inject(FleetVehicles);

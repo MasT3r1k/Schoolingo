@@ -13,6 +13,7 @@ import { Vehicle, Reservation, ReservationStatus } from '../../../infrastructure
 import { ModalManager } from '@Schoolingo/modal';
 import { TabsComponent } from '@Components/Tabs';
 import moment from 'moment';
+import { NewReservationComponent } from '../modals/new-reservation/new-reservation.component';
 
 @Component({
   standalone: true,
@@ -20,7 +21,7 @@ import moment from 'moment';
   templateUrl: './reservations.component.html',
   styleUrls: ['./reservations.component.css']
 })
-export class ReservationsComponent implements OnInit {
+export class FleetVehiclesReservationsComponent implements OnInit {
   public l = inject(Locale);
   public perm = inject(Permission);
   public fleet = inject(FleetVehicles);
@@ -45,9 +46,13 @@ export class ReservationsComponent implements OnInit {
   ];
 
   // Filters
+  public searchQuery = '';
   public statusFilter: ReservationStatus | 'all' = 'all';
   public vehicleFilter: number | 'all' = 'all';
   public statuses: ReservationStatus[] = ['pending', 'approved', 'active', 'completed', 'rejected', 'cancelled'];
+  public dropdownManager = {
+    selected_dropdown: ''
+  };
 
   // New reservation form
   public showNewReservationForm = false;
@@ -66,12 +71,31 @@ export class ReservationsComponent implements OnInit {
     this.listeners.push(
       this.selectedTab.subscribe(() => this.filterReservations())
     );
+    
+    this.modalManager.addModal(
+      'fleetvehicles.new_reservation',
+      {
+        title: 'fleetvehicles.new_reservation',
+        closeable: true,
+        items: [
+          { type: 'component', component: NewReservationComponent }
+        ]
+      }
+    )
 
     // Check for vehicle param
     const vehicleId = this.route.snapshot.queryParamMap.get('vehicle');
     if (vehicleId) {
       this.vehicleFilter = parseInt(vehicleId);
     }
+
+    this.listeners.push(
+      this.route.queryParams.subscribe((data) => {
+      if ('vehicle' in data) {
+        this.vehicleFilter = parseInt(data['vehicle']);
+      }
+      })
+    )
   }
 
   ngOnDestroy(): void {
@@ -159,8 +183,21 @@ export class ReservationsComponent implements OnInit {
   public filterReservations(): void {
     const now = new Date();
     const tab = this.selectedTab.getValue();
+    const searchLower = this.searchQuery.toLowerCase();
 
     this.filteredReservations = this.reservations.filter(r => {
+      // Search filter
+      if (searchLower) {
+        const matchesSearch = 
+          r.vehicleName?.toLowerCase().includes(searchLower) ||
+          r.vehicleLicensePlate?.toLowerCase().includes(searchLower) ||
+          r.userName?.toLowerCase().includes(searchLower) ||
+          r.purpose.toLowerCase().includes(searchLower) ||
+          (r.destination && r.destination.toLowerCase().includes(searchLower));
+        
+        if (!matchesSearch) return false;
+      }
+
       // Tab filter
       if (tab === 0) { // Upcoming
         if (new Date(r.startDate) < now && r.status !== 'active') return false;
@@ -184,41 +221,27 @@ export class ReservationsComponent implements OnInit {
     );
   }
 
+  public clearFilters(): void {
+    this.searchQuery = '';
+    this.statusFilter = 'all';
+    this.vehicleFilter = 'all';
+    this.filterReservations();
+  }
+
+  public getPendingCount(): number {
+    return this.reservations.filter(r => r.status === 'pending').length;
+  }
+
+  public getApprovedCount(): number {
+    return this.reservations.filter(r => r.status === 'approved').length;
+  }
+
+  public getActiveCount(): number {
+    return this.reservations.filter(r => r.status === 'active').length;
+  }
+
   public openNewReservationForm(): void {
-    this.showNewReservationForm = true;
-    this.newReservation = {
-      vehicleId: this.vehicleFilter !== 'all' ? this.vehicleFilter : 0,
-      startDate: '',
-      endDate: '',
-      purpose: '',
-      destination: '',
-      notes: ''
-    };
-  }
-
-  public closeNewReservationForm(): void {
-    this.showNewReservationForm = false;
-  }
-
-  public submitReservation(): void {
-    if (!this.newReservation.vehicleId || !this.newReservation.startDate || !this.newReservation.endDate || !this.newReservation.purpose) {
-      return;
-    }
-
-    this.http.post(
-      `${Config.API_URL}/v1/fleetvehicles/reservations`,
-      this.newReservation,
-      { withCredentials: true }
-    ).subscribe({
-      next: () => {
-        this.closeNewReservationForm();
-        this.loadData();
-      },
-      error: () => {
-        // For now, just close the form
-        this.closeNewReservationForm();
-      }
-    });
+    this.modalManager.openModal('fleetvehicles.new_reservation');
   }
 
   public approveReservation(reservation: Reservation): void {
@@ -260,6 +283,10 @@ export class ReservationsComponent implements OnInit {
 
   public getStatusClass(status: ReservationStatus): string {
     return status;
+  }
+
+  public getDaysFromNowNumber(date: Date): number {
+    return moment(date).diff(moment(), 'days');
   }
 
   public getDaysFromNow(date: Date): string {

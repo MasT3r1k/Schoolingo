@@ -50,7 +50,8 @@
     } @else {
     <div class="vehicles-grid">
         @for (vehicle of filteredVehicles; track vehicle.vehicleId) {
-        <div class="vehicle-card" (click)="selectVehicle(vehicle.vehicleId)">
+        <div class="vehicle-card" [routerLink]="['/fleetvehicles/vehicles', vehicle.vehicleId]"
+            (click)="selectVehicle(vehicle.vehicleId)">
             <div class="vehicle-header">
                 <div class="vehicle-icon" [ngClass]="vehicle.type">
                     <i-tabler [name]="fleet.getVehicleTypeIcon(vehicle.type)"></i-tabler>
@@ -84,239 +85,310 @@
 
     } @else {
     <!-- Vehicle Detail -->
-    <div class="detail-header">
-        <button class="btn btn--ghost back-btn" (click)="goToList()">
-            <i-tabler name="arrow-left"></i-tabler>
-            {{ l.s('buttons.back') }}
-        </button>
-        @if (perm.checkPermission(['manager:fleetVehicles:manage'])) {
-        <div class="detail-actions">
-            <button class="btn btn--outline" (click)="openEditVehicleModal()">
-                <i-tabler name="edit"></i-tabler>
-                {{ l.s('buttons.edit') }}
+    <div class="detail-view">
+        <!-- Detail Header -->
+        <div class="detail-header">
+            <button class="btn-back" (click)="goToList()">
+                <i-tabler name="arrow-left"></i-tabler>
+                <span>{{ l.s('buttons.back') }}</span>
             </button>
+            @if (perm.checkPermission(['manager:fleetVehicles:manage'])) {
+            <div class="detail-actions">
+                <button class="action-btn" title="{{ l.s('buttons.edit') }}" (click)="openEditVehicleModal()">
+                    <i-tabler name="edit"></i-tabler>
+                </button>
+                <button class="action-btn more" title="Více akcí">
+                    <i-tabler name="dots-vertical"></i-tabler>
+                </button>
+            </div>
+            }
         </div>
-        }
-    </div>
 
-    @if (selectedVehicle) {
-    <div class="vehicle-detail">
-        <div class="detail-main">
-            <div class="detail-card primary">
-                <div class="vehicle-header-large">
-                    <div class="vehicle-icon-large" [ngClass]="selectedVehicle.type">
+        @if (selectedVehicle) {
+        <div class="detail-layout">
+            <!-- Sidebar Profile -->
+            <aside class="profile-sidebar">
+                <div class="profile-card">
+                    <div class="profile-vehicle-icon" [ngClass]="selectedVehicle.type">
                         <i-tabler [name]="fleet.getVehicleTypeIcon(selectedVehicle.type)"></i-tabler>
                     </div>
-                    <div class="vehicle-title">
-                        <h1>{{ selectedVehicle.name }}</h1>
-                        <span class="license-plate-large">{{ selectedVehicle.licensePlate }}</span>
+                    <h1 class="profile-name">{{ selectedVehicle.name }}</h1>
+                    <div class="profile-license">
+                        <i-tabler name="license"></i-tabler>
+                        {{ selectedVehicle.licensePlate }}
                     </div>
-                    <span class="vehicle-status-large" [ngClass]="selectedVehicle.status">
+                    <span class="status-badge" [ngClass]="'status-' + selectedVehicle.status">
                         {{ l.s(fleet.getVehicleStatusLabel(selectedVehicle.status)) }}
                     </span>
                 </div>
 
-                <div class="detail-grid">
-                    <div class="detail-item">
-                        <span class="label">{{ l.s('fleetvehicles.brand') }}</span>
-                        <span class="value">{{ selectedVehicle.brand }}</span>
-                    </div>
-                    <div class="detail-item">
-                        <span class="label">{{ l.s('fleetvehicles.model') }}</span>
-                        <span class="value">{{ selectedVehicle.model }}</span>
-                    </div>
-                    <div class="detail-item">
-                        <span class="label">{{ l.s('fleetvehicles.year') }}</span>
-                        <span class="value">{{ selectedVehicle.year }}</span>
-                    </div>
-                    <div class="detail-item">
-                        <span class="label">{{ l.s('fleetvehicles.color') }}</span>
-                        <span class="value">{{ selectedVehicle.color || '-' }}</span>
-                    </div>
-                    <div class="detail-item">
-                        <span class="label">{{ l.s('fleetvehicles.fuel_type') }}</span>
-                        <span class="value">{{ selectedVehicle.fuelType ? l.s('fleetvehicles.fuel.' +
-                            selectedVehicle.fuelType) : '-' }}</span>
-                    </div>
-                    <div class="detail-item">
-                        <span class="label">{{ l.s('fleetvehicles.mileage') }}</span>
-                        <span class="value">{{ formatMileage(selectedVehicle.mileage) }}</span>
-                    </div>
-                    <div class="detail-item">
-                        <span class="label">{{ l.s('fleetvehicles.capacity') }}</span>
-                        <span class="value">{{ selectedVehicle.capacity || '-' }} {{ l.s('fleetvehicles.seats')
-                            }}</span>
-                    </div>
-                    @if (selectedVehicle.vin) {
-                    <div class="detail-item full">
-                        <span class="label">VIN</span>
-                        <span class="value monospace">{{ selectedVehicle.vin }}</span>
-                    </div>
-                    }
-                </div>
-            </div>
-
-            <!-- Tabs -->
-            <div class="tabs-container">
-                <schoolingo-tabs [options]="tabOptions" [value]="selectedTab"></schoolingo-tabs>
-            </div>
-
-            <!-- Documents Tab -->
-            @if (selectedTab.getValue() === 1) {
-            <div class="documents-section">
-                <div class="section-header">
-                    <h3>{{ l.s('fleetvehicles.documents') }}</h3>
-                    @if (perm.checkPermission(['manager:fleetVehicles:manage'])) {
-                    <button class="btn btn--sm btn--outline">
-                        <i-tabler name="plus"></i-tabler>
-                        {{ l.s('fleetvehicles.add_document') }}
-                    </button>
-                    }
-                </div>
-
-                <!-- Highway Stickers -->
-                <div class="document-group">
-                    <h4>
-                        <i-tabler name="road"></i-tabler>
-                        {{ l.s('fleetvehicles.highway_stickers') }}
-                    </h4>
-                    <div class="stickers-info">
-                        <p class="info-note">
-                            <i-tabler name="info-circle"></i-tabler>
-                            {{ l.s('fleetvehicles.stickers_note') }}
-                        </p>
-                    </div>
-                    <div class="documents-list">
-                        @for (doc of vehicleDocuments; track doc.documentId) {
-                        @if (doc.type === 'highway_sticker') {
-                        <div class="document-row" [ngClass]="getExpiryClass(doc.validTo)">
-                            <div class="doc-country">
-                                <span class="country-code">{{ doc.country }}</span>
-                            </div>
-                            <div class="doc-dates">
-                                <span>{{ formatDate(doc.validFrom) }} - {{ formatDate(doc.validTo) }}</span>
-                            </div>
-                            <div class="doc-expiry" [ngClass]="getExpiryClass(doc.validTo)">
-                                @if (getDaysUntilExpiry(doc.validTo) < 0) { <span class="expired">{{
-                                    l.s('fleetvehicles.expired') }}</span>
-                                    } @else if (getDaysUntilExpiry(doc.validTo) <= 30) { <span>{{
-                                        getDaysUntilExpiry(doc.validTo) }} {{ l.s('fleetvehicles.days_left') }}</span>
-                                        } @else {
-                                        <span class="valid">{{ l.s('fleetvehicles.valid') }}</span>
-                                        }
-                            </div>
-                            @if (doc.cost) {
-                            <div class="doc-cost">
-                                {{ doc.cost }} Kč
-                            </div>
-                            }
+                <!-- Quick Stats -->
+                <div class="quick-stats">
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i-tabler name="gauge"></i-tabler>
                         </div>
-                        }
-                        }
-                    </div>
-                </div>
-
-                <!-- Other Documents -->
-                <div class="document-group">
-                    <h4>
-                        <i-tabler name="file-certificate"></i-tabler>
-                        {{ l.s('fleetvehicles.other_documents') }}
-                    </h4>
-                    <div class="documents-list">
-                        @for (doc of vehicleDocuments; track doc.documentId) {
-                        @if (doc.type !== 'highway_sticker') {
-                        <div class="document-row" [ngClass]="getExpiryClass(doc.validTo)">
-                            <div class="doc-type">
-                                @switch (doc.type) {
-                                @case ('insurance') {
-                                <i-tabler name="shield-check"></i-tabler>
-                                }
-                                @case ('inspection') {
-                                <i-tabler name="certificate"></i-tabler>
-                                }
-                                @case ('emission') {
-                                <i-tabler name="leaf"></i-tabler>
-                                }
-                                @default {
-                                <i-tabler name="file"></i-tabler>
-                                }
-                                }
-                                <span>{{ l.s(fleet.getDocumentTypeLabel(doc.type)) }}</span>
-                            </div>
-                            <div class="doc-dates">
-                                <span>{{ formatDate(doc.validFrom) }} - {{ formatDate(doc.validTo) }}</span>
-                            </div>
-                            <div class="doc-expiry" [ngClass]="getExpiryClass(doc.validTo)">
-                                @if (getDaysUntilExpiry(doc.validTo) < 0) { <span class="expired">{{
-                                    l.s('fleetvehicles.expired') }}</span>
-                                    } @else if (getDaysUntilExpiry(doc.validTo) <= 30) { <span>{{
-                                        getDaysUntilExpiry(doc.validTo) }} {{ l.s('fleetvehicles.days_left') }}</span>
-                                        } @else {
-                                        <span class="valid">{{ l.s('fleetvehicles.valid') }}</span>
-                                        }
-                            </div>
+                        <div class="stat-info">
+                            <span class="stat-value">{{ formatMileage(selectedVehicle.mileage) }}</span>
+                            <span class="stat-label">{{ l.s('fleetvehicles.mileage') }}</span>
                         </div>
-                        }
-                        }
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i-tabler name="users"></i-tabler>
+                        </div>
+                        <div class="stat-info">
+                            <span class="stat-value">{{ selectedVehicle.capacity || '-' }}</span>
+                            <span class="stat-label">{{ l.s('fleetvehicles.capacity') }}</span>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i-tabler name="calendar-check"></i-tabler>
+                        </div>
+                        <div class="stat-info">
+                            <span class="stat-value">0</span>
+                            <span class="stat-label">Rezervace</span>
+                        </div>
                     </div>
                 </div>
-            </div>
-            }
 
-            <!-- Info Tab (default) -->
-            @if (selectedTab.getValue() === 0) {
-            <div class="info-section">
+                <!-- Quick Info -->
                 @if (selectedVehicle.managerName) {
-                <div class="info-card">
-                    <h4>{{ l.s('fleetvehicles.vehicle_manager') }}</h4>
-                    <div class="manager-info">
+                <div class="quick-contact">
+                    <h3>Správce vozidla</h3>
+                    <div class="contact-item">
                         <i-tabler name="user"></i-tabler>
                         <span>{{ selectedVehicle.managerName }}</span>
                     </div>
                 </div>
                 }
-                @if (selectedVehicle.notes) {
-                <div class="info-card">
-                    <h4>{{ l.s('fleetvehicles.notes') }}</h4>
-                    <p>{{ selectedVehicle.notes }}</p>
-                </div>
-                }
-            </div>
-            }
+            </aside>
 
-            <!-- Reservations Tab -->
-            @if (selectedTab.getValue() === 2) {
-            <div class="reservations-section">
-                <div class="section-header">
-                    <h3>{{ l.s('fleetvehicles.vehicle_reservations') }}</h3>
-                    <a routerLink="/fleetvehicles/reservations" [queryParams]="{vehicle: selectedVehicle.vehicleId}"
-                        class="btn btn--sm btn--primary">
-                        <i-tabler name="plus"></i-tabler>
-                        {{ l.s('fleetvehicles.new_reservation') }}
-                    </a>
-                </div>
-                <div class="no-selection">
-                    <div class="illustration">
-                        <i-tabler name="calendar-off"></i-tabler>
-                    </div>
-                    <p>{{ l.s('fleetvehicles.no_reservations_for_vehicle') }}</p>
-                </div>
-            </div>
-            }
-
-            <!-- History Tab -->
-            @if (selectedTab.getValue() === 3) {
-            <div class="history-section">
-                <div class="no-selection">
-                    <div class="illustration">
+            <!-- Main Content -->
+            <main class="detail-main">
+                <!-- Tabs Navigation -->
+                <nav class="tabs-nav">
+                    <button class="tab-btn" [class.active]="selectedTab.getValue() === 0" (click)="selectedTab.next(0)">
+                        <i-tabler name="info-circle"></i-tabler>
+                        <span>Informace</span>
+                    </button>
+                    <button class="tab-btn" [class.active]="selectedTab.getValue() === 1" (click)="selectedTab.next(1)">
+                        <i-tabler name="file-certificate"></i-tabler>
+                        <span>{{ l.s('fleetvehicles.documents') }}</span>
+                    </button>
+                    <button class="tab-btn" [class.active]="selectedTab.getValue() === 2" (click)="selectedTab.next(2)">
+                        <i-tabler name="calendar"></i-tabler>
+                        <span>Rezervace</span>
+                    </button>
+                    <button class="tab-btn" [class.active]="selectedTab.getValue() === 3" (click)="selectedTab.next(3)">
                         <i-tabler name="history"></i-tabler>
+                        <span>Historie</span>
+                    </button>
+                </nav>
+
+                <!-- Tab Content -->
+                <div class="tab-content">
+                    <!-- Info Tab -->
+                    @if (selectedTab.getValue() === 0) {
+                    <div class="overview-grid">
+                        <div class="info-card">
+                            <div class="card-header">
+                                <i-tabler name="car"></i-tabler>
+                                <h3>Základní informace</h3>
+                            </div>
+                            <div class="info-list">
+                                <div class="info-row">
+                                    <span class="info-label">{{ l.s('fleetvehicles.brand') }}</span>
+                                    <span class="info-value">{{ selectedVehicle.brand }}</span>
+                                </div>
+                                <div class="info-row">
+                                    <span class="info-label">{{ l.s('fleetvehicles.model') }}</span>
+                                    <span class="info-value">{{ selectedVehicle.model }}</span>
+                                </div>
+                                <div class="info-row">
+                                    <span class="info-label">{{ l.s('fleetvehicles.year') }}</span>
+                                    <span class="info-value">{{ selectedVehicle.year }}</span>
+                                </div>
+                                <div class="info-row">
+                                    <span class="info-label">{{ l.s('fleetvehicles.color') }}</span>
+                                    <span class="info-value">{{ selectedVehicle.color || '-' }}</span>
+                                </div>
+                                <div class="info-row">
+                                    <span class="info-label">{{ l.s('fleetvehicles.fuel_type') }}</span>
+                                    <span class="info-value">{{ selectedVehicle.fuelType ? l.s('fleetvehicles.fuel.' +
+                                        selectedVehicle.fuelType) : '-' }}</span>
+                                </div>
+                                @if (selectedVehicle.vin) {
+                                <div class="info-row">
+                                    <span class="info-label">VIN</span>
+                                    <span class="info-value monospace">{{ selectedVehicle.vin }}</span>
+                                </div>
+                                }
+                            </div>
+                        </div>
+
+                        @if (selectedVehicle.notes) {
+                        <div class="info-card">
+                            <div class="card-header">
+                                <i-tabler name="notes"></i-tabler>
+                                <h3>{{ l.s('fleetvehicles.notes') }}</h3>
+                            </div>
+                            <div class="notes-content">
+                                <p>{{ selectedVehicle.notes }}</p>
+                            </div>
+                        </div>
+                        }
                     </div>
-                    <p>{{ l.s('fleetvehicles.no_history') }}</p>
+                    }
+
+                    <!-- Documents Tab -->
+                    @if (selectedTab.getValue() === 1) {
+                    <div class="section-grid">
+                        <div class="info-card full">
+                            <div class="card-header">
+                                <i-tabler name="file-certificate"></i-tabler>
+                                <h3>{{ l.s('fleetvehicles.documents') }}</h3>
+                                @if (perm.checkPermission(['manager:fleetVehicles:manage'])) {
+                                <button class="card-action-btn">
+                                    <i-tabler name="plus"></i-tabler>
+                                    {{ l.s('fleetvehicles.add_document') }}
+                                </button>
+                                }
+                            </div>
+
+                            <!-- Highway Stickers -->
+                            <div class="document-group">
+                                <h4>
+                                    <i-tabler name="road"></i-tabler>
+                                    {{ l.s('fleetvehicles.highway_stickers') }}
+                                </h4>
+                                <div class="stickers-info">
+                                    <p class="info-note">
+                                        <i-tabler name="info-circle"></i-tabler>
+                                        {{ l.s('fleetvehicles.stickers_note') }}
+                                    </p>
+                                </div>
+                                <div class="documents-list">
+                                    @for (doc of vehicleDocuments; track doc.documentId) {
+                                    @if (doc.type === 'highway_sticker') {
+                                    <div class="document-row" [ngClass]="getExpiryClass(doc.validTo)">
+                                        <div class="doc-country">
+                                            <span class="country-code">{{ doc.country }}</span>
+                                        </div>
+                                        <div class="doc-dates">
+                                            <span>{{ formatDate(doc.validFrom) }} - {{ formatDate(doc.validTo) }}</span>
+                                        </div>
+                                        <div class="doc-expiry" [ngClass]="getExpiryClass(doc.validTo)">
+                                            @if (getDaysUntilExpiry(doc.validTo) < 0) { <span class="expired">{{
+                                                l.s('fleetvehicles.expired') }}</span>
+                                                } @else if (getDaysUntilExpiry(doc.validTo) <= 30) { <span>{{
+                                                    getDaysUntilExpiry(doc.validTo) }} {{ l.s('fleetvehicles.days_left')
+                                                    }}</span>
+                                                    } @else {
+                                                    <span class="valid">{{ l.s('fleetvehicles.valid') }}</span>
+                                                    }
+                                        </div>
+                                        @if (doc.cost) {
+                                        <div class="doc-cost">
+                                            {{ doc.cost }} Kč
+                                        </div>
+                                        }
+                                    </div>
+                                    }
+                                    }
+                                </div>
+                            </div>
+
+                            <!-- Other Documents -->
+                            <div class="document-group">
+                                <h4>
+                                    <i-tabler name="file-certificate"></i-tabler>
+                                    {{ l.s('fleetvehicles.other_documents') }}
+                                </h4>
+                                <div class="documents-list">
+                                    @for (doc of vehicleDocuments; track doc.documentId) {
+                                    @if (doc.type !== 'highway_sticker') {
+                                    <div class="document-row" [ngClass]="getExpiryClass(doc.validTo)">
+                                        <div class="doc-type">
+                                            @switch (doc.type) {
+                                            @case ('insurance') {
+                                            <i-tabler name="shield-check"></i-tabler>
+                                            }
+                                            @case ('inspection') {
+                                            <i-tabler name="certificate"></i-tabler>
+                                            }
+                                            @case ('emission') {
+                                            <i-tabler name="leaf"></i-tabler>
+                                            }
+                                            @default {
+                                            <i-tabler name="file"></i-tabler>
+                                            }
+                                            }
+                                            <span>{{ l.s(fleet.getDocumentTypeLabel(doc.type)) }}</span>
+                                        </div>
+                                        <div class="doc-dates">
+                                            <span>{{ formatDate(doc.validFrom) }} - {{ formatDate(doc.validTo) }}</span>
+                                        </div>
+                                        <div class="doc-expiry" [ngClass]="getExpiryClass(doc.validTo)">
+                                            @if (getDaysUntilExpiry(doc.validTo) < 0) { <span class="expired">{{
+                                                l.s('fleetvehicles.expired') }}</span>
+                                                } @else if (getDaysUntilExpiry(doc.validTo) <= 30) { <span>{{
+                                                    getDaysUntilExpiry(doc.validTo) }} {{ l.s('fleetvehicles.days_left')
+                                                    }}</span>
+                                                    } @else {
+                                                    <span class="valid">{{ l.s('fleetvehicles.valid') }}</span>
+                                                    }
+                                        </div>
+                                    </div>
+                                    }
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    }
+
+                    <!-- Reservations Tab -->
+                    @if (selectedTab.getValue() === 2) {
+                    <div class="section-grid">
+                        <div class="info-card full">
+                            <div class="card-header">
+                                <i-tabler name="calendar"></i-tabler>
+                                <h3>{{ l.s('fleetvehicles.vehicle_reservations') }}</h3>
+                                <a routerLink="/fleetvehicles/reservations"
+                                    [queryParams]="{vehicle: selectedVehicle.vehicleId}" class="card-link-btn">
+                                    <i-tabler name="plus"></i-tabler>
+                                    {{ l.s('fleetvehicles.new_reservation') }}
+                                </a>
+                            </div>
+                            <div class="empty-state small">
+                                <i-tabler name="calendar-off"></i-tabler>
+                                <p>{{ l.s('fleetvehicles.no_reservations_for_vehicle') }}</p>
+                            </div>
+                        </div>
+                    </div>
+                    }
+
+                    <!-- History Tab -->
+                    @if (selectedTab.getValue() === 3) {
+                    <div class="section-grid">
+                        <div class="info-card full">
+                            <div class="card-header">
+                                <i-tabler name="history"></i-tabler>
+                                <h3>Historie vozidla</h3>
+                            </div>
+                            <div class="empty-state small">
+                                <i-tabler name="history"></i-tabler>
+                                <p>{{ l.s('fleetvehicles.no_history') }}</p>
+                            </div>
+                        </div>
+                    </div>
+                    }
                 </div>
-            </div>
-            }
+            </main>
         </div>
+        }
     </div>
-    }
     }
 </div>

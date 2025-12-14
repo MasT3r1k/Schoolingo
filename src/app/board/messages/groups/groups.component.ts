@@ -137,6 +137,22 @@ export class GroupsComponent implements OnInit {
     return this.groups.filter(g => g.type !== 'class');
   }
 
+  get teachers(): Member[] {
+    return this.members.filter(m => m.role === 'teacher');
+  }
+
+  get onlineStudents(): Member[] {
+    return this.members.filter(m => m.role === 'student' && m.status === 'online');
+  }
+
+  get offlineMembers(): Member[] {
+    return this.members.filter(m => m.status !== 'online');
+  }
+
+  get offlineStudents(): Member[] {
+    return this.members.filter(m => m.role === 'student' && m.status !== 'online');
+  }
+
   ngOnInit(): void {
     this.loadGroups();
     // Default to Home or first group

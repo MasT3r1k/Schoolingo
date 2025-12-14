@@ -5,6 +5,7 @@ import { BehaviorSubject } from "rxjs";
 export type VehicleType = 'car' | 'van' | 'bus' | 'minibus' | 'truck' | 'motorcycle';
 export type VehicleStatus = 'available' | 'reserved' | 'maintenance' | 'unavailable';
 export type FuelType = 'petrol' | 'diesel' | 'electric' | 'hybrid' | 'lpg' | 'cng';
+export type VehicleGearbox = 'manual' | 'automatic';
 
 // Document Types
 export type DocumentType = 'highway_sticker' | 'insurance' | 'inspection' | 'emission' | 'other';
@@ -12,6 +13,25 @@ export type DocumentType = 'highway_sticker' | 'insurance' | 'inspection' | 'emi
 // Reservation Types
 export type ReservationStatus = 'pending' | 'approved' | 'rejected' | 'active' | 'completed' | 'cancelled';
 export type ApprovalMode = 'auto' | 'manager_approval' | 'free';
+
+export const LICENSE_PLATES = [
+  { code: 'CZ', name: 'Česká republika', type: 'europe' },
+  { code: 'A', name: 'Rakousko', type: 'europe' },
+  { code: 'B', name: 'Belgie', type: 'europe' },
+  { code: 'BG', name: 'Bulharsko', type: 'europe' },
+  { code: 'HR', name: 'Chorvatsko', type: 'europe' },
+  { code: 'CY', name: 'Kypr', type: 'europe' },
+  { code: 'DK', name: 'Dánsko', type: 'europe' },
+  { code: 'EST', name: 'Estonsko', type: 'europe' },
+  { code: 'FIN', name: 'Finsko', type: 'europe' },
+  { code: 'F', name: 'Francie', type: 'europe' },
+  { code: 'D', name: 'Německo', type: 'europe' },
+  { code: 'GR', name: 'Řecko', type: 'europe' },
+  { code: 'H', name: 'Maďarsko', type: 'europe' },
+  { code: 'IRL', name: 'Irsko', type: 'europe' },
+  { code: 'I', name: 'Itálie', type: 'europe' },
+  { code: 'LV', name: 'Lotyšsko', type: 'europe' },
+]
 
 // Highway Sticker Countries (with paid vignettes)
 export const HIGHWAY_STICKER_COUNTRIES = [

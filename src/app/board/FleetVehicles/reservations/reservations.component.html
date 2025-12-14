@@ -1,166 +1,197 @@
 <div class="card">
+    <!-- Page Header -->
     <div class="card-header">
-        <h2>{{ l.s('fleetvehicles.reservations') }}</h2>
-        <button class="btn btn--primary" (click)="openNewReservationForm()">
+        <div class="header-title">
+            <h2>{{ l.s('fleetvehicles.reservations.title') }}</h2>
+            <p class="header-subtitle">Správa a přehled všech rezervací vozidel</p>
+        </div>
+        <button class="btn btn--gradient" (click)="openNewReservationForm()">
             <i-tabler name="plus"></i-tabler>
             {{ l.s('fleetvehicles.new_reservation') }}
         </button>
     </div>
 
-    <!-- Tabs -->
-    <div class="tabs-row">
-        <schoolingo-tabs [options]="tabOptions" [value]="selectedTab"></schoolingo-tabs>
-    </div>
-
-    <!-- Filters -->
-    <div class="filters">
-        <div class="filter-group">
-            <select [(ngModel)]="statusFilter" (change)="filterReservations()">
-                <option value="all">{{ l.s('fleetvehicles.all_statuses') }}</option>
-                @for (status of statuses; track status) {
-                <option [value]="status">{{ l.s('fleetvehicles.status.' + status) }}</option>
-                }
-            </select>
-            <select [(ngModel)]="vehicleFilter" (change)="filterReservations()">
-                <option value="all">{{ l.s('fleetvehicles.all_vehicles') }}</option>
-                @for (vehicle of vehicles; track vehicle.vehicleId) {
-                <option [ngValue]="vehicle.vehicleId">{{ vehicle.name }} ({{ vehicle.licensePlate }})</option>
-                }
-            </select>
+    <!-- Stats Cards -->
+    <div class="stats-cards">
+        <div class="stat-card stat--warning">
+            <div class="stat-icon">
+                <i-tabler name="clock"></i-tabler>
+            </div>
+            <div class="stat-info">
+                <span class="stat-value">{{ getPendingCount() }}</span>
+                <span class="stat-label">Čekající</span>
+            </div>
+        </div>
+        <div class="stat-card stat--success">
+            <div class="stat-icon">
+                <i-tabler name="check"></i-tabler>
+            </div>
+            <div class="stat-info">
+                <span class="stat-value">{{ getApprovedCount() }}</span>
+                <span class="stat-label">Schválené</span>
+            </div>
+        </div>
+        <div class="stat-card stat--primary">
+            <div class="stat-icon">
+                <i-tabler name="car"></i-tabler>
+            </div>
+            <div class="stat-info">
+                <span class="stat-value">{{ getActiveCount() }}</span>
+                <span class="stat-label">Aktivní</span>
+            </div>
+        </div>
+        <div class="stat-card stat--info">
+            <div class="stat-icon">
+                <i-tabler name="calendar-stats"></i-tabler>
+            </div>
+            <div class="stat-info">
+                <span class="stat-value">{{ reservations.length }}</span>
+                <span class="stat-label">Celkem</span>
+            </div>
         </div>
     </div>
 
-    <!-- New Reservation Form -->
-    @if (showNewReservationForm) {
-    <div class="reservation-form-overlay" (click)="closeNewReservationForm()">
-        <div class="reservation-form" (click)="$event.stopPropagation()">
-            <div class="form-header">
-                <h2>{{ l.s('fleetvehicles.new_reservation') }}</h2>
-                <button class="close-btn" (click)="closeNewReservationForm()">
-                    <i-tabler name="x"></i-tabler>
-                </button>
+    <!-- Main Content Card -->
+    <div class="card-body">
+        <!-- Toolbar -->
+        <div class="toolbar">
+            <div class="toolbar-left">
+                <div class="search-box">
+                    <i-tabler name="search"></i-tabler>
+                    <input type="search" placeholder="Hledat..." [(ngModel)]="searchQuery"
+                        (input)="filterReservations()">
+                </div>
             </div>
-            <div class="form-body">
-                <div class="form-group">
-                    <label>{{ l.s('fleetvehicles.vehicle') }} *</label>
-                    <select [(ngModel)]="newReservation.vehicleId" required>
-                        <option value="0" disabled>{{ l.s('fleetvehicles.select_vehicle') }}</option>
-                        @for (vehicle of vehicles; track vehicle.vehicleId) {
-                        @if (vehicle.status === 'available') {
-                        <option [ngValue]="vehicle.vehicleId">{{ vehicle.name }} ({{ vehicle.licensePlate }})</option>
+            <div class="toolbar-right">
+                <schoolingo-tabs [options]="tabOptions" [value]="selectedTab"></schoolingo-tabs>
+
+                <!-- <div class="search-box">
+                    <i-tabler name="search"></i-tabler>
+                    <input type="search" placeholder="Hledat..." [(ngModel)]="searchQuery"
+                        (input)="filterReservations()">
+                </div> -->
+                <!-- <div class="filter-buttons">
+                    <button class="btn btn--secondary btn--sm" [class.active]="statusFilter === 'all'"
+                        (click)="statusFilter = 'all'; filterReservations()">
+                        Vše
+                    </button>
+                    <button class="btn btn--secondary btn--sm" [class.active]="statusFilter === 'pending'"
+                        (click)="statusFilter = 'pending'; filterReservations()">
+                        <span class="status-dot pending"></span>
+                        Čekající
+                    </button>
+                    <button class="btn btn--secondary btn--sm" [class.active]="statusFilter === 'approved'"
+                        (click)="statusFilter = 'approved'; filterReservations()">
+                        <span class="status-dot approved"></span>
+                        Schválené
+                    </button>
+                    <button class="btn btn--secondary btn--sm" [class.active]="statusFilter === 'active'"
+                        (click)="statusFilter = 'active'; filterReservations()">
+                        <span class="status-dot active"></span>
+                        Aktivní
+                    </button>
+                </div> -->
+            </div>
+        </div>
+
+        <!-- Reservations Content -->
+        @if (loading) {
+        <div class="loading-state">
+            <div class="loader"></div>
+            <p>Načítání rezervací...</p>
+        </div>
+        } @else if (filteredReservations.length === 0) {
+        <div class="empty-state">
+            <div class="empty-illustration">
+                <i-tabler name="calendar-off"></i-tabler>
+            </div>
+            <h3>Žádné rezervace</h3>
+            <p>{{ l.s('fleetvehicles.no_reservations_desc') }}</p>
+            <button class="btn btn--primary" (click)="openNewReservationForm()">
+                <i-tabler name="plus"></i-tabler>
+                Vytvořit první rezervaci
+            </button>
+        </div>
+        } @else {
+        <div class="reservations-grid">
+            @for (reservation of filteredReservations; track reservation.reservationId) {
+            <div class="reservation-card" [class]="reservation.status">
+                <!-- Card Header with Gradient -->
+                <div class="card-top" [class]="reservation.status">
+                    <div class="status-badge" [class]="reservation.status">
+                        @switch (reservation.status) {
+                        @case ('pending') { <i-tabler name="clock"></i-tabler> }
+                        @case ('approved') { <i-tabler name="check"></i-tabler> }
+                        @case ('active') { <i-tabler name="car"></i-tabler> }
+                        @case ('completed') { <i-tabler name="checks"></i-tabler> }
+                        @case ('rejected') { <i-tabler name="x"></i-tabler> }
+                        @case ('cancelled') { <i-tabler name="ban"></i-tabler> }
                         }
-                        }
-                    </select>
-                </div>
-                <div class="form-row">
-                    <div class="form-group">
-                        <label>{{ l.s('fleetvehicles.start_date') }} *</label>
-                        <input type="date" [(ngModel)]="newReservation.startDate" required />
+                        {{ l.s('fleetvehicles.status.' + reservation.status) }}
                     </div>
-                    <div class="form-group">
-                        <label>{{ l.s('fleetvehicles.end_date') }} *</label>
-                        <input type="date" [(ngModel)]="newReservation.endDate" required />
-                    </div>
+                    <span class="date-badge">
+                        {{ getDaysFromNow(reservation.startDate) }}
+                    </span>
                 </div>
-                <div class="form-group">
-                    <label>{{ l.s('fleetvehicles.purpose') }} *</label>
-                    <input type="text" [(ngModel)]="newReservation.purpose"
-                        placeholder="{{ l.s('fleetvehicles.purpose_placeholder') }}" required />
-                </div>
-                <div class="form-group">
-                    <label>{{ l.s('fleetvehicles.destination') }}</label>
-                    <input type="text" [(ngModel)]="newReservation.destination"
-                        placeholder="{{ l.s('fleetvehicles.destination_placeholder') }}" />
-                </div>
-                <div class="form-group">
-                    <label>{{ l.s('fleetvehicles.notes') }}</label>
-                    <textarea [(ngModel)]="newReservation.notes" rows="3"
-                        placeholder="{{ l.s('fleetvehicles.notes_placeholder') }}"></textarea>
-                </div>
-            </div>
-            <div class="form-footer">
-                <button class="btn btn--ghost" (click)="closeNewReservationForm()">
-                    {{ l.s('buttons.cancel') }}
-                </button>
-                <button class="btn btn--primary" (click)="submitReservation()">
-                    <i-tabler name="calendar-plus"></i-tabler>
-                    {{ l.s('fleetvehicles.create_reservation') }}
-                </button>
-            </div>
-        </div>
-    </div>
-    }
 
-    <!-- Reservations List -->
-    @if (loading) {
-    <div class="loading-state">
-        <div class="loader"></div>
-    </div>
-    } @else if (filteredReservations.length === 0) {
-    <div class="no-selection">
-        <div class="illustration">
-            <i-tabler name="calendar-off"></i-tabler>
-        </div>
-        <h3>{{ l.s('fleetvehicles.no_reservations') }}</h3>
-        <p>{{ l.s('fleetvehicles.no_reservations_desc') }}</p>
-        <button class="btn btn--primary" (click)="openNewReservationForm()">
-            <i-tabler name="plus"></i-tabler>
-            {{ l.s('fleetvehicles.create_first_reservation') }}
-        </button>
-    </div>
-    } @else {
-    <div class="reservations-list">
-        @for (reservation of filteredReservations; track reservation.reservationId) {
-        <div class="reservation-card" [ngClass]="reservation.status">
-            <div class="reservation-header">
-                <div class="vehicle-info">
-                    <i-tabler [name]="fleet.getVehicleTypeIcon('car')"></i-tabler>
-                    <div>
-                        <span class="vehicle-name">{{ reservation.vehicleName }}</span>
-                        <span class="vehicle-plate">{{ reservation.vehicleLicensePlate }}</span>
+                <!-- Vehicle Info -->
+                <div class="card-vehicle">
+                    <div class="vehicle-avatar">
+                        <i-tabler [name]="fleet.getVehicleTypeIcon('car')"></i-tabler>
+                    </div>
+                    <div class="vehicle-details">
+                        <h4>{{ reservation.vehicleName }}</h4>
+                        <span class="license-plate">{{ reservation.vehicleLicensePlate }}</span>
                     </div>
                 </div>
-                <span class="reservation-status" [ngClass]="reservation.status">
-                    {{ l.s('fleetvehicles.status.' + reservation.status) }}
-                </span>
-            </div>
-            <div class="reservation-body">
-                <div class="reservation-dates">
-                    <i-tabler name="calendar"></i-tabler>
-                    <span class="date-range">{{ formatDateRange(reservation.startDate, reservation.endDate) }}</span>
-                    <span class="date-relative">{{ getDaysFromNow(reservation.startDate) }}</span>
+
+                <!-- Date & Time -->
+                <div class="card-datetime">
+                    <div class="datetime-row">
+                        <i-tabler name="calendar-event"></i-tabler>
+                        <div class="datetime-content">
+                            <span class="datetime-label">Termín</span>
+                            <span class="datetime-value">
+                                {{ formatDateRange(reservation.startDate, reservation.endDate) }}
+                            </span>
+                        </div>
+                    </div>
                 </div>
-                <div class="reservation-details">
-                    <div class="detail-item">
-                        <span class="label">{{ l.s('fleetvehicles.purpose') }}:</span>
-                        <span class="value">{{ reservation.purpose }}</span>
+
+                <!-- Purpose & Details -->
+                <div class="card-info">
+                    <div class="info-item">
+                        <i-tabler name="target"></i-tabler>
+                        <span>{{ reservation.purpose }}</span>
                     </div>
                     @if (reservation.destination) {
-                    <div class="detail-item">
-                        <span class="label">{{ l.s('fleetvehicles.destination') }}:</span>
-                        <span class="value">{{ reservation.destination }}</span>
+                    <div class="info-item">
+                        <i-tabler name="map-pin"></i-tabler>
+                        <span>{{ reservation.destination }}</span>
                     </div>
                     }
-                    <div class="detail-item">
-                        <span class="label">{{ l.s('fleetvehicles.reserved_by') }}:</span>
-                        <span class="value">{{ reservation.userName }}</span>
+                    <div class="info-item">
+                        <i-tabler name="user"></i-tabler>
+                        <span>{{ reservation.userName }}</span>
                     </div>
                 </div>
-            </div>
-            @if (reservation.status === 'pending' && perm.checkPermission(['manager:fleetVehicles:approve'])) {
-            <div class="reservation-actions">
-                <button class="btn btn--sm btn--success" (click)="approveReservation(reservation)">
-                    <i-tabler name="check"></i-tabler>
-                    {{ l.s('fleetvehicles.approve') }}
-                </button>
-                <button class="btn btn--sm btn--danger" (click)="rejectReservation(reservation)">
-                    <i-tabler name="x"></i-tabler>
-                    {{ l.s('fleetvehicles.reject') }}
-                </button>
+
+                <!-- Actions -->
+                @if (reservation.status === 'pending' && perm.checkPermission(['manager:fleetVehicles:approve'])) {
+                <div class="card-actions">
+                    <button class="action-btn approve" (click)="approveReservation(reservation)" title="Schválit">
+                        <i-tabler name="check"></i-tabler>
+                        Schválit
+                    </button>
+                    <button class="action-btn reject" (click)="rejectReservation(reservation)" title="Zamítnout">
+                        <i-tabler name="x"></i-tabler>
+                        Zamítnout
+                    </button>
+                </div>
+                }
             </div>
             }
         </div>
         }
     </div>
-    }
 </div>

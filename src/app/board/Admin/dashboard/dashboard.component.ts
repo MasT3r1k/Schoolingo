@@ -5,6 +5,16 @@ import { IconsModule } from '@Schoolingo/icons';
 import { HttpClient } from '@angular/common/http';
 import { Config } from '@Schoolingo/config';
 import { Utils } from '@Schoolingo/utils';
+import { TabsComponent } from '@Components/Tabs';
+import { BehaviorSubject } from 'rxjs';
+
+enum ViewSelector {
+  overview,
+  classes,
+  subjects,
+  teachers,
+  risks
+}
 
 interface StudentRisk {
   student_id: number;
@@ -20,6 +30,8 @@ interface StudentRisk {
 interface ClassStats {
   class_id: number;
   class_name: string;
+  group_name: string;
+  group_num: string;
   student_count: number;
   average_grade: number;
   absence_rate: number;
@@ -52,11 +64,12 @@ interface AbsenceHeatmap {
 
 @Component({
   standalone: true,
-  imports: [CommonModule, IconsModule],
+  imports: [CommonModule, IconsModule, TabsComponent],
   templateUrl: './dashboard.component.html',
   styleUrl: './dashboard.component.css'
 })
 export class DashboardComponent implements OnInit {
+  ViewSelector = ViewSelector;
   public l = inject(Locale);
   private http = inject(HttpClient);
   public Utils = Utils
@@ -86,7 +99,7 @@ export class DashboardComponent implements OnInit {
   // Absence heatmap data
   public absenceHeatmap: AbsenceHeatmap[] = [];
 
-  public selectedView: 'overview' | 'classes' | 'subjects' | 'teachers' | 'risks' = 'overview';
+  public selectedView = new BehaviorSubject<ViewSelector>(0);
 
   ngOnInit(): void {
     this.http.get(

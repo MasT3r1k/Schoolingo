@@ -95,6 +95,113 @@
     color: white;
 }
 
+/* Filters Row Container */
+.filters-row-container {
+    display: flex;
+    gap: 0.75rem;
+    margin-bottom: 20px;
+    position: relative;
+    z-index: 10;
+}
+
+.search-wrapper.full-width {
+    flex: 1;
+    width: auto;
+}
+
+.filter-dropdown-wrapper {
+    position: relative;
+}
+
+.filters-dropdown {
+    position: absolute;
+    top: calc(100% + 0.5rem);
+    right: 0;
+    width: 400px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+    padding: 1.5rem;
+    z-index: 100;
+    animation: slideDown 0.2s ease-out;
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.filters-dropdown h3 {
+    margin: 0 0 1.25rem 0;
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--text);
+    padding-bottom: 0.75rem;
+    border-bottom: 1px solid var(--border);
+}
+
+.filters-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.25rem;
+}
+
+.filter-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.filter-group.full-width {
+    grid-column: 1 / -1;
+}
+
+.filter-group label {
+    font-size: 0.8125rem;
+    font-weight: 500;
+    color: var(--text-muted);
+}
+
+.range-inputs {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.range-sep {
+    color: var(--text-muted);
+}
+
+.checkbox-label {
+    display: flex;
+    align-items: center;
+    gap: 0.625rem;
+    cursor: pointer;
+}
+
+.checkbox-text {
+    font-size: 0.9375rem;
+    color: var(--text);
+}
+
+.dropdown-footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.75rem;
+    margin-top: 1.5rem;
+    padding-top: 1rem;
+    border-top: 1px solid var(--border);
+}
+
+/* Original filters (legacy or specific overrides) */
 .filters-row {
     display: flex;
     gap: 0.75rem;
@@ -690,7 +797,67 @@
     gap: 1rem;
 }
 
-/* Info Card */
+/* ================================
+   PAGINATION (Datalist Style)
+   ================================ */
+.bottom {
+    padding: 1rem 1.25rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-top: 1px solid var(--border);
+    margin-top: auto;
+    background: var(--surface);
+    border-radius: 0 0 var(--radius) var(--radius);
+}
+
+.bottom>div {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+
+.page {
+    background-color: transparent;
+    cursor: pointer;
+    width: 2rem;
+    height: 2rem;
+    transition: all 0.2s ease;
+    user-select: none;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: var(--radius);
+    margin: 0 0.125rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--text);
+    border: 1px solid transparent;
+}
+
+.page:hover {
+    background-color: var(--surface-2);
+    color: var(--text);
+}
+
+.page.active {
+    background-color: var(--primary);
+    color: #fff;
+    font-weight: 600;
+}
+
+.page.disabled {
+    opacity: 0.5;
+    pointer-events: none;
+    background: transparent;
+}
+
+.pagination-info {
+    font-size: 0.875rem;
+    color: var(--text-muted);
+    font-weight: 500;
+}
+
 .info-card {
     background: var(--surface);
     border: 1px solid var(--border);

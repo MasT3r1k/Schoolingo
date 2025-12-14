@@ -1,36 +1,14 @@
 <div class="card">
     <div class="card-top"></div>
     <div class="card-header">
-        <h2>
-            {{ l.s('sidebar.management') }}
-        </h2>
-        <div class="view-selector">
-            <div class="view-btn" [class.active]="selectedView === 'overview'" (click)="selectedView = 'overview'">
-                <i-tabler name="dashboard"></i-tabler>
-                Přehled
-            </div>
-            <div class="view-btn" [class.active]="selectedView === 'classes'" (click)="selectedView = 'classes'">
-                <i-tabler name="school"></i-tabler>
-                Třídy
-            </div>
-            <div class="view-btn" [class.active]="selectedView === 'subjects'" (click)="selectedView = 'subjects'">
-                <i-tabler name="book"></i-tabler>
-                Předměty
-            </div>
-            <div class="view-btn" [class.active]="selectedView === 'teachers'" (click)="selectedView = 'teachers'">
-                <i-tabler name="users"></i-tabler>
-                Učitelé
-            </div>
-            <div class="view-btn" [class.active]="selectedView === 'risks'" (click)="selectedView = 'risks'">
-                <i-tabler name="alert-triangle"></i-tabler>
-                Rizika
-            </div>
-        </div>
+        <h2>{{ l.s('sidebar.management') }}</h2>
+        <schoolingo-tabs [options]="['dashboard.overview', 'dashboard.classes', 'subjects', 'dashboard.teachers', 'dashboard.risks']" [icons]="['dashboard', 'school', 'book', 'users', 'alert-triangle']" [value]="selectedView"></schoolingo-tabs>
     </div>
 
     <div class="card-body">
+        @switch (selectedView.getValue()) {
+            @case(ViewSelector.overview) {
         <!-- OVERVIEW -->
-        @if (selectedView === 'overview') {
         <div class="overview-grid">
             <!-- Stats Cards -->
             <div class="stats-cards">
@@ -41,7 +19,13 @@
                     <div class="stat-info">
                         <div class="stat-value">
                             {{ Utils.formatNumber(schoolStats.totalStudents) }}
-                            <span class="muted">ze {{ schoolStats.limitStudents == -1 ? 'NEOMEZENO' : schoolStats.limitStudents }}</span>
+                            <span class="muted">ze 
+                                @if (schoolStats.limitStudents == -1) {
+                                    <span style="color: var(--primary-100);font-weight: 500;">NEOMEZENO</span> 
+                                } @else {
+                                    {{ schoolStats.limitStudents }}
+                                }
+                            </span>
                         </div>
                         <div class="stat-label">Celkem studentů</div>
                     </div>
@@ -162,10 +146,9 @@
                 </div>
             </div>
         </div>
-        }
-
+            }
+            @case (ViewSelector.classes) {
         <!-- CLASSES VIEW -->
-        @if (selectedView === 'classes') {
         <div class="classes-view">
             <div class="section-card">
                 <div class="section-header">
@@ -188,7 +171,16 @@
                     @for (classItem of classStats; track $index) {
                     <div class="class-card">
                         <div class="class-header">
-                            <h4>{{ classItem.class_name }}</h4>
+                            <h4>
+                                {{ classItem.class_name }}
+                                @if (classItem.group_name != null || classItem.group_num != null) {
+                                <small class="muted">
+                                {{ classItem.group_name || 'sk.' }}
+                                {{ classItem.group_num }}
+                                </small>
+                                }
+                            
+                            </h4>
                             <i-tabler [name]="getTrendIcon(classItem.trend)"
                                 [class]="'trend-' + classItem.trend"></i-tabler>
                         </div>
@@ -217,10 +209,9 @@
                 </div>
             </div>
         </div>
-        }
-
+            }
+            @case(ViewSelector.subjects) {
         <!-- SUBJECTS VIEW -->
-        @if (selectedView === 'subjects') {
         <div class="subjects-view">
             <div class="section-card">
                 <div class="section-header">
@@ -267,10 +258,9 @@
                 </div>
             </div>
         </div>
-        }
-
+            }
+            @case (ViewSelector.teachers) {
         <!-- TEACHERS VIEW -->
-        @if (selectedView === 'teachers') {
         <div class="teachers-view">
             <div class="section-card">
                 <div class="section-header">
@@ -317,10 +307,9 @@
                 </div>
             </div>
         </div>
-        }
-
+            }
+            @case(ViewSelector.risks) {
         <!-- RISKS VIEW -->
-        @if (selectedView === 'risks') {
         <div class="risks-view">
             <div class="section-card">
                 <div class="section-header">
@@ -363,6 +352,7 @@
                 </div>
             </div>
         </div>
+            }
         }
     </div>
 </div>

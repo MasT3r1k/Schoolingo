@@ -34,34 +34,64 @@ import { MidtermComponent } from './board/marks/midterm/midterm.component';
 import { StudentsComponent } from './board/students/students.component';
 import { DashboardComponent } from './board/Admin/dashboard/dashboard.component';
 import { PollsComponent } from './board/polls/polls.component';
+import { FleetVehiclesComponent } from './board/FleetVehicles/vehicles/vehicles.component';
+import { FleetVehiclesReservationsComponent } from './board/FleetVehicles/reservations/reservations.component';
+import { FleetVehiclesOverviewComponent } from './board/FleetVehicles/overview/overview.component';
+import { FleetVehiclesSettingsComponent } from './board/FleetVehicles/settings/settings.component';
+import { TutoringComponent } from './board/schedule/tutoring/tutoring.component';
+import { SubstitutionComponent } from './board/Teach/substitution/substitution.component';
+import { SubjectsComponent } from './board/Teach/subjects/subjects.component';
+import { RewardsComponent } from './board/Teach/rewards/rewards.component';
+import { MeasuresComponent } from './board/Teach/measures/measures.component';
+import { SentComponent } from './board/messages/sent/sent.component';
+import { ArchiveComponent } from './board/Admin/archive/archive.component';
+import { BackupComponent } from './board/Admin/backup/backup.component';
+import { CatalogComponent } from './board/library/pages/catalog/catalog.component';
+import { ManagerComponent } from './board/library/pages/manager/manager.component';
+import { PollCreateComponent } from './board/polls/poll-create/poll-create.component';
+import { PollVoteComponent } from './board/polls/poll-vote/poll-vote.component';
+import { PollResultsComponent } from './board/polls/poll-results/poll-results.component';
 
 
 export const routes: Routes = [
     {
-        path: '', pathMatch: 'full', redirectTo: 'login'
+        path: '',
+        pathMatch: 'full',
+        redirectTo: 'login'
     },
     {
-        path: 'login', component: AuthComponent, canActivate: [NotUserGuard]
+        path: 'login',
+        component: AuthComponent,
+        canActivate: [NotUserGuard]
     },
     {
-        path: '', component: BoardComponent, canActivate: [UserGuard], children: [
+        path: '',
+        component: BoardComponent,
+        canActivate: [UserGuard],
+        children: [
             {
-                path: 'main', component: MainComponent
+                path: 'main',
+                component: MainComponent
             },
             {
-                path: 'dashboard', component: DashboardComponent
+                path: 'dashboard',
+                component: DashboardComponent
             },
             {
-                path: 'students', component: StudentsComponent
+                path: 'students',
+                component: StudentsComponent
             },
             {
-                path: 'schedule/builder', component: BuilderComponent
+                path: 'schedule/builder',
+                component: BuilderComponent
             },
             {
-                path: 'calendar', component: CalendarComponent
+                path: 'calendar',
+                component: CalendarComponent
             },
             {
-                path: 'documents', component: DocumentsComponent
+                path: 'documents',
+                component: DocumentsComponent
             },
             {
                 path: 'tests',
@@ -72,64 +102,71 @@ export const routes: Routes = [
                     },
                     {
                         path: 'create',
-                        loadComponent: () => import('./board/polls/poll-create/poll-create.component').then(m => m.PollCreateComponent)
+                        component: PollCreateComponent
                     },
                     {
-                         path: ':id',
-                         loadComponent: () => import('./board/polls/poll-vote/poll-vote.component').then(m => m.PollVoteComponent)
+                        path: ':id',
+                        component: PollVoteComponent
                     },
                     {
-                         path: ':id/results',
-                         loadComponent: () => import('./board/polls/poll-results/poll-results.component').then(m => m.PollResultsComponent)
+                        path: ':id/results',
+                        component: PollResultsComponent
                     }
                 ]
             },
             {
                 path: 'marks', children: [
                     {
-                        path: 'interm', component: IntermComponent
+                        path: 'interm',
+                        component: IntermComponent
                     },
                     {
-                        path: 'intermrecord', component: IntermRecordComponent
+                        path: 'intermrecord',
+                        component: IntermRecordComponent
                     },
                     {
-                        path: 'midterm', component: MidtermComponent
+                        path: 'midterm',
+                        component: MidtermComponent
                     },
                     {
                         path: 'educationmeasures',
-                        loadComponent: () => import('./board/Teach/measures/measures.component').then(m => m.MeasuresComponent)
+                        component: MeasuresComponent
                     }
                 ]
             },
             {
                 path: 'teach', children: [
                     {
-                        path: 'timetable', component: TimetableComponent
+                        path: 'timetable',
+                        component: TimetableComponent
                     },
                     {
-                        path: 'homeworks', component: HomeworkComponent
+                        path: 'homeworks',
+                        component: HomeworkComponent
                     },
                     {
-                        path: 'absence', component: AbsenceComponent
+                        path: 'absence',
+                        component: AbsenceComponent
                     },
                     {
-                        path: 'classbook', component: ClassbookComponent
+                        path: 'classbook',
+                        component: ClassbookComponent
                     },
                     {
                         path: 'rewards',
-                        loadComponent: () => import('./board/Teach/rewards/rewards.component').then(m => m.RewardsComponent)
+                        component: RewardsComponent
                     },
                     {
                         path: 'subjects',
-                        loadComponent: () => import('./board/Teach/subjects/subjects.component').then(m => m.SubjectsComponent)
+                        component: SubjectsComponent
                     },
                     {
                         path: 'substitution',
-                        loadComponent: () => import('./board/Teach/substitution/substitution.component').then(m => m.SubstitutionComponent)
+                        component: SubstitutionComponent
                     },
                     {
                         path: 'tutoring',
-                        loadComponent: () => import('./board/schedule/tutoring/tutoring.component').then(m => m.TutoringComponent)
+                        component: TutoringComponent
                     }
                 ]
             },
@@ -167,93 +204,107 @@ export const routes: Routes = [
                 children: [
                     {
                         path: 'overview',
-                        loadComponent: () => import('./board/FleetVehicles/overview/overview.component').then(m => m.OverviewComponent)
+                        component: FleetVehiclesOverviewComponent
                     },
                     {
                         path: 'vehicles',
-                        loadComponent: () => import('./board/FleetVehicles/vehicles/vehicles.component').then(m => m.VehiclesComponent)
+                        component: FleetVehiclesComponent
                     },
                     {
                         path: 'vehicles/:id',
-                        loadComponent: () => import('./board/FleetVehicles/vehicles/vehicles.component').then(m => m.VehiclesComponent)
+                        component: FleetVehiclesComponent
                     },
                     {
                         path: 'reservations',
-                        loadComponent: () => import('./board/FleetVehicles/reservations/reservations.component').then(m => m.ReservationsComponent)
+                        component: FleetVehiclesReservationsComponent
                     },
                     {
                         path: 'settings',
-                        loadComponent: () => import('./board/FleetVehicles/settings/settings.component').then(m => m.SettingsComponent)
+                        component: FleetVehiclesSettingsComponent
                     }
                 ]
             },
             {
                 path: 'messages', children: [
                     {
-                        path: 'send', component: SendComponent
+                        path: 'send',
+                        component: SendComponent
                     },
                     {
-                        path: 'received', component: ReceivedComponent
+                        path: 'received',
+                        component: ReceivedComponent
                     },
                     {
                         path: 'sent',
-                        loadComponent: () => import('./board/messages/sent/sent.component').then(m => m.SentComponent)
+                        component: SentComponent
                     },
                     {
-                        path: 'noticeboard', component: NoticeboardComponent
+                        path: 'noticeboard',
+                        component: NoticeboardComponent
                     },
                     {
-                        path: 'groups', component: GroupsComponent
+                        path: 'groups',
+                        component: GroupsComponent
                     }
                 ]
             },
             {
                 path: 'user', children: [
                     {
-                        path: '', component: AccountComponent
+                        path: '',
+                        component: AccountComponent
                     },
                     {
-                        path: 'settings', component: SettingsComponent
+                        path: 'settings',
+                        component: SettingsComponent
                     },
                     {
-                        path: 'personal', component: PersonalInformationComponent
+                        path: 'personal',
+                        component: PersonalInformationComponent
                     },
                     {
-                        path: 'parents', component: ParentsComponent
+                        path: 'parents',
+                        component: ParentsComponent
                     },
                     {
-                        path: 'devices', component: DevicesComponent
+                        path: 'devices',
+                        component: DevicesComponent
                     },
                     {
-                        path: 'logins', component: LoginHistoryComponent
+                        path: 'logins',
+                        component: LoginHistoryComponent
                     },
                     {
-                        path: 'connections', component: ConnectionsComponent
+                        path: 'connections',
+                        component: ConnectionsComponent
                     },
                     {
-                        path: 'gdpr', component: GdprComponent
+                        path: 'gdpr',
+                        component: GdprComponent
                     },
                     {
-                        path: 'notifications', component: NotificationsComponent
+                        path: 'notifications',
+                        component: NotificationsComponent
                     },
                 ]
             },
             {
                 path: 'system', children: [
                     {
-                        path: 'settings', component: SystemSettings
+                        path: 'settings',
+                        component: SystemSettings
                     },
                 ]
             },
             {
                 path: 'archive',
-                loadComponent: () => import('./board/Admin/archive/archive.component').then(m => m.ArchiveComponent)
+                component: ArchiveComponent
             },
             {
                 path: 'admin', children: [
                     {
                         path: 'backup',
-                        loadComponent: () => import('./board/Admin/backup/backup.component').then(m => m.BackupComponent)
+                        component: BackupComponent
                     }
                 ]
             },
@@ -262,11 +313,11 @@ export const routes: Routes = [
                 children: [
                     {
                         path: '',
-                        loadComponent: () => import('./board/library/pages/catalog/catalog.component').then(m => m.CatalogComponent)
+                        component: CatalogComponent
                     },
                     {
                         path: 'manage',
-                        loadComponent: () => import('./board/library/pages/manager/manager.component').then(m => m.ManagerComponent)
+                        component: ManagerComponent
                     }
                 ]
             }

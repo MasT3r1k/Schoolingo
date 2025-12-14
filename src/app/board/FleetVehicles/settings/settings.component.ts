@@ -16,7 +16,7 @@ import Swal from 'sweetalert2';
   templateUrl: './settings.component.html',
   styleUrls: ['./settings.component.css']
 })
-export class SettingsComponent implements OnInit {
+export class FleetVehiclesSettingsComponent implements OnInit {
   public l = inject(Locale);
   public perm = inject(Permission);
   public fleet = inject(FleetVehicles);

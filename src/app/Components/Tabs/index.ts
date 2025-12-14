@@ -1,5 +1,5 @@
-import { NgClass, NgStyle } from "@angular/common";
-import { Component, inject, Input, OnInit, RendererFactory2 } from "@angular/core";
+import { Component, inject, Input } from "@angular/core";
+import { IconsModule } from "@Schoolingo/icons";
 import { Locale } from "@Schoolingo/locale";
 import { Utils } from "@Schoolingo/utils";
 import { BehaviorSubject } from "rxjs";
@@ -8,30 +8,20 @@ import { BehaviorSubject } from "rxjs";
     selector: 'schoolingo-tabs',
     templateUrl: './Tabs.html',
     standalone: true,
-    imports: [NgClass, NgStyle],
+    imports: [IconsModule],
     styleUrl: './Tabs.css'
 })
-export class TabsComponent implements OnInit {
-    
-    public renderer;
+export class TabsComponent {
     public l = inject(Locale);
 
-    constructor(
-        private factory: RendererFactory2
-    ) {
-        this.renderer = this.factory.createRenderer(window, null);
-    }
+    constructor() {}
 
     name: string = Utils.randomstring(16, false);
-    @Input() value: BehaviorSubject<number> = new BehaviorSubject<number>(0);
+    @Input() icons: string[] = [];
+    @Input() value = new BehaviorSubject<number>(0);
     @Input() options: string[] = [];
-    @Input() no_bottom_radius: boolean = false;
+    @Input() no_bottom_radius = false;
     @Input() option_width!: string;
-
-    public gliderStyles: Record<string, string | number> = {};
-    public getGlider(): Record<string, string | number> {
-        return this.gliderStyles;
-    }
 
     public getWidth(): string {
         if (this.option_width) {
@@ -42,49 +32,4 @@ export class TabsComponent implements OnInit {
         }
         return '';
     }
-
-
-    ngOnInit(): void {
-
-        this.renderer.listen(window, 'resize', () => {
-            setTimeout(() => {
-                this.refreshGlider()
-            })
-        });
-
-        setTimeout(() => {
-            this.refreshGlider()
-        })
-
-        this.value.subscribe(() => {
-            this.refreshGlider();
-        });
-
-        this.l.getLocaleData().subscribe(() => {
-            setTimeout(() => this.refreshGlider(), 10)
-        });
-        
-    }
-
-    ngAfterContentInit(): void {
-        this.refreshGlider();
-    }
-
-    ngOnDestroy(): void {
-        this.renderer.destroy();
-    }
-
-    public refreshGlider(): void {
-        try {
-            let tab = document.querySelectorAll(".tabs#" + this.name + " .options .tab")[this.value.getValue() || 0] as HTMLElement;
-            if (!tab) return;
-            
-            this.gliderStyles["width"] = tab.clientWidth - 8; 
-            this.gliderStyles["height"] = tab.clientHeight;
-            this.gliderStyles["transform"] = 'translateX(' + tab.offsetLeft + 'px)';
-        } catch(err) {
-            console.error(err);
-        }
-    }
-
 }

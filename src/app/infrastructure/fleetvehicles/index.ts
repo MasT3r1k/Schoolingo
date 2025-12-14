@@ -170,6 +170,18 @@ export class FleetVehicles {
     });
   }
 
+  getFuelLabel(fuel: fleetVehicles.FuelType): string {
+    const labels: Record<fleetVehicles.FuelType, string> = {
+      'petrol': 'fleetvehicles.fuel.petrol',
+      'diesel': 'fleetvehicles.fuel.diesel',
+      'electric': 'fleetvehicles.fuel.electric',
+      'hybrid': 'fleetvehicles.fuel.hybrid',
+      'lpg': 'fleetvehicles.fuel.lpg',
+      'cng': 'fleetvehicles.fuel.cng',
+    };
+    return labels[fuel] || fuel;
+  }
+
   getVehicleStatusLabel(status: fleetVehicles.VehicleStatus): string {
     const labels: Record<fleetVehicles.VehicleStatus, string> = {
       'available': 'fleetvehicles.status.available',
@@ -191,8 +203,16 @@ export class FleetVehicles {
     return labels[type] || type;
   }
 
-  getVehicleTypeLabel(type: string): string {
-    const labels: Record<string, string> = {
+  getVehicleGearboxLabel(gearbox: fleetVehicles.VehicleGearbox): string {
+    const labels: Record<fleetVehicles.VehicleGearbox, string> = {
+      'manual': 'fleetvehicles.gearbox.manual',
+      'automatic': 'fleetvehicles.gearbox.automatic'
+    };
+    return labels[gearbox] || gearbox;
+  }
+
+  getVehicleTypeLabel(type: fleetVehicles.VehicleType): string {
+    const labels: Record<fleetVehicles.VehicleType, string> = {
       'car': 'fleetvehicles.type.car',
       'van': 'fleetvehicles.type.van',
       'bus': 'fleetvehicles.type.bus',

@@ -1,0 +1,312 @@
+<div class="discord-layout">
+    <!-- Server Icons Sidebar (Discord-style icons) -->
+    <aside class="servers-bar">
+        <!-- Home/DM Button -->
+        <div class="server-icon home" [class.active]="showHome" (click)="selectHome()">
+            <i-tabler name="home-2"></i-tabler>
+            <span class="tooltip">Domů</span>
+        </div>
+
+        <div class="server-divider"></div>
+
+        <!-- Class Servers -->
+        @for (group of classes; track group.id) {
+        <div class="server-icon" [class.active]="selectedGroup?.id === group.id" [class.has-unread]="group.unread"
+            [style.--server-color]="group.color" (click)="selectGroup(group)">
+            <span class="server-letter">{{ group.name }}</span>
+            <span class="tooltip">{{ group.name }}</span>
+            @if (group.unread) {
+            <span class="notification-badge">{{ group.unread }}</span>
+            }
+            <span class="active-indicator"></span>
+        </div>
+        }
+
+        @if (customGroups.length > 0) {
+        <div class="server-divider"></div>
+        }
+
+        <!-- Custom Groups -->
+        @for (group of customGroups; track group.id) {
+        <div class="server-icon" [class.active]="selectedGroup?.id === group.id" [class.has-unread]="group.unread"
+            [style.--server-color]="group.color" (click)="selectGroup(group)">
+            @if (group.icon) {
+            <i-tabler [name]="group.icon"></i-tabler>
+            } @else {
+            <span class="server-letter">{{ group.name.charAt(0) }}</span>
+            }
+            <span class="tooltip">{{ group.name }}</span>
+            @if (group.unread) {
+            <span class="notification-badge">{{ group.unread }}</span>
+            }
+            <span class="active-indicator"></span>
+        </div>
+        }
+
+        <div class="server-divider"></div>
+
+        <!-- Add Server Button -->
+        <div class="server-icon add-server">
+            <i-tabler name="plus"></i-tabler>
+            <span class="tooltip">Vytvořit skupinu</span>
+        </div>
+    </aside>
+
+    <!-- Channels Sidebar -->
+    @if (selectedGroup) {
+    <aside class="channels-panel">
+        <!-- Group Header -->
+        <div class="group-header" [style.--header-color]="selectedGroup.color">
+            <h2>{{ selectedGroup.name }}</h2>
+            <button class="header-action">
+                <i-tabler name="chevron-down"></i-tabler>
+            </button>
+        </div>
+
+        <!-- Channels -->
+        <div class="channels-container">
+            <div class="channel-category">
+                <button class="category-header">
+                    <i-tabler name="chevron-down"></i-tabler>
+                    <span>Textové kanály</span>
+                </button>
+
+                @for (channel of selectedGroup.channels; track channel.id) {
+                @if (channel.type === 'text') {
+                <button class="channel-item" [class.active]="selectedChannel?.id === channel.id"
+                    (click)="selectChannel(channel)">
+                    <i-tabler name="hash"></i-tabler>
+                    <span class="channel-name">{{ channel.name }}</span>
+                    @if (channel.unread) {
+                    <span class="channel-badge">{{ channel.unread }}</span>
+                    }
+                    <div class="channel-actions">
+                        <i-tabler name="user-plus"></i-tabler>
+                        <i-tabler name="settings"></i-tabler>
+                    </div>
+                </button>
+                }
+                }
+            </div>
+        </div>
+
+        <!-- User Panel -->
+        <div class="user-panel">
+            <div class="user-info">
+                <div class="user-avatar">
+                    <span>JN</span>
+                    <span class="status-dot online"></span>
+                </div>
+                <div class="user-details">
+                    <span class="username">Jan Novák</span>
+                    <span class="user-status">Online</span>
+                </div>
+            </div>
+            <div class="user-controls">
+                <button><i-tabler name="microphone"></i-tabler></button>
+                <button><i-tabler name="headphones"></i-tabler></button>
+                <button><i-tabler name="settings"></i-tabler></button>
+            </div>
+        </div>
+    </aside>
+    }
+
+    <!-- Main Chat Area -->
+    <main class="chat-panel" [class.no-selection]="!selectedGroup">
+        @if (!selectedGroup) {
+        <!-- Welcome Screen -->
+        <div class="welcome-screen">
+            <div class="welcome-logo">
+                <i-tabler name="messages"></i-tabler>
+            </div>
+            <h1>Vítejte v Schoolingo Chat</h1>
+            <p>Vyberte třídu nebo skupinu ze seznamu vlevo pro zahájení konverzace</p>
+            <div class="quick-actions">
+                <button class="quick-action">
+                    <i-tabler name="school"></i-tabler>
+                    <span>Třídy</span>
+                </button>
+                <button class="quick-action">
+                    <i-tabler name="users-group"></i-tabler>
+                    <span>Skupiny</span>
+                </button>
+                <button class="quick-action">
+                    <i-tabler name="message-circle"></i-tabler>
+                    <span>Přímé zprávy</span>
+                </button>
+            </div>
+        </div>
+        } @else {
+        <!-- Chat Header -->
+        <header class="chat-header">
+            <div class="header-info">
+                <i-tabler name="hash"></i-tabler>
+                <h3>{{ selectedChannel?.name }}</h3>
+                @if (selectedChannel?.description) {
+                <span class="divider">|</span>
+                <span class="description">{{ selectedChannel?.description }}</span>
+                }
+            </div>
+            <div class="header-tools">
+                <button class="tool-btn"><i-tabler name="bell"></i-tabler></button>
+                <button class="tool-btn"><i-tabler name="pin"></i-tabler></button>
+                <button class="tool-btn" (click)="toggleMembersSidebar()" [class.active]="showMembersSidebar">
+                    <i-tabler name="users"></i-tabler>
+                </button>
+                <div class="search-bar">
+                    <input type="text" placeholder="Hledat">
+                    <i-tabler name="search"></i-tabler>
+                </div>
+                <button class="tool-btn"><i-tabler name="inbox"></i-tabler></button>
+                <button class="tool-btn"><i-tabler name="help"></i-tabler></button>
+            </div>
+        </header>
+
+        <!-- Messages Area -->
+        <div class="messages-area">
+            <!-- Channel Welcome -->
+            <div class="channel-welcome">
+                <div class="welcome-icon">
+                    <i-tabler name="hash"></i-tabler>
+                </div>
+                <h2>Vítejte v #{{ selectedChannel?.name }}!</h2>
+                <p>Toto je začátek kanálu <strong>#{{ selectedChannel?.name }}</strong>.</p>
+            </div>
+
+            <!-- Messages -->
+            @for (message of messages; track message.id; let first = $first) {
+            <div class="message-group">
+                @if (message.replyTo) {
+                <div class="reply-context">
+                    <div class="reply-line"></div>
+                    <img class="reply-avatar">
+                    <span class="reply-name">{{ getMessageById(message.replyTo)?.sender?.name }}</span>
+                    <span class="reply-text">{{ getMessageById(message.replyTo)?.content | slice:0:60 }}...</span>
+                </div>
+                }
+
+                <div class="message" [class.compact]="!first">
+                    <div class="message-avatar" [class]="message.sender.role">
+                        {{ message.sender.name.charAt(0) }}
+                    </div>
+                    <div class="message-content">
+                        <div class="message-header">
+                            <span class="author" [class]="message.sender.role">{{ message.sender.name }}</span>
+                            <span class="timestamp">{{ formatTime(message.date) }}</span>
+                        </div>
+                        <div class="message-body">
+                            {{ message.content }}
+                        </div>
+
+                        @if (message.reactions?.length) {
+                        <div class="message-reactions">
+                            @for (reaction of message.reactions; track reaction.emoji) {
+                            <button class="reaction" [class.reacted]="reaction.users.includes(999)">
+                                <span>{{ reaction.emoji }}</span>
+                                <span>{{ reaction.count }}</span>
+                            </button>
+                            }
+                            <button class="add-reaction">
+                                <i-tabler name="mood-plus"></i-tabler>
+                            </button>
+                        </div>
+                        }
+                    </div>
+
+                    <div class="message-toolbar">
+                        <button (click)="addReaction(message, '👍')"><i-tabler name="mood-smile"></i-tabler></button>
+                        <button (click)="replyToMessage(message)"><i-tabler name="arrow-back-up"></i-tabler></button>
+                        <button><i-tabler name="dots"></i-tabler></button>
+                    </div>
+                </div>
+            </div>
+            }
+        </div>
+
+        <!-- Message Input -->
+        <div class="chat-input-area">
+            @if (replyingTo) {
+            <div class="reply-bar">
+                <span>Odpovídáte na <strong>{{ replyingTo.sender.name }}</strong></span>
+                <button (click)="cancelReply()"><i-tabler name="x"></i-tabler></button>
+            </div>
+            }
+            <div class="input-container">
+                <button class="attach-btn"><i-tabler name="circle-plus"></i-tabler></button>
+                <div class="input-wrapper">
+                    <input type="text" [placeholder]="'Napsat zprávu do #' + selectedChannel?.name"
+                        [(ngModel)]="messageInput" (keyup.enter)="sendMessage()">
+                </div>
+                <div class="input-tools">
+                    <button><i-tabler name="gift"></i-tabler></button>
+                    <button><i-tabler name="sticker"></i-tabler></button>
+                    <button><i-tabler name="mood-smile"></i-tabler></button>
+                </div>
+            </div>
+        </div>
+        }
+    </main>
+
+    <!-- Members Sidebar -->
+    @if (selectedGroup && showMembersSidebar) {
+    <aside class="members-panel">
+        <div class="members-search">
+            <input type="text" placeholder="Hledat členy">
+        </div>
+
+        <!-- Teachers -->
+        <div class="member-category">
+            <h4>Učitelé — {{ teachers.length }}</h4>
+            @for (member of teachers; track member.id) {
+            <div class="member-row" [class.offline]="member.status !== 'online'">
+                <div class="member-avatar teacher">
+                    <span>{{ member.name.charAt(0) }}</span>
+                    <span class="status-ring" [class]="member.status"></span>
+                </div>
+                <div class="member-info">
+                    <span class="name">{{ member.name }}</span>
+                    @if (member.statusText) {
+                    <span class="activity">{{ member.statusText }}</span>
+                    }
+                </div>
+            </div>
+            }
+        </div>
+
+        <!-- Students -->
+        <div class="member-category">
+            <h4>Online — {{ onlineStudents.length }}</h4>
+            @for (member of onlineStudents; track member.id) {
+            <div class="member-row">
+                <div class="member-avatar student">
+                    <span>{{ member.name.charAt(0) }}</span>
+                    <span class="status-ring online"></span>
+                </div>
+                <div class="member-info">
+                    <span class="name">{{ member.name }}</span>
+                    @if (member.statusText) {
+                    <span class="activity">{{ member.statusText }}</span>
+                    }
+                </div>
+            </div>
+            }
+        </div>
+
+        <!-- Offline -->
+        <div class="member-category">
+            <h4>Offline — {{ offlineMembers.length }}</h4>
+            @for (member of offlineStudents; track member.id) {
+            <div class="member-row offline">
+                <div class="member-avatar student">
+                    <span>{{ member.name.charAt(0) }}</span>
+                    <span class="status-ring" [class]="member.status"></span>
+                </div>
+                <div class="member-info">
+                    <span class="name">{{ member.name }}</span>
+                </div>
+            </div>
+            }
+        </div>
+    </aside>
+    }
+</div>

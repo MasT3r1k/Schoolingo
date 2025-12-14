@@ -5,6 +5,7 @@ import { FormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
 import { Config } from '@Schoolingo/config';
 import { Utils } from '@Schoolingo/utils';
+import { DropdownManager } from '@Schoolingo/dropdown';
 
 // Interfaces
 export interface Student {
@@ -49,28 +50,38 @@ export interface ParentInfo {
 export interface StudentFilters {
   search: string;
   status: 'all' | 'active' | 'former' | 'suspended';
-  fieldOfStudy: string;
-  className: string;
+  scopeId: number | null;
+  classId: number | null;
   year: number | null;
+  avgGradeDates: { from: number | null; to: number | null };
+  absenceRates: { from: number | null; to: number | null };
+  missingInfo: boolean;
 }
 
 // Backend API response interface
 interface StudentAPIResponse {
-  personId: number;
-  firstName: string;
-  lastName: string;
-  fullName: string;
-  email?: string;
-  phone?: string;
-  dateOfBirth: string;
-  birth: string;
-  status: string;
-  startStudy: string;
-  className?: string;
-  year?: number;
-  fieldOfStudy?: string;
-  averageGrade?: string;
-  absenceRate?: string;
+  data: {
+    personId: number;
+    firstName: string;
+    lastName: string;
+    fullName: string;
+    email?: string;
+    phone?: string;
+    dateOfBirth: string;
+    birth: string;
+    status: string;
+    startStudy: string;
+    className?: string;
+    year?: number;
+    fieldOfStudy?: string;
+    averageGrade?: string;
+    absenceRate?: string;
+  }[];
+  meta: {
+    total: number;
+    page: number;
+    limit: number;
+  }
 }
 
 @Component({
@@ -83,6 +94,7 @@ interface StudentAPIResponse {
 export class StudentsComponent implements OnInit {
   private http = inject(HttpClient);
   public Utils = Utils;
+  public dropdownManager = inject(DropdownManager);
 
   // Loading state
   isLoading = false;
@@ -108,34 +120,92 @@ export class StudentsComponent implements OnInit {
   filters: StudentFilters = {
     search: '',
     status: 'all',
-    fieldOfStudy: '',
-    className: '',
-    year: null
+    scopeId: null,
+    classId: null,
+    year: null,
+    avgGradeDates: { from: null, to: null },
+    absenceRates: { from: null, to: null },
+    missingInfo: false
   };
   
   // Filter options
-  fieldsOfStudy = ['Informační technologie', 'Ekonomika', 'Zdravotnictví', 'Stavebnictví', 'Elektrotechnika'];
+  availableClasses: { id: number; name: string }[] = [];
+  availableScopes: { id: number; name: string }[] = [];
   years = [1, 2, 3, 4];
+  
+  // Pagination
+  currentPage = 1;
+  pageSize = 20;
+  totalItems = 0;
+  totalPages = 0;
   
   // Students data from API
   students: Student[] = [];
 
   ngOnInit() {
+    this.loadFilters();
     this.loadStudents();
   }
 
+  // Load available filters (classes, scopes)
+  loadFilters() {
+    this.http.get<{ classes: { id: number; name: string }[], scopes: { id: number; name: string }[] }>(
+      `${Config.API_URL}/v1/students/filters`,
+      { withCredentials: true }
+    ).subscribe({
+      next: (response) => {
+        this.availableClasses = response.classes;
+        this.availableScopes = response.scopes;
+      },
+      error: (error) => {
+        console.error('Error loading filters:', error);
+      }
+    });
+  }
+
   // Load students from API
-  loadStudents() {
+  loadStudents(page = this.currentPage) {
+    this.currentPage = page;
     this.isLoading = true;
     this.loadError = null;
 
-    this.http.get<StudentAPIResponse[]>(
-      `${Config.API_URL}/v1/students?limit=100&offset=0`,
-      { withCredentials: true }
+    // Build params
+    let params: any = {
+      limit: this.pageSize,
+      offset: (page - 1) * this.pageSize,
+      search: this.filters.search,
+      status: this.filters.status,
+      // API expects string parameters or specific types. 
+      // Handling empty values:
+    };
+    
+    if (this.filters.classId) params.classId = this.filters.classId;
+    if (this.filters.scopeId) params.scopeId = this.filters.scopeId;
+    if (this.filters.year) params.year = this.filters.year;
+    
+    if (this.filters.avgGradeDates.from) params.avgGradeMin = this.filters.avgGradeDates.from;
+    if (this.filters.avgGradeDates.to) params.avgGradeMax = this.filters.avgGradeDates.to;
+    
+    if (this.filters.absenceRates.from) params.absenceMin = this.filters.absenceRates.from;
+    if (this.filters.absenceRates.to) params.absenceMax = this.filters.absenceRates.to;
+    
+    if (this.filters.missingInfo) params.missingInfo = 'true';
+
+    this.http.get<StudentAPIResponse>(
+      `${Config.API_URL}/v1/students`,
+      { 
+        withCredentials: true,
+        params: params
+      }
     ).subscribe({
-      next: (data) => {
-        // Transform API response to Student interface
-        this.students = data.map(apiStudent => this.transformStudent(apiStudent));
+      next: (response) => {
+        // Transform API response
+        this.students = response.data.map(apiStudent => this.transformStudent(apiStudent));
+        
+        // Update pagination
+        this.totalItems = response.meta.total;
+        this.totalPages = Math.ceil(this.totalItems / this.pageSize);
+        
         this.isLoading = false;
       },
       error: (error) => {
@@ -148,8 +218,67 @@ export class StudentsComponent implements OnInit {
     });
   }
 
-  // Transform API response to Student interface
-  private transformStudent(apiStudent: StudentAPIResponse): Student {
+  // Handle filter changes
+  onFilterChange() {
+    this.loadStudents(1); // Reset to first page
+  }
+  
+  // Clear all filters
+  clearFilters() {
+    this.filters = {
+      search: '',
+      status: 'all',
+      scopeId: null,
+      classId: null,
+      year: null,
+      avgGradeDates: { from: null, to: null },
+      absenceRates: { from: null, to: null },
+      missingInfo: false
+    };
+    this.loadStudents(1);
+  }
+
+  // Pagination controls
+  nextPage() {
+    if (this.currentPage < this.totalPages) {
+      this.loadStudents(this.currentPage + 1);
+    }
+  }
+
+  prevPage() {
+    if (this.currentPage > 1) {
+      this.loadStudents(this.currentPage - 1);
+    }
+  }
+
+  setPage(page: number) {
+    if (page >= 1 && page <= this.totalPages) {
+      this.loadStudents(page);
+    }
+  }
+
+  // Datalist-style pagination helpers
+  getPageList(): number[] {
+      let pages = [-4, -3, -2, -1, 0, 1, 2, 3, 4];
+      let list: number[] = [];
+      pages.forEach((page: number) => {
+          list.push(page + this.currentPage);
+      })
+
+      let startSlice = 0;
+      if (this.currentPage == 4 || this.currentPage == this.totalPages - 1) {
+          startSlice = 1;
+      }
+      
+      else if (this.currentPage > 3 && this.currentPage <= this.totalPages - 2) {
+          startSlice = 2;
+      }
+
+      return list.filter((page) => page > 0 && page <= this.totalPages).slice(startSlice).slice(0,5);
+  }
+
+  // Transform API response (updated for nested data response type in signature)
+  private transformStudent(apiStudent: StudentAPIResponse['data'][0]): Student {
     return {
       id: apiStudent.personId,
       firstName: apiStudent.firstName,
@@ -190,49 +319,9 @@ export class StudentsComponent implements OnInit {
     }
   }
   
-  // Get filtered students
+  // Direct access for template since we rely on server filtering now
   get filteredStudents(): Student[] {
-    return this.students.filter(student => {
-      // Search filter
-      if (this.filters.search) {
-        const search = this.filters.search.toLowerCase();
-        const matchesSearch = 
-          student.fullName.toLowerCase().includes(search) ||
-          student.email.toLowerCase().includes(search) ||
-          student.className.toLowerCase().includes(search);
-        if (!matchesSearch) return false;
-      }
-      
-      // Status filter
-      if (this.filters.status !== 'all' && student.status !== this.filters.status) {
-        return false;
-      }
-      
-      // Field of study filter
-      if (this.filters.fieldOfStudy && student.fieldOfStudy !== this.filters.fieldOfStudy) {
-        return false;
-      }
-      
-      // Class name filter
-      if (this.filters.className && student.className !== this.filters.className) {
-        return false;
-      }
-      
-      // Year filter
-      if (this.filters.year !== null && student.year !== this.filters.year) {
-        return false;
-      }
-      
-      return true;
-    });
-  }
-  
-  // Get unique classes for filter
-  get availableClasses(): string[] {
-    const classes = [...new Set(this.students
-      .filter(s => s.status === 'active')
-      .map(s => s.className))];
-    return classes.sort();
+    return this.students;
   }
   
   // Select student for detail view
@@ -265,16 +354,8 @@ export class StudentsComponent implements OnInit {
     this.addStudentTab = tab;
   }
   
-  // Clear all filters
-  clearFilters() {
-    this.filters = {
-      search: '',
-      status: 'all',
-      fieldOfStudy: '',
-      className: '',
-      year: null
-    };
-  }
+  // Clear all filters - removed duplicate logic, handled above
+  /* clearFilters() { ... } */
   
   // Get status badge class
   getStatusClass(status: string): string {
