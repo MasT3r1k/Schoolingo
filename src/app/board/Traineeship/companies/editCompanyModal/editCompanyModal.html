@@ -164,7 +164,7 @@
 
                         <div class="badges" style="position:absolute;top:8px;right:12px;">
                             @if (instructor.status == 'deleted') {
-                                <div class="badge danger">
+                                <div class="badge badge--danger">
                                     {{ l.s('traineeship.removed') }}
                                 </div>
                             }
@@ -172,16 +172,16 @@
 
                         <div class="instructor-actions">
                             @if (instructor.status == 'active') {
-                                <div class="btn edit" (click)="editInstructor(instructor.instructorId)">
+                                <div class="btn" (click)="editInstructor(instructor.instructorId)">
                                     <i-tabler name="pencil"></i-tabler>
                                 </div>
-                                <div class="btn danger" (click)="removeInstructor(instructor.instructorId)">
+                                <div class="btn btn--danger" (click)="removeInstructor(instructor.instructorId)">
                                     <i-tabler name="trash-x"></i-tabler>
                                 </div>
                             }
 
                             @if (instructor.status == 'deleted') {
-                                <div class="btn edit" (click)="restoreInstructor(instructor.instructorId)">
+                                <div class="btn" (click)="restoreInstructor(instructor.instructorId)">
                                     <i-tabler name="restore"></i-tabler>
                                 </div>
                             }
@@ -195,7 +195,7 @@
                         <div class="empty-text">
                             <h3>{{ l.s('traineeship.no_instructors') }}</h3>
                             <p>{{ l.s('traineeship.no_instructors_description') }}</p>
-                            <div class="btn primary" (click)="page = 'newInstructor'">
+                            <div class="btn btn--primary" (click)="page = 'newInstructor'">
                                 <i-tabler name="plus"></i-tabler>    
                                 {{ l.s('traineeship.new_instructor') }}
                             </div>
@@ -206,15 +206,17 @@
         </div>
     </div>
     @if (traineeship.selectedCompany.instructors.length) {
-    <div class="btn primary" role="button" (click)="page = 'newInstructor'">
-        <i-tabler name="plus"></i-tabler>
-        {{ l.s('traineeship.new_instructor') }}
+    <div class="form-group">
+        <div class="btn btn--primary" role="button" (click)="page = 'newInstructor'">
+            <i-tabler name="plus"></i-tabler>
+            {{ l.s('traineeship.new_instructor') }}
+        </div>
     </div>
     }
 </div>
     
 
-<div [ngClass]="{items: true, active: selectedTab.getValue() === 2}" style="min-height: 400px;">
+<div class="items" [class.active]="selectedTab.getValue() === 2" style="min-height: 400px;">
     <div class="item">
         <div class="label">
             {{ l.s('traineeship.status_company.main') }}
@@ -273,8 +275,10 @@
         </div>
     </div>
 
-    <div class="btn" (click)="SaveScopesOfCompany()">
-        {{ l.s('traineeship.buttons.save_changes') }}
+    <div class="form-group">
+        <div class="btn btn--primary" (click)="SaveScopesOfCompany()">
+            {{ l.s('traineeship.buttons.save_changes') }}
+        </div>
     </div>
 </div>
 
@@ -356,8 +360,10 @@
         </div>
     </div>
 
-    <div class="btn primary" (click)="updateCompany(['name'], [c_name])">
-        {{ l.s('traineeship.buttons.save_changes') }}
+    <div class="form-group">
+        <div class="btn btn--primary" (click)="updateCompany(['name'], [c_name])">
+            {{ l.s('traineeship.buttons.save_changes') }}
+        </div>
     </div>
 </div>
 
@@ -384,8 +390,10 @@
         </div>
     </div>
 
-    <div class="btn primary" (click)="updateCompany(['ico'], [c_ico])">
-        {{ l.s('traineeship.buttons.save_changes') }}
+    <div class="form-group">
+        <div class="btn btn--primary" (click)="updateCompany(['ico'], [c_ico])">
+            {{ l.s('traineeship.buttons.save_changes') }}
+        </div>
     </div>
 </div>
 
@@ -412,8 +420,10 @@
         </div>
     </div>
 
-    <div class="btn primary" (click)="updateCompany(['description'], [c_description])">
-        {{ l.s('traineeship.buttons.save_changes') }}
+    <div class="form-group">
+        <div class="btn btn--primary" (click)="updateCompany(['description'], [c_description])">
+            {{ l.s('traineeship.buttons.save_changes') }}
+        </div>
     </div>
 </div>
 
@@ -440,8 +450,10 @@
         </div>
     </div>
 
-    <div class="btn primary" (click)="updateCompany(['activity'], [c_activity])">
-        {{ l.s('traineeship.buttons.save_changes') }}
+    <div class="form-group">
+        <div class="btn btn--primary" (click)="updateCompany(['activity'], [c_activity])">
+            {{ l.s('traineeship.buttons.save_changes') }}
+        </div>
     </div>
 </div>
 
@@ -468,8 +480,10 @@
         </div>
     </div>
 
-    <div class="btn primary" (click)="updateCompany(['equipment'], [c_equipment])">
-        {{ l.s('traineeship.buttons.save_changes') }}
+    <div class="form-group">
+        <div class="btn btn--primary" (click)="updateCompany(['equipment'], [c_equipment])">
+            {{ l.s('traineeship.buttons.save_changes') }}
+        </div>
     </div>
 </div>
 
@@ -532,9 +546,11 @@
         </div>
     </div>
 
-    <div class="btn primary" (click)="updateInstructor()">
-        <i-tabler name="pencil"></i-tabler>
-        {{ l.s('traineeship.save_instructor') }}
+    <div class="form-group">
+        <div class="btn btn--primary" (click)="updateInstructor()">
+            <i-tabler name="pencil"></i-tabler>
+            {{ l.s('traineeship.save_instructor') }}
+        </div>
     </div>
 </div>
 
@@ -593,8 +609,10 @@
         </div>
     </div>
 
-    <div class="btn primary" (click)="createInstructor()">
-        <i-tabler name="plus"></i-tabler>
-        {{ l.s('traineeship.create_instructor') }}
+    <div class="form-group">
+        <div class="btn btn--primary" (click)="createInstructor()">
+            <i-tabler name="plus"></i-tabler>
+            {{ l.s('traineeship.create_instructor') }}
+        </div>
     </div>
 </div>

@@ -57,13 +57,14 @@ export class MidtermComponent implements OnInit {
   }
 
   public getYearText(year: number): string {
-    return this.l.s('marks.midterm.year')
-      .replaceAll(
-        '%year%',
-        (this.l.s('marks.midterm.years.' + year) != "[`marks.midterm.years.${$index}`]")
-        ? this.l.s('marks.midterm.years.' + year)
-        : year.toString()
-      );
+    return this.l.s(
+      'marks.midterm.year',
+      {
+        year: (this.l.s('marks.midterm.years.' + year) != "[`marks.midterm.years.${$index}`]")
+            ? this.l.s('marks.midterm.years.' + year)
+            : year
+      }
+    );
   }
 
   ngOnInit(): void {

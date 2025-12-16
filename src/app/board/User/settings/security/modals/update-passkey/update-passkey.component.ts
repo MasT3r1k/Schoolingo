@@ -39,8 +39,7 @@ export class UpdatePasskeyComponent {
           Swal.fire({
             title: this.l.s('settings.passkeys.edit.success_title'),
             text: this.l
-              .s('settings.passkeys.edit.success_description')
-              .replaceAll('%passkey%', data.newName),
+              .s('settings.passkeys.edit.success_description', { passkey: data.newName }),
             icon: 'success',
             timer: 2500,
             timerProgressBar: true,

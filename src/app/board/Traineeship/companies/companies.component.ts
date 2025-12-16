@@ -230,7 +230,7 @@ export class CompaniesComponent implements OnInit {
                   next: (data: any) => {
                     Swal.fire({
                       title: this.l.s("traineeship.alerts.company_found_title"),
-                      text: this.l.s("traineeship.alerts.company_found_description").replaceAll('%companyName%', data.obchodniJmeno),
+                      text: this.l.s("traineeship.alerts.company_found_description", { companyName: data.obchodniJmeno }),
                       icon: "success",
                       showCancelButton: true,
                       confirmButtonColor: "var(--primary)",

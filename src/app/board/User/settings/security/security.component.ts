@@ -150,8 +150,7 @@ export class SecurityComponent implements OnInit {
 
     Swal.fire({
       title: this.l
-        .s('settings.passkeys.remove.title')
-        .replaceAll('%passkey%', passkey[0].device_name),
+        .s('settings.passkeys.remove.title', { passkey: passkey[0].device_name }),
       text: this.l.s('settings.passkeys.remove.description'),
       icon: 'error',
       showCloseButton: false,
@@ -177,8 +176,7 @@ export class SecurityComponent implements OnInit {
               Swal.fire({
                 title: this.l.s('settings.passkeys.remove.success_title'),
                 text: this.l
-                  .s('settings.passkeys.remove.success_description')
-                  .replaceAll('%passkey%', passkey[0].device_name),
+                  .s('settings.passkeys.remove.success_description', { passkey: passkey[0].device_name }),
                 icon: 'success',
                 timer: 2500,
                 timerProgressBar: true,

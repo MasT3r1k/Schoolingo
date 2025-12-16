@@ -59,12 +59,16 @@
                 <div class="alerts mb">
                     <div class="alert alert--info" style="justify-content: center;">
                         {{
-                            l.s('traineeship.alerts.selected_company')
-                            .replaceAll('%companyName%', traineeship.selectedDairy.companyName || "")
-                            .replaceAll('%instructor%', l.s('traineeship.alerts.' +
-                                            (traineeship.selectedDairy.instructor ? 'success_selected_company_with_instructor' : 'success_selected_company_no_instructor')
+                            l.s(
+                                'traineeship.alerts.selected_company',
+                                {
+                                    companyName: traineeship.selectedDairy.companyName || "",
+                                    instructor: l.s('traineeship.alerts.' +
+                                            (traineeship.selectedDairy.instructor ? 'success_selected_company_with_instructor' : 'success_selected_company_no_instructor'),
+                                            { instructorName: traineeship.selectedDairy.instructor ? traineeship.selectedDairy.instructor : '' }
                                         )
-                                        .replaceAll('%instructorName%', traineeship.selectedDairy.instructor ? traineeship.selectedDairy.instructor : ''))
+                                }
+                            )
                         }}
                         <div class="actions">
                             <div class="btn btn--secondary" role="button" (click)="modalManager.openModal('select_instructor')">
@@ -92,9 +96,7 @@
                     </div>
                     <p class="description">
                         {{
-                            l.s('traineeship.diary.description')
-                            .replaceAll('%start%', traineeship.selectedDairy.start.format('DD.MM.YYYY'))
-                            .replaceAll('%end%', traineeship.selectedDairy.end.format('DD.MM.YYYY'))
+                            l.s('traineeship.diary.description', { start: Utils.formatDateShort(traineeship.selectedDairy.start), end: Utils.formatDateShort(traineeship.selectedDairy.end) })
                         }}
                     </p>
                 </div>

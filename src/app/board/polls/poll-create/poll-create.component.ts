@@ -3,12 +3,12 @@ import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup, FormArray, Validators } from '@angular/forms';
 import { IconsModule } from '@Schoolingo/icons';
 import { PollsService } from '../polls.service';
-import { Router } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 
 @Component({
   selector: 'app-poll-create',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, IconsModule],
+  imports: [CommonModule, ReactiveFormsModule, IconsModule, RouterLink],
   templateUrl: './poll-create.component.html',
   styleUrl: './poll-create.component.css'
 })

@@ -8,9 +8,7 @@
                 <h2>{{ l.s('traineeship.overview.nearest_diary') }}</h2>
                 @if (getNearestDiary()) {
                 <span class="meta muted">{{
-                    l.s('traineeship.overview.diary_week')
-                    .replaceAll('%start%', Utils.formatDateShort(getNearestDiary().start))
-                    .replaceAll('%end%', Utils.formatDateShort(getNearestDiary().end))
+                    l.s('traineeship.overview.diary_week', { start: Utils.formatDateShort(getNearestDiary().start), end: Utils.formatDateShort(getNearestDiary().end) })
                     }}</span>
                 }
             </div>
@@ -39,14 +37,17 @@
             } @else {
             <div class="alert alert--info">
                 {{
-                l.s('traineeship.alerts.selected_company')
-                .replaceAll('%companyName%', getNearestDiary().companyName)
-                .replaceAll('%instructor%', l.s('traineeship.alerts.' +
-                (getNearestDiary().instructor ? 'success_selected_company_with_instructor' :
-                'success_selected_company_no_instructor')
-                )
-                .replaceAll('%instructorName%', getNearestDiary().instructor?.toString()!))
-                }}
+                l.s(
+                    'traineeship.alerts.selected_company',
+                    { 
+                        companyName: getNearestDiary().companyName,
+                        instructor: l.s('traineeship.alerts.' +
+                                        (getNearestDiary().instructor ? 'success_selected_company_with_instructor' :
+                                        'success_selected_company_no_instructor'),
+                                        { instructorName: getNearestDiary().instructor ?? '' }
+                                    )
+                    }
+                ) }}
                 @if (!getNearestDiary().instructor) {
                 <div class="actions">
                     <button class="btn btn--secondary btn--sm">{{ l.s('traineeship.buttons.select_instructor')

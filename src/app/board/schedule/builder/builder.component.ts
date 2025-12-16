@@ -5,7 +5,6 @@ import { IconsModule } from '@Schoolingo/icons';
 import { Locale } from '@Schoolingo/locale';
 import { ModalManager } from '@Schoolingo/modal';
 import { ScheduleBuilder } from '@Schoolingo/schedule_builder';
-import { AddSubjectComponent } from '../add-subject/add-subject.component';
 import { AddEventComponent } from '../add-event/add-event.component';
 import { CdkDrag, CdkDropList, CdkDropListGroup, CdkDragDrop } from '@angular/cdk/drag-drop';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
@@ -38,20 +37,6 @@ export class BuilderComponent implements OnInit {
 
   ngOnInit(): void {
     this.scheduleBuilder.isTimetableLoading = false;
-
-    this.modalManager.addModal(
-      'schedule_add_subject',
-      {
-        title: 'schedule.builder.add_subject',
-        closeable: true,
-        items: [
-          {
-            type: 'component',
-            component: AddSubjectComponent
-          }
-        ]
-      }
-    )
 
     this.modalManager.addModal(
       'schedule_add_event',
@@ -361,10 +346,6 @@ export class BuilderComponent implements OnInit {
 
   return classes;
 }
-
-  public openAddSubjectModal(): void {
-    this.modalManager.openModal('schedule_add_subject');
-  }
 
   public openAddEventModal(): void {
     this.modalManager.openModal('schedule_add_event');

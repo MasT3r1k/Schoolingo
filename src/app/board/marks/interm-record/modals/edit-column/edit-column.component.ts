@@ -64,11 +64,11 @@ export class EditColumnComponent implements OnInit {
     }
 
     if (this.topic.length > this.marksManager.getConfig().max_topic_length) {
-      this.errors['topic'] = this.l.s('form.maxLength').replaceAll('%max%', this.marksManager.getConfig().max_topic_length.toString());
+      this.errors['topic'] = this.l.s('form.maxLength', { max: this.marksManager.getConfig().max_topic_length });
     }
 
     if (this.topic.length < this.marksManager.getConfig().min_topic_length) {
-      this.errors['topic'] = this.l.s('form.minLength').replaceAll('%min%', this.marksManager.getConfig().min_topic_length.toString());
+      this.errors['topic'] = this.l.s('form.minLength', { min: this.marksManager.getConfig().min_topic_length });
     }
 
     switch (this.type) {
@@ -79,11 +79,11 @@ export class EditColumnComponent implements OnInit {
         }
 
         if (weight < this.marksManager.getConfig().min_weight) {
-          this.errors['weight'] = this.l.s('form.minValue').replaceAll('%min%', this.marksManager.getConfig().min_weight.toString());
+          this.errors['weight'] = this.l.s('form.minValue', { min: this.marksManager.getConfig().min_weight });
         }
 
         if (weight > this.marksManager.getConfig().max_weight) {
-          this.errors['weight'] = this.l.s('form.maxValue').replaceAll('%max%', this.marksManager.getConfig().max_weight.toString());
+          this.errors['weight'] = this.l.s('form.maxValue', { max: this.marksManager.getConfig().max_weight });
         }
 
         if (parseInt(this.weight).toString() != this.weight) {
@@ -97,10 +97,10 @@ export class EditColumnComponent implements OnInit {
       }
 
       if (maxPoints > this.marksManager.getConfig().max_points) {
-        this.errors['points'] = this.l.s('form.maxValue').replaceAll('%max%', this.marksManager.getConfig().max_points.toString());
+        this.errors['points'] = this.l.s('form.maxValue', { max: this.marksManager.getConfig().max_points });
       }
       if (maxPoints < this.marksManager.getConfig().min_points) {
-        this.errors['points'] = this.l.s('form.minValue').replaceAll('%min%', this.marksManager.getConfig().min_points.toString());
+        this.errors['points'] = this.l.s('form.minValue', { min: this.marksManager.getConfig().min_points });
       }
 
       if (parseInt(this.maxPoints).toString() != this.maxPoints) {

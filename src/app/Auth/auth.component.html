@@ -315,7 +315,7 @@
                     </div>
                 </div>
                 <div class="form-group">
-                    <div [ngClass]="{btn: true}" (click)="resetForgotPassword()">
+                    <div class="btn" (click)="resetForgotPassword()">
                         {{ l.s('auth.login.back_to_login') }}
                     </div>
                 </div>
@@ -414,8 +414,9 @@
                         @if (isForgotPasswordLoading) {
                         <span class="btn-spinner"></span>
                         }
-                        <span [class.btn-text-hidden]="isForgotPasswordLoading">{{ l.s('auth.2fa.verify_code')
-                            }}</span>
+                        <span [class.btn-text-hidden]="isForgotPasswordLoading">
+                            {{ l.s('auth.2fa.verify_code') }}
+                        </span>
                     </div>
                 </div>
                 <div class="form-group">
@@ -439,10 +440,17 @@
                     <div class="skeleton"></div>
                     } @else {
                     <div class="qr-scanner-line"></div>
-                    <qrcode [allowEmptyString]="false" [width]="224" [elementType]="'canvas'"
-                        [errorCorrectionLevel]="'L'" [title]="'SCHOOLINGO QR Fastlogin'"
-                        [imageSrc]="'./assets/logo/mobile_logo_128.webp'" [imageHeight]="36" [imageWidth]="36"
-                        [qrdata]="qrcode.getValue()"></qrcode>
+                    <qrcode
+                    [allowEmptyString]="false"
+                    [width]="224"
+                    [elementType]="'canvas'"
+                    [errorCorrectionLevel]="'L'"
+                    [margin]="2"
+                    [title]="'QRCode'"
+                    [imageSrc]="'./assets/logo/login_black_100.webp'"
+                    [imageHeight]="50"
+                    [imageWidth]="50"
+                    [qrdata]="qrcode.getValue()"></qrcode>
                     }
                 </div>
                 <div class="qr-text">
@@ -459,7 +467,7 @@
     @if (App.SHOW_DOWNLOAD_BUTTON) {
     <div class="row" id="downloadApp">
         <div id="downloadApp" class="btn add-phone small-border" (click)="openInstallModal()">
-            {{ l.s('auth.login.downloadApp').replaceAll('%app%', App.APP_NAME) }}
+            {{ l.s('auth.login.downloadApp', { app: App.APP_NAME }) }}
         </div>
     </div>
     }

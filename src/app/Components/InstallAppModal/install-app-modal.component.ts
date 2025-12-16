@@ -38,7 +38,7 @@ import { Config } from '@Schoolingo/config';
                 </div>
                 <div class="step">
                   <div class="number">2</div>
-                  <div class="text">{{ l.s('auth.install_app.android.step2').replaceAll('%url%', Config.ELYSIA_URL) }}</div>
+                  <div class="text">{{ l.s('auth.install_app.android.step2', { url: Config.ELYSIA_URL }) }}</div>
                 </div>
                 <div class="step">
                   <div class="number">3</div>
@@ -58,7 +58,7 @@ import { Config } from '@Schoolingo/config';
                 </div>
                 <div class="step">
                   <div class="number">2</div>
-                  <div class="text">{{ l.s('auth.install_app.ios.step2').replaceAll('%url%', Config.ELYSIA_URL) }}</div>
+                  <div class="text">{{ l.s('auth.install_app.ios.step2', { url: Config.ELYSIA_URL }) }}</div>
                 </div>
                 <div class="step">
                   <div class="number">3</div>

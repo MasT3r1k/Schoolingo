@@ -162,12 +162,12 @@ export class ChangePasswordComponent implements OnInit {
 
     const minLengthError = control.getError('minlength');
     if (minLengthError) {
-      return this.l.s('form.minLength').replaceAll('%min%', minLengthError.requiredLength);
+      return this.l.s('form.minLength', {min: minLengthError.requiredLength});
     }
 
     const maxLengthError = control.getError('maxlength');
     if (maxLengthError) {
-      return this.l.s('form.maxLength').replaceAll('%max%', maxLengthError.requiredLength);
+      return this.l.s('form.maxLength', {max: maxLengthError.requiredLength});
     }
 
     return '';

@@ -31,6 +31,7 @@ import { Passkey } from '@Schoolingo/passkey';
 import { DropdownManager } from '@Schoolingo/dropdown';
 import { SessionExpiredService } from '../infrastructure/session/session-expired.service';
 import { WsService } from '@Schoolingo/websocket';
+import { Title } from '@angular/platform-browser';
 
 @Component({
   standalone: true,
@@ -58,6 +59,7 @@ export class AuthComponent implements OnInit {
   private http = inject(HttpClient);
   private router = inject(Router);
   private route = inject(ActivatedRoute);
+  private title = inject(Title);
   private ws = inject(WsService)
   public passkey = inject(Passkey);
   private sessionExpiredService = inject(SessionExpiredService);
@@ -355,6 +357,10 @@ export class AuthComponent implements OnInit {
   }
 
   async ngOnInit(): Promise<void> {
+    // Update page title
+    this.title.setTitle(Config.APP_NAME);
+
+    // Reset errors
     this.errors = {};
 
     this.isPasskeySupport = await this.passkey.isSupported();
@@ -397,6 +403,10 @@ export class AuthComponent implements OnInit {
       if (connected) {
         // třeba hned po připojení pošli QR request
         this.ws.send({ type: 'qrcode_request' });
+      }
+
+      if (!connected) {
+        this.qrcode.next('');
       }
     });
 
@@ -517,16 +527,12 @@ export class AuthComponent implements OnInit {
 
     const minLengthError = control.getError('minlength');
     if (minLengthError) {
-      return this.l
-        .s('form.minLength')
-        .replaceAll('%min%', minLengthError.requiredLength);
+      return this.l.s('form.minLength', { min: minLengthError.requiredLength });
     }
 
     const maxLengthError = control.getError('maxlength');
     if (maxLengthError) {
-      return this.l
-        .s('form.maxLength')
-        .replaceAll('%max%', maxLengthError.requiredLength);
+      return this.l.s('form.maxLength', { max: maxLengthError.requiredLength });
     }
 
     return '';

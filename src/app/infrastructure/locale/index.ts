@@ -112,7 +112,7 @@ export class Locale {
     }
 
     /** ✅ Překlad podle path (safety) */
-    public s(path: string): string {
+    public s(path: string, args: Record<string, string | number> = {}): string {
         if (!path) return '[no path]';
         let current = this.locale$.value;
         for (const key of path.split('.')) {
@@ -122,6 +122,10 @@ export class Locale {
                 return `[${path}]`;
             }
         }
+
+        // Replace all args in text
+        Object.entries(args).forEach((arg) => current.replaceAll(`%${arg[0]}%`, `${arg[1]}`));
+
         return current;
     }
 }

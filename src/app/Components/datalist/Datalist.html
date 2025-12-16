@@ -44,13 +44,13 @@
         <div class="left">
             @if (!options.hideInfo && this.data.getValue().length) {
                 <p>
-                    {{ l.s('components.datalist.info')
-                        .replaceAll('%start%', currentStart().toString())
-                        .replaceAll('%end%', currentEnd().toString())
-                        .replaceAll('%rows%', totalRows().toString())
-                        .replaceAll('%page%', currentPage().toString())
-                        .replaceAll('%max_pages%', getMaxPages().toString())
-                    }}
+                    {{ l.s('components.datalist.info', {
+                        start: currentStart(),
+                        end: currentEnd(),
+                        rows: totalRows(),
+                        page: currentPage(),
+                        max_pages: getMaxPages()
+                    }) }}
                 </p>
             }
         </div>

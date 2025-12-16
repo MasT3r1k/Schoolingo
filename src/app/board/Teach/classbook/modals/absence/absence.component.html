@@ -33,13 +33,11 @@
                 </div>
                 @if ([AbsenceType.LATE].includes(classbook.selectedAbsence)) {
                     <p>
-                        {{ l.s('classbook.add_absence.descriptions.late_arrival')
-                        .replaceAll('%time%', getTime('arrival').format('HH:mm')) }}
+                        {{ l.s('classbook.add_absence.descriptions.late_arrival', { time: getTime('arrival').format('HH:mm') }) }}
                     </p>
                 }
                 @if ([AbsenceType.EARLY].includes(classbook.selectedAbsence)) {
-                    {{ l.s('classbook.add_absence.descriptions.early_departure')
-                        .replaceAll('%time%', getTime('departure').format('HH:mm')) }}
+                    {{ l.s('classbook.add_absence.descriptions.early_departure', { time: getTime('departure').format('HH:mm') }) }}
                 }
     
             </div>

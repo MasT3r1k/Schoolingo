@@ -254,11 +254,14 @@ export class BoardComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     // Register token warning modal
-    this.modalManager.addModal('token-warning', {
-      title: '',
-      closeable: false,
-      items: [{ type: 'component', component: TokenWarningModalComponent }]
-    });
+    this.modalManager.addModal(
+      'token-warning',
+      {
+        title: '',
+        closeable: false,
+        items: [{ type: 'component', component: TokenWarningModalComponent }]
+      }
+    );
 
     // Subscribe to token expiration warnings
     const warningSubscription = this.tokenExpirationService.warningThreshold$.subscribe(() => {
@@ -273,7 +276,7 @@ export class BoardComponent implements OnInit, OnDestroy {
     this.subscriptions.push(expiredSubscription);
     
     this.u.getAuthState().subscribe((data) => {
-      this.sidebar.build();    
+      this.sidebar.build();
       if (data) {
         // === Connect to WebSocket for real-time notifications ===
         this.wsService.connect();
