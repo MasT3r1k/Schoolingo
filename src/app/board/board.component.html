@@ -1,4 +1,8 @@
 <div class="wrapper" (click)="dropdownManager.selected_dropdown = '';context_menu.hideContextMenu()">
+    <!-- Snow Effect - only visible in full seasonal mode during Christmas -->
+    @if (seasonalService.getModeValue() === 'full' && seasonalService.getSeasonValue() === 'christmas') {
+    <app-snow-effect></app-snow-effect>
+    }
     <div class="navbar">
         <div class="left">
             <div class="title">
@@ -38,6 +42,17 @@
         </div>
         <div class="right">
             <div class="options">
+                <!-- Seasonal Toggle Button -->
+                @if (seasonalService.getSeasonValue() !== 'none') {
+                <div class="item-btn seasonal-toggle" [class.active]="seasonalService.isActive()"
+                    (click)="$event.stopPropagation();seasonalService.toggleMode()"
+                    [title]="seasonalService.isActive() ? l.s('seasonal.toggle.disable') : l.s('seasonal.toggle.enable')">
+                    <div class="icon">
+                        <i-tabler name="snowflake"></i-tabler>
+                    </div>
+                </div>
+                }
+
                 <div class="item-btn"
                     (click)="$event.stopPropagation();dropdownManager.selected_dropdown = (dropdownManager.selected_dropdown == 'notification') ? '' : 'notification'">
                     <div class="icon">

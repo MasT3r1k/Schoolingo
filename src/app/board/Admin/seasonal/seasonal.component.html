@@ -1,0 +1,128 @@
+<div class="page-wrapper">
+    <div class="page-header">
+        <div class="header-content">
+            <h1>{{ l.s('admin.seasonal.title') }}</h1>
+            <p class="subtitle">{{ l.s('admin.seasonal.description') }}</p>
+        </div>
+        <div class="header-actions">
+            <button class="btn btn--primary" (click)="saveSettings()" [disabled]="isSaving">
+                @if (isSaving) {
+                <span class="spinner"></span>
+                } @else if (saveSuccess) {
+                <i-tabler name="check"></i-tabler>
+                } @else {
+                <i-tabler name="device-floppy"></i-tabler>
+                }
+                <span>{{ l.s('common.save') }}</span>
+            </button>
+        </div>
+    </div>
+
+    <div class="page-content">
+        @if (isLoading) {
+        <div class="loading-state">
+            <div class="spinner"></div>
+        </div>
+        } @else {
+        <form [formGroup]="form">
+            <!-- Global Settings Card -->
+            <div class="card">
+                <div class="card-header">
+                    <h2>{{ l.s('admin.seasonal.globalSettings') }}</h2>
+                </div>
+                <div class="card-body">
+                    <div class="form-group toggle-row">
+                        <label class="toggle-label">
+                            <span class="label-text">{{ l.s('admin.seasonal.enableGlobally') }}</span>
+                            <span class="label-description">{{ l.s('admin.seasonal.enableDescription') }}</span>
+                        </label>
+                        <label class="toggle">
+                            <input type="checkbox" formControlName="enabled">
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
+
+                    <div class="form-group toggle-row">
+                        <label class="toggle-label">
+                            <span class="label-text">{{ l.s('admin.seasonal.allowUserOverride') }}</span>
+                            <span class="label-description">{{ l.s('admin.seasonal.allowUserDescription') }}</span>
+                        </label>
+                        <label class="toggle">
+                            <input type="checkbox" formControlName="allowUserOverride">
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Seasons Configuration -->
+            <div class="card">
+                <div class="card-header">
+                    <h2>{{ l.s('admin.seasonal.seasonConfig') }}</h2>
+                </div>
+                <div class="card-body">
+                    <div class="seasons-grid">
+                        @for (season of seasons; track season.key) {
+                        <div class="season-card" [formGroupName]="season.key"
+                            [class.active]="form.get(season.key)?.get('enabled')?.value">
+                            <div class="season-header">
+                                <div class="season-icon" [style.background]="season.color + '20'"
+                                    [style.color]="season.color">
+                                    <i-tabler [name]="season.icon"></i-tabler>
+                                </div>
+                                <div class="season-info">
+                                    <span class="season-name">{{ season.name }}</span>
+                                    <label class="toggle toggle-sm">
+                                        <input type="checkbox" formControlName="enabled">
+                                        <span class="toggle-slider"></span>
+                                    </label>
+                                </div>
+                            </div>
+
+                            <div class="season-dates">
+                                <div class="date-field">
+                                    <label>{{ l.s('admin.seasonal.startDate') }}</label>
+                                    <input type="text" formControlName="startDate"
+                                        [placeholder]="season.key === 'easter' ? 'auto' : 'MM-DD'"
+                                        [disabled]="season.key === 'easter'">
+                                </div>
+                                <div class="date-field">
+                                    <label>{{ l.s('admin.seasonal.endDate') }}</label>
+                                    <input type="text" formControlName="endDate"
+                                        [placeholder]="season.key === 'easter' ? 'auto' : 'MM-DD'"
+                                        [disabled]="season.key === 'easter'">
+                                </div>
+                            </div>
+
+                            <button type="button" class="btn btn--ghost btn--sm preview-btn"
+                                (click)="previewSeason(season.key)">
+                                <i-tabler name="eye"></i-tabler>
+                                <span>{{ l.s('admin.seasonal.preview') }}</span>
+                            </button>
+                        </div>
+                        }
+                    </div>
+                </div>
+            </div>
+
+            <!-- Current Status Card -->
+            <div class="card">
+                <div class="card-header">
+                    <h2>{{ l.s('admin.seasonal.currentStatus') }}</h2>
+                </div>
+                <div class="card-body">
+                    <div class="status-info">
+                        <div class="status-item">
+                            <span class="status-label">{{ l.s('admin.seasonal.activeSeason') }}</span>
+                            <span class="status-value seasonal-badge">
+                                {{ seasonalService.getSeasonValue() === 'none' ? l.s('admin.seasonal.noActiveSeason') :
+                                seasonalService.getSeasonValue() }}
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+        }
+    </div>
+</div>

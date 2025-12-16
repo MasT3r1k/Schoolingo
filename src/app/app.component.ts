@@ -6,10 +6,13 @@ import { Authentication } from './infrastructure/authentication';
 import { polyfillCountryFlagEmojis } from "country-flag-emoji-polyfill";
 import { ModalComponent } from '@Components/modal';
 import { CalendarManager } from '@Components/calendar-dropdown';
+import { SeasonalService } from '@Schoolingo/seasonal';
+import { SnowEffectComponent } from '@Components/seasonal/snow-effect/snow-effect.component';
+import { SeasonalDecorationsComponent } from '@Components/seasonal/decorations/decorations.component';
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet, ModalComponent, CalendarManager],
+  imports: [RouterOutlet, ModalComponent, CalendarManager, SnowEffectComponent, SeasonalDecorationsComponent],
   templateUrl: './app.component.html',
   styleUrl: './app.component.css'
 })
@@ -18,9 +21,14 @@ export class AppComponent implements OnInit {
   private http = inject(HttpClient);
 
   public auth = inject(Authentication);
+  public seasonalService = inject(SeasonalService);
+  
   ngOnInit(): void {
     // Enable flags Windows 11
     polyfillCountryFlagEmojis();
+
+    // Initialize seasonal effects immediately (for login page too)
+    this.seasonalService.initialize();
 
     this.http.get<any>(`${Config.API_URL}/v1/version`).subscribe((data) => {
       if (data.version) {

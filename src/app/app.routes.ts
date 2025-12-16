@@ -305,6 +305,10 @@ export const routes: Routes = [
                     {
                         path: 'backup',
                         component: BackupComponent
+                    },
+                    {
+                        path: 'seasonal',
+                        loadComponent: () => import('./board/Admin/seasonal/seasonal.component').then(m => m.SeasonalAdminComponent)
                     }
                 ]
             },

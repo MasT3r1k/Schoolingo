@@ -24,6 +24,8 @@ import { ModalManager } from '@Schoolingo/modal';
 import { TokenWarningModalComponent } from '@Components/token-warning-modal/token-warning-modal.component';
 import { Subscription } from 'rxjs';
 import { WsService, NotificationPayload } from '@Schoolingo/websocket';
+import { SeasonalService } from '@Schoolingo/seasonal';
+import { SnowEffectComponent } from '@Components/seasonal/snow-effect/snow-effect.component';
 
 export interface SidebarItem {
     item: string;
@@ -76,7 +78,7 @@ interface Notification {
 
 @Component({
   standalone: true,
-  imports: [IconsModule, RouterLink, RouterLinkActive, NgStyle, NgClass, RouterOutlet],
+  imports: [IconsModule, RouterLink, RouterLinkActive, NgStyle, NgClass, RouterOutlet, SnowEffectComponent],
   templateUrl: './board.component.html',
   styleUrls: ['./board.component.css', '../styles/sidebar.css']
 })
@@ -87,6 +89,7 @@ export class BoardComponent implements OnInit, OnDestroy {
   private sessionExpiredService = inject(SessionExpiredService);
   private modalManager = inject(ModalManager);
   private wsService = inject(WsService);
+  public seasonalService = inject(SeasonalService);
   private subscriptions: Subscription[] = [];
   App = Config
   Utils = Utils;
@@ -315,6 +318,9 @@ export class BoardComponent implements OnInit, OnDestroy {
           this.dashboard.unreadMessages = data.unreadMessages;
           this.dashboard.newNotifications = data.newNotifications;
           this.dashboard.cookies = data.cookies;
+          
+          // Enable localStorage for seasonal preferences if full cookie consent
+          this.seasonalService.setCookiesConsent(data.cookies);
         })
 
         // === Get traineeship weeks ===

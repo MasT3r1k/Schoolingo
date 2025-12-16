@@ -1,0 +1,593 @@
+/* ============================================
+   SEASONAL MICRO-INTERACTIONS & EFFECTS
+   Enhanced with background patterns and decorative elements
+   ============================================ */
+
+/* === ANIMATION KEYFRAMES === */
+
+/* Gentle warmth pulse for badges and icons */
+@keyframes seasonal-warmth-pulse {
+
+    0%,
+    100% {
+        box-shadow: var(--seasonal-glow-shadow);
+    }
+
+    50% {
+        box-shadow: 0 0 24px rgba(var(--seasonal-primary-rgb), 0.4);
+    }
+}
+
+/* Subtle twinkle effect for icons */
+@keyframes seasonal-twinkle {
+
+    0%,
+    100% {
+        opacity: 1;
+        transform: scale(1);
+    }
+
+    50% {
+        opacity: 0.7;
+        transform: scale(1.1);
+    }
+}
+
+/* Gentle floating animation for decorations */
+@keyframes seasonal-float {
+
+    0%,
+    100% {
+        transform: translateY(0) rotate(0deg);
+    }
+
+    50% {
+        transform: translateY(10px) rotate(5deg);
+    }
+}
+
+/* Background pattern drift */
+@keyframes seasonal-pattern-drift {
+    0% {
+        background-position: 0% 0%;
+    }
+
+    100% {
+        background-position: 100% 100%;
+    }
+}
+
+/* Sparkle burst on click */
+@keyframes seasonal-sparkle {
+    0% {
+        transform: scale(0);
+        opacity: 1;
+    }
+
+    100% {
+        transform: scale(1.5);
+        opacity: 0;
+    }
+}
+
+/* === SEASONAL MODE: SUBTLE === */
+/* Colors and gentle accents */
+
+.seasonal-subtle .card:hover,
+.seasonal-subtle .module:hover {
+    border-color: var(--seasonal-primary);
+    box-shadow: var(--shadow-sm), 0 0 8px rgba(var(--seasonal-primary-rgb), 0.15);
+    transition: all var(--transition-slow);
+}
+
+.seasonal-subtle .btn--primary:hover {
+    box-shadow: var(--shadow-sm), var(--seasonal-glow-shadow);
+}
+
+.seasonal-subtle .sidebar li.active .item {
+    border-left-color: var(--seasonal-primary);
+    background: linear-gradient(90deg, rgba(var(--seasonal-primary-rgb), 0.05) 0%, transparent 100%);
+}
+
+/* Seasonal badge styling - more prominent */
+.seasonal-subtle .seasonal-badge,
+.seasonal-full .seasonal-badge {
+    background: linear-gradient(135deg, rgba(var(--seasonal-primary-rgb), 0.2), rgba(var(--seasonal-primary-rgb), 0.1));
+    color: var(--seasonal-primary);
+    padding: 0.35rem 0.75rem;
+    border-radius: var(--radius-full);
+    font-size: var(--text-xs);
+    font-weight: 600;
+    border: 1px solid rgba(var(--seasonal-primary-rgb), 0.3);
+    text-shadow: 0 0 8px rgba(var(--seasonal-primary-rgb), 0.3);
+}
+
+/* === SEASONAL MODE: FULL === */
+/* Full animations and decorative effects */
+
+.seasonal-full .card,
+.seasonal-full .module {
+    border-color: rgba(var(--seasonal-primary-rgb), 0.15);
+}
+
+.seasonal-full .card:hover,
+.seasonal-full .module:hover {
+    border-color: var(--seasonal-primary);
+    box-shadow: var(--shadow-lg), 0 0 20px rgba(var(--seasonal-primary-rgb), 0.2);
+    transition: all var(--transition-slow);
+}
+
+.seasonal-full .btn--primary {
+    box-shadow: 0 0 10px rgba(var(--seasonal-primary-rgb), 0.15);
+}
+
+.seasonal-full .btn--primary:hover {
+    box-shadow: var(--shadow-md), 0 0 24px rgba(var(--seasonal-primary-rgb), 0.35);
+}
+
+.seasonal-full .sidebar li.active .item {
+    border-left-color: var(--seasonal-primary);
+    border-left-width: 3px;
+    background: linear-gradient(90deg, rgba(var(--seasonal-primary-rgb), 0.12) 0%, transparent 100%);
+}
+
+/* Pulsing seasonal badge */
+.seasonal-full .seasonal-badge {
+    animation: seasonal-warmth-pulse 2.5s ease-in-out infinite;
+}
+
+/* Seasonal toggle button - more prominent */
+.seasonal-toggle.active .icon {
+    color: var(--seasonal-primary) !important;
+    filter: drop-shadow(0 0 6px rgba(var(--seasonal-primary-rgb), 0.5));
+}
+
+.seasonal-full .seasonal-toggle.active,
+.seasonal-subtle .seasonal-toggle.active {
+    background: rgba(var(--seasonal-primary-rgb), 0.15);
+    border-radius: var(--radius);
+}
+
+/* Navbar decorative border - golden glow */
+.seasonal-full .navbar {
+    border-bottom: 2px solid transparent;
+    border-image: linear-gradient(90deg,
+            transparent 0%,
+            rgba(var(--seasonal-primary-rgb), 0.4) 20%,
+            var(--seasonal-primary) 50%,
+            rgba(var(--seasonal-primary-rgb), 0.4) 80%,
+            transparent 100%) 1;
+}
+
+/* Main content subtle background pattern */
+.seasonal-full .main-content {
+    position: relative;
+}
+
+.seasonal-full .main-content::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    pointer-events: none;
+    opacity: 0.03;
+    z-index: -1;
+    background-size: 120px 120px;
+    animation: seasonal-pattern-drift 60s linear infinite;
+}
+
+/* === CHRISTMAS-SPECIFIC EFFECTS === */
+
+.seasonal-christmas .seasonal-toggle.active .icon {
+    animation: seasonal-twinkle 1.5s ease-in-out infinite;
+}
+
+/* Christmas background pattern - snowflakes and stars */
+.seasonal-christmas.seasonal-full .main-content::before {
+    background-image:
+        radial-gradient(circle at 20% 30%, rgba(255, 255, 255, 0.8) 1px, transparent 1px),
+        radial-gradient(circle at 60% 70%, rgba(255, 255, 255, 0.6) 1.5px, transparent 1.5px),
+        radial-gradient(circle at 80% 20%, rgba(255, 255, 255, 0.7) 1px, transparent 1px),
+        radial-gradient(circle at 40% 80%, rgba(255, 255, 255, 0.5) 2px, transparent 2px),
+        radial-gradient(circle at 10% 60%, rgba(255, 255, 255, 0.6) 1px, transparent 1px),
+        radial-gradient(circle at 90% 50%, rgba(255, 255, 255, 0.4) 1.5px, transparent 1.5px);
+    background-size: 150px 150px, 180px 180px, 120px 120px, 200px 200px, 100px 100px, 160px 160px;
+    opacity: 0.06;
+}
+
+/* Christmas sidebar decoration */
+.seasonal-christmas.seasonal-full .sidebar::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(90deg,
+            var(--seasonal-primary) 0%,
+            var(--seasonal-cool) 50%,
+            var(--seasonal-primary) 100%);
+    opacity: 0.8;
+}
+
+/* Christmas module cards decorative corner */
+.seasonal-christmas.seasonal-full .module,
+.seasonal-christmas.seasonal-full .card {
+    position: relative;
+    overflow: hidden;
+}
+
+.seasonal-christmas.seasonal-full .module::after,
+.seasonal-christmas.seasonal-full .card::after {
+    content: '❄';
+    position: absolute;
+    top: -8px;
+    right: -8px;
+    font-size: 32px;
+    opacity: 0.08;
+    pointer-events: none;
+    transform: rotate(15deg);
+}
+
+/* === EASTER-SPECIFIC EFFECTS === */
+
+.seasonal-easter .seasonal-badge {
+    background: linear-gradient(135deg, rgba(232, 213, 183, 0.25), rgba(155, 196, 168, 0.25));
+    border-color: rgba(155, 196, 168, 0.4);
+}
+
+/* Easter background pattern - soft dots/eggs */
+.seasonal-easter.seasonal-full .main-content::before {
+    background-image:
+        radial-gradient(ellipse 8px 10px at 30% 40%, rgba(232, 213, 183, 0.4) 0%, transparent 70%),
+        radial-gradient(ellipse 6px 8px at 70% 60%, rgba(155, 196, 168, 0.3) 0%, transparent 70%),
+        radial-gradient(ellipse 7px 9px at 50% 20%, rgba(201, 177, 212, 0.3) 0%, transparent 70%),
+        radial-gradient(ellipse 5px 7px at 20% 70%, rgba(155, 196, 168, 0.35) 0%, transparent 70%);
+    background-size: 200px 200px, 180px 180px, 220px 220px, 160px 160px;
+    opacity: 0.08;
+}
+
+.seasonal-easter.seasonal-full .module::after,
+.seasonal-easter.seasonal-full .card::after {
+    content: '🌸';
+    font-size: 28px;
+    opacity: 0.1;
+}
+
+/* === SUMMER-SPECIFIC EFFECTS === */
+
+.seasonal-summer .seasonal-toggle.active .icon {
+    color: var(--seasonal-primary);
+    filter: drop-shadow(0 0 8px rgba(244, 162, 97, 0.6));
+}
+
+/* Summer background pattern - sun rays */
+.seasonal-summer.seasonal-full .main-content::before {
+    background-image:
+        linear-gradient(45deg, rgba(244, 162, 97, 0.15) 0%, transparent 50%),
+        linear-gradient(-45deg, rgba(233, 196, 106, 0.1) 0%, transparent 50%),
+        radial-gradient(circle at 80% 20%, rgba(244, 162, 97, 0.2) 0%, transparent 30%);
+    background-size: 300px 300px, 300px 300px, 400px 400px;
+    opacity: 0.15;
+}
+
+.seasonal-summer.seasonal-full .module::after,
+.seasonal-summer.seasonal-full .card::after {
+    content: '☀';
+    font-size: 28px;
+    opacity: 0.1;
+}
+
+/* === GRADUATION-SPECIFIC EFFECTS === */
+
+.seasonal-graduation .seasonal-badge {
+    background: linear-gradient(135deg, rgba(201, 162, 39, 0.25), rgba(42, 67, 101, 0.15));
+    border: 1px solid rgba(201, 162, 39, 0.4);
+}
+
+/* Graduation background pattern - confetti-like */
+.seasonal-graduation.seasonal-full .main-content::before {
+    background-image:
+        linear-gradient(30deg, rgba(201, 162, 39, 0.2) 2px, transparent 2px),
+        linear-gradient(-30deg, rgba(42, 67, 101, 0.15) 2px, transparent 2px),
+        linear-gradient(60deg, rgba(201, 162, 39, 0.15) 1px, transparent 1px);
+    background-size: 80px 80px, 100px 100px, 60px 60px;
+    opacity: 0.1;
+}
+
+.seasonal-graduation.seasonal-full .module::after,
+.seasonal-graduation.seasonal-full .card::after {
+    content: '🎓';
+    font-size: 28px;
+    opacity: 0.12;
+}
+
+/* === ACCESSIBILITY: REDUCED MOTION === */
+
+@media (prefers-reduced-motion: reduce) {
+
+    .seasonal-full .seasonal-badge,
+    .seasonal-toggle.active .icon,
+    .seasonal-christmas .seasonal-toggle.active .icon {
+        animation: none !important;
+    }
+
+    .seasonal-full .card:hover,
+    .seasonal-full .module:hover,
+    .seasonal-full .btn--primary:hover {
+        transition: none !important;
+    }
+
+    .seasonal-full .main-content::before {
+        animation: none !important;
+    }
+}
+
+/* Alternative class-based reduced motion override */
+.seasonal-reduced-motion .seasonal-badge,
+.seasonal-reduced-motion .seasonal-toggle.active .icon {
+    animation: none !important;
+}
+
+.seasonal-reduced-motion .card:hover,
+.seasonal-reduced-motion .module:hover {
+    transition: border-color 0ms, box-shadow 0ms !important;
+}
+
+.seasonal-reduced-motion .main-content::before {
+    animation: none !important;
+}
+
+/* === SEASONAL WIDGETS === */
+
+.seasonal-widget {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    position: relative;
+}
+
+/* Widget decorative accent */
+.seasonal-full .seasonal-widget::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(90deg,
+            transparent,
+            var(--seasonal-primary),
+            var(--seasonal-cool, var(--seasonal-secondary)),
+            var(--seasonal-primary),
+            transparent);
+    opacity: 0.8;
+}
+
+.seasonal-widget:hover {
+    border-color: var(--seasonal-primary);
+    box-shadow: 0 0 15px rgba(var(--seasonal-primary-rgb), 0.15);
+}
+
+.seasonal-widget-header {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    padding: var(--space-4);
+    border-bottom: 1px solid var(--border);
+    background: linear-gradient(180deg, rgba(var(--seasonal-primary-rgb), 0.05), transparent);
+}
+
+.seasonal-widget-header .icon {
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, rgba(var(--seasonal-primary-rgb), 0.2), rgba(var(--seasonal-primary-rgb), 0.1));
+    color: var(--seasonal-primary);
+    border-radius: var(--radius);
+    box-shadow: 0 0 10px rgba(var(--seasonal-primary-rgb), 0.2);
+}
+
+.seasonal-widget-header .title {
+    font-weight: 600;
+    color: var(--text);
+}
+
+.seasonal-widget-body {
+    padding: var(--space-4);
+}
+
+/* Countdown widget specific */
+.seasonal-countdown {
+    text-align: center;
+    padding: var(--space-6);
+}
+
+.seasonal-countdown .days {
+    font-size: clamp(3rem, 8vw, 4.5rem);
+    font-weight: 800;
+    color: var(--seasonal-primary);
+    line-height: 1;
+    margin-bottom: var(--space-2);
+    text-shadow: 0 0 30px rgba(var(--seasonal-primary-rgb), 0.3);
+}
+
+.seasonal-countdown .label {
+    font-size: var(--text-md);
+    color: var(--text-secondary);
+    margin-bottom: var(--space-4);
+    font-weight: 500;
+}
+
+.seasonal-countdown .date-range {
+    font-size: var(--text-sm);
+    color: var(--text-muted);
+    padding: var(--space-2) var(--space-4);
+    background: rgba(var(--seasonal-primary-rgb), 0.1);
+    border: 1px solid rgba(var(--seasonal-primary-rgb), 0.2);
+    border-radius: var(--radius-full);
+    display: inline-block;
+}
+
+/* Year review widget specific */
+.seasonal-year-review .stats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--space-4);
+}
+
+.seasonal-year-review .stat {
+    text-align: center;
+    padding: var(--space-4);
+    background: linear-gradient(180deg, rgba(var(--seasonal-primary-rgb), 0.08), rgba(var(--seasonal-primary-rgb), 0.02));
+    border: 1px solid rgba(var(--seasonal-primary-rgb), 0.15);
+    border-radius: var(--radius-lg);
+    transition: all var(--transition-fast);
+}
+
+.seasonal-year-review .stat:hover {
+    border-color: var(--seasonal-primary);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(var(--seasonal-primary-rgb), 0.15);
+}
+
+.seasonal-year-review .stat-value {
+    font-size: var(--text-2xl);
+    font-weight: 800;
+    color: var(--seasonal-primary);
+    margin-bottom: var(--space-1);
+}
+
+.seasonal-year-review .stat-label {
+    font-size: var(--text-xs);
+    color: var(--text-muted);
+    font-weight: 500;
+}
+
+.seasonal-year-review .stat-icon {
+    color: var(--seasonal-primary);
+    margin-bottom: var(--space-2);
+    opacity: 0.8;
+}
+
+/* === SNOW EFFECT CONTAINER === */
+
+.snow-effect-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 120px;
+    pointer-events: none;
+    z-index: var(--z-sticky);
+    overflow: hidden;
+}
+
+.snow-effect-container canvas {
+    width: 100%;
+    height: 100%;
+}
+
+/* Hide snow when reduced motion is preferred */
+@media (prefers-reduced-motion: reduce) {
+    .snow-effect-container {
+        display: none !important;
+    }
+}
+
+.seasonal-reduced-motion .snow-effect-container {
+    display: none !important;
+}
+
+/* Only show in full mode */
+.seasonal-subtle .snow-effect-container {
+    display: none;
+}
+
+/* === FESTIVE HEADER DECORATIONS === */
+
+/* String lights effect for Christmas */
+.seasonal-christmas.seasonal-full .navbar::after {
+    content: '';
+    position: absolute;
+    bottom: -1px;
+    left: 0;
+    right: 0;
+    height: 8px;
+    background: repeating-linear-gradient(90deg,
+            transparent 0px,
+            transparent 30px,
+            rgba(212, 168, 83, 0.6) 32px,
+            rgba(212, 168, 83, 0.8) 36px,
+            rgba(212, 168, 83, 0.6) 40px,
+            transparent 42px,
+            transparent 60px,
+            rgba(126, 184, 216, 0.6) 62px,
+            rgba(126, 184, 216, 0.8) 66px,
+            rgba(126, 184, 216, 0.6) 70px,
+            transparent 72px);
+    background-size: 100px 8px;
+    filter: blur(1px);
+    opacity: 0.7;
+}
+
+/* === SNOWMAN DECORATION === */
+
+/* Snowman in bottom right corner */
+.seasonal-christmas.seasonal-full body::after,
+.seasonal-christmas.seasonal-full .wrapper::after {
+    content: '⛄';
+    position: fixed;
+    bottom: 30px;
+    right: 40px;
+    font-size: 80px;
+    opacity: 0.12;
+    pointer-events: none;
+    z-index: 1;
+    filter: drop-shadow(0 0 20px rgba(255, 255, 255, 0.3));
+    animation: seasonal-float 4s ease-in-out infinite;
+}
+
+/* Additional winter decorations in corners */
+.seasonal-christmas.seasonal-full .sidebar::after {
+    content: '🎄';
+    position: absolute;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 40px;
+    opacity: 0.08;
+    pointer-events: none;
+}
+
+/* Login page specific snowman decoration */
+.seasonal-christmas.seasonal-full .auth-container::after,
+.seasonal-christmas.seasonal-full .login-wrapper::after {
+    content: '⛄';
+    position: fixed;
+    bottom: 40px;
+    right: 50px;
+    font-size: 100px;
+    opacity: 0.15;
+    pointer-events: none;
+    z-index: 0;
+    filter: drop-shadow(0 0 30px rgba(255, 255, 255, 0.4));
+    animation: seasonal-float 5s ease-in-out infinite;
+}
+
+/* Gift decorations scattered */
+.seasonal-christmas.seasonal-full .main-content::after {
+    content: '🎁';
+    position: fixed;
+    bottom: 20px;
+    left: 30px;
+    font-size: 50px;
+    opacity: 0.06;
+    pointer-events: none;
+    z-index: 0;
+}

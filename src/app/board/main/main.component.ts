@@ -3,6 +3,7 @@ import { Component, inject, signal, Type, WritableSignal } from '@angular/core';
 import { Locale } from '@Schoolingo/locale';
 import { Permission } from '@Schoolingo/permission';
 import { IconsModule } from '@Schoolingo/icons';
+import { SeasonalService } from '@Schoolingo/seasonal';
 
 interface DashboardModule {
   id: string;
@@ -11,6 +12,7 @@ interface DashboardModule {
   component: WritableSignal<Type<any> | null>;
   permission?: string[];
   icon?: string;
+  seasonal?: boolean; // Only show during active seasonal theme
 }
 
 @Component({
@@ -23,6 +25,7 @@ interface DashboardModule {
 export class MainComponent {
   public perm = inject(Permission);
   public l = inject(Locale);
+  private seasonalService = inject(SeasonalService);
 
   public modules: DashboardModule[] = [
     {
@@ -91,6 +94,23 @@ export class MainComponent {
       permission: ['teacher'],
       import: () => import('./sections/vehicles/vehicles.component').then(m => m.VehiclesComponent),
       component: signal(null)
+    },
+    // === SEASONAL WIDGETS ===
+    {
+      id: 'seasonal-countdown',
+      titleKey: 'modules.seasonal.countdown',
+      icon: 'calendar-time',
+      import: () => import('./sections/seasonal/countdown/countdown.component').then(m => m.CountdownComponent),
+      component: signal(null),
+      seasonal: true
+    },
+    {
+      id: 'seasonal-year-review',
+      titleKey: 'modules.seasonal.yearReview',
+      icon: 'sparkles',
+      import: () => import('./sections/seasonal/year-review/year-review.component').then(m => m.YearReviewComponent),
+      component: signal(null),
+      seasonal: true
     }
   ];
 
@@ -99,7 +119,18 @@ export class MainComponent {
   }
 
   async loadModules() {
-    this.modules = this.modules.filter((module) => (module.permission && this.perm.checkPermission(module.permission)) || !module.permission);
+    // Filter modules based on permission and seasonal status
+    this.modules = this.modules.filter((module) => {
+      // Check permission
+      const hasPermission = module.permission ? this.perm.checkPermission(module.permission) : true;
+      
+      // Check seasonal - only show seasonal modules when seasonal is active
+      const isSeasonal = module.seasonal || false;
+      const seasonalActive = this.seasonalService.isActive();
+      const showSeasonal = !isSeasonal || (isSeasonal && seasonalActive);
+      
+      return hasPermission && showSeasonal;
+    });
     // Load all modules in parallel
     const loadedModules = await Promise.all(
       this.modules.map(m => m.import())
