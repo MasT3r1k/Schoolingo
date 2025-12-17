@@ -274,8 +274,7 @@ export class BoardComponent implements OnInit, OnDestroy {
       {
         title: 'Přehled za školní rok',
         closeable: true,
-        forceScrollbar: true,
-        width: 900,
+        width: 1200,
         items: [
           { type: 'component', component: studentSummaryComponent }
         ]

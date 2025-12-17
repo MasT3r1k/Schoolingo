@@ -1,134 +1,248 @@
-<div class="modal-body card_body">
-    <header class="header-card">
-        <div>
-            <h1 class="student-name">{{ getName() }}</h1>
-            <div class="meta-info">
-                <span class="meta-tag">4.B</span>
-                <span class="meta-tag">2024/2025</span>
-                <span class="meta-tag">Pololetí</span>
+<div class="summary-container">
+    <!-- SECTION 1: HERO -->
+    <section class="summary-section hero-section reveal">
+        <div class="hero-content">
+            <div class="year-badge">{{ summaryData.student.schoolYear }}</div>
+            <h1 class="hero-title">{{ getStudentName() }}</h1>
+            <div class="hero-meta">
+                <span class="meta-item">
+                    <i-tabler name="school"></i-tabler>
+                    {{ summaryData.student.className }}
+                </span>
+                <span class="meta-item">
+                    <i-tabler name="map-pin"></i-tabler>
+                    {{ getSchoolName() }}
+                </span>
             </div>
         </div>
-        <div class="school-info">
-            <div style="font-weight: 600; color: var(--text); margin-bottom: 4px;">{{ getSchoolName() }}</div>
-            <div style="font-size: var(--text-sm);">Parléřova 2, Praha 6</div>
-        </div>
-    </header>
+        <div class="hero-decoration"></div>
+    </section>
 
-    <div class="stats-cards" style="margin-bottom: var(--space-8)">
-        <div class="stat-card stat--primary">
-            <div class="stat-icon">
-                <i-tabler name="chart-bar"></i-tabler>
-            </div>
-            <div class="stat-info">
-                <div class="stat-value">1.42</div>
-                <div class="stat-label">Studijní průměr</div>
-            </div>
-        </div>
-        <div class="stat-card stat--warning">
-            <div class="stat-icon">
-                <i-tabler name="calendar-x"></i-tabler>
-            </div>
-            <div class="stat-info">
-                <div class="stat-value" style="color: var(--warning);">12</div>
-                <div class="stat-label">Absence (hodin)</div>
-            </div>
-        </div>
-        <div class="stat-card stat--success">
-            <div class="stat-icon">
-                <i-tabler name="alert-triangle"></i-tabler>
-            </div>
-            <div class="stat-info">
-                <div class="stat-value" style="color: var(--success); display: flex; align-items: center; gap: 10px;">
-                    <span>A</span>
+    <!-- SECTION 2: STATS OVERVIEW -->
+    <section class="summary-section stats-section reveal">
+        <h2 class="section-title">Tvůj rok v číslech</h2>
+
+        <div class="stats-grid">
+            <div class="summary-overview-card" [class.behavior-a]="summaryData.stats.behavior === 'A'"
+                [class.behavior-b]="summaryData.stats.behavior === 'B'"
+                [class.behavior-c]="summaryData.stats.behavior === 'C'">
+                <div class="summary-overview-icon">
+                    <i-tabler name="chart-bar"></i-tabler>
                 </div>
-                <div class="stat-label">Chování</div>
-            </div>
-        </div>
-    </div>
-
-    <div class="section-header">
-        <h2 class="section-title">Detailní hodnocení</h2>
-        <div style="height: 1px; flex: 1; background: var(--border);"></div>
-    </div>
-
-    <div class="subjects-grid">
-
-        <div class="subject-card">
-            <div class="subject-top">
-                <div>
-                    <div class="subject-name">Matematika</div>
-                    <div class="teacher">Mgr. Petra Dvořáková</div>
+                <div class="summary-overview-content">
+                    <div class="summary-overview-value">{{ summaryData.stats.average }}</div>
+                    <div class="summary-overview-label">Studijní průměr</div>
+                    <div class="summary-overview-progress">
+                        <div class="overview-progress-bar" [style.width.%]="(5 - summaryData.stats.average) / 4 * 100">
+                        </div>
+                    </div>
                 </div>
-                <div class="grade-badge grade-1">1</div>
             </div>
-            <div class="subject-feedback">
-                Výborná práce v geometrii. Doporučuji účast v olympiádě. Aktivní přístup k řešení složitých úloh.
+
+            <div class="summary-overview-card">
+                <div class="summary-overview-icon">
+                    <i-tabler name="calendar-x"></i-tabler>
+                </div>
+                <div class="summary-overview-content">
+                    <div class="summary-overview-value">{{ summaryData.stats.absenceHours }}</div>
+                    <div class="summary-overview-label">Hodin absence</div>
+                    <div class="summary-overview-subtext">
+                        {{ summaryData.stats.absenceHours < 20 ? 'Skvělá docházka!' : 'Dávej pozor na docházku' }}
+                            </div>
+                    </div>
+                </div>
+
+                <div class="summary-overview-card" [class.behavior-a]="summaryData.stats.behavior === 'A'"
+                    [class.behavior-b]="summaryData.stats.behavior === 'B'"
+                    [class.behavior-c]="summaryData.stats.behavior === 'C'">
+                    <div class="summary-overview-icon">
+                        <i-tabler name="user-check"></i-tabler>
+                    </div>
+                    <div class="summary-overview-content">
+                        <div class="summary-overview-value">{{ summaryData.stats.behavior }}</div>
+                        <div class="summary-overview-label">Chování</div>
+                        <div class="summary-overview-subtext">
+                            <span *ngIf="summaryData.stats.behavior === 'A'">Velmi dobré</span>
+                            <span *ngIf="summaryData.stats.behavior === 'B'">Uspokojivé</span>
+                            <span *ngIf="summaryData.stats.behavior === 'C'">Neuspokojivé</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+    </section>
+
+    <!-- SECTION 3: TOP SUBJECTS - VISUAL CARDS -->
+    <section class="summary-section top-subjects-section reveal">
+        <h2 class="section-title">Tvoje nejlepší předměty</h2>
+
+        <div class="top-subjects-grid">
+            <div class="top-subject-card" *ngFor="let subject of summaryData.topSubjects; let i = index"
+                [class.rank-1]="i === 0" [class.rank-2]="i === 1" [class.rank-3]="i === 2">
+
+                <!-- Rank Badge -->
+                <div class="card-rank">
+                    <span class="rank-position">#{{ i + 1 }}</span>
+                    <i-tabler [name]="i === 0 ? 'crown' : i === 1 ? 'award' : 'medal'" class="rank-icon"></i-tabler>
+                </div>
+
+                <!-- Main Content -->
+                <div class="card-content">
+                    <div class="subject-name">{{ subject.name }}</div>
+
+                    <!-- Big Grade Display -->
+                    <div class="grade-showcase">
+                        <div class="grade-number">{{ subject.grade }}</div>
+                        <div class="grade-sparkle">✨</div>
+                    </div>
+
+                    <!-- Teacher -->
+                    <div class="teacher-info">
+                        <i-tabler name="user"></i-tabler>
+                        <span>{{ subject.teacher }}</span>
+                    </div>
+
+                    <!-- Visual Stats -->
+                    <div class="visual-stats">
+                        <div class="stat-item">
+                            <div class="stat-icon">
+                                <i-tabler name="checklist"></i-tabler>
+                            </div>
+                            <div class="stat-text">
+                                <span class="stat-value">15</span>
+                                <span class="stat-label">známek</span>
+                            </div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-icon">
+                                <i-tabler name="trending-up"></i-tabler>
+                            </div>
+                            <div class="stat-text">
+                                <span class="stat-value">+12%</span>
+                                <span class="stat-label">zlepšení</span>
+                            </div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-icon">
+                                <i-tabler name="star"></i-tabler>
+                            </div>
+                            <div class="stat-text">
+                                <span class="stat-value">92%</span>
+                                <span class="stat-label">účast</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Mini Dot Chart -->
+                    <div class="dot-chart">
+                        <div class="dot" *ngFor="let n of [1,1,1,2,1,1,1,1,2,1,1,1]" [class.grade-1]="n === 1"
+                            [class.grade-2]="n === 2"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- SECTION 4: HIGHLIGHTS -->
+    <section class="summary-section highlights-section reveal">
+        <h2 class="section-title">Tvůj rok v číslech</h2>
+
+        <div class="highlights-grid">
+            <div class="summary-stat-card" [class.variant-primary]="highlight.variant === 'primary'"
+                [class.variant-success]="highlight.variant === 'success'"
+                [class.variant-warning]="highlight.variant === 'warning'"
+                [class.variant-danger]="highlight.variant === 'danger'"
+                [class.variant-info]="highlight.variant === 'info'" *ngFor="let highlight of getVisibleHighlights()">
+                <div class="summary-stat-icon">
+                    <i-tabler [name]="highlight.icon"></i-tabler>
+                </div>
+                <div class="summary-stat-content">
+                    <div class="summary-stat-title">{{ highlight.title }}</div>
+                    <div class="summary-stat-value">{{ highlight.value }}</div>
+                    <div class="summary-stat-description">{{ highlight.description }}</div>
+                </div>
             </div>
         </div>
 
-        <div class="subject-card">
-            <div class="subject-top">
-                <div>
-                    <div class="subject-name">Český jazyk</div>
-                    <div class="teacher">Mgr. Karel Svoboda</div>
-                </div>
-                <div class="grade-badge grade-1">1</div>
-            </div>
-            <div class="subject-feedback">
-                Skvělé slohové práce, výborný přednes. Gramatika bezchybná.
-            </div>
+        <!-- Show More Button -->
+        <div class="show-more-container">
+            <button class="btn-show-more" (click)="toggleHighlights()">
+                <span *ngIf="!showMoreHighlights">
+                    <i-tabler name="chevron-down"></i-tabler>
+                    Zobrazit více statistik
+                </span>
+                <span *ngIf="showMoreHighlights">
+                    <i-tabler name="chevron-up"></i-tabler>
+                    Zobrazit méně
+                </span>
+            </button>
         </div>
 
-        <div class="subject-card">
-            <div class="subject-top">
-                <div>
-                    <div class="subject-name">Anglický jazyk</div>
-                    <div class="teacher">John Smith, B.A.</div>
+        <!-- Excellence Badge -->
+        <div class="excellence-badge">
+            <div class="excellence-circle">
+                <svg class="excellence-svg" viewBox="0 0 100 100">
+                    <defs>
+                        <linearGradient id="excellenceGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" style="stop-color: var(--primary); stop-opacity: 1" />
+                            <stop offset="100%" style="stop-color: var(--accent); stop-opacity: 1" />
+                        </linearGradient>
+                    </defs>
+                    <circle class="excellence-bg" cx="50" cy="50" r="45"></circle>
+                    <circle class="excellence-fill" cx="50" cy="50" r="45" stroke="url(#excellenceGradient)"
+                        [style.stroke-dashoffset]="283 - (283 * getExcellencePercentage() / 100)"></circle>
+                </svg>
+                <div class="excellence-text">
+                    <span class="excellence-number">{{ getExcellencePercentage() }}%</span>
+                    <span class="excellence-label">výborných</span>
                 </div>
-                <div class="grade-badge grade-3">3</div>
             </div>
-            <div class="subject-feedback">
-                Potřeba zapracovat na nepravidelných slovesech. Konverzace se lepší, ale písemný projev vázne.
+            <div class="excellence-description">
+                {{ summaryData.stats.excellentGrades }} z {{ summaryData.stats.totalGrades }} známek byly výborné!
             </div>
         </div>
+    </section>
 
-        <div class="subject-card">
-            <div class="subject-top">
-                <div>
-                    <div class="subject-name">Fyzika</div>
-                    <div class="teacher">Ing. Prokop Buben</div>
-                </div>
-                <div class="grade-badge grade-2">2</div>
-            </div>
-            <div class="subject-feedback">
-                Stabilní výsledky, laboratorní protokoly odevzdány včas. Pozor na převody jednotek.
-            </div>
-        </div>
+    <!-- SECTION 5: SUBJECT BREAKDOWN -->
+    <section class="summary-section subjects-section reveal">
+        <h2 class="section-title">Všechny tvoje předměty</h2>
 
-            <div class="subject-card" style="border-color: rgba(var(--danger-rgb), 0.3);">
-            <div class="subject-top">
-                <div>
-                    <div class="subject-name">Chemie</div>
-                    <div class="teacher">Mgr. Jana Kyselá</div>
+        <div class="subjects-grid">
+            <div class="subject-card" *ngFor="let subject of summaryData.subjects"
+                [class.subject-card--warning]="subject.grade >= 4">
+                <div class="subject-header">
+                    <div class="subject-info">
+                        <div class="subject-name">{{ subject.name }}</div>
+                        <div class="subject-teacher">
+                            <i-tabler name="user" class="teacher-icon"></i-tabler>
+                            {{ subject.teacher }}
+                        </div>
+                    </div>
+                    <div class="subject-grade">
+                        <div class="grade-badge" [ngClass]="getGradeClass(subject.grade)">
+                            {{ subject.grade }}
+                        </div>
+                        <div class="trend-indicator" *ngIf="subject.trend">
+                            <i-tabler [name]="getTrendIcon(subject.trend)" [class.trend-up]="subject.trend === 'up'"
+                                [class.trend-down]="subject.trend === 'down'"></i-tabler>
+                        </div>
+                    </div>
                 </div>
-                <div class="grade-badge grade-4">4</div>
-            </div>
-            <div class="subject-feedback" style="color: var(--text-muted);">
-                <span style="color: var(--danger); font-weight: 600;">Varování:</span> Hrozí propadnutí. Nutné doplnit si sešit a doučit se názvosloví solí.
+                <div class="subject-feedback">
+                    {{ subject.feedback }}
+                </div>
             </div>
         </div>
+    </section>
 
-        <div class="subject-card">
-            <div class="subject-top">
-                <div>
-                    <div class="subject-name">Dějepis</div>
-                    <div class="teacher">PhDr. Alena Černá</div>
-                </div>
-                <div class="grade-badge grade-1">1</div>
-            </div>
-            <div class="subject-feedback">
-                Příkladná orientace v datech. Referát o druhé světové válce byl na vysokoškolské úrovni.
-            </div>
+    <!-- SECTION 6: OUTRO -->
+    <section class="summary-section outro-section reveal" style="margin-bottom: 0;">
+        <div class="outro-content">
+            <i-tabler name="confetti" class="outro-icon"></i-tabler>
+            <h2 class="outro-title">Skvělá práce!</h2>
+            <p class="outro-message">
+                Školní rok {{ summaryData.student.schoolYear }} byl plný výzev a úspěchů.
+                Pokračuj v tvrdé práci a věř si!
+            </p>
         </div>
-    </div>
+    </section>
 </div>

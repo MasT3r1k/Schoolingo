@@ -124,7 +124,7 @@ export class Locale {
         }
 
         // Replace all args in text
-        Object.entries(args).forEach((arg) => current.replaceAll(`%${arg[0]}%`, `${arg[1]}`));
+        Object.entries(args).forEach((arg) => current = current.replaceAll(`%${arg[0]}%`, `${arg[1]}`));
 
         return current;
     }
