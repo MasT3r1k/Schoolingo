@@ -1,0 +1,344 @@
+/* ===========================
+   LEADERBOARD PODIUM + LIST STYLES
+   Inspired by gaming leaderboards with hexagonal avatars
+   ===========================*/
+
+/* Podium Container */
+.summary-container .leaderboard-podium {
+    display: flex;
+    justify-content: center;
+    align-items: flex-end;
+    gap: var(--space-8);
+    margin: var(--space-10) auto var(--space-12);
+    max-width: 900px;
+    padding: 0 var(--space-4);
+}
+
+/* Podium Card Base */
+.summary-container .podium-card {
+    flex: 1;
+    max-width: 280px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-4);
+    padding: var(--space-6);
+    background: var(--surface);
+    border: 2px solid var(--border);
+    border-radius: var(--radius-xl);
+    transition: all var(--transition-base);
+    position: relative;
+    animation: podiumRise 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) backwards;
+}
+
+.summary-container .podium-card:hover {
+    transform: translateY(-8px);
+    box-shadow: var(--shadow-2xl);
+}
+
+/* Rank-specific styles and animation delays */
+.summary-container .podium-rank-1 {
+    animation-delay: 0.2s;
+    transform: translateY(-20px);
+    border-color: rgba(255, 215, 0, 0.5);
+    background: linear-gradient(180deg,
+            rgba(255, 215, 0, 0.05) 0%,
+            var(--surface) 100%);
+}
+
+.summary-container .podium-rank-2 {
+    animation-delay: 0.1s;
+    border-color: rgba(192, 192, 192, 0.4);
+}
+
+.summary-container .podium-rank-3 {
+    animation-delay: 0.3s;
+    border-color: rgba(205, 127, 50, 0.4);
+}
+
+@keyframes podiumRise {
+    from {
+        opacity: 0;
+        transform: translateY(50px) scale(0.8);
+    }
+}
+
+/* Laurel Wreaths */
+.summary-container .podium-laurel {
+    position: absolute;
+    top: -10px;
+    width: 40px;
+    height: 50px;
+    opacity: 0.8;
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+}
+
+/* Hexagonal Avatar */
+.summary-container .podium-avatar {
+    margin-bottom: var(--space-2);
+}
+
+.summary-container .avatar-hexagon {
+    width: 120px;
+    height: 120px;
+    background: var(--primary-gradient);
+    clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    transition: transform var(--transition-base);
+}
+
+.summary-container .podium-rank-1 .avatar-hexagon {
+    width: 140px;
+    height: 140px;
+    background: linear-gradient(135deg, #FFD700, #FFA500);
+    box-shadow: 0 0 40px rgba(255, 215, 0, 0.4);
+}
+
+.summary-container .podium-rank-2 .avatar-hexagon {
+    background: linear-gradient(135deg, #E8E8E8, #C0C0C0);
+    box-shadow: 0 0 30px rgba(192, 192, 192, 0.3);
+}
+
+.summary-container .podium-rank-3 .avatar-hexagon {
+    background: linear-gradient(135deg, #CD7F32, #B87333);
+    box-shadow: 0 0 30px rgba(205, 127, 50, 0.3);
+}
+
+.summary-container .podium-card:hover .avatar-hexagon {
+    transform: rotate(5deg) scale(1.05);
+}
+
+.summary-container .avatar-hexagon i-tabler {
+    width: 48px;
+    height: 48px;
+    color: white;
+    filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.3));
+}
+
+.summary-container .podium-rank-1 .avatar-hexagon i-tabler {
+    width: 56px;
+    height: 56px;
+}
+
+/* Podium Info */
+.summary-container .podium-info {
+    text-align: center;
+    width: 100%;
+}
+
+.summary-container .podium-name {
+    font-size: var(--text-lg);
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: var(--space-3);
+}
+
+.summary-container .podium-rank-1 .podium-name {
+    font-size: var(--text-xl);
+    font-weight: 800;
+    background: linear-gradient(135deg, #FFD700, #FFA500);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.summary-container .podium-stats {
+    display: flex;
+    justify-content: center;
+    gap: var(--space-4);
+}
+
+.summary-container .podium-stat {
+    display: flex;
+    align-items: center;
+    gap: var(--space-1);
+    font-size: var(--text-sm);
+    color: var(--text-secondary);
+    font-weight: 600;
+    font-family: var(--font-mono);
+}
+
+.summary-container .podium-stat i-tabler {
+    width: 16px;
+    height: 16px;
+    color: var(--primary);
+}
+
+.summary-container .podium-rank-1 .podium-stat:first-child {
+    color: #FFD700;
+}
+
+.summary-container .podium-rank-2 .podium-stat:first-child {
+    color: #C0C0C0;
+}
+
+.summary-container .podium-rank-3 .podium-stat:first-child {
+    color: #CD7F32;
+}
+
+/* Leaderboard List */
+.summary-container .leaderboard-list {
+    max-width: 800px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+}
+
+.summary-container .leaderboard-row {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: var(--space-4) var(--space-5);
+    display: flex;
+    align-items: center;
+    gap: var(--space-4);
+    transition: all var(--transition-base);
+    animation: rowSlideIn 0.4s ease-out backwards;
+}
+
+.summary-container .leaderboard-row:nth-child(1) {
+    animation-delay: 0.1s;
+}
+
+.summary-container .leaderboard-row:nth-child(2) {
+    animation-delay: 0.15s;
+}
+
+.summary-container .leaderboard-row:nth-child(3) {
+    animation-delay: 0.2s;
+}
+
+.summary-container .leaderboard-row:nth-child(4) {
+    animation-delay: 0.25s;
+}
+
+.summary-container .leaderboard-row:nth-child(5) {
+    animation-delay: 0.3s;
+}
+
+@keyframes rowSlideIn {
+    from {
+        opacity: 0;
+        transform: translateX(-30px);
+    }
+}
+
+.summary-container .leaderboard-row:hover {
+    border-color: var(--border-hover);
+    box-shadow: var(--shadow-md);
+    transform: translateX(4px);
+}
+
+.summary-container .row-rank {
+    font-size: var(--text-lg);
+    font-weight: 800;
+    font-family: var(--font-mono);
+    color: var(--text-muted);
+    min-width: 36px;
+}
+
+.summary-container .row-avatar {
+    width: 48px;
+    height: 48px;
+    border-radius: var(--radius-lg);
+    background: var(--surface-2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.summary-container .row-avatar i-tabler {
+    width: 24px;
+    height: 24px;
+    color: var(--text-secondary);
+}
+
+.summary-container .row-name {
+    flex: 1;
+    font-size: var(--text-base);
+    font-weight: 600;
+    color: var(--text);
+}
+
+.summary-container .row-stats {
+    display: flex;
+    gap: var(--space-4);
+    align-items: center;
+}
+
+.summary-container .row-stat {
+    display: flex;
+    align-items: center;
+    gap: var(--space-1);
+    font-size: var(--text-sm);
+    color: var(--text-secondary);
+    font-family: var(--font-mono);
+    font-weight: 600;
+}
+
+.summary-container .row-stat i-tabler {
+    width: 14px;
+    height: 14px;
+}
+
+.summary-container .row-stat-primary {
+    color: var(--primary);
+}
+
+.summary-container .row-stat-primary i-tabler {
+    color: var(--primary);
+}
+
+.summary-container .row-progress {
+    width: 120px;
+    height: 6px;
+    background: var(--surface-2);
+    border-radius: var(--radius-full);
+    overflow: hidden;
+    margin-left: var(--space-2);
+}
+
+.summary-container .row-progress-bar {
+    height: 100%;
+    background: var(--primary-gradient);
+    border-radius: var(--radius-full);
+    transition: width 1s cubic-bezier(0.4, 0, 0.2, 1) 0.3s;
+}
+
+/* Mobile Responsive */
+@media (max-width: 768px) {
+    .summary-container .leaderboard-podium {
+        flex-direction: column;
+        align-items: center;
+        gap: var(--space-6);
+    }
+
+    .summary-container .podium-rank-1 {
+        order: -1;
+        transform: translateY(0);
+    }
+
+    .summary-container .leaderboard-row {
+        flex-wrap: wrap;
+    }
+
+    .summary-container .row-stats {
+        order: 4;
+        width: 100%;
+        justify-content: space-between;
+        margin-top: var(--space-2);
+    }
+
+    .summary-container .row-progress {
+        width: 100%;
+        margin: var(--space-2) 0 0 0;
+        order: 5;
+    }
+}

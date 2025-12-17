@@ -23,45 +23,45 @@
         <h2 class="section-title">Tvůj rok v číslech</h2>
 
         <div class="stats-grid">
-            <div class="summary-overview-card" [class.behavior-a]="summaryData.stats.behavior === 'A'"
+            <div class="stat-card" [class.behavior-a]="summaryData.stats.behavior === 'A'"
                 [class.behavior-b]="summaryData.stats.behavior === 'B'"
                 [class.behavior-c]="summaryData.stats.behavior === 'C'">
-                <div class="summary-overview-icon">
+                <div class="stat-icon">
                     <i-tabler name="chart-bar"></i-tabler>
                 </div>
-                <div class="summary-overview-content">
-                    <div class="summary-overview-value">{{ summaryData.stats.average }}</div>
-                    <div class="summary-overview-label">Studijní průměr</div>
-                    <div class="summary-overview-progress">
+                <div class="stat-content">
+                    <div class="stat-value">{{ summaryData.stats.average }}</div>
+                    <div class="stat-label">Studijní průměr</div>
+                    <div class="stat-progress">
                         <div class="overview-progress-bar" [style.width.%]="(5 - summaryData.stats.average) / 4 * 100">
                         </div>
                     </div>
                 </div>
             </div>
 
-            <div class="summary-overview-card">
-                <div class="summary-overview-icon">
+            <div class="stat-card">
+                <div class="stat-icon">
                     <i-tabler name="calendar-x"></i-tabler>
                 </div>
-                <div class="summary-overview-content">
-                    <div class="summary-overview-value">{{ summaryData.stats.absenceHours }}</div>
-                    <div class="summary-overview-label">Hodin absence</div>
-                    <div class="summary-overview-subtext">
+                <div class="stat-content">
+                    <div class="stat-value">{{ summaryData.stats.absenceHours }}</div>
+                    <div class="stat-label">Hodin absence</div>
+                    <div class="stat-subtext">
                         {{ summaryData.stats.absenceHours < 20 ? 'Skvělá docházka!' : 'Dávej pozor na docházku' }}
                             </div>
                     </div>
                 </div>
 
-                <div class="summary-overview-card" [class.behavior-a]="summaryData.stats.behavior === 'A'"
+                <div class="stat-card" [class.behavior-a]="summaryData.stats.behavior === 'A'"
                     [class.behavior-b]="summaryData.stats.behavior === 'B'"
                     [class.behavior-c]="summaryData.stats.behavior === 'C'">
-                    <div class="summary-overview-icon">
+                    <div class="stat-icon">
                         <i-tabler name="user-check"></i-tabler>
                     </div>
-                    <div class="summary-overview-content">
-                        <div class="summary-overview-value">{{ summaryData.stats.behavior }}</div>
-                        <div class="summary-overview-label">Chování</div>
-                        <div class="summary-overview-subtext">
+                    <div class="stat-content">
+                        <div class="stat-value">{{ summaryData.stats.behavior }}</div>
+                        <div class="stat-label">Chování</div>
+                        <div class="stat-subtext">
                             <span *ngIf="summaryData.stats.behavior === 'A'">Velmi dobré</span>
                             <span *ngIf="summaryData.stats.behavior === 'B'">Uspokojivé</span>
                             <span *ngIf="summaryData.stats.behavior === 'C'">Neuspokojivé</span>
@@ -71,72 +71,103 @@
             </div>
     </section>
 
-    <!-- SECTION 3: TOP SUBJECTS - VISUAL CARDS -->
-    <section class="summary-section top-subjects-section reveal">
-        <h2 class="section-title">Tvoje nejlepší předměty</h2>
+    <!-- SECTION 3: TOP SUBJECTS LEADERBOARD -->
+    <section class="summary-section top-subjects-leaderboard reveal">
+        <h2 class="section-title">Tvůj nejlepší předměty</h2>
 
-        <div class="top-subjects-grid">
-            <div class="top-subject-card" *ngFor="let subject of summaryData.topSubjects; let i = index"
-                [class.rank-1]="i === 0" [class.rank-2]="i === 1" [class.rank-3]="i === 2">
-
-                <!-- Rank Badge -->
-                <div class="card-rank">
-                    <span class="rank-position">#{{ i + 1 }}</span>
-                    <i-tabler [name]="i === 0 ? 'crown' : i === 1 ? 'award' : 'medal'" class="rank-icon"></i-tabler>
+        <!-- Top 3 Podium -->
+        <div class="leaderboard-podium">
+            <!-- 2nd Place (Left) -->
+            <div class="podium-card podium-rank-2">
+                <div class="podium-laurel podium-laurel-left"></div>
+                <div class="podium-avatar">
+                    <div class="avatar-hexagon">
+                        <i-tabler name="book-2"></i-tabler>
+                    </div>
                 </div>
-
-                <!-- Main Content -->
-                <div class="card-content">
-                    <div class="subject-name">{{ subject.name }}</div>
-
-                    <!-- Big Grade Display -->
-                    <div class="grade-showcase">
-                        <div class="grade-number">{{ subject.grade }}</div>
-                        <div class="grade-sparkle">✨</div>
+                <div class="podium-info">
+                    <div class="podium-name">{{ summaryData.topSubjects[1]?.name }}</div>
+                    <div class="podium-stats">
+                        <span class="podium-stat">
+                            <i-tabler name="star"></i-tabler>
+                            {{ summaryData.topSubjects[1]?.grade }}
+                        </span>
+                        <span class="podium-stat">
+                            <i-tabler name="checklist"></i-tabler>
+                            15
+                        </span>
                     </div>
+                </div>
+            </div>
 
-                    <!-- Teacher -->
-                    <div class="teacher-info">
-                        <i-tabler name="user"></i-tabler>
-                        <span>{{ subject.teacher }}</span>
+            <!-- 1st Place (Center, Elevated) -->
+            <div class="podium-card podium-rank-1">
+                <div class="podium-laurel podium-laurel-left"></div>
+                <div class="podium-laurel podium-laurel-right"></div>
+                <div class="podium-avatar">
+                    <div class="avatar-hexagon">
+                        <i-tabler name="trophy"></i-tabler>
                     </div>
+                </div>
+                <div class="podium-info">
+                    <div class="podium-name">{{ summaryData.topSubjects[0]?.name }}</div>
+                    <div class="podium-stats">
+                        <span class="podium-stat">
+                            <i-tabler name="star"></i-tabler>
+                            {{ summaryData.topSubjects[0]?.grade }}
+                        </span>
+                        <span class="podium-stat">
+                            <i-tabler name="checklist"></i-tabler>
+                            18
+                        </span>
+                    </div>
+                </div>
+            </div>
 
-                    <!-- Visual Stats -->
-                    <div class="visual-stats">
-                        <div class="stat-item">
-                            <div class="stat-icon">
-                                <i-tabler name="checklist"></i-tabler>
-                            </div>
-                            <div class="stat-text">
-                                <span class="stat-value">15</span>
-                                <span class="stat-label">známek</span>
-                            </div>
-                        </div>
-                        <div class="stat-item">
-                            <div class="stat-icon">
-                                <i-tabler name="trending-up"></i-tabler>
-                            </div>
-                            <div class="stat-text">
-                                <span class="stat-value">+12%</span>
-                                <span class="stat-label">zlepšení</span>
-                            </div>
-                        </div>
-                        <div class="stat-item">
-                            <div class="stat-icon">
-                                <i-tabler name="star"></i-tabler>
-                            </div>
-                            <div class="stat-text">
-                                <span class="stat-value">92%</span>
-                                <span class="stat-label">účast</span>
-                            </div>
-                        </div>
+            <!-- 3rd Place (Right) -->
+            <div class="podium-card podium-rank-3">
+                <div class="podium-laurel podium-laurel-right"></div>
+                <div class="podium-avatar">
+                    <div class="avatar-hexagon">
+                        <i-tabler name="medal"></i-tabler>
                     </div>
+                </div>
+                <div class="podium-info">
+                    <div class="podium-name">{{ summaryData.topSubjects[2]?.name }}</div>
+                    <div class="podium-stats">
+                        <span class="podium-stat">
+                            <i-tabler name="star"></i-tabler>
+                            {{ summaryData.topSubjects[2]?.grade }}
+                        </span>
+                        <span class="podium-stat">
+                            <i-tabler name="checklist"></i-tabler>
+                            12
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
 
-                    <!-- Mini Dot Chart -->
-                    <div class="dot-chart">
-                        <div class="dot" *ngFor="let n of [1,1,1,2,1,1,1,1,2,1,1,1]" [class.grade-1]="n === 1"
-                            [class.grade-2]="n === 2"></div>
-                    </div>
+        <!-- Rest of Rankings (List View) -->
+        <div class="leaderboard-list" *ngIf="summaryData.subjects.length > 3">
+            <div class="leaderboard-row" *ngFor="let subject of summaryData.subjects.slice(3, 8); let i = index">
+                <div class="row-rank">{{ i + 4 }}.</div>
+                <div class="row-avatar">
+                    <i-tabler name="book"></i-tabler>
+                </div>
+                <div class="row-name">{{ subject.name }}</div>
+                <div class="row-stats">
+                    <span class="row-stat">
+                        <i-tabler name="checklist"></i-tabler>
+                        {{ 10 + i * 2 }}
+                    </span>
+                    <span class="row-stat row-stat-primary">
+                        <i-tabler name="star"></i-tabler>
+                        {{ subject.grade }}
+                    </span>
+                </div>
+                <div class="row-progress">
+                    <div class="row-progress-bar" [style.width.%]="(5 - subject.grade) / 4 * 100"></div>
                 </div>
             </div>
         </div>

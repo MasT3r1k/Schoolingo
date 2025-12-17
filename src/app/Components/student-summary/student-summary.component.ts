@@ -58,7 +58,7 @@ interface StudentSummaryData {
   standalone: true,
   imports: [CommonModule, IconsModule],
   templateUrl: './student-summary.component.html',
-  styleUrls: ['./student-summary.component.css']
+  styleUrls: ['./student-summary.component.css', './leaderboard.css']
 })
 export class studentSummaryComponent implements OnInit, OnDestroy, AfterViewInit {
   private auth = inject(Authentication);
