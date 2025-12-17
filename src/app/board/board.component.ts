@@ -26,6 +26,7 @@ import { Subscription } from 'rxjs';
 import { WsService, NotificationPayload } from '@Schoolingo/websocket';
 import { SeasonalService } from '@Schoolingo/seasonal';
 import { SnowEffectComponent } from '@Components/seasonal/snow-effect/snow-effect.component';
+import { studentSummaryComponent } from '@Components/student-summary/student-summary.component';
 
 export interface SidebarItem {
     item: string;
@@ -262,9 +263,26 @@ export class BoardComponent implements OnInit, OnDestroy {
       {
         title: '',
         closeable: false,
-        items: [{ type: 'component', component: TokenWarningModalComponent }]
+        items: [
+          { type: 'component', component: TokenWarningModalComponent }
+        ]
       }
     );
+
+    this.modalManager.addModal(
+      'student_summary',
+      {
+        title: 'Přehled za školní rok',
+        closeable: true,
+        forceScrollbar: true,
+        width: 900,
+        items: [
+          { type: 'component', component: studentSummaryComponent }
+        ]
+      }
+    )
+
+    this.modalManager.openModal('student_summary')
 
     // Subscribe to token expiration warnings
     const warningSubscription = this.tokenExpirationService.warningThreshold$.subscribe(() => {

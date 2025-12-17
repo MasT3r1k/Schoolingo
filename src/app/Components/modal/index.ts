@@ -20,7 +20,8 @@ export class ModalComponent {
     public l = inject(Locale);
     public context_menu = inject(ContextMenu)
 
-    public getOverflowStyle(): string {
+    public getOverflowStyle(forceScrollbar: boolean): string {
+        if (forceScrollbar) return 'auto';
         if (this.dropdownManager.selected_dropdown !== '') return 'visible';
         return 'hidden';
     }

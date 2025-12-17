@@ -8,6 +8,7 @@ interface ModalItem {
 interface Modal {
     title: string;
     width?: number;
+    forceScrollbar?: boolean;
     closeable: boolean;
     items: ModalItem[];
     isOpen: boolean;

@@ -375,9 +375,6 @@ export class SeasonalService implements OnDestroy {
 
     switch (current) {
       case 'off':
-        next = 'subtle';
-        break;
-      case 'subtle':
         next = 'full';
         break;
       case 'full':

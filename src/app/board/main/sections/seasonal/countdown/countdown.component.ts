@@ -34,8 +34,8 @@ import { RouterLink } from '@angular/router';
           </div>
           
           <!-- Action button -->
-          <a [routerLink]="['/calendar']" class="btn btn--seasonal">
-            <i-tabler name="calendar"></i-tabler>
+          <a class="btn btn--seasonal">
+            <i-tabler name="gift"></i-tabler>
             <span>{{ l.s('seasonal.countdown.viewCalendar') }}</span>
           </a>
         </div>

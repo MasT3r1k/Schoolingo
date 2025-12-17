@@ -1,66 +1,54 @@
-import { Component, ElementRef, OnDestroy, OnInit, ViewChild, inject } from '@angular/core';
+import { Component, ElementRef, OnDestroy, OnInit, ViewChild, inject, Renderer2 } from '@angular/core';
 import { SeasonalService } from '@Schoolingo/seasonal';
 import { Subscription } from 'rxjs';
-
-/**
- * Snow particle for animation
- */
-interface Snowflake {
-  x: number;
-  y: number;
-  radius: number;
-  speed: number;
-  opacity: number;
-  wobble: number;
-  wobbleSpeed: number;
-}
 
 @Component({
   selector: 'app-snow-effect',
   standalone: true,
   template: `
-    <div class="snow-effect-container">
-      <canvas #snowCanvas></canvas>
-    </div>
+    <div #snowContainer class="snow-container" id="snowContainer"></div>
   `,
   styles: [`
-    :host {
-      display: block;
+    .snow-container {
       position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100vh;
+      inset: 0;
       pointer-events: none;
-      z-index: 200;
+      z-index: 90;
       overflow: hidden;
+      display: block; /* Ensure it works */
+      height: 100vh; /* Explicit height */
+      width: 100vw; /* Explicit width */
     }
-    
-    .snow-effect-container {
-      width: 100%;
-      height: 100%;
+
+    .snowflake {
+      position: absolute;
+      top: -10px;
+      color: #e0f2fe; /* Light blue-white for better visibility */
+      font-size: 1em;
+      animation: fall linear infinite;
+      text-shadow: 0 1px 3px rgba(0,0,0,0.3), 0 0 8px rgba(255,255,255,0.8); /* Dark shadow for contrast */
     }
-    
-    canvas {
-      width: 100%;
-      height: 100%;
+
+    :host-context(.light) .snowflake {
+      color: #8ca6bd; /* Grayish blue for light mode */
+      text-shadow: 0 1px 2px rgba(0,0,0,0.2), 0 0 5px rgba(140, 166, 189, 0.4);
+    }
+
+    @keyframes fall {
+      to {
+        transform: translateY(100vh) translateX(var(--drift));
+        opacity: 0;
+      }
     }
   `]
 })
 export class SnowEffectComponent implements OnInit, OnDestroy {
-  @ViewChild('snowCanvas', { static: true }) canvasRef!: ElementRef<HTMLCanvasElement>;
-  
+  @ViewChild('snowContainer', { static: true }) containerRef!: ElementRef<HTMLDivElement>;
+
   private seasonalService = inject(SeasonalService);
-  
-  private ctx: CanvasRenderingContext2D | null = null;
-  private snowflakes: Snowflake[] = [];
-  private animationId: number | null = null;
-  private isRunning = false;
-  private stopTimeout: ReturnType<typeof setTimeout> | null = null;
-  
-  private SNOWFLAKE_COUNT = 50;
-  private ANIMATION_DURATION = 0; // 0 = run continuously
-  
+  private renderer = inject(Renderer2);
+
+  private intervalId: any = null;
   private modeSubscription: Subscription | null = null;
 
   ngOnInit(): void {
@@ -68,123 +56,90 @@ export class SnowEffectComponent implements OnInit, OnDestroy {
     if (this.seasonalService.hasReducedMotion()) {
       return;
     }
-    
+
     // Only run in full mode
     if (this.seasonalService.getModeValue() !== 'full') {
       return;
     }
-    
-    this.initCanvas();
-    this.createSnowflakes();
-    this.startAnimation();
-    
+
+    this.startSnow();
+
     // Listen for mode changes
     this.modeSubscription = this.seasonalService.getMode().subscribe((mode) => {
       if (mode !== 'full') {
-        this.stopAnimation();
-      } else if (!this.isRunning && !this.seasonalService.hasReducedMotion()) {
-        this.createSnowflakes();
-        this.startAnimation();
+        this.stopSnow();
+      } else if (!this.intervalId && !this.seasonalService.hasReducedMotion()) {
+        this.startSnow();
       }
     });
   }
 
   ngOnDestroy(): void {
-    this.stopAnimation();
-    if (this.stopTimeout) {
-      clearTimeout(this.stopTimeout);
-    }
+    this.stopSnow();
     if (this.modeSubscription) {
       this.modeSubscription.unsubscribe();
     }
   }
 
-  private initCanvas(): void {
-    const canvas = this.canvasRef.nativeElement;
-    this.ctx = canvas.getContext('2d');
-    
-    // Set canvas size
-    this.resizeCanvas();
-    
-    // Handle resize
-    window.addEventListener('resize', () => this.resizeCanvas());
+  private startSnow(): void {
+    if (this.intervalId) return;
+
+    // Počáteční burst 20 vloček
+    for (let i = 0; i < 20; i++) {
+      setTimeout(() => this.createSnowflake(), i * 100);
+    }
+
+    // Vytvářet vločky každých 300ms
+    this.intervalId = setInterval(() => this.createSnowflake(), 300);
   }
 
-  private resizeCanvas(): void {
-    const canvas = this.canvasRef.nativeElement;
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
-  }
+  private stopSnow(): void {
+    if (this.intervalId) {
+      clearInterval(this.intervalId);
+      this.intervalId = null;
+    }
 
-  private createSnowflakes(): void {
-    this.snowflakes = [];
-    const canvas = this.canvasRef.nativeElement;
-    
-    for (let i = 0; i < this.SNOWFLAKE_COUNT; i++) {
-      this.snowflakes.push({
-        x: Math.random() * canvas.width,
-        y: Math.random() * -50,
-        radius: Math.random() * 3 + 1.5,
-        speed: Math.random() * 0.8 + 0.4,
-        opacity: Math.random() * 0.4 + 0.2,
-        wobble: Math.random() * Math.PI * 2,
-        wobbleSpeed: Math.random() * 0.03 + 0.01
-      });
+    // Clean up existing snowflakes
+    if (this.containerRef && this.containerRef.nativeElement) {
+      this.containerRef.nativeElement.innerHTML = '';
     }
   }
 
-  private startAnimation(): void {
-    if (this.isRunning) return;
-    this.isRunning = true;
-    this.animate();
-  }
+  private createSnowflake(): void {
+    if (!this.containerRef) return;
 
-  private stopAnimation(): void {
-    this.isRunning = false;
-    if (this.animationId !== null) {
-      cancelAnimationFrame(this.animationId);
-      this.animationId = null;
-    }
-    
-    // Clear canvas
-    if (this.ctx) {
-      const canvas = this.canvasRef.nativeElement;
-      this.ctx.clearRect(0, 0, canvas.width, canvas.height);
-    }
-  }
+    const container = this.containerRef.nativeElement;
+    const snowflake = this.renderer.createElement('div');
+    this.renderer.addClass(snowflake, 'snowflake');
+    this.renderer.setProperty(snowflake, 'textContent', '❄');
 
-  private animate(): void {
-    if (!this.isRunning || !this.ctx) return;
-    
-    const canvas = this.canvasRef.nativeElement;
-    this.ctx.clearRect(0, 0, canvas.width, canvas.height);
-    
-    // Draw and update each snowflake
-    for (const flake of this.snowflakes) {
-      this.ctx.beginPath();
-      this.ctx.arc(flake.x, flake.y, flake.radius, 0, Math.PI * 2);
-      this.ctx.fillStyle = `rgba(255, 255, 255, ${flake.opacity})`;
-      this.ctx.fill();
-      
-      // Update position
-      flake.y += flake.speed;
-      flake.wobble += flake.wobbleSpeed;
-      flake.x += Math.sin(flake.wobble) * 0.3;
-      
-      // Reset if out of bounds
-      if (flake.y > canvas.height) {
-        flake.y = -5;
-        flake.x = Math.random() * canvas.width;
+    // Random starting position (0% - 100% šířky)
+    this.renderer.setStyle(snowflake, 'left', Math.random() * 100 + '%');
+
+    // Random size (0.5em to 1.5em)
+    const size = Math.random() * 1 + 0.5;
+    this.renderer.setStyle(snowflake, 'fontSize', size + 'em');
+
+    // Random opacity (0.3 to 0.9)
+    this.renderer.setStyle(snowflake, 'opacity', Math.random() * 0.6 + 0.3);
+
+    // Random duration (8s to 15s) - různé rychlosti padání
+    const duration = Math.random() * 7 + 8;
+    this.renderer.setStyle(snowflake, 'animationDuration', duration + 's');
+
+    // Random horizontal drift (-50px to +50px)
+    const drift = (Math.random() - 0.5) * 100;
+    // Set custom property directly on the element style
+    snowflake.style.setProperty('--drift', drift + 'px');
+
+    // Přidat do DOM
+    this.renderer.appendChild(container, snowflake);
+
+    // Odstranit po dokončení animace (úspora paměti)
+    setTimeout(() => {
+      if (snowflake && snowflake.parentNode === container) {
+        this.renderer.removeChild(container, snowflake);
       }
-      
-      // Wrap horizontally
-      if (flake.x < 0) {
-        flake.x = canvas.width;
-      } else if (flake.x > canvas.width) {
-        flake.x = 0;
-      }
-    }
-    
-    this.animationId = requestAnimationFrame(() => this.animate());
+    }, duration * 1000);
   }
 }
