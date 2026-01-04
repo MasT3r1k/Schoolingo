@@ -38,7 +38,7 @@ import { FleetVehiclesComponent } from './board/FleetVehicles/vehicles/vehicles.
 import { FleetVehiclesReservationsComponent } from './board/FleetVehicles/reservations/reservations.component';
 import { FleetVehiclesOverviewComponent } from './board/FleetVehicles/overview/overview.component';
 import { FleetVehiclesSettingsComponent } from './board/FleetVehicles/settings/settings.component';
-import { TutoringComponent } from './board/schedule/tutoring/tutoring.component';
+import { TutoringComponent } from './board/Teach/tutoring/tutoring.component';
 import { SubstitutionComponent } from './board/Teach/substitution/substitution.component';
 import { SubjectsComponent } from './board/Teach/subjects/subjects.component';
 import { RewardsComponent } from './board/Teach/rewards/rewards.component';
@@ -51,6 +51,7 @@ import { ManagerComponent } from './board/library/pages/manager/manager.componen
 import { PollCreateComponent } from './board/polls/poll-create/poll-create.component';
 import { PollVoteComponent } from './board/polls/poll-vote/poll-vote.component';
 import { PollResultsComponent } from './board/polls/poll-results/poll-results.component';
+import { EmployeesComponent } from './board/Employees/employees/employees.component';
 
 
 export const routes: Routes = [
@@ -80,6 +81,10 @@ export const routes: Routes = [
             {
                 path: 'students',
                 component: StudentsComponent
+            },
+            {
+                path: 'employees',
+                component: EmployeesComponent
             },
             {
                 path: 'schedule/builder',

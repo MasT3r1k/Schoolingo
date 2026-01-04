@@ -1,0 +1,148 @@
+<div class="create-form">
+    <div class="form-group">
+        <label>Žák *</label>
+        <div class="custom-select" style="min-width:200px" (click)="$event.stopPropagation();dropdownManager.selected_dropdown = dropdownManager.selected_dropdown == 'add_education_measure_student' ? '' : 'add_education_measure_student'">
+            <div class="selected-value">
+                {{ selected_student?.fullName ?? 'Vyber studenta' }}
+                <i-tabler name="chevron-down"></i-tabler>
+            </div>
+            @if (dropdownManager.selected_dropdown == 'add_education_measure_student') {
+            <div class="options-dropdown" (click)="$event.stopPropagation();">
+                <div class="search">
+                    <div class="search-wrapper" [class.loading]="filters.loading">
+                        <i-tabler name="search"></i-tabler>
+                        <input type="search" placeholder="Hledat žáka podle jména" [formControl]="filters.search">
+                    </div>
+                </div>
+                <div class="list">
+                @for (student of students; track $index) {
+                <div class="option" style="text-align: left;" (click)="dropdownManager.selected_dropdown = '';selected_student = student;newMeasure.studentId = student.personId;loadBehaveMark()">
+                    {{ `${student.fullName}, třída ${student.className}` }}
+                </div>
+                }
+                </div>
+            </div>
+            }
+        </div>
+    </div>
+    <div class="form-group">
+        <label>Typ opatření *</label>
+        <div class="custom-select" style="min-width:200px" (click)="$event.stopPropagation();dropdownManager.selected_dropdown = dropdownManager.selected_dropdown == 'add_education_measure_type' ? '' : 'add_education_measure_type'">
+            <div class="selected-value">
+                <span class="row" style="gap: 8px">
+                <i-tabler [style.color]="getTypeColor(newMeasure.type)" [name]="getTypeIcon(newMeasure.type)"></i-tabler>
+                {{ getTypeLabel(newMeasure.type) }}
+                </span>
+                <i-tabler name="chevron-down"></i-tabler>
+            </div>
+            @if (dropdownManager.selected_dropdown == 'add_education_measure_type') {
+            <div class="options-dropdown">
+                <div class="list">
+                @for (type of measureTypes; track $index) {
+                <div class="option row" style="text-align: left;gap: 8px;" (click)="$event.stopPropagation();dropdownManager.selected_dropdown = '';newMeasure.type = type;loadBehaveMark()">
+                    <i-tabler [style.color]="getTypeColor(type)" [name]="getTypeIcon(type)"></i-tabler>
+                    {{ getTypeLabel(type) }}
+                </div>
+                }
+                </div>
+            </div>
+            }
+        </div>
+        <div style="padding: 8px 4px">
+        @if (newMeasure.type == 'reduced_behavior' && !selected_student) {
+            <div class="note danger">
+                <span>Vyberte žáka pro zobrazení podrobností</span>
+            </div>
+        } @else if (newMeasure.type == 'reduced_behavior' && selected_student) {
+            @if (filters.loading_details) {
+            <div class="note">
+                <div class="small-loader"></div>
+                <span>Probíhá načítání stavu známky z chování žáka</span>
+            </div>
+            } @else {
+                @if (student_behave.allow_add) {
+            <div class="note">
+                <span>Tenhle student má známku z chování: {{ student_behave.mark }}</span>
+            </div>
+                } @else {
+            <div class="note danger">
+                <i-tabler name="x"></i-tabler>
+                <span>Tenhle student má již známku z chování: {{ student_behave.mark }}</span>
+            </div>
+                }
+            }
+        }
+        </div>
+    </div>
+    <div class="form-group">
+        <label>Datum *</label>
+        <input type="date" [(ngModel)]="newMeasure.date">
+    </div>
+    @if (newMeasure.type == 'other') {
+        <div class="form-group">
+            <label for="category">Kategorie *</label>
+            <div class="custom-select" style="min-width:200px" (click)="$event.stopPropagation();dropdownManager.selected_dropdown = dropdownManager.selected_dropdown == 'add_education_measure_category' ? '' : 'add_education_measure_category'">
+                <div class="selected-value">
+                    <span class="row" style="gap: 8px">
+                    <i-tabler [style.color]="getCategoryColor(newMeasure.category)" [name]="getCategoryIcon(newMeasure.category)"></i-tabler>
+                    {{ getCategoryLabel(newMeasure.category) }}
+                    </span>
+                    <i-tabler name="chevron-down"></i-tabler>
+                </div>
+                @if (dropdownManager.selected_dropdown == 'add_education_measure_category') {
+                <div class="options-dropdown">
+                    <div class="list">
+                    @for (category of measureCategories; track $index) {
+                    <div class="option row" style="text-align: left;gap: 8px;" (click)="$event.stopPropagation();dropdownManager.selected_dropdown = '';newMeasure.category = category">
+                        <i-tabler [style.color]="getCategoryColor(category)" [name]="getCategoryIcon(category)"></i-tabler>
+                        {{ getCategoryLabel(category) }}
+                    </div>
+                    }
+                    </div>
+                </div>
+                }
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label for="category">Závažnost *</label>
+            <div class="custom-select" style="min-width:200px" (click)="$event.stopPropagation();dropdownManager.selected_dropdown = dropdownManager.selected_dropdown == 'add_education_measure_severity' ? '' : 'add_education_measure_severity'">
+                <div class="selected-value">
+                    <span class="row" style="gap: 8px">
+                    <i-tabler [style.color]="getSeverityColor(newMeasure.severity)" [name]="getSeverityIcon(newMeasure.severity)"></i-tabler>
+                    {{ getSeverityLabel(newMeasure.severity) }}
+                    </span>
+                    <i-tabler name="chevron-down"></i-tabler>
+                </div>
+                @if (dropdownManager.selected_dropdown == 'add_education_measure_severity') {
+                <div class="options-dropdown">
+                    <div class="list">
+                    @for (severity of measureSeverities; track $index) {
+                    <div class="option row" style="text-align: left;gap: 8px;" (click)="$event.stopPropagation();dropdownManager.selected_dropdown = '';newMeasure.severity = severity">
+                        <i-tabler [style.color]="getSeverityColor(severity)" [name]="getSeverityIcon(severity)"></i-tabler>
+                        {{ getSeverityLabel(severity) }}
+                    </div>
+                    }
+                    </div>
+                </div>
+                }
+            </div>
+        </div>
+    }
+    <div class="form-group">
+        <label>Důvod *</label>
+        <textarea [(ngModel)]="newMeasure.reason" rows="3"
+            placeholder="Důvod pro udělení opatření..."></textarea>
+    </div>
+    <div class="form-group">
+        <label>Poznámka</label>
+        <input type="text" [(ngModel)]="newMeasure.note" placeholder="Volitelná poznámka">
+    </div>
+    <div class="buttons end mt-4">
+        <button class="btn btn--secondary" (click)="closeModal()">Zrušit</button>
+        <button class="btn btn--primary" (click)="createMeasure()"
+            [disabled]="!newMeasure.reason || !newMeasure.studentId || (newMeasure.type == 'reduced_behavior' && student_behave.mark == -1 && student_behave.allow_add == false)">
+            <i-tabler name="check"></i-tabler> Udělit opatření
+        </button>
+    </div>
+</div>

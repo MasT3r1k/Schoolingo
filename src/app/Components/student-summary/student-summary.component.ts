@@ -93,7 +93,7 @@ export class studentSummaryComponent implements OnInit, OnDestroy, AfterViewInit
   public summaryData: StudentSummaryData = {
     student: {
       className: '4.B',
-      schoolYear: '2024/2025'
+      schoolYear: '2024/25'
     },
     stats: {
       average: 1.42,

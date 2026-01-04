@@ -8,7 +8,7 @@ import { User } from './user';
 import { createAvatar } from '@dicebear/core';
 import { avataaarsNeutral } from '@dicebear/collection';
 import moment from 'moment';
-import { Router } from '@angular/router';
+import { Router, RouterState, RouterStateSnapshot } from '@angular/router';
 import { TokenExpirationService } from '../token-expiration/token-expiration.service';
 
 export class Authentication {
@@ -49,7 +49,7 @@ export class Authentication {
             if (err.status === 401) {
                 this.setAuthState(false);
                 // this.tokenExpirationService.clearExpiration();
-                this.router.navigate(['', 'login']);
+                this.router.navigate(['', 'login'], { queryParams: { returnUrl: this.router.url } });
                 return;
             }
             this.setAuthState('offline')

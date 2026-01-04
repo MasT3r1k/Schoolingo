@@ -4,6 +4,9 @@ import { Observable, map, catchError, of } from 'rxjs';
 import { Config } from '@Schoolingo/config';
 
 export type MeasureType = 'praise' | 'reprimand' | 'warning' | 'reduced_behavior' | 'other';
+export type MeasureCategory = 'positive' | 'negative';
+export type MeasureSeverity = 'low' | 'medium' | 'high';
+export type MeasureStatus = 'draft' | 'approved' | 'cancelled';
 
 export interface EducationMeasure {
   id: number;
@@ -31,8 +34,8 @@ export class EducationMeasuresService {
   loadMeasures(studentId?: number): Observable<EducationMeasure[]> {
     this.loading.set(true);
     const url = studentId 
-      ? `${Config.API_URL}/v1/teach/measures?studentId=${studentId}`
-      : `${Config.API_URL}/v1/teach/measures`;
+      ? `${Config.API_URL}/v1/measures?studentId=${studentId}`
+      : `${Config.API_URL}/v1/measures`;
     
     return this.http.get<{ measures: any[] }>(url, { withCredentials: true }).pipe(
       map(response => {
@@ -62,7 +65,7 @@ export class EducationMeasuresService {
     note?: string;
   }): Observable<{ measure_id: number; success: boolean }> {
     return this.http.post<{ measure_id: number; success: boolean }>(
-      `${Config.API_URL}/v1/teach/measures`,
+      `${Config.API_URL}/v1/measures`,
       data,
       { withCredentials: true }
     );
@@ -73,7 +76,7 @@ export class EducationMeasuresService {
    */
   updateMeasure(id: number, data: { reason?: string; note?: string }): Observable<{ success: boolean }> {
     return this.http.put<{ success: boolean }>(
-      `${Config.API_URL}/v1/teach/measures/${id}`,
+      `${Config.API_URL}/v1/measures/${id}`,
       data,
       { withCredentials: true }
     );
@@ -84,7 +87,7 @@ export class EducationMeasuresService {
    */
   deleteMeasure(id: number): Observable<{ success: boolean }> {
     return this.http.delete<{ success: boolean }>(
-      `${Config.API_URL}/v1/teach/measures/${id}`,
+      `${Config.API_URL}/v1/measures/${id}`,
       { withCredentials: true }
     );
   }

@@ -8,11 +8,13 @@
         </div>
         @if (dropdownManager.selected_dropdown == 'schedule_builder_edit_lesson_type') {
         <div class="options-dropdown">
-            @for (type of types; track type) {
-            <div class="option" style="text-align: left;" (click)="$event.stopPropagation();dropdownManager.selected_dropdown = '';selected_type = type">
-                {{ l.s('schedule.edit_lesson.types.' + type) }}
+            <div class="list">
+                @for (type of types; track type) {
+                <div class="option" style="text-align: left;" (click)="$event.stopPropagation();dropdownManager.selected_dropdown = '';selected_type = type">
+                    {{ l.s('schedule.edit_lesson.types.' + type) }}
+                </div>
+                }
             </div>
-            }
         </div>
         }
     </div>
@@ -36,11 +38,13 @@
                 </div>
                 @if (dropdownManager.selected_dropdown == 'schedule_builder_edit_lesson_subjectId') {
                 <div class="options-dropdown">
+                    <div class="list">
                     @for (subject of scheduleBuilder.subjects; track subject.subjectId) {
                     <div class="option" style="text-align: left;" (click)="$event.stopPropagation();dropdownManager.selected_dropdown = '';selectedSubjectId = subject.subjectId">
                         {{ subject.subjectName }}
                     </div>
                     }
+                    </div>
                 </div>
                 }
             </div>
@@ -56,6 +60,7 @@
                 </div>
                 @if (dropdownManager.selected_dropdown == 'schedule_builder_edit_lesson_teacherId') {
                 <div class="options-dropdown">
+                    <div class="list">
                     @if (selectedSubjectId) {
                         @for (teacher of scheduleBuilder.getTeachers(); track teacher.teacherId) {
                         <div class="option" style="text-align: left;" (click)="$event.stopPropagation();dropdownManager.selected_dropdown = '';selectedTeacherId = teacher.teacherId">
@@ -63,6 +68,7 @@
                         </div>
                         }
                     }
+                    </div>
                 </div>
                 }
             </div>
@@ -91,11 +97,13 @@
                 </div>
                 @if (dropdownManager.selected_dropdown == 'schedule_builder_edit_lesson_subjectId') {
                 <div class="options-dropdown">
+                    <div class="list">
                     @for (subject of scheduleBuilder.subjects; track subject.subjectId) {
                     <div class="option" style="text-align: left;" (click)="$event.stopPropagation();dropdownManager.selected_dropdown = '';selectedSubjectId = subject.subjectId">
                         {{ subject.subjectName }}
                     </div>
                     }
+                    </div>
                 </div>
                 }
             </div>
@@ -111,11 +119,13 @@
                 @if (dropdownManager.selected_dropdown == 'schedule_builder_edit_lesson_teacherId') {
                 <div class="options-dropdown">
                     @if (selectedSubjectId) {
+                        <div class="list">
                         @for (teacher of scheduleBuilder.getTeachers(); track teacher.teacherId) {
                         <div class="option" style="text-align: left;" (click)="$event.stopPropagation();dropdownManager.selected_dropdown = '';selectedTeacherId = teacher.teacherId">
                             {{ teacher.teacherName }}
                         </div>
                         }
+                        </div>
                     }
                 </div>
                 }

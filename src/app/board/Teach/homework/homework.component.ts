@@ -8,6 +8,7 @@ import { IconsModule } from '@Schoolingo/icons';
 import { Locale } from '@Schoolingo/locale';
 import { Utils } from '@Schoolingo/utils';
 import { BehaviorSubject } from 'rxjs';
+import moment from 'moment';
 
 interface Homework {
   homework_id: number;
@@ -69,10 +70,7 @@ export class HomeworkComponent implements OnInit {
   }
 
   public calculatePriority(dueDate: Date): 'low' | 'medium' | 'high' {
-    const now = new Date();
-    const due = new Date(dueDate);
-    const daysUntilDue = Math.ceil((due.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
-
+    const daysUntilDue = this.getDaysUntilDue(dueDate);
     if (daysUntilDue <= 1) return 'high';
     if (daysUntilDue <= 3) return 'medium';
     return 'low';
@@ -154,9 +152,9 @@ export class HomeworkComponent implements OnInit {
   }
 
   public getDaysUntilDue(dueDate: Date): number {
-    const now = new Date();
-    const due = new Date(dueDate);
-    return Math.ceil((due.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
+    const now = moment();
+    const due = moment(dueDate);
+    return now.diff(due, 'days');
   }
 
   public toggleViewMode(): void {

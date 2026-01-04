@@ -17,7 +17,7 @@ export class TabsComponent {
     constructor() {}
 
     name: string = Utils.randomstring(16, false);
-    @Input() icons: string[] = [];
+    @Input() icons: (string | null)[] = [];
     @Input() value = new BehaviorSubject<number>(0);
     @Input() options: string[] = [];
     @Input() no_bottom_radius = false;

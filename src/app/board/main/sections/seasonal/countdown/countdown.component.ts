@@ -34,27 +34,27 @@ import { RouterLink } from '@angular/router';
           </div>
           
           <!-- Action button -->
-          <a class="btn btn--seasonal">
+          <!-- <a class="btn btn--seasonal">
             <i-tabler name="gift"></i-tabler>
             <span>{{ l.s('seasonal.countdown.viewCalendar') }}</span>
-          </a>
+          </a> -->
         </div>
       </div>
     </div>
   `,
   styles: [`
-    :host {
-      display: block;
-    }
-    
     .seasonal-countdown-widget {
-      background: linear-gradient(135deg, 
+        /* background: linear-gradient(135deg, 
         rgba(var(--seasonal-primary-rgb), 0.05) 0%, 
         rgba(var(--seasonal-cool-rgb, var(--seasonal-primary-rgb)), 0.08) 100%
       );
-      border: 2px solid rgba(var(--seasonal-primary-rgb), 0.2);
+      border: 2px solid rgba(var(--seasonal-primary-rgb), 0.2);*/
       position: relative;
       overflow: hidden;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100%;
     }
     
     .seasonal-countdown-widget::before {

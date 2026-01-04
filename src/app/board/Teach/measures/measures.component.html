@@ -1,72 +1,40 @@
 <div class="card">
     <div class="card-top"></div>
     <div class="card-header">
-        <h2 class="flex" style="align-items: center;">
-            <i-tabler name="gavel"></i-tabler>
-            <span style="margin-left: 8px;">{{ l.s('sidebar.marks.education_measures') || 'Výchovná opatření' }}</span>
-        </h2>
+        <h2>{{ l.s('sidebar.marks.education_measures') }}</h2>
         <div class="flex-items">
             @if (perm.checkPermission(['teacher'])) {
-            <button class="btn btn--primary" (click)="toggleCreateForm()">
+            <button class="btn btn--primary btn--sm" (click)="toggleCreateForm()">
                 <i-tabler name="plus"></i-tabler>
-                {{ showCreateForm ? 'Zrušit' : 'Nové opatření' }}
+                {{ 'Nové opatření' }}
             </button>
             }
         </div>
     </div>
     <div class="card-body">
-        <!-- Create form -->
-        @if (showCreateForm) {
-        <div class="create-form">
-            <div class="form-row">
-                <div class="form-group">
-                    <label>Typ opatření *</label>
-                    <select [(ngModel)]="newMeasure.type">
-                        @for (type of measureTypes; track type) {
-                        <option [value]="type">{{ getTypeLabel(type) }}</option>
-                        }
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label>Datum *</label>
-                    <input type="date" [(ngModel)]="newMeasure.date">
-                </div>
-                <div class="form-group">
-                    <label>ID Studenta *</label>
-                    <input type="number" [(ngModel)]="newMeasure.studentId" placeholder="ID studenta">
-                </div>
-            </div>
-            <div class="form-group">
-                <label>Důvod *</label>
-                <textarea [(ngModel)]="newMeasure.reason" rows="3"
-                    placeholder="Důvod pro udělení opatření..."></textarea>
-            </div>
-            <div class="form-group">
-                <label>Poznámka</label>
-                <input type="text" [(ngModel)]="newMeasure.note" placeholder="Volitelná poznámka">
-            </div>
-            <div class="buttons end mt-4">
-                <button class="btn btn--secondary" (click)="toggleCreateForm()">Zrušit</button>
-                <button class="btn btn--primary" (click)="createMeasure()"
-                    [disabled]="!newMeasure.reason || !newMeasure.studentId">
-                    <i-tabler name="check"></i-tabler> Udělit opatření
-                </button>
-            </div>
-        </div>
-        }
-
         <!-- Filter bar -->
         <div class="filter-bar">
             <div class="filter-group">
                 <label style="margin: 0;">Filtr:</label>
-                <select [(ngModel)]="filterType" style="width: auto; min-width: 150px;">
-                    <option value="all">Všechny</option>
-                    @for (type of measureTypes; track type) {
-                    <option [value]="type">{{ getTypeLabel(type) }}</option>
+                <div class="custom-select" style="min-width:200px" (click)="$event.stopPropagation();dropdownManager.selected_dropdown = dropdownManager.selected_dropdown == 'education_measure_filter' ? '' : 'education_measure_filter'">
+                    <div class="selected-value">
+                        {{ getTypeLabel(filterType) }}
+                        <i-tabler name="chevron-down"></i-tabler>
+                    </div>
+                    @if (dropdownManager.selected_dropdown == 'education_measure_filter') {
+                    <div class="options-dropdown">
+                        <div class="list">
+                            @for (type of getFilterTypes(); track $index) {
+                            <div class="option" style="text-align: left;" (click)="$event.stopPropagation();dropdownManager.selected_dropdown = '';filterType = type">
+                                {{ getTypeLabel(type) }}
+                            </div>
+                            }
+                        </div>
+                    </div>
                     }
-                </select>
+                </div>
             </div>
-            <div class="flex-items">
+            <div class="flex-items form-row">
                 <span class="badge badge--success">
                     <i-tabler name="star"></i-tabler>
                     {{ praiseCount }} pochval

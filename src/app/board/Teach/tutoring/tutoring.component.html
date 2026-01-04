@@ -1,20 +1,17 @@
 <div class="card">
     <div class="card-top"></div>
     <div class="card-header">
-        <h2 class="flex" style="align-items: center;">
-            <i-tabler name="school"></i-tabler>
-            <span style="margin-left: 8px;">{{ l.s('sidebar.teach.tutoring') || 'Doučování' }}</span>
-        </h2>
+        <h2>{{ l.s('sidebar.teach.tutoring')}}</h2>
         <div class="flex-items">
             @if (perm.checkPermission(['teacher'])) {
-            <button class="btn btn--primary" (click)="toggleCreateForm()">
+            <button class="btn btn--primary btn--sm" (click)="toggleCreateForm()">
                 <i-tabler name="plus"></i-tabler>
                 {{ showCreateForm ? 'Zrušit' : 'Nová lekce' }}
             </button>
             }
         </div>
     </div>
-    <div class="card-body">
+    <div class="card-body" [class.center]="!loading && sessions.length == 0">
         <!-- Create form -->
         @if (showCreateForm) {
         <div class="create-form">

@@ -103,14 +103,6 @@ export class MainComponent {
       import: () => import('./sections/seasonal/countdown/countdown.component').then(m => m.CountdownComponent),
       component: signal(null),
       seasonal: true
-    },
-    {
-      id: 'seasonal-year-review',
-      titleKey: 'modules.seasonal.yearReview',
-      icon: 'sparkles',
-      import: () => import('./sections/seasonal/year-review/year-review.component').then(m => m.YearReviewComponent),
-      component: signal(null),
-      seasonal: true
     }
   ];
 

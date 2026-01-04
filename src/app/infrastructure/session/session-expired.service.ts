@@ -35,7 +35,7 @@ export class SessionExpiredService {
     this.auth.setAuthState(false);
     
     // Redirect to login
-    this.router.navigate(['/login']);
+    this.router.navigate(['/login'], { queryParams: { returnUrl: this.router.url } });
   }
 
   /**

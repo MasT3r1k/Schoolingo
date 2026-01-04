@@ -23,12 +23,14 @@
             </div>
             @if (dropdownManager.selected_dropdown == 'messagetype') {
             <div class="options-dropdown">
+              <div class="list">
               @for (type of getMessageTypes(); track $index) {
               <div class="option"
                 (click)="$event.stopPropagation();dropdownManager.selected_dropdown = ''; messageManager.messageType.next(messageManager.types.indexOf(type))">
                 {{ l.s("messages.types." + type.label) }}
               </div>
               }
+              </div>
             </div>
             }
           </div>

@@ -1,8 +1,8 @@
 <div class="tabs" [class.no-bottom-border]="no_bottom_radius" [id]="name">
     @for (option of options; track $index) {
         <div class="tab" [class.active]="value.getValue() == $index" [style.width]="getWidth()" (click)="value.next($index)">
-            @if(icons[$index]) {
-                <i-tabler [name]="icons[$index]"></i-tabler>
+            @if(icons[$index] && icons[$index] != null) {
+                <i-tabler [name]="icons[$index]!"></i-tabler>
             }
             {{ l.s(option) }}
         </div>

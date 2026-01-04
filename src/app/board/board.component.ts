@@ -272,7 +272,8 @@ export class BoardComponent implements OnInit, OnDestroy {
     this.modalManager.addModal(
       'student_summary',
       {
-        title: 'Přehled za školní rok',
+        title: 'student_summary.title',
+        title_placeholders: { year: '2024/25' },
         closeable: true,
         width: 1200,
         items: [
@@ -281,7 +282,9 @@ export class BoardComponent implements OnInit, OnDestroy {
       }
     )
 
-    this.modalManager.openModal('student_summary')
+    if (this.perm.checkPermission(['student'])) {
+      this.modalManager.openModal('student_summary')
+    }
 
     // Subscribe to token expiration warnings
     const warningSubscription = this.tokenExpirationService.warningThreshold$.subscribe(() => {

@@ -1,5 +1,5 @@
 import { APP_INITIALIZER, ApplicationConfig, provideZoneChangeDetection } from '@angular/core';
-import { provideRouter } from '@angular/router';
+import { provideRouter, RouterModule, RouterState, RouterStateSnapshot, withRouterConfig } from '@angular/router';
 
 import { routes } from './app.routes';
 import { provideHttpClient, withInterceptors } from '@angular/common/http';
@@ -77,6 +77,6 @@ export const appConfig: ApplicationConfig = {
     TokenExpirationService,
     MonitoringService,
     SessionExpiredService,
-    AlertManager
+    AlertManager,
   ]
 };

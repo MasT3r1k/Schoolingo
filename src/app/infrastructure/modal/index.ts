@@ -7,6 +7,7 @@ interface ModalItem {
 
 interface Modal {
     title: string;
+    title_placeholders?: Record<string, string>;
     width?: number;
     forceScrollbar?: boolean;
     closeable: boolean;
@@ -20,7 +21,7 @@ type ModalSetup = Omit<Modal, 'dropdown'|'isOpen'>;
 
 export class ModalManager {
     private modals: { [key: string]: Modal } = {};
-    public addModal(name: string, modal: ModalSetup): void { this.modals[name] = { ...modal, children: modal.children || [], dropdown: '', isOpen: false } }
+    public addModal(name: string, modal: ModalSetup): void { this.modals[name] = { ...modal, title_placeholders: modal.title_placeholders ?? {}, children: modal.children || [], dropdown: '', isOpen: false } }
     public getModals(): (Modal & {id: string})[] {
         return Object.entries(this.modals).filter(([modal1, modal2]) => modal2?.isOpen == true).map(([modal1, modal2]) => ({...modal2, id: modal1}));
     }

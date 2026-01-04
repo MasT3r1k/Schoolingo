@@ -430,8 +430,6 @@ export class AuthComponent implements OnInit {
           });
         }
       }, 5000);
-
-      setTimeout(() => this.qrcode.next('Naskejnute QR kód v mobilní aplikaci pro rychlé přihlášení'), 10000);
     }
   }
 

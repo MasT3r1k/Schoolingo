@@ -25,11 +25,13 @@
                         </div>
                         @if (dropdownManager.selected_dropdown == 'timetable_selectClass' && u.getUser().classes.length >= 2) {
                             <div class="options-dropdown">
-                            @for (class of u.getUser().classes; track $index) {
-                                <div class="option" (click)="$event.stopPropagation();dropdownManager.selected_dropdown = '';selectedClass.next(class.classId)">
-                                {{ class.className }}
+                                <div class="list">
+                                    @for (class of u.getUser().classes; track $index) {
+                                        <div class="option" (click)="$event.stopPropagation();dropdownManager.selected_dropdown = '';selectedClass.next(class.classId)">
+                                        {{ class.className }}
+                                        </div>
+                                    }
                                 </div>
-                            }
                             </div>
                         }
                         </div>

@@ -72,26 +72,7 @@
                 <input type="text" [(ngModel)]="searchQuery" (input)="searchQuery.set($any($event.target).value)"
                     [placeholder]="l.s('substitution.search')">
             </div>
-            <div class="filter-tabs">
-                <button class="filter-tab" [class.active]="selectedType() === 'all'" (click)="selectedType.set('all')">
-                    {{ l.s('substitution.filters.all') }}
-                </button>
-                <button class="filter-tab" [class.active]="selectedType() === 'cancelled'"
-                    (click)="selectedType.set('cancelled')">
-                    <i-tabler name="x"></i-tabler>
-                    {{ l.s('substitution.types.cancelled') }}
-                </button>
-                <button class="filter-tab" [class.active]="selectedType() === 'substitution'"
-                    (click)="selectedType.set('substitution')">
-                    <i-tabler name="user-check"></i-tabler>
-                    {{ l.s('substitution.types.substitution') }}
-                </button>
-                <button class="filter-tab" [class.active]="selectedType() === 'room_change'"
-                    (click)="selectedType.set('room_change')">
-                    <i-tabler name="door"></i-tabler>
-                    {{ l.s('substitution.types.room_change') }}
-                </button>
-            </div>
+            <schoolingo-tabs [options]="['substitution.filters.all', 'substitution.types.cancelled', 'substitution.types.substitution', 'substitution.types.room_change']" [icons]="['list', 'x', 'user-check', 'door']" [value]="selectedTab"></schoolingo-tabs>
         </div>
 
         <!-- Loading State -->

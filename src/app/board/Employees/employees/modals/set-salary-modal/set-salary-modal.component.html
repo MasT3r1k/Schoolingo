@@ -1,0 +1,48 @@
+<form class="salary-form">
+    <div class="form-section">
+        <h3 class="section-title">Nastavení platu</h3>
+
+        <div class="form-row">
+            <div class="form-group" style="flex: 2">
+                <label>Částka <span class="required">*</span></label>
+                <input type="number" class="form-input" [(ngModel)]="newSalary.amount" name="amount" placeholder="0"
+                    min="0" required>
+            </div>
+            <div class="form-group">
+                <label>Měna</label>
+                <select class="form-select" [(ngModel)]="newSalary.currency" name="currency">
+                    <option value="CZK">CZK</option>
+                    <option value="EUR">EUR</option>
+                    <option value="USD">USD</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="form-row">
+            <div class="form-group">
+                <label>Platný od <span class="required">*</span></label>
+                <input type="date" class="form-input" [(ngModel)]="newSalary.validFrom" name="validFrom" required>
+            </div>
+            <div class="form-group">
+                <label>Platný do</label>
+                <input type="date" class="form-input" [(ngModel)]="newSalary.validTo" name="validTo">
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label>Srážky</label>
+            <input type="number" class="form-input" [(ngModel)]="newSalary.deductions" name="deductions" placeholder="0"
+                min="0">
+            <small class="form-hint">Měsíční srážky (např. půjčky, zálohy)</small>
+        </div>
+    </div>
+
+    <div class="modal-actions">
+        <button type="button" class="btn btn--ghost" (click)="close()">Zrušit</button>
+        <button type="button" class="btn btn--primary" (click)="submitNewSalary()"
+            [disabled]="!newSalary.amount || !newSalary.validFrom">
+            <i-tabler name="check"></i-tabler>
+            Nastavit plat
+        </button>
+    </div>
+</form>

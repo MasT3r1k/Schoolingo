@@ -1,0 +1,65 @@
+.search-wrapper {
+    flex: 1;
+    position: relative;
+    display: flex;
+    align-items: center;
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 0 .5rem;
+    transition: all 0.5s ease;
+}
+
+.search-wrapper.loading i-tabler {
+    animation: lookupAnimation 1.2s ease-in-out infinite;
+    transform-origin: center;
+}
+
+.search-wrapper:focus-within {
+    border-color: var(--primary);
+    background: var(--surface);
+    box-shadow: 0 0 0 3px rgba(74, 163, 255, 0.15);
+}
+
+.search-wrapper i-tabler {
+    width: 1.25rem;
+    height: 1.25rem;
+    color: var(--text-muted);
+    flex-shrink: 0;
+    transition: 2s all;
+}
+
+.search-wrapper input {
+    flex: 1;
+    background: transparent;
+    border: none;
+    outline: none;
+    padding: 0.75rem 0.75rem;
+    font-size: 0.9375rem;
+    color: var(--text);
+}
+
+.search-wrapper input::placeholder {
+    color: var(--text-muted);
+}
+
+@keyframes lookupAnimation {
+    0% {
+        transform: rotate(0deg) scale(1);
+    }
+    20% {
+        transform: rotate(-12deg) scale(1.05);
+    }
+    40% {
+        transform: rotate(10deg) scale(1.05);
+    }
+    60% {
+        transform: rotate(-8deg) scale(1.05);
+    }
+    80% {
+        transform: rotate(6deg) scale(1.02);
+    }
+    100% {
+        transform: rotate(0deg) scale(1);
+    }
+}

@@ -8,6 +8,7 @@ import { Config } from '@Schoolingo/config';
 import { Locale } from '@Schoolingo/locale';
 import { ModalManager } from '@Schoolingo/modal';
 import { FormsModule } from '@angular/forms';
+import { TabsComponent } from '@Components/Tabs';
 
 interface Reward {
   id: number;
@@ -31,7 +32,7 @@ interface Student {
 @Component({
   selector: 'app-rewards',
   standalone: true,
-  imports: [CommonModule, IconsModule, RouterModule, FormsModule],
+  imports: [CommonModule, IconsModule, RouterModule, FormsModule, TabsComponent],
   templateUrl: './rewards.component.html',
   styleUrl: './rewards.component.css'
 })

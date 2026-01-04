@@ -59,7 +59,7 @@ export const httpInterceptor: HttpInterceptorFn = (req, next) => {
         
         // Handle no_user error
         if (error.error?.error === 'no_user') {
-          router.navigate(['/login']);
+          router.navigate(['/login'], { queryParams: { returnUrl: router.url } });
           monitoringService.logAuthError('no_user', error);
           sessionExpiredService.handleSessionExpired();
           return;
@@ -68,7 +68,7 @@ export const httpInterceptor: HttpInterceptorFn = (req, next) => {
         // Handle 401 unauthorized
         if (error.status === 401) {
           monitoringService.logAuthError('unauthorized', error);
-          sessionExpiredService.handleSessionExpired();
+          // sessionExpiredService.handleSessionExpired();
           return;
         }
         

@@ -90,7 +90,7 @@ export class SnowEffectComponent implements OnInit, OnDestroy {
     }
 
     // Vytvářet vločky každých 300ms
-    this.intervalId = setInterval(() => this.createSnowflake(), 300);
+    this.intervalId = setInterval(() => this.createSnowflake(), 350);
   }
 
   private stopSnow(): void {
@@ -117,7 +117,7 @@ export class SnowEffectComponent implements OnInit, OnDestroy {
     this.renderer.setStyle(snowflake, 'left', Math.random() * 100 + '%');
 
     // Random size (0.5em to 1.5em)
-    const size = Math.random() * 1 + 0.5;
+    const size = Math.random() * 0.9 + 0.25;
     this.renderer.setStyle(snowflake, 'fontSize', size + 'em');
 
     // Random opacity (0.3 to 0.9)

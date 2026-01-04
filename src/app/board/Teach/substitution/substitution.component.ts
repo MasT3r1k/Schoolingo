@@ -9,6 +9,13 @@ import { Utils } from '@Schoolingo/utils';
 import { BehaviorSubject } from 'rxjs';
 import { TabsComponent } from '../../../Components/Tabs';
 
+export enum SubstitutionPage {
+  ALL,
+  CANCELLED,
+  SUBSTITUTION,
+  ROOM_CHANGE
+}
+
 @Component({
   selector: 'app-substitution',
   standalone: true,
@@ -36,6 +43,7 @@ export class SubstitutionComponent implements OnInit {
   public loading = signal(true);
 
   // Filters
+  public pages = ['all', 'cancelled', 'substitution', 'room_change'];
   public selectedTab = new BehaviorSubject<number>(0);
   public filterOptions = ['substitution.filters.all', 'substitution.filters.by_type'];
   public selectedType = signal<string>('all');
@@ -121,7 +129,7 @@ export class SubstitutionComponent implements OnInit {
 
     // Filter by type
     if (this.selectedType() !== 'all') {
-      filtered = filtered.filter(s => s.type === this.selectedType());
+      filtered = filtered.filter(s => s.type == this.pages[this.selectedTab.getValue()]);
     }
 
     // Filter by search

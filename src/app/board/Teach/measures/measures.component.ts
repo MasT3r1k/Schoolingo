@@ -5,6 +5,9 @@ import { Locale } from '@Schoolingo/locale';
 import { Permission } from '@Schoolingo/permission';
 import { EducationMeasuresService, EducationMeasure, MeasureType } from '../../../infrastructure/measures/education-measures.service';
 import moment from 'moment';
+import { DropdownManager } from '@Schoolingo/dropdown';
+import { ModalManager } from '@Schoolingo/modal';
+import { AddMeasureComponent } from './modals/add-measure/add-measure.component';
 
 @Component({
   selector: 'app-measures',
@@ -16,7 +19,9 @@ import moment from 'moment';
 export class MeasuresComponent implements OnInit {
   public l = inject(Locale);
   public perm = inject(Permission);
+  public dropdownManager = inject(DropdownManager);
   public measuresService = inject(EducationMeasuresService);
+  private modalManager = inject(ModalManager);
 
   public measures: EducationMeasure[] = [];
   public loading = true;
@@ -36,6 +41,21 @@ export class MeasuresComponent implements OnInit {
 
   ngOnInit(): void {
     this.loadMeasures();
+
+    this.modalManager.addModal(
+      'add_education_measure',
+      {
+        title: '',
+        closeable: true,
+        items: [
+          { type: 'component', component: AddMeasureComponent }
+        ]
+      }
+    )
+  }
+
+  public getFilterTypes(): typeof this.filterType[] {
+    return ['all', ...this.measureTypes]
   }
 
   private loadMeasures(): void {
@@ -86,8 +106,9 @@ export class MeasuresComponent implements OnInit {
     return moment(date).format('D. M. YYYY');
   }
 
-  public getTypeLabel(type: MeasureType): string {
-    const labels: Record<MeasureType, string> = {
+  public getTypeLabel(type: typeof this.filterType): string {
+    const labels: Record<typeof this.filterType, string> = {
+      'all': 'Všechny',
       'praise': 'Pochvala',
       'reprimand': 'Důtka',
       'warning': 'Napomenutí',
@@ -139,7 +160,7 @@ export class MeasuresComponent implements OnInit {
   }
 
   public toggleCreateForm(): void {
-    this.showCreateForm = !this.showCreateForm;
+    this.modalManager.openModal('add_education_measure');
   }
 }
 

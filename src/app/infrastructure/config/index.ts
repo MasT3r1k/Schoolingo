@@ -9,7 +9,7 @@ export namespace Config {
 
     // App Config
     export const APP_NAME = "Schoolingo";
-    export let APP_VERSION = "1.0";
+    export let APP_VERSION = "";
     export const APP_CREDITS = "Made by Josef Kosík with 💙"
     export const APP_TYPE: AppType = "DEV";
 
