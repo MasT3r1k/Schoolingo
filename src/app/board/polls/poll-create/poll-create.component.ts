@@ -4,6 +4,8 @@ import { ReactiveFormsModule, FormBuilder, FormGroup, FormArray, Validators } fr
 import { IconsModule } from '@Schoolingo/icons';
 import { PollsService } from '../polls.service';
 import { Router, RouterLink } from '@angular/router';
+import { DropdownManager } from '@Schoolingo/dropdown';
+import { Locale } from '@Schoolingo/locale';
 
 @Component({
   selector: 'app-poll-create',
@@ -13,9 +15,11 @@ import { Router, RouterLink } from '@angular/router';
   styleUrl: './poll-create.component.css'
 })
 export class PollCreateComponent {
+  public l = inject(Locale)
   private fb = inject(FormBuilder);
   private pollsService = inject(PollsService);
   private router = inject(Router);
+  public dropdownManager = inject(DropdownManager)
 
   pollForm: FormGroup = this.fb.group({
     title: ['', Validators.required],
@@ -30,6 +34,8 @@ export class PollCreateComponent {
   get questions() {
     return this.pollForm.get('questions') as FormArray;
   }
+
+  public questionTypes: string[] = ['text', 'uni', 'multi'];
 
   addQuestion() {
     const questionGroup = this.fb.group({

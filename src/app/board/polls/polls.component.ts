@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { IconsModule } from '@Schoolingo/icons';
 import { PollsService, Poll } from './polls.service';
 import { Router, RouterModule } from '@angular/router';
+import { Locale } from '@Schoolingo/locale';
 
 @Component({
   selector: 'app-polls',
@@ -12,6 +13,7 @@ import { Router, RouterModule } from '@angular/router';
   styleUrl: './polls.component.css'
 })
 export class PollsComponent implements OnInit {
+  public l = inject(Locale);
   private pollsService = inject(PollsService);
   private router = inject(Router);
 

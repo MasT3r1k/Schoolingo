@@ -1,8 +1,8 @@
 <div class="card">
     <div class="card-header">
         <div class="left">
-            <h2>Testy</h2>
-            <p class="meta muted">Vyplňte testy od učitelů</p>
+            <h2>{{ l.s('tests.title') }}</h2>
+            <p class="meta muted">{{ l.s('tests.description') }}</p>
         </div>
         @if (canCreate) {
         <div class="flex-items">
@@ -14,7 +14,7 @@
         }
     </div>
 
-    <div class="card-body">
+    <div class="card-body" [class.center]="tests.length == 0">
         @if (loading) {
         <div class="loading-state">
             <div class="loader"></div>
@@ -60,8 +60,10 @@
             </div>
             }
             @empty {
-            <div class="empty-state">
-                <i-tabler name="inbox" class="empty-icon"></i-tabler>
+            <div class="no-selection">
+                <div class="illustration">
+                    <i-tabler name="inbox"></i-tabler>
+                </div>
                 <h3>Žádné aktivní testy</h3>
                 <p>Momentálně nejsou k dispozici žádné testy.</p>
             </div>

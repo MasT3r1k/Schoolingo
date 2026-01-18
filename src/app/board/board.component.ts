@@ -269,20 +269,20 @@ export class BoardComponent implements OnInit, OnDestroy {
       }
     );
 
-    this.modalManager.addModal(
-      'student_summary',
-      {
-        title: 'student_summary.title',
-        title_placeholders: { year: '2024/25' },
-        closeable: true,
-        width: 1200,
-        items: [
-          { type: 'component', component: studentSummaryComponent }
-        ]
-      }
-    )
-
     if (this.perm.checkPermission(['student'])) {
+      this.modalManager.addModal(
+        'student_summary',
+        {
+          title: 'student_summary.title',
+          title_placeholders: { year: '2024/25' },
+          closeable: true,
+          width: 1200,
+          items: [
+            { type: 'component', component: studentSummaryComponent }
+          ]
+        }
+      )
+      
       this.modalManager.openModal('student_summary')
     }
 
