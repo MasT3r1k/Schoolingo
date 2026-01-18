@@ -77,7 +77,6 @@ export class AuthComponent implements OnInit {
   public isLoading = true;
   public errors: { [key: string]: string } = {};
   formSubmitted = false;
-  // public dropdown: 'language' | 'theme' | '' = '';
 
   // Login form
   private formBuilder = inject(FormBuilder);
@@ -130,16 +129,16 @@ export class AuthComponent implements OnInit {
             // Show success state
             this.isLoggingIn = false;
             this.isLoginSuccess = true;
-            
+
             // Load user state
             this.auth.loadState();
             this.a.getAlerts().forEach((alert) => this.a.removeAlert(alert));
             return;
           }
-          
+
           // Handle errors
           this.isLoggingIn = false;
-          
+
           if ('error' in data && data.error instanceof Array) {
             if (data.error?.includes('Invalid username')) {
               this.errors['username'] = this.l.s(
@@ -248,7 +247,7 @@ export class AuthComponent implements OnInit {
         (data: any) => {
           // Stop loading on any response
           this.isForgotPasswordLoading = false;
-          
+
           // 🔸 chyba
           if ('error' in data && data.error instanceof Array) {
             const errors = data.error as string[];
@@ -260,7 +259,7 @@ export class AuthComponent implements OnInit {
 
             // === STAGE: výběr e-mailu ===
             if (errors.includes('Multiple verified emails found, please select one') &&
-                Array.isArray(data.emails) && data.token) {
+              Array.isArray(data.emails) && data.token) {
               this.page = 'forgotpass_email';
               this.emails = data.emails;
               this.forgotpass_token = data.token;
@@ -372,7 +371,7 @@ export class AuthComponent implements OnInit {
     this.school.config.subscribe((data) => {
       if (data == null) return;
       this.isLoading = false;
-      
+
       // Check for session expiration alert ONLY when school config is loaded
       // and clear it immediately to prevent showing on refresh
       const logoutReason = this.sessionExpiredService.getLogoutReason();
@@ -386,7 +385,7 @@ export class AuthComponent implements OnInit {
     });
 
     this.auth.getAuthState().subscribe((data) => {
-      if (data === true) {
+      if (data == true) {
         if (returnUrl) {
           this.router.navigateByUrl(returnUrl);
         } else {

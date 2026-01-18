@@ -5,15 +5,16 @@
 
     <div class="card-body">
         <div class="filter-bar">
-            <div class="custom-select" style="min-width: 400px" (click)="$event.stopPropagation();dropdownManager.selected_dropdown = dropdownManager.selected_dropdown == 'interm_record_select_group' ? '' : 'interm_record_select_group'">
+            <div class="custom-select" style="min-width: 400px"
+                (click)="$event.stopPropagation();dropdownManager.selected_dropdown = dropdownManager.selected_dropdown == 'interm_record_select_group' ? '' : 'interm_record_select_group'">
                 <div class="selected-value">
                     <div>
-                    @if (selected_group !== -1) {
-                            <span class="subject-name">{{ groups[selected_group].subject }}</span>
-                            -
-                            <span class="class-name">{{ groups[selected_group].className }}</span>
+                        @if (selected_group !== -1) {
+                        <span class="subject-name">{{ groups[selected_group].subject }}</span>
+                        -
+                        <span class="class-name">{{ groups[selected_group].className }}</span>
                         } @else {
-                            <span class="placeholder">{{ l.s("marks.interm_record.select_group_placeholder") }}</span>
+                        <span class="placeholder">{{ l.s("marks.interm_record.select_group_placeholder") }}</span>
                         }
                     </div>
                     <i-tabler name="chevron-down"></i-tabler>
@@ -21,103 +22,105 @@
                 @if (dropdownManager.selected_dropdown == 'interm_record_select_group') {
                 <div class="options-dropdown">
                     <div class="list">
-                    @for (group of groups; track $index) {
-                    <div class="option" style="text-align: left;" (click)="$event.stopPropagation();dropdownManager.selected_dropdown = '';selected_group = $index;updateGroup();">
-                        <span class="subject">{{ group.subject }}</span>
-                        -
-                        <span class="class">{{ group.className }}</span>
-                    </div>
-                    }
+                        @for (group of groups; track $index) {
+                        <div class="option" style="text-align: left;"
+                            (click)="$event.stopPropagation();dropdownManager.selected_dropdown = '';selected_group = $index;updateGroup();">
+                            <span class="subject">{{ group.subject }}</span>
+                            -
+                            <span class="class">{{ group.className }}</span>
+                        </div>
+                        }
                     </div>
                 </div>
                 }
             </div>
 
             <div class="header-actions">
-            @if (selected_group !== -1) {
+                @if (selected_group !== -1) {
                 <div class="btn btn--secondary" (click)="openMarkingScale()" [title]="l.s('marks.marking_scale')">
                     <i-tabler name="table"></i-tabler>
                     <span>{{ l.s('marks.marking_scale') }}</span>
                 </div>
-            }
+                }
             </div>
         </div>
 
         @if (selected_group == -1) {
-            <div class="no-selection">
-                <div class="illustration">
-                    <i-tabler name="school"></i-tabler>
-                </div>
-                <h3>{{ l.s('marks.interm_record.no_group_selected') }}</h3>
-                <p>{{ l.s('marks.interm_record.select_group_desc') }}</p>
+        <div class="no-selection">
+            <div class="illustration">
+                <i-tabler name="school"></i-tabler>
             </div>
-            } @else {
-            @if (students.length == 0) {
-            <div class="center">
-                <div class="loader bigger"></div>
-            </div>
-            } @else {
-            <div class="grade-table-wrapper">
-                <table>
-                    <thead>
-                        <tr>
-                            <th class="student-column">
-                                <div class="th-content">
-                                    {{ l.s('roles.student') }}
-                                </div>
-                            </th>
-                            @for(column of gradeColumns;track $index) {
-                            <th class="grade-header" (click)="openColumn($index)" [class.exists]="column.isExist">
-                                <div class="header-inner">
-                                    <span class="column-topic" [title]="column.topic">{{ column.topic || '+' }}</span>
-                                    @if(column.isExist) {
-                                    <span class="column-average"
-                                        [class.good]="getColumnAverage($index) && +getColumnAverage($index) <= 2.5"
-                                        [class.bad]="getColumnAverage($index) && +getColumnAverage($index) >= 3.5">
-                                        Ø {{ getColumnAverage($index) }}
-                                    </span>
-                                    }
-                                </div>
-                            </th>
-                            }
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @for (student of students; track $index;let studentIndex = $index) {
-                        <tr>
-                            <td class="student-column">
-                                <div class="student-cell">
-                                    <div class="student-info">
-                                        <span class="student-index">{{ $index + 1 }}.</span>
-                                        <span class="student-name">{{ student.name }}</span>
-                                    </div>
-                                    <div class="student-stats">
-                                        <div class="quarter-grade" (click)="openMidterm(studentIndex)"
-                                            [class.empty]="!student.quarter">
-                                            {{ student.quarter ?? "-" }}
-                                        </div>
-                                        <div class="average-grade"
-                                            [class.good]="getStudentAverage($index) && +getStudentAverage($index) <= 2.5"
-                                            [class.bad]="getStudentAverage($index) && +getStudentAverage($index) >= 3.5">
-                                            {{ getStudentAverage($index) ? 'Ø ' + getStudentAverage($index) : '' }}
-                                        </div>
-                                    </div>
-                                </div>
-                            </td>
-                            @for(_ of [].constructor(student.marks.length + add_more_columns);track $index) {
-                            <td class="grade-cell" (click)="updateMark($index, studentIndex)"
-                                [class.has-mark]="!!student.marks[$index]">
-                                <div class="grade-value">
-                                    {{ student.marks[$index] }}
-                                </div>
-                            </td>
-                            }
-                        </tr>
+            <h3>{{ l.s('marks.interm_record.no_group_selected') }}</h3>
+            <p>{{ l.s('marks.interm_record.select_group_desc') }}</p>
+        </div>
+        } @else {
+        @if (students.length == 0) {
+        <div class="center">
+            <div class="loader bigger"></div>
+        </div>
+        } @else {
+        <div class="grade-table-wrapper">
+            <table>
+                <thead>
+                    <tr>
+                        <th class="student-column">
+                            <div class="th-content">
+                                {{ l.s('roles.student') }}
+                            </div>
+                        </th>
+                        @for(column of gradeColumns;track $index) {
+                        <th class="grade-header" (click)="openColumn($index)" [class.exists]="column.isExist">
+                            <div class="header-inner">
+                                <span class="column-topic" [title]="column.topic">{{ column.topic || '+' }}</span>
+                                @if(column.isExist) {
+                                <span class="column-average"
+                                    [class.good]="getColumnAverage($index) && +getColumnAverage($index) <= 2.5"
+                                    [class.bad]="getColumnAverage($index) && +getColumnAverage($index) >= 3.5">
+                                    Ø {{ getColumnAverage($index) }}
+                                </span>
+                                }
+                            </div>
+                        </th>
                         }
-                    </tbody>
-                </table>
-            </div>
-            }
-            }
+                    </tr>
+                </thead>
+                <tbody>
+                    @for (student of students; track $index;let studentIndex = $index) {
+                    <tr>
+                        <td class="student-column">
+                            <div class="student-cell">
+                                <div class="student-info">
+                                    <span class="student-index">{{ $index + 1 }}.</span>
+                                    <span class="student-name">{{ student.name }}</span>
+                                </div>
+                                <div class="student-stats">
+                                    <div class="quarter-grade" (click)="openMidterm(studentIndex)"
+                                        [class.empty]="!student.quarters || student.quarters.length === 0">
+                                        {{ getStudentQuarter(studentIndex) == 0 ? "-" : getStudentQuarter(studentIndex)
+                                        }}
+                                    </div>
+                                    <div class="average-grade"
+                                        [class.good]="getStudentAverage($index) && +getStudentAverage($index) <= 2.5"
+                                        [class.bad]="getStudentAverage($index) && +getStudentAverage($index) >= 3.5">
+                                        {{ getStudentAverage($index) ? 'Ø ' + getStudentAverage($index) : '' }}
+                                    </div>
+                                </div>
+                            </div>
+                        </td>
+                        @for(_ of [].constructor(student.marks.length + add_more_columns);track $index) {
+                        <td class="grade-cell" (click)="updateMark($index, studentIndex)"
+                            [class.has-mark]="!!student.marks[$index]">
+                            <div class="grade-value">
+                                {{ student.marks[$index] }}
+                            </div>
+                        </td>
+                        }
+                    </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+        }
+        }
     </div>
 </div>

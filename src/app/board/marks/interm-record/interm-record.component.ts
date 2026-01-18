@@ -35,7 +35,11 @@ interface GradeColumn {
 interface Student {
   studentId: number;
   name: string;
-  quarter: number | null;
+  quarters: {
+    quarter: number;
+    grade: number;
+    verbal_assessment: string;
+  }[];
   marks: (string | null)[];
 }
 
@@ -114,7 +118,7 @@ export class IntermRecordComponent {
     let total = 0;
     let totalDivide = 0;
 
-    for (let i = 0;i < student.marks.length;i++) {
+    for (let i = 0; i < student.marks.length; i++) {
       if (student.marks[i]) {
         const weight = this.gradeColumns[i].weight;
         total += (parseInt(student.marks[i]!) || 0) * weight;
@@ -155,7 +159,7 @@ export class IntermRecordComponent {
       ).subscribe((data) => {
         if ('columns' in data && 'students' in data) {
           this.gradeColumns = (data.columns as GradeColumn[]).map((column: GradeColumn) => ({ ...column, isExist: true }));
-          for(let i = 0;i < this.add_more_columns;i++) {
+          for (let i = 0; i < this.add_more_columns; i++) {
             this.gradeColumns.push({
               columnId: -1,
               topic: "",
@@ -165,7 +169,7 @@ export class IntermRecordComponent {
               isExist: false
             })
           }
-          this.students = data.students as Student[]; 
+          this.students = data.students as Student[];
         }
       })
     } else {
@@ -246,40 +250,71 @@ export class IntermRecordComponent {
 
     // === Update column info ===
     this.marksManager.updateColumn$
-    .pipe(distinctUntilChanged())
-    .subscribe((data) => {
-      if (!Object.keys(data).length) return;
-      this.gradeColumns[data.columnIndex].isExist = true;
-      this.gradeColumns[data.columnIndex].topic = data.topic;
-      this.gradeColumns[data.columnIndex].type = data.type;
-      this.gradeColumns[data.columnIndex].weight = data.weight;
-      this.marksManager.updateColumn$.next({});
-      console.log(data)
-    });
+      .pipe(distinctUntilChanged())
+      .subscribe((data) => {
+        if (!Object.keys(data).length) return;
+        this.gradeColumns[data.columnIndex].isExist = true;
+        this.gradeColumns[data.columnIndex].topic = data.topic;
+        this.gradeColumns[data.columnIndex].type = data.type;
+        this.gradeColumns[data.columnIndex].weight = data.weight;
+        this.marksManager.updateColumn$.next({});
+        console.log(data)
+      });
 
     // === Get teacher groups ===
     this.http
-    .get<{ status: boolean; groups?: Group[] }>(
-      `${Config.API_URL}/v1/marks/teacher/list`,
-      { withCredentials: true }
-    )
-    .subscribe((data) => {
-      if (data.groups) {
-        this.groups = data.groups;
+      .get<{ status: boolean; groups?: Group[] }>(
+        `${Config.API_URL}/v1/marks/teacher/list`,
+        { withCredentials: true }
+      )
+      .subscribe((data) => {
+        if (data.groups) {
+          this.groups = data.groups;
 
-        const subject_id = this.route.snapshot.queryParamMap.get('subject_id');
-        const group_id = this.route.snapshot.queryParamMap.get('group_id');
+          const subject_id = this.route.snapshot.queryParamMap.get('subject_id');
+          const group_id = this.route.snapshot.queryParamMap.get('group_id');
 
-        if (subject_id != null && group_id != null) {
-          this.selected_group = this.groups.findIndex(
-            (group) =>
-              group.groupId === parseInt(group_id, 10) &&
-              group.subjectId === parseInt(subject_id, 10)
-          );
-          this.updateGroup();
+          if (subject_id != null && group_id != null) {
+            this.selected_group = this.groups.findIndex(
+              (group) =>
+                group.groupId === parseInt(group_id, 10) &&
+                group.subjectId === parseInt(subject_id, 10)
+            );
+            this.updateGroup();
+          }
         }
-      }
-    });
+      });
+  }
+
+  private getCurrentQuarter(): number {
+    const now = new Date();
+    const month = now.getMonth() + 1; // 1-12
+    const day = now.getDate();
+
+    // September - November = Q1
+    if (month >= 9 && month <= 11) {
+      return 1;
+    }
+    // December - January = End of Q2 (semester 1)
+    if (month === 12 || month === 1) {
+      return 2;
+    }
+    // February - April = Q3
+    if (month >= 2 && month <= 4) {
+      return 3;
+    }
+    // May - June = End of Q4 (semester 2)
+    if (month >= 5 && month <= 6) {
+      return 4;
+    }
+    // July - August = Summer break, default to Q4 (last completed)
+    return 4;
+  }
+
+  public getStudentQuarter(studentIndex: number): number {
+    const student = this.students[studentIndex];
+    if (!student || !student.quarters || student.quarters.length === 0) return 0;
+    return student.quarters?.find((quarter) => quarter.quarter === this.getCurrentQuarter())?.grade || 0;
   }
 
   public openMarkingScale(): void {
@@ -293,7 +328,7 @@ export class IntermRecordComponent {
     // Set data for modal
     this.marksManager.setStudent(student.name);
     this.marksManager.setStudentId(student.studentId);
-    this.marksManager.setMark(student.quarter?.toString() || null);
+    this.marksManager.setMark(student.quarters?.find((quarter) => quarter.quarter === this.getCurrentQuarter())?.grade?.toString() || null);
     this.marksManager.setGroupId(this.groups[this.selected_group].groupId);
     this.marksManager.setSubjectId(this.groups[this.selected_group].subjectId);
     this.marksManager.setSubjectName(this.groups[this.selected_group].subject);
