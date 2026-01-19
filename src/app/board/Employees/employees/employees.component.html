@@ -24,14 +24,15 @@
             <aside class="profile-sidebar">
                 <div class="profile-card">
                     <div class="profile-avatar">
-                        <span class="avatar-initials">{{ selectedEmployee.firstName[0] }}{{ selectedEmployee.lastName[0]
-                            }}</span>
+                        <span class="avatar-initials">
+                            {{ Utils.getInitials(`${selectedEmployee.firstName} ${selectedEmployee.lastName}`) }}
+                        </span>
                         <span class="status-dot" [class]="selectedEmployee.status"></span>
                     </div>
                     <h1 class="profile-name">{{ selectedEmployee.fullName }}</h1>
                     <div class="profile-role">
                         <i-tabler name="briefcase"></i-tabler>
-                        {{ getRoleLabel(selectedEmployee.role) }}
+                        {{ l.s('roles.' + selectedEmployee.role) }}
                     </div>
                     <span class="status-badge" [class]="getStatusClass(selectedEmployee.status)">
                         {{ getStatusText(selectedEmployee.status) }}
@@ -153,6 +154,26 @@
                             <div class="filters-row">
                                 <div class="filter-group">
                                     <label>Období</label>
+                                    <!-- <div class="custom-select" id="type" (click)="$event.stopPropagation();dropdownManager.selected_dropdown = dropdownManager.selected_dropdown == 'employees_update_filter_status' ? '' : 'employees_update_filter_status'">
+                                        <div class="selected-value">
+                                            <div class="row" style="gap: .5rem">
+                                                {{ l.s('employees.status.' + filters.status) }}
+                                            </div>
+                                            <i-tabler name="chevron-down"></i-tabler>
+                                        </div>
+                                        @if (dropdownManager.selected_dropdown == 'employees_update_filter_status') {
+                                        <div class="options-dropdown">
+                                            <div class="list">
+                                                @for (status of EMPLOYEE_CONFIG.EMPLOYEE_STATUSES; track $index) {
+                                                <div class="option row" style="gap: .5rem" (click)="$event.stopPropagation();dropdownManager.selected_dropdown = '';filters.status = status;onFilterChange()">
+                                                    {{ l.s('employees.status.' + status) }}
+                                                </div>
+                                                }
+                                            </div>
+                                        </div>
+                                        }
+                                    </div>  -->
+
                                     <select class="form-select" [(ngModel)]="attendanceFilter.period"
                                         (change)="loadAttendanceRecords(selectedEmployee.personId)">
                                         <option value="week">Tento týden</option>
@@ -189,7 +210,7 @@
                                             <th>Odpracováno</th>
                                             <th>Typ</th>
                                             @if (canManage) {
-                                            <th>Akce</th>
+                                                <th>Akce</th>
                                             }
                                         </tr>
                                     </thead>
@@ -223,9 +244,12 @@
                                 </table>
                             </div>
                             } @else {
-                            <div class="empty-state">
-                                <i-tabler name="calendar-off"></i-tabler>
-                                <p>Žádné záznamy docházky</p>
+                            <div class="no-selection">
+                                <div class="illustration">
+                                    <i-tabler name="calendar-off"></i-tabler>
+                                </div>
+                                <h3>Žádné záznamy docházky</h3>
+                                <p>U tohoto člověka není evidována žádná docházka</p>
                             </div>
                             }
                         </div>
@@ -237,29 +261,35 @@
                             <!-- Balance Card -->
                             <div class="vacation-balance-card">
                                 <h3>Stav dovolené {{ currentYear }}</h3>
-                                <div class="balance-info">
-                                    <div class="balance-item">
-                                        <span class="balance-label">Celkem</span>
-                                        <span class="balance-value primary">{{ vacationBalance.total || 0 }} dní</span>
+                                <div class="stats-cards">
+                                    <div class="stat-card stat--primary">
+                                        <div class="stat-icon">
+                                            <i-tabler name="sum"></i-tabler>
+                                        </div>
+                                        <div class="stat-info">
+                                            <span class="stat-value">{{ vacationBalance.total || 0 }} dní</span>
+                                            <span class="stat-label">Celkem</span>
+                                        </div>
                                     </div>
-                                    <div class="balance-item">
-                                        <span class="balance-label">Čerpáno</span>
-                                        <span class="balance-value danger">{{ vacationBalance.used || 0 }} dní</span>
+                                    <div class="stat-card stat--danger">
+                                        <div class="stat-icon">
+                                            <i-tabler name="progress"></i-tabler>
+                                        </div>
+                                        <div class="stat-info">
+                                            <span class="stat-value">{{ vacationBalance.used || 0 }} dní</span>
+                                            <span class="stat-label">Čerpáno</span>
+                                        </div>
                                     </div>
-                                    <div class="balance-item">
-                                        <span class="balance-label">Zbývá</span>
-                                        <span class="balance-value success">{{ vacationBalance.remaining || 0 }} dní</span>
+                                    <div class="stat-card stat--success">
+                                        <div class="stat-icon">
+                                            <i-tabler name="hourglass-empty"></i-tabler>
+                                        </div>
+                                        <div class="stat-info">
+                                            <span class="stat-value">{{ vacationBalance.remaining || 0 }} dní</span>
+                                            <span class="stat-label">Zbývá</span>
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
-
-                            <!-- Requests Table -->
-                            <div class="section-header">
-                                <h4>Žádosti o dovolenou</h4>
-                                <button class="btn btn--primary btn--sm" (click)="openVacationRequestModal()">
-                                    <i-tabler name="plus"></i-tabler>
-                                    Nová žádost
-                                </button>
                             </div>
 
                             @if (vacationRequests.length > 0) {
@@ -309,9 +339,11 @@
                                 </table>
                             </div>
                             } @else {
-                            <div class="empty-state">
-                                <i-tabler name="beach-off"></i-tabler>
-                                <p>Žádné žádosti o dovolenou</p>
+                            <div class="no-selection">
+                                <div class="illustration">
+                                    <i-tabler name="beach"></i-tabler>
+                                </div>
+                                <h3>Žádné žádosti o dovolenou</h3>
                             </div>
                             }
                         </div>
@@ -389,14 +421,24 @@
                         <!-- Bonuses Tab -->
                         <div class="bonuses-tab">
                             <!-- Bonuses Summary -->
-                            <div class="bonuses-summary">
-                                <div class="summary-card">
-                                    <h4>Celkové prémie</h4>
-                                    <div class="summary-amount success">{{ bonusesTotal }} CZK</div>
+                            <div class="stats-cards">
+                                <div class="stat-card stat--success">
+                                    <div class="stat-icon">
+                                        <i-tabler name="coins"></i-tabler>
+                                    </div>
+                                    <div class="stat-info">
+                                        <span class="stat-value">{{ bonusesTotal || 0 }} CZK</span>
+                                        <span class="stat-label">Celkové prémie</span>
+                                    </div>
                                 </div>
-                                <div class="summary-card">
-                                    <h4>Nevyplaceno</h4>
-                                    <div class="summary-amount warning">{{ bonusesUnpaid }} CZK</div>
+                                <div class="stat-card stat--warning">
+                                    <div class="stat-icon">
+                                        <i-tabler name="coin-off"></i-tabler>
+                                    </div>
+                                    <div class="stat-info">
+                                        <span class="stat-value">{{ bonusesUnpaid || 0 }} CZK</span>
+                                        <span class="stat-label">Nevyplacené prémie</span>
+                                    </div>
                                 </div>
                             </div>
 
@@ -508,7 +550,7 @@
                     <h4>Pracovní údaje</h4>
                     <div class="info-row">
                         <i-tabler name="briefcase"></i-tabler>
-                        <span>{{ getRoleLabel(selectedEmployee.role) }}</span>
+                        <span>{{ l.s('roles.' + selectedEmployee.role) }}</span>
                     </div>
                     <div class="info-row">
                         <i-tabler name="door"></i-tabler>
@@ -889,6 +931,9 @@
 }
 
     } @else {
+        <div class="alert alert--danger mb">
+            Nemáte dostatečná oprávnění na vidění ostatních zaměstnanců, zobrazujeme pouze Vás.
+        </div>
     <!-- Employee List View -->
     <div class="list-view">
         <!-- Page Header -->
@@ -940,26 +985,51 @@
         <div class="filters-row-container">
             <div class="search-wrapper">
                 <i-tabler name="search"></i-tabler>
-                <input type="search" placeholder="Hledat zaměstnance..." [(ngModel)]="filters.search"
-                    (ngModelChange)="onFilterChange()">
+                <input type="search" placeholder="Hledat zaměstnance..." [(ngModel)]="filters.search" (ngModelChange)="onFilterChange()">
             </div>
 
             <div class="filter-group">
-                <select [(ngModel)]="filters.status" (change)="onFilterChange()" class="form-select">
-                    <option value="all">Všechny stavy</option>
-                    <option value="active">Aktivní</option>
-                    <option value="inactive">Neaktivní</option>
-                    <option value="terminated">Ukončení</option>
-                </select>
-            </div>
-
-            <div class="filter-group">
-                <select [(ngModel)]="filters.role" (change)="onFilterChange()" class="form-select">
-                    <option value="all">Všechny role</option>
-                    @for (role of roles; track role.value) {
-                    <option [value]="role.value">{{ role.label }}</option>
+                <div class="custom-select" id="type" (click)="$event.stopPropagation();dropdownManager.selected_dropdown = dropdownManager.selected_dropdown == 'employees_update_filter_status' ? '' : 'employees_update_filter_status'">
+                    <div class="selected-value">
+                        <div class="row" style="gap: .5rem">
+                            {{ l.s('employees.status.' + filters.status) }}
+                        </div>
+                        <i-tabler name="chevron-down"></i-tabler>
+                    </div>
+                    @if (dropdownManager.selected_dropdown == 'employees_update_filter_status') {
+                    <div class="options-dropdown">
+                        <div class="list">
+                            @for (status of EMPLOYEE_CONFIG.EMPLOYEE_STATUSES; track $index) {
+                            <div class="option row" style="gap: .5rem" (click)="$event.stopPropagation();dropdownManager.selected_dropdown = '';filters.status = status;onFilterChange()">
+                                {{ l.s('employees.status.' + status) }}
+                            </div>
+                            }
+                        </div>
+                    </div>
                     }
-                </select>
+                </div> 
+            </div>
+
+            <div class="filter-group">
+                <div class="custom-select" id="role" (click)="$event.stopPropagation();dropdownManager.selected_dropdown = dropdownManager.selected_dropdown == 'employees_update_filter_role' ? '' : 'employees_update_filter_role'">
+                    <div class="selected-value">
+                        <div class="row" style="gap: .5rem">
+                            {{ l.s('roles.' + filters.role) }}
+                        </div>
+                        <i-tabler name="chevron-down"></i-tabler>
+                    </div>
+                    @if (dropdownManager.selected_dropdown == 'employees_update_filter_role') {
+                    <div class="options-dropdown">
+                        <div class="list">
+                            @for (role of EMPLOYEE_CONFIG.EMPLOYEE_ROLES; track $index) {
+                            <div class="option row" style="gap: .5rem" (click)="$event.stopPropagation();dropdownManager.selected_dropdown = '';filters.role = role;onFilterChange()">
+                                {{ l.s('roles.' + role) }}
+                            </div>
+                            }
+                        </div>
+                    </div>
+                    }
+                </div> 
             </div>
 
             <button class="btn btn--ghost btn--sm" (click)="clearFilters()">
@@ -1017,7 +1087,7 @@
                             </div>
                         </td>
                         <td class="col-role">
-                            <span class="role-badge">{{ getRoleLabel(employee.role) }}</span>
+                            <span class="role-badge">{{ l.s('roles.' + employee.role) }}</span>
                         </td>
                         <td class="col-department">{{ employee.department || '-' }}</td>
                         <td class="col-contract">{{ getContractTypeLabel(employee.contractType) }}</td>
@@ -1065,8 +1135,8 @@
 
         <!-- Empty State -->
         @else {
-        <div class="empty-state">
-            <div class="empty-icon">
+        <div class="no-selection">
+            <div class="illustration">
                 <i-tabler name="users-minus"></i-tabler>
             </div>
             <h3>Žádní zaměstnanci nenalezeni</h3>
@@ -1117,12 +1187,18 @@
                 }
             </div>
             } @else {
-            <div class="empty-state small">
-                <i-tabler name="beach"></i-tabler>
-                <p>Žádné žádosti o dovolenou</p>
+            <div class="no-selection">
+                <div class="illustration">
+                    <i-tabler name="beach"></i-tabler>
+                </div>
+                <h3>Žádné žádosti o dovolenou</h3>
+                <p>Není podána žádná žádost o dovolenou</p>
             </div>
             }
+
         </div>
+
+
         }
 
         @if (selectedViewTab.getValue() === 3 && canManage) {

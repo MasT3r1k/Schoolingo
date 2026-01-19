@@ -15,6 +15,7 @@ import { AddEmployeeModalComponent } from './modals/add-employee-modal/add-emplo
 import { VacationRequestModalComponent } from './modals/vacation-request-modal/vacation-request-modal.component';
 import { AddBonusModalComponent } from './modals/add-bonus-modal/add-bonus-modal.component';
 import { SetSalaryModalComponent } from './modals/set-salary-modal/set-salary-modal.component';
+import { EMPLOYEE_CONFIG } from '../../../infrastructure/employees/const';
 
 export interface Employee {
   personId: number;
@@ -25,7 +26,7 @@ export interface Employee {
   employeeNumber?: string;
   department?: string;
   contractType?: string;
-  status: 'active' | 'inactive' | 'terminated';
+  status: Omit<EMPLOYEE_CONFIG.EMPLOYEE_STATUS, 'all'>;
   hoursPerWeek?: number;
   startDate?: string;
   endDate?: string;
@@ -65,7 +66,7 @@ export interface AttendanceRecord {
 
 export interface EmployeeFilters {
   search: string;
-  status: 'all' | 'active' | 'inactive' | 'terminated';
+  status: EMPLOYEE_CONFIG.EMPLOYEE_STATUS;
   role: string;
   department: string;
 }
@@ -85,6 +86,7 @@ export class EmployeesComponent implements OnInit, OnDestroy {
   public perm = inject(Permission);
   private subscriptions: Subscription[] = [];
   public modalManager = inject(ModalManager);
+  EMPLOYEE_CONFIG = EMPLOYEE_CONFIG
 
 
   // Loading state
@@ -104,9 +106,6 @@ export class EmployeesComponent implements OnInit, OnDestroy {
   detailTabOptions = ['employees.overview', 'employees.attendance', 'employees.vacations', 'employees.salary', 'employees.bonuses'];
   detailTabIcons = ['layout-dashboard', 'clock', 'beach', 'cash', 'gift'];
 
-  // Modals
-  showAddBonusModal = false;
-
   // Filters
   filters: EmployeeFilters = {
     search: '',
@@ -125,16 +124,6 @@ export class EmployeesComponent implements OnInit, OnDestroy {
   employees: Employee[] = [];
   vacationRequests: VacationRequest[] = [];
   attendanceRecords: AttendanceRecord[] = [];
-  
-  // Role options
-  roles = [
-    { value: 'teacher', label: 'Učitel' },
-    { value: 'admin_staff', label: 'Administrativa' },
-    { value: 'maintenance', label: 'Údržba' },
-    { value: 'management', label: 'Vedení' },
-    { value: 'personnel', label: 'Personalistika' },
-    { value: 'other', label: 'Ostatní' }
-  ];
 
   // Check-in/out state
   isCheckedIn = false;
@@ -435,14 +424,7 @@ export class EmployeesComponent implements OnInit, OnDestroy {
     this.modalManager.openModal('request_vacation');
   }
 
-
-  // Helper methods
-  getRoleLabel(role: string): string {
-    const found = this.roles.find(r => r.value === role);
-    return found ? found.label : role;
-  }
-
-  getStatusClass(status: string): string {
+  getStatusClass(status: any): string {
     switch (status) {
       case 'active': return 'status-active';
       case 'inactive': return 'status-inactive';
@@ -451,7 +433,7 @@ export class EmployeesComponent implements OnInit, OnDestroy {
     }
   }
 
-  getStatusLabel(status: string): string {
+  getStatusLabel(status: any): string {
     switch (status) {
       case 'active': return 'Aktivní';
       case 'inactive': return 'Neaktivní';
@@ -460,7 +442,7 @@ export class EmployeesComponent implements OnInit, OnDestroy {
     }
   }
 
-  getStatusText(status: string): string {
+  getStatusText(status: any): string {
     switch (status) {
       case 'active': return 'Aktivní';
       case 'inactive': return 'Neaktivní';
@@ -588,11 +570,11 @@ export class EmployeesComponent implements OnInit, OnDestroy {
 
   editAttendanceRecord(record: any) {
     console.log('Edit attendance:', record);
-    alert('Editace doch�zky - zat�m neimplementov�no');
+    alert('Editace docházky - zatím neimplementováno');
   }
 
   exportAttendanceCSV() {
-    const headers = ['Datum', 'P��chod', 'Odchod', 'Pauza (min)', 'Odpracov�no (h)', 'Typ'];
+    const headers = ['Datum', 'Příchod', 'Odchod', 'Pauza (min)', 'Odpracováno (h)', 'Typ'];
     const rows = this.attendanceRecords.map(r => [
       r.date,
       r.checkIn || '',
@@ -629,7 +611,7 @@ export class EmployeesComponent implements OnInit, OnDestroy {
   }
 
   approveVacation(requestId: number) {
-    if (!confirm('Schv�lit tuto ��dost o dovolenou?')) return;
+    if (!confirm('Schválit tuto žádost o dovolenou?')) return;
 
     this.http.put(
       `${Config.API_URL}/v1/employees/vacations/request/${requestId}/approve`,
@@ -637,7 +619,7 @@ export class EmployeesComponent implements OnInit, OnDestroy {
       { withCredentials: true }
     ).subscribe({
       next: () => {
-        alert('��dost byla schv�lena');
+        alert('žádost byla schválena');
         if (this.selectedEmployee) {
           this.loadVacationData(this.selectedEmployee.personId);
           this.loadVacationRequests();
@@ -645,13 +627,13 @@ export class EmployeesComponent implements OnInit, OnDestroy {
       },
       error: (error) => {
         console.error('Failed to approve:', error);
-        alert('Nepoda�ilo se schv�lit ��dost');
+        alert('Nepodařilo se schválit žádost');
       }
     });
   }
 
   rejectVacation(requestId: number) {
-    const reason = prompt('Zadejte d�vod zam�tnut�:');
+    const reason = prompt('Zadejte důvod zamítnutí:');
     if (!reason) return;
 
     this.http.put(
@@ -668,7 +650,7 @@ export class EmployeesComponent implements OnInit, OnDestroy {
       },
       error: (error) => {
         console.error('Failed to reject:', error);
-        alert('Nepoda�ilo se zam�tnout ��dost');
+        alert('Nepodařilo se zamítnout žádost');
       }
     });
   }
@@ -694,7 +676,7 @@ export class EmployeesComponent implements OnInit, OnDestroy {
   }
 
   exportPayrollXML() {
-    alert('XML export - zat�m neimplementov�no');
+    alert('XML export - zatím neimplementováno');
   }
 
   // Bonus methods
@@ -736,7 +718,7 @@ export class EmployeesComponent implements OnInit, OnDestroy {
   }
 
   markBonusAsPaid(bonusId: number) {
-    if (!confirm('Ozna�it pr�mii jako vyplacenou?')) return;
+    if (!confirm('Označit prémii jako vyplacenou?')) return;
 
     this.http.put(
       `${Config.API_URL}/v1/employees/bonuses/${bonusId}/paid`,
@@ -744,40 +726,40 @@ export class EmployeesComponent implements OnInit, OnDestroy {
       { withCredentials: true }
     ).subscribe({
       next: () => {
-        alert('Pr�mie ozna�ena jako vyplacen�');
+        alert('Prémie označena jako vyplacená');
         if (this.selectedEmployee) {
           this.loadBonusesData(this.selectedEmployee.personId);
         }
       },
       error: (error) => {
         console.error('Failed to mark as paid:', error);
-        alert('Nepoda�ilo se ozna�it jako vyplacenou');
+        alert('Nepodařilo se označit jako vyplacenou');
       }
     });
   }
 
   deleteBonus(bonusId: number) {
-    if (!confirm('Opravdu smazat tuto pr�mii?')) return;
+    if (!confirm('Opravdu smazat tuto prémii?')) return;
 
     this.http.delete(
       `${Config.API_URL}/v1/employees/bonuses/${bonusId}`,
       { withCredentials: true }
     ).subscribe({
       next: () => {
-        alert('Pr�mie byla smaz�na');
+        alert('Prémie byla smazána');
         if (this.selectedEmployee) {
           this.loadBonusesData(this.selectedEmployee.personId);
         }
       },
       error: (error) => {
         console.error('Failed to delete:', error);
-        alert('Nepoda�ilo se smazat pr�mii');
+        alert('Nepodařilo se smazat prémii');
       }
     });
   }
 
   getBonusTypeLabel(type: string): string {
-    const types: any = { performance: 'V�kon', project: 'Projekt', holiday: 'Sv�tky', other: 'Ostatn�' };
+    const types: any = { performance: 'Výkon', project: 'Projekt', holiday: 'Svátky', other: 'Ostatní' };
     return types[type] || type;
   }
 }

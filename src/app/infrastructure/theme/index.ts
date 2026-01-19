@@ -40,9 +40,11 @@ export class Theme {
     this.auth.getAuthState().subscribe((state) => {
       if (state == true) {
         const user = this.auth.getUser();
-        const themeIndex = user.theme;
-        const theme = this.themes[themeIndex] || this.theme.getValue();
-        this.updateTheme(theme);
+        if ('theme' in user) {
+          const themeIndex = user.theme;
+          const theme = this.themes[themeIndex] || this.theme.getValue();
+          this.updateTheme(theme);
+        }
       }
     });
   }
@@ -72,9 +74,9 @@ export class Theme {
       this.theme.next(theme);
       this.saveTheme(theme);
     }
-    this.renderer.removeClass(document.body.parentElement, 'light');
-    this.renderer.removeClass(document.body.parentElement, 'dark');
-    this.renderer.removeClass(document.body.parentElement, 'moon');
+    this.themes.forEach((theme) => {
+      this.renderer.removeClass(document.body.parentElement, theme);
+    })
     this.renderer.addClass(
       document.body.parentElement,
       this.getThemeColor().toString()

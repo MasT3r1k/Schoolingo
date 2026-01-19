@@ -115,8 +115,8 @@ export class Authentication {
         return this.user.personId;
     }
 
-    public getAuthState(): Observable<typeof this.authState$.value> {
-        return this.authState$.asObservable();
+    public getAuthState(): typeof this.authState$ {
+        return this.authState$;
     }
 
     public getAuthStateValue(): typeof this.authState$.value {

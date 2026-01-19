@@ -45,6 +45,10 @@ export class TokenExpirationService {
     console.log('[TokenExpiration] Token expires at:', expirationDate);
   }
 
+  public getExpirationListener(): typeof this.expiresAt$ {
+    return this.expiresAt$;
+  }
+
   /**
    * Get current expiration time
    */

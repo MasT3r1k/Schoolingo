@@ -32,6 +32,8 @@ import { DropdownManager } from '@Schoolingo/dropdown';
 import { SessionExpiredService } from '../infrastructure/session/session-expired.service';
 import { WsService } from '@Schoolingo/websocket';
 import { Title } from '@angular/platform-browser';
+import { TokenExpirationService } from '../infrastructure/token-expiration/token-expiration.service';
+import moment from 'moment';
 
 @Component({
   standalone: true,
@@ -62,6 +64,7 @@ export class AuthComponent implements OnInit {
   private title = inject(Title);
   private ws = inject(WsService)
   public passkey = inject(Passkey);
+  private tokenExpirationService = inject(TokenExpirationService);
   private sessionExpiredService = inject(SessionExpiredService);
   public isPasskeySupport = false;
   public isPasskeyLoading = false;
@@ -393,6 +396,12 @@ export class AuthComponent implements OnInit {
         }
       }
     });
+
+    this.tokenExpirationService.getExpirationListener().subscribe((data: Date | null) => {
+      if (data && moment().isBefore(data)) {
+        this.auth.setAuthState(true)
+      }
+    })
 
     // Error while too long loading
     this.ws.connect();
