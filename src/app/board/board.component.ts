@@ -224,6 +224,7 @@ export class BoardComponent implements OnInit, OnDestroy {
 
   public addDropdown: SidebarItem[] = [];
   public buildAddDropdown(): void {
+    this.addDropdown = [];
     this.addDropdownConfig.forEach((item) => {
       if (this.perm.checkPermission(item.permission)) {
         this.addDropdown.push(item);
@@ -269,22 +270,22 @@ export class BoardComponent implements OnInit, OnDestroy {
       }
     );
 
-    if (this.perm.checkPermission(['student'])) {
-      this.modalManager.addModal(
-        'student_summary',
-        {
-          title: 'student_summary.title',
-          title_placeholders: { year: '2024/25' },
-          closeable: true,
-          width: 1200,
-          items: [
-            { type: 'component', component: studentSummaryComponent }
-          ]
-        }
-      )
-      
-      this.modalManager.openModal('student_summary')
-    }
+    this.modalManager.addModal(
+      'student_summary',
+      {
+        title: 'student_summary.title',
+        title_placeholders: { year: '2024/25' },
+        closeable: true,
+        width: 1200,
+        items: [
+          { type: 'component', component: studentSummaryComponent }
+        ]
+      }
+    )
+
+    // if (this.perm.checkPermission(['student'])) {
+    //   this.modalManager.openModal('student_summary')
+    // }
 
     // Subscribe to token expiration warnings
     const warningSubscription = this.tokenExpirationService.warningThreshold$.subscribe(() => {

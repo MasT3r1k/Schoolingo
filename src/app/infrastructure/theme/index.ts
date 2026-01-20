@@ -40,7 +40,7 @@ export class Theme {
     this.auth.getAuthState().subscribe((state) => {
       if (state == true) {
         const user = this.auth.getUser();
-        if ('theme' in user) {
+        if (user && 'theme' in user) {
           const themeIndex = user.theme;
           const theme = this.themes[themeIndex] || this.theme.getValue();
           this.updateTheme(theme);

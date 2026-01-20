@@ -52,6 +52,8 @@ import { PollCreateComponent } from './board/polls/poll-create/poll-create.compo
 import { PollVoteComponent } from './board/polls/poll-vote/poll-vote.component';
 import { PollResultsComponent } from './board/polls/poll-results/poll-results.component';
 import { EmployeesComponent } from './board/Employees/employees/employees.component';
+import { ManageusersComponent } from './board/system/manageusers/manageusers.component';
+import { AuditlogComponent } from './board/system/auditlog/auditlog.component';
 
 
 export const routes: Routes = [
@@ -299,6 +301,14 @@ export const routes: Routes = [
                         path: 'settings',
                         component: SystemSettings
                     },
+                    {
+                        path: 'manageusers',
+                        component: ManageusersComponent
+                    },
+                    {
+                        path: 'auditlog',
+                        component: AuditlogComponent
+                    }
                 ]
             },
             {

@@ -1,0 +1,189 @@
+<div class="auditlog-page card">
+    <div class="list-view">
+        <!-- Page Header -->
+        <div class="card-header">
+            <h2>Auditní protokol</h2>
+            <div class="header-actions">
+                <button class="btn btn--sm btn--secondary" (click)="exportAuditLog()">
+                    <i-tabler name="file-export"></i-tabler>
+                    Exportovat
+                </button>
+                <button class="btn btn--sm btn--primary" (click)="openAdvancedFilters()">
+                    <i-tabler name="filter"></i-tabler>
+                    Pokročilé filtry
+                </button>
+            </div>
+        </div>
+
+        <!-- Search & Filter Row -->
+        <div class="filters-row-container">
+            <div class="search-wrapper full-width">
+                <i-tabler name="search"></i-tabler>
+                <input type="search" placeholder="Hledat v protokolu..." [(ngModel)]="filters.search"
+                    (ngModelChange)="onFilterChange()">
+            </div>
+
+            <div class="filter-group-inline">
+                <select class="form-select" [(ngModel)]="filters.action" (change)="onFilterChange()">
+                    <option value="all">Všechny akce</option>
+                    <option value="login">Přihlášení</option>
+                    <option value="logout">Odhlášení</option>
+                    <option value="create">Vytvoření</option>
+                    <option value="update">Úprava</option>
+                    <option value="delete">Smazání</option>
+                    <option value="failed_login">Neúspěšné přihlášení</option>
+                </select>
+            </div>
+
+            <div class="filter-group-inline">
+                <select class="form-select" [(ngModel)]="filters.userRole" (change)="onFilterChange()">
+                    <option value="all">Všichni uživatelé</option>
+                    <option value="admin">Administrátoři</option>
+                    <option value="teacher">Učitelé</option>
+                    <option value="student">Studenti</option>
+                    <option value="parent">Rodiče</option>
+                </select>
+            </div>
+
+            <div class="filter-group-inline">
+                <select class="form-select" [(ngModel)]="filters.timeRange" (change)="onFilterChange()">
+                    <option value="today">Dnes</option>
+                    <option value="week">Tento týden</option>
+                    <option value="month">Tento měsíc</option>
+                    <option value="custom">Vlastní rozsah</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- Loading State -->
+        @if (isLoading) {
+        <div class="loading-state">
+            <div class="loading-spinner"></div>
+            <p>Načítání auditního protokolu...</p>
+        </div>
+        }
+
+        <!-- Error State -->
+        @else if (loadError) {
+        <div class="error-state">
+            <i-tabler name="alert-circle"></i-tabler>
+            <h3>Chyba načítání</h3>
+            <p>{{ loadError }}</p>
+            <button class="btn btn--primary" (click)="loadAuditLogs()">
+                <i-tabler name="refresh"></i-tabler>
+                Zkusit znovu
+            </button>
+        </div>
+        }
+
+        <!-- Audit Log Timeline -->
+        @else if (auditLogs.length > 0) {
+        <div class="audit-log-wrapper">
+            <div class="audit-timeline">
+                @for (log of auditLogs; track log.id) {
+                <div class="audit-entry">
+                    <div class="audit-dot" [class]="getAuditDotClass(log.action)"></div>
+                    <div class="audit-content">
+                        <div class="audit-header">
+                            <div class="audit-action">
+                                <i-tabler [name]="getActionIcon(log.action)"></i-tabler>
+                                <span class="action-title">{{ getActionTitle(log.action) }}</span>
+                            </div>
+                            <div class="audit-meta">
+                                <span class="audit-time">{{ formatTimestamp(log.timestamp) }}</span>
+                            </div>
+                        </div>
+                        <div class="audit-details">
+                            <div class="audit-user">
+                                <div class="user-avatar-tiny">{{ getUserInitials(log.userFullName) }}</div>
+                                <span class="user-name">{{ log.userFullName }}</span>
+                                <span class="user-role">({{ log.userRole }})</span>
+                            </div>
+                            <div class="audit-info">
+                                @if (log.details?.device && log.details?.browser) {
+                                <span class="info-item">
+                                    <i-tabler name="device-desktop"></i-tabler>
+                                    {{ log.details?.device }}, {{ log.details?.browser }}
+                                </span>
+                                }
+                                @if (log.details?.ipAddress) {
+                                <span class="info-item">
+                                    <i-tabler name="map-pin"></i-tabler>
+                                    {{ log.details?.ipAddress }}
+                                </span>
+                                }
+                                @if (log.targetType && log.targetName) {
+                                <span class="info-item">
+                                    <i-tabler name="file"></i-tabler>
+                                    {{ log.targetType }}: {{ log.targetName }}
+                                    @if (log.targetId) {
+                                    (ID: {{ log.targetId }})
+                                    }
+                                </span>
+                                }
+                                @if (log.details?.reason) {
+                                <span class="info-item">
+                                    <i-tabler name="alert-circle"></i-tabler>
+                                    Důvod: {{ log.details?.reason }}
+                                </span>
+                                }
+                                @if (log.details?.sessionDuration) {
+                                <span class="info-item">
+                                    <i-tabler name="clock"></i-tabler>
+                                    Doba relace: {{ log.details?.sessionDuration }}
+                                </span>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                }
+            </div>
+        </div>
+
+        <!-- Pagination -->
+        @if (totalItems > 0) {
+        <div class="bottom">
+            <div class="left">
+                <span class="pagination-info">
+                    Zobrazeno {{ (currentPage - 1) * pageSize + 1 }} - {{ Utils.MathMin([currentPage * pageSize,
+                    totalItems]) }} z {{ totalItems }} záznamů
+                </span>
+            </div>
+            <div class="right">
+                @if (totalPages > 1) {
+                <div class="page center previous" [class.disabled]="currentPage == 1"
+                    (click)="currentPage > 1 && loadAuditLogs(currentPage - 1)">
+                    <i-tabler name="chevron-left" style="width:18px;height:18px;"></i-tabler>
+                </div>
+                @for (p of getPageList(); track $index) {
+                <div class="page center" [class.active]="currentPage === p" (click)="loadAuditLogs(p)">
+                    {{ p }}
+                </div>
+                }
+                <div class="page center next" [class.disabled]="currentPage == totalPages"
+                    (click)="currentPage < totalPages && loadAuditLogs(currentPage + 1)">
+                    <i-tabler name="chevron-right" style="width:18px;height:18px;"></i-tabler>
+                </div>
+                }
+            </div>
+        </div>
+        }
+        }
+
+        <!-- Empty State -->
+        @else {
+        <div class="empty-state">
+            <div class="empty-icon">
+                <i-tabler name="file-search"></i-tabler>
+            </div>
+            <h3>Žádné záznamy nenalezeny</h3>
+            <p>Zkuste upravit filtry nebo časový rozsah</p>
+            <button class="btn btn--ghost" (click)="clearFilters()">
+                <i-tabler name="filter-off"></i-tabler>
+                Resetovat filtry
+            </button>
+        </div>
+        }
+    </div>
+</div>

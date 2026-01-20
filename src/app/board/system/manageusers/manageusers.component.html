@@ -1,0 +1,298 @@
+<div class="manageusers-page card">
+    <div class="list-view">
+        <!-- Page Header -->
+        <div class="card-header">
+            <h2>Správa uživatelů</h2>
+            <div class="header-actions">
+                <button class="btn btn--sm btn--primary" (click)="openAddUserModal()">
+                    <i-tabler name="user-plus"></i-tabler>
+                    Přidat uživatele
+                </button>
+            </div>
+        </div>
+
+        <!-- Search & Filter Row -->
+        <div class="filters-row-container">
+            <div class="search-wrapper full-width">
+                <i-tabler name="search"></i-tabler>
+                <input type="search" placeholder="Hledat uživatele..." [(ngModel)]="filters.search"
+                    (ngModelChange)="onFilterChange()">
+            </div>
+
+            <div class="filter-group-inline">
+                <select class="form-select" [(ngModel)]="filters.role" (change)="onFilterChange()">
+                    <option value="all">Všechny role</option>
+                    <option value="admin">Administrátoři</option>
+                    <option value="teacher">Učitelé</option>
+                    <option value="student">Studenti</option>
+                    <option value="parent">Rodiče</option>
+                </select>
+            </div>
+
+            <div class="filter-group-inline">
+                <select class="form-select" [(ngModel)]="filters.status" (change)="onFilterChange()">
+                    <option value="all">Všechny stavy</option>
+                    <option value="active">Aktivní</option>
+                    <option value="inactive">Neaktivní</option>
+                    <option value="suspended">Pozastavení</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- Loading State -->
+        @if (isLoading) {
+        <div class="loading-state">
+            <div class="loading-spinner"></div>
+            <p>Načítání uživatelů...</p>
+        </div>
+        }
+
+        <!-- Error State -->
+        @else if (loadError) {
+        <div class="error-state">
+            <i-tabler name="alert-circle"></i-tabler>
+            <h3>Chyba načítání</h3>
+            <p>{{ loadError }}</p>
+            <button class="btn btn--primary" (click)="loadUsers()">
+                <i-tabler name="refresh"></i-tabler>
+                Zkusit znovu
+            </button>
+        </div>
+        }
+
+        <!-- Users Table -->
+        @else if (users.length > 0) {
+        <div class="users-table-wrapper">
+            <table class="users-table">
+                <thead>
+                    <tr>
+                        <th class="col-user">Uživatel</th>
+                        <th class="col-role">Role</th>
+                        <th class="col-email">Email</th>
+                        <th class="col-status">Status</th>
+                        <th class="col-last-login">Poslední přihlášení</th>
+                        <th class="col-actions"></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @for (user of users; track user.id) {
+                    <tr>
+                        <td class="col-user">
+                            <div class="user-cell">
+                                <div class="user-avatar-sm">
+                                    @if (user.photoUrl) {
+                                    <img [src]="user.photoUrl" [alt]="user.fullName">
+                                    } @else {
+                                    <span>{{ user.firstName[0] }}{{ user.lastName[0] }}</span>
+                                    }
+                                </div>
+                                <div class="user-name-cell">
+                                    <span class="name">{{ user.fullName }}</span>
+                                    <span class="username">{{ user.username }}</span>
+                                </div>
+                            </div>
+                        </td>
+                        <td class="col-role">
+                            <span class="role-badge" [class]="user.role">
+                                <i-tabler [name]="getRoleIcon(user.role)"></i-tabler>
+                                {{ getRoleText(user.role) }}
+                            </span>
+                        </td>
+                        <td class="col-email">{{ user.email }}</td>
+                        <td class="col-status">
+                            <span class="status-pill" [class]="user.status">
+                                <span class="status-dot"></span>
+                                {{ getStatusText(user.status) }}
+                            </span>
+                        </td>
+                        <td class="col-last-login">
+                            <span class="timestamp">{{ formatLastLogin(user.lastLogin) }}</span>
+                        </td>
+                        <td class="col-actions">
+                            <button class="row-action"
+                                [class.active]="dropdownManager.selected_dropdown === 'user_' + user.id"
+                                (click)="$event.stopPropagation(); dropdownManager.selected_dropdown = (dropdownManager.selected_dropdown === 'user_' + user.id ? '' : 'user_' + user.id)">
+                                <i-tabler name="dots"></i-tabler>
+                            </button>
+
+                            <!-- Actions Dropdown -->
+                            <div class="dropdown-menu actions-dropdown"
+                                [hidden]="dropdownManager.selected_dropdown !== 'user_' + user.id"
+                                (click)="$event.stopPropagation()">
+                                <button class="dropdown-item" (click)="editUser(user, $event)">
+                                    <i-tabler name="edit"></i-tabler>
+                                    Upravit
+                                </button>
+                                <button class="dropdown-item" (click)="resetPassword(user, $event)">
+                                    <i-tabler name="key"></i-tabler>
+                                    Resetovat heslo
+                                </button>
+                                <div class="dropdown-divider"></div>
+                                <button class="dropdown-item danger" (click)="deleteUser(user, $event)">
+                                    <i-tabler name="trash"></i-tabler>
+                                    Smazat
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Pagination -->
+        @if (totalItems > 0) {
+        <div class="bottom">
+            <div class="left">
+                <span class="pagination-info">
+                    Zobrazeno {{ (currentPage - 1) * pageSize + 1 }} - {{ Utils.MathMin([currentPage * pageSize,
+                    totalItems]) }} z {{ totalItems }} uživatelů
+                </span>
+            </div>
+            <div class="right">
+                @if (totalPages > 1) {
+                <div class="page center previous" [class.disabled]="currentPage == 1"
+                    (click)="currentPage > 1 && loadUsers(currentPage - 1)">
+                    <i-tabler name="chevron-left" style="width:18px;height:18px;"></i-tabler>
+                </div>
+                @for (p of getPageList(); track $index) {
+                <div class="page center" [class.active]="currentPage === p" (click)="loadUsers(p)">
+                    {{ p }}
+                </div>
+                }
+                <div class="page center next" [class.disabled]="currentPage == totalPages"
+                    (click)="currentPage < totalPages && loadUsers(currentPage + 1)">
+                    <i-tabler name="chevron-right" style="width:18px;height:18px;"></i-tabler>
+                </div>
+                }
+            </div>
+        </div>
+        }
+        } @else {
+        <div class="empty-state">
+            <div class="empty-icon">
+                <i-tabler name="user-search"></i-tabler>
+            </div>
+            <h3>Žádní uživatelé nenalezeni</h3>
+            <p>Zkuste upravit filtry nebo hledaný výraz</p>
+            <button class="btn btn--ghost" (click)="clearFilters()">
+                <i-tabler name="filter-off"></i-tabler>
+                Resetovat filtry
+            </button>
+        </div>
+        }
+    </div>
+
+    <!-- Add User Modal -->
+    @if (showAddUserModal) {
+    <div class="modal-overlay" (click)="closeAddUserModal()">
+        <div class="modal-container" (click)="$event.stopPropagation()">
+            <div class="modal-header">
+                <h2>Přidat nového uživatele</h2>
+                <button class="modal-close" (click)="closeAddUserModal()">
+                    <i-tabler name="x"></i-tabler>
+                </button>
+            </div>
+
+            <div class="modal-body">
+                <form (submit)="$event.preventDefault(); submitNewUser()">
+                    <!-- Username -->
+                    <div class="form-group">
+                        <label class="form-label" for="username">
+                            Uživatelské jméno <span class="required">*</span>
+                        </label>
+                        <input type="text" id="username" class="form-input" [(ngModel)]="newUser.username"
+                            [class.error]="formErrors.username" name="username" placeholder="jnovak" autocomplete="off">
+                        @if (formErrors.username) {
+                        <span class="form-error">{{ formErrors.username }}</span>
+                        }
+                    </div>
+
+                    <!-- First Name & Last Name -->
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label" for="firstName">
+                                Jméno <span class="required">*</span>
+                            </label>
+                            <input type="text" id="firstName" class="form-input" [(ngModel)]="newUser.firstName"
+                                [class.error]="formErrors.firstName" name="firstName" placeholder="Jan"
+                                autocomplete="off">
+                            @if (formErrors.firstName) {
+                            <span class="form-error">{{ formErrors.firstName }}</span>
+                            }
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label" for="lastName">
+                                Příjmení <span class="required">*</span>
+                            </label>
+                            <input type="text" id="lastName" class="form-input" [(ngModel)]="newUser.lastName"
+                                [class.error]="formErrors.lastName" name="lastName" placeholder="Novák"
+                                autocomplete="off">
+                            @if (formErrors.lastName) {
+                            <span class="form-error">{{ formErrors.lastName }}</span>
+                            }
+                        </div>
+                    </div>
+
+                    <!-- Email -->
+                    <div class="form-group">
+                        <label class="form-label" for="email">
+                            Email <span class="required">*</span>
+                        </label>
+                        <input type="email" id="email" class="form-input" [(ngModel)]="newUser.email"
+                            [class.error]="formErrors.email" name="email" placeholder="jan.novak@school.cz"
+                            autocomplete="off">
+                        @if (formErrors.email) {
+                        <span class="form-error">{{ formErrors.email }}</span>
+                        }
+                    </div>
+
+                    <!-- Role -->
+                    <div class="form-group">
+                        <label class="form-label" for="role">
+                            Role <span class="required">*</span>
+                        </label>
+                        <select id="role" class="form-select" [(ngModel)]="newUser.role" name="role">
+                            <option value="admin">Administrátor</option>
+                            <option value="teacher">Učitel</option>
+                            <option value="student">Student</option>
+                            <option value="parent">Rodič</option>
+                        </select>
+                    </div>
+
+                    <!-- Password -->
+                    <div class="form-group">
+                        <label class="form-label" for="password">
+                            Dočasné heslo <span class="required">*</span>
+                        </label>
+                        <div class="password-input-group">
+                            <input type="text" id="password" class="form-input" [(ngModel)]="newUser.password"
+                                [class.error]="formErrors.password" name="password" autocomplete="off">
+                            <button type="button" class="btn btn--secondary btn--sm" (click)="generatePassword()">
+                                <i-tabler name="refresh"></i-tabler>
+                                Generovat
+                            </button>
+                        </div>
+                        @if (formErrors.password) {
+                        <span class="form-error">{{ formErrors.password }}</span>
+                        }
+                    </div>
+                </form>
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn btn--ghost" (click)="closeAddUserModal()" [disabled]="isSubmitting">
+                    Zrušit
+                </button>
+                <button type="button" class="btn btn--primary" (click)="submitNewUser()" [disabled]="isSubmitting">
+                    @if (isSubmitting) {
+                    <span class="btn-spinner"></span>
+                    }
+                    {{ isSubmitting ? 'Vytvářím...' : 'Vytvořit uživatele' }}
+                </button>
+            </div>
+        </div>
+    </div>
+    }
+</div>
