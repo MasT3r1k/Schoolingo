@@ -133,11 +133,13 @@ export const config: SidebarGroup[] = [
                     item: 'sidebar.messages.sent',
                     url: 'messages/sent',
                     icon: 'mail-forward',
-                }, {
-                    item: 'sidebar.messages.groups',
-                    url: 'messages/groups',
-                    icon: 'users-group',
-                }, {
+                },
+                // {
+                //     item: 'sidebar.messages.groups',
+                //     url: 'messages/groups',
+                //     icon: 'users-group',
+                // },
+                {
                     item: 'sidebar.messages.noticeboard',
                     url: 'messages/noticeboard',
                     icon: 'clipboard-list',

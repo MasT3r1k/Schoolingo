@@ -107,50 +107,21 @@
             @if (alerts['message']) { <span>- {{ l.s(alerts["message"].text) }}</span> }
           </label>
           <div class="chat-message-group">
-            <div class="chat-message-header">
+            <textarea style="min-height: 225px;max-height: 225px;" [(ngModel)]="messageManager.message" [placeholder]="l.s('messages.message_placeholder')" [class.input-error]="alerts['message']"></textarea>
+            <div class="chat-message-footer">
               <div>
-                <div class="chat-option">
-                  <i-tabler name="bold"></i-tabler>
-                </div>
-
-                <div class="chat-option">
-                  <i-tabler name="italic"></i-tabler>
-                </div>
-
-                <div class="chat-option">
-                  <i-tabler name="underline"></i-tabler>
-                </div>
-              </div>
-              <div>
-                <div class="chat-option btn btn--sm">
+                <div class="chat-option btn btn--sm btn--ghost">
                   <i-tabler name="paperclip"></i-tabler>
-                  <span>Příložené soubory</span>
+                  <span>Příložené soubory ({{ files.length }})</span>
+                </div>
+              </div>
+              <div>
+                <div class="btn btn--sm btn--primary">
+                  <i-tabler name="send"></i-tabler>
+                  <span>{{ l.s("messages.buttons.send_message") }}</span>
                 </div>
               </div>
             </div>
-          </div>
-          <textarea style="min-height: 250px;" [(ngModel)]="messageManager.message" [placeholder]="l.s('messages.message_placeholder')" [class.input-error]="alerts['message']"></textarea>
-          <div class="chat-message-footer">
-            <div>
-              <div class="chat-option btn btn--sm btn--ghost">
-                <i-tabler name="paperclip"></i-tabler>
-                <span>Příložené soubory</span>
-              </div>
-            </div>
-            <div>
-              <div class="btn btn--sm btn--primary btn--pill">
-                <i-tabler name="send"></i-tabler>
-                <span>{{ l.s("messages.buttons.send_message") }}</span>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Action Buttons -->
-        <div class="form-group">
-          <div class="btn btn--primary" (click)="sendMessage()">
-            <i-tabler name="send"></i-tabler>
-            {{ l.s("messages.buttons.send_message") }}
           </div>
         </div>
 
