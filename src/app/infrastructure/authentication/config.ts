@@ -5,4 +5,6 @@ export namespace AuthConfig {
     export const password_min = 5;
     export const password_max = 64;
     export const token_length = 6;
+
+    export const ignored_redirect = ['/'];
 }

@@ -64,7 +64,6 @@ export class AuthComponent implements OnInit {
   private title = inject(Title);
   private ws = inject(WsService)
   public passkey = inject(Passkey);
-  private tokenExpirationService = inject(TokenExpirationService);
   private sessionExpiredService = inject(SessionExpiredService);
   public isPasskeySupport = false;
   public isPasskeyLoading = false;
@@ -251,7 +250,6 @@ export class AuthComponent implements OnInit {
           // Stop loading on any response
           this.isForgotPasswordLoading = false;
 
-          // 🔸 chyba
           if ('error' in data && data.error instanceof Array) {
             const errors = data.error as string[];
 
@@ -389,19 +387,14 @@ export class AuthComponent implements OnInit {
 
     this.auth.getAuthState().subscribe((data) => {
       if (data == true) {
-        if (returnUrl) {
+        console.log(returnUrl)
+        if (returnUrl && !AuthConfig.ignored_redirect.includes(returnUrl)) {
           this.router.navigateByUrl(returnUrl);
         } else {
           this.router.navigate(['', 'main']);
         }
       }
     });
-
-    this.tokenExpirationService.getExpirationListener().subscribe((data: Date | null) => {
-      if (data && moment().isBefore(data)) {
-        this.auth.setAuthState(true)
-      }
-    })
 
     // Error while too long loading
     this.ws.connect();

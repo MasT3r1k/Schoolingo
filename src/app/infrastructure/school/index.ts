@@ -15,6 +15,7 @@ export class School {
     private sidebar = inject(Sidebar);
 
     public config = new BehaviorSubject<SchoolConfig | null>(null);
+    public school_loading_error = null;
 
     constructor() {
         this.http.get<SchoolConfig>(Config.API_URL + '/v1/school')
@@ -25,6 +26,7 @@ export class School {
                 this.sidebar.build();
             },
             (err) => {
+                this.school_loading_error = err.status;
                 switch(err.status) {
                     case 429:
                         this.alert.alert("error", "schools.errors.429", []);

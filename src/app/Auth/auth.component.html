@@ -144,11 +144,8 @@
             </p>
         </div>
         <div class="card-row">
-            <div class="left" [style.width.%]="school.config.getValue()?.fastlogin ? '50' : '100'">
+            <div class="left" [class.not-fastlogin]="school.config.getValue()?.fastlogin">
                 @if (school.config.getValue()?.fastlogin && ["login", "2fa"].includes(page)) {
-                <div class="title">
-                    {{ l.s("auth.login.subtitle.0") }}
-                </div>
                 }
                 @switch (page) {
                 @case ("login") {
@@ -432,9 +429,6 @@
                 <span>{{ l.s('or') }}</span>
             </div>
             <div class="right qrcode">
-                <div class="title">
-                    {{ l.s("auth.login.subtitle.1") }}
-                </div>
                 <div class="qrcode-box">
                     @if (qrcode.getValue() == '') {
                     <div class="skeleton"></div>

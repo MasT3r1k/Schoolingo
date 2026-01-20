@@ -9,6 +9,8 @@ import { CalendarManager } from '@Components/calendar-dropdown';
 import { SeasonalService } from '@Schoolingo/seasonal';
 import { SnowEffectComponent } from '@Components/seasonal/snow-effect/snow-effect.component';
 import { SeasonalDecorationsComponent } from '@Components/seasonal/decorations/decorations.component';
+import { School } from '@Schoolingo/school';
+import { Locale } from '@Schoolingo/locale';
 
 @Component({
   selector: 'app-root',
@@ -19,31 +21,50 @@ import { SeasonalDecorationsComponent } from '@Components/seasonal/decorations/d
 export class AppComponent implements OnInit {
   public appState: boolean | null = null;
   private http = inject(HttpClient);
+  private school = inject(School);
+  private locale = inject(Locale);
 
   public auth = inject(Authentication);
   public seasonalService = inject(SeasonalService);
   
   ngOnInit(): void {
-    // Enable flags Windows 11
-    polyfillCountryFlagEmojis();
+    try {
+      // Enable flags Windows 11
+      polyfillCountryFlagEmojis();
+    } catch(e) {
+      console.error('Failed add support for Windows 11 flags.')
+    }
 
-    // Initialize seasonal effects immediately (for login page too)
-    this.seasonalService.initialize();
+    try {
+      // Initialize seasonal effects immediately (for login page too)
+      this.seasonalService.initialize();
+    } catch(e) {
+      console.error('Failed load seasonal service.')
+    }
 
     this.http.get<any>(`${Config.API_URL}/v1/version`).subscribe((data) => {
-      if (data.version) {
-        Config.APP_VERSION = data.version;
+      if (!data.version) {
+        return;
       }
+      Config.APP_VERSION = data.version;
     });
 
     this.auth.getAuthState()
     .subscribe((data) => {
-      if (data == "offline") {
-        this.appState = false;
-      } else {
-        this.appState = true;
-      }
+      this.appState = data == "offline" ? false : true;
     });
+  }
+
+  public getError(): string | null {
+    if (this.appState !== false) return null
+    if (this.locale.getState() == "error") {
+      return 'Language failed to load';
+    }
+    if (this.school.school_loading_error) {
+      return this.school.school_loading_error;
+    }
+
+    return 'App is offline';
   }
 
 }
