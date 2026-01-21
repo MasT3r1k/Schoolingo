@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { Config } from '@Schoolingo/config';
 import { Locale } from '@Schoolingo/locale';
 import {
@@ -15,21 +15,21 @@ import { Homeworks } from '@Schoolingo/homeworks';
 import { FormsModule } from '@angular/forms';
 import { IconsModule } from '@Schoolingo/icons';
 import { Authentication } from '@Schoolingo/authentication';
-import { TabsComponent } from '../../../Components/Tabs';
 import { HttpClient } from '@angular/common/http';
 import { DropdownManager } from '@Schoolingo/dropdown';
 import { Utils } from '@Schoolingo/utils';
+import { ModalManager } from '@Schoolingo/modal';
+import { UploadFilesComponent } from './modals/upload-files/upload-files.component';
 
 @Component({
   imports: [
     FormsModule,
-    IconsModule,
-    TabsComponent
+    IconsModule
   ],
   templateUrl: './send.component.html',
   styleUrl: './send.component.css',
 })
-export class SendComponent {
+export class SendComponent implements OnInit {
   AppConfig = Config;
   messageTypes = messageTypes;
   MessageSendSecondTab = MessageSendSecondTab;
@@ -41,9 +41,11 @@ export class SendComponent {
   public perms = inject(Permission);
   public messageManager = inject(MessageManager);
   public dropdownManager = inject(DropdownManager);
+  private modalManager = inject(ModalManager);
   public homeworks = inject(Homeworks);
   private http = inject(HttpClient);
   public Utils = Utils;
+
 
   // === Alerts ===
   public alerts: Record<string, Alert> = {};
@@ -161,6 +163,17 @@ export class SendComponent {
       .subscribe((data) => {
         if (!('error' in data)) this.config = data;
       });
+
+    this.modalManager.addModal(
+      'sendMessage_files',
+      {
+        title: 'messages.attachments',
+        closeable: true,
+        items: [
+          { type: 'component', component: UploadFilesComponent }
+        ]
+      }
+    )
   }
 
   // === Sending message ===
@@ -174,13 +187,13 @@ export class SendComponent {
     }
 
     const message = this.messageManager.message;
-    if (!message.trim()) {
+    if (!message.trim().length) {
       this.alerts['message'] = new Alert('error', 'form.required');
     }
 
     switch (type) {
       case messageTypes.MESSAGE:
-        if (!this.messageManager.topic.trim()) {
+        if (!this.messageManager.topic.trim().length) {
           this.alerts['topic'] = new Alert('error', 'form.required');
         }
         break;
@@ -198,7 +211,7 @@ export class SendComponent {
 
     const payload = {
       content: message,
-      receivers: this.selectedReceivers.map((r) => r.person_id), // API dostává IDčka
+      receivers: this.selectedReceivers.map((r) => r.person_id),
     };
 
     this.http
@@ -236,5 +249,9 @@ export class SendComponent {
 
   public checkMessageType(types: messageTypes[]): boolean {
     return types.includes(this.messageManager.messageType.getValue());
+  }
+
+  public openFiles(): void {
+    this.modalManager.openModal('sendMessage_files')
   }
 }

@@ -32,13 +32,10 @@ import { DropdownManager } from '@Schoolingo/dropdown';
 import { SessionExpiredService } from '../infrastructure/session/session-expired.service';
 import { WsService } from '@Schoolingo/websocket';
 import { Title } from '@angular/platform-browser';
-import { TokenExpirationService } from '../infrastructure/token-expiration/token-expiration.service';
-import moment from 'moment';
 
 @Component({
   standalone: true,
   imports: [
-    NgStyle,
     NgClass,
     QRCodeComponent,
     AlertComponent,
@@ -387,8 +384,7 @@ export class AuthComponent implements OnInit {
 
     this.auth.getAuthState().subscribe((data) => {
       if (data == true) {
-        console.log(returnUrl)
-        if (returnUrl && !AuthConfig.ignored_redirect.includes(returnUrl)) {
+        if (returnUrl && !AuthConfig.ignored_redirect.includes(returnUrl) && !returnUrl.startsWith('/login')) {
           this.router.navigateByUrl(returnUrl);
         } else {
           this.router.navigate(['', 'main']);
@@ -399,8 +395,6 @@ export class AuthComponent implements OnInit {
     // Error while too long loading
     this.ws.connect();
     this.ws.connected$.subscribe(connected => {
-      console.log('WS connected state:', connected);
-
       if (connected) {
         // třeba hned po připojení pošli QR request
         this.ws.send({ type: 'qrcode_request' });
@@ -415,7 +409,7 @@ export class AuthComponent implements OnInit {
       this.qrcode.next(res.payload)
     });
 
-    interval(5000).subscribe(() => {
+    interval(15000).subscribe(() => {
       this.ws.send({ type: 'qrcode_request' });
     })
 

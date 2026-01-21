@@ -1,12 +1,13 @@
 import { permType } from '@Schoolingo/permission';
 import { BehaviorSubject } from 'rxjs';
 export interface MessageConfig {
-    files_limit: number;
-    file_max_size_in_mb: number;
-    title_max_length: number;
-    title_min_length: number;
-    content_max_length: number;
-    content_min_length: number;
+  supported_files: string[];
+  files_limit: number;
+  file_max_size_in_mb: number;
+  title_max_length: number;
+  title_min_length: number;
+  content_max_length: number;
+  content_min_length: number;
 }
 
 export interface MessageType {

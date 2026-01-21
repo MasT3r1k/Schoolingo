@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import { Config } from '@Schoolingo/config';
 import { BehaviorSubject, Observable, Subject, filter, shareReplay } from 'rxjs';
 
 export interface NotificationPayload {
@@ -34,7 +35,7 @@ export class WsService {
   private reconnectDelay = 2000;
   private maxReconnectDelay = 30000;
   private currentReconnectDelay = 2000;
-  private wsUrl = 'ws://localhost:3000/ws';
+  private wsUrl = Config.WS_URL;
   private reconnectAttempts = 0;
   private maxReconnectAttempts = 10;
 

@@ -93,7 +93,9 @@
         <div class="form-group">
           <label [class.error-text]="alerts['topic']">
             {{ l.s("messages.topic") }}
-            @if (alerts['topic']) { <span>- {{ l.s(alerts["topic"].text) }}</span> }
+            @if (alerts['topic']) {
+              <span>- {{ l.s(alerts["topic"].text) }}</span>
+            }
           </label>
           <input type="text" [(ngModel)]="messageManager.topic" [placeholder]="l.s('messages.topic')"
             [class.input-error]="alerts['topic']">
@@ -110,9 +112,9 @@
             <textarea style="min-height: 225px;max-height: 225px;" [(ngModel)]="messageManager.message" [placeholder]="l.s('messages.message_placeholder')" [class.input-error]="alerts['message']"></textarea>
             <div class="chat-message-footer">
               <div>
-                <div class="chat-option btn btn--sm btn--ghost">
+                <div class="chat-option btn btn--sm btn--ghost" (click)="openFiles()">
                   <i-tabler name="paperclip"></i-tabler>
-                  <span>Příložené soubory ({{ files.length }})</span>
+                  <span>{{ l.s('messages.attachments') }} ({{ files.length }})</span>
                 </div>
               </div>
               <div>
@@ -228,39 +230,39 @@
         </div>
         }
         @case(MessageSendSecondTab.ATTACHMENTS) {
-        <div class="tab-content">
-          <div class="upload-area">
-            <i-tabler name="cloud-upload"></i-tabler>
-            <span>{{ l.s("buttons.upload_files") }}</span>
-            <small>Přetáhněte soubory nebo klikněte</small>
-            <input type="file" multiple (change)="files = $any($event.target).files">
-          </div>
+          <div class="tab-content">
+            <div class="upload-area">
+              <i-tabler name="cloud-upload"></i-tabler>
+              <span>{{ l.s("buttons.upload_files") }}</span>
+              <small>Přetáhněte soubory nebo klikněte</small>
+              <input type="file" multiple (change)="files = $any($event.target).files">
+            </div>
 
-          @if(files.length > 0) {
-          <div class="files-list">
-            @for(file of files; track $index) {
-            <div class="file-card">
-              <div class="file-icon">
-                <i-tabler name="file-text"></i-tabler>
+            @if(files.length > 0) {
+            <div class="files-list">
+              @for(file of files; track $index) {
+              <div class="file-card">
+                <div class="file-icon">
+                  <i-tabler name="file-text"></i-tabler>
+                </div>
+                <div class="file-info">
+                  <div class="file-name">{{ file.name }}</div>
+                  <div class="file-size">{{ (file.size / 1024).toFixed(1) }} KB</div>
+                </div>
+                <button class="btn-icon-small">
+                  <i-tabler name="x"></i-tabler>
+                </button>
               </div>
-              <div class="file-info">
-                <div class="file-name">{{ file.name }}</div>
-                <div class="file-size">{{ (file.size / 1024).toFixed(1) }} KB</div>
-              </div>
-              <button class="btn-icon-small">
-                <i-tabler name="x"></i-tabler>
-              </button>
+              }
+            </div>
+            } @else {
+            <div class="no-selection">
+                <div class="illustration">
+                    <i-tabler name="file-off"></i-tabler>
+                </div>
+                <p>Žádné přílohy</p>
             </div>
             }
-          </div>
-          } @else {
-          <div class="no-selection">
-              <div class="illustration">
-                  <i-tabler name="file-off"></i-tabler>
-              </div>
-              <p>Žádné přílohy</p>
-          </div>
-          }
         </div>
         }
         }

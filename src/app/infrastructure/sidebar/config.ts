@@ -224,7 +224,7 @@ export const config: SidebarGroup[] = [
             {
                 item: "sidebar.fleetVehicles.main",
                 icon: 'car',
-                // modules: ['fleetVehicles'],
+                modules: ['fleetVehicles'],
                 children: [{
                     item: "sidebar.fleetVehicles.overview",
                     url: "fleetvehicles/overview",
@@ -253,6 +253,7 @@ export const config: SidebarGroup[] = [
             {
                 item: 'sidebar.library.main',
                 icon: 'books',
+                modules: ['library'],
                 permission: ['all'],
                 children: [{
                     item: 'sidebar.library.catalog',

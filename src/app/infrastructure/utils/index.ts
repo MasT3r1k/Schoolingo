@@ -124,8 +124,6 @@ export namespace Utils {
     if (!match) return cleaned;
     let [, prefix, number] = match;
 
-    console.log(prefix, number)
-
     // Odstraníme počáteční nulu po předčíslí (např. +4200 → +420)
     if ((prefix === '+420' || prefix === '+421') && number.startsWith('0')) {
       number = number.slice(1);

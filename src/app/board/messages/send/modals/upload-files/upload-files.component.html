@@ -1,0 +1,48 @@
+<div class="tab-content">
+    <div class="upload-area" [class.drag-over]="isDragging" (click)="fileInput.click()" (dragover)="onDragOver($event)"
+        (dragleave)="onDragLeave($event)" (drop)="onDrop($event)">
+        <i-tabler name="cloud-upload"></i-tabler>
+        <span>{{ l.s("buttons.upload_files") }}</span>
+        <small>Přetáhněte soubory nebo klikněte</small>
+        <input #fileInput type="file" multiple (change)="handleFiles($any($event.target).files)" [size]="messageManager.getConfig().files_limit" [accept]="messageManager.getConfig().supported_files" style="display: none;">
+    </div>
+
+    <div class="files-list">
+        @for(file of files; track $index) {
+        <div class="file-card" [class.file-error]="checkFile(file) != null">
+            <div class="file-icon">
+                <i-tabler name="file-text"></i-tabler>
+            </div>
+            <div class="file-info">
+                <div class="file-name">{{ file.name }}</div>
+                    <div class="file-size">
+                        {{ Utils.formatBytes(file.size) }}
+                        @if (checkFile(file) != null) {
+                            <span style="margin-inline: 0.5rem;color:var(--color-darker)">&ndash;</span>
+                            <span class="file-error">
+                                {{ checkFile(file) }}
+                            </span>
+                        }
+                    </div>
+            </div>
+            <div class="btn btn--outline-danger icon-only" (click)="removeFile($index)">
+                <i-tabler name="x"></i-tabler>
+            </div>
+        </div>
+        } @empty {
+            <div class="no-selection">
+                <div class="illustration">
+                    <i-tabler name="file-off"></i-tabler>
+                </div>
+                <p>Žádné přílohy</p>
+            </div>
+        }
+    </div>
+    <div class="form-group">
+        <div class="btn btn--primary">
+            {{ l.s('messages.add_attachments') }}
+        </div>
+    </div>
+    <div class="note">Maximální velikost pro 1 soubor je {{ messageManager.getConfig().file_max_size_in_mb }} MB. Větší soubory nebudou přiloženy. Celkem lze přiložit až {{ messageManager.getConfig().files_limit }} souborů. Nelze odesílat spustitelné soubory (.exe).
+    </div>
+</div>
