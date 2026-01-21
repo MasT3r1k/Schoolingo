@@ -11,7 +11,7 @@
         @for(file of files; track $index) {
         <div class="file-card" [class.file-error]="checkFile(file) != null">
             <div class="file-icon">
-                <i-tabler name="file-text"></i-tabler>
+                <i-tabler [name]="getFileIcon(file)"></i-tabler>
             </div>
             <div class="file-info">
                 <div class="file-name">{{ file.name }}</div>
@@ -28,6 +28,14 @@
             <div class="btn btn--outline-danger icon-only" (click)="removeFile($index)">
                 <i-tabler name="x"></i-tabler>
             </div>
+            <div class="file-upload-progress">
+                <div class="progress-bar">
+                    <div class="progress-fill" [style.width.%]="getFileProgress(file)"
+                    [class.danger]="checkFile(file) != null"
+                    [class.good]="checkFile(file) == null && getFileProgress(file) == 100"
+                    ></div>
+                </div>
+            </div>
         </div>
         } @empty {
             <div class="no-selection">
@@ -39,7 +47,7 @@
         }
     </div>
     <div class="form-group">
-        <div class="btn btn--primary">
+        <div class="btn" [class.btn--primary]="checkFilesUploaded()">
             {{ l.s('messages.add_attachments') }}
         </div>
     </div>

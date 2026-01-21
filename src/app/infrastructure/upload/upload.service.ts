@@ -2,27 +2,34 @@ import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, of } from 'rxjs';
 import { Config } from '@Schoolingo/config';
+import { MessageManager } from '@Schoolingo/messages';
 
 @Injectable({
     providedIn: 'root'
 })
 export class UploadService {
     private http = inject(HttpClient);
-    
+    private messageManager = inject(MessageManager);    
+
     /**
      * Upload a single file
-     * @param file The file to upload
+     * @param files The files to upload
      */
-    uploadFile(file: File): Observable<{ url: string }> {
+
+    uploadFiles(files: FileList): Observable<{ url: string }> {
+        const MAX_MB = this.messageManager.getConfig().file_max_size_in_mb;
         const formData = new FormData();
-        formData.append('file', file);
 
-        // TODO: Replace with actual API endpoint once available
-        // return this.http.post<{ url: string }>(`${Config.API_URL}/v1/upload`, formData, {
-        //   withCredentials: true
-        // });
+        for (const file of files) {
+            formData.append('files', file);
+        }
 
-        // Mock response for now
-        return of({ url: URL.createObjectURL(file) });
+        return this.http.post<{ url: string }>(
+            `${Config.API_URL}/upload`,
+            files,
+            {
+                withCredentials: true
+            }
+        );
     }
 }

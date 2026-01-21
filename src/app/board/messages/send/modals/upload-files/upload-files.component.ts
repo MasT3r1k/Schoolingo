@@ -25,6 +25,7 @@ export class UploadFilesComponent {
    */
   handleFiles(fileList: FileList | null): void {
     if (!fileList) return;
+    let uploadFiles: FileList = JSON.parse(JSON.stringify(fileList));
 
     // Convert FileList to Array and filter duplicates if needed
     Array.from(fileList).forEach(file => {
@@ -34,6 +35,10 @@ export class UploadFilesComponent {
         this.files.push(file);
       }
     });
+
+    this.uploadService.uploadFiles(fileList).subscribe((data) => {
+      console.log(data)
+    })
   }
 
   public checkFile(file: File): string | null {
@@ -45,11 +50,39 @@ export class UploadFilesComponent {
   }
 
   public getFileIcon(file: File): string {
-    const format_file = file.name.split('.')[-1];
-    if (['txt', 'docx', 'jpg', 'pdf', 'png', 'svg', 'zip'].includes(format_file)) {
-      return 'file-type-' + format_file;
+    const parts = file.name.split('.');
+    const format = parts.length > 1 ? parts.pop()!.toLowerCase() : null;
+
+    if (!format) return 'file';
+
+    if (['txt', 'docx', 'doc', 'jpg', 'pdf', 'png', 'svg', 'zip'].includes(format)) {
+      return 'file-type-' + format;
     }
+
+    if (['gif', 'webp'].includes(format)) {
+      return 'photo';
+    }
+
     return 'file';
+  }
+
+  public getFileProgress(file: File): number {
+    if (this.checkFile(file) != null) {
+      return 100;
+    }
+    // get upload status
+
+    return 0;
+  }
+
+  public checkFilesUploaded(): boolean {
+    let uploaded_files = 0;
+    this.files.forEach((file: File) => {
+      if (this.getFileProgress(file) == 100) {
+        uploaded_files++;
+      }
+    })
+    return uploaded_files == this.files.length;
   }
 
   /**
