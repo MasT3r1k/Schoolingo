@@ -1,6 +1,6 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable, of } from 'rxjs';
+import { Observable } from 'rxjs';
 import { Config } from '@Schoolingo/config';
 import { MessageManager } from '@Schoolingo/messages';
 
@@ -16,20 +16,22 @@ export class UploadService {
      * @param files The files to upload
      */
 
-    uploadFiles(files: FileList): Observable<{ url: string }> {
+    uploadFiles(files: any): Observable<any> {
         const MAX_MB = this.messageManager.getConfig().file_max_size_in_mb;
         const formData = new FormData();
 
-        for (const file of files) {
-            formData.append('files', file);
+        for(const file of files) {
+            formData.append('files', file)
         }
 
-        return this.http.post<{ url: string }>(
+        return this.http.post<any>(
             `${Config.API_URL}/upload`,
-            files,
+            formData,
             {
-                withCredentials: true
-            }
+                reportProgress: true,
+                observe: 'events',
+                withCredentials: true,
+            } as any
         );
     }
 }

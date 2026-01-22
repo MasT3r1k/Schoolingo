@@ -212,6 +212,7 @@ export class SendComponent implements OnInit {
     const payload = {
       content: message,
       receivers: this.selectedReceivers.map((r) => r.person_id),
+      attachments: this.messageManager.attachments,
     };
 
     this.http
@@ -225,6 +226,7 @@ export class SendComponent implements OnInit {
           if (res?.status) {
             this.messageManager.message = '';
             this.messageManager.topic = '';
+            this.messageManager.attachments = [];
             this.selectedReceivers = [];
             this.alerts['main'] = new Alert('success', 'messages/sent');
           } else {

@@ -27,7 +27,7 @@ export type MessageOptions =
   | 'copyToClassTeacher'
   | 'copyToParents'
   | 'toAll';
-  
+
 export enum MessageSendSecondTab {
   RECEIVERS,
   ATTACHMENTS,
@@ -133,4 +133,7 @@ export class MessageManager {
 
   // Receivers
   public receivers: number[] = [];
+
+  // Attachments
+  public attachments: string[] = [];
 }
