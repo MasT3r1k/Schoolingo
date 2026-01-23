@@ -9,18 +9,18 @@
 
     <div class="files-list">
         @for(file of files; track $index) {
-        <div class="file-card" [class.file-error]="checkFile(file) != null">
+        <div class="file-card" [class.file-error]="checkFile(file.file) != null">
             <div class="file-icon">
-                <i-tabler [name]="getFileIcon(file)"></i-tabler>
+                <i-tabler [name]="getFileIcon(file.file)"></i-tabler>
             </div>
             <div class="file-info">
-                <div class="file-name">{{ file.name }}</div>
+                <div class="file-name">{{ file.file.name }}</div>
                     <div class="file-size">
-                        {{ Utils.formatBytes(file.size) }}
-                        @if (checkFile(file) != null) {
+                        {{ Utils.formatBytes(file.file.size) }}
+                        @if (checkFile(file.file) != null) {
                             <span style="margin-inline: 0.5rem;color:var(--color-darker)">&ndash;</span>
                             <span class="file-error">
-                                {{ checkFile(file) }}
+                                {{ checkFile(file.file) }}
                             </span>
                         }
                     </div>
@@ -31,8 +31,9 @@
             <div class="file-upload-progress">
                 <div class="progress-bar">
                     <div class="progress-fill" [style.width.%]="getFileProgress(file)"
-                    [class.danger]="checkFile(file) != null"
-                    [class.good]="checkFile(file) == null && getFileProgress(file) == 100"
+                    [class.danger]="checkFile(file.file) != null"
+                    [class.loading]="getFileProgress(file) != 100"
+                    [class.good]="checkFile(file.file) == null && getFileProgress(file) == 100"
                     ></div>
                 </div>
             </div>

@@ -34,4 +34,12 @@ export class UploadService {
             } as any
         );
     }
+
+    public removeFile(fileId: string): void {
+        this.http.delete(
+            `${Config.API_URL}/delete_file/${fileId}`,
+            { withCredentials: true }
+        )
+        .subscribe();
+    }
 }

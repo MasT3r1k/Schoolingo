@@ -264,6 +264,7 @@ export class BoardComponent implements OnInit, OnDestroy {
       {
         title: '',
         closeable: false,
+        index: 9999999,
         items: [
           { type: 'component', component: TokenWarningModalComponent }
         ]
