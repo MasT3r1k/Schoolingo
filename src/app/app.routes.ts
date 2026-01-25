@@ -54,6 +54,11 @@ import { PollResultsComponent } from './board/polls/poll-results/poll-results.co
 import { EmployeesComponent } from './board/Employees/employees/employees.component';
 import { ManageusersComponent } from './board/system/manageusers/manageusers.component';
 import { AuditlogComponent } from './board/system/auditlog/auditlog.component';
+import { ManagefilesComponent } from './board/system/managefiles/managefiles.component';
+import { ManagemessagesComponent } from './board/system/managemessages/managemessages.component';
+import { PollAssignComponent } from './board/polls/poll-assign/poll-assign.component';
+import { PollEditComponent } from './board/polls/poll-edit/poll-edit.component';
+import { DetailComponent } from './board/students/detail/detail.component';
 
 
 export const routes: Routes = [
@@ -82,7 +87,16 @@ export const routes: Routes = [
             },
             {
                 path: 'students',
-                component: StudentsComponent
+                children: [
+                    {
+                        path: '',
+                        component: StudentsComponent
+                    },
+                    {
+                        path: ':id',
+                        component: DetailComponent
+                    }
+                ]
             },
             {
                 path: 'employees',
@@ -112,7 +126,15 @@ export const routes: Routes = [
                         component: PollCreateComponent
                     },
                     {
-                        path: ':id',
+                        path: ':id/assign',
+                        component: PollAssignComponent
+                    },
+                    {
+                        path: ':id/edit',
+                        component: PollEditComponent
+                    },
+                    {
+                        path: ':id/vote',
                         component: PollVoteComponent
                     },
                     {
@@ -304,6 +326,14 @@ export const routes: Routes = [
                     {
                         path: 'manageusers',
                         component: ManageusersComponent
+                    },
+                    {
+                        path: 'managefiles',
+                        component: ManagefilesComponent
+                    },
+                    {
+                        path: 'managemessages',
+                        component: ManagemessagesComponent
                     },
                     {
                         path: 'auditlog',

@@ -16,9 +16,29 @@ export class UploadService {
      * @param files The files to upload
      */
 
-    uploadFiles(files: any): Observable<any> {
+    public getFileIcon(file: File): string {
+        const parts = file.name.split('.');
+        const format = parts.length > 1 ? parts.pop()!.toLowerCase() : null;
+
+        if (!format) return 'file';
+
+        if (['txt', 'docx', 'doc', 'jpg', 'pdf', 'png', 'svg', 'zip'].includes(format)) {
+        return 'file-type-' + format;
+        }
+
+        if (['gif', 'webp'].includes(format)) {
+        return 'photo';
+        }
+
+        return 'file';
+    }
+
+    uploadFiles(files: any, origin: string | null = null): Observable<any> {
         const MAX_MB = this.messageManager.getConfig().file_max_size_in_mb;
         const formData = new FormData();
+        if (origin) {
+            formData.append('origin', origin);
+        }
 
         for(const file of files) {
             formData.append('files', file)

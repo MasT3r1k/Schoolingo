@@ -1,0 +1,90 @@
+<div class="received-container">
+    <!-- Message List (Sidebar) -->
+    <div class="message-list-panel">
+        <div class="panel-header">
+            <h2>{{ l.s("sidebar.system.manage_messages") }}</h2>
+            <div class="search-box">
+                <i-tabler name="search"></i-tabler>
+                <input type="text" [(ngModel)]="searchText" [placeholder]="l.s('messages.search_messages')">
+            </div>
+        </div>
+
+        <div class="messages-list">
+            @for (message of filteredMessages; track message.message_id) {
+            <div class="message-item" [class.active]="selectedMessage?.message_id === message.message_id" [class.unread]="!message.read_at"
+                (click)="selectMessage(message)">
+
+                <div class="avatar" [class.teacher]="message.author.role === 'teacher'"
+                    [class.system]="message.author.role === 'system'">
+                    {{ Utils.getInitials(message.author.full_name) }}
+                </div>
+
+                <div class="message-preview-info">
+                    <div class="top-row">
+                        <span class="sender-name">
+                            {{ message.author.full_name }}
+                        </span>
+                        <span class="date">
+                            {{ Utils.formatDateShort(message.sent_at) }}
+                        </span>
+                    </div>
+                    <div class="subject">{{ message.topic }}</div>
+                    <div class="preview-text">{{ message.message }}</div>
+                </div>
+
+                @if (!message.read_at) {
+                <div class="unread-indicator"></div>
+                }
+            </div>
+            } @empty {
+            <div class="empty-state">
+                <i-tabler name="inbox"></i-tabler>
+                <p>{{ l.s("messages.no_messages") }}</p>
+            </div>
+            }
+        </div>
+    </div>
+
+    <!-- Message Content (Main) -->
+    <div class="message-content-panel">
+        <div class="message-detail card">
+        @if (selectedMessage) {
+            <div class="message-header">
+                <div class="sender-info">
+                    <div class="avatar large" [class.teacher]="selectedMessage.author.role === 'teacher'"
+                        [class.system]="selectedMessage.author.role === 'system'">
+                        {{ Utils.getInitials(selectedMessage.author.full_name) }}
+                    </div>
+                    <div class="meta">
+                        <div class="name">{{ selectedMessage.author.full_name }}</div>
+                        <div class="role">{{ l.s("roles." + selectedMessage.author.role) }}</div>
+                    </div>
+                </div>
+                <div class="message-actions">
+                    <div class="date">
+                        {{ Utils.formatDate(selectedMessage.sent_at) }}
+                    </div>
+                    <!-- Future actions like reply/delete could go here -->
+                </div>
+            </div>
+
+            <div class="message-subject">
+                {{ selectedMessage.topic }}
+            </div>
+
+            <div class="message-body">
+                {{ selectedMessage.message }}
+            </div>
+        } @else {
+        <div class="no-selection">
+            <div class="illustration">
+                <i-tabler name="message-circle"></i-tabler>
+            </div>
+            <h3>{{ l.s("messages.select_message") }}</h3>
+            <p>{{ l.s("messages.select_message_desc") }}</p>
+        </div>
+        }
+        </div>
+
+    </div>
+</div>

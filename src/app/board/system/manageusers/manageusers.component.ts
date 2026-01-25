@@ -1,4 +1,5 @@
 import { Component, OnInit, inject } from '@angular/core';
+import { UserFilesModalComponent } from './modals/user-files-modal/user-files-modal.component';
 import { CommonModule } from '@angular/common';
 import { IconsModule } from '@Schoolingo/icons';
 import { FormsModule } from '@angular/forms';
@@ -55,7 +56,7 @@ interface UserAPIResponse {
 @Component({
   selector: 'app-manageusers',
   standalone: true,
-  imports: [CommonModule, IconsModule, FormsModule],
+  imports: [CommonModule, IconsModule, FormsModule, UserFilesModalComponent],
   templateUrl: './manageusers.component.html',
   styleUrl: './manageusers.component.css'
 })
@@ -68,6 +69,8 @@ export class ManageusersComponent implements OnInit {
   isLoading = false;
   loadError: string | null = null;
 
+  pageSize = 10
+
   // Filters
   filters: UserFilters = {
     search: '',
@@ -77,9 +80,12 @@ export class ManageusersComponent implements OnInit {
 
   // Pagination
   currentPage = 1;
-  pageSize = 20;
   totalItems = 0;
   totalPages = 0;
+
+  // Selected User
+  selectedUser: User | null = null;
+  activeTab: 'overview' | 'permissions' | 'files' | 'activity' = 'overview'; // Mock tabs for now
 
   // Users data from API
   users: User[] = [];
@@ -105,6 +111,9 @@ export class ManageusersComponent implements OnInit {
   };
 
   isSubmitting = false;
+
+  // File Manager Modal
+  selectedUserForFiles: User | null = null;
 
   ngOnInit() {
     this.loadUsers();
@@ -136,7 +145,7 @@ export class ManageusersComponent implements OnInit {
       next: (response) => {
         // Transform API response
         this.users = response.data.map(apiUser => this.transformUser(apiUser));
-
+        
         // Update pagination
         this.totalItems = response.meta.total;
         this.totalPages = Math.ceil(this.totalItems / this.pageSize);
@@ -154,7 +163,7 @@ export class ManageusersComponent implements OnInit {
 
   // Handle filter changes
   onFilterChange() {
-    this.loadUsers(1); // Reset to first page
+    this.loadUsers(1); 
   }
 
   // Clear all filters
@@ -185,6 +194,23 @@ export class ManageusersComponent implements OnInit {
     return list.filter((page) => page > 0 && page <= this.totalPages).slice(startSlice).slice(0, 5);
   }
 
+  // Detail View
+  selectUser(user: User) {
+      this.selectedUser = user;
+      this.activeTab = 'overview';
+  }
+
+  closeDetail() {
+      this.selectedUser = null;
+  }
+
+  setActiveTab(tab: typeof this.activeTab) {
+        this.activeTab = tab;
+  }
+
+  // Pagination controls
+
+
   // Transform API response
   private transformUser(apiUser: UserAPIResponse['data'][0]): User {
     return {
@@ -205,17 +231,14 @@ export class ManageusersComponent implements OnInit {
 
   // Map backend role to frontend role
   private mapRole(role: string): 'admin' | 'teacher' | 'student' | 'parent' {
-    switch (role.toLowerCase()) {
+    switch (String(role).toLowerCase()) {
       case 'admin':
-      case 'administrator':
         return 'admin';
       case 'teacher':
-      case 'educator':
         return 'teacher';
       case 'student':
         return 'student';
       case 'parent':
-      case 'guardian':
         return 'parent';
       default:
         return 'student';
@@ -224,7 +247,7 @@ export class ManageusersComponent implements OnInit {
 
   // Map backend status to frontend status
   private mapStatus(status: string): 'active' | 'inactive' | 'suspended' {
-    switch (status.toLowerCase()) {
+    switch (status) {
       case 'active':
         return 'active';
       case 'inactive':
@@ -306,6 +329,16 @@ export class ManageusersComponent implements OnInit {
     event.stopPropagation();
     console.log('Reset password for:', user);
     // TODO: Reset password
+  }
+
+  manageFiles(user: User, event: Event) {
+    event.stopPropagation();
+    this.selectedUserForFiles = user;
+    this.dropdownManager.selected_dropdown = ''; // Close dropdown
+  }
+
+  closeFileManager() {
+    this.selectedUserForFiles = null;
   }
 
   openAddUserModal() {

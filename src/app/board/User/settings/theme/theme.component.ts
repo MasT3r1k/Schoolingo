@@ -1,5 +1,6 @@
 import { NgClass, NgStyle } from '@angular/common';
 import { Component, inject, OnInit } from '@angular/core';
+import { DropdownManager } from '@Schoolingo/dropdown';
 import { IconsModule } from '@Schoolingo/icons';
 import { Locale } from '@Schoolingo/locale';
 import { Theme } from '@Schoolingo/theme';
@@ -14,6 +15,7 @@ import { Theme } from '@Schoolingo/theme';
 export class ThemeComponent implements OnInit {
   public l = inject(Locale);
   public t = inject(Theme);
+  public dropdownManager = inject(DropdownManager);
 
   ngOnInit(): void {
   }

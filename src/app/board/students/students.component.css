@@ -45,7 +45,9 @@
     background: var(--surface-2);
     border: 1px solid var(--border);
     border-radius: var(--radius);
-    padding: 0 1rem;
+    max-width: 400px;
+    width: 100%;
+    padding: 0 0.75rem;
     transition: all 0.2s ease;
 }
 
@@ -69,6 +71,7 @@
     outline: none;
     padding: 0.75rem 0.75rem;
     font-size: 0.9375rem;
+    width: 100%;
     color: var(--text);
 }
 
@@ -98,7 +101,7 @@
 /* Filters Row Container */
 .filters-row-container {
     display: flex;
-    gap: 0.75rem;
+    gap: 1.5rem;
     margin-bottom: 20px;
     position: relative;
     z-index: 10;
@@ -570,9 +573,10 @@
 
 /* Detail Layout */
 .detail-layout {
-    display: grid;
-    grid-template-columns: 280px 1fr;
+    display: flex;
     gap: 1.5rem;
+    overflow: hidden;
+    width: 100%;
 }
 
 /* Profile Sidebar */
@@ -580,6 +584,7 @@
     display: flex;
     flex-direction: column;
     gap: 1rem;
+    flex: 0 280px;
 }
 
 .profile-card {
@@ -741,6 +746,9 @@
     display: flex;
     flex-direction: column;
     gap: 1rem;
+    flex: 1;
+    max-width: 100%;
+    overflow: hidden;
 }
 
 /* Tabs Navigation */
@@ -2203,4 +2211,50 @@ a.parent-contact-item:hover {
 .error-state p {
     margin: 0 0 1.5rem 0;
     color: var(--text-muted);
+}
+
+.select-parent {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.select-parent .parents {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    flex: 1;
+    gap: 1rem;
+}
+
+.select-parent .parents .parent {
+    padding: 4px;
+    position: relative;
+    color: var(--text-secondary)
+}
+
+.select-parent .parents .parent.active::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 2px;
+    border-radius: var(--radius);
+    background-color: var(--success);
+}
+
+.parent-info {
+    overflow: hidden;
+    height: 100px;
+    background-color: rgba(var(--accent-rgb), 0.35);
+    border-radius: var(--radius);
+}
+
+.parent-info .bg-pattern {
+    width: 100%;
+    height: 100%;
+    opacity: 0.1;
+    background-image: repeating-linear-gradient(45deg, var(--primary-700) 0px, var(--primary-700) 2px, transparent 2px, transparent 10px), repeating-linear-gradient(-45deg, var(--primary) 0px, var(--primary) 2px, transparent 2px, transparent 10px);
 }

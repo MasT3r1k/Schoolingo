@@ -24,6 +24,8 @@ export class PollCreateComponent {
   pollForm: FormGroup = this.fb.group({
     title: ['', Validators.required],
     description: [''],
+    test_type: ['all', Validators.required],
+    require_type: ['points', Validators.required],
     type: ['test', Validators.required],
     active_from: [''],
     active_to: [''],
@@ -35,6 +37,8 @@ export class PollCreateComponent {
     return this.pollForm.get('questions') as FormArray;
   }
 
+  public testTypes: string[] = ['all', 'random'];
+  public requireTypes: string[] = ['points', 'questions'];
   public questionTypes: string[] = ['text', 'uni', 'multi'];
 
   addQuestion() {

@@ -47,7 +47,7 @@ export class ReceivedComponent implements OnInit {
 
   ngOnInit(): void {
     this.http.get(
-      `${Config.API_URL}/v1/messages/received`,
+      `${Config.API_URL}/v1/messages/list?receiver_id=${this.auth.getUser().userId}`,
       { withCredentials: true }
     )
     .subscribe((data: any) => {

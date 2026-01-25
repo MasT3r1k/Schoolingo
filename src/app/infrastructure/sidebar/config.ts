@@ -322,6 +322,7 @@ export const config: SidebarGroup[] = [
                     item: 'sidebar.user.notifications',
                     url: 'user/notifications',
                     icon: 'bell',
+                    permission: ['student', 'parent']
                 }, {
                     item: 'sidebar.settings',
                     url: 'user/settings',
@@ -349,6 +350,18 @@ export const config: SidebarGroup[] = [
                         item: 'sidebar.system.manage_users',
                         url: "system/manageusers",
                         icon: 'users-group',
+                        permission: ['manager:system:admin']
+                    },
+                    {
+                        item: 'sidebar.system.manage_files',
+                        url: "system/managefiles",
+                        icon: 'files',
+                        permission: ['manager:system:admin']
+                    },
+                    {
+                        item: 'sidebar.system.manage_messages',
+                        url: "system/managemessages",
+                        icon: 'messages',
                         permission: ['manager:system:admin']
                     },
                     {

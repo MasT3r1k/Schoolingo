@@ -6,8 +6,8 @@ import { IconsModule } from '@Schoolingo/icons';
 import { ModalManager } from '@Schoolingo/modal';
 import { Locale } from '@Schoolingo/locale';
 import { DropdownManager } from '@Schoolingo/dropdown';
+import { Utils } from '@Schoolingo/utils';
 
-export type Genders = 'male' | 'female'; 
 
 @Component({
   selector: 'add-employee-modal',
@@ -22,8 +22,7 @@ export class AddEmployeeModalComponent implements OnInit {
   public modalManager = inject(ModalManager);
   public dropdownManager = inject(DropdownManager);
 
-  public genders: Genders[] = ['male', 'female'];
-  public selected_gender: Genders = 'male';
+  public selected_gender: string = Utils.getGender(0);
 
   public roles = [
     'teacher',
@@ -41,17 +40,18 @@ export class AddEmployeeModalComponent implements OnInit {
   }
   public selected_role = 'teacher';
 
-  public genderIcon(gender: Genders): string {
+  public genderIcon(gender: Utils.genders | string): string {
     return 'gender-' + gender;
   }
 
-  public genderColor(gender: Genders): string {
+  public genderColor(gender: Utils.genders | string): string {
     switch(gender) {
       case 'male':
         return '#90D5FF';
       case 'female':
         return '#FFC0CB';
     }
+    return '';
   }
 
   public degrees: any[] = [];

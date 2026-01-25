@@ -1,0 +1,156 @@
+<div class="managefiles-page card">
+    <div class="list-view">
+        <!-- Page Header -->
+        <div class="card-header">
+            <h2>Správa souborů</h2>
+        </div>
+
+        <!-- Global Stats Row -->
+        <div class="stats-cards">
+            <div class="stat-card stat--primary">
+                <div class="stat-icon">
+                    <i-tabler name="database"></i-tabler>
+                </div>
+                <div class="stat-info">
+                    <span class="stat-value">{{ formatBytes(totalStats.usedSpace) }}</span>
+                    <span class="stat-label">Celkové využití ({{ totalStats.usagePercent }}%)</span>
+                </div>
+            </div>
+            <div class="stat-card stat--primary">
+                <div class="stat-icon">
+                    <i-tabler name="files"></i-tabler>
+                </div>
+                <div class="stat-info">
+                    <span class="stat-value">{{ totalStats.filesCount }}</span>
+                    <span class="stat-label">Počet souborů</span>
+                </div>
+            </div>
+            <div class="stat-card stat--primary">
+                <div class="stat-icon">
+                    <i-tabler name="users"></i-tabler>
+                </div>
+                <div class="stat-info">
+                    <span class="stat-value">{{ totalStats.usersCount }}</span>
+                    <span class="stat-label">Uživatelé se soubory</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Filter Row -->
+        <div class="filters-row-container">
+            <div class="search-wrapper">
+                <i-tabler name="search"></i-tabler>
+                <input type="search" placeholder="Hledat soubory..." [(ngModel)]="filters.search"
+                    (ngModelChange)="onFilterChange()">
+            </div>
+
+            <div class="filter-group-inline">
+                <select class="form-select" [(ngModel)]="filters.type" (change)="onFilterChange()">
+                    <option value="all">Všechny typy</option>
+                    <option value="image">Obrázky</option>
+                    <option value="document">Dokumenty</option>
+                    <option value="archive">Archivy</option>
+                    <option value="other">Ostatní</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- Content Area -->
+        @if (isLoading) {
+        <div class="loading-state">
+            <div class="loading-spinner"></div>
+            <p>Načítání souborů...</p>
+        </div>
+        } @else if (files.length > 0) {
+        <div class="users-table-wrapper">
+            <table class="users-table">
+                <thead>
+                    <tr>
+                        <th class="col-file">Soubor</th>
+                        <th class="col-owner">Vlastník</th>
+                        <th class="col-size">Velikost</th>
+                        <th class="col-date">Datum nahrání</th>
+                        <th class="col-actions"></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @for (file of files; track file.id) {
+                    <tr>
+                        <td class="col-file">
+                            <div class="file-cell">
+                                <div class="file-icon-wrapper" [ngClass]="getFileIconClass(file)">
+                                    <i-tabler [name]="getFileIcon(file)"></i-tabler>
+                                </div>
+                                <div class="file-info">
+                                    <span class="file-name">{{ file.name }}</span>
+                                    <span class="file-path">{{ file.path }}</span>
+                                </div>
+                            </div>
+                        </td>
+                        <td class="col-owner">
+                            <div class="owner-cell">
+                                <div class="owner-avatar">
+                                    <span>{{ file.owner.substring(0,2).toUpperCase() }}</span>
+                                </div>
+                                <span class="owner-name">{{ file.owner }}</span>
+                            </div>
+                        </td>
+                        <td class="col-size">{{ formatBytes(file.size) }}</td>
+                        <td class="col-date">{{ formatDate(file.createdAt) }}</td>
+                        <td class="col-actions">
+                            <div class="row-actions">
+                                <button class="btn-icon" title="Otevřít" (click)="viewFile(file)">
+                                    <i-tabler name="eye"></i-tabler>
+                                </button>
+                                <button class="btn-icon" title="Stáhnout" (click)="downloadFile(file)">
+                                    <i-tabler name="download"></i-tabler>
+                                </button>
+                                <button class="btn-icon danger" title="Smazat" (click)="deleteFile(file)">
+                                    <i-tabler name="trash"></i-tabler>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Pagination -->
+        <div class="bottom">
+            <div class="left">
+                <span class="pagination-info">
+                    Zobrazeno {{ (currentPage - 1) * pageSize + 1 }} - {{ Math.min.apply(null, [currentPage * pageSize,
+                    totalItems]) }} z {{ totalItems }} souborů
+                </span>
+            </div>
+            <div class="right">
+                @if (totalPages > 1) {
+                <div class="page" [class.disabled]="currentPage === 1"
+                    (click)="currentPage > 1 && loadFiles(currentPage - 1)">
+                    <i-tabler name="chevron-left" style="width: 16px;"></i-tabler>
+                </div>
+                @for (p of getPageList(); track $index) {
+                <div class="page" [class.active]="currentPage === p" (click)="loadFiles(p)">
+                    {{ p }}
+                </div>
+                }
+                <div class="page" [class.disabled]="currentPage === totalPages"
+                    (click)="currentPage < totalPages && loadFiles(currentPage + 1)">
+                    <i-tabler name="chevron-right" style="width: 16px;"></i-tabler>
+                </div>
+                }
+            </div>
+        </div>
+
+        } @else {
+        <div class="empty-state">
+            <div class="empty-icon">
+                <i-tabler name="file-search"></i-tabler>
+            </div>
+            <h3>Žádné soubory nenalezeny</h3>
+            <p>Zkuste upravit filtry nebo hledaný výraz</p>
+        </div>
+        }
+    </div>
+</div>

@@ -39,7 +39,7 @@ export namespace Utils {
     return text;
   }
 
-  export function makeMoment(date: string): moment.Moment {
+  export function makeMoment(date: string | Date): moment.Moment {
     return moment(date);
   }
 
@@ -48,11 +48,11 @@ export namespace Utils {
     return (moment.isMoment(week) ? week : moment().isoWeek(week)).startOf('isoWeek').add(day - 1, 'd');
   }
 
-  export function formatDate(date: Date | moment.Moment): string {
+  export function formatDate(date: Date | moment.Moment | string): string {
     return (moment.isMoment(date) ? date : moment(date)).format('H:mm:ss DD. MM. YYYY');
   }
 
-  export function formatDateShort(date: Date | moment.Moment): string {
+  export function formatDateShort(date: Date | moment.Moment | string): string {
     return (moment.isMoment(date) ? date : moment(date)).format('DD. MM. YYYY');
   }
 
@@ -99,6 +99,12 @@ export namespace Utils {
     }
 
     return ((!hideProtocol) ? 'https://' : '') + web;
+  }
+
+  export type genders = 'male' | 'female';
+  export function getGender(index: number): genders {
+    const genders: genders[] = ['male', 'female'];
+    return genders[index];
   }
 
   export function formatPhone(phone: string): string {
@@ -149,7 +155,7 @@ export namespace Utils {
     window.open(url, '_blank');
   }
 
-  export function getAge(date: moment.Moment): number {
+  export function getAge(date: moment.Moment | Date | string): number {
     let age = 0;
 
     let now = moment().subtract(1, 'year');

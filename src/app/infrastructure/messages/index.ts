@@ -1,4 +1,5 @@
 import { permType } from '@Schoolingo/permission';
+import { UploadFile } from '@Schoolingo/upload';
 import { BehaviorSubject } from 'rxjs';
 export interface MessageConfig {
   supported_files: string[];
@@ -134,6 +135,6 @@ export class MessageManager {
   // Receivers
   public receivers: number[] = [];
 
-  // Attachments
-  public attachments: string[] = [];
+  // Files
+  public files: UploadFile[] = [];
 }

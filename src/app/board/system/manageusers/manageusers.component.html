@@ -1,13 +1,199 @@
 <div class="manageusers-page card">
+    @if (selectedUser) {
+    <!-- User Detail View -->
+    <div class="detail-view">
+        <!-- Detail Header -->
+        <div class="detail-header">
+            <button class="btn-back" (click)="closeDetail()">
+                <i-tabler name="arrow-left"></i-tabler>
+                <span>Zpět na seznam</span>
+            </button>
+            <div class="detail-actions">
+                <button class="action-btn" title="Poslat zprávu">
+                    <i-tabler name="mail"></i-tabler>
+                </button>
+                <button class="action-btn" title="Upravit" (click)="editUser(selectedUser, $event)">
+                    <i-tabler name="edit"></i-tabler>
+                </button>
+                <button class="action-btn" title="Resetovat heslo" (click)="resetPassword(selectedUser, $event)">
+                    <i-tabler name="key"></i-tabler>
+                </button>
+                <button class="action-btn more" title="Více akcí" (click)="manageFiles(selectedUser, $event)">
+                    <i-tabler name="folder"></i-tabler>
+                </button>
+            </div>
+        </div>
+
+        <div class="detail-layout">
+            <!-- Sidebar Profile -->
+            <aside class="profile-sidebar">
+                <div class="profile-card">
+                    <div class="profile-avatar">
+                        @if (selectedUser.photoUrl) {
+                        <img [src]="selectedUser.photoUrl" [alt]="selectedUser.fullName">
+                        } @else {
+                        <span class="avatar-initials">{{ selectedUser.firstName[0] }}{{ selectedUser.lastName[0]
+                            }}</span>
+                        }
+                        <span class="status-dot" [class]="selectedUser.status"></span>
+                    </div>
+                    <h1 class="profile-name">{{ selectedUser.fullName }}</h1>
+                    <div class="profile-class">
+                        <i-tabler name="at"></i-tabler>
+                        {{ selectedUser.username }}
+                    </div>
+                    <span class="status-badge" [class]="selectedUser.role">
+                        <i-tabler [name]="getRoleIcon(selectedUser.role)"
+                            style="width: 14px; margin-right: 4px;"></i-tabler>
+                        {{ getRoleText(selectedUser.role) }}
+                    </span>
+                </div>
+
+                <!-- Quick Stats -->
+                <div class="quick-stats">
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i-tabler name="clock"></i-tabler>
+                        </div>
+                        <div class="stat-info">
+                            <span class="stat-value">{{ formatLastLogin(selectedUser.lastLogin) }}</span>
+                            <span class="stat-label">Poslední přihlášení</span>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i-tabler name="calendar"></i-tabler>
+                        </div>
+                        <div class="stat-info">
+                            <span class="stat-value">{{ selectedUser.createdAt | date:'dd.MM.yyyy' }}</span>
+                            <span class="stat-label">Vytvořen</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Quick Contact -->
+                <div class="quick-contact">
+                    <h3>Kontakt</h3>
+                    <a href="mailto:{{selectedUser.email}}" class="contact-item">
+                        <i-tabler name="mail"></i-tabler>
+                        <span>{{ selectedUser.email }}</span>
+                    </a>
+                </div>
+            </aside>
+
+            <!-- Main Content -->
+            <main class="detail-main">
+                <!-- Tabs Navigation -->
+                <nav class="tabs-nav">
+                    <button class="tab-btn" [class.active]="activeTab === 'overview'"
+                        (click)="setActiveTab('overview')">
+                        <i-tabler name="layout-dashboard"></i-tabler>
+                        <span>Přehled</span>
+                    </button>
+                    <button class="tab-btn" [class.active]="activeTab === 'permissions'"
+                        (click)="setActiveTab('permissions')">
+                        <i-tabler name="shield-lock"></i-tabler>
+                        <span>Oprávnění</span>
+                    </button>
+                    <button class="tab-btn" [class.active]="activeTab === 'files'" (click)="setActiveTab('files')">
+                        <i-tabler name="folder"></i-tabler>
+                        <span>Soubory</span>
+                    </button>
+                    <button class="tab-btn" [class.active]="activeTab === 'activity'"
+                        (click)="setActiveTab('activity')">
+                        <i-tabler name="activity"></i-tabler>
+                        <span>Aktivita</span>
+                    </button>
+                </nav>
+
+                <!-- Tab Content -->
+                <div class="tab-content">
+                    <!-- Overview Tab -->
+                    @if (activeTab === 'overview') {
+                    <div class="overview-grid">
+                        <div class="info-card full">
+                            <div class="card-header">
+                                <i-tabler name="user"></i-tabler>
+                                <h3>Osobní informace</h3>
+                            </div>
+                            <div class="data-grid">
+                                <div class="data-item">
+                                    <span class="data-label">Uživatelské jméno</span>
+                                    <span class="data-value">{{ selectedUser.username }}</span>
+                                </div>
+                                <div class="data-item">
+                                    <span class="data-label">Email</span>
+                                    <span class="data-value">{{ selectedUser.email }}</span>
+                                </div>
+                                <div class="data-item">
+                                    <span class="data-label">Jméno</span>
+                                    <span class="data-value">{{ selectedUser.firstName }}</span>
+                                </div>
+                                <div class="data-item">
+                                    <span class="data-label">Příjmení</span>
+                                    <span class="data-value">{{ selectedUser.lastName }}</span>
+                                </div>
+                                <div class="data-item">
+                                    <span class="data-label">Role</span>
+                                    <span class="data-value">{{ getRoleText(selectedUser.role) }}</span>
+                                </div>
+                                <div class="data-item">
+                                    <span class="data-label">Status</span>
+                                    <span class="data-value">{{ getStatusText(selectedUser.status) }}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    }
+
+                    <!-- Permissions Tab -->
+                    @if (activeTab === 'permissions') {
+                    <div class="empty-state">
+                        <div class="empty-icon"><i-tabler name="shield-lock"></i-tabler></div>
+                        <h3>Správa oprávnění</h3>
+                        <p>Tato funkce bude dostupná v příští verzi.</p>
+                    </div>
+                    }
+
+                    <!-- Files Tab -->
+                    @if (activeTab === 'files') {
+                    <div class="info-card full">
+                        <div class="card-header">
+                            <i-tabler name="folder"></i-tabler>
+                            <h3>Soubory uživatele</h3>
+                            <button class="btn btn--primary btn--sm" (click)="manageFiles(selectedUser, $event)">
+                                Spravovat soubory
+                            </button>
+                        </div>
+                        <div class="placeholder-box">
+                            <p>Pro správu souborů použijte tlačítko výše.</p>
+                        </div>
+                    </div>
+                    }
+
+                    <!-- Activity Tab -->
+                    @if (activeTab === 'activity') {
+                    <div class="empty-state">
+                        <div class="empty-icon"><i-tabler name="activity"></i-tabler></div>
+                        <h3>Záznam aktivity</h3>
+                        <p>Historie aktivity uživatele není momentálně dostupná.</p>
+                    </div>
+                    }
+                </div>
+            </main>
+        </div>
+    </div>
+    } @else {
     <div class="list-view">
         <!-- Page Header -->
         <div class="card-header">
             <h2>Správa uživatelů</h2>
-            <div class="header-actions">
-                <button class="btn btn--sm btn--primary" (click)="openAddUserModal()">
+
+            <div class="header-right">
+                <div class="btn btn--sm btn--primary" (click)="openAddUserModal()">
                     <i-tabler name="user-plus"></i-tabler>
                     Přidat uživatele
-                </button>
+                </div>
             </div>
         </div>
 
@@ -76,7 +262,7 @@
                 </thead>
                 <tbody>
                     @for (user of users; track user.id) {
-                    <tr>
+                    <tr class="clickable-row" (click)="selectUser(user)">
                         <td class="col-user">
                             <div class="user-cell">
                                 <div class="user-avatar-sm">
@@ -126,6 +312,10 @@
                                 <button class="dropdown-item" (click)="resetPassword(user, $event)">
                                     <i-tabler name="key"></i-tabler>
                                     Resetovat heslo
+                                </button>
+                                <button class="dropdown-item" (click)="manageFiles(user, $event)">
+                                    <i-tabler name="folder"></i-tabler>
+                                    Soubory a kvóty
                                 </button>
                                 <div class="dropdown-divider"></div>
                                 <button class="dropdown-item danger" (click)="deleteUser(user, $event)">
@@ -294,5 +484,12 @@
             </div>
         </div>
     </div>
+    }
+
+    <!-- File Manager Modal -->
+    @if (selectedUserForFiles) {
+    <app-user-files-modal [user]="selectedUserForFiles" (closeModal)="closeFileManager()">
+    </app-user-files-modal>
+    }
     }
 </div>

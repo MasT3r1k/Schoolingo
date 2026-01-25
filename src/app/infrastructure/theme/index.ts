@@ -5,6 +5,8 @@ import { Config } from '@Schoolingo/config';
 import { BehaviorSubject } from 'rxjs';
 
 export type themes = 'system' | 'light' | 'dark' | 'moon';
+export type themes_no_system = Omit<themes, 'system'>;
+export type theme_categories = 'dark' | 'light';
 
 @Injectable()
 export class Theme {
@@ -17,7 +19,55 @@ export class Theme {
 
   private theme = new BehaviorSubject<themes>('system');
   private themes: themes[] = ['system', 'dark', 'moon', 'light'];
+  private categories: Record<theme_categories, themes_no_system[]> = {
+    light: ['light'],
+    dark: ['dark', 'moon']
+  };
 
+  public getThemeCategory(theme: themes_no_system): theme_categories | void {
+    let entry = Object.entries(this.categories);
+    for(const category of entry) {
+      if (category[1].includes(theme)) return category[0] as theme_categories;
+    }
+    return;
+  }
+
+  public getThemesInCategory(category: theme_categories): themes_no_system[] {
+    return this.categories[category];
+  }
+  
+  
+  private system_theme: [themes_no_system, themes_no_system] = [this.getThemesInCategory('light')[0], this.getThemesInCategory('dark')[0]];
+
+  public getSystemTheme(category: theme_categories): themes_no_system {
+    switch(category) {
+      case "dark":
+        return this.system_theme[1];
+      case "light":
+      default:
+        return this.system_theme[0];
+    }
+  }
+
+  public setSystemTheme(category: theme_categories, theme: themes_no_system): void {
+    let index = 0;
+    switch(category) {
+      case "dark":
+        index = 1;
+        break;
+      case "light":
+      default:
+        index = 0;
+        break;
+    }
+
+    this.system_theme[index] = theme;
+    if (this.theme.getValue() == "system") {
+      this.updateTheme("system", false)
+    }
+  }
+
+  
   private action: 'selected' | 'saving' | 'error' = 'selected';
 
   constructor(private rendererFactory: RendererFactory2) {
@@ -33,7 +83,7 @@ export class Theme {
         if (this.theme.getValue() !== 'system') {
           return;
         }
-        this.updateTheme(event.matches ? 'dark' : 'light', false);
+        this.updateTheme(this.system_theme[event.matches ? 1 : 0] as themes, false);
       });
 
     this.updateTheme(this.theme.getValue());
@@ -53,13 +103,13 @@ export class Theme {
     this.renderer.destroy();
   }
 
-  public getSystemColor(): Omit<themes, 'system'> {
+  public getSystemColor(): themes_no_system {
     return window.matchMedia('(prefers-color-scheme: dark)').matches
-      ? 'dark'
-      : 'light';
+      ? this.system_theme[1]
+      : this.system_theme[0];
   }
 
-  public getThemeColorFromTheme(theme: themes): Omit<themes, 'system'> {
+  public getThemeColorFromTheme(theme: themes): themes_no_system {
     return theme == 'system' ? this.getSystemColor() : theme;
   }
 
@@ -87,7 +137,7 @@ export class Theme {
     return this.theme;
   }
 
-  public getThemeColor(): Omit<themes, 'system'> {
+  public getThemeColor(): themes_no_system {
     return this.theme.getValue() == 'system'
       ? this.getSystemColor()
       : this.theme.getValue();

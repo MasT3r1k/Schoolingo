@@ -49,7 +49,11 @@ export class CreateFolderComponent {
       if (data.success !== true) return;
       this.modalManager.closeModal('create_folder');
       this.documents.addFile({
+        document_id: data.document_id,
         file_id: data.file_id,
+        file_uuid: null,
+        file_format: null,
+        mime_type: '',
         parent_id: data.parent_id,
         name: data.name,
         type: 'folder',

@@ -39,17 +39,10 @@
         <div class="form-group">
           <label>{{ 'Komu' }}</label>
           <div class="custom-select"
-            (click)="$event.stopPropagation(); dropdownManager.selected_dropdown = dropdownManager.selected_dropdown == 'messages_send_receiver' ? '' : 'messages_send_receiver'">
+            (click)="$event.stopPropagation();openSelectReceiver()">
             <div class="selected-value">
-              <span></span>
-              <i-tabler name="chevron-down"></i-tabler>
+              <span>{{ l.s('messages.no_selected_receivers') }}</span>
             </div>
-            @if (dropdownManager.selected_dropdown == 'messages_send_receiver') {
-            <div class="options-dropdown">
-              <div class="list">
-              </div>
-            </div>
-            }
           </div>
         </div>
 
@@ -114,7 +107,7 @@
               <div>
                 <div class="chat-option btn btn--sm btn--ghost" (click)="openFiles()">
                   <i-tabler name="paperclip"></i-tabler>
-                  <span>{{ l.s('messages.attachments') }} ({{ files.length }})</span>
+                  <span>{{ l.s('messages.attachments') }} ({{ messageManager.files.length }})</span>
                 </div>
               </div>
               <div>
@@ -142,131 +135,4 @@
       </div>
     </div>
   </div>
-
-  <!-- Unified Sidebar with Tabs -->
-  <!-- <div class="sidebar">
-    <div class="sidebar-card unified-card">
-      <div class="sidebar-card-header">
-        <div class="header-icon">
-          <i-tabler [name]="selectedOptionTab.getValue() === 0 ? 'users' : 'paperclip'"></i-tabler>
-        </div>
-        <div class="header-text">
-          <h3>{{ selectedOptionTab.getValue() === 0 ? l.s("messages.receiver") : l.s("messages.attachments") }}</h3>
-          <p>
-            @if (selectedOptionTab.getValue() === 0) {
-            {{ getSelectedReceivers().length }} vybraných
-            } @else if (files.length > 0) {
-            {{ files.length }} souborů
-            }
-          </p>
-        </div>
-      </div>
-
-      <div class="tabs-navigation">
-        <div class="tab-button" [class.active]="selectedOptionTab.getValue() === 0" (click)="selectedOptionTab.next(0)">
-          <i-tabler name="users"></i-tabler>
-          <span>Příjemci</span>
-          @if (selectedReceivers.length > 0) {
-          <div class="tab-badge">{{ selectedReceivers.length }}</div>
-          }
-        </div>
-        <div class="tab-button" [class.active]="selectedOptionTab.getValue() === 1" (click)="selectedOptionTab.next(1)">
-          <i-tabler name="paperclip"></i-tabler>
-          <span>Přílohy</span>
-          @if (files.length > 0) {
-          <div class="tab-badge">{{ files.length }}</div>
-          }
-        </div>
-      </div>
-
-      <div class="sidebar-card-body">
-        @switch(selectedOptionTab.getValue()) {
-        @case(MessageSendSecondTab.RECEIVERS) {
-        <div class="tab-content">
-          <div class="search-box">
-            <i-tabler name="search"></i-tabler>
-            <input type="text" [(ngModel)]="receiverFilter" [placeholder]="l.s('messages.search_receiver')">
-          </div>
-
-          @if (selectedReceivers.length > 0) {
-          <div class="selected-pills">
-            @for (receiver of selectedReceivers; track receiver.person_id) {
-            <div class="pill">
-              <span>{{ receiver.full_name }}</span>
-              <i-tabler name="x" (click)="toggleReceiverSelection(receiver)"></i-tabler>
-            </div>
-            }
-          </div>
-          }
-
-          <div class="recipients-list">
-            @for(receiver of receivers; track receiver.person_id) {
-            <div class="recipient-card" [class.selected]="isReceiverSelected(receiver)"
-              (click)="toggleReceiverSelection(receiver)">
-              <div class="recipient-avatar">
-                {{ Utils.getInitials(receiver.full_name) }}
-              </div>
-              <div class="recipient-info">
-                <div class="recipient-name">{{ receiver.full_name }}</div>
-                <div class="recipient-role">{{ receiver.role }}</div>
-              </div>
-              <div class="recipient-checkbox">
-                <div class="checkbox" [class.checked]="isReceiverSelected(receiver)">
-                  @if(isReceiverSelected(receiver)) {
-                  <i-tabler name="check"></i-tabler>
-                  }
-                </div>
-              </div>
-            </div>
-            } @empty {
-            <div class="no-selection">
-                <div class="illustration">
-                    <i-tabler name="user-off"></i-tabler>
-                </div>
-                <p>Žádní příjemci k dispozici</p>
-            </div>
-            }
-          </div>
-        </div>
-        }
-        @case(MessageSendSecondTab.ATTACHMENTS) {
-          <div class="tab-content">
-            <div class="upload-area">
-              <i-tabler name="cloud-upload"></i-tabler>
-              <span>{{ l.s("buttons.upload_files") }}</span>
-              <small>Přetáhněte soubory nebo klikněte</small>
-              <input type="file" multiple (change)="files = $any($event.target).files">
-            </div>
-
-            @if(files.length > 0) {
-            <div class="files-list">
-              @for(file of files; track $index) {
-              <div class="file-card">
-                <div class="file-icon">
-                  <i-tabler name="file-text"></i-tabler>
-                </div>
-                <div class="file-info">
-                  <div class="file-name">{{ file.name }}</div>
-                  <div class="file-size">{{ (file.size / 1024).toFixed(1) }} KB</div>
-                </div>
-                <button class="btn-icon-small">
-                  <i-tabler name="x"></i-tabler>
-                </button>
-              </div>
-              }
-            </div>
-            } @else {
-            <div class="no-selection">
-                <div class="illustration">
-                    <i-tabler name="file-off"></i-tabler>
-                </div>
-                <p>Žádné přílohy</p>
-            </div>
-            }
-        </div>
-        }
-        }
-      </div>
-    </div>
-  </div> -->
 </div>

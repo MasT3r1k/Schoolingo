@@ -11,10 +11,11 @@ import { SnowEffectComponent } from '@Components/seasonal/snow-effect/snow-effec
 import { SeasonalDecorationsComponent } from '@Components/seasonal/decorations/decorations.component';
 import { School } from '@Schoolingo/school';
 import { Locale } from '@Schoolingo/locale';
+import { SystemErrorComponent } from "@Components/system-error/system-error.component";
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet, ModalComponent, CalendarManager, SnowEffectComponent, SeasonalDecorationsComponent],
+  imports: [RouterOutlet, ModalComponent, CalendarManager, SnowEffectComponent, SeasonalDecorationsComponent, SystemErrorComponent],
   templateUrl: './app.component.html',
   styleUrl: './app.component.css'
 })

@@ -38,6 +38,13 @@
                 </div>
             </li>
 
+            <li [class.active]="sidebar==enumSidebar.FILES" (click)="sidebar = enumSidebar.FILES">
+                <div class="item">
+                    <div class="icon"><i-tabler name="files"></i-tabler></div>
+                    <div class="item-label">{{ l.s('system.files_settings') }}</div>
+                </div>
+            </li>
+
             <li [class.active]="sidebar==enumSidebar.SCOPES" (click)="sidebar = enumSidebar.SCOPES">
                 <div class="item">
                     <div class="icon"><i-tabler name="list"></i-tabler></div>
@@ -676,6 +683,23 @@
         </div>
 
         }
+    </div>
+    }
+
+    @case(enumSidebar.FILES) {
+    <div class="container-content">
+        <div class="settings-header">
+            <h1>{{ l.s('system.files_settings') }}</h1>
+            <p class="settings-subtitle">Nastavení souborů, oprávnění a limity nahrávání</p>
+        </div>
+
+        <div class="form-section">
+            <h3 class="section-title">Nastavení souborů</h3>
+            <div class="form-group">
+                <label>Zdrojová složka</label>
+                <input type="text" placeholder="C:/Schoolingo/Uploads">
+            </div>
+        </div>
     </div>
     }
 

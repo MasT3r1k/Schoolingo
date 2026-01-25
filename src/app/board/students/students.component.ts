@@ -6,19 +6,22 @@ import { HttpClient } from '@angular/common/http';
 import { Config } from '@Schoolingo/config';
 import { Utils } from '@Schoolingo/utils';
 import { DropdownManager } from '@Schoolingo/dropdown';
+import { Locale } from '@Schoolingo/locale';
+import { RouterLink } from '@angular/router';
 
 // Interfaces
 export interface Student {
   id: number;
   firstName: string;
- lastName: string;
+  lastName: string;
   fullName: string;
   photoUrl?: string;
   className: string;
   year: number;
   fieldOfStudy: string;
   status: 'active' | 'former' | 'suspended';
-  dateOfBirth: string;
+  gender: number;
+  birthday: Date;
   email: string;
   phone: string;
   address: string;
@@ -67,8 +70,8 @@ interface StudentAPIResponse {
     fullName: string;
     email?: string;
     phone?: string;
-    dateOfBirth: string;
-    birth: string;
+    gender: number;
+    birthday: Date;
     status: string;
     startStudy: string;
     className?: string;
@@ -87,7 +90,7 @@ interface StudentAPIResponse {
 @Component({
   selector: 'app-students',
   standalone: true,
-  imports: [CommonModule, IconsModule, FormsModule],
+  imports: [CommonModule, IconsModule, FormsModule, RouterLink],
   templateUrl: './students.component.html',
   styleUrl: './students.component.css'
 })
@@ -95,16 +98,11 @@ export class StudentsComponent implements OnInit {
   private http = inject(HttpClient);
   public Utils = Utils;
   public dropdownManager = inject(DropdownManager);
+  public l = inject(Locale);
 
   // Loading state
   isLoading = false;
   loadError: string | null = null;
-
-  // Selected student for detail view
-  selectedStudent: Student | null = null;
-  
-  // Detail View Tabs
-  activeTab: 'overview' | 'personal' | 'parents' | 'academic' | 'medical' | 'notes' = 'overview';
 
   // Add Student Modal
   showAddStudentModal = false;
@@ -140,7 +138,7 @@ export class StudentsComponent implements OnInit {
   totalPages = 0;
   
   // Students data from API
-  students: Student[] = [];
+  students: any[] = [];
 
   ngOnInit() {
     this.loadFilters();
@@ -191,7 +189,7 @@ export class StudentsComponent implements OnInit {
     
     if (this.filters.missingInfo) params.missingInfo = 'true';
 
-    this.http.get<StudentAPIResponse>(
+    this.http.get<StudentAPIResponse | any>(
       `${Config.API_URL}/v1/students`,
       { 
         withCredentials: true,
@@ -200,7 +198,7 @@ export class StudentsComponent implements OnInit {
     ).subscribe({
       next: (response) => {
         // Transform API response
-        this.students = response.data.map(apiStudent => this.transformStudent(apiStudent));
+        this.students = response.data;
         
         // Update pagination
         this.totalItems = response.meta.total;
@@ -277,67 +275,9 @@ export class StudentsComponent implements OnInit {
       return list.filter((page) => page > 0 && page <= this.totalPages).slice(startSlice).slice(0,5);
   }
 
-  // Transform API response (updated for nested data response type in signature)
-  private transformStudent(apiStudent: StudentAPIResponse['data'][0]): Student {
-    return {
-      id: apiStudent.personId,
-      firstName: apiStudent.firstName,
-      lastName: apiStudent.lastName,
-      fullName: apiStudent.fullName,
-      className: apiStudent.className || '-',
-      year: apiStudent.year || 1,
-      fieldOfStudy: apiStudent.fieldOfStudy || 'Nezadáno',
-      status: this.mapStatus(apiStudent.status),
-      dateOfBirth: apiStudent.dateOfBirth,
-      email: apiStudent.email || '',
-      phone: apiStudent.phone || '',
-      address: '', // Not provided by API yet
-      enrollmentDate: apiStudent.startStudy,
-      // Real data from API
-      averageGrade: apiStudent.averageGrade || '0.00',
-      absenceRate: apiStudent.absenceRate || '0.00',
-      disciplinaryIssues: Math.floor(Math.random() * 3), // Still mock - not in API yet
-      parents: [], // Will be loaded separately if needed
-      notes: '',
-      allergies: [],
-      medicalConditions: []
-    };
-  }
-
-  // Map backend status to frontend status
-  private mapStatus(status: string): 'active' | 'former' | 'suspended' {
-    switch (status.toLowerCase()) {
-      case 'active':
-        return 'active';
-      case 'archive':
-      case 'former':
-        return 'former';
-      case 'suspended':
-        return 'suspended';
-      default:
-        return 'active';
-    }
-  }
-  
   // Direct access for template since we rely on server filtering now
-  get filteredStudents(): Student[] {
+  get filteredStudents(): any[] {
     return this.students;
-  }
-  
-  // Select student for detail view
-  selectStudent(student: Student) {
-    this.selectedStudent = student;
-    this.activeTab = 'overview';
-  }
-  
-  // Close detail view
-  closeDetail() {
-    this.selectedStudent = null;
-  }
-
-  // Tab switching
-  setActiveTab(tab: typeof this.activeTab) {
-    this.activeTab = tab;
   }
 
   // Add Student Modal

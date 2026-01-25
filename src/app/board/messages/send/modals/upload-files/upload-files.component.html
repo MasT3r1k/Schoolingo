@@ -1,9 +1,20 @@
+<div class="modal-close" (click)="closeModal()">
+        <i-tabler name="x"></i-tabler>
+    </div>
+
 <div class="tab-content">
+    <div class="alert alert--info mb">
+        <div class="center">
+            <i-tabler class="alert__icon mr-2" name="info-circle"></i-tabler>
+            <span class="alert__content">{{ l.s('messages.upload.note') }}</span>
+        </div>
+    </div>
+
     <div class="upload-area" [class.drag-over]="isDragging" (click)="fileInput.click()" (dragover)="onDragOver($event)"
         (dragleave)="onDragLeave($event)" (drop)="onDrop($event)">
         <i-tabler name="cloud-upload"></i-tabler>
         <span>{{ l.s("buttons.upload_files") }}</span>
-        <small>Přetáhněte soubory nebo klikněte</small>
+        <small>{{ l.s('upload.drag_files_description') }}</small>
         <input #fileInput type="file" multiple (change)="handleFiles($any($event.target).files)" [size]="messageManager.getConfig().files_limit" [accept]="messageManager.getConfig().supported_files" style="display: none;">
     </div>
 
@@ -20,12 +31,12 @@
                         @if (checkFile(file.file) != null) {
                             <span style="margin-inline: 0.5rem;color:var(--color-darker)">&ndash;</span>
                             <span class="file-error">
-                                {{ checkFile(file.file) }}
+                                {{ l.s('upload.errors.' + checkFile(file.file)) }}
                             </span>
                         }
                     </div>
             </div>
-            <div class="btn btn--outline-danger icon-only" (click)="removeFile($index)">
+            <div class="btn btn--outline-danger icon-only" (click)="removeFile(file)">
                 <i-tabler name="x"></i-tabler>
             </div>
             <div class="file-upload-progress">
@@ -43,15 +54,19 @@
                 <div class="illustration">
                     <i-tabler name="file-off"></i-tabler>
                 </div>
-                <p>Žádné přílohy</p>
+                <p>{{ l.s('upload.no_files') }}</p>
             </div>
         }
     </div>
     <div class="form-group">
-        <div class="btn" [class.btn--primary]="checkFilesUploaded()">
+        <div class="btn" [class.btn--primary]="checkFilesUploaded()" (click)="assignFiles()">
             {{ l.s('messages.add_attachments') }}
         </div>
+        @if (checkFilesError()) {
+        <div class="note danger mt-1">
+            {{ l.s('upload.upload_failed', { files: checkFilesError() }) }}
+        </div>
+        }
     </div>
-    <div class="note">Maximální velikost pro 1 soubor je {{ messageManager.getConfig().file_max_size_in_mb }} MB. Větší soubory nebudou přiloženy. Celkem lze přiložit až {{ messageManager.getConfig().files_limit }} souborů. Nelze odesílat spustitelné soubory (.exe).
-    </div>
+    <div class="note">{{ l.s('messages.upload.upload_info', { max_size: messageManager.getConfig().file_max_size_in_mb, max_files: messageManager.getConfig().files_limit }) }}</div>
 </div>

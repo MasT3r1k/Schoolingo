@@ -1,6 +1,6 @@
 <div class="panel">
   <div class="theme-selector">
-    <div>
+    <div class="title">
       <h2>{{ l.s('settings.theme') }}</h2>
       <p>{{ l.s('settings.themes.selector.description') }}</p>
     </div>
@@ -75,5 +75,74 @@
       </div>
       }
     </div>
+
+    @if (t.getTheme().getValue() == "system") {
+      <div class="title">
+        <h2>{{ l.s('settings.themes.system_settings.title') }}</h2>
+        <p>{{ l.s('settings.themes.system_settings.description') }}</p>
+      </div>
+
+      @let category_light = t.getThemesInCategory('light');
+      @let category_dark = t.getThemesInCategory('dark');
+      @if (category_light.length >= 2) {
+        <div class="category-item">
+          <div class="left">
+            <div class="title">Přizbůsobení světlého režimu</div>
+            <p>Vyberte vzhled, který se použije, když je systém nastaven na světlý režim.</p>
+          </div>
+          <div class="right">
+            <div class="custom-select" id="type" (click)="$event.stopPropagation();dropdownManager.selected_dropdown = dropdownManager.selected_dropdown == 'settings_theme_select_light' ? '' : 'settings_theme_select_light'">
+                <div class="selected-value">
+                    <div class="row" style="gap: .5rem">
+                        {{ l.s('themes.' + t.getSystemTheme('light')) }}
+                    </div>
+                    <i-tabler name="chevron-down"></i-tabler>
+                </div>
+                @if (dropdownManager.selected_dropdown == 'settings_theme_select_light') {
+                <div class="options-dropdown">
+                    <div class="list">
+                        @for (theme of t.getThemesInCategory('light'); track $index) {
+                        <div class="option row" style="gap: .5rem" (click)="$event.stopPropagation();dropdownManager.selected_dropdown = '';t.setSystemTheme('light', theme)">
+                            {{ l.s('themes.' + theme) }}
+                        </div>
+                        }
+                    </div>
+                </div>
+                }
+            </div>
+          </div>
+        </div>
+      }
+
+      @if (category_dark.length >= 2) {
+        <div class="category-item">
+          <div class="left">
+            <div class="title">Přizbůsobení tmavého režimu</div>
+            <p>Vyberte vzhled, který se použije, když je systém nastaven na tmavý režim.</p>
+          </div>
+          <div class="right">
+            <div class="custom-select" id="type" (click)="$event.stopPropagation();dropdownManager.selected_dropdown = dropdownManager.selected_dropdown == 'settings_theme_select_dark' ? '' : 'settings_theme_select_dark'">
+                <div class="selected-value">
+                    <div class="row" style="gap: .5rem">
+                        {{ l.s('themes.' + t.getSystemTheme('dark')) }}
+                    </div>
+                    <i-tabler name="chevron-down"></i-tabler>
+                </div>
+                @if (dropdownManager.selected_dropdown == 'settings_theme_select_dark') {
+                <div class="options-dropdown">
+                    <div class="list">
+                        @for (theme of t.getThemesInCategory('dark'); track $index) {
+                        <div class="option row" style="gap: .5rem" (click)="$event.stopPropagation();dropdownManager.selected_dropdown = '';t.setSystemTheme('dark', theme)">
+                            {{ l.s('themes.' + theme) }}
+                        </div>
+                        }
+                    </div>
+                </div>
+                }
+            </div>
+          </div>
+        </div>
+      }
+    }
   </div>
 </div>

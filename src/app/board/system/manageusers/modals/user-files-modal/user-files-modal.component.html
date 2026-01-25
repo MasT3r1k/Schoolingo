@@ -1,0 +1,154 @@
+<div class="files-modal-overlay" (click)="close()">
+    <div class="files-modal-container" (click)="$event.stopPropagation()">
+
+        <!-- Header -->
+        <div class="modal-header">
+            <div class="header-content">
+                <div class="header-icon">
+                    <i-tabler name="folder" style="width: 24px; height: 24px;"></i-tabler>
+                </div>
+                <div class="header-text">
+                    <h2>Správce souborů</h2>
+                    <p>{{ user?.fullName }} ({{ user?.username }})</p>
+                </div>
+            </div>
+            <button class="modal-close" (click)="close()">
+                <i-tabler name="x"></i-tabler>
+            </button>
+        </div>
+
+        <!-- Body -->
+        <div class="modal-body">
+
+            <!-- Quota Section -->
+            <div class="quota-section">
+                <div class="quota-card">
+                    <div class="quota-header">
+                        <div class="quota-title">
+                            <i-tabler name="database" style="width: 18px;"></i-tabler>
+                            Využití úložiště
+                        </div>
+                        <div class="quota-actions">
+                            <span class="text-sm bold">{{ formatBytes(storageUsage) }}</span>
+                            <span class="text-sm muted"> / {{ formatBytes(storageLimit) }}</span>
+                        </div>
+                    </div>
+
+                    <div class="progress-container">
+                        <div class="progress-bar" [style.width.%]="usagePercentage"
+                            [class.danger]="usagePercentage > 90">
+                        </div>
+                    </div>
+
+                    <div class="quota-stats">
+                        <div class="quota-details">
+                            <div class="quota-detail-item">
+                                <i-tabler name="file" style="width: 14px;"></i-tabler>
+                                {{ totalFiles }} souborů
+                            </div>
+                            <div class="quota-detail-item">
+                                <i-tabler name="folder" style="width: 14px;"></i-tabler>
+                                {{ totalFolders }} složek
+                            </div>
+                        </div>
+                        <button class="btn-quota-reset" (click)="resetQuota()">
+                            <i-tabler name="rotate-clockwise" style="width: 14px;"></i-tabler>
+                            Obnovit kvótu
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- File Browser -->
+            <div class="file-browser">
+                <!-- Toolbar -->
+                <div class="browser-toolbar">
+                    <div class="breadcrumbs">
+                        <span class="crumb" [class.active]="currentPath === '/'" (click)="navigate('/')">
+                            Domů
+                        </span>
+                        @if (currentPath !== '/') {
+                        <span class="crumb-separator">/</span>
+                        <!-- Mock breadcrumbs logic would go here -->
+                        <span class="crumb active">{{ currentPath }}</span>
+                        }
+                    </div>
+
+                    <div class="toolbar-actions">
+                        <div class="search-box">
+                            <i-tabler name="search"></i-tabler>
+                            <input type="text" class="search-input" placeholder="Hledat soubory..."
+                                [(ngModel)]="searchQuery" (ngModelChange)="onSearch()">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- File List -->
+                <div class="file-list-container">
+                    @if (isLoading) {
+                    <div class="empty-state">
+                        <div class="loading-spinner"></div>
+                        <p>Načítání souborů...</p>
+                    </div>
+                    } @else if (files.length === 0) {
+                    <div class="empty-state">
+                        <div class="empty-icon">
+                            <i-tabler name="folder-off"></i-tabler>
+                        </div>
+                        <h3>Žádné soubory</h3>
+                        <p>Uživatel zatím nenahrál žádné soubory.</p>
+                    </div>
+                    } @else {
+                    <table class="files-table">
+                        <thead>
+                            <tr>
+                                <th class="col-icon"></th>
+                                <th class="col-name">Název</th>
+                                <th class="col-size">Velikost</th>
+                                <th class="col-date">Datum</th>
+                                <th class="col-actions">Akce</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @for (file of files; track file.id) {
+                            <tr class="file-row" (click)="file.isFolder ? navigate(file.path) : viewFile(file)">
+                                <td class="col-icon">
+                                    <div class="file-icon-wrapper" [ngClass]="getFileIconClass(file)">
+                                        <i-tabler [name]="getFileIcon(file)"></i-tabler>
+                                    </div>
+                                </td>
+                                <td class="col-name">
+                                    <div class="file-name-cell">
+                                        <span class="file-name">{{ file.name }}</span>
+                                        <span class="file-location">{{ file.path }} <span class="meta">• Nahrál: {{
+                                                file.uploadedBy }}</span></span>
+                                    </div>
+                                </td>
+                                <td class="col-size">{{ file.isFolder ? '-' : formatBytes(file.size) }}</td>
+                                <td class="col-date">{{ formatDate(file.createdAt) }}</td>
+                                <td class="col-actions">
+                                    <div class="action-buttons" (click)="$event.stopPropagation()">
+                                        <button class="btn-icon" title="Odkaz ke sdílení" (click)="shareFile(file)">
+                                            <i-tabler name="share"></i-tabler>
+                                        </button>
+                                        <button class="btn-icon" title="Přístupový kód" (click)="generateCode(file)">
+                                            <i-tabler name="key"></i-tabler>
+                                        </button>
+                                        <button class="btn-icon" title="Stáhnout" (click)="downloadFile(file)">
+                                            <i-tabler name="download"></i-tabler>
+                                        </button>
+                                        <button class="btn-icon danger" title="Smazat" (click)="deleteFile(file)">
+                                            <i-tabler name="trash"></i-tabler>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                            }
+                        </tbody>
+                    </table>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

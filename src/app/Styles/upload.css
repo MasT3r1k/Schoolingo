@@ -1,0 +1,199 @@
+/* Upload Area */
+.upload-area {
+    border: 2px dashed var(--border);
+    border-radius: var(--radius);
+    padding: 2rem 1.5rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    color: var(--text-muted);
+    cursor: pointer;
+    position: relative;
+    transition: all 0.3s ease;
+    background: var(--surface);
+    text-align: center;
+    margin-bottom: 1rem;
+}
+
+.upload-area:hover,
+.upload-area.drag-over {
+    border-color: var(--primary);
+    background: linear-gradient(135deg, rgba(74, 163, 255, 0.05), rgba(74, 163, 255, 0.02));
+    color: var(--primary);
+    transform: translateY(-2px);
+}
+
+.upload-area i-tabler {
+    width: 2.5rem;
+    margin-bottom: 0.5rem;
+}
+
+.upload-area span {
+    font-weight: 500;
+    font-size: 0.9375rem;
+}
+
+.upload-area small {
+    font-size: 0.8125rem;
+    opacity: 0.7;
+}
+
+
+
+/* Files List */
+.files-list {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    max-height: 400px;
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding-right: 0.25rem;
+    background-color: var(--surface-2);
+    padding: 8px;
+}
+
+/* Custom Scrollbar for Files List */
+.files-list::-webkit-scrollbar {
+    width: 6px;
+}
+
+.files-list::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.files-list::-webkit-scrollbar-thumb {
+    background: var(--border);
+    border-radius: 3px;
+}
+
+.files-list::-webkit-scrollbar-thumb:hover {
+    background: var(--primary);
+}
+
+.file-card {
+    display: flex;
+    align-items: center;
+    gap: 0.875rem;
+    padding: 0.875rem;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    transition: all 0.2s ease;
+    position: relative;
+}
+
+.file-card.file-error {
+    border-color: var(--danger);
+}
+
+.file-card:not(.file-error):hover {
+    border-color: var(--primary);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+}
+
+.file-icon {
+    width: 36px;
+    height: 36px;
+    border-radius: var(--radius);
+    background: linear-gradient(135deg, rgba(74, 163, 255, 0.1), rgba(74, 163, 255, 0.05));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.file-card.file-error .file-icon {
+    border-color: var(--danger);
+    background: linear-gradient(135deg, rgba(255, 74, 74, 0.1), rgba(255, 74, 74, 0.05));
+}
+
+.file-icon i-tabler {
+    color: var(--primary);
+}
+
+.file-card.file-error .file-icon i-tabler {
+    color: var(--danger)
+}
+
+.file-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.file-name {
+    font-size: 0.9375rem;
+    color: var(--text);
+    font-weight: 500;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.file-size, .file-error {
+    font-size: 0.8125rem;
+    color: var(--text-muted);
+    margin-top: 0.125rem;
+}
+
+.file-error {
+    color: var(--danger)
+}
+
+.file-upload-progress {
+    position: absolute;
+    bottom: 4px;
+    width: calc(100% - 1.75rem);
+}
+
+.progress-bar {
+    width: 100%;
+    height: 4px;
+    background: var(--elevated-2);
+    border-radius: 3px;
+    overflow: hidden;
+}
+
+.progress-fill {
+    position: relative;
+    height: 100%;
+    transition: width 0.3s;
+    background-color: var(--primary);
+    overflow: hidden;
+}
+
+.progress-fill.loading::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(
+        90deg,
+        transparent,
+        rgba(255,255,255,0.5),
+        transparent
+    );
+    animation: shimmer 1.4s infinite;
+}
+
+.progress-fill.good {
+    background-color: var(--success);
+}
+
+.progress-fill.warning {
+    background-color: var(--warning);
+}
+
+.progress-fill.danger {
+    background-color: var(--danger);
+}
+
+@keyframes shimmer {
+    100% {
+        left: 100%;
+    }
+}

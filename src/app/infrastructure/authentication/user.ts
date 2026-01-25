@@ -4,6 +4,7 @@ export interface User {
     fullName: string;
     expires: Date;
     username: string;
+    userId: number;
     personId: number;
     gender: number;
     role: 'student' | 'teacher' | 'parent';

@@ -1,103 +1,80 @@
 import { Component, inject, OnInit } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
-import { Authentication } from '@Schoolingo/authentication';
-import { Locale } from '@Schoolingo/locale';
-import { Utils } from '@Schoolingo/utils';
-import { SentMessagesService, SentMessage, Pagination } from '../../../infrastructure/messages/sent-messages.service';
-import { NgClass } from '@angular/common';
+import { CommonModule, NgClass } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { IconsModule } from '@Schoolingo/icons';
+import { Locale } from '@Schoolingo/locale';
+import { Authentication } from '@Schoolingo/authentication';
+import { Utils } from '@Schoolingo/utils';
+import { HttpClient } from '@angular/common/http';
+import { Config } from '@Schoolingo/config';
+import { ActivatedRoute } from '@angular/router';
+
+interface Message {
+  message_id: number;
+  topic: string | null;
+  message: string;
+  author_id: number;
+  author: {
+    full_name: string;
+    first_name: string;
+    last_name: string;
+    role: string;
+  };
+  sent_at: Date;
+  deleted: boolean;
+  require_conform: boolean;
+  read_at: Date | null;
+  confirmed_at: Date | null;
+}
 
 @Component({
-  imports: [NgClass, IconsModule],
+  imports: [NgClass, FormsModule, IconsModule],
   templateUrl: './sent.component.html',
   styleUrls: ['./sent.component.css', '../messages.css']
 })
+
 export class SentComponent implements OnInit {
   Utils = Utils;
   
   public l = inject(Locale);
   public auth = inject(Authentication);
-  public messagesService = inject(SentMessagesService);
+  private http = inject(HttpClient);
   private route = inject(ActivatedRoute);
-  
-  public messages: SentMessage[] = [];
-  public selectedMessage: SentMessage | null = null;
+
+  public messages: Message[] = [];
+  public selectedMessage: Message | null = null;
   public searchText = '';
   public loading = true;
-  public pagination: Pagination = { page: 1, limit: 20, total: 0, pages: 0 };
 
   ngOnInit(): void {
-    this.loadMessages();
-  }
-
-  private loadMessages(): void {
-    this.loading = true;
-    this.messagesService.loadMessages().subscribe({
-      next: (data) => {
-        this.messages = data;
-        this.pagination = this.messagesService.pagination();
-        this.loading = false;
-      },
-      error: () => {
-        this.loading = false;
+    this.http.get(
+      `${Config.API_URL}/v1/messages/list?author_ids=[${this.auth.getUser().userId}]`,
+      { withCredentials: true }
+    )
+    .subscribe((data: any) => {
+      this.messages = data.messages;
+      console.log(this.route.snapshot.queryParams)
+      const message_id = this.route.snapshot.queryParams['id'];
+      if (message_id) {
+        this.selectedMessage = this.messages.find((message) => message.message_id == message_id) ?? null;
       }
-    });
+      console.log(data);
+    })
+
+    this.route.queryParams.subscribe((data) => {
+      const message_id = data['id'];
+      this.selectMessage(this.messages.find((message) => message.message_id == message_id) ?? null);
+    })
   }
 
-  public selectMessage(message: SentMessage): void {
-    this.messagesService.getMessage(message.message_id).subscribe({
-      next: (data) => {
-        if (data) {
-          this.selectedMessage = data.message;
-        }
-      }
-    });
+  public selectMessage(message: Message | null): void {
+    this.selectedMessage = message;
   }
 
-  public deleteMessage(message: SentMessage): void {
-    if (!confirm('Opravdu chcete smazat tuto zprávu?')) return;
-    
-    this.messagesService.deleteMessage(message.message_id).subscribe({
-      next: (response) => {
-        if (response.success) {
-          this.messages = this.messages.filter(m => m.message_id !== message.message_id);
-          if (this.selectedMessage?.message_id === message.message_id) {
-            this.selectedMessage = null;
-          }
-        }
-      }
-    });
-  }
-
-  public nextPage(): void {
-    if (this.pagination.page < this.pagination.pages) {
-      this.messagesService.loadMessages(this.pagination.page + 1).subscribe({
-        next: (data) => {
-          this.messages = data;
-          this.pagination = this.messagesService.pagination();
-        }
-      });
-    }
-  }
-
-  public previousPage(): void {
-    if (this.pagination.page > 1) {
-      this.messagesService.loadMessages(this.pagination.page - 1).subscribe({
-        next: (data) => {
-          this.messages = data;
-          this.pagination = this.messagesService.pagination();
-        }
-      });
-    }
-  }
-
-  public get filteredMessages(): SentMessage[] {
-    if (!this.searchText) return this.messages;
-    const query = this.searchText.toLowerCase();
-    return this.messages.filter(m => 
-      m.subject.toLowerCase().includes(query) ||
-      m.content.toLowerCase().includes(query)
+  public get filteredMessages(): Message[] {
+    return this.messages.filter((m: Message) => 
+      m.topic?.toLowerCase().includes(this.searchText.toLowerCase()) ||
+      m.author.full_name.toLowerCase().includes(this.searchText.toLowerCase())
     );
   }
 }
-

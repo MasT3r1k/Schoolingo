@@ -14,6 +14,7 @@ import { DeleteFileComponent } from './modals/delete-file/delete-file.component'
 import { RenameFileComponent } from './modals/rename-file/rename-file.component';
 import { SidebarItem } from '../board.component';
 import { DropdownManager } from '@Schoolingo/dropdown';
+import { Config } from '@Schoolingo/config';
 
 @Component({
   selector: 'app-documents',
@@ -45,6 +46,7 @@ export class DocumentsComponent implements OnInit {
   public expandedFolders = new Set<string | null>();
   private modalManager = inject(ModalManager);
   Utils = Utils;
+  Config = Config;
 
   public toggleLayout(): void {
     this.layout = this.layout == 'grid' ? 'list' : 'grid';
@@ -121,7 +123,7 @@ export class DocumentsComponent implements OnInit {
     if (selected_file == null) return;
     switch (event.key) {
       case 'ArrowUp':
-        let fileUpIndex = this.documents.getFiles().findIndex((file) => file.file_id == selected_file?.file_id);
+        let fileUpIndex = this.documents.getFiles().findIndex((file) => file.document_id == selected_file?.document_id);
         if (fileUpIndex <= 0) {
           return;
         }
@@ -130,7 +132,7 @@ export class DocumentsComponent implements OnInit {
         break;
 
       case 'ArrowDown':
-        let fileDownIndex = this.documents.getFiles().findIndex((file) => file.file_id == selected_file?.file_id);
+        let fileDownIndex = this.documents.getFiles().findIndex((file) => file.document_id == selected_file?.document_id);
         if (fileDownIndex + 1 >= this.documents.getFiles().length) {
           return;
         }
@@ -220,11 +222,10 @@ export class DocumentsComponent implements OnInit {
     )
 
     this.documents.currentFolder$.subscribe((data: any) => {
-      console.log(data)
       const tree = this.documents.getTree();
       tree.forEach((item: any) => {
-        if (data.file_id) {
-          this.expandedFolders.add(data.file_id);
+        if (data && 'document_id' in data) {
+          this.expandedFolders.add(data.document_id);
         }
       });
     });
@@ -257,29 +258,17 @@ export class DocumentsComponent implements OnInit {
 
   public toggleFolder(item: any, event: Event): void {
     event.stopPropagation();
-    if (this.expandedFolders.has(item.file_id)) {
-      this.expandedFolders.delete(item.file_id);
+    if (this.expandedFolders.has(item.document_id)) {
+      this.expandedFolders.delete(item.document_id);
     } else {
       if (!item.children || !item.children.length) {
-        this.documents.loadFiles(item.file_id);
+        this.documents.loadFiles(item.document_id);
       }
-      this.expandedFolders.add(item.file_id);
+      this.expandedFolders.add(item.document_id);
     }
   }
 
   public isFolderExpanded(item: any): boolean {
-    return this.expandedFolders.has(item.file_id);
-  }
-
-  public uploadFile() {
-      // TODO: Open modal
-      const input = document.createElement('input');
-      input.type = 'file';
-      input.onchange = (e: any) => {
-          if (e.target.files.length > 0) {
-            //   this.documentService.uploadFile(e.target.files[0], null).subscribe();
-          }
-      };
-      input.click();
+    return this.expandedFolders.has(item.document_id);
   }
 }

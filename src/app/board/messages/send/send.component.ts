@@ -20,6 +20,7 @@ import { DropdownManager } from '@Schoolingo/dropdown';
 import { Utils } from '@Schoolingo/utils';
 import { ModalManager } from '@Schoolingo/modal';
 import { UploadFilesComponent } from './modals/upload-files/upload-files.component';
+import { SelectReceiverComponent } from './modals/select-receiver/select-receiver.component';
 
 @Component({
   imports: [
@@ -65,9 +66,6 @@ export class SendComponent implements OnInit {
   public showSelectedReceivers = false;
   public receiverFilter = '';
   public receivers: messageReceiver[] = [];
-
-  // === Files ===
-  public files: File[] = [];
 
   // === Receiver handling ===
   public toggleReceiverSelection(receiver: messageReceiver): void {
@@ -134,6 +132,10 @@ export class SendComponent implements OnInit {
     return this.receivers.find((r) => r.person_id === id);
   }
 
+  public openSelectReceiver(): void {
+    this.modalManager.openModal('sendMessage_select-receiver');
+  }
+
   public getCountOfReceiverType(type: string): number {
     return this.selectedReceivers.filter((r) => r.role === type).length;
   }
@@ -168,9 +170,20 @@ export class SendComponent implements OnInit {
       'sendMessage_files',
       {
         title: 'messages.attachments',
-        closeable: true,
+        closeable: false,
         items: [
           { type: 'component', component: UploadFilesComponent }
+        ]
+      }
+    )
+
+    this.modalManager.addModal(
+      'sendMessage_select-receiver',
+      {
+        title: 'messages.select_receiver',
+        closeable: true,
+        items: [
+          { type: 'component', component: SelectReceiverComponent }
         ]
       }
     )
@@ -212,7 +225,7 @@ export class SendComponent implements OnInit {
     const payload = {
       content: message,
       receivers: this.selectedReceivers.map((r) => r.person_id),
-      attachments: this.messageManager.attachments,
+      files: this.messageManager.files,
     };
 
     this.http
@@ -226,7 +239,7 @@ export class SendComponent implements OnInit {
           if (res?.status) {
             this.messageManager.message = '';
             this.messageManager.topic = '';
-            this.messageManager.attachments = [];
+            this.messageManager.files = [];
             this.selectedReceivers = [];
             this.alerts['main'] = new Alert('success', 'messages/sent');
           } else {
