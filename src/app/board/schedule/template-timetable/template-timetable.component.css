@@ -1,0 +1,114 @@
+/* Mřížka rozvrhu */
+.schedule-grid {
+    display: grid;
+    grid-template-columns: 80px repeat(8, 1fr);
+    gap: 4px;
+    background-color: var(--border-subtle);
+    padding: 4px;
+    border-radius: var(--radius);
+}
+
+.grid-cell {
+    aspect-ratio: 1 / 1;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-xs);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all var(--transition-fast);
+    user-select: none;
+}
+
+.grid-cell.header {
+    aspect-ratio: auto;
+    height: 50px;
+    font-size: var(--text-xs);
+    font-weight: 700;
+    text-align: center;
+    background: var(--surface-2);
+    border: none;
+}
+
+.grid-cell.day {
+    aspect-ratio: auto;
+    font-weight: 600;
+    font-size: var(--text-sm);
+    background: var(--surface-3);
+    writing-mode: vertical-lr;
+    transform: rotate(180deg);
+}
+
+/* Stavy buněk podle barev z obrázku */
+.state-disabled {
+    background: repeating-linear-gradient(45deg, transparent, transparent 5px, var(--border-hover) 5px, var(--border-hover) 10px);
+    opacity: 0.6;
+}
+
+.state-maybe {
+    content: '?';
+    color: var(--text-muted);
+    font-weight: bold;
+}
+
+.state-lunch {
+    background-color: #bbf7d0 !important; /* Světle zelená */
+}
+.dark .state-lunch { background-color: #166534 !important; }
+
+.state-continuous {
+    background-color: #fecaca !important; /* Světle červená */
+}
+.dark .state-continuous { background-color: #991b1b !important; }
+
+/* Položky v pravém menu */
+.selection-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 8px 12px;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    font-size: var(--text-sm);
+    transition: background 0.2s;
+}
+
+.selection-item:hover { background: var(--hover-bg); }
+.selection-item.active { background: var(--selected-bg); border: 1px solid var(--primary); }
+
+.selection-item .box {
+    width: 32px;
+    height: 24px;
+    border: 1px solid var(--border);
+    border-radius: 2px;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.hour-info {
+    display: flex;
+    justify-content: end;
+    align-items: center;
+    flex-direction: column;
+}
+
+.hour-info > .hour-id {
+    font-size: 18px;
+    font-weight: 600;
+    line-height: 18px;
+    min-height: 18px;
+    text-align: center;
+    color: var(--primary);
+}
+
+.hour-info > .hour-time {
+    font-size: 12px;
+    color: var(--text);
+    opacity: .7;
+    line-height: 16px;
+    min-height: 12px;
+    text-align: center;
+    font-weight: 300;
+}

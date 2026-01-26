@@ -1,0 +1,131 @@
+<div class="pattern-bg"></div>
+
+<div class="card" style="position: relative; z-index: 1;">
+    <header class="card-header">
+        <div class="flex-items gap-4">
+            <h2 class="small">Schéma rozvrhu třídy:</h2>
+            <select class="form-select" style="width: 120px;">
+                <option>IT</option>
+                <option>PP</option>
+            </select>
+            <select class="form-select" id="class" style="width: 120px;">
+                <option>1</option>
+                <option>2</option>
+            </select>
+            <label for="class">. ročník</label>
+        </div>
+        <div class="buttons">
+            <button class="btn btn--secondary icon-only">
+                <i-tabler name="settings"></i-tabler>
+            </button>
+        </div>
+    </header>
+
+    <div class="row" style="gap: var(--space-6);align-items: flex-start;">
+        <div style="flex: 1;">
+            <div class="schedule-grid" style="gap: var(--space-2);overflow-x: auto;">
+                <div class="grid-cell header"></div>
+                <div class="grid-cell header hour-info">
+                    <div class="hour-id">0</div>
+                    <div class="hour-time">7:00 - 7:30</div>
+                </div>
+                <div class="grid-cell header hour-info">
+                    <div class="hour-id">1</div>
+                    <div class="hour-time">8:00 - 8:45</div>
+                </div>
+                <div class="grid-cell header hour-info">
+                    <div class="hour-id">2</div>
+                    <div class="hour-time">8:55 - 9:40</div>
+                </div>
+                <div class="grid-cell header hour-info">
+                    <div class="hour-id">3</div>
+                    <div class="hour-time">10:00 - 10:45</div>
+                </div>
+
+                <div class="grid-cell header hour-info">
+                    <div class="hour-id">4</div>
+                    <div class="hour-time">10:55 - 11:40</div>
+                </div>
+                <div class="grid-cell header hour-info">
+                    <div class="hour-id">5</div>
+                    <div class="hour-time">11:50 - 12:35</div>
+                </div>
+                <div class="grid-cell header hour-info">
+                    <div class="hour-id">6</div>
+                    <div class="hour-time">12:45 - 13:30</div>
+                </div>
+                <div class="grid-cell header hour-info">
+                    <div class="hour-id">7</div>
+                    <div class="hour-time">13:35 - 14:20</div>
+                </div>
+                <div class="grid-cell header hour-info">
+                    <div class="hour-id">8</div>
+                    <div class="hour-time">14:25 - 15:10</div>
+                </div>
+                <div class="grid-cell header hour-info">
+                    <div class="hour-id">9</div>
+                    <div class="hour-time">15:15 - 16:00</div>
+                </div>
+                @for (day of schema; track dayIndex;let dayIndex = $index) {
+                    <div class="grid-cell day">
+                        {{ l.s('days.' + (dayIndex + 1)) }}
+                    </div>
+                    @for (hour of day; track $index) {
+                        <div [class]="['grid-cell', 'state-' + hour]" (mousedown)="schema[dayIndex][$index] = selected_type" (mouseover)="updateCell(dayIndex, $index, selected_type)">
+                            @if (hour == "maybe") {
+                                ?
+                            }
+                        </div>
+                    }
+                }
+            </div>
+
+            <div class="mt-4 flex justify-content-space-between text-sm muted">
+                <div>počet hodin / z toho část třídy: <strong>22 / 0</strong></div>
+                <div>prostor k nasazení: <strong>30 / +8</strong></div>
+            </div>
+        </div>
+
+        <aside style="width: 30%;min-width:350px;flex: 0 30%;flex-direction: column;" class="flex gap-6">
+            <section class="card p-0 overflow-hidden">
+                <div class="card__header" style="background: var(--surface-2)">
+                    <span class="font-bold text-sm uppercase tracking-wider">Označit do rozvrhu</span>
+                </div>
+                <div class="p-2 flex gap-1" style="flex-direction: column;">
+                    <div class="selection-item" [class.active]="selected_type == 'empty'" (click)="selected_type = 'empty'">
+                        <div class="box"></div> <span>zrušit označení</span>
+                    </div>
+                    <div class="selection-item" [class.active]="selected_type == 'disabled'" (click)="selected_type = 'disabled'">
+                        <div class="box state-disabled"></div> <span>hodinu nenasazovat</span>
+                    </div>
+                    <div class="selection-item" [class.active]="selected_type == 'maybe'" (click)="selected_type = 'maybe'">
+                        <div class="box state-maybe">?</div> <span>hodinu raději nenasazovat</span>
+                    </div>
+                    <div class="selection-item" [class.active]="selected_type == 'lunch'" (click)="selected_type = 'lunch'">
+                        <div class="box state-lunch"></div> <span>volno na oběd</span>
+                    </div>
+                    <div class="selection-item" [class.active]="selected_type == 'continuous'" (click)="selected_type = 'continuous'">
+                        <div class="box state-continuous"></div> <span>souvislé vyučování</span>
+                    </div>
+                </div>
+            </section>
+
+            <section class="card p-0 overflow-hidden">
+                <div class="card__header" style="background: var(--surface-2)">
+                    <span class="font-bold text-sm uppercase tracking-wider">Hromadné nastavení</span>
+                </div>
+                <div class="p-4 flex gap-3" style="flex-direction: column;">
+                    <button class="btn btn--outline-secondary btn--block">
+                        Toto schéma nastavit u skupiny tříd
+                    </button>
+                    <button class="btn btn--outline-secondary btn--block">
+                        Toto schéma nastavit u všech tříd
+                    </button>
+                </div>
+            </section>
+            <button class="btn btn--primary">
+                Uložit schéma
+            </button>
+        </aside>
+    </div>
+</div>
