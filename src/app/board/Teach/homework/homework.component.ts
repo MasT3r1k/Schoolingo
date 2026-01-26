@@ -9,6 +9,8 @@ import { Locale } from '@Schoolingo/locale';
 import { Utils } from '@Schoolingo/utils';
 import { BehaviorSubject } from 'rxjs';
 import moment from 'moment';
+import { ModalManager } from '@Schoolingo/modal';
+import { HomeworkDetailsComponent } from './modals/homework-details/homework-details.component';
 
 interface Homework {
   homework_id: number;
@@ -33,6 +35,7 @@ export class HomeworkComponent implements OnInit {
   public l = inject(Locale);
   public Utils = Utils;
   public u = inject(Authentication);
+  private modalManager = inject(ModalManager);
 
   // View mode
   public viewMode: 'kanban' | 'list' = 'kanban';
@@ -46,6 +49,19 @@ export class HomeworkComponent implements OnInit {
 
   ngOnInit(): void {
     this.loadHomework();
+
+    this.modalManager.addModal(
+      'homeworks_homework-detail',
+      {
+        title: '',
+        closeable: false,
+        forceScrollbar: true,
+        width: 900,
+        items: [
+          { type: 'component', component: HomeworkDetailsComponent }
+        ]
+      }
+    )
   }
 
   private loadHomework(): void {
@@ -85,21 +101,20 @@ export class HomeworkComponent implements OnInit {
     }
   }
 
-
-  public getHomeworkByStatus(status: number): Homework[] {
-    return this.homework.filter(hw => hw.type === status);
+  public getHomeworkByStatus(status: number[]): Homework[] {
+    return this.homework.filter(hw => status.includes(hw.type));
   }
 
   public getTodoHomework(): Homework[] {
-    return this.getHomeworkByStatus(0);
+    return this.getHomeworkByStatus([0]);
   }
 
   public getInProgressHomework(): Homework[] {
-    return this.getHomeworkByStatus(1);
+    return this.getHomeworkByStatus([1]);
   }
 
   public getDoneHomework(): Homework[] {
-    return this.getHomeworkByStatus(2);
+    return this.getHomeworkByStatus([2]);
   }
 
   public moveToInProgress(homework: Homework): void {
@@ -159,5 +174,10 @@ export class HomeworkComponent implements OnInit {
 
   public toggleViewMode(): void {
     this.viewMode = this.viewMode === 'kanban' ? 'list' : 'kanban';
+  }
+
+  public openHomeworkDetail(homework_id: number): void {
+    this.modalManager.updateModal('homeworks_homework-detail', 'width', '900px')
+    this.modalManager.openModal('homeworks_homework-detail');
   }
 }

@@ -64,7 +64,7 @@ h1 {
     margin: 0 0 20px 0;
     font-weight: 800;
     line-height: 1.1;
-    background: linear-gradient(to right, var(--text), var(--primary-200));
+    background: linear-gradient(to right, var(--text-secondary), var(--primary-200));
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
 }
@@ -73,7 +73,7 @@ p {
     font-size: 18px;
     line-height: 1.7;
     margin-bottom: 40px;
-    color: #4b5563;
+    color: var(--text-muted);
     max-width: 600px;
     margin-left: auto;
     margin-right: auto;
@@ -81,10 +81,15 @@ p {
 
 .actions {
     display: flex;
-    gap: 15px;
+    gap: 1rem;
     justify-content: center;
     flex-wrap: wrap;
-    margin-bottom: 60px;
+    margin: 0 auto;
+    width: min(450px, 65%);
+}
+
+.actions > div {
+    width: calc(50% - 0.5rem);
 }
 
 /* Developer details panel */
@@ -163,12 +168,8 @@ p {
 
 /* Responsive design */
 @media (max-width: 768px) {
-    .school-header {
-        padding: 15px 20px;
-    }
-
-    .school-header h2 {
-        font-size: 18px;
+    .school-header .logo {
+        text-align: center;
     }
 
     .container {
@@ -176,7 +177,15 @@ p {
     }
 
     .error-code {
-        font-size: 80px;
+        display: none;
+    }
+
+    .actions {
+        width: unset;
+    }
+
+    .actions > div {
+        width: 100%;
     }
 
     h1 {

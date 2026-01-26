@@ -35,13 +35,14 @@
                 </div>
                 <div class="column-content">
                     @for (hw of getTodoHomework(); track hw.homework_id) {
-                    <div class="homework-card">
-                        <div class="card-header-mini">
-                            <div class="subject-badge" [style.background]="hw.subjectColor || '#4aa3ff'">
-                                {{ hw.subjectName }}
-                            </div>
-                        </div>
+                    <div class="homework-card" (click)="openHomeworkDetail(hw.homework_id)">
                         <h4 class="homework-title">{{ hw.headline }}</h4>
+                        <div class="row">
+                            <span class="homework-subject">
+                                {{ hw.subjectName }}
+                            </span>
+                            <span class="homework-teacher"></span>
+                        </div>
                         <p class="homework-description">{{ hw.homework }}</p>
                         <div class="homework-meta">
                             <div class="meta-item">
@@ -63,9 +64,11 @@
                         </div>
                     </div>
                     } @empty {
-                    <div class="empty-column">
-                        <i-tabler name="circle-check"></i-tabler>
-                        <p>Žádné úkoly k vypracování</p>
+                    <div class="no-selection">
+                        <div class="illustration">
+                            <i-tabler name="circle-check"></i-tabler>
+                        </div>
+                        <h2>Žádné úkoly k vypracování</h2>
                     </div>
                     }
                 </div>
@@ -82,7 +85,7 @@
                 </div>
                 <div class="column-content">
                     @for (hw of getInProgressHomework(); track hw.homework_id) {
-                    <div class="homework-card">
+                    <div class="homework-card" (click)="openHomeworkDetail(hw.homework_id)">
                         <div class="card-header-mini">
                             <div class="subject-badge" [style.background]="hw.subjectColor || '#4aa3ff'">
                                 {{ hw.subjectName }}
@@ -113,9 +116,11 @@
                         </div>
                     </div>
                     } @empty {
-                    <div class="empty-column">
-                        <i-tabler name="pencil"></i-tabler>
-                        <p>Žádné rozpracované úkoly</p>
+                    <div class="no-selection">
+                        <div class="illustration">
+                            <i-tabler name="pencil"></i-tabler>
+                        </div>
+                        <h2>Žádné rozpracované úkoly</h2>
                     </div>
                     }
                 </div>
@@ -158,9 +163,11 @@
                         </div>
                     </div>
                     } @empty {
-                    <div class="empty-column">
-                        <i-tabler name="trophy"></i-tabler>
-                        <p>Žádné dokončené úkoly</p>
+                    <div class="no-selection">
+                        <div class="illustration">
+                            <i-tabler name="trophy"></i-tabler>
+                        </div>
+                        <h2>Žádné dokončené úkoly</h2>
                     </div>
                     }
                 </div>
@@ -257,8 +264,8 @@
                 </div>
             </div>
             } @empty {
-            <div class="empty-list">
-                <div class="empty-icon">
+            <div class="no-selection">
+                <div class="illustration">
                     <i-tabler name="notebook-off"></i-tabler>
                 </div>
                 <h3>Žádné domácí úkoly</h3>

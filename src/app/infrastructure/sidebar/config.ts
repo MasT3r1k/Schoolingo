@@ -31,10 +31,25 @@ export const config: SidebarGroup[] = [
                 permission: ['manager:admin', 'principal']
             },
             {
-                item: 'sidebar.schedule_builder',
-                url: 'schedule/builder',
+                item: 'sidebar.schedule.main',
                 icon: 'calendar-plus',
-                permission: ['manager:system:admin']
+                permission: ['manager:system:admin'],
+                children: [
+                    {
+                        item: 'sidebar.schedule.template_timetable',
+                        url: 'schedule/template_timetable',
+                        icon: ''
+                    },
+                    {
+                        item: 'sidebar.schedule.template_subject',
+                        url: 'schedule/template_subject',
+                        icon: ''
+                    },
+                    {
+                        item: 'sidebar.schedule.builder',
+                        url: 'schedule/builder'
+                    }
+                ]
             },
             {
                 item: 'sidebar.marks.main',

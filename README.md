@@ -48,8 +48,33 @@
 * Možnost u rozvrhu schovat/zobrazit skupinu, učitele nebo místnost
 * U přehledu předmětů možnost zobrazit dle období (K dnešku od začátku školního roku, 1. pololetí, 2. pololetí, celý školní rok)
 
-## Nové funkce v přípravě (TODO)
+## Menší ukázka
+### Chybová ukázka, když se nepodaří načíst něco ze serveru
+- I přesto že vypadne systém, tak furt jste aspoň informováni o tom, že systém spadl
+![Error500](/readme/Error500.png)
 
+### Přihlašovací stránka
+- Přihlašovací stránka s podporou přihlášení pomocí přihlašovacích údajů, passkey a QR kódu
+- Systém také umí obnovení hesla pomocí zaslání kódu na e-mail
+- Přihlášení také podporuje 2FA (ověření pomocí authenticátoru)
+![Login](/readme/Login.png)
+
+### Rozvrh
+- Zobrazení možnosti svého rozvrhu, rozvrhu své třídy, u rozvrhu podpora nastavení týdne (sudý, lichý, výchozí - oba)
+- Dále je na screenu vidět náhled dashboardu, včetně badge u notifikací a další dostupné funkce v systému
+![Timetable](/readme/Timetable.png)
+
+### Nastavení
+- Ukázka nastavení vzhledu systému - nabízíme 3 režimy: Tmavý, Midnight (co nejvíce tmavá - ideální pro OLED) a světý
+![Settings](/readme/Settings.png)
+
+### Varování o vypršení přihlášení
+- Z bezpečnostních důvodů tam je implementováný systém automatického odhlášení při neaktivitě
+![LogoutWarning](/readme/SessionExpirationWarning.png)
+
+### Více bude v budoucnu na [Wiki](https://github.com/MasT3r1k/Schoolingo/wiki)
+
+## Nové funkce v přípravě (TODO)
 * Dokončit propojení s discordem
 * Propojení s hlavním systémem
 * Dokončit třídní knihu, správu domácích úkolů, správa známek
@@ -58,7 +83,7 @@
 * Přidat podporu pro zákonné zástupce v profilu
 * Přidat stránku pro historii přihlášení ✅
 * Na stránku O systému zobrazit modal se stavem služeb
-* Upload systém
+* Upload systém ✅
 
 ### Můj přehled
 * U batohu ignorovat prázdné dny
@@ -69,16 +94,16 @@
 * V nastavení oken možnost nastavit velikost okna
 
 ### Přihlášení
-* Možnost nastavit jazyk a vzhled u přihlášení
-* Zprovoznit Zapomenuté heslo
+* Možnost nastavit jazyk a vzhled u přihlášení ✅
+* Zprovoznit Zapomenuté heslo ✅
 
 ### Praxe
 * Tisk smlouvy
 * Tisk průvodky
 * Aktivita u firem
-* Hodnocení u firem
+* Hodnocení u firem ✅
 * U seznamu deníků a v mém přehledu u studenta zprovoznit tlačítko "Vybrat instruktora"
-* Zápis deníku
+* Zápis deníku 
 * Když už je praxe aktivní (praxe již probíhá / proběhla), nelze změnit firmu, ale změnu instruktora nechat
 * Možnost upravit popis u praxe (v přehledu)
 
@@ -86,7 +111,7 @@
 * Po rozkliknutí hodiny zobrazit informace, domácí úkoly
 * Po rozkliknutí hodiny, pokud žák/student dosáhl 18 let, možnost omluvit si hodinu sám
 * Jako učitel po rozkliknutí možnost zapsat hodinu, napsat domácí úkol, přidat poznámku k hodině
-* Pro učitele zobrazení rozvrhu třídy (+ výběr třídy)
+* Pro učitele zobrazení rozvrhu třídy (+ výběr třídy) ✅
 
 ### Jídelna
 * Zprovoznit kompletně modul jídelny
@@ -101,14 +126,14 @@
 
 ### Zprávy
 * Odeslání zprávy
-* Vytvoření zprávy na nástěnku
+* Vytvoření zprávy na nástěnku ✅
 * Modal s označeními
-* Modal s přiloženými soubory
+* Modal s přiloženými soubory ✅
 * U omluvenky možnost vybrat dny pro omluvení (u rodičů)
-* Načítání zpráv + počet nepřečtených zpráv
+* Načítání zpráv + počet nepřečtených zpráv ✅
 * To samé z přijatých zpráv i do odeslaných zpráv
 * Správa skupiny (společný chat pro třída s učitelem)
-* Zobrazení zpráv na nástěnce
+* Zobrazení zpráv na nástěnce ✅
 * Přidat možnost napsat omluvenku po dosažení žáka/studenta 18 let
 
 ### Wiki

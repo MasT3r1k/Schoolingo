@@ -59,6 +59,8 @@ import { ManagemessagesComponent } from './board/system/managemessages/managemes
 import { PollAssignComponent } from './board/polls/poll-assign/poll-assign.component';
 import { PollEditComponent } from './board/polls/poll-edit/poll-edit.component';
 import { DetailComponent } from './board/students/detail/detail.component';
+import { TemplateSubjectComponent } from './board/schedule/template-subject/template-subject.component';
+import { TemplateTimetableComponent } from './board/schedule/template-timetable/template-timetable.component';
 
 
 export const routes: Routes = [
@@ -103,8 +105,21 @@ export const routes: Routes = [
                 component: EmployeesComponent
             },
             {
-                path: 'schedule/builder',
-                component: BuilderComponent
+                path: 'schedule',
+                children: [
+                    {
+                        path: 'builder',
+                        component: BuilderComponent
+                    },
+                    {
+                        path: 'template_timetable',
+                        component: TemplateTimetableComponent
+                    },
+                    {
+                        path: 'template_subject',
+                        component: TemplateSubjectComponent
+                    }
+                ]
             },
             {
                 path: 'calendar',
