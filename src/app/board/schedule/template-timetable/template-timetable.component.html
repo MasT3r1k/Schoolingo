@@ -3,18 +3,60 @@
 <div class="card" style="position: relative; z-index: 1;">
     <header class="card-header">
         <div class="flex-items gap-4">
-            <h2 class="small">Schéma rozvrhu třídy:</h2>
-            <select class="form-select" style="width: 120px;">
-                <option>IT</option>
-                <option>PP</option>
-            </select>
-            <select class="form-select" id="class" style="width: 120px;">
-                <option>1</option>
-                <option>2</option>
-            </select>
-            <label for="class">. ročník</label>
+            <h2 class="small">{{ l.s('schedule.template_timetable.title') }}:</h2>
+            <div class="custom-select"
+                style="min-width: 250px;"
+                (click)="$event.stopPropagation(); dropdownManager.selected_dropdown = dropdownManager.selected_dropdown == 'templateTimetable_selectScope' ? '' : 'templateTimetable_selectScope'">
+                <div class="selected-value">
+                    {{ selected_scope?.scopeName || 'Nothing' }}
+                    <i-tabler name="chevron-down"></i-tabler>
+                </div>
+                @if (dropdownManager.selected_dropdown == 'templateTimetable_selectScope') {
+                <div class="options-dropdown">
+                    <div class="list">
+                    @for (scope of scopes; track $index) {
+                    <div class="option"
+                        (click)="$event.stopPropagation();dropdownManager.selected_dropdown = '';selected_scope = scope;this.loadScheme();">
+                        {{ scope.scopeName }}
+                    </div>
+                    }
+                    </div>
+                </div>
+                }
+            </div>
+
+            <div class="custom-select"
+                style="min-width: 120px;"
+                (click)="$event.stopPropagation(); dropdownManager.selected_dropdown = dropdownManager.selected_dropdown == 'templateTimetable_selectYear' ? '' : 'templateTimetable_selectYear'">
+                <div class="selected-value">
+                    {{ selected_year || 'Nothing' }}
+                    <i-tabler name="chevron-down"></i-tabler>
+                </div>
+                @if (dropdownManager.selected_dropdown == 'templateTimetable_selectYear') {
+                <div class="options-dropdown">
+                    <div class="list">
+                    @for (year of [].constructor(selected_scope?.years); track $index) {
+                    <div class="option"
+                        (click)="$event.stopPropagation();dropdownManager.selected_dropdown = '';selected_year = $index + 1;this.loadScheme();">
+                        {{ $index + 1 }}
+                    </div>
+                    }
+                    </div>
+                </div>
+                }
+            </div>
+            <label for="class">. {{ l.s('schedule.builder.add_subject_modal.grade_level') }}</label>
         </div>
         <div class="buttons">
+            <div class="row" style="gap:8px;">
+                <span>1x</span>
+                <label class="toggle">
+                    <input type="checkbox">
+                    <span class="toggle-slider"></span>
+                </label>
+                <span>multi</span>
+            </div>
+            
             <button class="btn btn--secondary icon-only">
                 <i-tabler name="settings"></i-tabler>
             </button>
@@ -24,61 +66,32 @@
     <div class="row" style="gap: var(--space-6);align-items: flex-start;">
         <div style="flex: 1;">
             <div class="schedule-wrapper">
-                <div class="schedule-grid">
+                <div class="schedule-grid" [style.--columns]="maxHours">
                     <div class="grid-cell header sticky-cell"></div>
+                    @for(_ of [].constructor(maxHours);track $index) {
                     <div class="grid-cell header hour-info">
-                        <div class="hour-id">0</div>
-                        <div class="hour-time">7:00 - 7:30</div>
+                        <div class="hour-id">{{ $index + 1 }}</div>
+                        <div class="hour-time">
+                            {{ `${hours[$index].start} - ${hours[$index].end}` }}
+                        </div>
                     </div>
-                    <div class="grid-cell header hour-info">
-                        <div class="hour-id">1</div>
-                        <div class="hour-time">8:00 - 8:45</div>
-                    </div>
-                    <div class="grid-cell header hour-info">
-                        <div class="hour-id">2</div>
-                        <div class="hour-time">8:55 - 9:40</div>
-                    </div>
-                    <div class="grid-cell header hour-info">
-                        <div class="hour-id">3</div>
-                        <div class="hour-time">10:00 - 10:45</div>
-                    </div>
-
-                    <div class="grid-cell header hour-info">
-                        <div class="hour-id">4</div>
-                        <div class="hour-time">10:55 - 11:40</div>
-                    </div>
-                    <div class="grid-cell header hour-info">
-                        <div class="hour-id">5</div>
-                        <div class="hour-time">11:50 - 12:35</div>
-                    </div>
-                    <div class="grid-cell header hour-info">
-                        <div class="hour-id">6</div>
-                        <div class="hour-time">12:45 - 13:30</div>
-                    </div>
-                    <div class="grid-cell header hour-info">
-                        <div class="hour-id">7</div>
-                        <div class="hour-time">13:35 - 14:20</div>
-                    </div>
-                    <div class="grid-cell header hour-info">
-                        <div class="hour-id">8</div>
-                        <div class="hour-time">14:25 - 15:10</div>
-                    </div>
-                    <div class="grid-cell header hour-info">
-                        <div class="hour-id">9</div>
-                        <div class="hour-time">15:15 - 16:00</div>
-                    </div>
+                    }
+                
                     @for (day of schema; track dayIndex;let dayIndex = $index) {
                     <div class="grid-cell day sticky-cell">
                         {{ l.s('days.' + (dayIndex + 1)) }}
                     </div>
-                    @for (hour of day; track $index) {
-                    <div [class]="['grid-cell', 'state-' + hour]" (mousedown)="schema[dayIndex][$index] = selected_type"
-                        (mouseover)="updateCell(dayIndex, $index, selected_type)">
-                        @if (hour == "maybe") {
-                        ?
+                    @for (hour of [].constructor(maxHours); track hourIndex;let hourIndex = $index) {
+                        <div [class]="['grid-cell']" style="aspect-ratio: 1;">
+                            @for(a of hour; track $index) {
+                            <div [class]="['grid-cell', 'state-' + a]" (click)="this.schema[dayIndex][hourIndex][$index] = selected_type" (mouseover)="updateCell(dayIndex, hourIndex, $index)" (mousedown)="this.schema[dayIndex][hourIndex][$index] = selected_type">
+                                @if (a == "maybe") {
+                                    ?
+                                }
+                            </div>
+                            }
+                        </div>
                         }
-                    </div>
-                    }
                     }
                 </div>
             </div>
@@ -92,47 +105,56 @@
         <aside style="width: 30%;min-width:350px;flex: 0 30%;flex-direction: column;" class="flex gap-6">
             <section class="card p-0 overflow-hidden">
                 <div class="card__header" style="background: var(--surface-2)">
-                    <span class="font-bold text-sm uppercase tracking-wider">Označit do rozvrhu</span>
+                    <span class="font-bold text-sm uppercase tracking-wider">
+                        {{ l.s('schedule.template_timetable.types.title') }}
+                    </span>
                 </div>
                 <div class="p-2 flex gap-1" style="flex-direction: column;">
                     <div class="selection-item" [class.active]="selected_type == 'empty'"
                         (click)="selected_type = 'empty'">
-                        <div class="box"></div> <span>zrušit označení</span>
+                        <div class="box"></div>
+                        <span>{{ l.s('schedule.template_timetable.types.empty') }}</span>
                     </div>
                     <div class="selection-item" [class.active]="selected_type == 'disabled'"
                         (click)="selected_type = 'disabled'">
-                        <div class="box state-disabled"></div> <span>hodinu nenasazovat</span>
+                        <div class="box state-disabled"></div>
+                        <span>{{ l.s('schedule.template_timetable.types.disabled') }}</span>
                     </div>
                     <div class="selection-item" [class.active]="selected_type == 'maybe'"
                         (click)="selected_type = 'maybe'">
-                        <div class="box state-maybe">?</div> <span>hodinu raději nenasazovat</span>
+                        <div class="box state-maybe">?</div>
+                        <span>{{ l.s('schedule.template_timetable.types.maybe') }}</span>
                     </div>
                     <div class="selection-item" [class.active]="selected_type == 'lunch'"
                         (click)="selected_type = 'lunch'">
-                        <div class="box state-lunch"></div> <span>volno na oběd</span>
+                        <div class="box state-lunch"></div>
+                        <span>{{ l.s('schedule.template_timetable.types.lunch') }}</span>
                     </div>
                     <div class="selection-item" [class.active]="selected_type == 'continuous'"
                         (click)="selected_type = 'continuous'">
-                        <div class="box state-continuous"></div> <span>souvislé vyučování</span>
+                        <div class="box state-continuous"></div>
+                        <span>{{ l.s('schedule.template_timetable.types.continuous') }}</span>
                     </div>
                 </div>
             </section>
 
             <section class="card p-0 overflow-hidden">
                 <div class="card__header" style="background: var(--surface-2)">
-                    <span class="font-bold text-sm uppercase tracking-wider">Hromadné nastavení</span>
+                    <span class="font-bold text-sm uppercase tracking-wider">
+                        {{ l.s('schedule.template_timetable.multi_settings.title') }}
+                    </span>
                 </div>
                 <div class="p-4 flex gap-3" style="flex-direction: column;">
-                    <button class="btn btn--outline-secondary btn--block">
-                        Toto schéma nastavit u skupiny tříd
+                    <button class="btn btn--outline-secondary btn--block" (click)="saveScheme(selected_scope?.scopeId, -1)">
+                        {{ l.s('schedule.template_timetable.multi_settings.save_scope') }}
                     </button>
-                    <button class="btn btn--outline-secondary btn--block">
-                        Toto schéma nastavit u všech tříd
+                    <button class="btn btn--outline-secondary btn--block" (click)="saveScheme(-1,-1)">
+                        {{ l.s('schedule.template_timetable.multi_settings.save_all') }}
                     </button>
                 </div>
             </section>
-            <button class="btn btn--primary">
-                Uložit schéma
+            <button class="btn btn--primary" (click)="saveScheme()">
+                {{ l.s('schedule.template_timetable.save_scheme') }}
             </button>
         </aside>
     </div>

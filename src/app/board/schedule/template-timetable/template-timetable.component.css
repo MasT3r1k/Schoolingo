@@ -6,8 +6,9 @@
 
 /* Mřížka rozvrhu */
 .schedule-grid {
+    --columns: 10;
     display: grid;
-    grid-template-columns: 80px repeat(10, 1fr);
+    grid-template-columns: 80px repeat(var(--columns, 10), 1fr);
     gap: 4px;
     background-color: var(--border-subtle);
     padding: 4px;
@@ -28,7 +29,6 @@
 }
 
 .grid-cell {
-    aspect-ratio: 1 / 1;
     background: var(--surface);
     border: 1px solid var(--border);
     border-radius: var(--radius-xs);
@@ -37,7 +37,10 @@
     justify-content: center;
     transition: all var(--transition-fast);
     user-select: none;
-    min-width: 60px;
+    overflow: hidden;
+    width: 100%;
+    height: 100%;
+    min-height: 60px;
 }
 
 .grid-cell.header {
@@ -66,7 +69,6 @@
 }
 
 .state-maybe {
-    content: '?';
     color: var(--text-muted);
     font-weight: bold;
 }
