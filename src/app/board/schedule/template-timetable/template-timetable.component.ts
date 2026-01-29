@@ -37,12 +37,16 @@ export class TemplateTimetableComponent implements OnInit {
   public maxHours = 9;
   public hours: TimetableHours[] = [];
 
-  public default_schema: (string[][])[] = [
-    [['disabled'], ['continuous'], ['continuous'], ['continuous'], ['continuous'], ['lunch'], ['disabled'], ['disabled'], ['disabled'], ['disabled']],
-    [['disabled'], ['continuous'], ['continuous'], ['continuous'], ['continuous'], ['lunch'], ['disabled'], ['disabled'], ['disabled'], ['disabled']],
-    [['disabled'], ['continuous'], ['continuous'], ['continuous'], ['continuous'], ['lunch'], ['disabled'], ['disabled'], ['disabled'], ['disabled']],
-    [['disabled'], ['continuous'], ['continuous'], ['continuous'], ['continuous'], ['lunch'], ['disabled'], ['disabled'], ['disabled'], ['disabled']],
-    [['disabled'], ['continuous'], ['continuous'], ['continuous'], ['continuous'], ['lunch'], ['disabled'], ['disabled'], ['disabled'], ['disabled']]
+  public default_schema: string[][][] = [
+    [['continuous'], ['continuous'], ['continuous'], ['continuous'], ['continuous'], ['lunch'], ['disabled'], ['disabled'], ['disabled'], ['disabled']],
+
+    [['continuous'], ['continuous'], ['continuous'], ['continuous'], ['continuous'], ['lunch'], ['disabled'], ['disabled'], ['disabled'], ['disabled']],
+
+    [['continuous'], ['continuous'], ['continuous'], ['continuous'], ['continuous'], ['lunch'], ['disabled'], ['disabled'], ['disabled'], ['disabled']],
+
+    [['continuous'], ['continuous'], ['continuous'], ['continuous'], ['continuous'], ['lunch'], ['disabled'], ['disabled'], ['disabled'], ['disabled']],
+
+    [['continuous'], ['continuous'], ['continuous'], ['continuous'], ['continuous'], ['lunch'], ['disabled'], ['disabled'], ['disabled'], ['disabled']]
   ]
 
   public schema: typeof this.default_schema = [];
@@ -156,7 +160,8 @@ export class TemplateTimetableComponent implements OnInit {
       { withCredentials: true }
     )
     .subscribe((data) => {
-      if (data.length == 0) {
+      if (data.length == 0 || `${data}` == '[]') {
+        console.log('IGNORE')
         return;
       }
       this.default_schema = [];

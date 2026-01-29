@@ -132,17 +132,21 @@ export class AbsenceComponent implements OnInit {
 
   ngOnInit(): void {
     this.listeners.push(
-      this.selectedTab.subscribe((tab: number) => {
+      this.selectedTab
+      .pipe(distinctUntilChanged())
+      .subscribe((tab: number) => {
         if (tab === 0) {
           this.absenceSubjects = {};
           this.absence = {};
           this.selectedPeriod.next(0);
+          this.loadAbsence()
         }
       })
     );
 
     this.listeners.push(
       this.selectedPeriod
+      .pipe(distinctUntilChanged())
       .subscribe((period: number) => {
         this.loadAbsence();
       })

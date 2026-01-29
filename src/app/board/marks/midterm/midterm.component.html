@@ -1,13 +1,9 @@
-
 <div class="card">
     <div class="card-top"></div>
     <div class="card-header">
         <h2>{{ l.s("sidebar.marks.midterm") }}</h2>
         <div class="flex-items">
-        <schoolingo-tabs
-            [value]="selectedTab"
-            [options]="options"
-        ></schoolingo-tabs>
+            <schoolingo-tabs [value]="selectedTab" [options]="options"></schoolingo-tabs>
         </div>
     </div>
     @if(selectedTab.getValue() == 0) {
@@ -20,16 +16,16 @@
 
                         <!-- Roky -->
                         @for(year of [].constructor(getYears());track $index) {
-                            <th colspan="2" class="year">
-                                {{ getYearText($index) }}
-                            </th>
+                        <th colspan="2" class="year">
+                            {{ getYearText($index) }}
+                        </th>
                         }
                     </tr>
                     <tr>
                         @for(year of [].constructor(getYears());track $index) {
-                            @for(semester of [].constructor(2);track $index) {
-                                <th>{{ $index + 1 }}.</th>
-                            }
+                        @for(semester of [].constructor(2);track $index) {
+                        <th>{{ $index + 1 }}.</th>
+                        }
                         }
                     </tr>
                 </thead>
@@ -43,7 +39,7 @@
                             {{ subject.subjectName }}
                         </td>
                         @for (grade of subject.semesters; track $index) {
-                            <td>{{ grade ?? '-' }}</td>
+                        <td>{{ grade ?? '-' }}</td>
                         }
                     </tr>
                     }
@@ -58,7 +54,7 @@
                             {{ subject.subjectName }}
                         </td>
                         @for (grade of subject.semesters; track $index) {
-                            <td>{{ grade ?? '-' }}</td>
+                        <td>{{ grade ?? '-' }}</td>
                         }
                     </tr>
                     }
@@ -74,7 +70,7 @@
                             {{ subject.subjectName }}
                         </td>
                         @for (grade of subject.semesters; track $index) {
-                            <td>{{ grade ?? '-' }}</td>
+                        <td>{{ grade ?? '-' }}</td>
                         }
                     </tr>
                     }
@@ -85,6 +81,85 @@
     }
 
     @if (selectedTab.getValue() === 1) {
-        <div class="card-body"></div>
+    <div class="card-body reports-view">
+        <!-- Iterace přes ročníky -->
+        @for (yearGroup of getGroupedYears(); track yearGroup.year) {
+        <div class="year-section">
+            <div class="year-header">
+                <div class="year-title">
+                    <i-tabler name="school"></i-tabler>
+                    <h3>{{ yearGroup.year }}. {{ l.s('marks.midterm.report.year_label') }}</h3>
+                </div>
+            </div>
+
+            <div class="semesters-grid">
+                @for (semester of yearGroup.semesters; track semester.semester) {
+                <div class="semester-card"
+                    [class.semester--not-evaluated]="semester.evaluationType === 'not_evaluated'">
+                    <div class="semester-header">
+                        <span class="semester-badge">{{ semester.semester }}. {{ l.s('marks.midterm.report.semester')
+                            }}</span>
+                        <div class="evaluation-badge sm" [class]="getEvaluationClass(semester.evaluationType)">
+                            <i-tabler [name]="getEvaluationIcon(semester.evaluationType)"></i-tabler>
+                            <span>{{ l.s('marks.midterm.report.evaluation_types.' + semester.evaluationType) }}</span>
+                        </div>
+                    </div>
+
+                    <div class="stats-cards">
+                        <!-- Průměr -->
+                        <div class="stat-card" [class]="getAverageClass(semester.averageGrade)">
+                            <div class="stat-icon">
+                                <i-tabler name="chart-bar"></i-tabler>
+                            </div>
+                            <div class="stat-info">
+                                <span class="stat-value">{{ semester.averageGrade }}</span>
+                                <span class="stat-label">{{ l.s('marks.midterm.report.average') }}</span>
+                            </div>
+                        </div>
+
+                        <!-- Absence -->
+                        <div class="stat-card" [class.stat--warning]="semester.absenceUnexcused > 0"
+                            [class.stat--success]="semester.absenceUnexcused === 0 && semester.absenceTotal > 0">
+                            <div class="stat-icon">
+                                <i-tabler name="clock-off"></i-tabler>
+                            </div>
+                            <div class="stat-info">
+                                <span class="stat-value">{{ semester.absenceTotal }}</span>
+                                <span class="stat-label">{{ l.s('marks.midterm.report.hours') }}</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Detailní absence -->
+                    @if (semester.evaluationType !== 'not_evaluated') {
+                    <div class="semester-absence-detail">
+                        <div class="absence-row">
+                            <span class="absence-dot excused"></span>
+                            <span class="absence-text">{{ l.s('marks.midterm.report.absence_excused') }}: {{
+                                semester.absenceExcused }}</span>
+                        </div>
+                        <div class="absence-row">
+                            <span class="absence-dot unexcused"></span>
+                            <span class="absence-text">{{ l.s('marks.midterm.report.absence_unexcused') }}: {{
+                                semester.absenceUnexcused }}</span>
+                        </div>
+                    </div>
+
+                    <div class="semester-footer">
+                        <i-tabler name="certificate"></i-tabler>
+                        <span>{{ l.s('marks.midterm.report.issued') }}: {{ semester.issueDate }}</span>
+                    </div>
+                    } @else {
+                    <div class="not-evaluated-message">
+                        <i-tabler name="hourglass"></i-tabler>
+                        <span>{{ l.s('marks.midterm.report.not_yet_evaluated') }}</span>
+                    </div>
+                    }
+                </div>
+                }
+            </div>
+        </div>
+        }
+    </div>
     }
 </div>

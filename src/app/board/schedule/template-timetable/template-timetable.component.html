@@ -82,9 +82,9 @@
                         {{ l.s('days.' + (dayIndex + 1)) }}
                     </div>
                     @for (hour of [].constructor(maxHours); track hourIndex;let hourIndex = $index) {
-                        <div [class]="['grid-cell']" style="aspect-ratio: 1;">
-                            @for(a of hour; track $index) {
-                            <div [class]="['grid-cell', 'state-' + a]" (click)="this.schema[dayIndex][hourIndex][$index] = selected_type" (mouseover)="updateCell(dayIndex, hourIndex, $index)" (mousedown)="this.schema[dayIndex][hourIndex][$index] = selected_type">
+                        <div [class]="['grid-cell']" style="aspect-ratio: 1;" (click)="this.schema[dayIndex][hourIndex][0] = selected_type" (mouseover)="updateCell(dayIndex, hourIndex, 0)" (mousedown)="this.schema[dayIndex][hourIndex][0] = selected_type">
+                            @for(a of this.schema[dayIndex][hourIndex]; track $index) {
+                            <div [class]="['grid-cell', 'state-' + a]" >
                                 @if (a == "maybe") {
                                     ?
                                 }

@@ -113,26 +113,26 @@
 * Jako učitel po rozkliknutí možnost zapsat hodinu, napsat domácí úkol, přidat poznámku k hodině
 * Pro učitele zobrazení rozvrhu třídy (+ výběr třídy) ✅
 
-### Jídelna
+### Jídelna ❌ DOČASNĚ ZRUŠENO
 * Zprovoznit kompletně modul jídelny
 
-### Knihovna
+### Knihovna ❌ DOČASNĚ ZRUŠENO
 * Seznam knih
 * Podrobnosti o knize, počtu dostupných kopií
 * Přidat možnost pokut (propojení s platbama)
 
 ### Platby
-* Zprovoznit kompletně modul platby
+* Zprovoznit kompletně modul platby ❌ DOČASNĚ ZRUŠENO
 
 ### Zprávy
 * Odeslání zprávy
 * Vytvoření zprávy na nástěnku ✅
-* Modal s označeními
+* Modal s označeními ❌ DOČASNĚ ZRUŠENO
 * Modal s přiloženými soubory ✅
 * U omluvenky možnost vybrat dny pro omluvení (u rodičů)
 * Načítání zpráv + počet nepřečtených zpráv ✅
-* To samé z přijatých zpráv i do odeslaných zpráv
-* Správa skupiny (společný chat pro třída s učitelem)
+* To samé z přijatých zpráv i do odeslaných zpráv ✅
+* Správa skupiny (společný chat pro třída s učitelem) ❌ DOČASNĚ ZRUŠENO
 * Zobrazení zpráv na nástěnce ✅
 * Přidat možnost napsat omluvenku po dosažení žáka/studenta 18 let
 
