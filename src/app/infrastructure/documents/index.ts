@@ -174,13 +174,13 @@ export class Documents {
     }
 
     public getIcon(type: string): string {
-        switch (type) {
-        case 'folder': return 'folder-filled';
-        case 'image': return 'photo';
-        case 'video': return 'movie';
-        case 'pdf': return 'file-type-pdf';
-        case 'sheet': return 'table';
-        default: return 'file';
+        switch (type.split('/')[0]) {
+            case 'folder': return 'folder-filled';
+            case 'image': return 'photo';
+            case 'video': return 'movie';
+            case 'pdf': return 'file-type-pdf';
+            case 'sheet': return 'table';
+            default: return 'file';
         }
     }
 

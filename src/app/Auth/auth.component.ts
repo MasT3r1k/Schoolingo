@@ -19,6 +19,11 @@ import {
   startAuthentication,
 } from '@simplewebauthn/browser';
 import { InstallAppModalComponent } from '@Components/InstallAppModal/install-app-modal.component';
+import { Passkey } from '@Schoolingo/passkey';
+import { DropdownManager } from '@Schoolingo/dropdown';
+import { SessionExpiredService } from '../infrastructure/session/session-expired.service';
+import { WsService } from '@Schoolingo/websocket';
+import { Title } from '@angular/platform-browser';
 
 export function isoBase64URLBuffer(buffer: Uint8Array): string {
   return btoa(String.fromCharCode(...buffer))
@@ -26,12 +31,6 @@ export function isoBase64URLBuffer(buffer: Uint8Array): string {
     .replace(/\//g, '_')
     .replace(/=/g, '');
 }
-
-import { Passkey } from '@Schoolingo/passkey';
-import { DropdownManager } from '@Schoolingo/dropdown';
-import { SessionExpiredService } from '../infrastructure/session/session-expired.service';
-import { WsService } from '@Schoolingo/websocket';
-import { Title } from '@angular/platform-browser';
 
 @Component({
   standalone: true,
@@ -393,6 +392,7 @@ export class AuthComponent implements OnInit {
     });
 
     // Error while too long loading
+    this.ws.close();
     this.ws.connect();
     this.ws.connected$.subscribe(connected => {
       if (connected) {

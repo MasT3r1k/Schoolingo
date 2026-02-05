@@ -74,29 +74,28 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @for (file of files; track file.id) {
+                    @for (file of files; track file.file_id) {
                     <tr>
                         <td class="col-file">
                             <div class="file-cell">
-                                <div class="file-icon-wrapper" [ngClass]="getFileIconClass(file)">
-                                    <i-tabler [name]="getFileIcon(file)"></i-tabler>
+                                <div class="file-icon-wrapper">
+                                    <i-tabler [name]="documents.getIcon(file.mime_type)"></i-tabler>
                                 </div>
                                 <div class="file-info">
                                     <span class="file-name">{{ file.name }}</span>
-                                    <span class="file-path">{{ file.path }}</span>
+                                    <span class="file-path">{{ file.storage_path }}</span>
                                 </div>
                             </div>
                         </td>
                         <td class="col-owner">
                             <div class="owner-cell">
                                 <div class="owner-avatar">
-                                    <span>{{ file.owner.substring(0,2).toUpperCase() }}</span>
                                 </div>
                                 <span class="owner-name">{{ file.owner }}</span>
                             </div>
                         </td>
-                        <td class="col-size">{{ formatBytes(file.size) }}</td>
-                        <td class="col-date">{{ formatDate(file.createdAt) }}</td>
+                        <td class="col-size">{{ formatBytes(file.file_size) }}</td>
+                        <td class="col-date">{{ formatDate(file.created_at) }}</td>
                         <td class="col-actions">
                             <div class="row-actions">
                                 <button class="btn-icon" title="Otevřít" (click)="viewFile(file)">
@@ -121,7 +120,7 @@
             <div class="left">
                 <span class="pagination-info">
                     Zobrazeno {{ (currentPage - 1) * pageSize + 1 }} - {{ Math.min.apply(null, [currentPage * pageSize,
-                    totalItems]) }} z {{ totalItems }} souborů
+                    this.totalStats.filesCount]) }} z {{ this.totalStats.filesCount }} souborů
                 </span>
             </div>
             <div class="right">
@@ -144,8 +143,8 @@
         </div>
 
         } @else {
-        <div class="empty-state">
-            <div class="empty-icon">
+        <div class="no-selection">
+            <div class="illustration">
                 <i-tabler name="file-search"></i-tabler>
             </div>
             <h3>Žádné soubory nenalezeny</h3>
