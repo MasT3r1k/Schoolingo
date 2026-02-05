@@ -57,31 +57,6 @@ export class ClassbookComponent implements OnInit {
     return this.classbook.students.filter((student) => student.absence[this.selected_lesson.getValue()] !== undefined).length;
   }
 
-  // === List lessons ===
-  public lessons: ClassbookLesson[] = [
-    {
-      subjectName: "Matematika",
-      className: "B4.I",
-      groupName: null,
-      topic: "",
-      lockClassAfterLesson: false
-    },
-    {
-      subjectName: "Anglický jazyk",
-      className: "B4.I",
-      groupName: "2",
-      topic: "",
-      lockClassAfterLesson: false
-    },
-    {
-      subjectName: "Anglický jazyk",
-      className: "B4.I",
-      groupName: "1",
-      topic: "Pikoláda v angličtině",
-      lockClassAfterLesson: true
-    }
-  ];
-
   // === New Homework ===
   public newHomework(): void {
     this.modalManager.openModal('add_homework')

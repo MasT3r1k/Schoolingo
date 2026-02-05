@@ -9,7 +9,7 @@
         </div>
     </div>
 
-    <div class="card-body">
+    <div class="card-body" [class.center]="timetable.length == 0">
         <div class="lessons-list">
         @if (!is_loading) {
             @if (timetable.length > 0) {
@@ -67,6 +67,7 @@
         }
         </div>
 
+        @if (timetable.length > 0) {
         <div class="lesson-details">
             @if (classbook.classbook) {
             <div class="header" [class.skeleton]="is_lesson_loading">
@@ -352,5 +353,6 @@
             </div>
             }
         </div>
+        }
     </div>
 </div>

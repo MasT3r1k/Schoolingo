@@ -10,6 +10,7 @@ import { avataaarsNeutral } from '@dicebear/collection';
 import moment from 'moment';
 import { Router } from '@angular/router';
 import { TokenExpirationService } from '../token-expiration/token-expiration.service';
+import { AuthConfig } from './config';
 
 export class Authentication {
     private http = inject(HttpClient);
@@ -45,11 +46,15 @@ export class Authentication {
                     this.setAuthState(true);
                 }
             }, (err) => {
-                console.log(err)
                 if (err.status === 401) {
                     this.setAuthState(false);
                     // this.tokenExpirationService.clearExpiration();
-                    this.router.navigate(['', 'login'], { queryParams: { returnUrl: this.router.url } });
+                    const url = this.router.url;
+                    if (AuthConfig.ignored_redirect.includes(url)) {
+                        this.router.navigate(['', 'login']);
+                    } else {
+                        this.router.navigate(['', 'login'], { queryParams: { returnUrl: url } });
+                    }
                     return;
                 }
                 this.setAuthState('offline')

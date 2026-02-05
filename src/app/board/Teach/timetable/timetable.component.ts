@@ -171,8 +171,8 @@ export class TimetableComponent implements OnInit {
       if (this.selectedClass.getValue() === 0 && this.u.getUser().classes.length) {
         this.selectedClass.next(this.u.getUser().classes[0].classId)
       }
-      this.refreshData()}
-    );
+      this.refreshData()
+    });
 
     this.selectedClass
     .pipe(distinctUntilChanged())
