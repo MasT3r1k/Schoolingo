@@ -7,7 +7,6 @@
         <div class="left">
             <div class="title">
                 <div class="application APP_Logo">
-                    <!-- {{ App.APP_NAME }} -->
                     <img src="/assets/logo/logo_64.webp" alt="Schoolingo" draggable="false">
                 </div>
                 <div class="school" [title]="school.config.getValue()?.shortName">
@@ -82,23 +81,27 @@
                         <div class="notification-list">
                             @for (notification of notifications; track $index) {
                             @let config = notifications_types[notification.type];
-                            <div class="notification-item" [class.unread]="!notification.is_read"
-                                (click)="config.close_after_action ? dropdownManager.selected_dropdown = '' : {}; notification.is_read = true"
-                                [routerLink]="config.url" [queryParams]="{ id: notification.action.id }">
+                            <div class="notification-item" [class.unread]="!notification.read_at"
+                                (click)="config.close_after_action ? dropdownManager.selected_dropdown = '' : {}; notification.read_at != null"
+                                [routerLink]="config.url" [queryParams]="{ id: notification.data.id }">
                                 <div class="notification-icon center" [style.color]="config.color"
                                     [style.background]="config.color + '1a'">
                                     <i-tabler [name]="config.icon"></i-tabler>
                                 </div>
                                 <div class="notification-content">
                                     <div class="notification-top">
-                                        <span class="notification-title">{{ config.title }}</span>
-                                        <span class="time">{{ Utils.formatDateShort(notification.created_at) }}</span>
+                                        <span class="notification-title">
+                                            {{ config.title }}
+                                        </span>
+                                        <span class="time">
+                                            {{ Utils.formatDateShort(notification.created_at) }}
+                                        </span>
                                     </div>
                                     <div class="notification-text">
                                         {{ getNotificationText(notification) }}
                                     </div>
                                 </div>
-                                @if (!notification.is_read) {
+                                @if (!notification.read_at) {
                                 <div class="unread-indicator"></div>
                                 }
                             </div>
@@ -113,35 +116,6 @@
                         </div>
                     </div>
                 </div>
-
-                <!-- <div class="item-btn"
-                    (click)="$event.stopPropagation();dropdownManager.selected_dropdown = (dropdownManager.selected_dropdown == 'navbar_add') ? '' : 'navbar_add'">
-                    <div class="icon">
-                        <i-tabler name="plus"></i-tabler>
-                    </div>
-                    <div class="dropdown" style="min-width: 225px;"
-                        [hidden]="dropdownManager.selected_dropdown !== 'navbar_add'"
-                        (click)="$event.stopPropagation()">
-                        <ul>
-                            @for (item of addDropdown; track $index) {
-                            <li [routerLink]="item.url" [ngClass]="[item.type ? item.type : '']"
-                                (click)="dropdownManager.selected_dropdown = '';item?.action()"
-                                [routerLinkActive]="'active'">
-                                <div class="item">
-                                    @if (item.icon) {
-                                    <div class="icon">
-                                        <i-tabler [name]="item.icon"></i-tabler>
-                                    </div>
-                                    }
-                                    <div class="item-label">
-                                        {{ l.s(item.item) }}
-                                    </div>
-                                </div>
-                            </li>
-                            }
-                        </ul>
-                    </div>
-                </div> -->
 
                 @if (u.getUser().children.length) {
                 <div class="item-btn"
@@ -232,7 +206,7 @@
                     (click)="$event.stopPropagation()">
                     <ul>
                         @for (item of userDropdown; track $index) {
-                        <li [routerLink]="item.url" [ngClass]="[item.type ? item.type : '']"
+                        <li [routerLink]="item.url" [ngClass]="[item.type ?? '']"
                             (click)="dropdownManager.selected_dropdown='';item?.action();" [routerLinkActive]="'active'"
                             [routerLinkActiveOptions]="{ exact: false, queryParams: 'ignored' }">
                             <div class="item">

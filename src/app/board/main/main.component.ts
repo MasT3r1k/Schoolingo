@@ -4,10 +4,12 @@ import { Locale } from '@Schoolingo/locale';
 import { Permission } from '@Schoolingo/permission';
 import { IconsModule } from '@Schoolingo/icons';
 import { SeasonalService } from '@Schoolingo/seasonal';
+import { RouterLink } from '@angular/router';
 
 interface DashboardModule {
   id: string;
   titleKey: string;
+  titleUrl?: string;
   import: () => Promise<Type<any>>;
   component: WritableSignal<Type<any> | null>;
   permission?: string[];
@@ -18,7 +20,7 @@ interface DashboardModule {
 @Component({
   selector: 'app-main',
   standalone: true,
-  imports: [NgComponentOutlet, IconsModule],
+  imports: [NgComponentOutlet, IconsModule, RouterLink],
   templateUrl: './main.component.html',
   styleUrls: ['./main.component.css']
 })
@@ -31,6 +33,7 @@ export class MainComponent {
     {
       id: 'timetable',
       titleKey: 'modules.timetable',
+      titleUrl: '/teach/timetable',
       icon: 'calendar',
       import: () => import('./sections/timetable/timetable.component').then(m => m.TimetableComponent),
       component: signal(null)
@@ -38,6 +41,7 @@ export class MainComponent {
     {
       id: 'marks',
       titleKey: 'modules.marks',
+      titleUrl: '/marks/interm',
       icon: 'school',
       permission: ['student', 'parent'],
       import: () => import('./sections/marks/marks.component').then(m => m.MarksComponent),
@@ -53,6 +57,7 @@ export class MainComponent {
     {
       id: 'homework',
       titleKey: 'modules.homework',
+      titleUrl: '/teach/homeworks',
       icon: 'notebook',
       permission: ['student', 'parent'],
       import: () => import('./sections/homework/homework.component').then(m => m.HomeworkComponent),
@@ -61,6 +66,7 @@ export class MainComponent {
     {
       id: 'events',
       titleKey: 'modules.events',
+      titleUrl: '/calendar',
       icon: 'calendar-event',
       import: () => import('./sections/events/events.component').then(m => m.EventsComponent),
       component: signal(null)
@@ -68,6 +74,7 @@ export class MainComponent {
     {
       id: 'substitutions',
       titleKey: 'modules.substitutions',
+      titleUrl: '/teach/substitution',
       icon: 'replace',
       import: () => import('./sections/substitutions/substitutions.component').then(m => m.SubstitutionsComponent),
       component: signal(null)
@@ -75,6 +82,7 @@ export class MainComponent {
     {
       id: 'traineeship',
       titleKey: 'modules.traineeship',
+      titleUrl: '/traineeship/overview',
       icon: 'briefcase',
       permission: ['student', 'parent'],
       import: () => import('./sections/traineeship/traineeship.component').then(m => m.TraineeshipComponent),

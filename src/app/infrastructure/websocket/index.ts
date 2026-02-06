@@ -3,6 +3,7 @@ import { Config } from '@Schoolingo/config';
 import { BehaviorSubject, Observable, Subject, filter, shareReplay } from 'rxjs';
 
 export interface NotificationPayload {
+  id: number;
   type: string;
   title: string;
   body: string;

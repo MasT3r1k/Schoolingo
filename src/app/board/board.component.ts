@@ -70,10 +70,11 @@ const notification_types: Record<string, any> = {
 }
 
 interface Notification {
+  notification_id: number;
   type: string;
   data: any;
-  action: any;
-  is_read: boolean;
+  url: any;
+  read_at: Date | null;
   created_at: Date;
 }
 
@@ -118,44 +119,7 @@ export class BoardComponent implements OnInit, OnDestroy {
   u = inject(Authentication);
 
   public notifications_types = notification_types;
-  public notifications: Notification[] = [
-    {
-      type: 'message',
-      data: {
-        name: "MgA. Jakub Pizinger"
-      },
-      action: {
-        id: "5"
-      },
-      is_read: false,
-      created_at: new Date()
-    },
-    {
-      type: 'login',
-      data: {},
-      action: {},
-      is_read: true,
-      created_at: new Date()
-    },
-    {
-      type: 'homework',
-      data: {
-        subject: "Matematika"
-      },
-      action: {
-        id: ""
-      },
-      is_read: true,
-      created_at: new Date()
-    },
-    {
-      type: 'reward',
-      data: {},
-      action: {},
-      is_read: true,
-      created_at: new Date()
-    }
-  ];
+  public notifications: Notification[] = [];
 
   public getNotificationText(notification: Notification): string {
     let text = this.notifications_types[notification.type].description;
@@ -167,7 +131,7 @@ export class BoardComponent implements OnInit, OnDestroy {
   }
 
   public markAllAsRead(): void {
-    this.notifications.forEach(n => n.is_read = true);
+    this.notifications.forEach(n => n.read_at = new Date());
     this.dashboard.newNotifications = 0;
   }
 
@@ -310,10 +274,11 @@ export class BoardComponent implements OnInit, OnDestroy {
         const notifSubscription = this.wsService.getNotifications().subscribe((notification) => {
           // Add to notifications list
           this.notifications.unshift({
+            notification_id: notification.id,
             type: notification.type.replace('_new', ''),
             data: notification.data || {},
-            action: { url: notification.url },
-            is_read: false,
+            url: notification.url,
+            read_at: null,
             created_at: new Date()
           });
           
@@ -344,6 +309,14 @@ export class BoardComponent implements OnInit, OnDestroy {
           // Enable localStorage for seasonal preferences if full cookie consent
           this.seasonalService.setCookiesConsent(data.cookies);
         })
+
+        this.http.get<Notification[]>(
+          `${Config.API_URL}/v1/notifications`,
+          { withCredentials: true }
+        )
+        .subscribe((data) => {
+          this.notifications = data;
+        });
 
         // === Get traineeship weeks ===
         this.http.get(

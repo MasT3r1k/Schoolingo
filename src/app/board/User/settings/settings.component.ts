@@ -8,6 +8,7 @@ import { LanguageComponent } from './language/language.component';
 import { ThemeComponent } from './theme/theme.component';
 import { SecurityComponent } from './security/security.component';
 import { Settings } from '@Schoolingo/settings';
+import { OtherComponent } from './other/other.component';
 
 @Component({
   standalone: true,
@@ -17,6 +18,7 @@ import { Settings } from '@Schoolingo/settings';
     LanguageComponent,
     ThemeComponent,
     SecurityComponent,
+    OtherComponent
   ],
   templateUrl: './settings.component.html',
   styleUrl: './settings.component.css',
@@ -28,32 +30,31 @@ export class SettingsComponent implements OnInit {
     'settings.language',
     'settings.theme',
     'settings.security',
+    'settings.other'
   ];
   public l = inject(Locale);
   public alert: '2FAEnabled' | '' = '';
   public settings = inject(Settings);
 
   private route = inject(ActivatedRoute);
-  private router = inject(Router); // ✅
+  private router = inject(Router);
 
   ngOnInit(): void {
     this.settings.init();
 
-    // ✅ Když uživatel přepne tab → změní URL (page=...)
     this.selectedTab.subscribe((index) => {
-      const option = this.options[index]; // např. 'settings.security'
-      const page = option.replace('settings.', ''); // → 'security'
+      const option = this.options[index];
+      const page = option.replace('settings.', '');
 
       this.router.navigate([], {
         relativeTo: this.route,
         queryParams: { page },
-        queryParamsHandling: 'merge', // nezruší ostatní parametry v URL
+        queryParamsHandling: 'merge',
       });
     });
 
-    // ✅ Při načtení URL → nastavit správný tab
     this.route.queryParamMap.subscribe((params) => {
-      const page = params.get('page'); // např. ?page=security
+      const page = params.get('page');
       if (page) {
         const index = this.options.findIndex((x) => x === `settings.${page}`);
         if (index !== -1) {

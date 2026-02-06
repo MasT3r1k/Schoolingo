@@ -1,11 +1,11 @@
 <h2 class="small mb">{{ l.s('settings.security') }}</h2>
 <div class="items">
-    <div [ngClass]="{item: true, collapse: collapses[0]}" style="justify-content: space-between;" (click)="settings.getSecurity()!['2fa'] ? collapses[0] = !collapses[0] : activate2FA()">
+    <div class="item" [class.collapse]="collapses[0]" style="justify-content: space-between;" (click)="settings.getSecurity()!['2fa'] ? collapses[0] = !collapses[0] : activate2FA()">
         <div class="row justify-content-space-between" style="width: 100%;">
             <div class="item-info">
                 <div class="row">
                     <span class="title">{{ l.s('settings.2fa.title') }}</span>
-                    <div class="badge badge--neutral" style="margin-left: 8px;">
+                    <div class="badge badge--primary" style="margin-left: 8px;">
                         {{ l.s('settings.2fa.methods.mobile_app') }}
                     </div>
                 </div>
@@ -51,7 +51,7 @@
             </div>
         }
     </div>
-    <div [ngClass]="{item: true, collapse: collapses[1]}" style="justify-content: space-between;" (click)="collapses[1] = !collapses[1]">
+    <div class="item" [class.collapse]="collapses[1]" style="justify-content: space-between;" (click)="collapses[1] = !collapses[1]">
         <div class="row justify-content-space-between" style="width: 100%;">
             <div class="item-info">
                 <div class="row">
@@ -62,7 +62,7 @@
                 </p>
             </div>
 
-            <div [ngClass]="{btn: true, 'btn--sm': true, 'btn--primary': isPasskeySupported == true, loading: isPasskeySupported !== true, skeleton: isPasskeySupported == null}" (click)="$event.stopPropagation();addPasskey()">
+            <div class="btn btn--sm" [class.btn--primary]="isPasskeySupported" [class.loading]="isPasskeySupported !== true" [class.skeleton]="isPasskeySupported == null" (click)="$event.stopPropagation();addPasskey()">
                 @if (!isPasskeySupported == null) {
                     <div class="loader"></div>
                     <span>{{ l.s('loading') }}</span>

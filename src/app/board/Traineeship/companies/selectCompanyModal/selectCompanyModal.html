@@ -53,7 +53,7 @@
 <div [ngStyle]="{position: 'absolute', top:0, left:0, transform: page == 'select_traineeship' ? 'translateX(0%)' : 'translateX(100%)', width: '100%',height:'100%', 'max-height': '100vh', 'visibility': page == 'select_traineeship' ? 'visible' : 'hidden', backgroundColor: 'var(--surface)', transition: 'all .5s', zIndex: '500', padding: '2rem', display: 'flex', 'flex-direction': 'column'}" class="modal">
     <div class="modal-header" style="justify-content: flex-start;">
         <div>
-            <div class="btn small gray" style="display: flex;align-items: center;margin-right: .5rem;" (click)="page = 'main'">
+            <div class="btn small btn--secondary" style="display: flex;align-items: center;margin-right: .5rem;" (click)="page = 'main'">
                 <i-tabler name="chevron-left" style="margin-right: 4px;width: 20px;height: 20px;"></i-tabler>
                 {{ l.s('buttons.back') }}
             </div>
@@ -98,21 +98,19 @@
 
                     <div class="badges" style="position:absolute;top:8px;right:12px;">
                         @if (traineeship.selectedDairy?.traineeship == week.traineeship) {
-                            <div class="badge primary">
+                            <div class="badge badge--primary">
                                 {{ l.s('selected') }}
                             </div>
                         }
                     </div>
                 </div>
             } @empty {
-                <div class="instructor-empty">
-                    <div class="empty-icon">
+                <div class="no-selection">
+                    <div class="illustration">
                         <i-tabler name="calendar-search"></i-tabler>
                     </div>
-                    <div class="empty-text">
-                        <h3>{{ l.s('traineeship.no_weeks') }}</h3>
-                        <p>{{ l.s('traineeship.no_incoming_weeks') }}</p>
-                    </div>
+                    <h3>{{ l.s('traineeship.no_weeks') }}</h3>
+                    <p>{{ l.s('traineeship.no_incoming_weeks') }}</p>
                 </div>
             }
         </div>
@@ -122,7 +120,7 @@
 <div [ngStyle]="{position: 'absolute', top:0, left:0, transform: page == 'select_instructor' ? 'translateX(0%)' : 'translateX(100%)', width: '100%',height:'100%', 'max-height': '100vh', 'visibility': page == 'select_instructor' ? 'visible' : 'hidden', backgroundColor: 'var(--surface)', transition: 'all .5s', zIndex: '500', padding: '2rem', display: 'flex', 'flex-direction': 'column'}" class="modal">
     <div class="modal-header" style="justify-content: flex-start;">
         <div>
-            <div class="btn small gray" style="display: flex;align-items: center;margin-right: .5rem;" (click)="page = 'main'">
+            <div class="btn small btn--secondary" style="display: flex;align-items: center;margin-right: .5rem;" (click)="page = 'main'">
                 <i-tabler name="chevron-left" style="margin-right: 4px;width: 20px;height: 20px;"></i-tabler>
                 {{ l.s('buttons.back') }}
             </div>
@@ -167,21 +165,19 @@
 
                     <div class="badges" style="position:absolute;top:8px;right:12px;">
                         @if (traineeship.selectedInstructor == instructor.instructorId) {
-                            <div class="badge primary">
+                            <div class="badge badge--primary">
                                 {{ l.s('selected') }}
                             </div>
                         }
                     </div>
                 </div>
             } @empty {
-                <div class="instructor-empty">
-                    <div class="empty-icon">
+                <div class="no-selection">
+                    <div class="illustration">
                         <i-tabler name="users"></i-tabler>
                     </div>
-                    <div class="empty-text">
-                        <h3>{{ l.s('traineeship.no_instructors') }}</h3>
-                        <p>{{ l.s('traineeship.no_instructors_select') }}</p>
-                    </div>
+                    <h3>{{ l.s('traineeship.no_instructors') }}</h3>
+                    <p>{{ l.s('traineeship.no_instructors_select') }}</p>
                 </div>
             }
         </div>
