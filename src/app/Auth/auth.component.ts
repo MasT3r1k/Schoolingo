@@ -460,6 +460,16 @@ export class AuthComponent implements OnInit {
                   this.auth.loadState();
                   return;
                 }
+                if ('error' in data) {
+                  switch(data.error) {
+                    case "no_credential":
+                      this.a.alert('error', 'auth.passkey.no_account')
+                      break;
+                    default:
+                      this.a.alert('error', 'auth.passkey.error')
+                      break;
+                  }
+                }
                 this.isPasskeyLoading = false;
               });
           } catch (err: unknown) {
