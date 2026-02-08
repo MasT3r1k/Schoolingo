@@ -8,7 +8,7 @@
             @if (perms.checkPermission(['teacher'])) {
             <div class="btn btn--primary btn--sm" (click)="openNewNote()">
                 <i-tabler name="plus"></i-tabler>
-                {{ l.s('messages.new_announcement') }} 
+                {{ l.s('messages.new_announcement') }}
             </div>
             }
         </div>
@@ -16,7 +16,7 @@
 
     <div class="notes">
         @for (note of announcements; track $index) {
-        <article class="note">
+        <article class="note" (click)="openNote(note)">
             <div class="tape"></div>
             <div class="pin"></div>
             <div class="meta">
@@ -36,9 +36,10 @@
                 } -->
             </div>
             @if (note.read_at) {
-                <div class="btn btn--sm">{{ l.s('messages.marked_as_read') }}</div>
+            <div class="btn btn--sm">{{ l.s('messages.marked_as_read') }}</div>
             } @else {
-                <div class="btn btn--sm btn--primary" (click)="readNoticeboard(note.message_id)">{{ l.s('messages.mark_as_read') }}</div>
+            <div class="btn btn--sm btn--primary" (click)="readNoticeboard(note.message_id); $event.stopPropagation()">
+                {{ l.s('messages.mark_as_read') }}</div>
             }
         </article>
         }

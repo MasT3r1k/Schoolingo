@@ -1,0 +1,33 @@
+<div class="view-note-container">
+    @if (loading) {
+    <div class="loader-container">
+        <div class="loader"></div>
+    </div>
+    } @else if (error) {
+    <div class="error-container">
+        <i-tabler name="alert-triangle" class="error-icon" style="width: 48px;height: 48px;"></i-tabler>
+        <p>{{ l.s('messages.error_loading') }}</p>
+    </div>
+    } @else if (note) {
+    <div class="note-header">
+        <div class="meta">
+            <div class="author">
+                <div class="avatar-placeholder">
+                    {{ note.author.first_name ? note.author.first_name[0] : '' }}{{ note.author.last_name ?
+                    note.author.last_name[0] : '' }}
+                </div>
+                <div class="info">
+                    <span class="name">{{ note.author.full_name }}</span>
+                    <span class="date">{{ Utils.formatDate(note.sent_at) }}</span>
+                </div>
+            </div>
+        </div>
+
+        <h1 class="topic">{{ note.topic }}</h1>
+    </div>
+
+    <div class="note-body">
+        {{ note.message }}
+    </div>
+    }
+</div>

@@ -8,6 +8,8 @@ import { AddNoteComponent } from './modals/add-note/add-note.component';
 import { Permission } from '@Schoolingo/permission';
 import { HttpClient } from '@angular/common/http';
 import { Config } from '@Schoolingo/config';
+import { ViewNoteComponent } from './modals/view-note/view-note.component';
+import { NoticeboardService } from './noticeboard.service';
 
 interface Announcement {
   message_id: number;
@@ -36,6 +38,7 @@ interface Announcement {
 export class NoticeboardComponent implements OnInit {
   private http = inject(HttpClient);
   public perms = inject(Permission);
+  private noticeboardService = inject(NoticeboardService);
   public l = inject(Locale);
   public announcements: Announcement[] = [];
   public modalManager = inject(ModalManager);
@@ -56,6 +59,21 @@ export class NoticeboardComponent implements OnInit {
       }
     )
 
+    this.modalManager.addModal(
+        'view_note',
+        {
+          title: 'messages.details', // Ensure this locale key exists or use a generic one
+          closeable: true,
+          width: 800,
+          items: [
+            {
+              type: 'component',
+              component: ViewNoteComponent
+            }
+          ]
+        }
+    )
+
     this.http.get(
       `${Config.API_URL}/v1/messages/noticeboard`,
       { withCredentials: true }
@@ -69,6 +87,15 @@ export class NoticeboardComponent implements OnInit {
 
   public openNewNote(): void {
     this.modalManager.openModal('add_message_to_noticeboard');
+  }
+
+  public openNote(note: Announcement): void {
+    this.noticeboardService.selectedMessageId = note.message_id;
+    this.modalManager.openModal('view_note');
+
+    if (!note.read_at) {
+        this.readNoticeboard(note.message_id);
+    }
   }
 
   public readNoticeboard(message_id: number): void {
