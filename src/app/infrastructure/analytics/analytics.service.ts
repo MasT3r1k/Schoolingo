@@ -13,6 +13,9 @@ export class AnalyticsService {
   private userId: number | null = null;
   private gaMeasurementId: string = 'G-K81P8DG338';
 
+  private currentVisitId: number | null = null;
+  private pageStartTime: number | null = null;
+
   constructor() {
     this.initGoogleAnalytics();
     
@@ -20,6 +23,11 @@ export class AnalyticsService {
       if (event instanceof NavigationEnd) {
         this.trackPageView();
       }
+    });
+
+    // Handle tab closing / browser exit
+    window.addEventListener('beforeunload', () => {
+        this.updateDuration();
     });
   }
 
@@ -82,27 +90,58 @@ export class AnalyticsService {
       }
   }
 
+  public updateDuration() {
+    if (this.currentVisitId && this.pageStartTime) {
+        const duration = Date.now() - this.pageStartTime;
+        // Basic check to avoid bad data
+        if (duration > 0 && duration < 86400000) { 
+            // Use sendBeacon for reliability on unload, fallback to xhr/fetch if needed, 
+            // but for simplicity in Angular we use HTTP usually. On unload sending async is tricky.
+            // Navigator.sendBeacon is best for unload.
+            const data = JSON.stringify({ id: this.currentVisitId, duration: duration });
+            const endpoint = `${Config.API_URL}/v1/analytics/duration`;
+            
+            if (navigator.sendBeacon) {
+                const blob = new Blob([data], { type: 'application/json' });
+                navigator.sendBeacon(endpoint, blob);
+            } else {
+                // Fallback (less reliable on unload)
+                this.http.post(endpoint, { id: this.currentVisitId, duration }).subscribe();
+            }
+        }
+    }
+  }
+
   public trackPageView() {
+      // 1. Update duration of PREVIOUS page
+      this.updateDuration();
+
+      // 2. Start NEW tracking
+      this.pageStartTime = Date.now();
       const url = window.location.href;
       const path = this.router.url;
 
-      // 1. Internal Tracking
+      // Internal Tracking
       const payload: any = {
           visitor_id: this.getVisitorId(),
           url: url,
           path: path
       };
       
-      // Only include user_id if valid
       if (this.userId) {
           payload.user_id = this.userId;
       }
 
-      this.http.post(`${Config.API_URL}/v1/analytics/track`, payload).subscribe({
+      this.http.post<any>(`${Config.API_URL}/v1/analytics/track`, payload).subscribe({
+          next: (res) => {
+              if (res.success && res.id) {
+                  this.currentVisitId = res.id;
+              }
+          },
           error: (err) => console.error('Internal analytics error', err)
       });
 
-      // 2. Google Analytics Tracking
+      // Google Analytics Tracking
       const win = window as any;
       if (win.gtag) {
           win.gtag('event', 'page_view', {

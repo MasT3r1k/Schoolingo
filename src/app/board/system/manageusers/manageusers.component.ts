@@ -47,8 +47,8 @@ interface UserAPIResponse {
     last_login: string | null;
     lastLoginIp: string | null;
     lastLoginUserAgent: string | null;
-    createdAt: string;
-    updatedAt: string;
+    created_at: string;
+    updated_at: string;
   }[];
   meta: {
     total: number;
@@ -229,8 +229,8 @@ export class ManageusersComponent implements OnInit {
       status: this.mapStatus(apiUser.status),
       photoUrl: apiUser.photoUrl,
       lastLogin: apiUser.last_login,
-      createdAt: apiUser.createdAt,
-      updatedAt: apiUser.updatedAt
+      createdAt: apiUser.created_at,
+      updatedAt: apiUser.updated_at
     };
   }
 
