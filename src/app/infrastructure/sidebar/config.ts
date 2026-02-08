@@ -337,7 +337,14 @@ export const config: SidebarGroup[] = [
                     item: 'sidebar.user.notifications',
                     url: 'user/notifications',
                     icon: 'bell',
-                    permission: ['student', 'parent']
+                }, {
+                    item: 'sidebar.user.gdpr',
+                    url: 'user/gdpr',
+                    icon: 'shield-check',
+                }, {
+                    item: 'sidebar.user.cookies',
+                    url: 'user/cookies',
+                    icon: 'cookie',
                 }, {
                     item: 'sidebar.settings',
                     url: 'user/settings',

@@ -264,19 +264,19 @@ export namespace Utils {
   }
 
   export function getBrowserIcon(userAgent: string): string {
-    let browser = '';
+    let browser = 'browser';
     if (userAgent.includes("Opera") || userAgent.includes('OPR')) {
-      browser = "opera.svg";
+      browser = "brand-opera";
     } else if (userAgent.includes("Edg")) {
-      browser = "edge.svg";
+      browser = "brand-edge";
     } else if (userAgent.includes("Chrome")) {
-      browser = "chrome.svg";
+      browser = "brand-chrome";
     } else if (userAgent.includes("Safari")) {
-      browser = "safari.svg";
+      browser = "brand-safari";
     } else if (userAgent.includes("Firefox")) {
-      browser = "firefox.svg";
+      browser = "brand-firefox";
     } else if ((userAgent.includes("MSIE")) || (!!(document as any).documentMode == true)) {
-      browser = 'IE.svg';
+      browser = 'browser';
     }
     return browser;
   }

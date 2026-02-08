@@ -53,7 +53,7 @@
                 }
 
                 <div class="item-btn"
-                    (click)="$event.stopPropagation();dropdownManager.selected_dropdown = (dropdownManager.selected_dropdown == 'notification') ? '' : 'notification'">
+                    (click)="$event.stopPropagation();openNotificationDropdown()">
                     <div class="icon">
                         <i-tabler name="bell"></i-tabler>
                     </div>
@@ -79,6 +79,7 @@
                             </div>
                         </div>
                         <div class="notification-list">
+                            @if (!notification_loading) {
                             @for (notification of notifications; track $index) {
                             @let config = notifications_types[notification.type];
                             <div class="notification-item" [class.unread]="!notification.read_at"
@@ -112,6 +113,19 @@
                                 </div>
                                 <p>{{ l.s('notifications.empty') }}</p>
                             </div>
+                            }
+                            } @else {
+                                @for (_ of [].constructor(5); track $index) {
+                                    <div class="notification-item skeleton" style="min-height: 76px;">
+                                        <div class="notification-icon center"></div>
+                                        <div class="notification-content">
+                                            <div class="notification-top">
+                                                <span class="notification-title"></span>
+                                            </div>
+                                            <div class="notification-text"></div>
+                                        </div>
+                                    </div>
+                                }
                             }
                         </div>
                     </div>

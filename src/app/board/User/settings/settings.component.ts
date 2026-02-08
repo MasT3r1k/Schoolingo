@@ -8,7 +8,6 @@ import { LanguageComponent } from './language/language.component';
 import { ThemeComponent } from './theme/theme.component';
 import { SecurityComponent } from './security/security.component';
 import { Settings } from '@Schoolingo/settings';
-import { OtherComponent } from './other/other.component';
 
 @Component({
   standalone: true,
@@ -18,7 +17,6 @@ import { OtherComponent } from './other/other.component';
     LanguageComponent,
     ThemeComponent,
     SecurityComponent,
-    OtherComponent
   ],
   templateUrl: './settings.component.html',
   styleUrl: './settings.component.css',
@@ -29,8 +27,7 @@ export class SettingsComponent implements OnInit {
     'settings.change_password',
     'settings.language',
     'settings.theme',
-    'settings.security',
-    'settings.other'
+    'settings.security'
   ];
   public l = inject(Locale);
   public alert: '2FAEnabled' | '' = '';

@@ -6,6 +6,7 @@ import { Alert } from '@Schoolingo/alert';
 import { Config } from '@Schoolingo/config';
 import { Locale } from '@Schoolingo/locale';
 import { MarksManager } from '@Schoolingo/marks';
+import { ModalManager } from '@Schoolingo/modal';
 
 @Component({
   standalone: true,
@@ -16,6 +17,7 @@ import { MarksManager } from '@Schoolingo/marks';
 export class EditMarkComponent implements OnInit {
   public alert: Alert | null = null;
   public marksManager = inject(MarksManager);
+  private modalManager = inject(ModalManager);
   public l = inject(Locale);
   private http = inject(HttpClient);
 
@@ -45,7 +47,7 @@ export class EditMarkComponent implements OnInit {
       this.marksManager.getColumnId()
     )
     // Validation
-    if (this.marksManager.getSelectedStudent() == undefined || this.marksManager.getSubjectId() == undefined || this.marksManager.getColumnId() == undefined) {
+    if (this.marksManager.getSelectedStudentId() == undefined || this.marksManager.getSubjectId() == undefined || this.marksManager.getColumnId() == undefined) {
       this.errors['mark'] = this.l.s('form.invalid');
       return;
     }
@@ -60,16 +62,28 @@ export class EditMarkComponent implements OnInit {
     if (  !config.mark_display.includes(this.mark)
         && config.mark_ids.includes(parseInt(this.mark))) {
       this.errors['mark'] = this.l.s('form.invalid');
+      console.log('INVALID MARK')
       return;
     }
+
+
 
     this.http.post(
       `${Config.API_URL}/v1/marks/add_mark`,
       { column_id: this.marksManager.getColumnId(),
         mark: this.mark,
-        student_id: this.marksManager.getSelectedStudent(),
+        student_id: this.marksManager.getSelectedStudentId(),
         description: "" },
       { withCredentials: true }
     )
+    .subscribe((data) => {
+      this.marksManager.updateMark$.next({
+        studentId: this.marksManager.getSelectedStudentId(),
+        studentIndex: this.marksManager.getSelectedStudentIndex(),
+        columnIndex: this.marksManager.getColumnIndex(),
+        mark: this.mark
+      })
+      this.modalManager.closeModal("edit_mark")
+    })
   }
 }

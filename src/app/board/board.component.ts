@@ -49,11 +49,19 @@ const notification_types: Record<string, any> = {
     close_after_action: true,
     description: "Dostal jste novou zprávu od %name%."
   },
-  login: {
+  new_login: {
     color: "#ff5757",
     icon: "lock",
     title: "Neznámé přihlášení",
     description: "Zaznamenali jsme nové přihlášení z neznámého zařízení."
+  },
+  new_grade: {
+    color: "#ffc107",
+    icon: "star",
+    title: "Nová známka",
+    url: "/marks/interm",
+    close_after_action: true,
+    description: "Dostal jste novou známku %mark%."
   },
   homework: {
     color: "#7cd67c",
@@ -96,6 +104,7 @@ export class BoardComponent implements OnInit, OnDestroy {
   App = Config
   Utils = Utils;
   sidebarToggled = false;
+  public notification_loading = true;
   public notification_count = 0;
   private router = inject(Router);
   public sidebar = inject(Sidebar);
@@ -123,7 +132,7 @@ export class BoardComponent implements OnInit, OnDestroy {
 
   public getNotificationText(notification: Notification): string {
     let text = this.notifications_types[notification.type].description;
-    Object.entries(notification.data).forEach((data) => {
+    Object.entries(JSON.parse(notification.data)).forEach((data) => {
       text = text.replaceAll(`%${data[0]}%`, data[1]);
     })
 
@@ -310,14 +319,6 @@ export class BoardComponent implements OnInit, OnDestroy {
           this.seasonalService.setCookiesConsent(data.cookies);
         })
 
-        this.http.get<Notification[]>(
-          `${Config.API_URL}/v1/notifications`,
-          { withCredentials: true }
-        )
-        .subscribe((data) => {
-          this.notifications = data;
-        });
-
         // === Get traineeship weeks ===
         this.http.get(
           `${Config.API_URL}/v1/traineeship/diary_weeks`,
@@ -364,6 +365,24 @@ export class BoardComponent implements OnInit, OnDestroy {
         })
       }
     })
+  }
+
+  public openNotificationDropdown(): void {
+    if (this.dropdownManager.selected_dropdown !== 'notification') {
+      this.loadNotifications()
+    }
+    this.dropdownManager.selected_dropdown = (this.dropdownManager.selected_dropdown == 'notification') ? '' : 'notification';
+  }
+
+  public loadNotifications(): void {
+    this.http.get<Notification[]>(
+      `${Config.API_URL}/v1/notifications`,
+      { withCredentials: true }
+    )
+    .subscribe((data) => {
+      this.notifications = data;
+      this.notification_loading = false;
+    });
   }
 
   ngOnDestroy(): void {

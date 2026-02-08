@@ -13,6 +13,8 @@ export interface Poll {
   time_limit: number | null;
   created_at: string;
   authorName: string;
+  completed?: boolean;
+  questionCount?: number;
 }
 
 export interface Question {

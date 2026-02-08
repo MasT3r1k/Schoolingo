@@ -1,1 +1,258 @@
-<p>poll-assign works!</p>
+<div class="card">
+    @if (loading) {
+    <div class="loading-state">
+        <div class="loading-spinner"></div>
+        <p>Načítání testu...</p>
+    </div>
+    } @else if (poll) {
+
+    <div class="card-header">
+        <div class="left">
+            <h2>Přiřadit test</h2>
+            <p class="meta muted">{{ poll.title }}</p>
+        </div>
+        <div class="flex-items">
+            <button routerLink="/tests" class="btn btn--ghost">
+                <i-tabler name="arrow-left"></i-tabler>
+                Zpět
+            </button>
+        </div>
+    </div>
+
+    <!-- Test Summary Section -->
+    <div class="section summary-section">
+        <div class="summary-header">
+            <div class="summary-icon">
+                <i-tabler name="clipboard-check"></i-tabler>
+            </div>
+            <div class="summary-info">
+                <h3>{{ poll.title }}</h3>
+                <p>{{ poll.description || 'Žádný popis' }}</p>
+            </div>
+        </div>
+    </div>
+
+    <form [formGroup]="assignForm" (ngSubmit)="submit()">
+        <!-- Class Selection Section -->
+        <div class="section">
+            <div class="section-header">
+                <div class="header-content">
+                    <i-tabler name="users-group"></i-tabler>
+                    <div>
+                        <h3>Vyberte třídy</h3>
+                        <span class="meta muted">Vyberte třídy, kterým bude test přiřazen</span>
+                    </div>
+                </div>
+                <button type="button" class="btn btn--sm btn--ghost" (click)="selectAllClasses()">
+                    <i-tabler
+                        [name]="selectedClasses.length === classes.length ? 'square-minus' : 'square-check'"></i-tabler>
+                    {{ selectedClasses.length === classes.length ? 'Zrušit vše' : 'Vybrat vše' }}
+                </button>
+            </div>
+            <div class="section-content">
+                <div class="classes-grid">
+                    @for (classItem of classes; track classItem.id) {
+                    <div class="class-card" [class.selected]="isClassSelected(classItem.id)"
+                        (click)="toggleClass(classItem.id)">
+                        <div class="class-checkbox">
+                            <i-tabler
+                                [name]="isClassSelected(classItem.id) ? 'square-check-filled' : 'square'"></i-tabler>
+                        </div>
+                        <div class="class-info">
+                            <span class="class-name">{{ classItem.name }}</span>
+                            <span class="class-count">
+                                <i-tabler name="users"></i-tabler>
+                                {{ classItem.studentCount }} studentů
+                            </span>
+                        </div>
+                    </div>
+                    }
+                    @empty {
+                    <div class="empty-classes">
+                        <i-tabler name="users-off"></i-tabler>
+                        <span>Žádné třídy k dispozici</span>
+                    </div>
+                    }
+                </div>
+
+                @if (selectedClasses.length > 0) {
+                <div class="selection-summary">
+                    <i-tabler name="info-circle"></i-tabler>
+                    <span>Vybráno <strong>{{ selectedClasses.length }}</strong> tříd ({{ getTotalStudents() }}
+                        studentů)</span>
+                </div>
+                }
+            </div>
+        </div>
+
+        <!-- Time Settings Section -->
+        <div class="section">
+            <div class="section-header">
+                <div class="header-content">
+                    <i-tabler name="calendar-time"></i-tabler>
+                    <div>
+                        <h3>Časové nastavení</h3>
+                        <span class="meta muted">Nastavte, kdy bude test aktivní</span>
+                    </div>
+                </div>
+            </div>
+            <div class="section-content">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>
+                            <i-tabler name="calendar-plus"></i-tabler>
+                            Začátek <span class="required">*</span>
+                        </label>
+                        <input type="datetime-local" formControlName="active_from" class="form-input" />
+                    </div>
+                    <div class="form-group">
+                        <label>
+                            <i-tabler name="calendar-minus"></i-tabler>
+                            Konec <span class="required">*</span>
+                        </label>
+                        <input type="datetime-local" formControlName="active_to" class="form-input" />
+                    </div>
+                    <div class="form-group">
+                        <label>
+                            <i-tabler name="clock"></i-tabler>
+                            Časový limit (minuty)
+                        </label>
+                        <input type="number" formControlName="time_limit" placeholder="Neomezeno" class="form-input"
+                            min="0" />
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Options Section -->
+        <div class="section">
+            <div class="section-header">
+                <div class="header-content">
+                    <i-tabler name="settings"></i-tabler>
+                    <div>
+                        <h3>Možnosti testu</h3>
+                        <span class="meta muted">Další nastavení pro test</span>
+                    </div>
+                </div>
+            </div>
+            <div class="section-content">
+                <div class="options-list">
+                    <label class="option-toggle">
+                        <div class="option-info">
+                            <i-tabler name="arrows-shuffle"></i-tabler>
+                            <div>
+                                <span class="option-title">Zamíchat otázky</span>
+                                <span class="option-desc">Každý student uvidí otázky v jiném pořadí</span>
+                            </div>
+                        </div>
+                        <div class="toggle">
+                            <input type="checkbox" formControlName="shuffle_questions" />
+                            <span class="toggle-slider"></span>
+                        </div>
+                    </label>
+
+                    <label class="option-toggle">
+                        <div class="option-info">
+                            <i-tabler name="arrows-shuffle"></i-tabler>
+                            <div>
+                                <span class="option-title">Zamíchat možnosti</span>
+                                <span class="option-desc">Možnosti u každé otázky budou v náhodném pořadí</span>
+                            </div>
+                        </div>
+                        <div class="toggle">
+                            <input type="checkbox" formControlName="shuffle_options" />
+                            <span class="toggle-slider"></span>
+                        </div>
+                    </label>
+
+                    <label class="option-toggle">
+                        <div class="option-info">
+                            <i-tabler name="chart-bar"></i-tabler>
+                            <div>
+                                <span class="option-title">Zobrazit výsledky</span>
+                                <span class="option-desc">Studenti uvidí své výsledky po odevzdání</span>
+                            </div>
+                        </div>
+                        <div class="toggle">
+                            <input type="checkbox" formControlName="show_results" />
+                            <span class="toggle-slider"></span>
+                        </div>
+                    </label>
+
+                    <label class="option-toggle">
+                        <div class="option-info">
+                            <i-tabler name="eye"></i-tabler>
+                            <div>
+                                <span class="option-title">Povolit náhled odpovědí</span>
+                                <span class="option-desc">Studenti si budou moci prohlédnout své odpovědi po
+                                    odevzdání</span>
+                            </div>
+                        </div>
+                        <div class="toggle">
+                            <input type="checkbox" formControlName="allow_review" />
+                            <span class="toggle-slider"></span>
+                        </div>
+                    </label>
+                </div>
+            </div>
+        </div>
+
+        <!-- Preview Section -->
+        <div class="section preview-section">
+            <div class="section-header">
+                <div class="header-content">
+                    <i-tabler name="eye"></i-tabler>
+                    <div>
+                        <h3>Náhled přiřazení</h3>
+                        <span class="meta muted">Zkontrolujte nastavení před spuštěním</span>
+                    </div>
+                </div>
+            </div>
+            <div class="section-content">
+                <div class="preview-grid">
+                    <div class="preview-item">
+                        <div class="preview-icon">
+                            <i-tabler name="users-group"></i-tabler>
+                        </div>
+                        <div class="preview-info">
+                            <span class="preview-label">Počet tříd</span>
+                            <span class="preview-value">{{ selectedClasses.length }}</span>
+                        </div>
+                    </div>
+                    <div class="preview-item">
+                        <div class="preview-icon students">
+                            <i-tabler name="user"></i-tabler>
+                        </div>
+                        <div class="preview-info">
+                            <span class="preview-label">Celkem studentů</span>
+                            <span class="preview-value">{{ getTotalStudents() }}</span>
+                        </div>
+                    </div>
+                    <div class="preview-item">
+                        <div class="preview-icon time">
+                            <i-tabler name="clock"></i-tabler>
+                        </div>
+                        <div class="preview-info">
+                            <span class="preview-label">Časový limit</span>
+                            <span class="preview-value">{{ assignForm.get('time_limit')?.value || 'Neomezený' }}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Submit Section -->
+        <div class="form-actions">
+            <button type="button" routerLink="/tests" class="btn btn--ghost">
+                <i-tabler name="x"></i-tabler>
+                Zrušit
+            </button>
+            <button type="submit" class="btn btn--primary btn--lg"
+                [disabled]="assignForm.invalid || selectedClasses.length === 0">
+                <i-tabler name="send"></i-tabler>
+                Spustit test
+            </button>
+        </div>
+    </form>
+    }
+</div>

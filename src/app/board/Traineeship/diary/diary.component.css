@@ -1,47 +1,108 @@
-.card {
-    display: none!important;
-}
+/* ========================================
+   TRAINEESHIP DIARY - Modern Design
+   ======================================== */
 
-.card.active {
-    display: flex!important;
-}
-
-.dairy-item {
-    padding: 8px 16px;
-    border: 1px solid var(--border-color);
+/* Section Cards */
+.section {
+    background: var(--background-secondary);
     border-radius: var(--radius);
-    margin: 4px 0;
-    transition: all .3s;
-    cursor: pointer;
-
+    padding: clamp(1rem, 3vw, 1.5rem);
+    margin-bottom: 1.5rem;
+    border: 1px solid var(--border);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    animation: fadeInUp 0.5s ease;
 }
 
-.dairy-item:hover {
-    background-color: var(--background-hover);
+.section:hover {
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
 }
 
+.section-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+    padding-bottom: 1rem;
+    border-bottom: 2px solid var(--border);
+    flex-wrap: wrap;
+}
+
+.header-content {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    flex: 1;
+}
+
+.header-content>i-tabler {
+    color: var(--primary);
+    width: 2rem;
+    flex-shrink: 0;
+}
+
+.header-content h3 {
+    font-size: clamp(1.125rem, 3vw, 1.375rem);
+    font-weight: 600;
+    color: var(--text);
+    margin: 0 0 0.25rem 0;
+}
+
+.header-actions {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+}
+
+.section-content {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+/* Diaries Container */
 .deniky-container {
     display: flex;
     flex-direction: column;
-    gap: 16px;
+    gap: 1rem;
 }
 
+/* Diary Card */
 .denik-card {
-    background: var(--background-hover); /* tmavě modrá (ladí se sidebar) */
+    background: var(--glass-0);
+    border: 1px solid var(--border);
     border-radius: var(--radius);
-    padding: 1rem;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.4);
-    transition: all 0.25s ease;
+    padding: 1.25rem;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     display: flex;
     flex-direction: column;
-    gap: 18px;
+    gap: 1rem;
     cursor: pointer;
+    position: relative;
+    overflow: hidden;
+}
+
+.denik-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 4px;
+    height: 100%;
+    background: var(--primary);
+    opacity: 0;
+    transition: opacity 0.3s ease;
 }
 
 .denik-card:hover {
-    transform: translateY(3px);
-    background: var(--surface-2);
-    box-shadow: 0 8px 20px rgba(0,0,0,0.4);
+    border-color: var(--primary);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+}
+
+.denik-card:hover::before {
+    opacity: 1;
 }
 
 .denik-header {
@@ -49,69 +110,72 @@
     justify-content: space-between;
     align-items: flex-start;
     flex-wrap: wrap;
-    gap: 12px;
+    gap: 1rem;
 }
 
 .denik-info {
     display: flex;
     flex-direction: column;
-    gap: 6px;
+    gap: 0.5rem;
 }
 
 .denik-date {
-    font-size: 0.95rem;
+    font-size: 0.875rem;
     color: var(--primary);
     font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
 }
 
 .denik-firma {
-    font-size: 1.2rem;
-    font-weight: 600;
-    color: #f1f5f9;
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--text);
 }
 
 .denik-instruktor {
-    font-size: 0.95rem;
-    color: #cbd5e1;
+    font-size: 0.875rem;
+    color: var(--text-muted);
+}
+
+.denik-instruktor b {
+    color: var(--text-secondary);
+    font-weight: 500;
 }
 
 .badges {
     display: flex;
     flex-direction: row;
     align-items: center;
-    gap: 8px;
+    gap: 0.5rem;
+    flex-wrap: wrap;
 }
 
-.denik-status {
-    padding: 6px 14px;
-    border-radius: 9999px;
-    font-size: 0.85rem;
-    font-weight: 600;
-    color: #fff;
-    background: var(--primary); /* modrý badge */
-    height: fit-content;
-}
-
-.denik-status.closed {
-    background: #6b7280; /* šedý badge */
-}
-
+/* Extra Info Grid */
 .denik-extra {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-    gap: 8px;
-    font-size: 0.9rem;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 0.75rem;
 }
 
 .denik-extra span {
     display: flex;
     align-items: center;
-    gap: 4px;
-    background: #111827; /* tmavší panel */
-    padding: 8px;
+    gap: 0.5rem;
+    background: var(--surface-2);
+    padding: 0.75rem 1rem;
     border-radius: var(--radius);
-    color: #d1d5db;
+    font-size: 0.8125rem;
+    color: var(--text-secondary);
     font-weight: 500;
+    border: 1px solid var(--border);
+    transition: all 0.2s ease;
+}
+
+.denik-extra span:hover {
+    border-color: var(--primary);
+    background: var(--hover-bg);
 }
 
 .denik-extra b {
@@ -119,8 +183,141 @@
     font-weight: 600;
 }
 
-@media (max-width: 600px) {
+/* Selected Diary View */
+.alerts {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.row {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.description {
+    color: var(--text-muted);
+    font-size: 0.875rem;
+    margin: 0;
+}
+
+/* Animations */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .denik-header {
+        flex-direction: column;
+    }
+
     .denik-extra {
-    grid-template-columns: 1fr;
+        grid-template-columns: 1fr;
+    }
+
+    .badges {
+        width: 100%;
+    }
+}
+
+@media (max-width: 480px) {
+    .denik-card {
+        padding: 1rem;
+    }
+
+    .denik-firma {
+        font-size: 1.125rem;
+    }
+}
+
+/* Empty State */
+.no-selection {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 3rem 1.5rem;
+    text-align: center;
+    color: var(--text-muted);
+}
+
+.no-selection .illustration {
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    background: var(--primary-gradient-soft);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 1rem;
+}
+
+.no-selection .illustration i-tabler {
+    width: 32px;
+    height: 32px;
+    color: var(--primary);
+}
+
+.no-selection p {
+    margin: 0;
+    font-size: 0.875rem;
+}
+
+/* Alerts */
+.alerts {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.alert {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.75rem;
+    padding: 1rem 1.25rem;
+    border-radius: var(--radius);
+    font-size: 0.875rem;
+    line-height: 1.5;
+}
+
+.alert i-tabler {
+    width: 20px;
+    height: 20px;
+    flex-shrink: 0;
+}
+
+.alert--info {
+    background: var(--message-info-bg);
+    border: 1px solid var(--message-info-border);
+    color: var(--message-info-color);
+}
+
+.alert .actions {
+    margin-top: 0.75rem;
+}
+
+/* Dark Mode Enhancements */
+@media (prefers-color-scheme: dark) {
+    .section {
+        box-shadow: 0 2px 12px rgba(0, 0, 0, 0.3);
+    }
+
+    .section:hover {
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+    }
+
+    .denik-card:hover {
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
     }
 }

@@ -83,4 +83,8 @@ export class PollCreateComponent {
       error: (err) => console.error(err)
     });
   }
+
+  getTotalPoints(): number {
+    return this.questions.controls.reduce((sum, q) => sum + (q.get('points')?.value || 0), 0);
+  }
 }

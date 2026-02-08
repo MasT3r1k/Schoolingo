@@ -15,6 +15,7 @@ export interface User {
   firstName: string;
   lastName: string;
   fullName: string;
+  login_type: string;
   email: string;
   role: 'admin' | 'teacher' | 'student' | 'parent';
   status: 'active' | 'inactive' | 'suspended';
@@ -38,11 +39,14 @@ interface UserAPIResponse {
     firstName: string;
     lastName: string;
     fullName: string;
+    login_type: string;
     email: string;
     role: string;
     status: string;
     photoUrl?: string;
-    lastLogin: string | null;
+    last_login: string | null;
+    lastLoginIp: string | null;
+    lastLoginUserAgent: string | null;
     createdAt: string;
     updatedAt: string;
   }[];
@@ -220,10 +224,11 @@ export class ManageusersComponent implements OnInit {
       lastName: apiUser.lastName,
       fullName: apiUser.fullName,
       email: apiUser.email,
+      login_type: apiUser.login_type,
       role: this.mapRole(apiUser.role),
       status: this.mapStatus(apiUser.status),
       photoUrl: apiUser.photoUrl,
-      lastLogin: apiUser.lastLogin,
+      lastLogin: apiUser.last_login,
       createdAt: apiUser.createdAt,
       updatedAt: apiUser.updatedAt
     };

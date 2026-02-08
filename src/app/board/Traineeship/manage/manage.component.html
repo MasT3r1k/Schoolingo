@@ -1,85 +1,123 @@
-<div class="traineeship-container card">
+<div class="card">
     <!-- Header with Create Button -->
     <div class="card-header">
-        <h2>{{ l.s('sidebar.traineeship.manage') }}</h2>
+        <div class="left">
+            <h2>{{ l.s('sidebar.traineeship.manage') }}</h2>
+            <span class="meta muted">Spravujte praxe a sledujte studenty</span>
+        </div>
         <button class="btn btn--primary" (click)="openCreateModal()">
-            + {{ l.s('traineeship.manage.new_traineeship') }}
+            <i-tabler name="plus" style="width: 18px; height: 18px;"></i-tabler>
+            {{ l.s('traineeship.manage.new_traineeship') }}
         </button>
     </div>
 
     <!-- List View -->
     @if (!selectedWeek) {
-    <div class="card-body">
-        @for (week of traineeship.diaryWeeks | async; track week.traineeship) {
-        <div class="denik-card card--hover" (click)="selectWeek(week)">
-            <div class="denik-header">
-                <div class="denik-info">
-                    <span class="denik-date">
-                        {{ week.start.format('DD. MM. YYYY') }} – {{ week.end.format('DD. MM. YYYY') }}
-                    </span>
-                    <span class="denik-firma">{{ week.name }}</span>
+    <div class="section">
+        <div class="section-header">
+            <div class="header-content">
+                <i-tabler name="calendar-event"></i-tabler>
+                <div>
+                    <h3>Přehled praxí</h3>
+                    <span class="meta muted">Klikněte na praxi pro zobrazení detailu a seznamu studentů</span>
                 </div>
-                <div class="badge" [class.badge--warning]="traineeship.getStateOfTraineeship(week) == 'planned'"
-                    [class.badge--primary]="traineeship.getStateOfTraineeship(week) == 'ongoing'"
-                    [class.badge--success]="traineeship.getStateOfTraineeship(week) == 'finished'"
-                    [class.badge--danger]="traineeship.getStateOfTraineeship(week) == 'canceled'">
-                    {{ l.s('traineeship.diary.status.' + traineeship.getStateOfTraineeship(week)) }}
-                </div>
-            </div>
-            <div class="denik-extra">
-                <span class="stat-item">
-                    <b>👨‍🎓 {{ l.s('traineeship.manage.enrolled_students') }}:</b>
-                    {{ week.zapsaniStudenti }}
-                </span>
-                <span class="stat-item">
-                    <b>👨‍🎓 {{ l.s('traineeship.manage.total_students') }}:</b>
-                    {{ week.celkemStudentu }}
-                </span>
-                <span class="stat-item">
-                    <b>⏳ {{ l.s('traineeship.number_of_days') }}:</b>
-                    {{ traineeship.getDays(week) }}
-                </span>
             </div>
         </div>
-        }
+        <div class="section-content">
+            <div class="traineeships-grid">
+                @for (week of traineeship.diaryWeeks | async; track week.traineeship) {
+                <div class="traineeship-card" (click)="selectWeek(week)">
+                    <div class="card-accent"
+                        [class.accent--warning]="traineeship.getStateOfTraineeship(week) == 'planned'"
+                        [class.accent--primary]="traineeship.getStateOfTraineeship(week) == 'ongoing'"
+                        [class.accent--success]="traineeship.getStateOfTraineeship(week) == 'finished'"
+                        [class.accent--danger]="traineeship.getStateOfTraineeship(week) == 'canceled'"></div>
+                    <div class="card-content">
+                        <div class="card-top-row">
+                            <span class="card-date">
+                                <i-tabler name="calendar" style="width: 14px; height: 14px;"></i-tabler>
+                                {{ week.start.format('DD. MM. YYYY') }} – {{ week.end.format('DD. MM. YYYY') }}
+                            </span>
+                            <span class="badge"
+                                [class.badge--warning]="traineeship.getStateOfTraineeship(week) == 'planned'"
+                                [class.badge--primary]="traineeship.getStateOfTraineeship(week) == 'ongoing'"
+                                [class.badge--success]="traineeship.getStateOfTraineeship(week) == 'finished'"
+                                [class.badge--danger]="traineeship.getStateOfTraineeship(week) == 'canceled'">
+                                {{ l.s('traineeship.diary.status.' + traineeship.getStateOfTraineeship(week)) }}
+                            </span>
+                        </div>
+                        <h3 class="card-title">{{ week.name }}</h3>
+                        <div class="card-stats">
+                            <div class="stat-pill">
+                                <i-tabler name="user-check" style="width: 16px; height: 16px;"></i-tabler>
+                                <span><strong>{{ week.zapsaniStudenti }}</strong> {{
+                                    l.s('traineeship.manage.enrolled_students') }}</span>
+                            </div>
+                            <div class="stat-pill">
+                                <i-tabler name="users" style="width: 16px; height: 16px;"></i-tabler>
+                                <span><strong>{{ week.celkemStudentu }}</strong> {{
+                                    l.s('traineeship.manage.total_students') }}</span>
+                            </div>
+                            <div class="stat-pill">
+                                <i-tabler name="clock" style="width: 16px; height: 16px;"></i-tabler>
+                                <span><strong>{{ traineeship.getDays(week) }}</strong> {{
+                                    l.s('traineeship.number_of_days') }}</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-arrow">
+                        <i-tabler name="chevron-right" style="width: 20px; height: 20px;"></i-tabler>
+                    </div>
+                </div>
+                } @empty {
+                <div class="empty-state">
+                    <div class="empty-icon">
+                        <i-tabler name="calendar-off" style="width: 48px; height: 48px;"></i-tabler>
+                    </div>
+                    <h4>Zatím nejsou vytvořeny žádné praxe</h4>
+                    <p>Klikněte na tlačítko "Nová praxe" pro vytvoření první praxe</p>
+                </div>
+                }
+            </div>
+        </div>
     </div>
     }
 
     <!-- Detail View -->
     @if (selectedWeek) {
     <div class="card-body">
-        <button class="btn btn--ghost btn--sm" (click)="backToList()">
-            ← {{ l.s('buttons.back') }}
+        <button class="btn btn--ghost" (click)="backToList()">
+            <i-tabler name="chevron-left" style="width: 18px; height: 18px;"></i-tabler>
+            {{ l.s('buttons.back') }}
         </button>
 
-        <div class="detail-header-info">
-            <h3>{{ selectedWeek.name }}</h3>
-            <div class="detail-meta">
-                <span class="text--muted">
-                    {{ selectedWeek.start.format('DD. MM. YYYY') }} – {{ selectedWeek.end.format('DD. MM. YYYY') }}
-                </span>
-                <span class="badge"
-                    [class.badge--warning]="traineeship.getStateOfTraineeship(selectedWeek) == 'planned'"
-                    [class.badge--primary]="traineeship.getStateOfTraineeship(selectedWeek) == 'ongoing'"
-                    [class.badge--success]="traineeship.getStateOfTraineeship(selectedWeek) == 'finished'"
-                    [class.badge--danger]="traineeship.getStateOfTraineeship(selectedWeek) == 'canceled'">
-                    {{ l.s('traineeship.diary.status.' + traineeship.getStateOfTraineeship(selectedWeek)) }}
-                </span>
+        <div class="detail-header">
+            <div class="detail-title">
+                <h3>{{ selectedWeek.name }}</h3>
+                <div class="detail-meta">
+                    <span class="meta-date">
+                        <i-tabler name="calendar" style="width: 16px; height: 16px;"></i-tabler>
+                        {{ selectedWeek.start.format('DD. MM. YYYY') }} – {{ selectedWeek.end.format('DD. MM. YYYY') }}
+                    </span>
+                    <span class="badge"
+                        [class.badge--warning]="traineeship.getStateOfTraineeship(selectedWeek) == 'planned'"
+                        [class.badge--primary]="traineeship.getStateOfTraineeship(selectedWeek) == 'ongoing'"
+                        [class.badge--success]="traineeship.getStateOfTraineeship(selectedWeek) == 'finished'"
+                        [class.badge--danger]="traineeship.getStateOfTraineeship(selectedWeek) == 'canceled'">
+                        {{ l.s('traineeship.diary.status.' + traineeship.getStateOfTraineeship(selectedWeek)) }}
+                    </span>
+                </div>
             </div>
         </div>
 
-        <div class="stats-cards mb-8">
+        <div class="stats-cards">
             <div class="stat-card stat--success">
                 <div class="stat-icon">
-                    <i-tabler name="file"></i-tabler>
+                    <i-tabler name="user-check"></i-tabler>
                 </div>
                 <div class="stat-info">
-                    <div class="stat-value">
-                        {{ selectedWeek.zapsaniStudenti }}
-                    </div>
-                    <div class="stat-label">
-                        {{ l.s('traineeship.manage.enrolled_students') }}
-                    </div>
+                    <div class="stat-value">{{ selectedWeek.zapsaniStudenti }}</div>
+                    <div class="stat-label">{{ l.s('traineeship.manage.enrolled_students') }}</div>
                 </div>
             </div>
             <div class="stat-card stat--primary">
@@ -87,12 +125,8 @@
                     <i-tabler name="users"></i-tabler>
                 </div>
                 <div class="stat-info">
-                    <div class="stat-value">
-                        {{ selectedWeek.celkemStudentu }}
-                    </div>
-                    <div class="stat-label">
-                        {{ l.s('traineeship.manage.total_students') }}
-                    </div>
+                    <div class="stat-value">{{ selectedWeek.celkemStudentu }}</div>
+                    <div class="stat-label">{{ l.s('traineeship.manage.total_students') }}</div>
                 </div>
             </div>
             <div class="stat-card stat--info">
@@ -100,60 +134,76 @@
                     <i-tabler name="clock"></i-tabler>
                 </div>
                 <div class="stat-info">
-                    <div class="stat-value">
-                        {{ traineeship.getDays(selectedWeek) }}
-                    </div>
-                    <div class="stat-label">
-                        {{ l.s('traineeship.number_of_days') }}
-                    </div>
+                    <div class="stat-value">{{ traineeship.getDays(selectedWeek) }}</div>
+                    <div class="stat-label">{{ l.s('traineeship.number_of_days') }}</div>
                 </div>
             </div>
         </div>
 
-        <h4>{{ l.s('traineeship.student_list') }}</h4>
-        <div class="table-container">
-            <table class="table">
-                <thead>
-                    <tr>
-                        <th>{{ l.s('name') }}</th>
-                        <th>{{ l.s('class') }}</th>
-                        <th>{{ l.s('traineeship.company') }}</th>
-                        <th>{{ l.s('traineeship.instructor') }}</th>
-                        <th>{{ l.s('traineeship.contract') }}</th>
-                        <th>{{ l.s('traineeship.processed') }}</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @for (student of students; track student.studentId) {
-                    <tr>
-                        <td><strong>{{ student.name }}</strong></td>
-                        <td>{{ student.class }}</td>
-                        <td>{{ student.company || '—' }}</td>
-                        <td>{{ student.instructor || '—' }}</td>
-                        <td>
-                            <span class="badge badge--with-dot" [class.badge--success]="student.hasContract"
-                                [class.badge--danger]="!student.hasContract">
-                                <span class="badge-dot" [class.badge-dot--success]="student.hasContract"
-                                    [class.badge-dot--danger]="!student.hasContract"></span>
-                                {{ student.hasContract ? l.s('yes') : l.s('no') }}
-                            </span>
-                        </td>
-                        <td>
-                            <span class="badge badge--with-dot" [class.badge--success]="student.isProcessed"
-                                [class.badge--warning]="!student.isProcessed">
-                                <span class="badge-dot" [class.badge-dot--success]="student.isProcessed"
-                                    [class.badge-dot--warning]="!student.isProcessed"></span>
-                                {{ student.isProcessed ? l.s('yes') : l.s('no') }}
-                            </span>
-                        </td>
-                    </tr>
-                    } @empty {
-                    <tr>
-                        <td colspan="6" style="text-align: center; color: var(--text-muted);">{{ l.s('no_data') }}</td>
-                    </tr>
-                    }
-                </tbody>
-            </table>
+        <div class="section">
+            <div class="section-header">
+                <div class="header-content">
+                    <i-tabler name="users"></i-tabler>
+                    <div>
+                        <h3>{{ l.s('traineeship.student_list') }}</h3>
+                        <span class="meta muted">Přehled studentů a jejich stavu</span>
+                    </div>
+                </div>
+            </div>
+            <div class="section-content">
+                <div class="table-container">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>{{ l.s('name') }}</th>
+                                <th>{{ l.s('class') }}</th>
+                                <th>{{ l.s('traineeship.company') }}</th>
+                                <th>{{ l.s('traineeship.instructor') }}</th>
+                                <th>{{ l.s('traineeship.contract') }}</th>
+                                <th>{{ l.s('traineeship.processed') }}</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @for (student of students; track student.studentId) {
+                            <tr>
+                                <td>
+                                    <div class="student-name">
+                                        <div class="student-avatar">
+                                            <i-tabler name="user" style="width: 16px; height: 16px;"></i-tabler>
+                                        </div>
+                                        <strong>{{ student.name }}</strong>
+                                    </div>
+                                </td>
+                                <td><span class="class-badge">{{ student.class }}</span></td>
+                                <td>{{ student.company || '—' }}</td>
+                                <td>{{ student.instructor || '—' }}</td>
+                                <td>
+                                    <span class="status-badge" [class.status--success]="student.hasContract"
+                                        [class.status--danger]="!student.hasContract">
+                                        <span class="status-dot"></span>
+                                        {{ student.hasContract ? l.s('yes') : l.s('no') }}
+                                    </span>
+                                </td>
+                                <td>
+                                    <span class="status-badge" [class.status--success]="student.isProcessed"
+                                        [class.status--warning]="!student.isProcessed">
+                                        <span class="status-dot"></span>
+                                        {{ student.isProcessed ? l.s('yes') : l.s('no') }}
+                                    </span>
+                                </td>
+                            </tr>
+                            } @empty {
+                            <tr>
+                                <td colspan="6" class="empty-cell">
+                                    <i-tabler name="users-off" style="width: 24px; height: 24px;"></i-tabler>
+                                    {{ l.s('no_data') }}
+                                </td>
+                            </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
         </div>
     </div>
     }
@@ -164,27 +214,44 @@
 <div class="modal-overlay" (click)="closeCreateModal()">
     <div class="modal" (click)="$event.stopPropagation()">
         <div class="modal__header">
+            <div class="modal__icon">
+                <i-tabler name="calendar-plus" style="width: 24px; height: 24px;"></i-tabler>
+            </div>
             <h3 class="modal__title">{{ l.s('traineeship.manage.new_traineeship') }}</h3>
-            <button class="modal__close" (click)="closeCreateModal()">×</button>
+            <button class="modal__close" (click)="closeCreateModal()">
+                <i-tabler name="x" style="width: 20px; height: 20px;"></i-tabler>
+            </button>
         </div>
         <div class="modal__body">
             <div class="form-group">
-                <label class="form-label">Název praxe</label>
+                <label class="form-label">
+                    <i-tabler name="file-text" style="width: 16px; height: 16px;"></i-tabler>
+                    Název praxe
+                </label>
                 <input type="text" class="form-input" [(ngModel)]="newTraineeship.name"
                     placeholder="Zadejte název praxe">
             </div>
             <div class="form-row">
                 <div class="form-group">
-                    <label class="form-label">Od</label>
+                    <label class="form-label">
+                        <i-tabler name="calendar" style="width: 16px; height: 16px;"></i-tabler>
+                        Od
+                    </label>
                     <input type="date" class="form-input" [(ngModel)]="newTraineeship.start">
                 </div>
                 <div class="form-group">
-                    <label class="form-label">Do</label>
+                    <label class="form-label">
+                        <i-tabler name="calendar" style="width: 16px; height: 16px;"></i-tabler>
+                        Do
+                    </label>
                     <input type="date" class="form-input" [(ngModel)]="newTraineeship.end">
                 </div>
             </div>
             <div class="form-group">
-                <label class="form-label">Pro třídy</label>
+                <label class="form-label">
+                    <i-tabler name="school" style="width: 16px; height: 16px;"></i-tabler>
+                    Pro třídy
+                </label>
                 <div class="selection-container">
                     @for (group of availableGroups; track group) {
                     <span (click)="toggleGroup(group)" [class.selected]="newTraineeship.groups.includes(group)"
@@ -195,7 +262,10 @@
                 </div>
             </div>
             <div class="form-group">
-                <label class="form-label">Ignorované dny</label>
+                <label class="form-label">
+                    <i-tabler name="calendar-off" style="width: 16px; height: 16px;"></i-tabler>
+                    Ignorované dny
+                </label>
                 <div class="selection-container">
                     @for (day of daysOfWeek; track day.id) {
                     <span (click)="toggleDay(day.id)" [class.selected]="newTraineeship.ignoredDays.includes(day.id)"
@@ -207,10 +277,11 @@
             </div>
         </div>
         <div class="modal__footer">
-            <button class="btn btn--secondary" (click)="closeCreateModal()">Zrušit</button>
+            <button class="btn btn--ghost" (click)="closeCreateModal()">Zrušit</button>
             <button class="btn btn--primary" (click)="createTraineeship()"
                 [disabled]="!newTraineeship.name || !newTraineeship.start || !newTraineeship.end">
-                Vytvořit
+                <i-tabler name="check" style="width: 18px; height: 18px;"></i-tabler>
+                Vytvořit praxi
             </button>
         </div>
     </div>

@@ -1,7 +1,7 @@
 <div class="card">
     @if (loading) {
     <div class="loading-state">
-        <div class="loader"></div>
+        <div class="loading-spinner"></div>
         <p>Načítání testu...</p>
     </div>
     } @else if (poll) {
@@ -21,90 +21,203 @@
         </div>
     </div>
 
-    <div class="card-body">
-        @if (submitted) {
-        <!-- Submitted State -->
-        <div class="submitted-card">
+    @if (submitted) {
+    <!-- Submitted State -->
+    <div class="section success-section">
+        <div class="success-content">
             <div class="success-icon-wrapper">
                 <i-tabler name="circle-check" class="success-icon"></i-tabler>
             </div>
-            <h2>Test již byl odeslán</h2>
-            <p>Děkujeme za vyplnění testu. Vaše odpovědi byly úspěšně uloženy.</p>
-            <div class="submitted-actions">
-                <button routerLink="/tests" class="btn btn--ghost">
-                    Zpět na přehled
-                </button>
-                <button [routerLink]="['/tests', poll.id, 'results']" class="btn btn--primary">
-                    Zobrazit výsledky
-                </button>
-            </div>
-        </div>
-        } @else {
+            <h2>Test byl úspěšně odeslán!</h2>
+            <p>Děkujeme za vyplnění testu. Vaše odpovědi byly úspěšně uloženy a odeslány k hodnocení.</p>
 
-        <!-- Vote Form -->
-        <form [formGroup]="voteForm" (ngSubmit)="submit()" class="vote-form">
-            <div formArrayName="answers" class="questions-container">
-                @for (answer of answers.controls; track $index; let i = $index) {
-                <div [formGroupName]="i" class="question-card">
-                    <div class="question-header">
-                        <div class="question-number">Otázka {{ i + 1 }}</div>
-                        @if (questions[i].points > 0) {
-                        <span class="points-badge">{{ questions[i].points }} bodů</span>
-                        }
+            <div class="result-cards">
+                <div class="result-card">
+                    <div class="result-icon">
+                        <i-tabler name="list-check"></i-tabler>
                     </div>
-
-                    <div class="question-content">
-                        <h3 class="question-title">{{ questions[i].title }}</h3>
-
-                        @if (questions[i].type === 'text') {
-                        <!-- Text Answer -->
-                        <textarea formControlName="answerText" placeholder="Vaše odpověď..." class="answer-textarea"
-                            rows="4"></textarea>
-                        }
-
-                        @if (questions[i].type === 'single') {
-                        <!-- Single Choice -->
-                        <div class="options-list">
-                            @for (option of questions[i].options; track option.id) {
-                            <label class="option-radio">
-                                <input type="radio" [value]="option.id" formControlName="optionId"
-                                    class="radio-input" />
-                                <span class="radio-custom"></span>
-                                <span class="option-label">{{ option.label }}</span>
-                            </label>
-                            }
-                        </div>
-                        }
-
-                        @if (questions[i].type === 'multiple') {
-                        <!-- Multiple Choice -->
-                        <div class="options-list">
-                            @for (option of questions[i].options; track option.id) {
-                            <label class="option-checkbox">
-                                <input type="checkbox" (change)="onCheckboxChange(i, option.id, $event)"
-                                    class="checkbox-input" />
-                                <span class="checkbox-custom"></span>
-                                <span class="option-label">{{ option.label }}</span>
-                            </label>
-                            }
-                        </div>
-                        }
+                    <div class="result-info">
+                        <span class="result-value">{{ questions.length }}</span>
+                        <span class="result-label">Zodpovězených otázek</span>
+                    </div>
+                </div>
+                @if (submissionScore !== null) {
+                <div class="result-card highlight">
+                    <div class="result-icon">
+                        <i-tabler name="trophy"></i-tabler>
+                    </div>
+                    <div class="result-info">
+                        <span class="result-value">{{ submissionScore }} / {{ maxScore }}</span>
+                        <span class="result-label">Získaných bodů</span>
                     </div>
                 </div>
                 }
             </div>
 
-            <div class="form-actions">
-                <button type="button" routerLink="/tests" class="btn btn--ghost">
-                    Zrušit
+            <div class="success-actions">
+                <button routerLink="/tests" class="btn btn--ghost">
+                    <i-tabler name="arrow-left"></i-tabler>
+                    Zpět na přehled
                 </button>
-                <button type="submit" [disabled]="voteForm.invalid" class="btn btn--primary">
-                    <i-tabler name="send"></i-tabler>
-                    Odeslat odpovědi
+                <button [routerLink]="['/tests', poll.id, 'results']" class="btn btn--primary">
+                    <i-tabler name="chart-bar"></i-tabler>
+                    Zobrazit výsledky
                 </button>
             </div>
-        </form>
-        }
+        </div>
     </div>
+    } @else {
+
+    <!-- Test Info Section -->
+    <div class="section info-section">
+        <div class="info-grid">
+            <div class="info-card">
+                <div class="info-icon">
+                    <i-tabler name="list-check"></i-tabler>
+                </div>
+                <div class="info-content">
+                    <span class="info-value">{{ questions.length }}</span>
+                    <span class="info-label">Otázek</span>
+                </div>
+            </div>
+            <div class="info-card">
+                <div class="info-icon points">
+                    <i-tabler name="star"></i-tabler>
+                </div>
+                <div class="info-content">
+                    <span class="info-value">{{ getTotalPoints() }}</span>
+                    <span class="info-label">Bodů celkem</span>
+                </div>
+            </div>
+            @if (poll.time_limit) {
+            <div class="info-card" [class.warning]="timeRemaining && timeRemaining < 300">
+                <div class="info-icon time">
+                    <i-tabler name="clock"></i-tabler>
+                </div>
+                <div class="info-content">
+                    <span class="info-value">{{ poll.time_limit }}</span>
+                    <span class="info-label">Minut</span>
+                </div>
+            </div>
+            }
+            <div class="info-card">
+                <div class="info-icon user">
+                    <i-tabler name="user"></i-tabler>
+                </div>
+                <div class="info-content">
+                    <span class="info-value">{{ poll.authorName }}</span>
+                    <span class="info-label">Autor</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Questions Form -->
+    <form [formGroup]="voteForm" (ngSubmit)="submit()" class="vote-form">
+        <div class="section">
+            <div class="section-header">
+                <div class="header-content">
+                    <i-tabler name="clipboard-list"></i-tabler>
+                    <div>
+                        <h3>Otázky</h3>
+                        <span class="meta muted">Odpovězte na všechny otázky</span>
+                    </div>
+                </div>
+                <div class="progress-indicator">
+                    <span class="progress-text">{{ getAnsweredCount() }} / {{ questions.length }}</span>
+                    <div class="progress-bar">
+                        <div class="progress-fill" [style.width.%]="(getAnsweredCount() / questions.length) * 100">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="section-content">
+                <div formArrayName="answers" class="questions-container">
+                    @for (answer of answers.controls; track $index; let i = $index) {
+                    <div [formGroupName]="i" class="question-card" [class.answered]="isAnswered(i)">
+                        <div class="question-header">
+                            <div class="question-info">
+                                <span class="question-number">
+                                    <span class="number-badge">{{ i + 1 }}</span>
+                                </span>
+                                <span class="question-type" [class.text]="questions[i].type === 'text'"
+                                    [class.single]="questions[i].type === 'single'"
+                                    [class.multiple]="questions[i].type === 'multiple'">
+                                    <i-tabler
+                                        [name]="questions[i].type === 'text' ? 'align-left' : (questions[i].type === 'single' ? 'circle-dot' : 'checkbox')"></i-tabler>
+                                    {{ questions[i].type === 'text' ? 'Textová' : (questions[i].type === 'single' ?
+                                    'Jedna odpověď' : 'Více odpovědí') }}
+                                </span>
+                            </div>
+                            @if (questions[i].points > 0) {
+                            <div class="points-badge">
+                                <i-tabler name="star"></i-tabler>
+                                {{ questions[i].points }} bodů
+                            </div>
+                            }
+                        </div>
+
+                        <div class="question-content">
+                            <h3 class="question-title">{{ questions[i].title }}</h3>
+
+                            @if (questions[i].type === 'text') {
+                            <!-- Text Answer -->
+                            <div class="answer-wrapper">
+                                <textarea formControlName="answerText" placeholder="Napište svou odpověď..."
+                                    class="answer-textarea" rows="4"></textarea>
+                                <div class="char-counter">
+                                    {{ answer.get('answerText')?.value?.length || 0 }} znaků
+                                </div>
+                            </div>
+                            }
+
+                            @if (questions[i].type === 'single') {
+                            <!-- Single Choice -->
+                            <div class="options-list">
+                                @for (option of questions[i].options; track option.id) {
+                                <label class="option-card"
+                                    [class.selected]="answer.get('optionId')?.value === option.id">
+                                    <input type="radio" [value]="option.id" formControlName="optionId"
+                                        class="option-input" />
+                                    <div class="option-indicator radio"></div>
+                                    <span class="option-text">{{ option.label }}</span>
+                                </label>
+                                }
+                            </div>
+                            }
+
+                            @if (questions[i].type === 'multiple') {
+                            <!-- Multiple Choice -->
+                            <div class="options-list">
+                                @for (option of questions[i].options; track option.id) {
+                                <label class="option-card" [class.selected]="isOptionSelected(i, option.id)">
+                                    <input type="checkbox" (change)="onCheckboxChange(i, option.id, $event)"
+                                        class="option-input" />
+                                    <div class="option-indicator checkbox"></div>
+                                    <span class="option-text">{{ option.label }}</span>
+                                </label>
+                                }
+                            </div>
+                            }
+                        </div>
+                    </div>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <!-- Submit Section -->
+        <div class="form-actions">
+            <button type="button" routerLink="/tests" class="btn btn--ghost">
+                <i-tabler name="x"></i-tabler>
+                Zrušit
+            </button>
+            <button type="submit" [disabled]="voteForm.invalid" class="btn btn--primary btn--lg">
+                <i-tabler name="send"></i-tabler>
+                Odeslat odpovědi
+            </button>
+        </div>
+    </form>
+    }
     }
 </div>

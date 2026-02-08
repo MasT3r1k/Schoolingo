@@ -323,6 +323,7 @@ export class CompaniesComponent implements OnInit {
     'edit_company', {
     closeable: true,
     title: 'traineeship.edit_company',
+    width: 600,
     items: [
       {
         type: 'component',

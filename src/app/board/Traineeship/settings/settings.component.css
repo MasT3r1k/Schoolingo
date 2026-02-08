@@ -1,54 +1,281 @@
+/* ========================================
+   TRAINEESHIP SETTINGS - Modern Design
+   ======================================== */
+
+/* Section Cards */
+.section {
+    background: var(--background-secondary);
+    border-radius: var(--radius);
+    padding: clamp(1rem, 3vw, 1.5rem);
+    margin-bottom: 1.5rem;
+    border: 1px solid var(--border);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    animation: fadeInUp 0.5s ease;
+}
+
+.section:hover {
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+}
+
+.section-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+    padding-bottom: 1rem;
+    border-bottom: 2px solid var(--border);
+    flex-wrap: wrap;
+}
+
+.header-content {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    flex: 1;
+}
+
+.header-content>i-tabler {
+    color: var(--primary);
+    width: 2rem;
+    flex-shrink: 0;
+}
+
+.header-content h3 {
+    font-size: clamp(1.125rem, 3vw, 1.375rem);
+    font-weight: 600;
+    color: var(--text);
+    margin: 0 0 0.25rem 0;
+}
+
+.section-content {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+/* Options List */
 .options {
     display: flex;
     flex-direction: column;
-    border-bottom: 1px solid var(--border-color);
+    border-radius: var(--radius);
+    overflow: hidden;
+    border: 1px solid var(--border);
 }
 
-.options > .option {
-    padding: .5rem 1rem;
+.options>.option {
+    padding: 1rem 1.25rem;
     display: flex;
     flex-direction: row;
     justify-content: space-between;
     align-items: center;
-    border-top: 1px solid var(--border-color);
+    background: var(--glass-0);
+    transition: all 0.2s ease;
+    gap: 1rem;
 }
 
-.options > .option.clickable {
+.options>.option:not(:last-child) {
+    border-bottom: 1px solid var(--border);
+}
+
+.options>.option.clickable {
     cursor: pointer;
 }
 
-.options > .option.clickable:hover {
-    background-color: var(--background-hover);
+.options>.option.clickable:hover {
+    background-color: var(--hover-bg);
 }
 
-.options > .option .left .title {
-    font-size: 18px;
-    font-weight: bold;
-    line-height: 22px;
+.options>.option .left {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    flex: 1;
 }
 
-.options > .option .left .description {
-    margin-top: .5rem;
-    font-size: 15px;
-    line-height: 16px;
-    color: var(--color-darker);
+.option-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: var(--radius);
+    background: var(--primary-gradient-soft);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--primary);
+    flex-shrink: 0;
 }
 
+.option-info {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+.options>.option .title {
+    font-size: 0.9375rem;
+    font-weight: 600;
+    line-height: 1.4;
+    color: var(--text);
+}
+
+.options>.option .description {
+    font-size: 0.8125rem;
+    line-height: 1.4;
+    color: var(--text-muted);
+}
+
+.options>.option .right {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex-shrink: 0;
+}
+
+/* Badge */
 .badge {
-    padding: .35rem .75rem;
-    line-height: 16px;
-    font-size: 14px;
-    border-radius: 4px;
-}
-
-.badge i {
-    font-size: 16px;
-    font-weight: 500;
-    margin-right: .5rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 0.875rem;
+    line-height: 1.2;
+    font-size: 0.8125rem;
+    border-radius: var(--radius-full);
+    font-weight: 600;
 }
 
 .badge.activated {
-    border: 1px solid var(--green-darker);
-    background-color: hsla(134deg, 62%, 41%, .08);
-    color: var(--green);
+    border: 1px solid rgba(46, 204, 113, 0.3);
+    background: linear-gradient(135deg, rgba(46, 204, 113, 0.15), rgba(46, 204, 113, 0.08));
+    color: var(--success);
+}
+
+/* User Badge */
+.user-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 0.875rem;
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-full);
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--text);
+}
+
+.user-avatar {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background: var(--primary-gradient-soft);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--primary);
+}
+
+.users-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+/* Toggle Switch / Checkbox */
+.checkbox {
+    width: 52px;
+    height: 28px;
+    border-radius: 28px;
+    background-color: var(--border);
+    position: relative;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.checkbox .knob {
+    position: absolute;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background-color: white;
+    top: 3px;
+    left: 3px;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    z-index: 1;
+}
+
+.checkbox .btn-bg {
+    position: absolute;
+    inset: 0;
+    border-radius: 28px;
+    background: linear-gradient(135deg, var(--primary), var(--primary-hover));
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.checkbox.checked .knob {
+    transform: translateX(24px);
+}
+
+.checkbox.checked .btn-bg {
+    opacity: 1;
+}
+
+/* Animations */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .options>.option {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1rem;
+    }
+
+    .options>.option .right {
+        width: 100%;
+        justify-content: flex-end;
+    }
+
+    .options>.option .left {
+        width: 100%;
+    }
+}
+
+@media (max-width: 480px) {
+    .section {
+        padding: 1rem;
+    }
+
+    .option-icon {
+        width: 36px;
+        height: 36px;
+    }
+}
+
+/* Dark Mode Enhancements */
+@media (prefers-color-scheme: dark) {
+    .section {
+        box-shadow: 0 2px 12px rgba(0, 0, 0, 0.3);
+    }
+
+    .section:hover {
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+    }
+
+    .options>.option.clickable:hover {
+        box-shadow: inset 0 0 0 1px var(--primary);
+    }
 }

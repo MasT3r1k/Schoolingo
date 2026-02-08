@@ -83,4 +83,12 @@ export class LoginHistoryComponent implements OnInit {
       this.history.next(dataRaw.data);
     });
   }
+
+  public getSuccessfulLogins(): number {
+    return this.history.getValue().filter(item => item.success).length;
+  }
+
+  public getFailedLogins(): number {
+    return this.history.getValue().filter(item => !item.success).length;
+  }
 }

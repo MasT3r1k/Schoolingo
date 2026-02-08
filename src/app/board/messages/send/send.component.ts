@@ -182,6 +182,7 @@ export class SendComponent implements OnInit {
       {
         title: 'messages.select_receiver',
         closeable: true,
+        width: 1100,
         items: [
           { type: 'component', component: SelectReceiverComponent }
         ]

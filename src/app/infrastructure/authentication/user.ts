@@ -20,6 +20,7 @@ export interface User {
     locale: string;
     theme: number;
     level: number;
+    '2fa': boolean;
     passwordChanged: Date;
     lastLogins7Days: number;
     failedLogins7Days: number;

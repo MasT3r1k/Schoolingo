@@ -1,217 +1,281 @@
 <div class="card">
     <div class="card-header">
-        <h2>Můj účet</h2>
+        <div class="left">
+            <h2>Můj účet</h2>
+            <span class="meta muted">Správa vašeho účtu a bezpečnostních nastavení</span>
+        </div>
     </div>
-    <div class="profile-content">
-        <!-- Account Details Cards -->
-        <div class="info-grid">
-            <div class="info-card">
-                <div class="info-card__icon">
-                    <i-tabler name="user"></i-tabler>
-                </div>
-                <div class="info-card__content">
-                    <span class="info-card__label">{{ l.s('auth.login.username') }}</span>
-                    <span class="info-card__value">{{ u.getUser().username }}</span>
-                </div>
-            </div>
-            <div class="info-card">
-                <div class="info-card__icon">
-                    <i-tabler name="id"></i-tabler>
-                </div>
-                <div class="info-card__content">
-                    <span class="info-card__label">{{ l.s('person.full_name') }}</span>
-                    <span class="info-card__value">{{ u.getUser().fullName }}</span>
+
+    <!-- Account Info Section -->
+    <div class="section profile-section">
+        <div class="section-header">
+            <div class="header-content">
+                <i-tabler name="user-circle"></i-tabler>
+                <div>
+                    <h3>Osobní údaje</h3>
+                    <span class="meta muted">Základní informace o vašem účtu</span>
                 </div>
             </div>
         </div>
+        <div class="section-content">
+            <div class="info-grid">
+                <div class="info-card">
+                    <div class="info-card__icon">
+                        <i-tabler name="user"></i-tabler>
+                    </div>
+                    <div class="info-card__content">
+                        <span class="info-card__label">{{ l.s('auth.login.username') }}</span>
+                        <span class="info-card__value">{{ u.getUser().username }}</span>
+                    </div>
+                </div>
+                <div class="info-card">
+                    <div class="info-card__icon id">
+                        <i-tabler name="id"></i-tabler>
+                    </div>
+                    <div class="info-card__content">
+                        <span class="info-card__label">{{ l.s('person.full_name') }}</span>
+                        <span class="info-card__value">{{ u.getUser().fullName }}</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 
-        <!-- Emails Section -->
-        <div class="items mt mb">
-            <div class="item">
-                <h3 class="section-title">
-                    {{ l.s('settings.emails.title') }}
-                </h3>
-                <div class="value list">
-                    @for (email of emails; track $index) {
-                    <div class="list-item">
-                        <span class="list-value">
-                            <div class="icon center">
-                                <i-tabler name="mail"></i-tabler>
-                            </div>
-                            <span>{{ email.email }}</span>
-                            <div class="labels">
-                                @if (email.is_verified) {
-                                <div class="badge badge--success">
-                                    <i-tabler name="circle-check" style="width: 14px; height: 14px;"></i-tabler>
-                                    Ověřený
-                                </div>
-                                }
-                            </div>
-                        </span>
-                        <div class="list-actions">
-                            <button class="btn btn--sm btn--ghost">
-                                <i-tabler name="pencil"></i-tabler>
-                            </button>
-                            <button class="btn btn--sm btn--danger" (click)="removeEmail($index)">
-                                <i-tabler name="trash-x"></i-tabler>
-                            </button>
-                        </div>
-                    </div>
-                    } @empty {
-                    <div class="empty-state row" style="display: flex;flex-direction: row;justify-content: space-between;">
-                        <div class="row" style="gap: 1.25rem;">
-                            <div class="security-card__icon">
-                                <i-tabler name="mailbox-off"></i-tabler>
-                            </div>
-                            <div class="empty-state__content">
-                                <h3 class="empty-state__title">{{ l.s('settings.emails.empty') }}</h3>
-                                <p class="empty-state__description">{{ l.s('settings.emails.empty_description') }}</p>
-                            </div>
-                        </div>
-                        <button class="btn btn--primary" (click)="addEmptyEmail()">
-                            <i-tabler name="plus"></i-tabler>
-                            {{ l.s('buttons.add_email') }}
-                        </button>
-                    </div>
-                    }
+    <!-- Emails Section -->
+    <div class="section">
+        <div class="section-header">
+            <div class="header-content">
+                <i-tabler name="mail"></i-tabler>
+                <div>
+                    <h3>{{ l.s('settings.emails.title') }}</h3>
+                    <span class="meta muted">E-mailové adresy propojené s vaším účtem</span>
                 </div>
             </div>
             @if (emails.length) {
-            <button class="btn btn--secondary btn--sm" style="width: fit-content;" (click)="addEmptyEmail()">
+            <button class="btn btn--primary btn--sm" (click)="addEmptyEmail()">
                 <i-tabler name="plus"></i-tabler>
                 {{ l.s('buttons.add_email') }}
             </button>
             }
         </div>
-
-        <hr />
-
-        <!-- Phones Section -->
-        <div class="items mt">
-            <div class="item">
-                <h3 class="section-title">
-                    {{ l.s('settings.phones.title') }}
-                </h3>
-                <div class="value">
-                    @for (phone of phones; track $index) {
-                    <div class="list-item">
-                        <span class="list-value">
-                            <div class="icon center">
-                                <i-tabler name="phone"></i-tabler>
-                            </div>
-                            <span>{{ Utils.formatPhone(phone.number) }}</span>
+        <div class="section-content">
+            @for (email of emails; track $index) {
+            <div class="contact-item">
+                <div class="contact-icon email">
+                    <i-tabler name="mail"></i-tabler>
+                </div>
+                <div class="contact-content">
+                    <span class="contact-value">{{ email.email }}</span>
+                    <div class="contact-badges">
+                        @if (email.is_verified) {
+                        <span class="badge badge--success">
+                            <i-tabler name="circle-check"></i-tabler>
+                            Ověřený
                         </span>
+                        } @else {
+                        <span class="badge badge--warning">
+                            <i-tabler name="clock"></i-tabler>
+                            Čeká na ověření
+                        </span>
+                        }
                     </div>
-                    } @empty {
-                    <div class="empty-state row" style="display: flex;flex-direction: row;justify-content: space-between;">
-                        <div class="row" style="gap: 1.25rem;">
-                            <div class="security-card__icon">
-                                <i-tabler name="phone-off"></i-tabler>
-                            </div>
-                            <div class="empty-state__content">
-                                <h3 class="empty-state__title">{{ l.s('settings.phones.empty') }}</h3>
-                                <p class="empty-state__description">{{ l.s('settings.phones.empty_description') }}</p>
-                            </div>
-                        </div>
-                        <button class="btn btn--primary">
-                            <i-tabler name="plus"></i-tabler>
-                            {{ l.s('buttons.add_phone') }}
-                        </button>
-                    </div>
-                    }
+                </div>
+                <div class="contact-actions">
+                    <button class="btn btn--sm btn--ghost" title="Upravit">
+                        <i-tabler name="pencil"></i-tabler>
+                    </button>
+                    <button class="btn btn--sm btn--danger-ghost" (click)="removeEmail($index)" title="Odstranit">
+                        <i-tabler name="trash-x"></i-tabler>
+                    </button>
+                </div>
+            </div>
+            } @empty {
+            <div class="empty-state">
+                <div class="empty-icon">
+                    <i-tabler name="mailbox-off"></i-tabler>
+                </div>
+                <div class="empty-content">
+                    <h4>{{ l.s('settings.emails.empty') }}</h4>
+                    <p>{{ l.s('settings.emails.empty_description') }}</p>
+                </div>
+                <button class="btn btn--primary" (click)="addEmptyEmail()">
+                    <i-tabler name="plus"></i-tabler>
+                    {{ l.s('buttons.add_email') }}
+                </button>
+            </div>
+            }
+        </div>
+    </div>
+
+    <!-- Phones Section -->
+    <div class="section">
+        <div class="section-header">
+            <div class="header-content">
+                <i-tabler name="phone"></i-tabler>
+                <div>
+                    <h3>{{ l.s('settings.phones.title') }}</h3>
+                    <span class="meta muted">Telefonní čísla pro ověření a obnovení účtu</span>
                 </div>
             </div>
             @if (phones.length) {
-            <button class="btn btn--secondary btn--sm" style="width: fit-content;">
+            <button class="btn btn--primary btn--sm">
                 <i-tabler name="plus"></i-tabler>
                 {{ l.s('buttons.add_phone') }}
             </button>
             }
         </div>
-
-        <hr class="mb-2" />
-
-        <!-- Security Section -->
-        <h3 class="section-title mt mb">
-            {{ l.s('user.security') }}
-        </h3>
-
-        <!-- Password -->
-        <div class="security-card mb">
-            <div class="security-card__icon">
-                <i-tabler name="lock"></i-tabler>
-            </div>
-            <div class="security-card__content">
-                <h4 class="security-card__title">{{ l.s('user.password_authenticator.title') }}</h4>
-                <p class="security-card__description">{{ l.s('user.password_authenticator.description') }}</p>
-                @if (u.getUser().passwordChanged) {
-                <div class="security-card__meta">
-                    <span class="badge badge--neutral">
-                        {{ l.s('user.password_authenticator.last_updated', { time: Utils.formatDateShort(u.getUser().passwordChanged) }) }}
-                    </span>
+        <div class="section-content">
+            @for (phone of phones; track $index) {
+            <div class="contact-item">
+                <div class="contact-icon phone">
+                    <i-tabler name="phone"></i-tabler>
                 </div>
-                }
+                <div class="contact-content">
+                    <span class="contact-value">{{ Utils.formatPhone(phone.number) }}</span>
+                </div>
+                <div class="contact-actions">
+                    <button class="btn btn--sm btn--ghost" title="Upravit">
+                        <i-tabler name="pencil"></i-tabler>
+                    </button>
+                    <button class="btn btn--sm btn--danger-ghost" title="Odstranit">
+                        <i-tabler name="trash-x"></i-tabler>
+                    </button>
+                </div>
             </div>
-            <button class="btn btn--primary" [routerLink]="['/user/settings']"
-                [queryParams]="{ page: 'changepassword' }" style="margin: auto;">
-                <i-tabler name="lock"></i-tabler>
-                {{ l.s('buttons.change_password') }}
-            </button>
+            } @empty {
+            <div class="empty-state">
+                <div class="empty-icon">
+                    <i-tabler name="phone-off"></i-tabler>
+                </div>
+                <div class="empty-content">
+                    <h4>{{ l.s('settings.phones.empty') }}</h4>
+                    <p>{{ l.s('settings.phones.empty_description') }}</p>
+                </div>
+                <button class="btn btn--primary">
+                    <i-tabler name="plus"></i-tabler>
+                    {{ l.s('buttons.add_phone') }}
+                </button>
+            </div>
+            }
         </div>
+    </div>
 
-        <!-- Login History -->
-        <div class="security-card mb" [class.security-card--danger]="u.getUser().failedLogins7Days">
-            <div class="security-card__icon">
-                <i-tabler name="history"></i-tabler>
-            </div>
-            <div class="security-card__content">
-                <h4 class="security-card__title">
-                    {{ l.s('user.login_history') }}
-                    @if (u.getUser().failedLogins7Days) {
-                    <span class="badge badge--danger">
-                        <i-tabler name="alert-triangle" style="width: 14px; height: 14px;"></i-tabler>
-                        {{ l.s('user.unknown_login') }}
-                    </span>
-                    }
-                </h4>
-                <p class="security-card__description">{{ l.s('user.login_history_description') }}</p>
-
-                <div class="security-card__meta">
-                    <span class="badge badge--neutral">
-                        {{ l.s('user.logins_for_7days') }}: {{ u.getUser().lastLogins7Days }}
-                    </span>
-                    @if (u.getUser().failedLogins7Days) {
-                    <span class="badge badge--danger">
-                        {{ l.s('user.failed_logins_for_7days') }}: {{ u.getUser().failedLogins7Days }}
-                    </span>
-                    }
+    <!-- Security Section -->
+    <div class="section security-section">
+        <div class="section-header">
+            <div class="header-content">
+                <i-tabler name="shield-check"></i-tabler>
+                <div>
+                    <h3>{{ l.s('user.security') }}</h3>
+                    <span class="meta muted">Nastavení zabezpečení vašeho účtu</span>
                 </div>
             </div>
-            <div class="security-card__actions" style="margin: auto;">
-                <div class="btn" [ngClass]="u.getUser().failedLogins7Days ? 'btn--danger' : 'btn--primary'"
-                    [routerLink]="['/user/logins']">
+        </div>
+        <div class="section-content">
+            <!-- Password -->
+            <div class="security-card">
+                <div class="security-icon password">
+                    <i-tabler name="lock"></i-tabler>
+                </div>
+                <div class="security-content">
+                    <div class="security-header">
+                        <h4>{{ l.s('user.password_authenticator.title') }}</h4>
+                        @if (u.getUser().passwordChanged) {
+                        <span class="badge badge--neutral">
+                            <i-tabler name="clock"></i-tabler>
+                            {{ l.s('user.password_authenticator.last_updated', { time:
+                            Utils.formatDateShort(u.getUser().passwordChanged) }) }}
+                        </span>
+                        }
+                    </div>
+                    <p class="security-description">{{ l.s('user.password_authenticator.description') }}</p>
+                </div>
+                <div class="security-action">
+                    <button class="btn btn--primary" [routerLink]="['/user/settings']"
+                        [queryParams]="{ page: 'changepassword' }">
+                        <i-tabler name="lock-cog"></i-tabler>
+                        {{ l.s('buttons.change_password') }}
+                    </button>
+                </div>
+            </div>
+
+            <!-- Login History -->
+            <div class="security-card" [class.security-card--danger]="u.getUser().failedLogins7Days">
+                <div class="security-icon history" [class.danger]="u.getUser().failedLogins7Days">
                     <i-tabler name="history"></i-tabler>
-                    {{ l.s('user.login_history_action') }}
                 </div>
-                <small class="note clickable" [routerLink]="['/user/devices']" style="color: var(--primary-200)">
-                    {{ l.s('user.show_logged_devices') }}
-                </small>
+                <div class="security-content">
+                    <div class="security-header">
+                        <h4>
+                            {{ l.s('user.login_history') }}
+                            @if (u.getUser().failedLogins7Days) {
+                            <span class="badge badge--danger">
+                                <i-tabler name="alert-triangle"></i-tabler>
+                                {{ l.s('user.unknown_login') }}
+                            </span>
+                            }
+                        </h4>
+                    </div>
+                    <p class="security-description">{{ l.s('user.login_history_description') }}</p>
+                    <div class="security-stats">
+                        <span class="stat-badge">
+                            <i-tabler name="login"></i-tabler>
+                            {{ l.s('user.logins_for_7days') }}: <strong>{{ u.getUser().lastLogins7Days }}</strong>
+                        </span>
+                        @if (u.getUser().failedLogins7Days) {
+                        <span class="stat-badge danger">
+                            <i-tabler name="circle-x"></i-tabler>
+                            {{ l.s('user.failed_logins_for_7days') }}: <strong>{{ u.getUser().failedLogins7Days
+                                }}</strong>
+                        </span>
+                        }
+                    </div>
+                </div>
+                <div class="security-action">
+                    <button class="btn" [ngClass]="u.getUser().failedLogins7Days ? 'btn--danger' : 'btn--primary'"
+                        [routerLink]="['/user/logins']">
+                        <i-tabler name="history"></i-tabler>
+                        {{ l.s('user.login_history_action') }}
+                    </button>
+                    <a class="link-secondary" [routerLink]="['/user/devices']">
+                        <i-tabler name="devices"></i-tabler>
+                        {{ l.s('user.show_logged_devices') }}
+                    </a>
+                </div>
             </div>
-        </div>
 
-        <!-- 2FA -->
-        <div class="security-card mb">
-            <div class="security-card__icon">
-                <i-tabler name="auth-2fa"></i-tabler>
+            <!-- 2FA -->
+            <div class="security-card" [class.security-card--success]="u.getUser()['2fa']">
+                <div class="security-icon tfa" [class.success]="u.getUser()['2fa']">
+                    <i-tabler name="auth-2fa"></i-tabler>
+                </div>
+                <div class="security-content">
+                    <div class="security-header">
+                        <h4>
+                            {{ l.s('settings.2fa.title') }}
+                            @if (u.getUser()['2fa']) {
+                            <span class="badge badge--success">
+                                <i-tabler name="shield-check"></i-tabler>
+                                Aktivní
+                            </span>
+                            } @else {
+                            <span class="badge badge--warning">
+                                <i-tabler name="shield-off"></i-tabler>
+                                Neaktivní
+                            </span>
+                            }
+                        </h4>
+                    </div>
+                    <p class="security-description">{{ l.s('user.app_authenticator.description') }}</p>
+                </div>
+                <div class="security-action">
+                    <button class="btn btn--primary" [routerLink]="['/user/settings']"
+                        [queryParams]="{ page: 'security' }">
+                        <i-tabler name="settings"></i-tabler>
+                        {{ l.s('buttons.jump_to_2FA_settings') }}
+                    </button>
+                </div>
             </div>
-            <div class="security-card__content">
-                <h4 class="security-card__title">{{ l.s('settings.2fa.title') }}</h4>
-                <p class="security-card__description">{{ l.s('user.app_authenticator.description') }}</p>
-            </div>
-            <button class="btn btn--primary" [routerLink]="['/user/settings']" [queryParams]="{ page: 'security' }" style="margin: auto;">
-                <i-tabler name="settings"></i-tabler>
-                {{ l.s('buttons.jump_to_2FA_settings') }}
-            </button>
         </div>
     </div>
 </div>

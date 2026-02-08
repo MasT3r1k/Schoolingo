@@ -1,1 +1,291 @@
-<p>gdpr works!</p>
+<div class="card">
+    <div class="card-header">
+        <div class="left">
+            <h2>GDPR - Ochrana osobních údajů</h2>
+            <span class="meta muted">Spravujte své souhlasy a osobní data podle GDPR</span>
+        </div>
+    </div>
+
+    <!-- Consent Management Section -->
+    <div class="section">
+        <div class="section-header">
+            <div class="header-content">
+                <i-tabler name="shield-check"></i-tabler>
+                <div>
+                    <h3>Správa souhlasů</h3>
+                    <span class="meta muted">Vyberte, k jakým účelům smíme zpracovávat vaše osobní údaje</span>
+                </div>
+            </div>
+            <div class="header-actions">
+                <button class="btn btn--secondary btn--sm" (click)="grantAllOptional()">
+                    <i-tabler name="list-check"></i-tabler>
+                    Povolit vše
+                </button>
+                <button class="btn btn--ghost btn--sm" (click)="revokeAllOptional()">
+                    <i-tabler name="x"></i-tabler>
+                    Odvolat volitelné
+                </button>
+            </div>
+        </div>
+        <div class="section-content">
+            @if (loading) {
+            <div class="loading">
+                <div class="loading-spinner"></div>
+                <span>Načítání souhlasů...</span>
+            </div>
+            } @else {
+            <div class="consents-grid">
+                @for (type of consentTypes; track type.id) {
+                @let consent = getConsentByType(type.id);
+                <div class="consent-card" [class.active]="consent?.granted" [class.required]="type.required"
+                    (click)="!type.required && toggleConsent(type.id)">
+                    <div class="consent-header">
+                        <div class="consent-icon" [style.background]="type.color + '20'" [style.color]="type.color">
+                            <i-tabler [name]="type.icon"></i-tabler>
+                        </div>
+                        <div class="consent-toggle">
+                            @if (type.required) {
+                            <span class="required-badge">Povinné</span>
+                            } @else {
+                            <label class="toggle-switch">
+                                <input type="checkbox" [checked]="consent?.granted || false" [disabled]="type.required">
+                                <span class="slider"></span>
+                            </label>
+                            }
+                        </div>
+                    </div>
+                    <div class="consent-content">
+                        <h4>{{ type.name }}</h4>
+                        <p>{{ type.description }}</p>
+                    </div>
+                    @if (consent?.granted_at) {
+                    <div class="consent-meta">
+                        <i-tabler name="clock"></i-tabler>
+                        <span>Uděleno: {{ consent!.granted_at | date:'dd.MM.yyyy' }}</span>
+                    </div>
+                    }
+                </div>
+                }
+            </div>
+            }
+        </div>
+    </div>
+
+    <!-- Data Export Section -->
+    <div class="section">
+        <div class="section-header">
+            <div class="header-content">
+                <i-tabler name="download"></i-tabler>
+                <div>
+                    <h3>Export osobních údajů</h3>
+                    <span class="meta muted">Stáhněte si kopii všech vašich osobních údajů</span>
+                </div>
+            </div>
+            <button class="btn btn--primary" (click)="requestDataExport()" [disabled]="exportLoading">
+                @if (exportLoading) {
+                <div class="btn-spinner"></div>
+                Zpracovává se...
+                } @else {
+                <i-tabler name="file-download"></i-tabler>
+                Požádat o export
+                }
+            </button>
+        </div>
+        <div class="section-content">
+            <div class="info-box">
+                <i-tabler name="info-circle"></i-tabler>
+                <div>
+                    <p><strong>Právo na přístup k údajům (čl. 15 GDPR)</strong></p>
+                    <p>Máte právo získat kopii všech osobních údajů, které o vás zpracováváme. Export obsahuje vaše
+                        profilové údaje, historii aktivit, zprávy a další data.</p>
+                </div>
+            </div>
+
+            @if (dataExportRequests.length > 0) {
+            <div class="export-requests">
+                <h4>Historie žádostí o export</h4>
+                @for (request of dataExportRequests; track request.request_id) {
+                <div class="export-request-card">
+                    <div class="request-info">
+                        <div class="request-status" [style.color]="getExportStatusColor(request.status)">
+                            <i-tabler
+                                [name]="request.status === 'ready' ? 'circle-check' : request.status === 'expired' ? 'alert-circle' : 'loader'"></i-tabler>
+                            <span>{{ getExportStatusText(request.status) }}</span>
+                        </div>
+                        <span class="request-date">{{ request.requested_at | date:'dd.MM.yyyy HH:mm' }}</span>
+                    </div>
+                    @if (request.status === 'ready' && request.download_url) {
+                    <button class="btn btn--primary btn--sm" (click)="downloadExport(request)">
+                        <i-tabler name="download"></i-tabler>
+                        Stáhnout
+                    </button>
+                    }
+                </div>
+                }
+            </div>
+            }
+        </div>
+    </div>
+
+    <!-- Data Retention Info -->
+    <div class="section">
+        <div class="section-header">
+            <div class="header-content">
+                <i-tabler name="clock-hour-4"></i-tabler>
+                <div>
+                    <h3>Doba uchovávání údajů</h3>
+                    <span class="meta muted">Informace o tom, jak dlouho uchováváme vaše údaje</span>
+                </div>
+            </div>
+        </div>
+        <div class="section-content">
+            <div class="retention-list">
+                <div class="retention-item">
+                    <div class="retention-icon">
+                        <i-tabler name="user"></i-tabler>
+                    </div>
+                    <div class="retention-content">
+                        <h5>Profilové údaje</h5>
+                        <p>Po dobu trvání uživatelského účtu + 3 roky</p>
+                    </div>
+                </div>
+                <div class="retention-item">
+                    <div class="retention-icon">
+                        <i-tabler name="message"></i-tabler>
+                    </div>
+                    <div class="retention-content">
+                        <h5>Zprávy a komunikace</h5>
+                        <p>5 let od odeslání</p>
+                    </div>
+                </div>
+                <div class="retention-item">
+                    <div class="retention-icon">
+                        <i-tabler name="report-analytics"></i-tabler>
+                    </div>
+                    <div class="retention-content">
+                        <h5>Studijní výsledky</h5>
+                        <p>10 let od ukončení studia</p>
+                    </div>
+                </div>
+                <div class="retention-item">
+                    <div class="retention-icon">
+                        <i-tabler name="history"></i-tabler>
+                    </div>
+                    <div class="retention-content">
+                        <h5>Protokoly přístupu</h5>
+                        <p>1 rok od záznamu</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Delete Account Section -->
+    <div class="section danger-section">
+        <div class="section-header">
+            <div class="header-content">
+                <i-tabler name="trash"></i-tabler>
+                <div>
+                    <h3>Smazání účtu</h3>
+                    <span class="meta muted">Právo na výmaz (čl. 17 GDPR) - „právo být zapomenut"</span>
+                </div>
+            </div>
+        </div>
+        <div class="section-content">
+            <div class="warning-box">
+                <i-tabler name="alert-triangle"></i-tabler>
+                <div>
+                    <p><strong>Upozornění</strong></p>
+                    <p>Smazání účtu je nevratná akce. Všechny vaše osobní údaje budou trvale odstraněny. Některé údaje
+                        mohou být uchovány déle z důvodu zákonných povinností.</p>
+                </div>
+            </div>
+
+            @if (!showDeleteConfirm) {
+            <button class="btn btn--danger" (click)="showDeleteConfirm = true">
+                <i-tabler name="trash"></i-tabler>
+                Požádat o smazání účtu
+            </button>
+            } @else {
+            <div class="delete-confirm-box">
+                <p>Pro potvrzení napište <strong>"smazat účet"</strong>:</p>
+                <div class="delete-confirm-input">
+                    <input type="text" [(ngModel)]="deleteConfirmText" placeholder="smazat účet" class="form-input">
+                    <button class="btn btn--danger"
+                        [disabled]="deleteConfirmText.toLowerCase() !== 'smazat účet' || deleteAccountLoading"
+                        (click)="requestAccountDeletion()">
+                        @if (deleteAccountLoading) {
+                        <div class="btn-spinner"></div>
+                        } @else {
+                        <i-tabler name="trash"></i-tabler>
+                        }
+                        Potvrdit smazání
+                    </button>
+                </div>
+                <button class="btn btn--ghost" (click)="showDeleteConfirm = false; deleteConfirmText = ''">
+                    Zrušit
+                </button>
+            </div>
+            }
+        </div>
+    </div>
+
+    <!-- GDPR Rights Info -->
+    <div class="section info-section">
+        <div class="section-header">
+            <div class="header-content">
+                <i-tabler name="gavel"></i-tabler>
+                <div>
+                    <h3>Vaše práva podle GDPR</h3>
+                    <span class="meta muted">Přehled vašich práv týkajících se ochrany osobních údajů</span>
+                </div>
+            </div>
+        </div>
+        <div class="section-content">
+            <div class="rights-grid">
+                <div class="right-card">
+                    <div class="right-icon">
+                        <i-tabler name="eye"></i-tabler>
+                    </div>
+                    <h5>Právo na přístup</h5>
+                    <p>Právo získat informace o zpracování vašich údajů</p>
+                </div>
+                <div class="right-card">
+                    <div class="right-icon">
+                        <i-tabler name="edit"></i-tabler>
+                    </div>
+                    <h5>Právo na opravu</h5>
+                    <p>Právo na opravu nepřesných osobních údajů</p>
+                </div>
+                <div class="right-card">
+                    <div class="right-icon">
+                        <i-tabler name="trash"></i-tabler>
+                    </div>
+                    <h5>Právo na výmaz</h5>
+                    <p>Právo požádat o smazání vašich údajů</p>
+                </div>
+                <div class="right-card">
+                    <div class="right-icon">
+                        <i-tabler name="hand-stop"></i-tabler>
+                    </div>
+                    <h5>Právo na omezení</h5>
+                    <p>Právo omezit zpracování vašich údajů</p>
+                </div>
+                <div class="right-card">
+                    <div class="right-icon">
+                        <i-tabler name="database-export"></i-tabler>
+                    </div>
+                    <h5>Právo na přenositelnost</h5>
+                    <p>Právo získat údaje ve strojově čitelném formátu</p>
+                </div>
+                <div class="right-card">
+                    <div class="right-icon">
+                        <i-tabler name="ban"></i-tabler>
+                    </div>
+                    <h5>Právo vznést námitku</h5>
+                    <p>Právo vznést námitku proti zpracování</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

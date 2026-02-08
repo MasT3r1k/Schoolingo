@@ -6,69 +6,191 @@
         </div>
         @if (canCreate) {
         <div class="flex-items">
-            <div class="btn btn--primary" routerLink="create">
+            <button class="btn btn--primary" routerLink="create">
                 <i-tabler name="plus"></i-tabler>
                 <span>Vytvořit nový test</span>
-            </div>
+            </button>
         </div>
         }
     </div>
 
-    <div class="card-body" [class.center]="tests.length == 0">
-        @if (loading) {
-        <div class="loading-state">
-            <div class="loader"></div>
-            <p>Načítání testů...</p>
+    <!-- Stats Section -->
+    <div class="section stats-section">
+        <div class="stats-grid">
+            <div class="stat-card stat--primary">
+                <div class="stat-icon">
+                    <i-tabler name="clipboard-list"></i-tabler>
+                </div>
+                <div class="stat-info">
+                    <span class="stat-value">{{ tests.length }}</span>
+                    <span class="stat-label">Aktivních testů</span>
+                </div>
+            </div>
+            <div class="stat-card stat--success">
+                <div class="stat-icon">
+                    <i-tabler name="circle-check"></i-tabler>
+                </div>
+                <div class="stat-info">
+                    <span class="stat-value">{{ getCompletedCount() }}</span>
+                    <span class="stat-label">Vyplněných</span>
+                </div>
+            </div>
+            <div class="stat-card stat--warning">
+                <div class="stat-icon">
+                    <i-tabler name="clock"></i-tabler>
+                </div>
+                <div class="stat-info">
+                    <span class="stat-value">{{ getPendingCount() }}</span>
+                    <span class="stat-label">K vyplnění</span>
+                </div>
+            </div>
         </div>
-        } @else {
-        <div class="polls-grid">
-            @for (test of tests; track test.id) {
-            <div class="poll-card poll-test">
-                <div class="card-badge">
-                    <i-tabler name="clipboard-check"></i-tabler>
-                    <span>Test</span>
-                </div>
+    </div>
 
-                <div class="card-content">
-                    <h3 class="poll-title">{{ test.title }}</h3>
-                    <p class="poll-description">{{ test.description || 'Žádný popis k dispozici' }}</p>
+    <!-- Tests List Section -->
+    <div class="section">
+        <div class="section-header">
+            <div class="header-content">
+                <i-tabler name="clipboard-check"></i-tabler>
+                <div>
+                    <h3>Dostupné testy</h3>
+                    <span class="meta muted">Vyberte test k vyplnění nebo zobrazení výsledků</span>
                 </div>
+            </div>
+        </div>
+        <div class="section-content">
+            @if (loading) {
+            <div class="loading-state">
+                <div class="loading-spinner"></div>
+                <p>Načítání testů...</p>
+            </div>
+            } @else {
+            <div class="tests-grid">
+                @for (test of tests; track test.id) {
+                <div class="test-card" [class.completed]="test.completed" [class.urgent]="isUrgent(test)">
+                    <div class="test-card-header">
+                        <div class="test-badge" [class.completed]="test.completed" [class.pending]="!test.completed">
+                            @if (test.completed) {
+                            <i-tabler name="circle-check"></i-tabler>
+                            <span>Vyplněno</span>
+                            } @else {
+                            <i-tabler name="clipboard-check"></i-tabler>
+                            <span>Test</span>
+                            }
+                        </div>
+                        @if (isUrgent(test)) {
+                        <div class="urgent-badge">
+                            <i-tabler name="alert-triangle"></i-tabler>
+                            <span>Brzy končí</span>
+                        </div>
+                        }
+                    </div>
 
-                <div class="card-meta">
-                    <div class="meta-item">
-                        <i-tabler name="user"></i-tabler>
-                        <span>{{ test.authorName }}</span>
+                    <div class="test-card-content">
+                        <h3 class="test-title">{{ test.title }}</h3>
+                        <p class="test-description">{{ test.description || 'Žádný popis k dispozici' }}</p>
                     </div>
-                    @if (test.active_to) {
-                    <div class="meta-item">
-                        <i-tabler name="clock"></i-tabler>
-                        <span>{{ test.active_to | date:'short' }}</span>
+
+                    <div class="test-card-meta">
+                        <div class="meta-item">
+                            <i-tabler name="user"></i-tabler>
+                            <span>{{ test.authorName }}</span>
+                        </div>
+                        @if (test.active_to) {
+                        <div class="meta-item" [class.urgent]="isUrgent(test)">
+                            <i-tabler name="calendar"></i-tabler>
+                            <span>{{ test.active_to | date:'dd.MM.yyyy HH:mm' }}</span>
+                        </div>
+                        }
+                        @if (test.questionCount) {
+                        <div class="meta-item">
+                            <i-tabler name="list-check"></i-tabler>
+                            <span>{{ test.questionCount }} otázek</span>
+                        </div>
+                        }
                     </div>
+
+                    <div class="test-card-actions">
+                        @if (!test.completed) {
+                        <button class="btn btn--primary" [routerLink]="[test.id]">
+                            <i-tabler name="edit"></i-tabler>
+                            <span>Vyplnit test</span>
+                        </button>
+                        } @else {
+                        <button class="btn btn--success" [routerLink]="[test.id, 'results']">
+                            <i-tabler name="chart-bar"></i-tabler>
+                            <span>Moje výsledky</span>
+                        </button>
+                        }
+                        @if (canCreate) {
+                        <button class="btn btn--ghost" [routerLink]="[test.id, 'results']" title="Všechny výsledky">
+                            <i-tabler name="chart-dots"></i-tabler>
+                        </button>
+                        }
+                    </div>
+                </div>
+                }
+                @empty {
+                <div class="empty-state">
+                    <div class="empty-icon">
+                        <i-tabler name="clipboard-off"></i-tabler>
+                    </div>
+                    <h4>Žádné aktivní testy</h4>
+                    <p>Momentálně nejsou k dispozici žádné testy.</p>
+                    @if (canCreate) {
+                    <button class="btn btn--primary" routerLink="create">
+                        <i-tabler name="plus"></i-tabler>
+                        <span>Vytvořit první test</span>
+                    </button>
                     }
                 </div>
-
-                <div class="card-actions">
-                    <button class="btn btn--sm btn--primary" [routerLink]="[test.id]">
-                        <i-tabler name="edit"></i-tabler>
-                        <span>Vyplnit</span>
-                    </button>
-                    <button class="btn btn--sm btn--ghost" [routerLink]="[test.id, 'results']">
-                        <i-tabler name="chart-bar"></i-tabler>
-                        <span>Výsledky</span>
-                    </button>
-                </div>
-            </div>
-            }
-            @empty {
-            <div class="no-selection">
-                <div class="illustration">
-                    <i-tabler name="inbox"></i-tabler>
-                </div>
-                <h3>Žádné aktivní testy</h3>
-                <p>Momentálně nejsou k dispozici žádné testy.</p>
+                }
             </div>
             }
         </div>
-        }
+    </div>
+
+    <!-- Info Section -->
+    <div class="section info-section">
+        <div class="section-header">
+            <div class="header-content">
+                <i-tabler name="info-circle"></i-tabler>
+                <div>
+                    <h3>Jak na testy</h3>
+                    <span class="meta muted">Tipy pro úspěšné vyplnění</span>
+                </div>
+            </div>
+        </div>
+        <div class="section-content">
+            <div class="tips-grid">
+                <div class="tip-card">
+                    <div class="tip-icon primary">
+                        <i-tabler name="clock"></i-tabler>
+                    </div>
+                    <div class="tip-content">
+                        <h5>Hlídejte čas</h5>
+                        <p>Některé testy mají časový limit. Sledujte, kolik času vám zbývá.</p>
+                    </div>
+                </div>
+                <div class="tip-card">
+                    <div class="tip-icon warning">
+                        <i-tabler name="alert-circle"></i-tabler>
+                    </div>
+                    <div class="tip-content">
+                        <h5>Pozor na termín</h5>
+                        <p>Testy s blížícím se termínem jsou označeny jako urgentní.</p>
+                    </div>
+                </div>
+                <div class="tip-card">
+                    <div class="tip-icon success">
+                        <i-tabler name="device-floppy"></i-tabler>
+                    </div>
+                    <div class="tip-content">
+                        <h5>Automatické ukládání</h5>
+                        <p>Vaše odpovědi se průběžně ukládají, abyste o ně nepřišli.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 </div>

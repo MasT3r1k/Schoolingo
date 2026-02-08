@@ -11,6 +11,7 @@ import { DevicesComponent } from './board/User/devices/devices.component';
 import { LoginHistoryComponent } from './board/User/login-history/login-history.component';
 import { ConnectionsComponent } from './board/User/connections/connections.component';
 import { GdprComponent } from './board/User/gdpr/gdpr.component';
+import { CookiesComponent } from './board/User/cookies/cookies.component';
 import { NotificationsComponent } from './board/User/notifications/notifications.component';
 import { TimetableComponent } from './board/Teach/timetable/timetable.component';
 import { HomeworkComponent } from './board/Teach/homework/homework.component';
@@ -329,6 +330,10 @@ export const routes: Routes = [
                     {
                         path: 'notifications',
                         component: NotificationsComponent
+                    },
+                    {
+                        path: 'cookies',
+                        component: CookiesComponent
                     },
                 ]
             },

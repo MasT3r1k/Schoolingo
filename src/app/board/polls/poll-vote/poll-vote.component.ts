@@ -102,10 +102,46 @@ export class PollVoteComponent implements OnInit {
     this.pollsService.submitPoll(this.poll.id, this.voteForm.value.answers).subscribe({
       next: (res) => {
         if (res.success) {
-           this.router.navigate(['/polls']);
-           // Show success toast?
+           this.submitted = true;
+           this.submissionScore = res.score;
+           this.maxScore = res.max;
         }
       }
     });
+  }
+
+  // Helper methods
+  submissionScore: number | null = null;
+  maxScore: number | null = null;
+  timeRemaining: number | null = null;
+
+  getTotalPoints(): number {
+    return this.questions.reduce((sum, q) => sum + (q.points || 0), 0);
+  }
+
+  getAnsweredCount(): number {
+    return this.answers.controls.filter((ctrl, i) => this.isAnswered(i)).length;
+  }
+
+  isAnswered(index: number): boolean {
+    const answer = this.answers.at(index);
+    const question = this.questions[index];
+    if (!question) return false;
+
+    if (question.type === 'text') {
+      return !!answer.get('answerText')?.value?.trim();
+    } else if (question.type === 'single') {
+      return answer.get('optionId')?.value !== null;
+    } else if (question.type === 'multiple') {
+      const optionIds = answer.get('optionIds')?.value as number[];
+      return optionIds && optionIds.length > 0;
+    }
+    return false;
+  }
+
+  isOptionSelected(questionIndex: number, optionId: number): boolean {
+    const group = this.answers.at(questionIndex);
+    const optionIds = group.get('optionIds')?.value as number[];
+    return optionIds && optionIds.includes(optionId);
   }
 }

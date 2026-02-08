@@ -1,0 +1,294 @@
+<div class="card">
+    <div class="card-header">
+        <div class="left">
+            <h2>Nastavení Cookies</h2>
+            <span class="meta muted">Spravujte, jaké cookies můžeme používat</span>
+        </div>
+    </div>
+
+    <!-- Quick Actions Section -->
+    <div class="section quick-actions-section">
+        <div class="quick-actions">
+            <button class="btn btn--primary btn--lg" (click)="acceptAll()" [disabled]="saving">
+                <i-tabler name="check"></i-tabler>
+                Přijmout vše
+            </button>
+            <button class="btn btn--secondary btn--lg" (click)="acceptEssentialOnly()" [disabled]="saving">
+                <i-tabler name="shield-check"></i-tabler>
+                Pouze nezbytné
+            </button>
+        </div>
+        <div class="cookies-summary">
+            <div class="summary-stat">
+                <span class="stat-value">{{ getEnabledCount() }}</span>
+                <span class="stat-label">z {{ getTotalCategories() }} kategorií povoleno</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Cookie Categories Section -->
+    <div class="section">
+        <div class="section-header">
+            <div class="header-content">
+                <i-tabler name="cookie"></i-tabler>
+                <div>
+                    <h3>Kategorie cookies</h3>
+                    <span class="meta muted">Vyberte, které kategorie cookies chcete povolit</span>
+                </div>
+            </div>
+        </div>
+        <div class="section-content">
+            @if (loading) {
+            <div class="loading">
+                <div class="loading-spinner"></div>
+                <span>Načítání nastavení...</span>
+            </div>
+            } @else {
+            <div class="categories-list">
+                @for (category of cookieCategories; track category.id) {
+                @let pref = getCategoryPreference(category.id);
+                <div class="category-card" [class.active]="pref?.enabled" [class.required]="category.required"
+                    [class.expanded]="selectedCategory === category.id">
+                    <div class="category-main" (click)="toggleCategoryDetails(category.id)">
+                        <div class="category-icon" [style.background]="category.color + '20'"
+                            [style.color]="category.color">
+                            <i-tabler [name]="category.icon"></i-tabler>
+                        </div>
+                        <div class="category-content">
+                            <div class="category-header">
+                                <h4>{{ category.name }}</h4>
+                                @if (category.required) {
+                                <span class="required-badge">Vždy aktivní</span>
+                                }
+                            </div>
+                            <p>{{ category.description }}</p>
+                        </div>
+                        <div class="category-actions">
+                            @if (!category.required) {
+                            <label class="toggle-switch" (click)="$event.stopPropagation()">
+                                <input type="checkbox" [checked]="pref?.enabled || false"
+                                    (change)="toggleCategory(category.id)">
+                                <span class="slider"></span>
+                            </label>
+                            }
+                            <button class="expand-btn" [class.rotated]="selectedCategory === category.id">
+                                <i-tabler name="chevron-down"></i-tabler>
+                            </button>
+                        </div>
+                    </div>
+
+                    @if (selectedCategory === category.id) {
+                    <div class="category-details" @fadeInOut>
+                        <div class="examples-list">
+                            <h5>Příklady použití:</h5>
+                            <ul>
+                                @for (example of category.examples; track example) {
+                                <li>
+                                    <i-tabler name="check"></i-tabler>
+                                    {{ example }}
+                                </li>
+                                }
+                            </ul>
+                        </div>
+
+                        <div class="cookies-table">
+                            <h5>Cookies v této kategorii:</h5>
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Název</th>
+                                        <th>Účel</th>
+                                        <th>Doba platnosti</th>
+                                        <th>Poskytovatel</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @for (cookie of getCookiesByCategory(category.id); track cookie.name) {
+                                    <tr>
+                                        <td><code>{{ cookie.name }}</code></td>
+                                        <td>{{ cookie.purpose }}</td>
+                                        <td>{{ cookie.duration }}</td>
+                                        <td>{{ cookie.provider }}</td>
+                                    </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    }
+                </div>
+                }
+            </div>
+
+            <div class="save-section">
+                <button class="btn btn--primary" (click)="savePreferences()" [disabled]="saving">
+                    @if (saving) {
+                    <div class="btn-spinner"></div>
+                    Ukládání...
+                    } @else {
+                    <i-tabler name="device-floppy"></i-tabler>
+                    Uložit nastavení
+                    }
+                </button>
+            </div>
+            }
+        </div>
+    </div>
+
+    <!-- What are Cookies Section -->
+    <div class="section info-section">
+        <div class="section-header">
+            <div class="header-content">
+                <i-tabler name="info-circle"></i-tabler>
+                <div>
+                    <h3>Co jsou cookies?</h3>
+                    <span class="meta muted">Základní informace o cookies a jejich použití</span>
+                </div>
+            </div>
+        </div>
+        <div class="section-content">
+            <div class="info-cards">
+                <div class="info-card">
+                    <div class="info-icon">
+                        <i-tabler name="file-text"></i-tabler>
+                    </div>
+                    <h5>Definice</h5>
+                    <p>Cookies jsou malé textové soubory, které webové stránky ukládají ve vašem prohlížeči pro
+                        zapamatování informací o vaší návštěvě.</p>
+                </div>
+                <div class="info-card">
+                    <div class="info-icon">
+                        <i-tabler name="target"></i-tabler>
+                    </div>
+                    <h5>Účel</h5>
+                    <p>Používáme cookies pro zajištění funkčnosti webu, analýzu návštěvnosti a personalizaci obsahu a
+                        reklam.</p>
+                </div>
+                <div class="info-card">
+                    <div class="info-icon">
+                        <i-tabler name="shield"></i-tabler>
+                    </div>
+                    <h5>Vaše práva</h5>
+                    <p>Máte právo kdykoli změnit nebo odvolat svůj souhlas s používáním cookies přímo na této stránce.
+                    </p>
+                </div>
+                <div class="info-card">
+                    <div class="info-icon">
+                        <i-tabler name="clock"></i-tabler>
+                    </div>
+                    <h5>Doba uložení</h5>
+                    <p>Cookies mohou být uloženy jako „session" (jen do zavření prohlížeče) nebo „trvalé" (po delší
+                        dobu).</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Browser Settings Section -->
+    <div class="section">
+        <div class="section-header">
+            <div class="header-content">
+                <i-tabler name="browser"></i-tabler>
+                <div>
+                    <h3>Nastavení prohlížeče</h3>
+                    <span class="meta muted">Další možnosti správy cookies v prohlížeči</span>
+                </div>
+            </div>
+        </div>
+        <div class="section-content">
+            <div class="browser-info">
+                <p>Kromě nastavení na této stránce můžete cookies spravovat také přímo v nastavení vašeho prohlížeče:
+                </p>
+                <div class="browser-links">
+                    <a href="https://support.google.com/chrome/answer/95647" target="_blank" class="browser-link">
+                        <i-tabler name="brand-chrome"></i-tabler>
+                        <span>Google Chrome</span>
+                    </a>
+                    <a href="https://support.mozilla.org/cs/kb/jak-spravovat-cookies" target="_blank"
+                        class="browser-link">
+                        <i-tabler name="brand-firefox"></i-tabler>
+                        <span>Mozilla Firefox</span>
+                    </a>
+                    <a href="https://support.microsoft.com/cs-cz/microsoft-edge/odstran%C4%9Bn%C3%AD-soubor%C5%AF-cookie-v-aplikaci-microsoft-edge-63947406-40ac-c3b8-57b9-2a946a29ae09"
+                        target="_blank" class="browser-link">
+                        <i-tabler name="brand-edge"></i-tabler>
+                        <span>Microsoft Edge</span>
+                    </a>
+                    <a href="https://support.apple.com/cs-cz/guide/safari/sfri11471/mac" target="_blank"
+                        class="browser-link">
+                        <i-tabler name="brand-safari"></i-tabler>
+                        <span>Safari</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Clear All Cookies Section -->
+    <div class="section danger-section">
+        <div class="section-header">
+            <div class="header-content">
+                <i-tabler name="trash"></i-tabler>
+                <div>
+                    <h3>Smazat všechny cookies</h3>
+                    <span class="meta muted">Odstranit všechny cookies uložené tímto webem</span>
+                </div>
+            </div>
+        </div>
+        <div class="section-content">
+            <div class="warning-box">
+                <i-tabler name="alert-triangle"></i-tabler>
+                <div>
+                    <p><strong>Upozornění</strong></p>
+                    <p>Smazáním všech cookies budete odhlášeni a vaše nastavení bude resetováno. Tato akce je nevratná.
+                    </p>
+                </div>
+            </div>
+            <button class="btn btn--danger" (click)="clearAllCookies()">
+                <i-tabler name="trash"></i-tabler>
+                Smazat všechny cookies
+            </button>
+        </div>
+    </div>
+
+    <!-- More Information -->
+    <div class="section">
+        <div class="section-header">
+            <div class="header-content">
+                <i-tabler name="book"></i-tabler>
+                <div>
+                    <h3>Další informace</h3>
+                    <span class="meta muted">Odkazy na související dokumenty</span>
+                </div>
+            </div>
+        </div>
+        <div class="section-content">
+            <div class="links-grid">
+                <a routerLink="/user/gdpr" class="link-card">
+                    <i-tabler name="shield-check"></i-tabler>
+                    <div>
+                        <h5>GDPR nastavení</h5>
+                        <p>Správa souhlasů a osobních údajů</p>
+                    </div>
+                    <i-tabler name="arrow-right" class="arrow"></i-tabler>
+                </a>
+                <a href="/privacy-policy" target="_blank" class="link-card">
+                    <i-tabler name="file-description"></i-tabler>
+                    <div>
+                        <h5>Zásady ochrany soukromí</h5>
+                        <p>Kompletní informace o zpracování údajů</p>
+                    </div>
+                    <i-tabler name="arrow-right" class="arrow"></i-tabler>
+                </a>
+                <a href="/terms" target="_blank" class="link-card">
+                    <i-tabler name="gavel"></i-tabler>
+                    <div>
+                        <h5>Podmínky používání</h5>
+                        <p>Pravidla používání služby</p>
+                    </div>
+                    <i-tabler name="arrow-right" class="arrow"></i-tabler>
+                </a>
+            </div>
+        </div>
+    </div>
+</div>

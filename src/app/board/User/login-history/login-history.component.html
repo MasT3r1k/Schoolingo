@@ -1,82 +1,198 @@
-<div class="card" style="height: 100%;">
-    <div class="card-top">
-    </div>
+<div class="card">
     <div class="card-header">
-        <div>
+        <div class="left">
             <h2>{{ l.s('user.login_history') }}</h2>
-            <span class="meta muted">
-                Poslední aktivita na účtu — můžete zkontrolovat zařízení a IP adresy
-            </span>
+            <span class="meta muted">Poslední aktivita na účtu — můžete zkontrolovat zařízení a IP adresy</span>
         </div>
-        <div></div>
     </div>
-    <div class="card-body">
-        <div class="list">
-            @for (item of history.getValue();track $index) {
-            <div class="item">
-                <div class="icon">
-                    <i-tabler name="device-desktop"></i-tabler>
+
+    <!-- Stats Section -->
+    <div class="section stats-section">
+        <div class="stats-grid">
+            <div class="stat-card stat--primary">
+                <div class="stat-icon">
+                    <i-tabler name="login"></i-tabler>
                 </div>
-                <div class="meta">
-                    <div class="row" style="justify-content: space-between;">
-                        <div class="main">
-                            <div>
-                                <div class="device">
-                                    <img height="24" width="24" class="table-icon" [src]="'/assets/browsers/' + Utils.getBrowserIcon(item.userAgent)" alt="" /> {{ Utils.getBrowser(item.userAgent) }}
-                                    —
-                                    {{ Utils.getOS(item.userAgent) }}
-                                </div>
-                                <div class="muted">
-                                    {{ l.s('login_history.types.' + item.type) }} • 
-                                    <span class="time">{{ Utils.formatDate(item.created) }}</span>
-                                </div>
+                <div class="stat-info">
+                    <span class="stat-value">{{ metadata.rows }}</span>
+                    <span class="stat-label">Celkem přihlášení</span>
+                </div>
+            </div>
+            <div class="stat-card stat--success">
+                <div class="stat-icon">
+                    <i-tabler name="circle-check"></i-tabler>
+                </div>
+                <div class="stat-info">
+                    <span class="stat-value">{{ getSuccessfulLogins() }}</span>
+                    <span class="stat-label">Úspěšných za 30 dní</span>
+                </div>
+            </div>
+            <div class="stat-card stat--danger">
+                <div class="stat-icon">
+                    <i-tabler name="circle-x"></i-tabler>
+                </div>
+                <div class="stat-info">
+                    <span class="stat-value">{{ getFailedLogins() }}</span>
+                    <span class="stat-label">Neúspěšných za 30 dní</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Login History List -->
+    <div class="section">
+        <div class="section-header">
+            <div class="header-content">
+                <i-tabler name="history"></i-tabler>
+                <div>
+                    <h3>Historie přihlášení</h3>
+                    <span class="meta muted">Přehled všech pokusů o přihlášení k vašemu účtu</span>
+                </div>
+            </div>
+        </div>
+        <div class="section-content">
+            <div class="history-list">
+                @for (item of history.getValue();track $index) {
+                <div class="history-item" [class.success]="item.success" [class.failed]="!item.success">
+                    <div class="item-icon" [class.success]="item.success" [class.failed]="!item.success">
+                        <i-tabler [name]="item.success ? 'login' : 'login-2'"></i-tabler>
+                    </div>
+
+                    <div class="item-content">
+                        <div class="item-main">
+                            <div class="device-info">
+                                <span class="browser">
+                                    <i-tabler [name]="Utils.getBrowserIcon(item.userAgent)"
+                                        class="browser-icon"></i-tabler>
+                                    {{ Utils.getBrowser(item.userAgent) }}
+                                </span>
+                                <span class="separator">•</span>
+                                <span class="os">{{ Utils.getOS(item.userAgent) }}</span>
+                            </div>
+                            <div class="item-meta">
+                                <span class="login-type">
+                                    <i-tabler name="key"></i-tabler>
+                                    {{ l.s('login_history.types.' + item.type) }}
+                                </span>
+                                <span class="separator">•</span>
+                                <span class="time">
+                                    <i-tabler name="clock"></i-tabler>
+                                    {{ Utils.formatDate(item.created) }}
+                                </span>
                             </div>
                         </div>
-                        <div style="display:flex;align-items:center;gap:10px">
-                            <div class="ip">{{ item.ip }}</div>
-                            @if (item.success) {
-                            <div class="badge badge--success">
-                                <span style="width:100%;text-align:center;">
+
+                        <div class="item-details">
+                            <div class="ip-address">
+                                <i-tabler name="world"></i-tabler>
+                                <code>{{ item.ip }}</code>
+                            </div>
+
+                            <div class="item-status">
+                                @if (item.success) {
+                                <div class="status-badge success">
+                                    <i-tabler name="circle-check"></i-tabler>
                                     {{ l.s('login_history.state.success') }}
-                                </span>
-                            </div>
-                            } @else {
-                            <div class="badge badge--danger">
-                                <span style="width:100%;text-align:center;">
+                                </div>
+                                } @else {
+                                <div class="status-badge danger">
+                                    <i-tabler name="circle-x"></i-tabler>
                                     {{ l.s('login_history.state.' + (item.error ? item.error : 'error')) }}
-                                </span>
+                                </div>
+                                }
                             </div>
-                            }
-                            <div class="btn btn--sm justify-content-space-between" [routerLink]="'./'" [queryParams]="{ id: item.loginId }">
+
+                            <button class="btn btn--sm btn--ghost" [routerLink]="'./'"
+                                [queryParams]="{ id: item.loginId }">
                                 {{ l.s('login_history.buttons.details') }}
-                                <div class="icon-arrow-right"></div>
-                            </div>
+                                <i-tabler name="chevron-right"></i-tabler>
+                            </button>
                         </div>
                     </div>
                 </div>
-            </div>
-            }
-        </div>
-        <div class="bottom">
-            <div class="left">
-                Celkem přihlášení: {{ this.metadata.rows }}
-            </div>
-            <div class="right">
-            @if (getMaxPages() > 1 && this.history.getValue().length) {
-                <div class="page center previous" [class.disabled]="page.getValue() == 1" (click)="goPage(page.getValue() - 1)">
-                    <i-tabler name="chevron-left" style="width:18px;height:18px;"></i-tabler>
-                </div>
-                @for (_ of getPageList(); track index;let index = $index;) {
-                    <div class="page center" [class.active]="page.getValue() === _" [id]="(page.getValue() == _) ? 'currentPage' : ''" (click)="goPage(_)">
-                        {{ _ }}
-                    </div>
                 }
-                <div class="page center next" [class.disabled]="page.getValue() == getMaxPages()" (click)="goPage(page.getValue() + 1)">
-                    <i-tabler name="chevron-right" style="width:18px;height:18px;"></i-tabler>
+
+                @if (history.getValue().length === 0) {
+                <div class="empty-state">
+                    <div class="empty-icon">
+                        <i-tabler name="history-off"></i-tabler>
+                    </div>
+                    <h4>Žádná historie přihlášení</h4>
+                    <p>Zatím nemáte žádné záznamy o přihlášení.</p>
                 </div>
+                }
+            </div>
+
+            <!-- Pagination -->
+            @if (getMaxPages() > 1 && history.getValue().length) {
+            <div class="pagination-section">
+                <div class="pagination-info">
+                    Stránka {{ page.getValue() }} z {{ getMaxPages() }}
+                </div>
+                <div class="pagination-controls">
+                    <button class="pagination-btn" [class.disabled]="page.getValue() == 1"
+                        (click)="goPage(page.getValue() - 1)" [disabled]="page.getValue() == 1">
+                        <i-tabler name="chevron-left"></i-tabler>
+                    </button>
+
+                    @for (_ of getPageList(); track index; let index = $index) {
+                    <button class="pagination-btn page-number" [class.active]="page.getValue() === _"
+                        (click)="goPage(_)">
+                        {{ _ }}
+                    </button>
+                    }
+
+                    <button class="pagination-btn" [class.disabled]="page.getValue() == getMaxPages()"
+                        (click)="goPage(page.getValue() + 1)" [disabled]="page.getValue() == getMaxPages()">
+                        <i-tabler name="chevron-right"></i-tabler>
+                    </button>
+                </div>
+            </div>
             }
         </div>
+    </div>
+
+    <!-- Security Tips -->
+    <div class="section tips-section">
+        <div class="section-header">
+            <div class="header-content">
+                <i-tabler name="shield-check"></i-tabler>
+                <div>
+                    <h3>Bezpečnostní tipy</h3>
+                    <span class="meta muted">Jak chránit svůj účet</span>
+                </div>
+            </div>
         </div>
-        <!-- <schoolingo-datalist (datalist)="subscribeDatalist($event)" [options]="{}" [head]="tableHead" [data]="history" [metadata]="metadata"></schoolingo-datalist> -->
+        <div class="section-content">
+            <div class="tips-grid">
+                <div class="tip-card">
+                    <div class="tip-icon warning">
+                        <i-tabler name="alert-triangle"></i-tabler>
+                    </div>
+                    <div class="tip-content">
+                        <h5>Neznámé přihlášení?</h5>
+                        <p>Pokud vidíte přihlášení, které jste neprovedli, okamžitě změňte heslo.</p>
+                    </div>
+                </div>
+                <div class="tip-card">
+                    <div class="tip-icon info">
+                        <i-tabler name="device-desktop"></i-tabler>
+                    </div>
+                    <div class="tip-content">
+                        <h5>Kontrolujte zařízení</h5>
+                        <p>Pravidelně kontrolujte, ze kterých zařízení přistupujete ke svému účtu.</p>
+                    </div>
+                </div>
+                <div class="tip-card">
+                    <div class="tip-icon success">
+                        <i-tabler name="auth-2fa"></i-tabler>
+                    </div>
+                    <div class="tip-content">
+                        <h5>Zapněte 2FA</h5>
+                        <p>Dvoufaktorové ověření výrazně zvyšuje bezpečnost vašeho účtu.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 </div>

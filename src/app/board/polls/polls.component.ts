@@ -40,4 +40,20 @@ export class PollsComponent implements OnInit {
       }
     });
   }
+
+  getCompletedCount(): number {
+    return this.tests.filter(t => t.completed).length;
+  }
+
+  getPendingCount(): number {
+    return this.tests.filter(t => !t.completed).length;
+  }
+
+  isUrgent(test: Poll): boolean {
+    if (!test.active_to || test.completed) return false;
+    const deadline = new Date(test.active_to);
+    const now = new Date();
+    const hoursLeft = (deadline.getTime() - now.getTime()) / (1000 * 60 * 60);
+    return hoursLeft > 0 && hoursLeft < 24;
+  }
 }

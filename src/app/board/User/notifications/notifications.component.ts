@@ -5,6 +5,7 @@ import { HttpClient } from '@angular/common/http';
 import { Config } from '@Schoolingo/config';
 import { IconsModule } from '@Schoolingo/icons';
 import { Locale } from '@Schoolingo/locale';
+import { Permission } from '@Schoolingo/permission';
 
 interface NotificationRule {
   rule_id?: number;
@@ -22,6 +23,7 @@ interface NotificationRule {
 export class NotificationsComponent implements OnInit {
   private http = inject(HttpClient);
   public l = inject(Locale);
+  public perms = inject(Permission)
   
   public rules: NotificationRule[] = [];
   public notificationApplicationServerKey: ArrayBuffer | null = null; 

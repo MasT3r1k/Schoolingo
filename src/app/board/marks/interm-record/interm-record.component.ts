@@ -105,6 +105,8 @@ export class IntermRecordComponent {
     this.marksManager.setSubjectName(this.groups[this.selected_group].subject);
     this.marksManager.setType(column.type)
     this.marksManager.setStudent(this.students[studentIndex].name);
+    this.marksManager.setStudentId(this.students[studentIndex].studentId);
+    this.marksManager.setStudentIndex(studentIndex);
     this.marksManager.setMark(this.students[studentIndex].marks[columnIndex]);
 
     // === Open Modal ===
@@ -258,6 +260,16 @@ export class IntermRecordComponent {
         this.gradeColumns[data.columnIndex].type = data.type;
         this.gradeColumns[data.columnIndex].weight = data.weight;
         this.marksManager.updateColumn$.next({});
+        console.log(data)
+      });
+
+    // === Update column info ===
+    this.marksManager.updateMark$
+      .pipe(distinctUntilChanged())
+      .subscribe((data) => {
+        if (!Object.keys(data).length) return;
+        this.students[data.studentIndex].marks[data.columnIndex] = data.mark;
+        this.marksManager.updateMark$.next({});
         console.log(data)
       });
 

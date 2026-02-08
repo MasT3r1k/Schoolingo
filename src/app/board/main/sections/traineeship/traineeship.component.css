@@ -1,3 +1,7 @@
+/* ========================================
+   TRAINEESHIP SECTION - Modern Design
+   ======================================== */
+
 .section-container {
     height: 100%;
     display: flex;
@@ -8,90 +12,134 @@
 .section-list {
     display: flex;
     flex-direction: column;
-    gap: 8px;
-    padding: .75rem 1rem;
+    gap: 0.75rem;
+    padding: 0.75rem 1rem;
     overflow-y: auto;
     height: 100%;
 }
 
+/* Traineeship Cards */
 .section-item {
-    padding: 12px 14px;
-    background: var(--surface-2);
+    padding: 1rem 1.25rem;
+    background: var(--glass-0);
     border-radius: var(--radius);
     border: 1px solid var(--border);
-    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    overflow: hidden;
+}
+
+.section-item::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 4px;
+    height: 100%;
+    background: var(--primary);
+    opacity: 0;
+    transition: opacity 0.3s ease;
 }
 
 .section-item:hover {
     background: var(--hover-bg);
-    border-color: var(--primary-200);
+    border-color: var(--primary);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
 }
 
+.section-item:hover::before {
+    opacity: 1;
+}
+
+/* Skeleton Loading */
 .section-item.skeleton {
-    height: 100px;
-    animation: pulse 1.5s infinite;
+    height: 120px;
+    background: linear-gradient(90deg,
+            var(--surface-2) 25%,
+            var(--surface-3) 50%,
+            var(--surface-2) 75%);
+    background-size: 200% 100%;
+    animation: shimmer 1.5s infinite;
+    border: none;
 }
 
-@keyframes pulse {
+.section-item.skeleton::before {
+    display: none;
+}
 
-    0%,
+@keyframes shimmer {
+    0% {
+        background-position: 200% 0;
+    }
+
     100% {
-        opacity: 1;
-    }
-
-    50% {
-        opacity: 0.5;
+        background-position: -200% 0;
     }
 }
 
+/* Item Content */
 .item-content {
     display: flex;
     flex-direction: column;
-    gap: 8px;
+    gap: 0.75rem;
 }
 
 .item-header {
     display: flex;
     justify-content: space-between;
     align-items: flex-start;
-    gap: 8px;
+    gap: 0.75rem;
 }
 
 .item-title {
     font-weight: 600;
-    font-size: 0.9rem;
+    font-size: 1rem;
     color: var(--text);
+    line-height: 1.4;
 }
 
+/* Status Badges */
 .status {
     font-size: 0.7rem;
-    padding: 2px 8px;
+    padding: 0.25rem 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.25px;
 }
 
 .status.status-active {
-    background: rgba(34, 197, 94, 0.1);
+    background: linear-gradient(135deg, rgba(46, 204, 113, 0.15), rgba(46, 204, 113, 0.08));
     color: var(--success);
+    border: 1px solid rgba(46, 204, 113, 0.2);
 }
 
 .status.status-completed {
-    background: rgba(var(--primary-rgb), 0.1);
+    background: var(--primary-gradient-soft);
     color: var(--primary);
+    border: 1px solid rgba(var(--primary-rgb), 0.2);
 }
 
 .status.status-upcoming {
-    background: rgba(234, 179, 8, 0.1);
+    background: linear-gradient(135deg, rgba(241, 196, 15, 0.15), rgba(241, 196, 15, 0.08));
     color: var(--warning);
+    border: 1px solid rgba(241, 196, 15, 0.2);
 }
 
+/* Dates */
 .traineeship-dates {
-    font-size: 0.75rem;
+    font-size: 0.8125rem;
     color: var(--text-muted);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
 }
 
+/* Hours Progress */
 .hours-progress {
     display: flex;
     flex-direction: column;
-    gap: 6px;
+    gap: 0.5rem;
 }
 
 .progress-info {
@@ -112,52 +160,139 @@
 }
 
 .progress-bar {
-    height: 4px;
-    background: var(--surface);
-    border-radius: 2px;
+    height: 6px;
+    background: var(--surface-2);
+    border-radius: var(--radius-full);
     overflow: hidden;
+    position: relative;
+}
+
+.progress-bar::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: var(--border);
 }
 
 .progress-fill {
     height: 100%;
-    background: var(--primary);
-    border-radius: 2px;
-    transition: width 0.3s ease;
+    background: linear-gradient(90deg, var(--primary), var(--primary-hover));
+    border-radius: var(--radius-full);
+    transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    z-index: 1;
 }
 
+.progress-fill::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    animation: progressGlow 2s ease-in-out infinite;
+}
+
+@keyframes progressGlow {
+
+    0%,
+    100% {
+        transform: translateX(-100%);
+    }
+
+    50% {
+        transform: translateX(100%);
+    }
+}
+
+/* Supervisor Info */
 .supervisor-info {
     display: flex;
     align-items: center;
-    gap: 6px;
-    font-size: 0.75rem;
+    gap: 0.5rem;
+    font-size: 0.8125rem;
     color: var(--text-muted);
-    padding-top: 6px;
+    padding-top: 0.75rem;
     border-top: 1px solid var(--border);
 }
 
 .supervisor-info i-tabler {
-    width: 14px;
-    height: 14px;
+    width: 16px;
+    height: 16px;
+    color: var(--primary);
 }
 
-/* Empty state */
-.empty-state {
+/* Empty State */
+.no-selection {
     height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+    text-align: center;
 }
 
-.empty-state__icon {
-    width: 48px;
-    height: 48px;
+.no-selection .illustration {
+    width: 64px;
+    height: 64px;
     display: flex;
     align-items: center;
     justify-content: center;
-    background: var(--surface-2);
-    border-radius: 12px;
+    background: var(--primary-gradient-soft);
+    border-radius: 50%;
     margin-bottom: 1rem;
+    transition: transform 0.3s ease;
 }
 
-.empty-state__icon i-tabler {
-    width: 24px;
-    height: 24px;
+.no-selection:hover .illustration {
+    transform: scale(1.1);
+}
+
+.no-selection .illustration i-tabler {
+    width: 32px;
+    height: 32px;
+    color: var(--primary);
+}
+
+.no-selection h3 {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--text);
+    margin: 0 0 0.5rem 0;
+}
+
+.no-selection p {
+    font-size: 0.875rem;
     color: var(--text-muted);
+    margin: 0;
+    line-height: 1.5;
+}
+
+/* Responsive */
+@media (max-width: 480px) {
+    .section-list {
+        padding: 0.5rem 0.75rem;
+    }
+
+    .section-item {
+        padding: 0.875rem 1rem;
+    }
+
+    .item-header {
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+
+    .status {
+        align-self: flex-start;
+    }
+}
+
+/* Dark Mode Enhancements */
+@media (prefers-color-scheme: dark) {
+    .section-item:hover {
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+    }
 }

@@ -1,479 +1,499 @@
 @switch (showPage) { @case ("list") {
 <div class="card">
-  <div class="card-top"></div>
-  <div class="card-header mb">
-    <h2>{{ l.s("sidebar.traineeship.companies") }}</h2>
-    <div class="flex-items">
-      <schoolingo-tabs
-        [options]="getCompanyListOptions()"
-        [value]="selectedCompanyListOption"
-      ></schoolingo-tabs>
+  <div class="card-header">
+    <div class="left">
+      <h2>{{ l.s("sidebar.traineeship.companies") }}</h2>
+      <span class="meta muted">Procházejte a vybírejte firmy pro vaši praxi</span>
     </div>
   </div>
-  <div class="card-body">
-    <div class="form-group search mb">
-      <input
-        type="text"
-        name="search"
-        [formControl]="search"
-        [placeholder]="l.s('traineeship.search')"
-      />
-      @if (!permissions.checkPermission(["manager:traineeship:manage"])) {
-      <div
-        (click)="requestCompany()"
-        class="btn btn--primary"
-        role="button"
-      >
-        {{ l.s("traineeship.request_add_company") }}
-      </div>
-      } @else {
-      <div class="btn submit btn--primary" role="button">
-        <i-tabler
-          name="plus"
-          style="margin-right: 4px; width: 20px; height: 20px"
-        ></i-tabler>
-        {{ l.s("traineeship.add_company") }}
-      </div>
 
-      }
+  <!-- Search & Actions Section -->
+  <div class="section">
+    <div class="section-header">
+      <div class="header-content">
+        <i-tabler name="search"></i-tabler>
+        <div>
+          <h3>Vyhledat firmu</h3>
+          <span class="meta muted">Filtrujte firmy podle názvu, města nebo oboru</span>
+        </div>
+      </div>
+      <div class="header-actions">
+        @if (!permissions.checkPermission(["manager:traineeship:manage"])) {
+        <button (click)="requestCompany()" class="btn btn--secondary">
+          <i-tabler name="building-plus" style="width: 18px; height: 18px;"></i-tabler>
+          {{ l.s("traineeship.request_add_company") }}
+        </button>
+        } @else {
+        <button class="btn btn--primary">
+          <i-tabler name="plus" style="width: 18px; height: 18px;"></i-tabler>
+          {{ l.s("traineeship.add_company") }}
+        </button>
+        }
+      </div>
     </div>
+    <div class="section-content">
+      <div class="search-container">
+        <div class="search-input-wrapper">
+          <i-tabler name="search" class="search-icon"></i-tabler>
+          <input type="text" name="search" class="search-input" [formControl]="search"
+            [placeholder]="l.s('traineeship.search')" />
+        </div>
+        <div class="filter-tabs">
+          <schoolingo-tabs [options]="getCompanyListOptions()" [value]="selectedCompanyListOption"></schoolingo-tabs>
+        </div>
+      </div>
+    </div>
+  </div>
 
-    <schoolingo-datalist
-      (datalist)="receivedDatalist($event)"
-      [options]="{
-        search: false,
-        ignore: [
-          getCompanyListOptions(true)[selectedCompanyListOption.getValue()]
-        ],
-        disableLocales: getDisabledLocales(),
-        titles: getTableTitles()
-      }"
-      [head]="tableHead"
-      [clickFc]="onClick"
-      [data]="companies"
-      [metadata]="metadata"
-      [search]="search"
-    ></schoolingo-datalist>
+  <!-- Companies List Section -->
+  <div class="section">
+    <div class="section-header">
+      <div class="header-content">
+        <i-tabler name="building"></i-tabler>
+        <div>
+          <h3>Seznam firem</h3>
+          <span class="meta muted">Klikněte na firmu pro zobrazení detailu</span>
+        </div>
+      </div>
+    </div>
+    <div class="section-content">
+      <schoolingo-datalist (datalist)="receivedDatalist($event)" [options]="{
+          search: false,
+          ignore: [
+            getCompanyListOptions(true)[selectedCompanyListOption.getValue()]
+          ],
+          disableLocales: getDisabledLocales(),
+          titles: getTableTitles()
+        }" [head]="tableHead" [clickFc]="onClick" [data]="companies" [metadata]="metadata"
+        [search]="search"></schoolingo-datalist>
+    </div>
   </div>
 </div>
 } @case ("detailCompany") { @if (traineeship.selectedCompany) {
-<div class="companyName mb">
-  <h2>{{ traineeship.selectedCompany.name }}</h2>
-</div>
-<div class="card">
-  <div class="card-top">
-    @if (alert) {
-    <div class="alerts mb">
-      @switch (alert) { @case("success_selected_company") {
-      <div class="alert alert--success">
-        {{
-          l
-            .s("traineeship.alerts.success_selected_company", { companyName: traineeship.selectedCompany.name, instructor:
-              l.s("traineeship.alerts." + (requestDataForAlert.instructor ? "success_selected_company_with_instructor": "success_selected_company_no_instructor"), { instructorName: requestDataForAlert.instructor }) })
-        }}
-        <div class="close" (click)="alert = null">
-          <i class="ti ti-x"></i>
-        </div>
-      </div>
-      } @case("success_updated_instructor") {
-      <div class="alert alert--success">
-        {{
-          l.s("traineeship.alerts.success_updated_instructor", { companyName: traineeship.selectedCompany.name, instructor:
-              l.s("traineeship.alerts." + (requestDataForAlert.instructor ? "success_selected_company_with_instructor": "success_selected_company_no_instructor"), { instructorName: requestDataForAlert.instructor }) })
-        }}
-        <div class="close" (click)="alert = null">
-          <i class="ti ti-x"></i>
-        </div>
-      </div>
-      } @case("too_many_students_in_company") {
-      <div class="alert alert--danger">
-        {{ l.s("traineeship.alerts.too_many_students_in_company") }}
-        <div class="close" (click)="alert = null">
-          <i class="ti ti-x"></i>
-        </div>
-      </div>
-      } }
+<div class="company-detail">
+  <!-- Company Header -->
+  <div class="company-header-card">
+    <div class="company-avatar">
+      <i-tabler name="building" style="width: 32px; height: 32px;"></i-tabler>
     </div>
-    } @if (weeks.length) {
-    <div class="alerts mb">
-      @for (week of weeks; track $index) {
+    <div class="company-title">
+      <h1>{{ traineeship.selectedCompany.name }}</h1>
+      <span class="company-location">
+        <i-tabler name="map-pin" style="width: 16px; height: 16px;"></i-tabler>
+        {{ traineeship.selectedCompany.cityName }}
+      </span>
+    </div>
+    <div class="company-rating-badge" *ngIf="traineeship.selectedCompany.rating">
+      <span class="rating-star">⭐</span>
+      <span class="rating-value">{{ traineeship.getRating(traineeship.selectedCompany) }}</span>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-top">
+      @if (alert) {
+      <div class="alerts mb">
+        @switch (alert) { @case("success_selected_company") {
+        <div class="alert alert--success">
+          <i-tabler name="check" style="width: 20px; height: 20px;"></i-tabler>
+          <div class="alert-content">
+            {{ l.s("traineeship.alerts.success_selected_company", {
+            companyName: traineeship.selectedCompany.name,
+            instructor: l.s("traineeship.alerts." + (requestDataForAlert.instructor ?
+            "success_selected_company_with_instructor": "success_selected_company_no_instructor"), { instructorName:
+            requestDataForAlert.instructor })
+            }) }}
+          </div>
+          <button class="alert-close" (click)="alert = null">
+            <i-tabler name="x" style="width: 16px; height: 16px;"></i-tabler>
+          </button>
+        </div>
+        } @case("success_updated_instructor") {
+        <div class="alert alert--success">
+          <i-tabler name="check" style="width: 20px; height: 20px;"></i-tabler>
+          <div class="alert-content">
+            {{ l.s("traineeship.alerts.success_updated_instructor", {
+            companyName: traineeship.selectedCompany.name,
+            instructor: l.s("traineeship.alerts." + (requestDataForAlert.instructor ?
+            "success_selected_company_with_instructor": "success_selected_company_no_instructor"), { instructorName:
+            requestDataForAlert.instructor })
+            }) }}
+          </div>
+          <button class="alert-close" (click)="alert = null">
+            <i-tabler name="x" style="width: 16px; height: 16px;"></i-tabler>
+          </button>
+        </div>
+        } @case("too_many_students_in_company") {
+        <div class="alert alert--danger">
+          <i-tabler name="alert-circle" style="width: 20px; height: 20px;"></i-tabler>
+          <span>{{ l.s("traineeship.alerts.too_many_students_in_company") }}</span>
+          <button class="alert-close" (click)="alert = null">
+            <i-tabler name="x" style="width: 16px; height: 16px;"></i-tabler>
+          </button>
+        </div>
+        } }
+      </div>
+      } @if (weeks.length) {
+      <div class="alerts mb">
+        @for (week of weeks; track $index) {
         @if (traineeship.checkIfValidDairy(week) != true) {
-      <div class="alert alert--danger" style="justify-content: center;">
-        @switch(traineeship.checkIfValidDairy(week)) {
+        <div class="alert alert--danger">
+          <i-tabler name="alert-triangle" style="width: 20px; height: 20px;"></i-tabler>
+          @switch(traineeship.checkIfValidDairy(week)) {
           @case('invalid_instructor') {
-            {{ l.s('traineeship.alerts.selected_company_deleted_instructor') }}
-            <div class="actions">
-              <div class="btn btn--secondary" role="button">
-                {{ l.s('traineeship.update_instructor') }}
-              </div>
-            </div>
+          <span class="alert-content">{{ l.s('traineeship.alerts.selected_company_deleted_instructor') }}</span>
+          <button class="btn btn--sm btn--secondary" style="margin-left: auto;">
+            <i-tabler name="user-edit" style="width: 16px; height: 16px;"></i-tabler>
+            {{ l.s('traineeship.update_instructor') }}
+          </button>
           }
-        }
-      </div>
+          }
+        </div>
         } @else {
-      <div class="alert alert--info">
-        {{
-          l
-            .s("traineeship.alerts.week_info",
-            {
-              start: Utils.formatDateShort(week.start),
-              end: Utils.formatDateShort(week.end),
-              instructor: l
-                .s(
-                  "traineeship.alerts." +
-                    (
-                      week.instructor
-                      ? "success_selected_company_with_instructor"
-                      : "success_selected_company_no_instructor"
-                    ),
-                  { instructorName: week.instructor ?? "" })
+        <div class="alert alert--info">
+          <i-tabler name="calendar" style="width: 20px; height: 20px;"></i-tabler>
+          <span>{{ l.s("traineeship.alerts.week_info", {
+            start: Utils.formatDateShort(week.start),
+            end: Utils.formatDateShort(week.end),
+            instructor: l.s("traineeship.alerts." + (week.instructor ? "success_selected_company_with_instructor" :
+            "success_selected_company_no_instructor"), { instructorName: week.instructor ?? "" })
             })
-        }}
-      </div>
+            }}</span>
+        </div>
         }
+        }
+      </div>
+      } @if (!checkIfCompanyIsSuitableForMe() && permissions.checkPermission(["student"])) {
+      <div class="alerts mb">
+        <div class="alert alert--warning">
+          <i-tabler name="alert-triangle" style="width: 20px; height: 20px;"></i-tabler>
+          <span>{{ l.s("traineeship.alerts.company_not_suitable_for_you") }}</span>
+        </div>
+      </div>
       }
     </div>
-    } @if (!checkIfCompanyIsSuitableForMe() &&
-    permissions.checkPermission(["student"])) {
-    <div class="alerts mb">
-      <div class="alert alert--danger">
-        {{ l.s("traineeship.alerts.company_not_suitable_for_you") }}
-      </div>
-    </div>
-    }
-  </div>
-  <div class="card-header mb">
-    <div class="card-row">
-      <div class="left">
-        <div (click)="goToList()" class="btn submit btn--secondary" role="button">
-          <i-tabler
-            name="chevron-left"
-            style="margin-right: 4px; width: 20px; height: 20px"
-          ></i-tabler>
-          <span>{{ l.s("traineeship.back_to_list") }}</span>
-        </div>
+
+    <!-- Actions Bar -->
+    <div class="card-header">
+      <div class="actions-bar">
+        <button (click)="goToList()" class="btn btn--ghost">
+          <i-tabler name="chevron-left" style="width: 18px; height: 18px;"></i-tabler>
+          {{ l.s("traineeship.back_to_list") }}
+        </button>
 
         @if (permissions.checkPermission(["student"])) {
-            <div class="btn btn--primary" role="button" (click)="modalManager.openModal('select_company')">
-                <span>{{ l.s('traineeship.register_to_company') }}</span>
-            </div> 
+        <button class="btn btn--primary" (click)="modalManager.openModal('select_company')">
+          <i-tabler name="check" style="width: 18px; height: 18px;"></i-tabler>
+          {{ l.s('traineeship.register_to_company') }}
+        </button>
         }
 
         @if (permissions.checkPermission(["manager:traineeship:editCompany"])) {
-            <div class="btn btn--primary" role="button" (click)="modalManager.openModal('edit_company')">
-                <i-tabler name="pencil" style="margin-right: 4px;width: 20px;height: 20px;"></i-tabler>
-                <span>{{ l.s('traineeship.edit_company') }}</span>
-            </div>
+        <button class="btn btn--secondary" (click)="modalManager.openModal('edit_company')">
+          <i-tabler name="pencil" style="width: 18px; height: 18px;"></i-tabler>
+          {{ l.s('traineeship.edit_company') }}
+        </button>
         }
 
-        @if (permissions.checkPermission(["manager:traineeship:removeCompany"]))
-        {
-        <div
-          class="btn btn--danger"
-          (click)="removeCompany()"
-        >
-          <i-tabler
-            name="trash-x"
-            style="margin-right: 4px; width: 20px; height: 20px"
-          ></i-tabler>
-          <span>{{ l.s("traineeship.remove_company") }}</span>
-        </div>
+        @if (permissions.checkPermission(["manager:traineeship:removeCompany"])) {
+        <button class="btn btn--danger" (click)="removeCompany()">
+          <i-tabler name="trash-x" style="width: 18px; height: 18px;"></i-tabler>
+          {{ l.s("traineeship.remove_company") }}
+        </button>
         }
       </div>
-    </div>
-    <div class="flex-items">
-      <schoolingo-tabs
-        [options]="[
-          'traineeship.tabs.detail_company.main',
-          'traineeship.tabs.detail_company.activity',
-          'traineeship.rate'
-        ]"
-        [icons]="['dashboard', 'users', 'star']"
-        [value]="selectedTab"
-      ></schoolingo-tabs>
-    </div>
-  </div>
-  <div class="card-body mt">
-    <div
-      [ngClass]="{
-        'card-tab': true,
-        'card-row': true,
-        active: selectedTab.getValue() === 0
-      }"
-    >
-      <div class="left">
-        <div class="card-table">
-          <div class="card-table-header">
-            <h2>{{ l.s("traineeship.company_info") }}</h2>
-          </div>
-          <div class="card-table-body">
-            <div class="card-table-row">
-              <div class="card-table-item">
-                {{ l.s("traineeship.company_name") }}
-              </div>
-              <div class="card-table-item">
-                <span>
-                  {{ traineeship.selectedCompany.name }}
-                </span>
-              </div>
-            </div>
-
-            <div class="card-table-row">
-              <div class="card-table-item">
-                {{ l.s("traineeship.office_address") }}
-              </div>
-              <div class="card-table-item">
-                <span>{{
-                  Utils.formatAddress({
-                    code2: traineeship.selectedCompany.code2,
-                    street: traineeship.selectedCompany.street,
-                    houseNumber: traineeship.selectedCompany.houseNumber,
-                    city: traineeship.selectedCompany.cityName,
-                    postcode: traineeship.selectedCompany.postcode
-                  })
-                }}</span>
-              </div>
-            </div>
-
-            <div class="card-table-row">
-              <div class="card-table-item">
-                {{ l.s("traineeship.trainee_address") }}
-              </div>
-              <div class="card-table-item">
-                <span>{{
-                  Utils.formatAddress({
-                    code2: traineeship.selectedCompany.code2,
-                    street: traineeship.selectedCompany.street,
-                    houseNumber: traineeship.selectedCompany.houseNumber,
-                    city: traineeship.selectedCompany.cityName,
-                    postcode: traineeship.selectedCompany.postcode
-                  })
-                }}</span>
-              </div>
-            </div>
-
-            <div class="card-table-row">
-              <div class="card-table-item">
-                {{ l.s("traineeship.CIN") }}
-              </div>
-              <div class="card-table-item">
-                {{ traineeship.selectedCompany.ico }}
-              </div>
-            </div>
-
-            <div class="card-table-row">
-              <div class="card-table-item">
-                {{ l.s("traineeship.web") }}
-              </div>
-              <div class="card-table-item">
-                @if (traineeship.selectedCompany.web) {
-                <a
-                  [href]="Utils.formatWeb(traineeship.selectedCompany.web)"
-                  target="_blank"
-                  (click)="
-                    Utils.openURL(
-                      Utils.formatWeb(traineeship.selectedCompany.web)
-                    )
-                  "
-                >
-                  {{ Utils.formatWeb(traineeship.selectedCompany.web) }}
-                </a>
-                } @else {
-                {{ l.s("traineeship.no_web") }}
-                }
-              </div>
-            </div>
-
-            <div class="card-table-row">
-              <div class="card-table-item">
-                {{ l.s("traineeship.average_rate") }}
-              </div>
-              <div class="card-table-item">
-                {{
-                  traineeship.selectedCompany.rating != null
-                    ? traineeship.getRating(traineeship.selectedCompany)
-                    : l.s(traineeship.getRating(traineeship.selectedCompany))
-                }}
-              </div>
-            </div>
-
-            <div class="card-table-row">
-              <div class="card-table-item">
-                {{ l.s("traineeship.email") }}
-              </div>
-              <div class="card-table-item">
-                @if (traineeship.selectedCompany.email) {
-                    <a
-                    [href]="'mailto:' + traineeship.selectedCompany.email"
-                    target="_top"
-                    (click)="
-                        Utils.openURL('mailto:' + traineeship.selectedCompany.email)
-                    "
-                    >
-                    {{ traineeship.selectedCompany.email }}
-                    </a>
-                } @else {
-                    {{ l.s("traineeship.no_email") }}
-                }
-              </div>
-            </div>
-
-            <div class="card-table-row">
-              <div class="card-table-item">
-                {{ l.s("traineeship.phone") }}
-              </div>
-              <div class="card-table-item">
-                {{
-                  Utils.formatPhone(traineeship.selectedCompany.phone) ||
-                    l.s("traineeship.no_phone")
-                }}
-              </div>
-            </div>
-
-            <div class="card-table-row">
-              <div class="card-table-item">
-                {{ l.s("traineeship.description") }}
-              </div>
-              <div class="card-table-item">
-                {{
-                  traineeship.selectedCompany.description ||
-                    l.s("traineeship.no_description")
-                }}
-              </div>
-            </div>
-            <div class="card-table-row">
-              <div class="card-table-item">
-                {{ l.s("traineeship.activity") }}
-              </div>
-              <div class="card-table-item">
-                {{
-                  traineeship.selectedCompany.activity ||
-                    l.s("traineeship.no_activity")
-                }}
-              </div>
-            </div>
-            <div class="card-table-row">
-              <div class="card-table-item">
-                {{ l.s("traineeship.equipment") }}
-              </div>
-              <div class="card-table-item">
-                {{
-                  traineeship.selectedCompany.equipment ||
-                    l.s("traineeship.no_equipment")
-                }}
-              </div>
-            </div>
-            <div class="card-table-row">
-              <div class="card-table-item">
-                {{ l.s("traineeship.scopes") }}
-              </div>
-              <div class="card-table-item">
-                @for (scope of getScopes(traineeship.selectedCompany); track $index) {
-                    <p>{{ scope }}</p>
-                } @empty {
-                    {{ l.s("traineeship.no_scopes") }}
-                }
-              </div>
-            </div>
-            <div class="card-table-row">
-              <div class="card-table-item">
-                {{ l.s("traineeship.responsible_person") }}
-              </div>
-              <div class="card-table-item">
-                {{
-                  traineeship.selectedCompany.rp_firstName +
-                    " " +
-                    traineeship.selectedCompany.rp_lastName
-                }}
-              </div>
-            </div>
-            <div class="card-table-row">
-              <div class="card-table-item">
-                {{ l.s("traineeship.instructors") }}
-              </div>
-              <div class="card-table-item">
-                @for (instructor of traineeship.selectedCompany.instructors; track $index) {
-                    <p>{{ instructor.name }}</p>
-                } @empty {
-                    {{ l.s("traineeship.no_instructors") }}
-                }
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div class="right">
-        <div class="map">
-          <div class="skeleton">
-                <iframe width="100%" 
-                height="100%"
-                [ngStyle]="{ filter: t.getThemeColor() == 'dark' ? 'invert(90%) hue-rotate(180deg)' : '' }"
-                allowFullScreen=""
-                referrerPolicy="no-referrer-when-downgrade"
-                [src]="iframeURL"
-                frameborder="0"></iframe>
-          </div>
-        </div>
+      <div class="tabs-container">
+        <schoolingo-tabs [options]="[
+            'traineeship.tabs.detail_company.main',
+            'traineeship.tabs.detail_company.activity',
+            'traineeship.rate'
+          ]" [icons]="['dashboard', 'users', 'star']" [value]="selectedTab"></schoolingo-tabs>
       </div>
     </div>
 
-    <div
-      [ngClass]="{ 'card-tab': true, active: selectedTab.getValue() === 1 }"
-      style="overflow: hidden"
-    >
-      <h2>Aktivita ve firmě</h2>
-      <!-- <ag-charts [options]="options" style="width: 100%"></ag-charts> -->
-    </div>
-
-    <div
-      [ngClass]="{ 'card-tab': true, active: selectedTab.getValue() === 2 }"
-      style="overflow: hidden"
-    >
-      <div class="company-rating-card">
-        <div class="header">
-            <h2>{{ l.s('traineeship.company_rating') }}</h2>
-            @if (reviews.length) {
-
-            <div class="rating-summary">
-              <span style="color: var(--text-muted)">{{ l.s('traineeship.average_rate') }}</span>
-              ⭐
-              <span style="color: var(--primary-200)">{{ traineeship.getRating(traineeship.selectedCompany) }}</span>
-              <small style="color: var(--text-muted)"> / 5</small>
-            </div>
-          }
-        </div>
-        <div class="reviews">
-          @for(review of reviews;track $index) {
-            <div class="review">
-                <div class="review-header">
-                    <strong>{{ review.student ?? l.s('traineeship.anon_student') }}</strong>
-                    <div class="row" style="gap: 1rem">
-                      <div class="badge" [class.success]="review.recommend" [class.danger]="!review.recommend">
-                        {{ l.s(`traineeship.${(review.recommend ? '' : 'not_')}recommend`) }}
-                      </div>
-                      <span class="stars">
-                        @for(_ of [].constructor(5);track $index) {
-                          @if (review.rating >= $index + 1) {
-                            ⭐
-                          } @else {
-                            <span style="color:var(--text-muted)">☆</span>
-                          }
-                        }
-                      </span>
-                      <small style="color: var(--primary-200);font-size:16px">
-                        {{ review.rating }}
-                      </small>
+    <div class="card-body">
+      <!-- Main Info Tab -->
+      <div [ngClass]="{'card-tab': true, active: selectedTab.getValue() === 0}">
+        <div class="detail-grid">
+          <div class="detail-info">
+            <div class="section">
+              <div class="section-header">
+                <div class="header-content">
+                  <i-tabler name="info-circle"></i-tabler>
+                  <div>
+                    <h3>{{ l.s("traineeship.company_info") }}</h3>
+                    <span class="meta muted">Základní informace o firmě</span>
+                  </div>
+                </div>
+              </div>
+              <div class="section-content">
+                <div class="info-table">
+                  <div class="info-row">
+                    <div class="info-label">
+                      <i-tabler name="building" style="width: 16px; height: 16px;"></i-tabler>
+                      {{ l.s("traineeship.company_name") }}
                     </div>
+                    <div class="info-value">{{ traineeship.selectedCompany.name }}</div>
+                  </div>
+
+                  <div class="info-row">
+                    <div class="info-label">
+                      <i-tabler name="map-pin" style="width: 16px; height: 16px;"></i-tabler>
+                      {{ l.s("traineeship.office_address") }}
+                    </div>
+                    <div class="info-value">
+                      {{ Utils.formatAddress({
+                      code2: traineeship.selectedCompany.code2,
+                      street: traineeship.selectedCompany.street,
+                      houseNumber: traineeship.selectedCompany.houseNumber,
+                      city: traineeship.selectedCompany.cityName,
+                      postcode: traineeship.selectedCompany.postcode
+                      }) }}
+                    </div>
+                  </div>
+
+                  <div class="info-row">
+                    <div class="info-label">
+                      <i-tabler name="id" style="width: 16px; height: 16px;"></i-tabler>
+                      {{ l.s("traineeship.CIN") }}
+                    </div>
+                    <div class="info-value">{{ traineeship.selectedCompany.ico }}</div>
+                  </div>
+
+                  <div class="info-row">
+                    <div class="info-label">
+                      <i-tabler name="world" style="width: 16px; height: 16px;"></i-tabler>
+                      {{ l.s("traineeship.web") }}
+                    </div>
+                    <div class="info-value">
+                      @if (traineeship.selectedCompany.web) {
+                      <a [href]="Utils.formatWeb(traineeship.selectedCompany.web)" target="_blank" class="link">
+                        <i-tabler name="external-link" style="width: 14px; height: 14px;"></i-tabler>
+                        {{ Utils.formatWeb(traineeship.selectedCompany.web) }}
+                      </a>
+                      } @else {
+                      <span class="text-muted">{{ l.s("traineeship.no_web") }}</span>
+                      }
+                    </div>
+                  </div>
+
+                  <div class="info-row">
+                    <div class="info-label">
+                      <i-tabler name="mail" style="width: 16px; height: 16px;"></i-tabler>
+                      {{ l.s("traineeship.email") }}
+                    </div>
+                    <div class="info-value">
+                      @if (traineeship.selectedCompany.email) {
+                      <a [href]="'mailto:' + traineeship.selectedCompany.email" class="link">
+                        {{ traineeship.selectedCompany.email }}
+                      </a>
+                      } @else {
+                      <span class="text-muted">{{ l.s("traineeship.no_email") }}</span>
+                      }
+                    </div>
+                  </div>
+
+                  <div class="info-row">
+                    <div class="info-label">
+                      <i-tabler name="phone" style="width: 16px; height: 16px;"></i-tabler>
+                      {{ l.s("traineeship.phone") }}
+                    </div>
+                    <div class="info-value">
+                      {{ Utils.formatPhone(traineeship.selectedCompany.phone) || l.s("traineeship.no_phone") }}
+                    </div>
+                  </div>
+
+                  <div class="info-row">
+                    <div class="info-label">
+                      <i-tabler name="star" style="width: 16px; height: 16px;"></i-tabler>
+                      {{ l.s("traineeship.average_rate") }}
+                    </div>
+                    <div class="info-value">
+                      <span class="rating-inline">
+                        ⭐ {{ traineeship.selectedCompany.rating != null
+                        ? traineeship.getRating(traineeship.selectedCompany)
+                        : l.s(traineeship.getRating(traineeship.selectedCompany)) }}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="section">
+              <div class="section-header">
+                <div class="header-content">
+                  <i-tabler name="file-description"></i-tabler>
+                  <div>
+                    <h3>Podrobnosti</h3>
+                    <span class="meta muted">Další informace o firmě a praxi</span>
+                  </div>
+                </div>
+              </div>
+              <div class="section-content">
+                <div class="info-table">
+                  <div class="info-row">
+                    <div class="info-label">{{ l.s("traineeship.description") }}</div>
+                    <div class="info-value">
+                      {{ traineeship.selectedCompany.description || l.s("traineeship.no_description") }}
+                    </div>
+                  </div>
+                  <div class="info-row">
+                    <div class="info-label">{{ l.s("traineeship.activity") }}</div>
+                    <div class="info-value">
+                      {{ traineeship.selectedCompany.activity || l.s("traineeship.no_activity") }}
+                    </div>
+                  </div>
+                  <div class="info-row">
+                    <div class="info-label">{{ l.s("traineeship.equipment") }}</div>
+                    <div class="info-value">
+                      {{ traineeship.selectedCompany.equipment || l.s("traineeship.no_equipment") }}
+                    </div>
+                  </div>
+                  <div class="info-row">
+                    <div class="info-label">{{ l.s("traineeship.scopes") }}</div>
+                    <div class="info-value">
+                      <div class="scope-tags">
+                        @for (scope of getScopes(traineeship.selectedCompany); track $index) {
+                        <span class="scope-tag">{{ scope }}</span>
+                        } @empty {
+                        <span class="text-muted">{{ l.s("traineeship.no_scopes") }}</span>
+                        }
+                      </div>
+                    </div>
+                  </div>
+                  <div class="info-row">
+                    <div class="info-label">{{ l.s("traineeship.responsible_person") }}</div>
+                    <div class="info-value">
+                      {{ traineeship.selectedCompany.rp_firstName + " " + traineeship.selectedCompany.rp_lastName }}
+                    </div>
+                  </div>
+                  <div class="info-row">
+                    <div class="info-label">{{ l.s("traineeship.instructors") }}</div>
+                    <div class="info-value">
+                      <div class="instructors-list">
+                        @for (instructor of traineeship.selectedCompany.instructors; track $index) {
+                        <span class="instructor-badge">
+                          <i-tabler name="user" style="width: 14px; height: 14px;"></i-tabler>
+                          {{ instructor.name }}
+                        </span>
+                        } @empty {
+                        <span class="text-muted">{{ l.s("traineeship.no_instructors") }}</span>
+                        }
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="detail-map">
+            <div class="map-container">
+              <div class="map-header">
+                <i-tabler name="map" style="width: 18px; height: 18px;"></i-tabler>
+                <span>Poloha firmy</span>
+              </div>
+              <div class="map">
+                <iframe width="100%" height="100%"
+                  [ngStyle]="{ filter: t.getThemeColor() == 'dark' ? 'invert(90%) hue-rotate(180deg)' : '' }"
+                  allowFullScreen="" referrerPolicy="no-referrer-when-downgrade" [src]="iframeURL"
+                  frameborder="0"></iframe>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Activity Tab -->
+      <div [ngClass]="{ 'card-tab': true, active: selectedTab.getValue() === 1 }">
+        <div class="section">
+          <div class="section-header">
+            <div class="header-content">
+              <i-tabler name="chart-bar"></i-tabler>
+              <div>
+                <h3>Aktivita ve firmě</h3>
+                <span class="meta muted">Přehled aktivit studentů ve firmě</span>
+              </div>
+            </div>
+          </div>
+          <div class="section-content">
+            <div class="empty-state">
+              <div class="empty-icon">
+                <i-tabler name="chart-dots" style="width: 48px; height: 48px;"></i-tabler>
+              </div>
+              <p>Statistiky aktivity budou brzy k dispozici</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Rating Tab -->
+      <div [ngClass]="{ 'card-tab': true, active: selectedTab.getValue() === 2 }">
+        <div class="section">
+          <div class="section-header">
+            <div class="header-content">
+              <i-tabler name="star"></i-tabler>
+              <div>
+                <h3>{{ l.s('traineeship.company_rating') }}</h3>
+                <span class="meta muted">Hodnocení od studentů, kteří zde absolvovali praxi</span>
+              </div>
+            </div>
+            @if (reviews.length) {
+            <div class="rating-summary-badge">
+              <span class="rating-star">⭐</span>
+              <span class="rating-value">{{ traineeship.getRating(traineeship.selectedCompany) }}</span>
+              <span class="rating-max">/ 5</span>
+            </div>
+            }
+          </div>
+          <div class="section-content">
+            <div class="reviews-list">
+              @for(review of reviews; track $index) {
+              <div class="review-card">
+                <div class="review-header">
+                  <div class="review-author">
+                    <div class="author-avatar">
+                      <i-tabler name="user" style="width: 20px; height: 20px;"></i-tabler>
+                    </div>
+                    <div class="author-info">
+                      <strong>{{ review.student ?? l.s('traineeship.anon_student') }}</strong>
+                      <span class="review-date">{{ Utils.formatDateShort(review.created_at) }}</span>
+                    </div>
+                  </div>
+                  <div class="review-meta">
+                    <span class="badge" [class.badge--success]="review.recommend"
+                      [class.badge--danger]="!review.recommend">
+                      <i-tabler [name]="review.recommend ? 'thumb-up' : 'thumb-down'"
+                        style="width: 14px; height: 14px;"></i-tabler>
+                      {{ l.s(`traineeship.${(review.recommend ? '' : 'not_')}recommend`) }}
+                    </span>
+                    <div class="review-stars">
+                      @for(_ of [].constructor(5); track $index) {
+                      @if (review.rating >= $index + 1) {
+                      <span class="star filled">★</span>
+                      } @else {
+                      <span class="star empty">☆</span>
+                      }
+                      }
+                      <span class="rating-number">{{ review.rating }}</span>
+                    </div>
+                  </div>
                 </div>
                 <div class="review-body">
-                    {{ review.experience || l.s('traineeship.no_review') }}
+                  {{ review.experience || l.s('traineeship.no_review') }}
                 </div>
-                <div class="review-footer">{{ Utils.formatDateShort(review.created_at) }}</div>
+              </div>
+              } @empty {
+              <div class="empty-state">
+                <div class="empty-icon">
+                  <i-tabler name="star-off" style="width: 48px; height: 48px;"></i-tabler>
+                </div>
+                <p>Firma zatím nemá žádné hodnocení</p>
+              </div>
+              }
             </div>
-          } @empty {
-            <div class="message error">Firma nemá žádné hodnocení.</div>
-          }
-
+          </div>
         </div>
       </div>
     </div>
@@ -481,173 +501,211 @@
 </div>
 } } @case ("requestCompany") {
 <div class="card">
-  <div class="card-top">
-    <div class="alert mb alert--primary">
-      Doporučujeme řešit alespoň měsíc před začátkem praxe
-    </div>
-  </div>
-
-  <div class="card-header mb">
-    <div class="row">
-      <div class="btn btn--secondary first-margin" (click)="goToList()">
+  <div class="card-header">
+    <div class="left">
+      <button class="btn btn--ghost" (click)="goToList()">
+        <i-tabler name="chevron-left" style="width: 18px; height: 18px;"></i-tabler>
         {{ l.s("buttons.back") }}
-      </div>
-      <h2>
-        {{ l.s("traineeship.request_company") }}
-      </h2>
+      </button>
+      <h2>{{ l.s("traineeship.request_company") }}</h2>
     </div>
   </div>
 
-  <div class="form-group">
-    <label for="country">
-      {{ l.s("traineeship.country") }}
-    </label>
-    <select [(ngModel)]="countryCode" id="country">
-      <option value="CZ">Česko</option>
-      <option value="SK">Slovensko</option>
-      <option value="DE">Německo</option>
-      <option value="FR">Francie</option>
-      <option value="IT">Itálie</option>
-    </select>
-  </div>
-  @if (['CZ'].includes(countryCode)) {
-  <span class="note">Podporujeme automatické doplnování firmy z IČO.</span>
-  }
-
-  <div class="form-group">
-    <label for="CIN">
-      {{ l.s("traineeship.DIC") }}
-    </label>
-    <div class="row">
-      <div class="input-text" style="width: 40px; text-align: center">
-        {{ countryCode }}
+  <div class="section info-banner">
+    <div class="banner-content">
+      <div class="banner-icon">
+        <i-tabler name="bulb" style="width: 24px; height: 24px;"></i-tabler>
       </div>
-      <input
-        type="text"
-        class="no-left-radius"
-        name="DIC"
-        [placeholder]="l.s('traineeship.DIC')"
-        [formControl]="dic"
-      />
+      <div class="banner-text">
+        <strong>Tip</strong>
+        <p>Doporučujeme řešit alespoň měsíc před začátkem praxe</p>
+      </div>
     </div>
   </div>
 
-  <div class="form-group">
-      <label for="name">
-          {{ l.s('traineeship.company_name') }}
-      </label>
-      <input type="text" name="name" [value]="creatingCompany['name']" [placeholder]="l.s('traineeship.company_name')">
-  </div>
-  
-  <div class="form-group">
-      <label for="street">
-          {{ l.s('street') }}
-      </label>
-      <input type="text" name="street" [value]="creatingCompany['street']" [placeholder]="l.s('street')">
-  </div>
-  
-  <div class="form-group">
-      <label for="houseNumber">
-          {{ l.s('houseNumber') }}
-      </label>
-      <input type="text" name="houseNumber" [value]="creatingCompany['houseNumber']" [placeholder]="l.s('houseNumber')">
-  </div>
-  
-  <div class="form-group">
-      <label for="city">
-          {{ l.s('traineeship.city') }}
-      </label>
-      <input type="text" name="city" [value]="creatingCompany['city']" [placeholder]="l.s('traineeship.city')">
-  </div>
-  
-  <div class="form-group">
-      <label for="postcode">
-          {{ l.s('postcode') }}
-      </label>
-      <input type="text" name="postcode" [value]="creatingCompany['postcode']" [placeholder]="l.s('postcode')">
-  </div>
-  
-  <div class="form-group">
-      <label for="web">
-          {{ l.s('traineeship.web') }}
-      </label>
-      <input type="text" name="web" [value]="creatingCompany['web']" [placeholder]="l.s('traineeship.web')">
-  </div>
-
-  <div class="form-group">
-    <label for="scope">
-      {{ l.s("traineeship.scopes") }}
-    </label>
-    <div>
-      @for (scope of getAllScopes(); track $index) {
-      <div class="row">
-        <p>{{ scope.name }}</p>
-        <div class="last-margin yesOrNo row">
-          <div
-            (click)="toggleScope(scope.name, true)"
-            [ngClass]="{ 'blue-info': scopeSupported.includes(scope.name) }"
-          >
-            {{ l.s("yes") }}
-          </div>
-          <div
-            (click)="toggleScope(scope.name, false)"
-            [ngClass]="{ 'blue-info': !scopeSupported.includes(scope.name) }"
-          >
-            {{ l.s("no") }}
-          </div>
+  <!-- Basic Info Section -->
+  <div class="section">
+    <div class="section-header">
+      <div class="header-content">
+        <i-tabler name="building"></i-tabler>
+        <div>
+          <h3>Základní údaje firmy</h3>
+          <span class="meta muted">Vyplňte informace o firmě, kterou chcete přidat</span>
         </div>
       </div>
-      }
+    </div>
+    <div class="section-content">
+      <div class="form-grid">
+        <div class="form-group">
+          <label class="form-label" for="country">
+            <i-tabler name="flag" style="width: 16px; height: 16px;"></i-tabler>
+            {{ l.s("traineeship.country") }}
+          </label>
+          <select [(ngModel)]="countryCode" id="country" class="form-select">
+            <option value="CZ">🇨🇿 Česko</option>
+            <option value="SK">🇸🇰 Slovensko</option>
+            <option value="DE">🇩🇪 Německo</option>
+            <option value="FR">🇫🇷 Francie</option>
+            <option value="IT">🇮🇹 Itálie</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="CIN">
+            <i-tabler name="id" style="width: 16px; height: 16px;"></i-tabler>
+            {{ l.s("traineeship.DIC") }}
+          </label>
+          <div class="input-with-prefix">
+            <span class="input-prefix">{{ countryCode }}</span>
+            <input type="text" class="form-input" name="DIC" [placeholder]="l.s('traineeship.DIC')"
+              [formControl]="dic" />
+          </div>
+          @if (['CZ'].includes(countryCode)) {
+          <span class="form-hint">
+            <i-tabler name="sparkles" style="width: 14px; height: 14px;"></i-tabler>
+            Podporujeme automatické doplnění z ARES
+          </span>
+          }
+        </div>
+
+        <div class="form-group full-width">
+          <label class="form-label" for="name">
+            <i-tabler name="building" style="width: 16px; height: 16px;"></i-tabler>
+            {{ l.s('traineeship.company_name') }}
+          </label>
+          <input type="text" class="form-input" name="name" [value]="creatingCompany['name']"
+            [placeholder]="l.s('traineeship.company_name')">
+        </div>
+      </div>
     </div>
   </div>
 
-  <div class="form-group">
-    <label for="contact">
-      {{ l.s("contact") }}
-    </label>
-    <input type="text" name="contact" [placeholder]="l.s('contact')" />
+  <!-- Address Section -->
+  <div class="section">
+    <div class="section-header">
+      <div class="header-content">
+        <i-tabler name="map-pin"></i-tabler>
+        <div>
+          <h3>Adresa</h3>
+          <span class="meta muted">Sídlo firmy</span>
+        </div>
+      </div>
+    </div>
+    <div class="section-content">
+      <div class="form-grid">
+        <div class="form-group">
+          <label class="form-label" for="street">{{ l.s('street') }}</label>
+          <input type="text" class="form-input" name="street" [value]="creatingCompany['street']"
+            [placeholder]="l.s('street')">
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="houseNumber">{{ l.s('houseNumber') }}</label>
+          <input type="text" class="form-input" name="houseNumber" [value]="creatingCompany['houseNumber']"
+            [placeholder]="l.s('houseNumber')">
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="city">{{ l.s('traineeship.city') }}</label>
+          <input type="text" class="form-input" name="city" [value]="creatingCompany['city']"
+            [placeholder]="l.s('traineeship.city')">
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="postcode">{{ l.s('postcode') }}</label>
+          <input type="text" class="form-input" name="postcode" [value]="creatingCompany['postcode']"
+            [placeholder]="l.s('postcode')">
+        </div>
+
+        <div class="form-group full-width">
+          <label class="form-label" for="web">
+            <i-tabler name="world" style="width: 16px; height: 16px;"></i-tabler>
+            {{ l.s('traineeship.web') }}
+          </label>
+          <input type="text" class="form-input" name="web" [value]="creatingCompany['web']"
+            [placeholder]="l.s('traineeship.web')">
+        </div>
+      </div>
+    </div>
   </div>
 
-  <div class="form-group">
-    <label for="description">
-      {{ l.s("description") }}
-    </label>
-    <input type="text" name="description" [placeholder]="l.s('description')" />
+  <!-- Scopes Section -->
+  <div class="section">
+    <div class="section-header">
+      <div class="header-content">
+        <i-tabler name="category"></i-tabler>
+        <div>
+          <h3>{{ l.s("traineeship.scopes") }}</h3>
+          <span class="meta muted">Vyberte obory, které firma podporuje</span>
+        </div>
+      </div>
+    </div>
+    <div class="section-content">
+      <div class="scopes-list">
+        @for (scope of getAllScopes(); track $index) {
+        <div class="scope-item" [class.selected]="scopeSupported.includes(scope.name)"
+          (click)="toggleScope(scope.name, !scopeSupported.includes(scope.name))">
+          <span class="scope-name">{{ scope.name }}</span>
+          <div class="scope-toggle">
+            <span class="toggle-label">{{ scopeSupported.includes(scope.name) ? l.s("yes") : l.s("no") }}</span>
+            <div class="toggle-switch" [class.active]="scopeSupported.includes(scope.name)">
+              <span class="toggle-knob"></span>
+            </div>
+          </div>
+        </div>
+        }
+      </div>
+    </div>
   </div>
 
-  <div class="form-group">
-    <label for="activity">
-      {{ l.s("traineeship.activity") }}
-    </label>
-    <input
-      type="text"
-      name="activity"
-      [placeholder]="l.s('traineeship.activity')"
-    />
+  <!-- Additional Info Section -->
+  <div class="section">
+    <div class="section-header">
+      <div class="header-content">
+        <i-tabler name="file-text"></i-tabler>
+        <div>
+          <h3>Doplňující informace</h3>
+          <span class="meta muted">Volitelné údaje</span>
+        </div>
+      </div>
+    </div>
+    <div class="section-content">
+      <div class="form-grid">
+        <div class="form-group full-width">
+          <label class="form-label" for="contact">{{ l.s("contact") }}</label>
+          <input type="text" class="form-input" name="contact" [placeholder]="l.s('contact')" />
+        </div>
+
+        <div class="form-group full-width">
+          <label class="form-label" for="description">{{ l.s("description") }}</label>
+          <textarea class="form-textarea" name="description" rows="3" [placeholder]="l.s('description')"></textarea>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="activity">{{ l.s("traineeship.activity") }}</label>
+          <input type="text" class="form-input" name="activity" [placeholder]="l.s('traineeship.activity')" />
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="equipment">{{ l.s("traineeship.equipment") }}</label>
+          <input type="text" class="form-input" name="equipment" [placeholder]="l.s('traineeship.equipment')" />
+        </div>
+
+        <div class="form-group full-width">
+          <label class="form-label" for="note">{{ l.s("traineeship.note") }}</label>
+          <textarea class="form-textarea" name="note" rows="2" [placeholder]="l.s('traineeship.note')"></textarea>
+        </div>
+      </div>
+    </div>
   </div>
 
-  <div class="form-group">
-    <label for="equipment">
-      {{ l.s("traineeship.equipment") }}
-    </label>
-    <input
-      type="text"
-      name="equipment"
-      [placeholder]="l.s('traineeship.equipment')"
-    />
-  </div>
-
-  <div class="form-group">
-    <label for="note">
-      {{ l.s("traineeship.note") }}
-    </label>
-    <input type="text" name="note" [placeholder]="l.s('traineeship.note')" />
-  </div>
-
-  <div class="form-group">
-    <div class="btn center">
+  <!-- Submit Section -->
+  <div class="form-actions">
+    <button class="btn btn--ghost" (click)="goToList()">Zrušit</button>
+    <button class="btn btn--primary btn--lg">
+      <i-tabler name="send" style="width: 18px; height: 18px;"></i-tabler>
       {{ l.s("traineeship.request_add_company") }}
-    </div>
+    </button>
   </div>
 </div>
 } }

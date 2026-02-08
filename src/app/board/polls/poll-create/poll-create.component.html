@@ -12,175 +12,252 @@
         </div>
     </div>
 
-    <div class="card-body">
-        <form [formGroup]="pollForm" (ngSubmit)="submit()" class="poll-form">
-            <!-- Basic Info Section -->
-            <div class="form-section">
-                <div class="section-header">
-                    <h3>Základní informace</h3>
+    <!-- Progress Steps -->
+    <div class="section progress-section">
+        <div class="progress-steps">
+            <div class="step" [class.active]="true" [class.completed]="pollForm.get('title')?.value">
+                <div class="step-icon">
+                    <i-tabler name="file-text"></i-tabler>
                 </div>
-
-                <div class="form-group">
-                    <label for="title">
-                        Název testu
-                    </label>
-                    <input id="title" type="text" formControlName="title" placeholder="Zadejte název testu" class="field-input" />
+                <span>Základní info</span>
+            </div>
+            <div class="step-line" [class.active]="pollForm.get('title')?.value"></div>
+            <div class="step" [class.active]="questions.length > 0">
+                <div class="step-icon">
+                    <i-tabler name="list-check"></i-tabler>
                 </div>
-
-                <div class="form-group">
-                    <label for="description">Popis testu</label>
-                    <textarea id="description" formControlName="description" placeholder="Volitelný popis testu" class="field-textarea" rows="3"></textarea>
+                <span>Otázky</span>
+            </div>
+            <div class="step-line" [class.active]="questions.length > 0 && pollForm.valid"></div>
+            <div class="step" [class.active]="pollForm.valid">
+                <div class="step-icon">
+                    <i-tabler name="check"></i-tabler>
                 </div>
+                <span>Dokončení</span>
+            </div>
+        </div>
+    </div>
 
-                <div class="form-group">
-                    <label for="">Druh testu</label>
-                    <div class="custom-select" id="type" (click)="$event.stopPropagation();dropdownManager.selected_dropdown = dropdownManager.selected_dropdown == 'tests_select_test_type' ? '' : 'tests_select_test_type'">
-                        <div class="selected-value">
-                            <div class="row" style="gap: .5rem">
-                                {{ l.s('tests.test_types.' + pollForm.get('test_type')!.value) }}
+    <form [formGroup]="pollForm" (ngSubmit)="submit()" class="poll-form">
+        <!-- Basic Info Section -->
+        <div class="section">
+            <div class="section-header">
+                <div class="header-content">
+                    <i-tabler name="file-description"></i-tabler>
+                    <div>
+                        <h3>Základní informace</h3>
+                        <span class="meta muted">Zadejte název a popis testu</span>
+                    </div>
+                </div>
+            </div>
+            <div class="section-content">
+                <div class="form-grid">
+                    <div class="form-group full-width">
+                        <label for="title">
+                            <i-tabler name="heading"></i-tabler>
+                            Název testu <span class="required">*</span>
+                        </label>
+                        <input id="title" type="text" formControlName="title"
+                            placeholder="Např. Matematika - test z rovnic" class="form-input" />
+                    </div>
+
+                    <div class="form-group full-width">
+                        <label for="description">
+                            <i-tabler name="align-left"></i-tabler>
+                            Popis testu
+                        </label>
+                        <textarea id="description" formControlName="description"
+                            placeholder="Volitelný popis testu pro studenty" class="form-textarea" rows="3"></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label>
+                            <i-tabler name="category"></i-tabler>
+                            Druh testu
+                        </label>
+                        <div class="custom-select"
+                            (click)="$event.stopPropagation();dropdownManager.selected_dropdown = dropdownManager.selected_dropdown == 'tests_select_test_type' ? '' : 'tests_select_test_type'">
+                            <div class="selected-value">
+                                <span>{{ l.s('tests.test_types.' + pollForm.get('test_type')!.value) }}</span>
+                                <i-tabler name="chevron-down"></i-tabler>
                             </div>
-                            <i-tabler name="chevron-down"></i-tabler>
-                        </div>
-                        @if (dropdownManager.selected_dropdown == 'tests_select_test_type') {
-                        <div class="options-dropdown">
-                            <div class="list">
+                            @if (dropdownManager.selected_dropdown == 'tests_select_test_type') {
+                            <div class="options-dropdown">
                                 @for (testType of testTypes; track $index) {
-                                <div class="option row" style="gap: .5rem" (click)="$event.stopPropagation();dropdownManager.selected_dropdown = '';pollForm.patchValue({ test_type: testType })">
+                                <div class="option"
+                                    (click)="$event.stopPropagation();dropdownManager.selected_dropdown = '';pollForm.patchValue({ test_type: testType })">
                                     {{ l.s('tests.test_types.' + testType) }}
                                 </div>
                                 }
                             </div>
+                            }
                         </div>
-                        }
                     </div>
-                </div>
 
-                @if (pollForm.get('test_type')!.value == "random") {
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label for="">Požadovaný počet</label>
-                            <input type="number">
-                        </div>
-                        <div class="form-group">
-                            <label for="">Čeho</label>
-                            <div class="custom-select" id="type" (click)="$event.stopPropagation();dropdownManager.selected_dropdown = dropdownManager.selected_dropdown == 'tests_select_count_type' ? '' : 'tests_select_count_type'">
-                                <div class="selected-value">
-                                    <div class="row" style="gap: .5rem">
-                                        {{ l.s('tests.require_types.' + pollForm.get('require_type')!.value) }}
-                                    </div>
-                                    <i-tabler name="chevron-down"></i-tabler>
-                                </div>
-                                @if (dropdownManager.selected_dropdown == 'tests_select_count_type') {
-                                <div class="options-dropdown">
-                                    <div class="list">
-                                        @for (requireType of requireTypes; track $index) {
-                                        <div class="option row" style="gap: .5rem" (click)="$event.stopPropagation();dropdownManager.selected_dropdown = '';pollForm.patchValue({ require_type: requireType })">
-                                            {{ l.s('tests.require_types.' + requireType) }}
-                                        </div>
-                                        }
-                                    </div>
+                    <div class="form-group">
+                        <label for="time_limit">
+                            <i-tabler name="clock"></i-tabler>
+                            Časový limit (minuty)
+                        </label>
+                        <input id="time_limit" type="number" formControlName="time_limit" min="0"
+                            placeholder="Neomezeno" class="form-input" />
+                    </div>
+
+                    @if (pollForm.get('test_type')!.value == "random") {
+                    <div class="form-group">
+                        <label>
+                            <i-tabler name="hash"></i-tabler>
+                            Požadovaný počet
+                        </label>
+                        <input type="number" class="form-input" placeholder="Počet">
+                    </div>
+                    <div class="form-group">
+                        <label>
+                            <i-tabler name="filter"></i-tabler>
+                            Čeho
+                        </label>
+                        <div class="custom-select"
+                            (click)="$event.stopPropagation();dropdownManager.selected_dropdown = dropdownManager.selected_dropdown == 'tests_select_count_type' ? '' : 'tests_select_count_type'">
+                            <div class="selected-value">
+                                <span>{{ l.s('tests.require_types.' + pollForm.get('require_type')!.value) }}</span>
+                                <i-tabler name="chevron-down"></i-tabler>
+                            </div>
+                            @if (dropdownManager.selected_dropdown == 'tests_select_count_type') {
+                            <div class="options-dropdown">
+                                @for (requireType of requireTypes; track $index) {
+                                <div class="option"
+                                    (click)="$event.stopPropagation();dropdownManager.selected_dropdown = '';pollForm.patchValue({ require_type: requireType })">
+                                    {{ l.s('tests.require_types.' + requireType) }}
                                 </div>
                                 }
                             </div>
+                            }
                         </div>
                     </div>
-                }
-
-                <div class="form-group">
-                    <label for="time_limit">Časový limit (minuty)</label>
-                    <input id="time_limit" type="number" formControlName="time_limit" min="0" placeholder="Neomezeno" class="field-input" />
+                    }
                 </div>
             </div>
+        </div>
 
-            <!-- Questions Section -->
-            <div class="form-section">
-                <div class="section-header">
-                    <h3>Otázky</h3>
-                    <button type="button" (click)="addQuestion()" class="btn btn--primary">
-                        <i-tabler name="plus"></i-tabler>
-                        Přidat otázku
-                    </button>
+        <!-- Questions Section -->
+        <div class="section">
+            <div class="section-header">
+                <div class="header-content">
+                    <i-tabler name="list-check"></i-tabler>
+                    <div>
+                        <h3>Otázky</h3>
+                        <span class="meta muted">Přidejte otázky a možnosti odpovědí</span>
+                    </div>
                 </div>
-
+                <button type="button" (click)="addQuestion()" class="btn btn--primary">
+                    <i-tabler name="plus"></i-tabler>
+                    Přidat otázku
+                </button>
+            </div>
+            <div class="section-content">
                 <div formArrayName="questions" class="questions-list">
                     @for (question of questions.controls; track $index; let i = $index) {
-                    <div [formGroupName]="i" class="question-card">
-                        <div class="question-header">
-                            <div class="question-number">Otázka {{ i + 1 }}</div>
-                            <div (click)="removeQuestion(i)" class="btn btn--danger"
-                                title="Odstranit otázku">
-                                <i-tabler name="trash-x"></i-tabler>
+                    <div [formGroupName]="i" class="question-card" [class.expanded]="true">
+                        <div class="question-card-header">
+                            <div class="question-number">
+                                <span class="number-badge">{{ i + 1 }}</span>
+                                <span class="question-type-badge" [class.text]="question.get('type')!.value === 'text'"
+                                    [class.uni]="question.get('type')!.value === 'uni'"
+                                    [class.multi]="question.get('type')!.value === 'multi'">
+                                    <i-tabler
+                                        [name]="question.get('type')!.value === 'text' ? 'align-left' : (question.get('type')!.value === 'uni' ? 'circle-dot' : 'checkbox')"></i-tabler>
+                                    {{ l.s('tests.question_types.' + question.get('type')!.value) }}
+                                </span>
+                            </div>
+                            <div class="question-actions">
+                                <button type="button" class="btn btn--sm btn--ghost" title="Přesunout nahoru">
+                                    <i-tabler name="arrow-up"></i-tabler>
+                                </button>
+                                <button type="button" class="btn btn--sm btn--ghost" title="Přesunout dolů">
+                                    <i-tabler name="arrow-down"></i-tabler>
+                                </button>
+                                <button type="button" (click)="removeQuestion(i)" class="btn btn--sm btn--danger-ghost"
+                                    title="Odstranit otázku">
+                                    <i-tabler name="trash-x"></i-tabler>
+                                </button>
                             </div>
                         </div>
 
-                        <div class="question-body">
+                        <div class="question-card-body">
                             <div class="form-group full-width">
-                                <label>Text otázky</label>
-                                <input type="text" formControlName="title" placeholder="Zadejte text otázky" />
+                                <label>Text otázky <span class="required">*</span></label>
+                                <input type="text" formControlName="title" placeholder="Zadejte text otázky"
+                                    class="form-input" />
                             </div>
 
                             <div class="form-row">
                                 <div class="form-group">
                                     <label>{{ l.s('tests.question_types.title') }}</label>
-                                    <div class="custom-select" id="type" (click)="$event.stopPropagation();dropdownManager.selected_dropdown = dropdownManager.selected_dropdown == 'tests_select_question_type' ? '' : 'tests_select_question_type'">
+                                    <div class="custom-select"
+                                        (click)="$event.stopPropagation();dropdownManager.selected_dropdown = dropdownManager.selected_dropdown == 'tests_select_question_type_' + i ? '' : 'tests_select_question_type_' + i">
                                         <div class="selected-value">
-                                            <div class="row" style="gap: .5rem">
-                                                {{ l.s('tests.question_types.' + question.get('type')!.value) }}
-                                            </div>
+                                            <span>{{ l.s('tests.question_types.' + question.get('type')!.value)
+                                                }}</span>
                                             <i-tabler name="chevron-down"></i-tabler>
                                         </div>
-                                        @if (dropdownManager.selected_dropdown == 'tests_select_question_type') {
+                                        @if (dropdownManager.selected_dropdown == 'tests_select_question_type_' + i) {
                                         <div class="options-dropdown">
-                                            <div class="list">
-                                                @for (questionType of questionTypes; track $index) {
-                                                <div class="option row" style="gap: .5rem" (click)="$event.stopPropagation();dropdownManager.selected_dropdown = '';question.patchValue({ type: questionType })">
-                                                    {{ l.s('tests.question_types.' + questionType) }}
-                                                </div>
-                                                }
+                                            @for (questionType of questionTypes; track $index) {
+                                            <div class="option"
+                                                (click)="$event.stopPropagation();dropdownManager.selected_dropdown = '';question.patchValue({ type: questionType })">
+                                                {{ l.s('tests.question_types.' + questionType) }}
                                             </div>
+                                            }
                                         </div>
                                         }
                                     </div>
                                 </div>
 
                                 <div class="form-group">
-                                    <label>Body</label>
-                                    <input type="number" formControlName="points" placeholder="0" />
+                                    <label>Body za otázku</label>
+                                    <div class="points-input">
+                                        <i-tabler name="star"></i-tabler>
+                                        <input type="number" formControlName="points" placeholder="0"
+                                            class="form-input" />
+                                    </div>
                                 </div>
                             </div>
 
                             @if (question.get('type')!.value !== 'text') {
-
-                            @if (question.get('type')!.value == 'multi') {
-                            <div class="form-group">
-                                <label for="">Způsob hodnocení</label>
-                                <input type="text">
-                            </div>
-                            }
-
-
                             <div class="options-section">
                                 <div class="options-header">
-                                    <label class="field-label">Možnosti odpovědí</label>
-                                    <div (click)="addOption(i)" class="btn btn--sm btn--ghost">
+                                    <label class="options-label">
+                                        <i-tabler name="list"></i-tabler>
+                                        Možnosti odpovědí
+                                    </label>
+                                    <button type="button" (click)="addOption(i)" class="btn btn--sm btn--ghost">
                                         <i-tabler name="plus"></i-tabler>
                                         Přidat možnost
-                                    </div>
+                                    </button>
                                 </div>
 
                                 <div formArrayName="options" class="options-list">
                                     @for (option of getOptions(i).controls; track $index; let j = $index) {
-                                    <div [formGroupName]="j" class="option-item">
-                                        <label class="checkbox-wrapper">
-                                            <input type="checkbox" formControlName="is_correct" class="checkbox" />
-                                            <span class="checkbox-label">Správná</span>
+                                    <div [formGroupName]="j" class="option-item"
+                                        [class.correct]="option.get('is_correct')!.value">
+                                        <label class="correct-toggle"
+                                            [title]="option.get('is_correct')!.value ? 'Správná odpověď' : 'Označit jako správnou'">
+                                            <input type="checkbox" formControlName="is_correct" />
+                                            <i-tabler
+                                                [name]="option.get('is_correct')!.value ? 'circle-check-filled' : 'circle'"></i-tabler>
                                         </label>
                                         <input type="text" formControlName="label" placeholder="Text možnosti"
-                                            class="field-input flex-1" />
-                                        <div (click)="removeOption(i, j)" class="btn-icon-remove"
+                                            class="form-input flex-1" />
+                                        <button type="button" (click)="removeOption(i, j)" class="btn-remove"
                                             title="Odstranit">
                                             <i-tabler name="x"></i-tabler>
-                                        </div>
+                                        </button>
+                                    </div>
+                                    }
+                                    @empty {
+                                    <div class="empty-options">
+                                        <i-tabler name="list-details"></i-tabler>
+                                        <span>Přidejte možnosti odpovědí</span>
                                     </div>
                                     }
                                 </div>
@@ -191,27 +268,75 @@
                     }
                     @empty {
                     <div class="empty-questions">
-                        <i-tabler name="file-text" class="empty-icon"></i-tabler>
-                        <p>Zatím nebyly přidány žádné otázky</p>
-                        <div (click)="addQuestion()" class="btn btn--primary">
+                        <div class="empty-icon">
+                            <i-tabler name="file-text"></i-tabler>
+                        </div>
+                        <h4>Zatím nebyly přidány žádné otázky</h4>
+                        <p>Začněte přidáním první otázky do testu</p>
+                        <button type="button" (click)="addQuestion()" class="btn btn--primary">
                             <i-tabler name="plus"></i-tabler>
                             Přidat první otázku
-                        </div>
+                        </button>
                     </div>
                     }
                 </div>
             </div>
+        </div>
 
-            <!-- Submit Section -->
-            <div class="form-actions">
-                <div routerLink="/tests" class="btn btn--ghost">
-                    Zrušit
-                </div>
-                <div class="btn" [class.btn--primary]="pollForm.valid" (click)="submit()">
-                    <i-tabler name="check"></i-tabler>
-                    Vytvořit test
+        <!-- Summary Section -->
+        <div class="section summary-section">
+            <div class="section-header">
+                <div class="header-content">
+                    <i-tabler name="clipboard-list"></i-tabler>
+                    <div>
+                        <h3>Souhrn testu</h3>
+                        <span class="meta muted">Přehled vašeho testu před vytvořením</span>
+                    </div>
                 </div>
             </div>
-        </form>
-    </div>
+            <div class="section-content">
+                <div class="summary-grid">
+                    <div class="summary-card">
+                        <div class="summary-icon">
+                            <i-tabler name="list-check"></i-tabler>
+                        </div>
+                        <div class="summary-info">
+                            <span class="summary-value">{{ questions.length }}</span>
+                            <span class="summary-label">Otázek</span>
+                        </div>
+                    </div>
+                    <div class="summary-card">
+                        <div class="summary-icon points">
+                            <i-tabler name="star"></i-tabler>
+                        </div>
+                        <div class="summary-info">
+                            <span class="summary-value">{{ getTotalPoints() }}</span>
+                            <span class="summary-label">Bodů celkem</span>
+                        </div>
+                    </div>
+                    <div class="summary-card">
+                        <div class="summary-icon time">
+                            <i-tabler name="clock"></i-tabler>
+                        </div>
+                        <div class="summary-info">
+                            <span class="summary-value">{{ pollForm.get('time_limit')?.value || '∞' }}</span>
+                            <span class="summary-label">Minut</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Submit Section -->
+        <div class="form-actions">
+            <button type="button" routerLink="/tests" class="btn btn--ghost">
+                <i-tabler name="x"></i-tabler>
+                Zrušit
+            </button>
+            <button type="submit" class="btn btn--primary btn--lg" [disabled]="pollForm.invalid">
+                <i-tabler name="check"></i-tabler>
+                Vytvořit test
+            </button>
+        </div>
+    </form>
 </div>
