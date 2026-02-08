@@ -22,4 +22,15 @@ export interface SchoolConfig {
     end: Date;
   };
   loginExpires: number;
+  // auth
+  auth_classic: boolean;
+  auth_ldap: boolean;
+  auth_passkeys: boolean;
+  gdpr_firstname: string;
+  gdpr_lastname: string;
+  gdpr_phone: string;
+  gdpr_email: string;
+  gdpr_mobile: string;
+  gdpr_databox: string;
+  gdpr_web: string;
 }

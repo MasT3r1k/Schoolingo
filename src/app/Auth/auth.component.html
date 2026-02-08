@@ -97,10 +97,12 @@
         @if (isPasskeyLoading) {
         <div class="passkey-loading-overlay">
             <div class="passkey-loading-content">
-                <div class="passkey-loading-ring"></div>
-                <div class="passkey-loading-ring passkey-loading-ring-2"></div>
+                <div class="center">
+                    <div class="passkey-loading-ring"></div>
+                    <div class="passkey-loading-ring passkey-loading-ring-2"></div>
 
-                <i-tabler name="fingerprint" class="passkey-loading-icon"></i-tabler>
+                    <i-tabler name="fingerprint" class="passkey-loading-icon"></i-tabler>
+                </div>
 
                 <div class="passkey-loading-text-wrapper">
                     <span class="passkey-loading-title">
@@ -150,7 +152,7 @@
             </p>
         </div>
         <div class="card-row">
-            <div class="left" [class.not-fastlogin]="school.config.getValue()?.fastlogin">
+            <div class="left">
                 @if (school.config.getValue()?.fastlogin && ["login", "2fa"].includes(page)) {
                 }
                 @switch (page) {
@@ -208,14 +210,13 @@
                     </div>
                 </div>
 
-                @if (isPasskeySupport) {
-
-                <div class="form-group">
-                    <div class="btn btn--outline-secondary" (click)="loginPasskey()">
-                        <i-tabler name="fingerprint"></i-tabler>
-                        <span>{{ l.s('auth.login.login_with_passkey') }}</span>
+                @if (isPasskeySupport && school.config.getValue()?.auth_passkeys) {
+                    <div class="form-group">
+                        <div class="btn btn--outline-secondary" (click)="loginPasskey()">
+                            <i-tabler name="fingerprint"></i-tabler>
+                            <span>{{ l.s('auth.login.login_with_passkey') }}</span>
+                        </div>
                     </div>
-                </div>
                 }
                 }
 

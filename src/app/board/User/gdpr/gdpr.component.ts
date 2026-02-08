@@ -24,6 +24,8 @@ interface DataExportRequest {
   download_url?: string;
 }
 
+import { School } from '@Schoolingo/school';
+
 @Component({
   selector: 'app-gdpr',
   standalone: true,
@@ -33,6 +35,7 @@ interface DataExportRequest {
 })
 export class GdprComponent implements OnInit {
   private http = inject(HttpClient);
+  public school = inject(School);
   public l = inject(Locale);
 
   public consents: GdprConsent[] = [];

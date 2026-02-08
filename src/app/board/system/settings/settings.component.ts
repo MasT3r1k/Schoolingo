@@ -85,7 +85,6 @@ type ElysiaSystemAPI = {
     // Auth
     auth_classic: boolean;
     auth_ldap: boolean;
-    auth_qr: boolean;
     auth_passkeys: boolean;
     session_lifetime_minutes: number;
     max_login_attempts: number;
@@ -437,10 +436,11 @@ export class SettingsComponent implements OnInit {
     this.http.post(
       `${Config.API_URL}/v1/system/update_login`,
       {
-        auth_classic: this.system.settings.auth_classic,
-        auth_ldap: this.system.settings.auth_ldap,
-        auth_qr: this.system.settings.auth_qr,
-        auth_passkeys: this.system.settings.auth_passkeys,
+        auth_classic: this.system.settings.auth_classic ? true : false,
+        auth_ldap: this.system.settings.auth_ldap ? true : false,
+        auth_qr: this.system.settings.fastlogin ? true : false,
+        auth_passkeys: this.system.settings.auth_passkeys ? true : false,
+        reset_password_with_email: this.system.settings.resetPasswordWithEmail ? true : false,
         session_lifetime_minutes: this.system.settings.session_lifetime_minutes,
         max_login_attempts: this.system.settings.max_login_attempts
       },

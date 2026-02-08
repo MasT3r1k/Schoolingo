@@ -6,6 +6,54 @@
         </div>
     </div>
 
+    <!-- Responsible Person Section -->
+    <div class="section">
+        <div class="section-header">
+            <div class="header-content">
+                <i-tabler name="id"></i-tabler>
+                <div>
+                    <h3>Zodpovědná osoba (GDPR)</h3>
+                    <span class="meta muted">Kontakt na osobu pověřenou ochranou osobních údajů</span>
+                </div>
+            </div>
+        </div>
+        <div class="section-content">
+            @if (school.config | async; as config) {
+            <div class="contact-grid">
+                <div class="contact-item">
+                    <span class="label">Jméno a příjmení</span>
+                    <span class="value">{{ config.gdpr_firstname }} {{ config.gdpr_lastname }}</span>
+                </div>
+                <div class="contact-item">
+                    <span class="label">Email</span>
+                    <span class="value"><a [href]="'mailto:' + config.gdpr_email">{{ config.gdpr_email }}</a></span>
+                </div>
+                <div class="contact-item">
+                    <span class="label">Telefon</span>
+                    <span class="value"><a [href]="'tel:' + config.gdpr_phone">{{ config.gdpr_phone }}</a></span>
+                </div>
+                <div class="contact-item">
+                    <span class="label">Mobil</span>
+                    <span class="value"><a [href]="'tel:' + config.gdpr_mobile">{{ config.gdpr_mobile }}</a></span>
+                </div>
+                <div class="contact-item">
+                    <span class="label">Datová schránka</span>
+                    <span class="value">{{ config.gdpr_databox }}</span>
+                </div>
+                <div class="contact-item">
+                    <span class="label">Web</span>
+                    <span class="value"><a [href]="config.gdpr_web" target="_blank">{{ config.gdpr_web }}</a></span>
+                </div>
+            </div>
+            } @else {
+            <div class="loading">
+                <div class="loading-spinner"></div>
+                <span>Načítání kontaktu...</span>
+            </div>
+            }
+        </div>
+    </div>
+
     <!-- Consent Management Section -->
     <div class="section">
         <div class="section-header">
