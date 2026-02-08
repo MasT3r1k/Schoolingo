@@ -391,6 +391,12 @@ export const config: SidebarGroup[] = [
                         url: "system/auditlog",
                         icon: 'file-analytics',
                         permission: ['manager:system:admin']
+                    },
+                    {
+                        item: 'sidebar.system.monitoring',
+                        url: "admin/monitoring",
+                        icon: 'chart-bar',
+                        permission: ['manager:system:admin']
                     }
                 ]
             }

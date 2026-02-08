@@ -12,6 +12,8 @@ import { SeasonalDecorationsComponent } from '@Components/seasonal/decorations/d
 import { School } from '@Schoolingo/school';
 import { Locale } from '@Schoolingo/locale';
 import { SystemErrorComponent } from "@Components/system-error/system-error.component";
+import { AnalyticsService } from './infrastructure/analytics/analytics.service';
+import { MonitoringService } from './infrastructure/monitoring/monitoring.service';
 
 @Component({
   selector: 'app-root',
@@ -27,6 +29,8 @@ export class AppComponent implements OnInit {
 
   public auth = inject(Authentication);
   public seasonalService = inject(SeasonalService);
+  private analyticsService = inject(AnalyticsService);
+  public monitoringService = inject(MonitoringService);
   
   ngOnInit(): void {
     try {
@@ -53,7 +57,16 @@ export class AppComponent implements OnInit {
     this.auth.getAuthState()
     .subscribe((data) => {
       this.appState = data == "offline" ? false : true;
+      if (this.appState === true) {
+        this.analyticsService.setUserId(this.auth.getId());
+      } else {
+        this.analyticsService.setUserId(null);
+      }
     });
+
+    // Set User ID for Matomo if logged in
+    // This is optional and depends on Authentication service exposing user info
+    // For now, we rely on basic page tracking
   }
 
   public getError(): string | null {

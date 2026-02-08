@@ -62,6 +62,8 @@ import { PollEditComponent } from './board/polls/poll-edit/poll-edit.component';
 import { DetailComponent } from './board/students/detail/detail.component';
 import { TemplateSubjectComponent } from './board/schedule/template-subject/template-subject.component';
 import { TemplateTimetableComponent } from './board/schedule/template-timetable/template-timetable.component';
+import { MonitoringComponent } from './board/Admin/monitoring/monitoring.component';
+import { SeasonalAdminComponent } from './board/Admin/seasonal/seasonal.component';
 
 
 export const routes: Routes = [
@@ -373,7 +375,11 @@ export const routes: Routes = [
                     },
                     {
                         path: 'seasonal',
-                        loadComponent: () => import('./board/Admin/seasonal/seasonal.component').then(m => m.SeasonalAdminComponent)
+                        component: SeasonalAdminComponent
+                    },
+                    {
+                        path: 'monitoring',
+                        component: MonitoringComponent
                     }
                 ]
             },

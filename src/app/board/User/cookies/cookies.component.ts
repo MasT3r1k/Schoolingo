@@ -109,16 +109,30 @@ export class CookiesComponent implements OnInit {
 
   private loadPreferences(): void {
     this.loading = true;
-    this.http.get<{ preferences: CookiePreference[] }>(
-      `${Config.API_URL}/v1/cookies/preferences`,
+    this.preferences = [];
+
+    this.http.get<{ success: boolean; cookies: number }>(
+      `${Config.API_URL}/v1/cookies`,
       { withCredentials: true }
     ).subscribe({
       next: (data) => {
-        if (data.preferences) {
-          this.preferences = data.preferences;
+        if (data.cookies !== undefined && data.cookies !== null) {
+          // dec → bin → reverse → zarovnat na počet kategorií
+          const bits = data.cookies
+            .toString(2)
+            .split('')
+            .reverse()
+            .map(b => b === '1');
+
+          this.preferences = this.cookieCategories.map((cat, i) => ({
+            category: cat.id,
+            enabled: cat.required ? true : bits[i] ?? false,
+            required: cat.required
+          }));
         } else {
           this.initDefaultPreferences();
         }
+
         this.loading = false;
       },
       error: () => {
@@ -199,11 +213,17 @@ export class CookiesComponent implements OnInit {
     this.savePreferences();
   }
 
+  private preferencesToDecimal(): number {
+    return this.preferences.reduce((acc, pref, index) => {
+      return acc + (pref.enabled ? (1 << index) : 0);
+    }, 0);
+  }
+
   public savePreferences(): void {
     this.saving = true;
-    this.http.put(
-      `${Config.API_URL}/v1/cookies/preferences`,
-      { preferences: this.preferences },
+    this.http.post(
+      `${Config.API_URL}/v1/cookies`,
+      { cookies: this.preferencesToDecimal() },
       { withCredentials: true }
     ).subscribe({
       next: () => {
