@@ -1,5 +1,6 @@
 import { NgClass, NgStyle } from '@angular/common';
 import { Component, inject, OnInit } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
 import { RouterLink } from '@angular/router';
 import { Authentication } from '@Schoolingo/authentication';
 import { IconsModule } from '@Schoolingo/icons';
@@ -10,6 +11,8 @@ import { UserEmail, UserPhone } from '../../../infrastructure/authentication/use
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { ModalManager } from '@Schoolingo/modal';
 import { AddEmailComponent } from './modals/add-email/add-email.component';
+import { AddPhoneComponent } from './modals/add-phone/add-phone.component';
+import { DeleteEmailComponent } from './modals/delete-email/delete-email.component';
 
 @Component({
   imports: [NgClass, IconsModule, RouterLink, FormsModule, ReactiveFormsModule],
@@ -18,6 +21,7 @@ import { AddEmailComponent } from './modals/add-email/add-email.component';
 })
 export class AccountComponent implements OnInit {
   private modalManager = inject(ModalManager);
+  private http = inject(HttpClient);
   u = inject(Authentication);
   l = inject(Locale);
   Config = Config;
@@ -42,20 +46,70 @@ export class AccountComponent implements OnInit {
           }
         ]
       }
-    )
+    );
+
+    this.modalManager.addModal(
+      'delete_email',
+      {
+        title: 'user.delete_email.title',
+        closeable: true,
+        items: [
+          {
+            type: 'component',
+            component: DeleteEmailComponent
+          }
+        ]
+      }
+    );
+
+    this.modalManager.addModal(
+      'add_phone',
+      {
+        title: 'user.add_phone.title',
+        closeable: true,
+        items: [
+          {
+            type: 'component',
+            component: AddPhoneComponent
+          }
+        ]
+      }
+    );
   }
 
   public addEmptyEmail(): void {
-    this.modalManager.openModal('add_email');
-    // this.emails.push({
-    //   email: "",
-    //   is_created: false,
-    //   is_verified: false,
-    //   description: ""
-    // })
+    this.modalManager.openModal('add_email', null);
   }
 
-  public removeEmail(index: number): void {
-    this.emails.splice(index, 1);
+  public editEmail(email: UserEmail): void {
+    this.modalManager.openModal('add_email', email);
+  }
+
+  public removeEmail(email: string): void {
+    this.modalManager.openModal('delete_email', email);
+  }
+
+  public addEmptyPhone(): void {
+    this.modalManager.openModal('add_phone', null);
+  }
+
+  public editPhone(phone: UserPhone): void {
+    this.modalManager.openModal('add_phone', phone);
+  }
+
+  public removePhone(number: string): void {
+    if (!confirm('Opravdu chcete smazat toto telefonní číslo?')) return;
+
+    this.http.delete(`${Config.API_URL}/v1/user/phone`, {
+      body: { number },
+      withCredentials: true
+    }).subscribe({
+      next: (response: any) => {
+        if (response.success) {
+          this.u.loadState();
+        }
+      },
+      error: (error) => console.error('Error removing phone', error)
+    });
   }
 }

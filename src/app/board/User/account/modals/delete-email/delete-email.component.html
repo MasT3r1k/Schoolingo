@@ -1,0 +1,16 @@
+<div class="form-group">
+    <label for="email">{{ l.s('user.add_email.email') }}</label>
+    <input type="text" name="email" id="email" [(ngModel)]="email" [placeholder]="l.s('user.add_email.email')" readonly>
+</div>
+
+<div class="form-group">
+    <p>Přepište **{{ email }}** do inputu níže</p>
+    <input type="text" name="text_email" id="text_email" [(ngModel)]="text_email" [placeholder]="l.s('user.delete_email.placeholder')">
+</div>
+
+<div class="form-group">
+    <div class="btn" [class.btn--danger]="this.email == this.text_email" (click)="deleteEmail()">
+        <i-tabler name="trash-x"></i-tabler>
+        {{ l.s('user.delete_email.delete_email') }}
+    </div>
+</div>

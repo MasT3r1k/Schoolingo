@@ -81,10 +81,10 @@
                     </div>
                 </div>
                 <div class="contact-actions">
-                    <button class="btn btn--sm btn--ghost" title="Upravit">
+                    <button class="btn btn--sm btn--ghost" (click)="editEmail(email)" title="Upravit">
                         <i-tabler name="pencil"></i-tabler>
                     </button>
-                    <button class="btn btn--sm btn--danger-ghost" (click)="removeEmail($index)" title="Odstranit">
+                    <button class="btn btn--sm btn--danger-ghost" (click)="removeEmail(email.email)" title="Odstranit">
                         <i-tabler name="trash-x"></i-tabler>
                     </button>
                 </div>
@@ -118,7 +118,7 @@
                 </div>
             </div>
             @if (phones.length) {
-            <button class="btn btn--primary btn--sm">
+            <button class="btn btn--primary btn--sm" (click)="addEmptyPhone()">
                 <i-tabler name="plus"></i-tabler>
                 {{ l.s('buttons.add_phone') }}
             </button>
@@ -134,10 +134,10 @@
                     <span class="contact-value">{{ Utils.formatPhone(phone.number) }}</span>
                 </div>
                 <div class="contact-actions">
-                    <button class="btn btn--sm btn--ghost" title="Upravit">
+                    <button class="btn btn--sm btn--ghost" (click)="editPhone(phone)" title="Upravit">
                         <i-tabler name="pencil"></i-tabler>
                     </button>
-                    <button class="btn btn--sm btn--danger-ghost" title="Odstranit">
+                    <button class="btn btn--sm btn--danger-ghost" (click)="removePhone(phone.number)" title="Odstranit">
                         <i-tabler name="trash-x"></i-tabler>
                     </button>
                 </div>
@@ -151,7 +151,7 @@
                     <h4>{{ l.s('settings.phones.empty') }}</h4>
                     <p>{{ l.s('settings.phones.empty_description') }}</p>
                 </div>
-                <button class="btn btn--primary">
+                <button class="btn btn--primary" (click)="addEmptyPhone()">
                     <i-tabler name="plus"></i-tabler>
                     {{ l.s('buttons.add_phone') }}
                 </button>

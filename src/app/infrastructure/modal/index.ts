@@ -49,10 +49,10 @@ export class ModalManager {
         this.modals[name].dropdown = null
     }
 
-    public openModal(name: string, data?: any): void {
+    public openModal(name: string, data: any = null): void {
         if (!this.modals[name]) return
         this.modals[name].isOpen = true
-        if (data) this.modals[name].data = data;
+        this.modals[name].data = data;
     }
 
     public getModalData(name: string): any {

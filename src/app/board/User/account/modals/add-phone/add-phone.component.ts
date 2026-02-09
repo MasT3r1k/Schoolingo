@@ -10,81 +10,72 @@ import { Authentication } from '@Schoolingo/authentication';
 
 @Component({
   imports: [IconsModule, FormsModule, ReactiveFormsModule],
-  templateUrl: './add-email.component.html',
-  styleUrl: './add-email.component.css'
+  templateUrl: './add-phone.component.html',
+  styleUrl: './add-phone.component.css'
 })
-export class AddEmailComponent implements OnInit {
+export class AddPhoneComponent implements OnInit {
   public l = inject(Locale);
   public dropdownManager = inject(DropdownManager);
   private modalManager = inject(ModalManager);
   private http = inject(HttpClient);
   private auth = inject(Authentication);
 
-  public showSelect: null | 'type' = null;
-  public email_types = ['personal', 'school', 'work', 'other'];
-  public email_selected = 0;
-
-  public email = '';
-  public originalEmail: string | null = null;
+  public code = 420;
+  public number = '';
+  public originalNumber: string | null = null;
   public isEdit = false;
 
   ngOnInit(): void {
-    const data = this.modalManager.getModalData('add_email');
-    if (data && data.email) {
+    const data = this.modalManager.getModalData('add_phone');
+    if (data && data.number) {
       this.isEdit = true;
-      this.email = data.email;
-      this.originalEmail = data.email;
-      const typeIndex = this.email_types.indexOf(data.type);
-      if (typeIndex !== -1) {
-        this.email_selected = typeIndex;
-      }
-    }
-    if (data == null) {
-      this.resetForm();
+      this.code = data.code || 420;
+      this.number = data.number;
+      this.originalNumber = data.number;
     }
   }
 
-  public saveEmail(): void {
-    if (this.email == '') {
+  public savePhone(): void {
+    if (this.number == '') {
       return;
     }
 
     if (this.isEdit) {
-      this.http.put(`${Config.API_URL}/v1/user/email`, {
-        originalEmail: this.originalEmail,
-        email: this.email,
-        type: this.email_types[this.email_selected]
+      this.http.put(`${Config.API_URL}/v1/user/phone`, {
+        originalNumber: this.originalNumber,
+        code: this.code,
+        number: this.number
       }, { withCredentials: true }).subscribe({
         next: (response: any) => {
           if (response.success) {
-            this.modalManager.closeModal('add_email');
+            this.modalManager.closeModal('add_phone');
             this.auth.loadState();
             this.resetForm();
           }
         },
-        error: (error) => console.error('Error updating email', error)
+        error: (error) => console.error('Error updating phone', error)
       });
     } else {
-      this.http.post(`${Config.API_URL}/v1/user/email`, {
-        email: this.email,
-        type: this.email_types[this.email_selected]
+      this.http.post(`${Config.API_URL}/v1/user/phone`, {
+        code: this.code,
+        number: this.number
       }, { withCredentials: true }).subscribe({
         next: (response: any) => {
           if (response.success) {
-            this.modalManager.closeModal('add_email');
+            this.modalManager.closeModal('add_phone');
             this.auth.loadState();
             this.resetForm();
           }
         },
-        error: (error) => console.error('Error adding email', error)
+        error: (error) => console.error('Error adding phone', error)
       });
     }
   }
 
   private resetForm() {
-    this.email = '';
-    this.email_selected = 0;
+    this.code = 420;
+    this.number = '';
     this.isEdit = false;
-    this.originalEmail = null;
+    this.originalNumber = null;
   }
 }
