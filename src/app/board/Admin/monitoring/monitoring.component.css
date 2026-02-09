@@ -44,7 +44,7 @@
 .period-switcher button.active {
     background: var(--primary);
     color: #fff;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 
 .period-switcher button:hover:not(.active) {
@@ -71,7 +71,7 @@
 
 .kpi-card:hover {
     transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
 .kpi-title {
@@ -163,4 +163,126 @@ tr:hover td {
 .bg-glass {
     backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
+}
+
+/* Chart Styles */
+.chart-section {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    min-height: 400px;
+}
+
+.chart-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.chart-legend {
+    display: flex;
+    gap: 16px;
+    font-size: 13px;
+    color: var(--text-muted);
+}
+
+.legend-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+}
+
+.dot.primary {
+    background: var(--primary);
+}
+
+.chart-container {
+    flex: 1;
+    position: relative;
+    padding: 30px 10px 10px 10px;
+    /* Top for tooltip */
+    display: flex;
+    flex-direction: column;
+}
+
+.chart-bars {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    height: 100%;
+    width: 100%;
+    gap: 6px;
+}
+
+.chart-bar-wrapper {
+    flex: 1;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    /* Stack elements: Tooltip -> Bar -> Label */
+    justify-content: flex-end;
+    align-items: center;
+    position: relative;
+    transition: background-color 0.2s;
+    border-radius: 4px;
+}
+
+.chart-bar-wrapper:hover {
+    background: rgba(var(--primary-rgb), 0.05);
+}
+
+.chart-bar {
+    width: 100%;
+    background: var(--primary);
+    border-radius: 4px 4px 0 0;
+    transition: height 0.6s cubic-bezier(0.16, 1, 0.3, 1), background-color 0.2s;
+    min-height: 2px;
+    opacity: 0.8;
+}
+
+.chart-bar-wrapper:hover .chart-bar {
+    opacity: 1;
+    background: var(--primary-hover, var(--primary));
+    box-shadow: 0 0 10px rgba(var(--primary-rgb), 0.3);
+}
+
+.bar-label {
+    margin-top: 8px;
+    font-size: 10px;
+    color: var(--text-muted);
+    white-space: nowrap;
+    text-align: center;
+    width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    height: 20px;
+}
+
+.bar-value-tooltip {
+    margin-bottom: 8px;
+    /* Space between bar and tooltip */
+    background: var(--surface-3, #222);
+    color: #fff;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 12px;
+    font-weight: 600;
+    opacity: 0;
+    transition: opacity 0.2s, transform 0.2s;
+    pointer-events: none;
+    transform: translateY(5px);
+    white-space: nowrap;
+    z-index: 2;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.chart-bar-wrapper:hover .bar-value-tooltip {
+    opacity: 1;
+    transform: translateY(0);
 }

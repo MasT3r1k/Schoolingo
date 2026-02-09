@@ -1,59 +1,84 @@
 <div class="card monitoring-container">
     <div class="header">
-        <h1>Monitoring (Matomo)</h1>
+        <h1>{{ l.s('admin.monitoring.title') }}</h1>
         <div class="period-switcher">
-            <button [class.active]="period === 'day'" (click)="setPeriod('day')">Today</button>
-            <button [class.active]="period === 'week'" (click)="setPeriod('week')">Week</button>
-            <button [class.active]="period === 'month'" (click)="setPeriod('month')">Month</button>
+            <button [class.active]="period === 'day'" (click)="setPeriod('day')">{{ l.s('admin.monitoring.period.today')
+                }}</button>
+            <button [class.active]="period === 'week'" (click)="setPeriod('week')">{{
+                l.s('admin.monitoring.period.week') }}</button>
+            <button [class.active]="period === 'month'" (click)="setPeriod('month')">{{
+                l.s('admin.monitoring.period.month') }}</button>
         </div>
     </div>
 
     <div *ngIf="loading" class="loading-state">
         <div class="spinner"></div>
-        <span>Loading Analytics...</span>
+        <span>{{ l.s('admin.monitoring.loading') }}</span>
     </div>
-    
+
     <div *ngIf="error" class="error-state">
-        <p>{{ error }}</p>
-        <button (click)="fetchStats()">Retry</button>
+        <p>{{ l.s(error) }}</p>
+        <button (click)="fetchStats()">{{ l.s('admin.monitoring.retry') }}</button>
     </div>
 
     <div *ngIf="stats && !loading" class="dashboard-content">
+        <!-- Visits Chart -->
+        <div class="section-card chart-section mb">
+            <div class="chart-header">
+                <h2>{{ l.s('admin.monitoring.visits_overview') }}</h2>
+                <div class="chart-legend">
+                    <span class="legend-item">
+                        <span class="dot primary"></span> {{ l.s('admin.monitoring.visits') }}
+                    </span>
+                </div>
+            </div>
+            <div class="chart-container">
+                <div class="chart-bars">
+                    <div *ngFor="let point of chartData" class="chart-bar-wrapper"
+                        [title]="point.label + ': ' + point.value">
+                        <div class="bar-value-tooltip">{{ point.value }}</div>
+                        <div class="chart-bar" [style.height.%]="point.height"></div>
+                        <div class="bar-label">{{ point.label }}</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <!-- Key Metrics -->
         <div class="kpi-grid mb">
             <div class="kpi-card">
-                <div class="kpi-title">Visits</div>
+                <div class="kpi-title">{{ l.s('admin.monitoring.visits') }}</div>
                 <div class="kpi-value">{{ stats.nb_visits || 0 }}</div>
-                <div class="kpi-sub">Total sessions</div>
+                <div class="kpi-sub">{{ l.s('admin.monitoring.total_sessions') }}</div>
             </div>
             <div class="kpi-card">
-                <div class="kpi-title">Unique Visitors</div>
+                <div class="kpi-title">{{ l.s('admin.monitoring.unique_visitors') }}</div>
                 <div class="kpi-value">{{ stats.nb_uniq_visitors || 0 }}</div>
-                <div class="kpi-sub">Individual users</div>
+                <div class="kpi-sub">{{ l.s('admin.monitoring.individual_users') }}</div>
             </div>
             <div class="kpi-card">
-                <div class="kpi-title">Page Views</div>
+                <div class="kpi-title">{{ l.s('admin.monitoring.page_views') }}</div>
                 <div class="kpi-value">{{ stats.nb_actions || 0 }}</div>
-                <div class="kpi-sub">Total interactions</div>
+                <div class="kpi-sub">{{ l.s('admin.monitoring.total_interactions') }}</div>
             </div>
             <div class="kpi-card">
-                <div class="kpi-title">Avg. Duration</div>
+                <div class="kpi-title">{{ l.s('admin.monitoring.avg_duration') }}</div>
                 <div class="kpi-value">{{ stats.avg_time_on_site || 0 }}s</div>
-                <div class="kpi-sub">Per session</div>
+                <div class="kpi-sub">{{ l.s('admin.monitoring.per_session') }}</div>
             </div>
         </div>
 
         <!-- Top Pages Table -->
         <div class="section-card">
-            <h2>Most Visited Pages</h2>
+            <h2>{{ l.s('admin.monitoring.most_visited_pages') }}</h2>
             <div class="table-responsive">
                 <table>
                     <thead>
                         <tr>
-                            <th>Page Name</th>
-                            <th>Visits</th>
-                            <th>Unique</th>
-                            <th>Avg Time</th>
+                            <th>{{ l.s('admin.monitoring.table.page_name') }}</th>
+                            <th>{{ l.s('admin.monitoring.table.visits') }}</th>
+                            <th>{{ l.s('admin.monitoring.table.unique') }}</th>
+                            <th>{{ l.s('admin.monitoring.table.avg_time') }}</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -64,7 +89,7 @@
                             <td>{{ page.avg_time_on_page || 0 }}s</td>
                         </tr>
                         <tr *ngIf="topPages.length === 0">
-                            <td colspan="4" class="no-data">No pages recorded yet.</td>
+                            <td colspan="4" class="no-data">{{ l.s('admin.monitoring.no_data') }}</td>
                         </tr>
                     </tbody>
                 </table>

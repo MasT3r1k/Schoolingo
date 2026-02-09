@@ -2,6 +2,7 @@ import { Component, OnInit, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { CommonModule } from '@angular/common';
 import { Config } from '@Schoolingo/config'; 
+import { Locale } from '@Schoolingo/locale';
 
 @Component({
   selector: 'app-monitoring',
@@ -12,9 +13,11 @@ import { Config } from '@Schoolingo/config';
 })
 export class MonitoringComponent implements OnInit {
   private http = inject(HttpClient);
+  public l = inject(Locale);
   
   stats: any = null;
   topPages: any[] = [];
+  chartData: { label: string, value: number, height?: number }[] = [];
   loading = true;
   error: string | null = null;
   period: string = 'day';
@@ -34,11 +37,20 @@ export class MonitoringComponent implements OnInit {
         next: (data) => {
             this.stats = data;
             this.topPages = data.pages || [];
+            
+            // Process chart data
+            const rawChart = data.chartData || [];
+            const maxVal = Math.max(...rawChart.map((d: any) => d.value), 1); // Avoid division by zero
+            this.chartData = rawChart.map((d: any) => ({
+                ...d,
+                height: (d.value / maxVal) * 100
+            }));
+
             this.loading = false;
         },
         error: (err) => {
             console.error('Stats error', err);
-            this.error = 'Failed to load statistics.';
+            this.error = 'admin.monitoring.error';
             this.loading = false;
         }
     });
