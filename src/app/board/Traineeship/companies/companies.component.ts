@@ -18,6 +18,7 @@ import { Locale } from '@Schoolingo/locale';
 import { Theme } from '@Schoolingo/theme';
 import { Authentication } from '@Schoolingo/authentication';
 import { ModalManager } from '@Schoolingo/modal';
+import { DropdownManager } from '@Schoolingo/dropdown';
 import { editCompanyModalComponent } from './editCompanyModal/editCompanyModal';
 import { selectCompanyModalComponent } from './selectCompanyModal/selectCompanyModal';
 
@@ -39,6 +40,7 @@ export class CompaniesComponent implements OnInit {
   public auth = inject(Authentication);
   private router = inject(Router);
   public modalManager = inject(ModalManager);
+  public dropdownManager = inject(DropdownManager);
   public sanitizer = inject(DomSanitizer);
   public l = inject(Locale);
   public t = inject(Theme);
@@ -87,6 +89,17 @@ export class CompaniesComponent implements OnInit {
 
   public countryCodes = ['CZ'];
   public countryCode = 'CZ';
+
+  public getCountryLabel(code: string): string {
+    const countries: {[key: string]: string} = {
+      'CZ': '🇨🇿 Česko',
+      'SK': '🇸🇰 Slovensko',
+      'DE': '🇩🇪 Německo',
+      'FR': '🇫🇷 Francie',
+      'IT': '🇮🇹 Itálie'
+    };
+    return countries[code] || code;
+  }
 
   private listeners: Subscription[] = [];
   public companies = new BehaviorSubject<Data[][] | any>([]);

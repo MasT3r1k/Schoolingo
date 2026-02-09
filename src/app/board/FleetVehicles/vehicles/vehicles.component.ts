@@ -16,6 +16,8 @@ import moment from 'moment';
 import { Utils } from '@Schoolingo/utils';
 import { NewVehicleComponent } from '../modals/new-vehicle/new-vehicle.component';
 
+import { DropdownManager } from '@Schoolingo/dropdown';
+
 @Component({
   standalone: true,
   imports: [RouterLink, IconsModule, NgClass, NgStyle, FormsModule, TabsComponent],
@@ -27,6 +29,7 @@ export class FleetVehiclesComponent implements OnInit {
   public perm = inject(Permission);
   public fleet = inject(FleetVehicles);
   public modalManager = inject(ModalManager);
+  public dropdownManager = inject(DropdownManager);
   private http = inject(HttpClient);
   private router = inject(Router);
   private route = inject(ActivatedRoute);
@@ -55,6 +58,33 @@ export class FleetVehiclesComponent implements OnInit {
 
   public vehicleTypes: VehicleType[] = ['car', 'van', 'bus', 'minibus', 'truck', 'motorcycle'];
   public vehicleStatuses: VehicleStatus[] = ['available', 'reserved', 'maintenance', 'unavailable'];
+
+  public getFilterLabel(type: 'status' | 'type', value: any): string {
+    const options = this.getFilterOptions(type);
+    return options.find(o => o.value === value)?.label || value;
+  }
+
+  public getFilterOptions(type: 'status' | 'type'): {value: string, label: string}[] {
+    switch(type) {
+      case 'status':
+        return [
+          {value: 'all', label: this.l.s('fleetvehicles.all_statuses')},
+          ...this.vehicleStatuses.map(status => ({
+            value: status,
+            label: this.l.s(this.fleet.getVehicleStatusLabel(status))
+          }))
+        ];
+      case 'type':
+         return [
+          {value: 'all', label: this.l.s('fleetvehicles.all_types')},
+          ...this.vehicleTypes.map(type => ({
+            value: type,
+            label: this.l.s(this.fleet.getVehicleTypeLabel(type))
+          }))
+        ];
+      default: return [];
+    }
+  }
 
   ngOnInit(): void {
     this.loadVehicles();

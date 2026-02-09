@@ -6,8 +6,9 @@ import { HttpClient } from '@angular/common/http';
 import { Config } from '@Schoolingo/config';
 import { Utils } from '@Schoolingo/utils';
 import { Locale } from '@Schoolingo/locale';
+import { DropdownManager } from '@Schoolingo/dropdown';
 
-// Interfaces
+// ... interfaces ... (unchanged)
 export interface AuditLogEntry {
   id: number;
   action: 'login' | 'logout' | 'create' | 'update' | 'delete' | 'failed_login' | 'password_reset';
@@ -76,6 +77,7 @@ export class AuditlogComponent implements OnInit {
   private http = inject(HttpClient);
   public l = inject(Locale)
   public Utils = Utils;
+  public dropdownManager = inject(DropdownManager);
 
   // Loading state
   isLoading = false;
@@ -88,6 +90,42 @@ export class AuditlogComponent implements OnInit {
     userRole: 'all',
     timeRange: 'today'
   };
+
+  public getFilterLabel(type: 'action' | 'userRole' | 'timeRange', value: string): string {
+    const options = this.getFilterOptions(type);
+    return options.find(o => o.value === value)?.label || value;
+  }
+
+  public getFilterOptions(type: 'action' | 'userRole' | 'timeRange'): {value: string, label: string}[] {
+    switch(type) {
+      case 'action':
+        return [
+          {value: 'all', label: 'Všechny akce'},
+          {value: 'login', label: 'Přihlášení'},
+          {value: 'logout', label: 'Odhlášení'},
+          {value: 'create', label: 'Vytvoření'},
+          {value: 'update', label: 'Úprava'},
+          {value: 'delete', label: 'Smazání'},
+          {value: 'failed_login', label: 'Neúspěšné přihlášení'}
+        ];
+      case 'userRole':
+        return [
+          {value: 'all', label: 'Všichni uživatelé'},
+          {value: 'admin', label: 'Administrátoři'},
+          {value: 'teacher', label: 'Učitelé'},
+          {value: 'student', label: 'Studenti'},
+          {value: 'parent', label: 'Rodiče'}
+        ];
+      case 'timeRange':
+        return [
+          {value: 'today', label: 'Dnes'},
+          {value: 'week', label: 'Tento týden'},
+          {value: 'month', label: 'Tento měsíc'},
+          {value: 'custom', label: 'Vlastní rozsah'}
+        ];
+      default: return [];
+    }
+  }
 
   // Pagination
   currentPage = 1;

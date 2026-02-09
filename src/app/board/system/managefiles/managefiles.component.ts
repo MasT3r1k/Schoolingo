@@ -6,6 +6,7 @@ import { Utils } from '@Schoolingo/utils';
 import { HttpClient } from '@angular/common/http';
 import { Config } from '@Schoolingo/config';
 import { Documents } from '@Schoolingo/documents';
+import { DropdownManager } from '@Schoolingo/dropdown';
 
 interface FileItem {
   file_id: string;
@@ -38,6 +39,7 @@ interface StatsAPI {
 export class ManagefilesComponent implements OnInit {
     private http = inject(HttpClient);
     public documents = inject(Documents);
+    public dropdownManager = inject(DropdownManager);
     Math = Math;
 
     // Mock State
@@ -61,6 +63,21 @@ export class ManagefilesComponent implements OnInit {
         search: '',
         type: 'all'
     };
+
+    public getFilterLabel(type: 'type', value: string): string {
+        const options = this.getFilterOptions(type);
+        return options.find(o => o.value === value)?.label || value;
+    }
+
+    public getFilterOptions(type: 'type'): {value: string, label: string}[] {
+        return [
+            {value: 'all', label: 'Všechny typy'},
+            {value: 'image', label: 'Obrázky'},
+            {value: 'document', label: 'Dokumenty'},
+            {value: 'archive', label: 'Archivy'},
+            {value: 'other', label: 'Ostatní'}
+        ];
+    }
 
     ngOnInit() {
         this.loadFiles();

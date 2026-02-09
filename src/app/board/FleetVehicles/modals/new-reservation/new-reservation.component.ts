@@ -6,6 +6,8 @@ import { IconsModule } from '@Schoolingo/icons';
 import { Locale } from '@Schoolingo/locale';
 import { ModalManager } from '@Schoolingo/modal';
 
+import { DropdownManager } from '@Schoolingo/dropdown';
+
 @Component({
   imports: [IconsModule, FormsModule, ReactiveFormsModule],
   templateUrl: './new-reservation.component.html',
@@ -14,6 +16,7 @@ import { ModalManager } from '@Schoolingo/modal';
 export class NewReservationComponent {
   public l = inject(Locale);
   public modalManager = inject(ModalManager);
+  public dropdownManager = inject(DropdownManager);
   private http = inject(HttpClient);
 
   public vehicles: any[] = [];
@@ -50,5 +53,9 @@ export class NewReservationComponent {
         this.closeNewReservationForm();
       }
     });
+  }
+
+  public selectedType() {
+    return this.vehicles.find(v => v.vehicleId === this.newReservation.vehicleId)
   }
 }

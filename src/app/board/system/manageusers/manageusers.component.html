@@ -210,22 +210,51 @@
             </div>
 
             <div class="filter-group-inline">
-                <select class="form-select" [(ngModel)]="filters.role" (change)="onFilterChange()">
-                    <option value="all">Všechny role</option>
-                    <option value="admin">Administrátoři</option>
-                    <option value="teacher">Učitelé</option>
-                    <option value="student">Studenti</option>
-                    <option value="parent">Rodiče</option>
-                </select>
+                <div class="custom-select" id="filter-user-role" style="min-width: 180px;"
+                    (click)="$event.stopPropagation(); dropdownManager.selected_dropdown = dropdownManager.selected_dropdown == 'filter_user_role' ? '' : 'filter_user_role'">
+                    <div class="selected-value">
+                        <div class="row" style="gap: .5rem">
+                            {{ getFilterLabel('role', filters.role) }}
+                        </div>
+                        <i-tabler name="chevron-down"></i-tabler>
+                    </div>
+                    @if (dropdownManager.selected_dropdown == 'filter_user_role') {
+                    <div class="options-dropdown">
+                        <div class="list">
+                            @for (opt of getFilterOptions('role'); track $index) {
+                            <div class="option row" style="gap: .5rem"
+                                (click)="$event.stopPropagation(); dropdownManager.selected_dropdown = ''; filters.role = $any(opt.value); onFilterChange()">
+                                {{ opt.label }}
+                            </div>
+                            }
+                        </div>
+                    </div>
+                    }
+                </div>
             </div>
 
             <div class="filter-group-inline">
-                <select class="form-select" [(ngModel)]="filters.status" (change)="onFilterChange()">
-                    <option value="all">Všechny stavy</option>
-                    <option value="active">Aktivní</option>
-                    <option value="inactive">Neaktivní</option>
-                    <option value="suspended">Pozastavení</option>
-                </select>
+                <div class="custom-select" id="filter-user-status" style="min-width: 180px;"
+                    (click)="$event.stopPropagation(); dropdownManager.selected_dropdown = dropdownManager.selected_dropdown == 'filter_user_status' ? '' : 'filter_user_status'">
+                    <div class="selected-value">
+                        <div class="row" style="gap: .5rem">
+                            {{ getFilterLabel('status', filters.status) }}
+                        </div>
+                        <i-tabler name="chevron-down"></i-tabler>
+                    </div>
+                    @if (dropdownManager.selected_dropdown == 'filter_user_status') {
+                    <div class="options-dropdown">
+                        <div class="list">
+                            @for (opt of getFilterOptions('status'); track $index) {
+                            <div class="option row" style="gap: .5rem"
+                                (click)="$event.stopPropagation(); dropdownManager.selected_dropdown = ''; filters.status = $any(opt.value); onFilterChange()">
+                                {{ opt.label }}
+                            </div>
+                            }
+                        </div>
+                    </div>
+                    }
+                </div>
             </div>
         </div>
 
@@ -440,12 +469,29 @@
                         <label class="form-label" for="role">
                             Role <span class="required">*</span>
                         </label>
-                        <select id="role" class="form-select" [(ngModel)]="newUser.role" name="role">
-                            <option value="admin">Administrátor</option>
-                            <option value="teacher">Učitel</option>
-                            <option value="student">Student</option>
-                            <option value="parent">Rodič</option>
-                        </select>
+                        <div class="custom-select" id="role" style="width: 100%"
+                            (click)="$event.stopPropagation(); dropdownManager.selected_dropdown = dropdownManager.selected_dropdown == 'new_user_role' ? '' : 'new_user_role'">
+                            <div class="selected-value">
+                                <div class="row" style="gap: .5rem">
+                                    {{ getRoleText(newUser.role) }}
+                                </div>
+                                <i-tabler name="chevron-down"></i-tabler>
+                            </div>
+                            @if (dropdownManager.selected_dropdown == 'new_user_role') {
+                            <div class="options-dropdown">
+                                <div class="list">
+                                    @for (opt of getFilterOptions('role'); track $index) {
+                                    @if (opt.value !== 'all') {
+                                    <div class="option row" style="gap: .5rem"
+                                        (click)="$event.stopPropagation(); dropdownManager.selected_dropdown = ''; newUser.role = $any(opt.value)">
+                                        {{ opt.label }}
+                                    </div>
+                                    }
+                                    }
+                                </div>
+                            </div>
+                            }
+                        </div>
                     </div>
 
                     <!-- Password -->

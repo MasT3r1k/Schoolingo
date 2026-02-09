@@ -1,14 +1,31 @@
 <div class="form-body">
     <div class="form-group">
         <label>{{ l.s('fleetvehicles.vehicle') }} *</label>
-        <select [(ngModel)]="newReservation.vehicleId" required>
-            <option value="0" disabled>{{ l.s('fleetvehicles.select_vehicle') }}</option>
-            @for (vehicle of vehicles; track vehicle.vehicleId) {
-            @if (vehicle.status === 'available') {
-            <option [ngValue]="vehicle.vehicleId">{{ vehicle.name }} ({{ vehicle.licensePlate }})</option>
+        <div class="custom-select" id="reservation-vehicle"
+            (click)="$event.stopPropagation(); dropdownManager.selected_dropdown = dropdownManager.selected_dropdown == 'reservation_vehicle' ? '' : 'reservation_vehicle'">
+            <div class="selected-value">
+                <div class="row" style="gap: .5rem">
+                    @let selectedVehicle = selectedType();
+                    {{ selectedVehicle ? (selectedVehicle.name + ' (' + selectedVehicle.licensePlate + ')') :
+                    l.s('fleetvehicles.select_vehicle') }}
+                </div>
+                <i-tabler name="chevron-down"></i-tabler>
+            </div>
+            @if (dropdownManager.selected_dropdown == 'reservation_vehicle') {
+            <div class="options-dropdown">
+                <div class="list">
+                    @for (vehicle of vehicles; track vehicle.vehicleId) {
+                    @if (vehicle.status === 'available') {
+                    <div class="option row" style="gap: .5rem"
+                        (click)="$event.stopPropagation(); dropdownManager.selected_dropdown = ''; newReservation.vehicleId = vehicle.vehicleId">
+                        {{ vehicle.name }} ({{ vehicle.licensePlate }})
+                    </div>
+                    }
+                    }
+                </div>
+            </div>
             }
-            }
-        </select>
+        </div>
     </div>
     <div class="form-row">
         <div class="form-group">
@@ -22,7 +39,8 @@
     </div>
     <div class="form-group">
         <label>{{ l.s('fleetvehicles.purpose') }} *</label>
-        <input type="text" [(ngModel)]="newReservation.purpose" [placeholder]="l.s('fleetvehicles.purpose_placeholder')" required />
+        <input type="text" [(ngModel)]="newReservation.purpose" [placeholder]="l.s('fleetvehicles.purpose_placeholder')"
+            required />
     </div>
     <div class="form-group">
         <label>{{ l.s('fleetvehicles.destination') }}</label>

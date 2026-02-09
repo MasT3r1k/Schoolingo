@@ -11,6 +11,8 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import {CdkDrag, CdkDropList, CdkDropListGroup, CdkDragDrop, moveItemInArray, transferArrayItem} from '@angular/cdk/drag-drop';
 import { EditLessonComponent } from '../../edit-lesson/edit-lesson.component';
 
+import { DropdownManager } from '@Schoolingo/dropdown';
+
 @Component({
   selector: 'app-builder',
   imports: [IconsModule, FormsModule, ReactiveFormsModule, CdkDrag, CdkDropList, CdkDropListGroup],
@@ -21,6 +23,7 @@ export class BuilderComponent implements OnInit {
   public l = inject(Locale);
   public scheduleBuilder = inject(ScheduleBuilder);
   private http = inject(HttpClient);
+  public dropdownManager = inject(DropdownManager);
   private modalManager = inject(ModalManager);
   public selected_class = 0;
 

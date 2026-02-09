@@ -85,14 +85,28 @@
                 <div class="toolbar-left">
                     <div class="input-group">
                         <label>{{ l.s('schedule.builder.class') }}</label>
-                        <div class="custom-select-wrapper">
-                            <select [(ngModel)]="this.selected_class" (change)="selectClass(this.selected_class)">
-                                <option value="" disabled selected>{{ l.s('schedule.builder.select_class') }}</option>
-                                @for(class of scheduleBuilder.classes; track $index) {
-                                <option [value]="class.classId">{{ class.className }}</option>
-                                }
-                            </select>
-                            <i-tabler name="chevron-down" class="select-icon"></i-tabler>
+                        <div class="custom-select" id="class-select" style="min-width: 200px;"
+                            (click)="$event.stopPropagation(); dropdownManager.selected_dropdown = dropdownManager.selected_dropdown == 'class_select' ? '' : 'class_select'">
+                            <div class="selected-value">
+                                <div class="row" style="gap: .5rem">
+                                    {{ selected_class && selected_class !== 0 ? (scheduleBuilder.classes?.find(c =>
+                                    c.classId == selected_class)?.className || l.s('schedule.builder.select_class')) :
+                                    l.s('schedule.builder.select_class') }}
+                                </div>
+                                <i-tabler name="chevron-down"></i-tabler>
+                            </div>
+                            @if (dropdownManager.selected_dropdown == 'class_select') {
+                            <div class="options-dropdown">
+                                <div class="list">
+                                    @for (class of scheduleBuilder.classes; track $index) {
+                                    <div class="option row" style="gap: .5rem"
+                                        (click)="$event.stopPropagation(); dropdownManager.selected_dropdown = ''; selected_class = class.classId; selectClass(selected_class)">
+                                        {{ class.className }}
+                                    </div>
+                                    }
+                                </div>
+                            </div>
+                            }
                         </div>
                     </div>
                     <div class="divider"></div>

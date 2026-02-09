@@ -108,6 +108,15 @@ export class StudentsComponent implements OnInit {
   showAddStudentModal = false;
   addStudentTab: 'manual' | 'ldap' | 'excel' = 'manual';
   
+  newStudent = {
+    firstName: '',
+    lastName: '',
+    email: '',
+    classId: null as number | null,
+    scopeId: null as number | null,
+    birthday: ''
+  };
+  
   // Detail Modals
   showGradesModal = false;
   showAbsenceModal = false;
@@ -130,6 +139,36 @@ export class StudentsComponent implements OnInit {
   availableClasses: { id: number; name: string }[] = [];
   availableScopes: { id: number; name: string }[] = [];
   years = [1, 2, 3, 4];
+
+  public getFilterLabel(type: 'status' | 'class' | 'scope', value: any): string {
+    if (value === null || value === 'all') {
+      switch(type) {
+        case 'status': return 'Všichni';
+        case 'class': return 'Všechny třídy';
+        case 'scope': return 'Všechny obory';
+      }
+    }
+    
+    switch(type) {
+      case 'status':
+        const statusMap: Record<string, string> = { 'active': 'Aktivní', 'former': 'Bývalí', 'suspended': 'Pozastavení' };
+        return statusMap[value] || value;
+      case 'class':
+        return this.availableClasses.find(c => c.id === value)?.name || 'Neznámá třída';
+      case 'scope':
+        return this.availableScopes.find(s => s.id === value)?.name || 'Neznámý obor';
+    }
+    return value;
+  }
+
+  public getFilterOptions(type: 'status'): {value: string, label: string}[] {
+    return [
+      {value: 'all', label: 'Všichni'},
+      {value: 'active', label: 'Aktivní'},
+      {value: 'former', label: 'Bývalí'},
+      {value: 'suspended', label: 'Pozastavení'}
+    ];
+  }
   
   // Pagination
   currentPage = 1;
@@ -253,6 +292,14 @@ export class StudentsComponent implements OnInit {
     if (page >= 1 && page <= this.totalPages) {
       this.loadStudents(page);
     }
+  }
+
+  public selectedClass() {
+    return (this.newStudent.classId ? (this.availableClasses.find(c => c.id === this.newStudent.classId)?.name || 'Vyberte třídu') : 'Vyberte třídu')
+  }
+
+  public selectedScope() {
+    return (this.newStudent.scopeId ? (this.availableScopes.find(s => s.id === this.newStudent.scopeId)?.name || 'Vyberte obor') : 'Vyberte obor')
   }
 
   // Datalist-style pagination helpers

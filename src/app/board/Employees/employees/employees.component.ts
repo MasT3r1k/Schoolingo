@@ -147,6 +147,37 @@ export class EmployeesComponent implements OnInit, OnDestroy {
   vacationBalance: any = { total: 0, used: 0, remaining: 0 };
   currentYear = new Date().getFullYear();
 
+  public getFilterLabel(type: 'attendancePeriod' | 'bonusStatus' | 'bonusType', value: any): string {
+    const options = this.getFilterOptions(type);
+    return options.find(o => o.value === value)?.label || value;
+  }
+
+  public getFilterOptions(type: 'attendancePeriod' | 'bonusStatus' | 'bonusType'): {value: string, label: string}[] {
+    switch(type) {
+      case 'attendancePeriod':
+        return [
+          {value: 'week', label: 'Tento týden'},
+          {value: 'month', label: 'Tento měsíc'},
+          {value: 'custom', label: 'Vlastní'}
+        ];
+      case 'bonusStatus':
+        return [
+          {value: 'all', label: 'Všechny'},
+          {value: 'paid', label: 'Vyplacené'},
+          {value: 'unpaid', label: 'Nevyplacené'}
+        ];
+      case 'bonusType':
+        return [
+          {value: 'all', label: 'Všechny typy'},
+          {value: 'performance', label: 'Výkon'},
+          {value: 'project', label: 'Projekt'},
+          {value: 'holiday', label: 'Svátky'},
+          {value: 'other', label: 'Ostatní'}
+        ];
+      default: return [];
+    }
+  }
+
   ngOnInit() {
     this.loadEmployees();
     this.checkAttendanceStatus();

@@ -38,34 +38,87 @@
                         <!-- Status Filter -->
                         <div class="filter-group">
                             <label>Status studenta</label>
-                            <select [(ngModel)]="filters.status" (change)="onFilterChange()" class="form-select">
-                                <option value="all">Všichni</option>
-                                <option value="active">Aktivní</option>
-                                <option value="former">Bývalí</option>
-                                <option value="suspended">Pozastavení</option>
-                            </select>
+                            <div class="custom-select" id="filter-status" style="width: 100%"
+                                (click)="$event.stopPropagation(); dropdownManager.selected_dropdown = dropdownManager.selected_dropdown == 'filter_status' ? '' : 'filter_status'">
+                                <div class="selected-value">
+                                    <div class="row" style="gap: .5rem">
+                                        {{ getFilterLabel('status', filters.status) }}
+                                    </div>
+                                    <i-tabler name="chevron-down"></i-tabler>
+                                </div>
+                                @if (dropdownManager.selected_dropdown == 'filter_status') {
+                                <div class="options-dropdown">
+                                    <div class="list">
+                                        @for (opt of getFilterOptions('status'); track $index) {
+                                        <div class="option row" style="gap: .5rem"
+                                            (click)="$event.stopPropagation(); dropdownManager.selected_dropdown = ''; filters.status = $any(opt.value); onFilterChange()">
+                                            {{ opt.label }}
+                                        </div>
+                                        }
+                                    </div>
+                                </div>
+                                }
+                            </div>
                         </div>
 
                         <!-- Class Filter -->
                         <div class="filter-group">
                             <label>Třída</label>
-                            <select [(ngModel)]="filters.classId" (change)="onFilterChange()" class="form-select">
-                                <option [ngValue]="null">Všechny třídy</option>
-                                @for (cls of availableClasses; track cls.id) {
-                                <option [ngValue]="cls.id">{{ cls.name }}</option>
+                            <div class="custom-select" id="filter-class" style="width: 100%"
+                                (click)="$event.stopPropagation(); dropdownManager.selected_dropdown = dropdownManager.selected_dropdown == 'filter_class' ? '' : 'filter_class'">
+                                <div class="selected-value">
+                                    <div class="row" style="gap: .5rem">
+                                        {{ getFilterLabel('class', filters.classId) }}
+                                    </div>
+                                    <i-tabler name="chevron-down"></i-tabler>
+                                </div>
+                                @if (dropdownManager.selected_dropdown == 'filter_class') {
+                                <div class="options-dropdown">
+                                    <div class="list">
+                                        <div class="option row" style="gap: .5rem"
+                                            (click)="$event.stopPropagation(); dropdownManager.selected_dropdown = ''; filters.classId = null; onFilterChange()">
+                                            Všechny třídy
+                                        </div>
+                                        @for (cls of availableClasses; track cls.id) {
+                                        <div class="option row" style="gap: .5rem"
+                                            (click)="$event.stopPropagation(); dropdownManager.selected_dropdown = ''; filters.classId = cls.id; onFilterChange()">
+                                            {{ cls.name }}
+                                        </div>
+                                        }
+                                    </div>
+                                </div>
                                 }
-                            </select>
+                            </div>
                         </div>
 
                         <!-- Field of Study Filter -->
                         <div class="filter-group">
                             <label>Obor</label>
-                            <select [(ngModel)]="filters.scopeId" (change)="onFilterChange()" class="form-select">
-                                <option [ngValue]="null">Všechny obory</option>
-                                @for (scope of availableScopes; track scope.id) {
-                                <option [ngValue]="scope.id">{{ scope.name }}</option>
+                            <div class="custom-select" id="filter-scope" style="width: 100%"
+                                (click)="$event.stopPropagation(); dropdownManager.selected_dropdown = dropdownManager.selected_dropdown == 'filter_scope' ? '' : 'filter_scope'">
+                                <div class="selected-value">
+                                    <div class="row" style="gap: .5rem">
+                                        {{ getFilterLabel('scope', filters.scopeId) }}
+                                    </div>
+                                    <i-tabler name="chevron-down"></i-tabler>
+                                </div>
+                                @if (dropdownManager.selected_dropdown == 'filter_scope') {
+                                <div class="options-dropdown">
+                                    <div class="list">
+                                        <div class="option row" style="gap: .5rem"
+                                            (click)="$event.stopPropagation(); dropdownManager.selected_dropdown = ''; filters.scopeId = null; onFilterChange()">
+                                            Všechny obory
+                                        </div>
+                                        @for (scope of availableScopes; track scope.id) {
+                                        <div class="option row" style="gap: .5rem"
+                                            (click)="$event.stopPropagation(); dropdownManager.selected_dropdown = ''; filters.scopeId = scope.id; onFilterChange()">
+                                            {{ scope.name }}
+                                        </div>
+                                        }
+                                    </div>
+                                </div>
                                 }
-                            </select>
+                            </div>
                         </div>
 
                         <!-- Grade Average Range -->
@@ -276,37 +329,67 @@
             <div class="form-grid">
                 <div class="form-group">
                     <label>Jméno</label>
-                    <input type="text" placeholder="Jan">
+                    <input type="text" placeholder="Jan" [(ngModel)]="newStudent.firstName">
                 </div>
                 <div class="form-group">
                     <label>Příjmení</label>
-                    <input type="text" placeholder="Novák">
+                    <input type="text" placeholder="Novák" [(ngModel)]="newStudent.lastName">
                 </div>
                 <div class="form-group">
                     <label>Email</label>
-                    <input type="email" placeholder="jan.novak@skola.cz">
+                    <input type="email" placeholder="jan.novak@skola.cz" [(ngModel)]="newStudent.email">
                 </div>
                 <div class="form-group">
                     <label>Třída</label>
-                    <select>
-                        <option value="">Vyberte třídu</option>
-                        @for (className of availableClasses; track className) {
-                        <option [value]="className">{{ className }}</option>
+                    <div class="custom-select" id="new-student-class" style="width: 100%"
+                        (click)="$event.stopPropagation(); dropdownManager.selected_dropdown = dropdownManager.selected_dropdown == 'new_student_class' ? '' : 'new_student_class'">
+                        <div class="selected-value">
+                            <div class="row" style="gap: .5rem">
+                                {{ selectedClass() }}
+                            </div>
+                            <i-tabler name="chevron-down"></i-tabler>
+                        </div>
+                        @if (dropdownManager.selected_dropdown == 'new_student_class') {
+                        <div class="options-dropdown">
+                            <div class="list">
+                                @for (cls of availableClasses; track cls.id) {
+                                <div class="option row" style="gap: .5rem"
+                                    (click)="$event.stopPropagation(); dropdownManager.selected_dropdown = ''; newStudent.classId = cls.id">
+                                    {{ cls.name }}
+                                </div>
+                                }
+                            </div>
+                        </div>
                         }
-                    </select>
+                    </div>
                 </div>
                 <div class="form-group">
                     <label>Obor</label>
-                    <select>
-                        <option value="">Vyberte obor</option>
-                        @for (field of availableScopes; track field) {
-                        <option [value]="field.id">{{ field.name }}</option>
+                    <div class="custom-select" id="new-student-scope" style="width: 100%"
+                        (click)="$event.stopPropagation(); dropdownManager.selected_dropdown = dropdownManager.selected_dropdown == 'new_student_scope' ? '' : 'new_student_scope'">
+                        <div class="selected-value">
+                            <div class="row" style="gap: .5rem">
+                                {{ selectedScope() }}
+                            </div>
+                            <i-tabler name="chevron-down"></i-tabler>
+                        </div>
+                        @if (dropdownManager.selected_dropdown == 'new_student_scope') {
+                        <div class="options-dropdown">
+                            <div class="list">
+                                @for (scope of availableScopes; track scope.id) {
+                                <div class="option row" style="gap: .5rem"
+                                    (click)="$event.stopPropagation(); dropdownManager.selected_dropdown = ''; newStudent.scopeId = scope.id">
+                                    {{ scope.name }}
+                                </div>
+                                }
+                            </div>
+                        </div>
                         }
-                    </select>
+                    </div>
                 </div>
                 <div class="form-group">
                     <label>Datum narození</label>
-                    <input type="date">
+                    <input type="date" [(ngModel)]="newStudent.birthday">
                 </div>
             </div>
             }

@@ -510,4 +510,8 @@ export class SettingsComponent implements OnInit {
       console.log('Email settings updated', data);
     });
   }
+
+  public getSelectedTranslation() {
+    return this.get_translate_subjects().find(s => s[0] == this.translate_subject)
+  }
 }

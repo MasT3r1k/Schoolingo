@@ -541,13 +541,41 @@
             <i-tabler name="flag" style="width: 16px; height: 16px;"></i-tabler>
             {{ l.s("traineeship.country") }}
           </label>
-          <select [(ngModel)]="countryCode" id="country" class="form-select">
-            <option value="CZ">🇨🇿 Česko</option>
-            <option value="SK">🇸🇰 Slovensko</option>
-            <option value="DE">🇩🇪 Německo</option>
-            <option value="FR">🇫🇷 Francie</option>
-            <option value="IT">🇮🇹 Itálie</option>
-          </select>
+          <div class="custom-select" id="countryCodeSelect"
+            (click)="$event.stopPropagation(); dropdownManager.selected_dropdown = dropdownManager.selected_dropdown == 'countryCodeSelect' ? '' : 'countryCodeSelect'">
+            <div class="selected-value">
+              <div class="row" style="gap: .5rem">
+                {{ getCountryLabel(countryCode) }}
+              </div>
+              <i-tabler name="chevron-down"></i-tabler>
+            </div>
+            @if (dropdownManager.selected_dropdown == 'countryCodeSelect') {
+            <div class="options-dropdown">
+              <div class="list">
+                <div class="option row" style="gap: .5rem"
+                  (click)="$event.stopPropagation(); dropdownManager.selected_dropdown = ''; countryCode = 'CZ'">
+                  🇨🇿 Česko
+                </div>
+                <div class="option row" style="gap: .5rem"
+                  (click)="$event.stopPropagation(); dropdownManager.selected_dropdown = ''; countryCode = 'SK'">
+                  🇸🇰 Slovensko
+                </div>
+                <div class="option row" style="gap: .5rem"
+                  (click)="$event.stopPropagation(); dropdownManager.selected_dropdown = ''; countryCode = 'DE'">
+                  🇩🇪 Německo
+                </div>
+                <div class="option row" style="gap: .5rem"
+                  (click)="$event.stopPropagation(); dropdownManager.selected_dropdown = ''; countryCode = 'FR'">
+                  🇫🇷 Francie
+                </div>
+                <div class="option row" style="gap: .5rem"
+                  (click)="$event.stopPropagation(); dropdownManager.selected_dropdown = ''; countryCode = 'IT'">
+                  🇮🇹 Itálie
+                </div>
+              </div>
+            </div>
+            }
+          </div>
         </div>
 
         <div class="form-group">

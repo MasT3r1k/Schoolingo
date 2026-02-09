@@ -30,12 +30,31 @@
 
     <div class="form-group">
         <label>Typ</label>
-        <select class="form-select" [(ngModel)]="attendance.type">
-            <option value="regular">Běžná</option>
-            @for (type of types; track type.id) {
-            <option [value]="type.id">{{ type.name }}</option>
+        <div class="custom-select" id="attendance-type"
+            (click)="$event.stopPropagation(); dropdownManager.selected_dropdown = dropdownManager.selected_dropdown == 'attendance_type' ? '' : 'attendance_type'">
+            <div class="selected-value">
+                <div class="row" style="gap: .5rem">
+                    {{ attendance.type === 'regular' ? 'Běžná' : (selectedType() ? selectedType().name : attendance.type) }}
+                </div>
+                <i-tabler name="chevron-down"></i-tabler>
+            </div>
+            @if (dropdownManager.selected_dropdown == 'attendance_type') {
+            <div class="options-dropdown">
+                <div class="list">
+                    <div class="option row" style="gap: .5rem"
+                        (click)="$event.stopPropagation(); dropdownManager.selected_dropdown = ''; attendance.type = 'regular'">
+                        Běžná
+                    </div>
+                    @for (type of types; track type.id) {
+                    <div class="option row" style="gap: .5rem"
+                        (click)="$event.stopPropagation(); dropdownManager.selected_dropdown = ''; attendance.type = type.id">
+                        {{ type.name }}
+                    </div>
+                    }
+                </div>
+            </div>
             }
-        </select>
+        </div>
     </div>
 
     <div class="form-group">

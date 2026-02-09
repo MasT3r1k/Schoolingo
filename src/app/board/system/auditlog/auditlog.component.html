@@ -24,34 +24,75 @@
             </div>
 
             <div class="filter-group-inline">
-                <select class="form-select" [(ngModel)]="filters.action" (change)="onFilterChange()">
-                    <option value="all">Všechny akce</option>
-                    <option value="login">Přihlášení</option>
-                    <option value="logout">Odhlášení</option>
-                    <option value="create">Vytvoření</option>
-                    <option value="update">Úprava</option>
-                    <option value="delete">Smazání</option>
-                    <option value="failed_login">Neúspěšné přihlášení</option>
-                </select>
+                <div class="custom-select" id="filter-action" style="min-width: 180px;"
+                    (click)="$event.stopPropagation(); dropdownManager.selected_dropdown = dropdownManager.selected_dropdown == 'filter_action' ? '' : 'filter_action'">
+                    <div class="selected-value">
+                        <div class="row" style="gap: .5rem">
+                            {{ getFilterLabel('action', filters.action) }}
+                        </div>
+                        <i-tabler name="chevron-down"></i-tabler>
+                    </div>
+                    @if (dropdownManager.selected_dropdown == 'filter_action') {
+                    <div class="options-dropdown">
+                        <div class="list">
+                            @for (opt of getFilterOptions('action'); track $index) {
+                            <div class="option row" style="gap: .5rem"
+                                (click)="$event.stopPropagation(); dropdownManager.selected_dropdown = ''; filters.action = $any(opt.value); onFilterChange()">
+                                {{ opt.label }}
+                            </div>
+                            }
+                        </div>
+                    </div>
+                    }
+                </div>
             </div>
 
             <div class="filter-group-inline">
-                <select class="form-select" [(ngModel)]="filters.userRole" (change)="onFilterChange()">
-                    <option value="all">Všichni uživatelé</option>
-                    <option value="admin">Administrátoři</option>
-                    <option value="teacher">Učitelé</option>
-                    <option value="student">Studenti</option>
-                    <option value="parent">Rodiče</option>
-                </select>
+                <div class="custom-select" id="filter-role" style="min-width: 180px;"
+                    (click)="$event.stopPropagation(); dropdownManager.selected_dropdown = dropdownManager.selected_dropdown == 'filter_role' ? '' : 'filter_role'">
+                    <div class="selected-value">
+                        <div class="row" style="gap: .5rem">
+                            {{ getFilterLabel('userRole', filters.userRole) }}
+                        </div>
+                        <i-tabler name="chevron-down"></i-tabler>
+                    </div>
+                    @if (dropdownManager.selected_dropdown == 'filter_role') {
+                    <div class="options-dropdown">
+                        <div class="list">
+                            @for (opt of getFilterOptions('userRole'); track $index) {
+                            <div class="option row" style="gap: .5rem"
+                                (click)="$event.stopPropagation(); dropdownManager.selected_dropdown = ''; filters.userRole = $any(opt.value); onFilterChange()">
+                                {{ opt.label }}
+                            </div>
+                            }
+                        </div>
+                    </div>
+                    }
+                </div>
             </div>
 
             <div class="filter-group-inline">
-                <select class="form-select" [(ngModel)]="filters.timeRange" (change)="onFilterChange()">
-                    <option value="today">Dnes</option>
-                    <option value="week">Tento týden</option>
-                    <option value="month">Tento měsíc</option>
-                    <option value="custom">Vlastní rozsah</option>
-                </select>
+                <div class="custom-select" id="filter-time" style="min-width: 180px;"
+                    (click)="$event.stopPropagation(); dropdownManager.selected_dropdown = dropdownManager.selected_dropdown == 'filter_time' ? '' : 'filter_time'">
+                    <div class="selected-value">
+                        <div class="row" style="gap: .5rem">
+                            {{ getFilterLabel('timeRange', filters.timeRange) }}
+                        </div>
+                        <i-tabler name="chevron-down"></i-tabler>
+                    </div>
+                    @if (dropdownManager.selected_dropdown == 'filter_time') {
+                    <div class="options-dropdown">
+                        <div class="list">
+                            @for (opt of getFilterOptions('timeRange'); track $index) {
+                            <div class="option row" style="gap: .5rem"
+                                (click)="$event.stopPropagation(); dropdownManager.selected_dropdown = ''; filters.timeRange = $any(opt.value); onFilterChange()">
+                                {{ opt.label }}
+                            </div>
+                            }
+                        </div>
+                    </div>
+                    }
+                </div>
             </div>
         </div>
 

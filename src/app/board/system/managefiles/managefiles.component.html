@@ -45,13 +45,27 @@
             </div>
 
             <div class="filter-group-inline">
-                <select class="form-select" [(ngModel)]="filters.type" (change)="onFilterChange()">
-                    <option value="all">Všechny typy</option>
-                    <option value="image">Obrázky</option>
-                    <option value="document">Dokumenty</option>
-                    <option value="archive">Archivy</option>
-                    <option value="other">Ostatní</option>
-                </select>
+                <div class="custom-select" id="filter-type" style="min-width: 150px;"
+                    (click)="$event.stopPropagation(); dropdownManager.selected_dropdown = dropdownManager.selected_dropdown == 'filter_type' ? '' : 'filter_type'">
+                    <div class="selected-value">
+                        <div class="row" style="gap: .5rem">
+                            {{ getFilterLabel('type', filters.type) }}
+                        </div>
+                        <i-tabler name="chevron-down"></i-tabler>
+                    </div>
+                    @if (dropdownManager.selected_dropdown == 'filter_type') {
+                    <div class="options-dropdown">
+                        <div class="list">
+                            @for (opt of getFilterOptions('type'); track $index) {
+                            <div class="option row" style="gap: .5rem"
+                                (click)="$event.stopPropagation(); dropdownManager.selected_dropdown = ''; filters.type = opt.value; onFilterChange()">
+                                {{ opt.label }}
+                            </div>
+                            }
+                        </div>
+                    </div>
+                    }
+                </div>
             </div>
         </div>
 

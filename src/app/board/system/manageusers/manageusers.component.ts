@@ -82,6 +82,32 @@ export class ManageusersComponent implements OnInit {
     status: 'all'
   };
 
+  public getFilterLabel(type: 'role' | 'status', value: string): string {
+    const options = this.getFilterOptions(type);
+    return options.find(o => o.value === value)?.label || value;
+  }
+
+  public getFilterOptions(type: 'role' | 'status'): {value: string, label: string}[] {
+    switch(type) {
+      case 'role':
+        return [
+          {value: 'all', label: 'Všechny role'},
+          {value: 'admin', label: 'Administrátoři'},
+          {value: 'teacher', label: 'Učitelé'},
+          {value: 'student', label: 'Studenti'},
+          {value: 'parent', label: 'Rodiče'}
+        ];
+      case 'status':
+        return [
+          {value: 'all', label: 'Všechny stavy'},
+          {value: 'active', label: 'Aktivní'},
+          {value: 'inactive', label: 'Neaktivní'},
+          {value: 'suspended', label: 'Pozastavení'}
+        ];
+      default: return [];
+    }
+  }
+
   // Pagination
   currentPage = 1;
   totalItems = 0;

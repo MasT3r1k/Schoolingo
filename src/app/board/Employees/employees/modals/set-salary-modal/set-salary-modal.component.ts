@@ -1,4 +1,5 @@
 import { Component, inject } from '@angular/core';
+import { DropdownManager } from '@Schoolingo/dropdown';
 import { HttpClient } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
 import { Config } from '@Schoolingo/config';
@@ -15,6 +16,7 @@ import { ModalManager } from '@Schoolingo/modal';
 export class SetSalaryModalComponent {
   private http = inject(HttpClient);
   public modalManager = inject(ModalManager);
+  public dropdownManager = inject(DropdownManager);
 
   public newSalary = {
     personId: 0,

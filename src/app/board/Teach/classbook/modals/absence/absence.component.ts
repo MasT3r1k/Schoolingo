@@ -1,6 +1,8 @@
 import { NgClass } from '@angular/common';
 import { Component, inject } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { DropdownManager } from '@Schoolingo/dropdown';
+import { IconsModule } from '@Schoolingo/icons';
 import { absence, AbsenceType } from '@Schoolingo/absence';
 import { Classbook } from '@Schoolingo/classbook';
 import { Locale } from '@Schoolingo/locale';
@@ -10,7 +12,7 @@ import moment from 'moment';
 
 @Component({
   standalone: true,
-  imports: [NgClass, FormsModule, ReactiveFormsModule],
+  imports: [NgClass, FormsModule, ReactiveFormsModule, IconsModule],
   templateUrl: './absence.component.html',
   styleUrl: './absence.component.css'
 })
@@ -22,6 +24,7 @@ export class ClassbookAbsenceComponent {
   public AbsenceType = AbsenceType;
   public classbook = inject(Classbook);
   public absenceConfig = absence;
+  public dropdownManager = inject(DropdownManager);
 
   public lesson = this.classbook.classbook;
   public errors: { [key: string]: string } = {};

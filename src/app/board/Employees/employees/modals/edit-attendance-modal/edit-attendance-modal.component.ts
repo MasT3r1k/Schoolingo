@@ -1,5 +1,6 @@
 import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { DropdownManager } from '@Schoolingo/dropdown';
 import { FormsModule } from '@angular/forms';
 import { ModalManager } from '@Schoolingo/modal';
 import { IconsModule } from '@Schoolingo/icons';
@@ -17,6 +18,7 @@ import { of } from 'rxjs';
 })
 export class EditAttendanceModalComponent {
   modalManager = inject(ModalManager);
+  dropdownManager = inject(DropdownManager);
   http = inject(HttpClient);
   
   data: any;
@@ -105,6 +107,10 @@ export class EditAttendanceModalComponent {
 
   close() {
     this.modalManager.closeModal('edit_attendance');
+  }
+
+  public selectedType() {
+    return this.types.find(t => t.id == this.attendance.type) || this.types[0];
   }
   
   parseTime(timeStr: string): number {

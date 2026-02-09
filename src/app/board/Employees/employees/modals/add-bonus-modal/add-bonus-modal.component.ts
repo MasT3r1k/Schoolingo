@@ -1,4 +1,5 @@
 import { Component, inject, OnInit } from '@angular/core';
+import { DropdownManager } from '@Schoolingo/dropdown';
 import { HttpClient } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
 import { Config } from '@Schoolingo/config';
@@ -15,6 +16,7 @@ import { ModalManager } from '@Schoolingo/modal';
 export class AddBonusModalComponent {
   private http = inject(HttpClient);
   public modalManager = inject(ModalManager);
+  public dropdownManager = inject(DropdownManager);
 
   public bonusTypes = [
     { value: 'performance', label: 'Výkon' },
@@ -69,6 +71,10 @@ export class AddBonusModalComponent {
       reason: '',
       date: new Date().toISOString().split('T')[0]
     };
+  }
+
+  public selectedType() {
+    return this.bonusTypes.find(t => t.value === this.newBonus.type);
   }
 
   close() {

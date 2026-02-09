@@ -65,7 +65,7 @@
 
     @switch (sidebar) {
     @case(enumSidebar.SYSTEM) {
-        @if (this.system) {
+    @if (this.system) {
     <div class="container-content">
         <div class="settings-header">
             <h1>{{ l.s('system.system_settings') }}</h1>
@@ -158,12 +158,12 @@
                         @if (dropdownManager.selected_dropdown == 'intervalBackup') {
                         <div class="options-dropdown">
                             <div class="list">
-                            @for (type of interval_backups; track $index) {
-                            <div class="option"
-                                (click)="$event.stopPropagation();dropdownManager.selected_dropdown = '';selected_interval_backup = $index">
-                                {{ l.s('time.' + type) }}
-                            </div>
-                            }
+                                @for (type of interval_backups; track $index) {
+                                <div class="option"
+                                    (click)="$event.stopPropagation();dropdownManager.selected_dropdown = '';selected_interval_backup = $index">
+                                    {{ l.s('time.' + type) }}
+                                </div>
+                                }
                             </div>
                         </div>
                         }
@@ -197,7 +197,8 @@
                     <div>
                         <div class="license-type">{{ system.settings.license_type || 'FREE' }} LICENSE</div>
                         <div class="license-status">
-                            {{ system.settings.license_until ? 'Platné do ' + system.settings.license_until : 'Trvalá licence' }}
+                            {{ system.settings.license_until ? 'Platné do ' + system.settings.license_until : 'Trvalá
+                            licence' }}
                         </div>
                     </div>
                     <div style="margin-left: auto;">
@@ -228,7 +229,7 @@
             {{ Config.APP_NAME }} {{ Config.APP_VERSION }} &bull; Build #b2f4 &bull; {{ l.s('system.system_settings') }}
         </footer>
     </div>
-}
+    }
     }
 
     @case(enumSidebar.MAIN) {
@@ -262,14 +263,31 @@
 
                 <div class="form-group">
                     <label for="district">{{ l.s('system.school_district') }}</label>
-                    <select id="district" class="selected-value" [(ngModel)]="system.settings.district">
-                        <option class="option" value=""></option>
-                        @for (district of system.districts; track $index) {
-                        <option [value]="district.district">
-                            {{ district.district }}
-                        </option>
+                    <div class="custom-select" id="district" style="width: 100%"
+                        (click)="$event.stopPropagation(); dropdownManager.selected_dropdown = dropdownManager.selected_dropdown == 'district' ? '' : 'district'">
+                        <div class="selected-value">
+                            <div class="row" style="gap: .5rem">
+                                {{ system.settings.district }}
+                            </div>
+                            <i-tabler name="chevron-down"></i-tabler>
+                        </div>
+                        @if (dropdownManager.selected_dropdown == 'district') {
+                        <div class="options-dropdown">
+                            <div class="list">
+                                <div class="option row" style="gap: .5rem"
+                                    (click)="$event.stopPropagation(); dropdownManager.selected_dropdown = ''; system.settings.district = ''">
+                                    &nbsp;
+                                </div>
+                                @for (district of system.districts; track $index) {
+                                <div class="option row" style="gap: .5rem"
+                                    (click)="$event.stopPropagation(); dropdownManager.selected_dropdown = ''; system.settings.district = district.district">
+                                    {{ district.district }}
+                                </div>
+                                }
+                            </div>
+                        </div>
                         }
-                    </select>
+                    </div>
                 </div>
             </div>
         </div>
@@ -433,7 +451,7 @@
     }
 
     @case(enumSidebar.LDAP) {
-        @if (this.system.ldap_config) {
+    @if (this.system.ldap_config) {
 
     <div class="container-content">
         <div class="settings-header">
@@ -463,7 +481,8 @@
             <h3 class="section-title">Typ LDAP serveru</h3>
 
             <div class="row-type-selector">
-                <div class="row-option" (click)="this.system.ldap_config!.type = 0" [class.selected]="this.system.ldap_config.type == 0">
+                <div class="row-option" (click)="this.system.ldap_config!.type = 0"
+                    [class.selected]="this.system.ldap_config.type == 0">
                     <div class="row-option__icon">
                         <i-tabler name="brand-windows"></i-tabler>
                     </div>
@@ -472,7 +491,8 @@
                         <p>Microsoft Active Directory</p>
                     </div>
                 </div>
-                <div class="row-option" (click)="this.system.ldap_config!.type = 1" [class.selected]="this.system.ldap_config.type == 1">
+                <div class="row-option" (click)="this.system.ldap_config!.type = 1"
+                    [class.selected]="this.system.ldap_config.type == 1">
                     <div class="row-option__icon">
                         <i-tabler name="server"></i-tabler>
                     </div>
@@ -560,7 +580,7 @@
             </div>
         </div>
     </div>
-        }
+    }
     }
 
     @case(enumSidebar.EMAIL) {
@@ -598,12 +618,12 @@
                     @if (dropdownManager.selected_dropdown == 'emailType') {
                     <div class="options-dropdown">
                         <div class="list">
-                        @for (type of email_types; track $index) {
-                        <div class="option"
-                            (click)="$event.stopPropagation();dropdownManager.selected_dropdown = '';selected_email_type = $index">
-                            {{ l.s('system.email_types.' + type) }}
-                        </div>
-                        }
+                            @for (type of email_types; track $index) {
+                            <div class="option"
+                                (click)="$event.stopPropagation();dropdownManager.selected_dropdown = '';selected_email_type = $index">
+                                {{ l.s('system.email_types.' + type) }}
+                            </div>
+                            }
                         </div>
                     </div>
                     }
@@ -637,12 +657,12 @@
                     @if (dropdownManager.selected_dropdown == 'encType') {
                     <div class="options-dropdown">
                         <div class="list">
-                        @for (type of ['none', 'ssl', 'tls']; track $index) {
-                        <div class="option"
-                            (click)="$event.stopPropagation();dropdownManager.selected_dropdown = '';system.email_config!.encryption = $any(type)">
-                            {{ type | uppercase }}
-                        </div>
-                        }
+                            @for (type of ['none', 'ssl', 'tls']; track $index) {
+                            <div class="option"
+                                (click)="$event.stopPropagation();dropdownManager.selected_dropdown = '';system.email_config!.encryption = $any(type)">
+                                {{ type | uppercase }}
+                            </div>
+                            }
                         </div>
                     </div>
                     }
@@ -832,13 +852,27 @@
 
             <div class="form-group" style="width:200px">
                 <label for="years">{{ l.s('system.scope_number_years_study') }}</label>
-                <select id="years" [(ngModel)]="selected_scope.years" [value]="3">
-                    <option [value]="1">1</option>
-                    <option [value]="2">2</option>
-                    <option [value]="3">3</option>
-                    <option [value]="4">4</option>
-                    <option [value]="5">5</option>
-                </select>
+                <div class="custom-select" id="scope-years"
+                    (click)="$event.stopPropagation(); dropdownManager.selected_dropdown = dropdownManager.selected_dropdown == 'scope_years' ? '' : 'scope_years'">
+                    <div class="selected-value">
+                        <div class="row" style="gap: .5rem">
+                            {{ selected_scope.years }}
+                        </div>
+                        <i-tabler name="chevron-down"></i-tabler>
+                    </div>
+                    @if (dropdownManager.selected_dropdown == 'scope_years') {
+                    <div class="options-dropdown">
+                        <div class="list">
+                            @for (year of [1, 2, 3, 4, 5]; track $index) {
+                            <div class="option row" style="gap: .5rem"
+                                (click)="$event.stopPropagation(); dropdownManager.selected_dropdown = ''; selected_scope.years = year">
+                                {{ year }}
+                            </div>
+                            }
+                        </div>
+                    </div>
+                    }
+                </div>
             </div>
         </div>
 
@@ -976,12 +1010,32 @@
 
             <div class="form-group">
                 <label for="translateSubject">{{ l.s('system.subject_traslate') }}</label>
-                <select id="translateSubject" [(ngModel)]="translate_subject">
-                    <option></option>
-                    @for (subject of get_translate_subjects(); track $index) {
-                    <option [value]="subject[0]">{{ subject[1] }}</option>
+                <div class="custom-select" id="translate-subject-1"
+                    (click)="$event.stopPropagation(); dropdownManager.selected_dropdown = dropdownManager.selected_dropdown == 'translate_subject_1' ? '' : 'translate_subject_1'">
+                    <div class="selected-value">
+                        <div class="row" style="gap: .5rem">
+                            @let selectedTranslation = getSelectedTranslation();
+                            {{ selectedTranslation ? selectedTranslation[1] : '' }}
+                        </div>
+                        <i-tabler name="chevron-down"></i-tabler>
+                    </div>
+                    @if (dropdownManager.selected_dropdown == 'translate_subject_1') {
+                    <div class="options-dropdown">
+                        <div class="list">
+                            <div class="option row" style="gap: .5rem"
+                                (click)="$event.stopPropagation(); dropdownManager.selected_dropdown = ''; translate_subject = ''">
+                                &nbsp;
+                            </div>
+                            @for (subject of get_translate_subjects(); track $index) {
+                            <div class="option row" style="gap: .5rem"
+                                (click)="$event.stopPropagation(); dropdownManager.selected_dropdown = ''; translate_subject = subject[0]">
+                                {{ subject[1] }}
+                            </div>
+                            }
+                        </div>
+                    </div>
                     }
-                </select>
+                </div>
                 <small class="note">{{ l.s('system.subject_traslate_note') }}</small>
             </div>
 
@@ -1029,13 +1083,27 @@
 
         <div class="form-group" style="width:200px">
             <label for="years">{{ l.s('system.scope_number_years_study') }}</label>
-            <select id="years" [(ngModel)]="selected_scope.years" [value]="3">
-                <option [value]="1">1</option>
-                <option [value]="2">2</option>
-                <option [value]="3">3</option>
-                <option [value]="4">4</option>
-                <option [value]="5">5</option>
-            </select>
+            <div class="custom-select" id="scope-years-2"
+                (click)="$event.stopPropagation(); dropdownManager.selected_dropdown = dropdownManager.selected_dropdown == 'scope_years_2' ? '' : 'scope_years_2'">
+                <div class="selected-value">
+                    <div class="row" style="gap: .5rem">
+                        {{ selected_scope.years }}
+                    </div>
+                    <i-tabler name="chevron-down"></i-tabler>
+                </div>
+                @if (dropdownManager.selected_dropdown == 'scope_years_2') {
+                <div class="options-dropdown">
+                    <div class="list">
+                        @for (year of [1, 2, 3, 4, 5]; track $index) {
+                        <div class="option row" style="gap: .5rem"
+                            (click)="$event.stopPropagation(); dropdownManager.selected_dropdown = ''; selected_scope.years = year">
+                            {{ year }}
+                        </div>
+                        }
+                    </div>
+                </div>
+                }
+            </div>
         </div>
     </div>
 
@@ -1162,12 +1230,32 @@
 
             <div class="form-group">
                 <label for="translateSubject">{{ l.s('system.subject_traslate') }}</label>
-                <select id="translateSubject" [(ngModel)]="translate_subject">
-                    <option></option>
-                    @for (subject of get_translate_subjects(); track $index) {
-                    <option [value]="subject[0]">{{ subject[1] }}</option>
+                <div class="custom-select" id="translate-subject-2"
+                    (click)="$event.stopPropagation(); dropdownManager.selected_dropdown = dropdownManager.selected_dropdown == 'translate_subject_2' ? '' : 'translate_subject_2'">
+                    <div class="selected-value">
+                        <div class="row" style="gap: .5rem">
+                            @let selectedTranslation = getSelectedTranslation();
+                            {{ selectedTranslation ? selectedTranslation[1] : '' }}
+                        </div>
+                        <i-tabler name="chevron-down"></i-tabler>
+                    </div>
+                    @if (dropdownManager.selected_dropdown == 'translate_subject_2') {
+                    <div class="options-dropdown">
+                        <div class="list">
+                            <div class="option row" style="gap: .5rem"
+                                (click)="$event.stopPropagation(); dropdownManager.selected_dropdown = ''; translate_subject = ''">
+                                &nbsp;
+                            </div>
+                            @for (subject of get_translate_subjects(); track $index) {
+                            <div class="option row" style="gap: .5rem"
+                                (click)="$event.stopPropagation(); dropdownManager.selected_dropdown = ''; translate_subject = subject[0]">
+                                {{ subject[1] }}
+                            </div>
+                            }
+                        </div>
+                    </div>
                     }
-                </select>
+                </div>
                 <small class="note">{{ l.s('system.subject_traslate_note') }}</small>
             </div>
 

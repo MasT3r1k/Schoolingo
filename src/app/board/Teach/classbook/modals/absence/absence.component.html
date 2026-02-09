@@ -5,7 +5,8 @@
                 {{ l.s('roles.student') }}
             </label>
             <div class="value">
-                <input type="text" class="disabled" name="topic" readonly [value]="classbook.getStudent(classbook.selectedStudent).full_name">
+                <input type="text" class="disabled" name="topic" readonly
+                    [value]="classbook.getStudent(classbook.selectedStudent).full_name">
             </div>
         </div>
 
@@ -14,54 +15,79 @@
                 {{ l.s('classbook.add_absence.type') }}
             </label>
             <div class="value">
-                <input type="text" class="disabled" name="type" readonly [value]="l.s('absence.' + absenceConfig[classbook.selectedAbsence].locale)">
+                <input type="text" class="disabled" name="type" readonly
+                    [value]="l.s('absence.' + absenceConfig[classbook.selectedAbsence].locale)">
             </div>
         </div>
 
         @if ([AbsenceType.LATE, AbsenceType.EARLY].includes(classbook.selectedAbsence)) {
-            <div class="item">
-                <label for="minutes" [ngClass]="{ 'error-color': errors['minutes'] != null }">
-                    {{ l.s('classbook.add_absence.minutes') }}
-                    @if (errors['minutes'] != null) {
-                        <span class="label-error">
-                            - {{ l.s(errors['minutes']) }}
-                        </span>
-                    }
-                </label>
-                <div class="value">
-                    <input type="text" name="minutes" [(ngModel)]="classbook.minutes" [placeholder]="l.s('classbook.add_absence.minutes')">
-                </div>
-                @if ([AbsenceType.LATE].includes(classbook.selectedAbsence)) {
-                    <p>
-                        {{ l.s('classbook.add_absence.descriptions.late_arrival', { time: getTime('arrival').format('HH:mm') }) }}
-                    </p>
+        <div class="item">
+            <label for="minutes" [ngClass]="{ 'error-color': errors['minutes'] != null }">
+                {{ l.s('classbook.add_absence.minutes') }}
+                @if (errors['minutes'] != null) {
+                <span class="label-error">
+                    - {{ l.s(errors['minutes']) }}
+                </span>
                 }
-                @if ([AbsenceType.EARLY].includes(classbook.selectedAbsence)) {
-                    {{ l.s('classbook.add_absence.descriptions.early_departure', { time: getTime('departure').format('HH:mm') }) }}
-                }
-    
+            </label>
+            <div class="value">
+                <input type="text" name="minutes" [(ngModel)]="classbook.minutes"
+                    [placeholder]="l.s('classbook.add_absence.minutes')">
             </div>
+            @if ([AbsenceType.LATE].includes(classbook.selectedAbsence)) {
+            <p>
+                {{ l.s('classbook.add_absence.descriptions.late_arrival', { time: getTime('arrival').format('HH:mm') })
+                }}
+            </p>
+            }
+            @if ([AbsenceType.EARLY].includes(classbook.selectedAbsence)) {
+            {{ l.s('classbook.add_absence.descriptions.early_departure', { time: getTime('departure').format('HH:mm') })
+            }}
+            }
+
+        </div>
         }
 
         <div class="item">
             <label for="reason" [ngClass]="{ 'error-color': errors['reason'] != null }">
                 {{ l.s('classbook.add_absence.reason') }}
                 @if (errors['reason'] != null) {
-                    <span class="label-error">
-                        - {{ l.s(errors['reason']) }}
-                    </span>
+                <span class="label-error">
+                    - {{ l.s(errors['reason']) }}
+                </span>
                 }
             </label>
             <div class="value">
                 <div class="input-select">
-                    <select [(ngModel)]="classbook.reason">
-                        <option value=""></option>
-                        @for (reason of getAbsenceReasons(); track $index) {
-                            <option [value]="reason">
-                                {{ l.s('classbook.add_absence.reasons.' + reason) }}
-                            </option>
+                    <div class="custom-select" id="absence-reason"
+                        (click)="$event.stopPropagation(); dropdownManager.selected_dropdown = dropdownManager.selected_dropdown == 'absence_reason' ? '' : 'absence_reason'">
+                        <div class="selected-value">
+                            <div class="row" style="gap: .5rem">
+                                @if (classbook.reason) {
+                                {{ l.s('classbook.add_absence.reasons.' + classbook.reason) }}
+                                } @else {
+                                &nbsp;
+                                }
+                            </div>
+                            <i-tabler name="chevron-down"></i-tabler>
+                        </div>
+                        @if (dropdownManager.selected_dropdown == 'absence_reason') {
+                        <div class="options-dropdown">
+                            <div class="list">
+                                <div class="option row" style="gap: .5rem"
+                                    (click)="$event.stopPropagation(); dropdownManager.selected_dropdown = ''; classbook.reason = ''">
+                                    &nbsp;
+                                </div>
+                                @for (reason of getAbsenceReasons(); track $index) {
+                                <div class="option row" style="gap: .5rem"
+                                    (click)="$event.stopPropagation(); dropdownManager.selected_dropdown = ''; classbook.reason = reason">
+                                    {{ l.s('classbook.add_absence.reasons.' + reason) }}
+                                </div>
+                                }
+                            </div>
+                        </div>
                         }
-                    </select>
+                    </div>
                 </div>
             </div>
         </div>
@@ -70,13 +96,14 @@
             <label for="note" [ngClass]="{ 'error-color': errors['note'] != null }">
                 {{ l.s('classbook.add_absence.note') }}
                 @if (errors['note'] != null) {
-                    <span class="label-error">
-                        - {{ l.s(errors['note']) }}
-                    </span>
+                <span class="label-error">
+                    - {{ l.s(errors['note']) }}
+                </span>
                 }
             </label>
             <div class="value">
-                <input type="text" name="note" [(ngModel)]="classbook.note" [placeholder]="l.s('classbook.add_absence.note')">
+                <input type="text" name="note" [(ngModel)]="classbook.note"
+                    [placeholder]="l.s('classbook.add_absence.note')">
             </div>
         </div>
 
