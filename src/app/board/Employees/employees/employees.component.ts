@@ -15,6 +15,7 @@ import { AddEmployeeModalComponent } from './modals/add-employee-modal/add-emplo
 import { VacationRequestModalComponent } from './modals/vacation-request-modal/vacation-request-modal.component';
 import { AddBonusModalComponent } from './modals/add-bonus-modal/add-bonus-modal.component';
 import { SetSalaryModalComponent } from './modals/set-salary-modal/set-salary-modal.component';
+import { EditAttendanceModalComponent } from './modals/edit-attendance-modal/edit-attendance-modal.component';
 import { EMPLOYEE_CONFIG } from '../../../infrastructure/employees/const';
 
 export interface Employee {
@@ -124,6 +125,7 @@ export class EmployeesComponent implements OnInit, OnDestroy {
   employees: Employee[] = [];
   vacationRequests: VacationRequest[] = [];
   attendanceRecords: AttendanceRecord[] = [];
+  allAttendanceRecords: AttendanceRecord[] = [];
 
   // Check-in/out state
   isCheckedIn = false;
@@ -202,8 +204,24 @@ export class EmployeesComponent implements OnInit, OnDestroy {
       }
     );
 
+    this.modalManager.addModal(
+      'edit_attendance',
+      {
+        title: 'employees.edit_attendance.title',
+        closeable: true,
+        width: 500,
+        items: [{
+          type: 'component',
+          component: EditAttendanceModalComponent
+        }]
+      }
+    );
+
     this.subscriptions.push(
       this.selectedViewTab.subscribe(tab => {
+        if (tab === 1) { // attendance tab
+          this.loadAllAttendance();
+        }
         if (tab === 2) { // vacations tab
           this.loadVacationRequests();
         }
@@ -411,6 +429,31 @@ export class EmployeesComponent implements OnInit, OnDestroy {
     });
   }
 
+  loadAllAttendance() {
+    // Default to today if not set
+    if (!this.attendanceFilter.startDate) {
+      this.attendanceFilter.startDate = new Date().toISOString().split('T')[0];
+    }
+    
+    this.http.get<{ data: AttendanceRecord[] }>(
+      `${Config.API_URL}/v1/employees/attendance`,
+      { 
+        withCredentials: true,
+        params: { 
+          dateFrom: this.attendanceFilter.startDate,
+          dateTo: this.attendanceFilter.startDate
+        }
+      }
+    ).subscribe({
+      next: (response) => {
+        this.allAttendanceRecords = response.data;
+      },
+      error: (error) => {
+        console.error('Failed to load all attendance:', error);
+      }
+    });
+  }
+
   // Modal handlers
   openAddEmployeeModal() {
     this.modalManager.openModal('add_employee');
@@ -524,7 +567,7 @@ export class EmployeesComponent implements OnInit, OnDestroy {
 
   // Attendance methods
   loadAttendanceForDetail(personId: number) {
-    const params: any = { personId };
+    const params: any = { employeeId: personId };
     
     if (this.attendanceFilter.period === 'week') {
       const now = new Date();
@@ -569,8 +612,17 @@ export class EmployeesComponent implements OnInit, OnDestroy {
   }
 
   editAttendanceRecord(record: any) {
-    console.log('Edit attendance:', record);
-    alert('Editace docházky - zatím neimplementováno');
+    this.modalManager.openModal('edit_attendance', {
+      record: { ...record }, // Copy to avoid direct mutation
+      onSave: () => {
+        // Refresh data
+        if (this.selectedEmployee) {
+          this.loadAttendanceForDetail(this.selectedEmployee.personId);
+        } else if (this.selectedViewTab.getValue() === 1) {
+          this.loadAllAttendance();
+        }
+      }
+    });
   }
 
   exportAttendanceCSV() {
@@ -600,7 +652,7 @@ export class EmployeesComponent implements OnInit, OnDestroy {
   // Vacation methods
   loadVacationData(personId: number) {
     this.http.get<{ balance: any }>(
-      `${Config.API_URL}/v1/employees/vacations/balance?personId=${personId}&year=${this.currentYear}`,
+      `${Config.API_URL}/v1/employees/vacations/balance?employeeId=${personId}&year=${this.currentYear}`,
       { withCredentials: true }
     ).subscribe({
       next: (response) => {

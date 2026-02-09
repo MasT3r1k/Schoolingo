@@ -1,0 +1,53 @@
+<div class="edit-attendance-modal">
+    <div *ngIf="error" class="alert alert--danger">{{ error }}</div>
+    <div *ngIf="success" class="alert alert--success">Změny byly uloženy!</div>
+    <div class="form-group">
+        <label>Datum</label>
+        <div class="readonly-value">{{ attendance.date | date:'dd.MM.yyyy' }}</div>
+    </div>
+
+    <div class="form-row">
+        <div class="form-group">
+            <label>Příchod</label>
+            <input type="time" class="form-input" [(ngModel)]="attendance.checkIn">
+        </div>
+        <div class="form-group">
+            <label>Odchod</label>
+            <input type="time" class="form-input" [(ngModel)]="attendance.checkOut">
+        </div>
+    </div>
+
+    <div class="form-row">
+        <div class="form-group">
+            <label>Přestávka (min)</label>
+            <input type="number" class="form-input" [(ngModel)]="attendance.breakMinutes">
+        </div>
+        <div class="form-group">
+            <label>Pracovní doba (min)</label>
+            <input type="number" class="form-input" [(ngModel)]="attendance.workedMinutes" readonly>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label>Typ</label>
+        <select class="form-select" [(ngModel)]="attendance.type">
+            <option value="regular">Běžná</option>
+            @for (type of types; track type.id) {
+            <option [value]="type.id">{{ type.name }}</option>
+            }
+        </select>
+    </div>
+
+    <div class="form-group">
+        <label>Poznámka</label>
+        <textarea class="form-input" [(ngModel)]="attendance.notes" rows="3"></textarea>
+    </div>
+
+    <div class="form-actions">
+        <button class="btn btn--secondary" (click)="close()">Zrušit</button>
+        <button class="btn btn--primary" (click)="save()" [disabled]="isLoading">
+            <span *ngIf="isLoading" class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+            Uložit
+        </button>
+    </div>
+</div>

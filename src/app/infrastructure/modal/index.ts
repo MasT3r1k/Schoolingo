@@ -16,6 +16,7 @@ interface Modal {
     children?: Modal[];
     index?: number;
     dropdown: string | null;
+    data?: any;
 }
 
 type ModalSetup = Omit<Modal, 'dropdown'|'isOpen'>;
@@ -48,14 +49,21 @@ export class ModalManager {
         this.modals[name].dropdown = null
     }
 
-    public openModal(name: string): void {
+    public openModal(name: string, data?: any): void {
         if (!this.modals[name]) return
         this.modals[name].isOpen = true
+        if (data) this.modals[name].data = data;
+    }
+
+    public getModalData(name: string): any {
+        return this.modals[name]?.data;
     }
 
     public closeModal(name: string): void { 
         if (!this.modals[name]) return
         this.modals[name].isOpen = false
+        // Optional: clear data on close? Maybe not if we want to preserve state?
+        // this.modals[name].data = undefined;
     }
     
     public closeAllModals(): void {

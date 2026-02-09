@@ -31,6 +31,14 @@ export class MainComponent {
 
   public modules: DashboardModule[] = [
     {
+      id: 'attendance',
+      titleKey: 'modules.attendance',
+      icon: 'clock',
+      permission: ['teacher', 'admin', 'principal', 'admin_staff', 'maintenance', 'management', 'personnel', 'other'],
+      import: () => import('./sections/attendance/attendance.component').then(m => m.AttendanceComponent),
+      component: signal(null)
+    },
+    {
       id: 'timetable',
       titleKey: 'modules.timetable',
       titleUrl: '/teach/timetable',

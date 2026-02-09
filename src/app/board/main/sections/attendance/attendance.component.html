@@ -1,0 +1,38 @@
+<div class="attendance-widget" [class.checked-in]="isCheckedIn">
+    @if (isLoading) {
+    <div class="loader">
+        <i-tabler name="loader-2"></i-tabler>
+    </div>
+    } @else {
+    <div class="status-indicator">
+        @if (isCheckedIn) {
+        <span class="dot active"></span>
+        <span class="status-text">Přihlášen ({{ checkInTime }})</span>
+        } @else {
+        <span class="dot inactive"></span>
+        <span class="status-text">Nepřihlášen</span>
+        }
+    </div>
+
+    <div class="stats">
+        <div class="stat">
+            <span class="label">Dnes odpracováno</span>
+            <span class="value">{{ formattedTotalWorked }}</span>
+        </div>
+    </div>
+
+    <div class="actions">
+        @if (!isCheckedIn) {
+        <button class="btn btn-primary" (click)="performCheckIn()">
+            <i-tabler name="login"></i-tabler>
+            Příchod
+        </button>
+        } @else {
+        <button class="btn btn-danger" (click)="performCheckOut()">
+            <i-tabler name="logout"></i-tabler>
+            Odchod
+        </button>
+        }
+    </div>
+    }
+</div>
