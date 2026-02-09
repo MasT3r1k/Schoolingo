@@ -5,6 +5,7 @@ import { HttpClient } from '@angular/common/http';
 import { Config } from '@Schoolingo/config';
 import { IconsModule } from '@Schoolingo/icons';
 import { Locale } from '@Schoolingo/locale';
+import { Cookies } from '@Schoolingo/cookies';
 
 interface CookiePreference {
   category: string;
@@ -29,6 +30,7 @@ interface CookieInfo {
 })
 export class CookiesComponent implements OnInit {
   private http = inject(HttpClient);
+  public cookies = inject(Cookies);
   public l = inject(Locale);
 
   public preferences: CookiePreference[] = [];
@@ -36,72 +38,6 @@ export class CookiesComponent implements OnInit {
   public saving = false;
   public showCookieDetails = false;
   public selectedCategory: string | null = null;
-
-  // Cookie categories
-  public cookieCategories = [
-    {
-      id: 'essential',
-      name: 'Nezbytné cookies',
-      icon: 'lock',
-      color: '#22c55e',
-      description: 'Tyto cookies jsou nezbytné pro fungování webu. Bez nich by stránka nemohla správně fungovat.',
-      required: true,
-      examples: [
-        'Přihlášení a autentizace',
-        'Bezpečnostní tokeny',
-        'Předvolby jazyka'
-      ]
-    },
-    {
-      id: 'functional',
-      name: 'Funkční cookies',
-      icon: 'adjustments',
-      color: '#6366f1',
-      description: 'Umožňují zapamatovat si vaše preference a poskytují vylepšené funkce.',
-      required: false,
-      examples: [
-        'Nastavení zobrazení',
-        'Historie procházení',
-        'Personalizované funkce'
-      ]
-    },
-    {
-      id: 'analytics',
-      name: 'Analytické cookies',
-      icon: 'chart-pie',
-      color: '#8b5cf6',
-      description: 'Pomáhají nám pochopit, jak uživatelé používají naše stránky, abychom je mohli zlepšovat.',
-      required: false,
-      examples: [
-        'Počet návštěv stránek',
-        'Doba strávená na webu',
-        'Výkon stránek'
-      ]
-    }
-  ];
-
-  // Detailed cookie information
-  public cookiesList: CookieInfo[] = [
-    // Essential
-    { name: 'session_id', category: 'essential', purpose: 'Identifikace přihlášeného uživatele', duration: 'Session', provider: 'Schoolingo' },
-    { name: 'csrf_token', category: 'essential', purpose: 'Ochrana proti CSRF útokům', duration: 'Session', provider: 'Schoolingo' },
-    { name: 'auth_token', category: 'essential', purpose: 'Dlouhodobé přihlášení', duration: '30 dní', provider: 'Schoolingo' },
-    { name: 'locale', category: 'essential', purpose: 'Ukládání preferovaného jazyka', duration: '1 rok', provider: 'Schoolingo' },
-    
-    // Functional
-    { name: 'theme', category: 'functional', purpose: 'Uložení preferovaného vzhledu', duration: '1 rok', provider: 'Schoolingo' },
-    { name: 'sidebar_state', category: 'functional', purpose: 'Stav postranního panelu', duration: '1 rok', provider: 'Schoolingo' },
-    { name: 'recent_items', category: 'functional', purpose: 'Nedávno navštívené položky', duration: '30 dní', provider: 'Schoolingo' },
-    
-    // Analytics
-    { name: '_ga', category: 'analytics', purpose: 'Google Analytics - rozlišení uživatelů', duration: '2 roky', provider: 'Google' },
-    { name: '_gid', category: 'analytics', purpose: 'Google Analytics - rozlišení uživatelů', duration: '24 hodin', provider: 'Google' },
-    { name: '_gat', category: 'analytics', purpose: 'Google Analytics - omezení rychlosti požadavků', duration: '1 minuta', provider: 'Google' },
-    
-    // Marketing
-    { name: '_fbp', category: 'marketing', purpose: 'Facebook Pixel - sledování konverzí', duration: '3 měsíce', provider: 'Facebook' },
-    { name: 'fr', category: 'marketing', purpose: 'Facebook - reklamní účely', duration: '3 měsíce', provider: 'Facebook' }
-  ];
 
   ngOnInit(): void {
     this.loadPreferences();
@@ -124,7 +60,7 @@ export class CookiesComponent implements OnInit {
             .reverse()
             .map(b => b === '1');
 
-          this.preferences = this.cookieCategories.map((cat, i) => ({
+          this.preferences = this.cookies.cookieCategories.map((cat, i) => ({
             category: cat.id,
             enabled: cat.required ? true : bits[i] ?? false,
             required: cat.required
@@ -143,7 +79,7 @@ export class CookiesComponent implements OnInit {
   }
 
   private initDefaultPreferences(): void {
-    this.preferences = this.cookieCategories.map(cat => ({
+    this.preferences = this.cookies.cookieCategories.map(cat => ({
       category: cat.id,
       enabled: cat.required,
       required: cat.required
@@ -155,11 +91,11 @@ export class CookiesComponent implements OnInit {
   }
 
   public getCategoryConfig(categoryId: string) {
-    return this.cookieCategories.find(c => c.id === categoryId);
+    return this.cookies.cookieCategories.find(c => c.id === categoryId);
   }
 
   public getCookiesByCategory(categoryId: string): CookieInfo[] {
-    return this.cookiesList.filter(c => c.category === categoryId);
+    return this.cookies.cookiesList.filter(c => c.category === categoryId);
   }
 
   public toggleCategory(categoryId: string): void {
@@ -182,7 +118,7 @@ export class CookiesComponent implements OnInit {
   }
 
   public acceptAll(): void {
-    this.cookieCategories.forEach(cat => {
+    this.cookies.cookieCategories.forEach(cat => {
       const pref = this.getCategoryPreference(cat.id);
       if (pref) {
         pref.enabled = true;
@@ -198,7 +134,7 @@ export class CookiesComponent implements OnInit {
   }
 
   public acceptEssentialOnly(): void {
-    this.cookieCategories.forEach(cat => {
+    this.cookies.cookieCategories.forEach(cat => {
       const pref = this.getCategoryPreference(cat.id);
       if (pref) {
         pref.enabled = cat.required;
@@ -239,7 +175,7 @@ export class CookiesComponent implements OnInit {
 
   private applyCookieSettings(): void {
     // Remove cookies from disabled categories
-    this.cookieCategories.forEach(cat => {
+    this.cookies.cookieCategories.forEach(cat => {
       const pref = this.getCategoryPreference(cat.id);
       if (pref && !pref.enabled) {
         this.getCookiesByCategory(cat.id).forEach(cookie => {
@@ -278,6 +214,6 @@ export class CookiesComponent implements OnInit {
   }
 
   public getTotalCategories(): number {
-    return this.cookieCategories.length;
+    return this.cookies.cookieCategories.length;
   }
 }

@@ -2,6 +2,8 @@ import { Injectable, inject } from '@angular/core';
 import { Router, NavigationEnd } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { Config } from '@Schoolingo/config';
+import { Dashboard } from '@Schoolingo/dashboard';
+import { Cookies } from '@Schoolingo/cookies';
 
 @Injectable({
   providedIn: 'root'
@@ -10,6 +12,8 @@ export class AnalyticsService {
   private visitorIdKey = 'visitor_id';
   private http = inject(HttpClient);
   private router = inject(Router);
+  private dashboard = inject(Dashboard);
+  private cookies = inject(Cookies);
   private userId: number | null = null;
   private gaMeasurementId: string = 'G-K81P8DG338';
 
@@ -59,7 +63,8 @@ export class AnalyticsService {
           send_page_view: false,
           debug_mode: true 
       });
-      console.log('Google Analytics Initialized:', this.gaMeasurementId);
+      console.log('Google Analytics Initialized');
+
     } catch (e) {
       console.error('Failed to initialize Google Analytics', e);
     }
@@ -91,6 +96,12 @@ export class AnalyticsService {
   }
 
   public updateDuration() {
+    const cookies = this.dashboard.cookies.toString(2).split('').reverse();
+    const analyticsIndex = this.cookies.cookieCategories.findIndex((cookie) => cookie.id == "analytics");
+    if (!cookies[analyticsIndex]) {
+        return;
+    }
+
     if (this.currentVisitId && this.pageStartTime) {
         const duration = Date.now() - this.pageStartTime;
         // Basic check to avoid bad data
@@ -113,42 +124,48 @@ export class AnalyticsService {
   }
 
   public trackPageView() {
-      // 1. Update duration of PREVIOUS page
-      this.updateDuration();
+    const cookies = this.dashboard.cookies.toString(2).split('').reverse();
+    const analyticsIndex = this.cookies.cookieCategories.findIndex((cookie) => cookie.id == "analytics");
+    if (!cookies[analyticsIndex]) {
+        return;
+    }
 
-      // 2. Start NEW tracking
-      this.pageStartTime = Date.now();
-      const url = window.location.href;
-      const path = this.router.url;
+    // 1. Update duration of PREVIOUS page
+    this.updateDuration();
 
-      // Internal Tracking
-      const payload: any = {
-          visitor_id: this.getVisitorId(),
-          url: url,
-          path: path
-      };
-      
-      if (this.userId) {
-          payload.user_id = this.userId;
-      }
+    // 2. Start NEW tracking
+    this.pageStartTime = Date.now();
+    const url = window.location.href;
+    const path = this.router.url;
 
-      this.http.post<any>(`${Config.API_URL}/v1/analytics/track`, payload).subscribe({
-          next: (res) => {
-              if (res.success && res.id) {
-                  this.currentVisitId = res.id;
-              }
-          },
-          error: (err) => console.error('Internal analytics error', err)
-      });
+    // Internal Tracking
+    const payload: any = {
+        visitor_id: this.getVisitorId(),
+        url: url,
+        path: path
+    };
+    
+    if (this.userId) {
+        payload.user_id = this.userId;
+    }
 
-      // Google Analytics Tracking
-      const win = window as any;
-      if (win.gtag) {
-          win.gtag('event', 'page_view', {
-              page_path: path,
-              page_location: url,
-              page_title: document.title
-          });
-      }
+    this.http.post<any>(`${Config.API_URL}/v1/analytics/track`, payload).subscribe({
+        next: (res) => {
+            if (res.success && res.id) {
+                this.currentVisitId = res.id;
+            }
+        },
+        error: (err) => console.error('Internal analytics error', err)
+    });
+
+    // Google Analytics Tracking
+    const win = window as any;
+    if (win.gtag) {
+        win.gtag('event', 'page_view', {
+            page_path: path,
+            page_location: url,
+            page_title: document.title
+        });
+    }
   }
 }
