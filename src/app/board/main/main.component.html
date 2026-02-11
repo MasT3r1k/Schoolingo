@@ -3,7 +3,12 @@
         @for (module of modules; track module.id) {
         <div class="module">
             <div class="module-header">
-                <h2 [class.has-link]="module.titleUrl" [routerLink]="module.titleUrl">{{ l.s(module.titleKey) }}</h2>
+                <h2 [class.has-link]="module.titleUrl" [routerLink]="module.titleUrl">
+                    @if (module.icon) {
+                        <i-tabler [name]="module.icon"></i-tabler>
+                    }
+                    {{ l.s(module.titleKey) }}
+                </h2>
             </div>
             <div class="module-body" [class.skeleton]="module.component() == null">
                 @if (module.component() == null) {

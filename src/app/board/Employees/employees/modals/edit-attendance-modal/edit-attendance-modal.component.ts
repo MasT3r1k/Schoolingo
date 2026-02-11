@@ -50,8 +50,12 @@ export class EditAttendanceModalComponent {
     if (this.data && this.data.record) {
       this.attendance = { 
         ...this.data.record,
+        checkOut: this.data.record.checkOut || null,
         breakMinutes: this.data.record.breakMinutes || 0,
-        workedMinutes: this.data.record.workedMinutes || 0
+        workedMinutes: this.data.record.workedMinutes || 0,
+        notes: this.data.record.notes || '',
+        approved: this.data.record.approved || false,
+
       };
       
       // Ensure checkIn/checkOut are in HH:MM format

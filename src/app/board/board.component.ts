@@ -53,7 +53,9 @@ const notification_types: Record<string, any> = {
     color: "#ff5757",
     icon: "lock",
     title: "Neznámé přihlášení",
-    description: "Zaznamenali jsme nové přihlášení z neznámého zařízení."
+    url: "/user/logins",
+    close_after_action: true,
+    description: "Zaznamenali jsme nové přihlášení z neznámého zařízení ze %city%, %country_code%."
   },
   new_grade: {
     color: "#ffc107",
@@ -142,6 +144,12 @@ export class BoardComponent implements OnInit, OnDestroy {
   public markAllAsRead(): void {
     this.notifications.forEach(n => n.read_at = new Date());
     this.dashboard.newNotifications = 0;
+    this.http.post(
+      `${Config.API_URL}/v1/notification/-1`,
+      {},
+      { withCredentials: true }
+    )
+    .subscribe((data) => console.log(data));
   }
 
   // dropdown: 'add' | 'notification' | 'child' | 'user' | '' = '';

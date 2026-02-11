@@ -7,6 +7,7 @@ import { Locale } from '@Schoolingo/locale';
 import { ModalManager } from '@Schoolingo/modal';
 import { Config } from '@Schoolingo/config';
 import { Authentication } from '@Schoolingo/authentication';
+import { AuthConfig } from '../../../../../infrastructure/authentication/config';
 
 @Component({
   imports: [IconsModule, FormsModule, ReactiveFormsModule],
@@ -19,14 +20,20 @@ export class AddEmailComponent implements OnInit {
   private modalManager = inject(ModalManager);
   private http = inject(HttpClient);
   private auth = inject(Authentication);
+  public AuthConfig = AuthConfig;
 
   public showSelect: null | 'type' = null;
   public email_types = ['personal', 'school', 'work', 'other'];
   public email_selected = 0;
 
+  public token = '';
   public email = '';
   public originalEmail: string | null = null;
   public isEdit = false;
+
+  public active_action = '';
+
+  public page: 'main' | '2fa' = '2fa';
 
   ngOnInit(): void {
     const data = this.modalManager.getModalData('add_email');
@@ -53,7 +60,8 @@ export class AddEmailComponent implements OnInit {
       this.http.put(`${Config.API_URL}/v1/user/email`, {
         originalEmail: this.originalEmail,
         email: this.email,
-        type: this.email_types[this.email_selected]
+        type: this.email_types[this.email_selected],
+        token: this.token
       }, { withCredentials: true }).subscribe({
         next: (response: any) => {
           if (response.success) {
@@ -67,7 +75,8 @@ export class AddEmailComponent implements OnInit {
     } else {
       this.http.post(`${Config.API_URL}/v1/user/email`, {
         email: this.email,
-        type: this.email_types[this.email_selected]
+        type: this.email_types[this.email_selected],
+        token: this.token
       }, { withCredentials: true }).subscribe({
         next: (response: any) => {
           if (response.success) {
@@ -82,6 +91,8 @@ export class AddEmailComponent implements OnInit {
   }
 
   private resetForm() {
+    this.token = '';
+    this.active_action = '';
     this.email = '';
     this.email_selected = 0;
     this.isEdit = false;

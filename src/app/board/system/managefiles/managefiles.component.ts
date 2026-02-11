@@ -71,11 +71,11 @@ export class ManagefilesComponent implements OnInit {
 
     public getFilterOptions(type: 'type'): {value: string, label: string}[] {
         return [
-            {value: 'all', label: 'Všechny typy'},
-            {value: 'image', label: 'Obrázky'},
-            {value: 'document', label: 'Dokumenty'},
-            {value: 'archive', label: 'Archivy'},
-            {value: 'other', label: 'Ostatní'}
+            { value: 'all', label: 'Všechny typy' },
+            { value: 'image', label: 'Obrázky' },
+            { value: 'document', label: 'Dokumenty' },
+            { value: 'archive', label: 'Archivy' },
+            { value: 'other', label: 'Ostatní' }
         ];
     }
 
