@@ -195,4 +195,85 @@
             </div>
         </div>
     </div>
+
+    @if (selected_id && getSelectedLogin()) {
+    @let login = getSelectedLogin();
+    <div class="modal-backdrop" [routerLink]="['./']" [queryParams]="{}">
+        <div class="modal-card" (click)="$event.stopPropagation()">
+            <div class="modal-header">
+                <h3>Detail přihlášení</h3>
+                <button class="close-btn" [routerLink]="['./']" [queryParams]="{}">
+                    <i-tabler name="x"></i-tabler>
+                </button>
+            </div>
+            <div class="modal-content">
+
+                <div class="detail-grid">
+                    <div class="info-group">
+                        <span class="info-label">Čas přihlášení</span>
+                        <div class="info-value">
+                            <i-tabler name="clock"></i-tabler>
+                            {{ Utils.formatDate(login.created) }}
+                        </div>
+                    </div>
+
+                    <div class="info-group">
+                        <span class="info-label">Stav</span>
+                        @if (login.success) {
+                        <div class="status-badge success">
+                            <i-tabler name="circle-check"></i-tabler>
+                            {{ l.s('login_history.state.success') }}
+                        </div>
+                        } @else {
+                        <div class="status-badge danger">
+                            <i-tabler name="circle-x"></i-tabler>
+                            {{ l.s('login_history.state.' + (login.error ? login.error : 'error')) }}
+                        </div>
+                        }
+                    </div>
+
+                    <div class="info-group">
+                        <span class="info-label">IP Adresa</span>
+                        <div class="info-value">
+                            <i-tabler name="world"></i-tabler>
+                            {{ login.ip || 'Neznámá' }}
+                        </div>
+                    </div>
+
+                    <div class="info-group">
+                        <span class="info-label">Metoda</span>
+                        <div class="info-value">
+                            <i-tabler name="key"></i-tabler>
+                            {{ l.s('login_history.types.' + login.type) }}
+                        </div>
+                    </div>
+                </div>
+
+                <div class="info-group">
+                    <span class="info-label">Zařízení</span>
+                    <div class="info-value">
+                        <i-tabler [name]="Utils.getBrowserIcon(login.userAgent)"></i-tabler>
+                        {{ Utils.getBrowser(login.userAgent) }} • {{ Utils.getOS(login.userAgent) }}
+                    </div>
+                    <div class="meta muted" style="margin-top: 4px; font-size: 0.8rem; word-break: break-all;">
+                        {{ login.userAgent }}
+                    </div>
+                </div>
+
+                @if (login.city || login.country) {
+                <div class="info-group">
+                    <span class="info-label">Lokace</span>
+                    <div class="info-value">
+                        <i-tabler name="map-pin"></i-tabler>
+                        {{ login.city }} {{ login.zip_code ? '(' + login.zip_code + ')' : '' }}
+                        {{ login.region_name ? ', ' + login.region_name : '' }}
+                        {{ login.country ? ', ' + login.country : '' }}
+                        {{ login.continent ? ' (' + login.continent + ')' : '' }}
+                    </div>
+                </div>
+                }
+            </div>
+        </div>
+    </div>
+    }
 </div>

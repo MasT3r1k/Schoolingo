@@ -258,6 +258,25 @@ export class EmployeesComponent implements OnInit, OnDestroy {
         }
       })
     );
+    this.subscriptions.push(
+      this.selectedDetailTab.subscribe(tab => {
+        if (!this.selectedEmployee) return;
+
+        if (tab === 1) { // Attendance
+             this.loadAttendanceForDetail(this.selectedEmployee.personId);
+        }
+        if (tab === 2) { // Vacation
+             this.loadVacationData(this.selectedEmployee.personId);
+             this.loadVacationRequests(this.selectedEmployee.personId);
+        }
+        if (tab === 3) { // Salary
+             this.loadSalaryData(this.selectedEmployee.personId);
+        }
+        if (tab === 4) { // Bonuses
+             this.loadBonusesData(this.selectedEmployee.personId);
+        }
+      })
+    );
   }
   
   ngOnDestroy() {
@@ -353,9 +372,14 @@ export class EmployeesComponent implements OnInit, OnDestroy {
   }
 
   // Load vacation requests
-  loadVacationRequests() {
+  loadVacationRequests(employeeId?: number) {
+    let url = `${Config.API_URL}/v1/employees/vacations/requests`;
+    if (employeeId) {
+       url += `?employeeId=${employeeId}`;
+    }
+
     this.http.get<{ data: VacationRequest[] }>(
-      `${Config.API_URL}/v1/employees/vacations/requests`,
+      url,
       { withCredentials: true }
     ).subscribe({
       next: (response) => {
@@ -393,6 +417,7 @@ export class EmployeesComponent implements OnInit, OnDestroy {
     this.selectedDetailTab.next(0);
     this.loadEmployeeDetail(employee.personId);
     this.loadAttendanceRecords(employee.personId);
+    this.loadVacationData(employee.personId);
     this.loadBonuses(employee.personId);
   }
 
@@ -682,14 +707,44 @@ export class EmployeesComponent implements OnInit, OnDestroy {
 
   // Vacation methods
   loadVacationData(personId: number) {
-    this.http.get<{ balance: any }>(
+    this.http.get<any>(
       `${Config.API_URL}/v1/employees/vacations/balance?employeeId=${personId}&year=${this.currentYear}`,
       { withCredentials: true }
     ).subscribe({
       next: (response) => {
-        this.vacationBalance = response.balance;
+        // Direct object response or wrapped
+        this.vacationBalance = response.balance || response;
       },
       error: (error) => console.error('Failed to load vacation balance:', error)
+    });
+  }
+
+  changeVacationEntitlement() {
+    if (!this.selectedEmployee) return;
+    const amountStr = prompt('Zadejte počet dní, o které chcete změnit nárok (např. 5 nebo -2):');
+    if (!amountStr) return;
+    
+    const amount = parseInt(amountStr);
+    if (isNaN(amount) || amount === 0) return;
+
+    this.http.post(
+      `${Config.API_URL}/v1/employees/vacations/balance/adjust`,
+      { 
+        employeeId: this.selectedEmployee.personId,
+        amount: amount,
+        reason: 'Manual adjustment'
+      },
+      { withCredentials: true }
+    ).subscribe({
+      next: () => {
+         if (this.selectedEmployee) {
+            this.loadVacationData(this.selectedEmployee.personId);
+         }
+      },
+      error: (error) => {
+        console.error('Failed to adjust balance:', error);
+        alert('Nepodařilo se upravit zůstatek');
+      }
     });
   }
 

@@ -62,7 +62,7 @@ export class RewardsComponent implements OnInit {
   saving = false;
   
   ngOnInit() {
-    this.isTeacher = this.auth.getRole() === 'teacher' || this.auth.getRole() === 'admin' || this.auth.getUser()?.manager !== -1;
+    this.isTeacher = this.auth.getRole() === 'teacher' || this.auth.getRole() === 'admin' || this.auth.getUser()?.manager == -1;
     this.loadRewards();
     
     if (this.isTeacher) {

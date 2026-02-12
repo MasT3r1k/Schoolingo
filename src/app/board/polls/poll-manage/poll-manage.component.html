@@ -1,1 +1,217 @@
-<p>poll-manage works!</p>
+<div class="card detail-view">
+    @if (loading) {
+    <div class="loading-state">
+        <div class="spinner"></div>
+        <p>Načítání informací o testu...</p>
+    </div>
+    } @else {
+    <!-- Detail Header -->
+    <div class="detail-header">
+        <button class="btn-back" routerLink="/tests">
+            <i-tabler name="arrow-left"></i-tabler>
+            <span>Zpět na seznam</span>
+        </button>
+        <div class="detail-actions">
+            <!-- <button class="action-btn" title="Náhled">
+                <i-tabler name="eye"></i-tabler>
+            </button> -->
+            <button class="action-btn" [routerLink]="['/tests', pollId, 'edit']" title="Upravit">
+                <i-tabler name="pencil"></i-tabler>
+            </button>
+            <button class="action-btn" title="Smazat">
+                <i-tabler name="trash"></i-tabler>
+            </button>
+        </div>
+    </div>
+
+    <div class="detail-layout">
+        <!-- Sidebar -->
+        <aside class="profile-sidebar">
+            <div class="profile-card">
+                <div class="profile-avatar poll-avatar">
+                    <i-tabler name="clipboard-list"></i-tabler>
+                </div>
+                <h1 class="profile-name">{{ poll?.title }}</h1>
+                <div class="profile-role">
+                    {{ poll?.type === 'test' ? 'Test' : 'Zpětná vazba' }}
+                </div>
+                <span class="status-badge" [class.status-active]="isActive" [class.status-suspended]="!isActive">
+                    {{ isActive ? 'Aktivní' : 'Neaktivní' }}
+                </span>
+            </div>
+
+            <!-- Quick Stats / Info -->
+            <div class="quick-info">
+                <div class="info-item">
+                    <i-tabler name="calendar"></i-tabler>
+                    <div>
+                        <span class="label">Vytvořeno</span>
+                        <span class="val">{{ poll?.created_at | date:'dd.MM.yyyy' }}</span>
+                    </div>
+                </div>
+                <div class="info-item">
+                    <i-tabler name="clock"></i-tabler>
+                    <div>
+                        <span class="label">Časový limit</span>
+                        <span class="val">{{ poll?.time_limit ? poll?.time_limit + ' min' : 'Neomezeno' }}</span>
+                    </div>
+                </div>
+                <div class="info-item">
+                    <i-tabler name="list-numbers"></i-tabler>
+                    <div>
+                        <span class="label">Počet otázek</span>
+                        <span class="val">{{ poll?.questionCount || 0 }}</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Summary Stats -->
+            <div class="quick-stats">
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i-tabler name="users"></i-tabler>
+                    </div>
+                    <div class="stat-info">
+                        <span class="stat-value">{{ resultsSummary.count }}</span>
+                        <span class="stat-label">Odevzdáno</span>
+                    </div>
+                </div>
+                <div class="stat-card" [class.success]="resultsSummary.average >= 80"
+                    [class.warning]="resultsSummary.average >= 50 && resultsSummary.average < 80"
+                    [class.danger]="resultsSummary.average < 50">
+                    <div class="stat-icon">
+                        <i-tabler name="chart-bar"></i-tabler>
+                    </div>
+                    <div class="stat-info">
+                        <span class="stat-value">{{ resultsSummary.average }}%</span>
+                        <span class="stat-label">Úspěšnost</span>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content (Actions) -->
+        <main class="detail-main">
+            <div class="section-grid">
+                <!-- Assign -->
+                <div class="info-card action-card-main clickable" [routerLink]="['/tests', pollId, 'assign']">
+                    <div class="card-header no-border">
+                        <div class="header-icon bg-primary-soft">
+                            <i-tabler name="users-group" class="text-primary"></i-tabler>
+                        </div>
+                        <div class="header-content">
+                            <h3>Zadat studentům</h3>
+                            <p>Přiřadit test třídám nebo skupinám studentů a nastavit termín.</p>
+                        </div>
+                        <div class="action-arrow">
+                            <i-tabler name="chevron-right"></i-tabler>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Results -->
+                <div class="info-card action-card-main clickable" [routerLink]="['/tests', pollId, 'results']">
+                    <div class="card-header no-border">
+                        <div class="header-icon bg-success-soft">
+                            <i-tabler name="chart-bar" class="text-success"></i-tabler>
+                        </div>
+                        <div class="header-content">
+                            <h3>Výsledky a hodnocení</h3>
+                            <p>Zobrazit detailní výsledky studentů, body a statistiky.</p>
+                        </div>
+                        <div class="action-arrow">
+                            <i-tabler name="chevron-right"></i-tabler>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Share -->
+                <div class="info-card action-card-main clickable" (click)="openShareModal()">
+                    <div class="card-header no-border">
+                        <div class="header-icon bg-accent-soft">
+                            <i-tabler name="share" class="text-accent"></i-tabler>
+                        </div>
+                        <div class="header-content">
+                            <h3>Sdílet s kolegy</h3>
+                            <p>Umožnit jiným učitelům používat nebo upravovat tento test.</p>
+                        </div>
+                        <div class="action-arrow">
+                            <i-tabler name="chevron-right"></i-tabler>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Edit -->
+                <div class="info-card action-card-main clickable" [routerLink]="['/tests', pollId, 'edit']">
+                    <div class="card-header no-border">
+                        <div class="header-icon bg-warning-soft">
+                            <i-tabler name="pencil" class="text-warning"></i-tabler>
+                        </div>
+                        <div class="header-content">
+                            <h3>Upravit obsah</h3>
+                            <p>Měnit otázky, možnosti odpovědí a bodování.</p>
+                        </div>
+                        <div class="action-arrow">
+                            <i-tabler name="chevron-right"></i-tabler>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+    }
+</div>
+
+<!-- Share Modal -->
+@if (showShareModal) {
+<div class="modal-backdrop" (click)="closeShareModal()">
+    <div class="modal-container" (click)="$event.stopPropagation()">
+        <div class="modal__header">
+            <h2 class="modal__title">Sdílet test</h2>
+            <button class="modal__close" (click)="closeShareModal()">
+                <i-tabler name="x"></i-tabler>
+            </button>
+        </div>
+        <div class="modal__body">
+            <p class="modal-subtitle">Vyberte učitele, kterému chcete tento test nasdílet.</p>
+
+            <div class="form-group search-box">
+                <i-tabler name="search"></i-tabler>
+                <input type="text" class="form-input" placeholder="Hledat učitele..." [(ngModel)]="shareSearchQuery"
+                    (ngModelChange)="filterTeachers()">
+            </div>
+
+            <div class="teachers-list">
+                @for (teacher of filteredTeachers; track teacher.personId) {
+                <div class="teacher-item" [class.selected]="selectedTeacherId === teacher.personId"
+                    (click)="selectTeacher(teacher.personId)">
+                    <div class="teacher-avt">
+                        {{ teacher.firstName.charAt(0) }}{{ teacher.lastName.charAt(0) }}
+                    </div>
+                    <div class="teacher-info">
+                        <span class="name">{{ teacher.firstName }} {{ teacher.lastName }}</span>
+                        <!-- <span class="email">{{ teacher.email }}</span> -->
+                    </div>
+                    <div class="selection-indicator">
+                        <div class="radio-circle"></div>
+                    </div>
+                </div>
+                }
+                @if (filteredTeachers.length === 0) {
+                <div class="no-results">Nenalezeni žádní učitelé.</div>
+                }
+            </div>
+        </div>
+        <div class="modal__footer">
+            <button class="btn btn--secondary" (click)="closeShareModal()">Zrušit</button>
+            <button class="btn btn--primary" [disabled]="!selectedTeacherId || isSharing" (click)="submitShare()">
+                @if (isSharing) {
+                Sdílení...
+                } @else {
+                Sdílet test
+                }
+            </button>
+        </div>
+    </div>
+</div>
+}

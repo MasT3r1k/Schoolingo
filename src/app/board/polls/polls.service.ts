@@ -102,4 +102,12 @@ export class PollsService {
       { withCredentials: true }
     ) as any;
   }
+
+  public sharePoll(id: number, teacherId: number): ObservableLike<{ success: boolean }> {
+    return this.http.post<any>(
+      `${Config.API_URL}/v1/polls/${id}/share`,
+      { teacherId },
+      { withCredentials: true }
+    ) as any;
+  }
 }

@@ -91,4 +91,15 @@ export class LoginHistoryComponent implements OnInit {
   public getFailedLogins(): number {
     return this.history.getValue().filter(item => !item.success).length;
   }
+  public getSelectedLogin(): any {
+    if (!this.selected_id) return null;
+    // ensure type compatibility (string vs number)
+    return this.history.getValue().find(item => item.loginId == this.selected_id);
+  }
+
+  public closeDetail(): void {
+      // Remove query param to close detail
+      // We need to navigate to the same route without the 'id' param
+      // But since we are using routerLink in HTML, we can just use router navigation here or rely on specific close button linking to ./
+  }
 }
