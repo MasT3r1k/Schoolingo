@@ -4,6 +4,7 @@ import { IconsModule } from '@Schoolingo/icons';
 import { PollsService, Poll } from './polls.service';
 import { Router, RouterModule } from '@angular/router';
 import { Locale } from '@Schoolingo/locale';
+import { Permission } from '@Schoolingo/permission';
 
 @Component({
   selector: 'app-polls',
@@ -16,6 +17,7 @@ export class PollsComponent implements OnInit {
   public l = inject(Locale);
   private pollsService = inject(PollsService);
   private router = inject(Router);
+  public perms = inject(Permission);
 
   public tests: Poll[] = [];
   public canCreate = false;

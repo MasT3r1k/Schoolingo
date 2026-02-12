@@ -4,12 +4,12 @@ import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angula
 import { IconsModule } from '@Schoolingo/icons';
 import { PollsService } from '../polls.service';
 import { Authentication } from '@Schoolingo/authentication';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, RouterLink } from '@angular/router';
 
 @Component({
   selector: 'app-poll-results',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, IconsModule],
+  imports: [CommonModule, ReactiveFormsModule, IconsModule, RouterLink],
   templateUrl: './poll-results.component.html',
   styleUrl: './poll-results.component.css'
 })

@@ -9,9 +9,20 @@ import { HttpClient } from '@angular/common/http';
 import { Config } from '@Schoolingo/config';
 
 interface ClassGroup {
-  id: number;
-  name: string;
+  groupId: number;
+  subjectId: number;
+  subject: string;
+  shortSubject: string;
+  className: string;
   studentCount: number;
+}
+
+interface PollOption {
+  icon: string,
+  title: string,
+  description: string,
+  formName: string,
+  require?: string[]
 }
 
 @Component({
@@ -32,17 +43,59 @@ export class PollAssignComponent implements OnInit {
   poll: Poll | null = null;
   loading = true;
   classes: ClassGroup[] = [];
-  selectedClasses: number[] = [];
+  selectedClasses: number[][] = [];
 
   assignForm: FormGroup = this.fb.group({
     active_from: ['', Validators.required],
     active_to: ['', Validators.required],
     time_limit: [null],
+    allow_marking: [false],
     shuffle_questions: [false],
     shuffle_options: [false],
     show_results: [true],
     allow_review: [true]
   });
+
+  public poll_options: PollOption[] = [
+    {
+      icon: "arrows-shuffle",
+      title: "Zamíchat otázky",
+      description: "Každý student uvidí otázky v jiném pořadí",
+      formName: "shuffle_questions"
+    },
+    {
+      icon: "arrows-shuffle",
+      title: "Zamíchat možnosti",
+      description: "Možnosti u každé otázky budou v náhodném pořadí",
+      formName: "shuffle_options"
+    },
+    {
+      icon: "eye",
+      title: "Povolit náhled odpovědí",
+      description: "Studenti si budou moci prohlédnout své odpovědi po odevzdání",
+      formName: "allow_review"
+    },
+    {
+      icon: "chart-bar",
+      title: "Zobrazit výsledky",
+      description: "Studenti uvidí své výsledky po odevzdání",
+      formName: "show_results",
+      require: ["allow_review"]
+    }
+  ];
+
+  public checkIfEnabled(option: PollOption): boolean {
+    return (option.require && this.assignForm.get(option.require[0])?.value || !option.require) ? true : false;
+  }
+
+  public toggleValue(option: PollOption): void {
+    if (!this.checkIfEnabled(option)) {
+      return;
+    }
+
+    const input = this.assignForm.get(option.formName);
+    input?.setValue(!input.value);
+  }
 
   ngOnInit() {
     const id = this.route.snapshot.paramMap.get('id');
@@ -67,41 +120,41 @@ export class PollAssignComponent implements OnInit {
   }
 
   loadClasses() {
-    this.http.get<{ classes: ClassGroup[] }>(
-      `${Config.API_URL}/v1/classes`,
+    this.http.get<{ groups: ClassGroup[] }>(
+      `${Config.API_URL}/v1/marks/teacher/list`,
       { withCredentials: true }
     ).subscribe({
       next: (data) => {
-        this.classes = data.classes || [];
+        this.classes = data.groups || [];
       },
       error: (err) => console.error(err)
     });
   }
 
-  toggleClass(classId: number) {
-    const index = this.selectedClasses.indexOf(classId);
+  toggleClass(classId: number, subjectId: number) {
+    const index = this.selectedClasses.findIndex((cl) => cl[0] == classId && cl[1] == subjectId);
     if (index > -1) {
       this.selectedClasses.splice(index, 1);
     } else {
-      this.selectedClasses.push(classId);
+      this.selectedClasses.push([classId, subjectId]);
     }
   }
 
-  isClassSelected(classId: number): boolean {
-    return this.selectedClasses.includes(classId);
+  isClassSelected(classId: number, subjectId: number): boolean {
+    return this.selectedClasses.findIndex((cl) => cl[0] == classId && cl[1] == subjectId) !== -1;
   }
 
   selectAllClasses() {
     if (this.selectedClasses.length === this.classes.length) {
       this.selectedClasses = [];
     } else {
-      this.selectedClasses = this.classes.map(c => c.id);
+      this.selectedClasses = this.classes.map(c => [c.groupId, c.subjectId]);
     }
   }
 
   getTotalStudents(): number {
     return this.classes
-      .filter(c => this.selectedClasses.includes(c.id))
+      .filter(c => this.isClassSelected(c.groupId, c.subjectId))
       .reduce((sum, c) => sum + c.studentCount, 0);
   }
 

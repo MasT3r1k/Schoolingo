@@ -64,6 +64,7 @@ import { TemplateSubjectComponent } from './board/schedule/template-subject/temp
 import { TemplateTimetableComponent } from './board/schedule/template-timetable/template-timetable.component';
 import { MonitoringComponent } from './board/Admin/monitoring/monitoring.component';
 import { SeasonalAdminComponent } from './board/Admin/seasonal/seasonal.component';
+import { PollManageComponent } from './board/polls/poll-manage/poll-manage.component';
 
 
 export const routes: Routes = [
@@ -154,6 +155,10 @@ export const routes: Routes = [
                     {
                         path: ':id/vote',
                         component: PollVoteComponent
+                    },
+                    {
+                        path: ':id/manage',
+                        component: PollManageComponent
                     },
                     {
                         path: ':id/results',
