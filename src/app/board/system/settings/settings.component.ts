@@ -29,6 +29,13 @@ interface SubjectAPI {
   shortcut: string;
 }
 
+interface TeacherAPI {
+  teacherId: number;
+  teacherName: string; // Full name from backend
+  firstName: string;
+  lastName: string;
+}
+
 interface ScopeAPI {
   scopeId: number | null;
   name: string;
@@ -285,14 +292,31 @@ export class SettingsComponent implements OnInit {
   // === Subjects ===
   public selected_subject = 0;
   public translate_subject = '';
+
+  public available_teachers: TeacherAPI[] = [];
+  public assigned_teachers: TeacherAPI[] = [];
+  public selected_teacher_to_add: number | null = null;
+  public subject_save_loading = false;
+
   public get_translate_subjects(): any[] {
     return Object.entries(this.l.s('subject_translations'));
+  }
+
+  public select_subject_item(index: number): void {
+    this.selected_subject = index;
+    const subject = this.system.subjects[index];
+    if (subject && subject.subjectId) {
+        this.load_assigned_teachers(subject.subjectId);
+    } else {
+        this.assigned_teachers = [];
+    }
   }
 
   public new_subject(): void {
     const subjectIndex = this.system.subjects.findIndex((subject) => subject.subjectId == null);
     if (subjectIndex != -1) {
       this.selected_subject = subjectIndex;
+      this.assigned_teachers = [];
       return;
     }
 
@@ -303,6 +327,68 @@ export class SettingsComponent implements OnInit {
     });
 
     this.selected_subject = 0;
+    this.assigned_teachers = [];
+  }
+
+  public save_subject(): void {
+    const subject = this.system.subjects[this.selected_subject];
+    if (!subject.subjectName || !subject.shortcut) return;
+
+    this.subject_save_loading = true;
+    this.http.post<{ success: boolean; subjectId: number }>(
+        `${Config.API_URL}/v1/system/update_subject`,
+        {
+            subjectId: subject.subjectId,
+            subjectName: subject.subjectName,
+            shortcut: subject.shortcut
+        },
+        { withCredentials: true }
+    ).subscribe((res) => {
+        this.subject_save_loading = false;
+        if (res.success) {
+            subject.subjectId = res.subjectId;
+        }
+    }, () => {
+        this.subject_save_loading = false;
+    });
+  }
+
+  public load_teachers(): void {
+    this.http.get<TeacherAPI[]>(`${Config.API_URL}/v1/teachers`).subscribe((data) => {
+        this.available_teachers = data;
+    });
+  }
+
+  public load_assigned_teachers(subjectId: number): void {
+     this.http.get<TeacherAPI[]>(`${Config.API_URL}/v1/system/subject_teachers?subjectId=${subjectId}`, { withCredentials: true })
+        .subscribe((data) => {
+            this.assigned_teachers = data;
+        });
+  }
+
+  public add_teacher_to_subject(): void {
+    const subject = this.system.subjects[this.selected_subject];
+    if (!subject.subjectId || !this.selected_teacher_to_add) return;
+
+    this.http.post(`${Config.API_URL}/v1/system/subject_teachers/add`, {
+        subjectId: subject.subjectId,
+        teacherId: this.selected_teacher_to_add
+    }, { withCredentials: true }).subscribe(() => {
+        this.load_assigned_teachers(subject.subjectId!);
+        this.selected_teacher_to_add = null;
+    });
+  }
+
+  public remove_teacher_from_subject(teacherId: number): void {
+    const subject = this.system.subjects[this.selected_subject];
+    if (!subject.subjectId) return;
+
+    this.http.post(`${Config.API_URL}/v1/system/subject_teachers/remove`, {
+        subjectId: subject.subjectId,
+        teacherId: teacherId
+    }, { withCredentials: true }).subscribe(() => {
+        this.load_assigned_teachers(subject.subjectId!);
+    });
   }
 
   public onInputSubjectName(): void {
@@ -402,6 +488,8 @@ export class SettingsComponent implements OnInit {
         ]
       }
     )
+    
+    this.load_teachers();
   }
 
   // === Save School information ===
@@ -449,6 +537,11 @@ export class SettingsComponent implements OnInit {
     .subscribe((data) => {
       console.log('Login settings updated', data);
     });
+  }
+
+  public get_teacher_name(id: number | null): string {
+    if (!id) return '';
+    return this.available_teachers.find(t => t.teacherId == id)?.teacherName || '';
   }
 
   public update_ldap(): void {

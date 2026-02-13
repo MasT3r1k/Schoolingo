@@ -1,5 +1,6 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { RouterLink } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { Config } from '@Schoolingo/config';
 import { IconsModule } from '@Schoolingo/icons';
@@ -10,7 +11,7 @@ import { Permission } from '@Schoolingo/permission';
 @Component({
   selector: 'app-attendance-widget',
   standalone: true,
-  imports: [CommonModule, IconsModule],
+  imports: [CommonModule, IconsModule, RouterLink],
   templateUrl: './attendance.component.html',
   styleUrl: './attendance.component.css'
 })

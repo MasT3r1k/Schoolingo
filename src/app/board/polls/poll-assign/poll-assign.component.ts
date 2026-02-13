@@ -46,12 +46,12 @@ export class PollAssignComponent implements OnInit {
   selectedClasses: number[][] = [];
 
   assignForm: FormGroup = this.fb.group({
-    active_from: ['', Validators.required],
-    active_to: ['', Validators.required],
+    active_from: [new Date().toISOString().slice(0, 16), Validators.required],
+    active_to: [''], // Optional
     time_limit: [null],
     allow_marking: [false],
-    shuffle_questions: [false],
-    shuffle_options: [false],
+    shuffle_questions: [true],
+    shuffle_options: [true],
     show_results: [true],
     allow_review: [true]
   });
@@ -159,21 +159,54 @@ export class PollAssignComponent implements OnInit {
   }
 
   submit() {
-    if (this.assignForm.invalid || this.selectedClasses.length === 0) return;
-    if (!this.poll) return;
+    console.log('Submit clicked');
+    console.log('Form status:', this.assignForm.status);
+    console.log('Selected classes:', this.selectedClasses.length);
+    
+    if (this.assignForm.invalid) {
+         console.error('Form is invalid', this.assignForm.errors);
+         // Log individual control errors
+         Object.keys(this.assignForm.controls).forEach(key => {
+            const errors = this.assignForm.get(key)?.errors;
+            if (errors) {
+                console.error(`Control ${key} errors:`, errors);
+            }
+         });
+         return;
+    }
+    
+    if (this.selectedClasses.length === 0) {
+        console.error('No classes selected');
+        return;
+    }
+    
+    if (!this.poll) {
+        console.error('Poll not loaded');
+        return;
+    }
 
     const payload = {
-      ...this.assignForm.value,
-      classIds: this.selectedClasses
+      pollId: this.poll.id,
+      targets: this.selectedClasses.map(c => ({ groupId: c[0], subjectId: c[1] })),
+      settings: {
+        start: this.assignForm.get('active_from')?.value,
+        end: this.assignForm.get('active_to')?.value,
+        timeLimit: this.assignForm.get('time_limit')?.value || 0,
+        shuffleQuestions: this.assignForm.get('shuffle_questions')?.value,
+        shuffleOptions: this.assignForm.get('shuffle_options')?.value,
+        showResults: this.assignForm.get('show_results')?.value,
+        allowReview: this.assignForm.get('allow_review')?.value,
+        gradeColumn: null // TODO: Implement grading
+      }
     };
 
     this.http.post(
-      `${Config.API_URL}/v1/polls/${this.poll.id}/assign`,
+      `${Config.API_URL}/v1/polls/assign`,
       payload,
       { withCredentials: true }
     ).subscribe({
       next: () => {
-        this.router.navigate(['/tests']);
+        this.router.navigate(['/board/polls']); // Redirect to list
       },
       error: (err) => console.error(err)
     });

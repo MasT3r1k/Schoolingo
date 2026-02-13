@@ -1181,7 +1181,7 @@
 
         <div id="list">
             @for (subject of system.subjects; track $index) {
-            <div class="panel-item" [class.active]="selected_subject == $index" (click)="selected_subject = $index">
+            <div class="panel-item" [class.active]="selected_subject == $index" (click)="select_subject_item($index)">
                 <div class="panel-meta">
                     <div class="panel-title">
                         <h3>
@@ -1205,9 +1205,14 @@
                 </div>
             </div>
             <div style="display:flex; gap:8px; align-items:center">
-                <div id="btnSave" class="btn small primary">
+                <div id="btnSave" class="btn small primary" (click)="save_subject()"
+                    [class.loading]="subject_save_loading">
+                    @if (subject_save_loading) {
+                    <i-tabler name="loader" class="animate-spin"></i-tabler>
+                    } @else {
                     <i-tabler
                         [name]="system.subjects[selected_subject].subjectId != null ? 'device-floppy' : 'plus'"></i-tabler>
+                    }
                     {{ l.s('system.' + (system.subjects[selected_subject].subjectId != null ? 'save_subject' :
                     'create_subject')) }}
                 </div>
@@ -1272,31 +1277,52 @@
                     <h1 id="detailName">
                         {{ 'Oprávnění učitelé učit tento předmět' }}
                     </h1>
-                    <div class="btn primary small">{{ l.s('system.add_teacher') }}</div>
+                </div>
+
+                <div class="form-group row" style="gap: 8px; align-items: flex-end;">
+                    <div class="custom-select" style="flex: 1"
+                        (click)="$event.stopPropagation(); dropdownManager.selected_dropdown = dropdownManager.selected_dropdown == 'add_teacher_subject' ? '' : 'add_teacher_subject'">
+                        <div class="selected-value">
+                            <div class="row" style="gap: .5rem">
+                                {{ get_teacher_name(selected_teacher_to_add) || l.s('system.select_teacher') }}
+                            </div>
+                            <i-tabler name="chevron-down"></i-tabler>
+                        </div>
+                        @if (dropdownManager.selected_dropdown == 'add_teacher_subject') {
+                        <div class="options-dropdown">
+                            <div class="list">
+                                @for (teacher of available_teachers; track teacher.teacherId) {
+                                <div class="option row" style="gap: .5rem"
+                                    (click)="$event.stopPropagation(); dropdownManager.selected_dropdown = ''; selected_teacher_to_add = teacher.teacherId">
+                                    {{ teacher.teacherName }}
+                                </div>
+                                }
+                            </div>
+                        </div>
+                        }
+                    </div>
+                    <div class="btn primary small" (click)="add_teacher_to_subject()"
+                        [class.disabled]="!selected_teacher_to_add">
+                        <i-tabler name="plus"></i-tabler> {{ l.s('system.add_teacher') }}
+                    </div>
                 </div>
 
                 <div class="teachers-list">
+                    @for (teacher of assigned_teachers; track teacher.teacherId) {
                     <div class="teacher-row">
                         <div class="teacher-name">
-                            Jožko Evelyn
+                            {{ teacher.firstName }} {{ teacher.lastName }}
                         </div>
                         <div class="teacher-actions">
-                            <div class="btn danger icon-only">
+                            <div class="btn danger icon-only" (click)="remove_teacher_from_subject(teacher.teacherId)">
                                 <i-tabler name="trash-x"></i-tabler>
                             </div>
                         </div>
                     </div>
-
-                    <div class="teacher-row">
-                        <div class="teacher-name">
-                            Jožko Evelyn
-                        </div>
-                        <div class="teacher-actions">
-                            <div class="btn danger icon-only">
-                                <i-tabler name="trash-x"></i-tabler>
-                            </div>
-                        </div>
-                    </div>
+                    }
+                    @if (assigned_teachers.length === 0) {
+                    <div class="empty-state-text">{{ l.s('system.no_teachers_assigned') }}</div>
+                    }
                 </div>
             </section>
         </div>

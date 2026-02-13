@@ -397,6 +397,12 @@ export const config: SidebarGroup[] = [
                         url: "admin/monitoring",
                         icon: 'chart-bar',
                         permission: ['manager:system:admin']
+                    },
+                    {
+                        item: 'sidebar.school_years',
+                        url: "admin/school-years",
+                        icon: 'calendar-stats',
+                        permission: ['manager:system:admin']
                     }
                 ]
             }

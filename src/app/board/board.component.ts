@@ -135,7 +135,7 @@ export class BoardComponent implements OnInit, OnDestroy {
   public getNotificationText(notification: Notification): string {
     let text = this.notifications_types[notification.type].description;
     Object.entries(JSON.parse(notification.data)).forEach((data) => {
-      text = text.replaceAll(`%${data[0]}%`, data[1]);
+      text = text.replaceAll(`%${data[0]}%`, data[1] || this.l.s('unknown'));
     })
 
     return text;

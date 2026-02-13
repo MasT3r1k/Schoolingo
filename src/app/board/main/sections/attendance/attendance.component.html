@@ -1,29 +1,46 @@
-<div class="attendance-widget" [class.checked-in]="isCheckedIn">
+<div class="attendance-widget">
     @if (isLoading) {
     <div class="loader">
         <i-tabler name="loader-2"></i-tabler>
     </div>
     } @else {
-    <div class="status-indicator">
-        @if (isCheckedIn) {
-        <span class="dot active"></span>
-        <span class="status-text">Přihlášen ({{ checkInTime }})</span>
-        } @else {
-        <span class="dot inactive"></span>
-        <span class="status-text">Nepřihlášen</span>
-        }
-    </div>
+    <div class="content">
+        <!-- Status Card -->
+        <div class="status-card">
+            @if (isCheckedIn) {
+            <div class="status-indicator active">
+                <i-tabler name="clock-check"></i-tabler>
+            </div>
+            <div class="status-info">
+                <span class="status-label">Přihlášen</span>
+                <span class="status-time">{{ checkInTime }}</span>
+            </div>
+            } @else {
+            <div class="status-indicator inactive">
+                <i-tabler name="clock-x"></i-tabler>
+            </div>
+            <div class="status-info">
+                <span class="status-label">Nepřihlášen</span>
+            </div>
+            }
+        </div>
 
-    <div class="stats">
-        <div class="stat">
-            <span class="label">Dnes odpracováno</span>
-            <span class="value">{{ formattedTotalWorked }}</span>
+        <!-- Stats Card -->
+        <div class="stats-card">
+            <div class="stats-icon">
+                <i-tabler name="clock-hour-3"></i-tabler>
+            </div>
+            <div class="stats-info">
+                <span class="stats-label">Dnes odpracováno</span>
+                <span class="stats-value">{{ formattedTotalWorked }}</span>
+            </div>
         </div>
     </div>
 
+    <!-- Actions -->
     <div class="actions">
         @if (!isCheckedIn) {
-        <button class="btn btn--primary" (click)="performCheckIn()">
+        <button class="btn btn--success" (click)="performCheckIn()">
             <i-tabler name="login"></i-tabler>
             Příchod
         </button>
@@ -34,5 +51,11 @@
         </button>
         }
     </div>
+
+    <!-- Footer Link -->
+    <a class="footer-link" routerLink="/employees/attendance">
+        <i-tabler name="history"></i-tabler>
+        <span>Zobrazit minulou docházku</span>
+    </a>
     }
 </div>

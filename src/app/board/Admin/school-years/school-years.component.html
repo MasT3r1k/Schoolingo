@@ -1,0 +1,187 @@
+<div class="space-y-6">
+    <!-- Header -->
+    <div
+        class="flex justify-between items-center bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700">
+        <div>
+            <h1
+                class="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-indigo-600 dark:from-blue-400 dark:to-indigo-400">
+                School Years Management
+            </h1>
+            <p class="text-gray-500 dark:text-gray-400 mt-1">Manage academic years, terms, and current active year.</p>
+        </div>
+        <button (click)="openCreateModal()"
+            class="px-5 py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white rounded-xl shadow-lg shadow-blue-500/30 transition-all active:scale-95 flex items-center gap-2 font-medium">
+            <i-tabler name="plus" class="w-5 h-5"></i-tabler>
+            New School Year
+        </button>
+    </div>
+
+    <!-- Loading State -->
+    <div *ngIf="isLoading" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 animate-pulse">
+        <div *ngFor="let i of [1,2,3]" class="h-48 bg-gray-200 dark:bg-gray-800 rounded-2xl"></div>
+    </div>
+
+    <!-- Error State -->
+    <div *ngIf="error && !isLoading"
+        class="p-4 bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 rounded-xl border border-red-100 dark:border-red-900/30 flex items-center gap-3">
+        <i-tabler name="alert-circle" class="w-6 h-6"></i-tabler>
+        <span>{{ error }}</span>
+        <button (click)="loadYears()" class="ml-auto text-sm font-bold hover:underline">Retry</button>
+    </div>
+
+    <!-- Years Grid -->
+    <div *ngIf="!isLoading && !error" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+
+        <!-- Year Card -->
+        <div *ngFor="let year of years"
+            class="group relative bg-white dark:bg-gray-800 rounded-2xl border border-gray-100 dark:border-gray-700 shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden"
+            [class.ring-2]="year.current" [class.ring-blue-500]="year.current"
+            [class.dark:ring-blue-400]="year.current">
+
+            <!-- Current Badge ribbon or corner -->
+            <div *ngIf="year.current" class="absolute top-0 right-0 p-3">
+                <span
+                    class="inline-flex items-center gap-1.5 px-3 py-1 bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 text-xs font-bold rounded-full border border-blue-200 dark:border-blue-800">
+                    <span class="w-2 h-2 rounded-full bg-blue-500 animate-pulse"></span>
+                    Current
+                </span>
+            </div>
+
+            <div class="p-6">
+                <!-- Dates -->
+                <div class="flex items-baseline gap-2 mb-1">
+                    <span
+                        class="text-3xl font-bold text-gray-800 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
+                        {{ year.start | date:'yyyy' }}
+                    </span>
+                    <span class="text-xl text-gray-400 font-light">-</span>
+                    <span
+                        class="text-3xl font-bold text-gray-800 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
+                        {{ year.end | date:'yyyy' }}
+                    </span>
+                </div>
+
+                <div class="mt-4 space-y-3">
+                    <div class="flex items-center justify-between text-sm text-gray-500 dark:text-gray-400">
+                        <span>Start Date</span>
+                        <span class="font-medium text-gray-700 dark:text-gray-300">{{ year.start | date:'mediumDate'
+                            }}</span>
+                    </div>
+                    <div class="flex items-center justify-between text-sm text-gray-500 dark:text-gray-400">
+                        <span>Midterm Data</span>
+                        <span class="font-medium text-gray-700 dark:text-gray-300">{{ year.midterm | date:'mediumDate'
+                            }}</span>
+                    </div>
+                    <div class="flex items-center justify-between text-sm text-gray-500 dark:text-gray-400">
+                        <span>End Date</span>
+                        <span class="font-medium text-gray-700 dark:text-gray-300">{{ year.end | date:'mediumDate'
+                            }}</span>
+                    </div>
+                </div>
+
+                <!-- Actions -->
+                <div
+                    class="mt-6 pt-4 border-t border-gray-100 dark:border-gray-700 flex items-center justify-between gap-2">
+                    <div class="flex gap-2">
+                        <button (click)="openEditModal(year)" title="Edit"
+                            class="p-2 text-gray-500 hover:text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-lg transition-colors">
+                            <i-tabler name="edit" class="w-5 h-5"></i-tabler>
+                        </button>
+                        <button (click)="deleteYear(year.syId)" title="Delete"
+                            class="p-2 text-gray-500 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors">
+                            <i-tabler name="trash" class="w-5 h-5"></i-tabler>
+                        </button>
+                    </div>
+
+                    <button *ngIf="!year.current" (click)="setAsCurrent(year)"
+                        class="text-xs font-semibold px-3 py-1.5 bg-gray-100 dark:bg-gray-700 hover:bg-blue-100 dark:hover:bg-blue-900/30 text-gray-600 dark:text-gray-300 hover:text-blue-700 dark:hover:text-blue-400 rounded-lg transition-colors border border-transparent hover:border-blue-200 dark:hover:border-blue-800">
+                        Set as Current
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Empty State -->
+        <div *ngIf="years.length === 0"
+            class="col-span-full py-12 text-center bg-gray-50 dark:bg-gray-800/50 rounded-2xl border border-dashed border-gray-200 dark:border-gray-700">
+            <div
+                class="w-16 h-16 bg-blue-100 dark:bg-blue-900/20 rounded-full flex items-center justify-center mx-auto mb-4 text-blue-600 dark:text-blue-400">
+                <i-tabler name="calendar-off" class="w-8 h-8"></i-tabler>
+            </div>
+            <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-2">No School Years Found</h3>
+            <p class="text-gray-500 dark:text-gray-400 mb-6 max-w-md mx-auto">Get started by creating your first school
+                year to manage terms and academic periods.</p>
+            <button (click)="openCreateModal()"
+                class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition shadow-lg shadow-blue-500/20">
+                Create First Year
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Modal -->
+<div *ngIf="showModal"
+    class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-fade-in">
+    <div
+        class="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl w-full max-w-lg overflow-hidden transform transition-all scale-100 ring-1 ring-gray-200 dark:ring-gray-700">
+        <div
+            class="px-6 py-4 border-b border-gray-100 dark:border-gray-700 flex justify-between items-center bg-gray-50 dark:bg-gray-800/50">
+            <h3 class="text-lg font-bold text-gray-900 dark:text-white flex items-center gap-2">
+                <i-tabler [name]="isEditing ? 'edit' : 'calendar-plus'"
+                    class="w-5 h-5 text-blue-600 dark:text-blue-400"></i-tabler>
+                {{ isEditing ? 'Edit School Year' : 'New School Year' }}
+            </h3>
+            <button (click)="showModal = false"
+                class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 transition-colors p-1 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-full">
+                <i-tabler name="x" class="w-5 h-5"></i-tabler>
+            </button>
+        </div>
+
+        <form [formGroup]="form" (ngSubmit)="save()" class="p-6 space-y-5">
+            <div class="grid grid-cols-2 gap-4">
+                <div class="space-y-1.5">
+                    <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300">Start Date</label>
+                    <input type="date" formControlName="start"
+                        class="w-full px-4 py-2.5 bg-gray-50 dark:bg-gray-900/50 border border-gray-200 dark:border-gray-700 rounded-xl focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none text-gray-900 dark:text-white transition-all">
+                </div>
+                <div class="space-y-1.5">
+                    <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300">End Date</label>
+                    <input type="date" formControlName="end"
+                        class="w-full px-4 py-2.5 bg-gray-50 dark:bg-gray-900/50 border border-gray-200 dark:border-gray-700 rounded-xl focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none text-gray-900 dark:text-white transition-all">
+                </div>
+            </div>
+
+            <div class="space-y-1.5">
+                <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300">Midterm Date</label>
+                <input type="date" formControlName="midterm"
+                    class="w-full px-4 py-2.5 bg-gray-50 dark:bg-gray-900/50 border border-gray-200 dark:border-gray-700 rounded-xl focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none text-gray-900 dark:text-white transition-all">
+            </div>
+
+            <div
+                class="relative flex items-start gap-3 p-4 bg-blue-50 dark:bg-blue-900/10 rounded-xl border border-blue-100 dark:border-blue-800">
+                <div class="flex items-center h-5">
+                    <input type="checkbox" id="current" formControlName="current"
+                        class="w-4 h-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500 cursor-pointer">
+                </div>
+                <div class="text-sm">
+                    <label for="current" class="font-medium text-blue-900 dark:text-blue-300 cursor-pointer">
+                        Set as active/current school year
+                    </label>
+                    <p class="text-blue-700 dark:text-blue-400/80 text-xs">This will automatically unset any other
+                        active school year.</p>
+                </div>
+            </div>
+
+            <div class="pt-2 flex justify-end gap-3 border-t border-gray-100 dark:border-gray-700 mt-4">
+                <button type="button" (click)="showModal = false"
+                    class="px-5 py-2.5 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-xl transition font-medium">
+                    Cancel
+                </button>
+                <button type="submit" [disabled]="form.invalid"
+                    class="px-6 py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-xl hover:shadow-lg hover:shadow-blue-500/30 transition-all disabled:opacity-50 disabled:cursor-not-allowed font-medium active:scale-95">
+                    {{ isEditing ? 'Update Year' : 'Create Year' }}
+                </button>
+            </div>
+        </form>
+    </div>
+</div>

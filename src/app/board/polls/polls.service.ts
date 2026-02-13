@@ -35,6 +35,7 @@ export interface Option {
 
 export interface PollResponse {
   id: number;
+  started_at: string;
   submitted_at: string;
   total_score: number;
   total_max_score: number;
@@ -58,7 +59,7 @@ export class PollsService {
     ) as any;
   }
 
-  public getPoll(id: number): ObservableLike<{ poll: Poll, questions: Question[], submission: PollResponse | null }> {
+  public getPoll(id: number): ObservableLike<{ poll: Poll, questions: Question[], submission: PollResponse | null, assignment?: any }> {
     return this.http.get<any>(
       `${Config.API_URL}/v1/polls/${id}`,
       { withCredentials: true }
@@ -107,6 +108,21 @@ export class PollsService {
     return this.http.post<any>(
       `${Config.API_URL}/v1/polls/${id}/share`,
       { teacherId },
+      { withCredentials: true }
+    ) as any;
+  }
+  public startPoll(id: number): ObservableLike<{ success: boolean, responseId: number }> {
+    return this.http.post<any>(
+      `${Config.API_URL}/v1/polls/${id}/start`,
+      {},
+      { withCredentials: true }
+    ) as any;
+  }
+
+  public sendAnswer(id: number, data: { questionId: number, answerText?: string, optionId?: number, optionIds?: number[] }): ObservableLike<{ success: boolean }> {
+    return this.http.post<any>(
+      `${Config.API_URL}/v1/polls/${id}/answer`,
+      data,
       { withCredentials: true }
     ) as any;
   }

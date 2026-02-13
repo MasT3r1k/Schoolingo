@@ -112,24 +112,24 @@
 
                     <div class="test-card-actions">
                         @if (perms.checkPermission(['student']) && test.type == "test") {
-                            @if (!test.completed) {
-                            <button class="btn btn--primary" [routerLink]="[test.id]">
-                                <i-tabler name="edit"></i-tabler>
-                                <span>Vyplnit test</span>
-                            </button>
-                            } @else {
-                            <button class="btn btn--success" [routerLink]="[test.id, 'results']">
-                                <i-tabler name="chart-bar"></i-tabler>
-                                <span>Moje výsledky</span>
-                            </button>
-                            }
+                        @if (!test.completed) {
+                        <button class="btn btn--primary" [routerLink]="[test.id, 'vote']">
+                            <i-tabler name="edit"></i-tabler>
+                            <span>Vyplnit test</span>
+                        </button>
                         } @else {
-                            @if (canCreate) {
-                            <button class="btn btn--primary" [routerLink]="[test.id, 'manage']" title="Všechny výsledky">
-                                <i-tabler name="chart-dots"></i-tabler>
-                                <span>Správa testu</span>
-                            </button>
-                            }
+                        <button class="btn btn--success" [routerLink]="[test.id, 'results']">
+                            <i-tabler name="chart-bar"></i-tabler>
+                            <span>Moje výsledky</span>
+                        </button>
+                        }
+                        } @else {
+                        @if (canCreate) {
+                        <button class="btn btn--primary" [routerLink]="[test.id, 'manage']" title="Všechny výsledky">
+                            <i-tabler name="chart-dots"></i-tabler>
+                            <span>Správa testu</span>
+                        </button>
+                        }
                         }
                     </div>
                 </div>

@@ -70,12 +70,12 @@
                     </div>
                     }
                     @empty {
-                        <div class="no-selection">
-                            <div class="illustration">
-                                <i-tabler name="user-off"></i-tabler>
-                            </div>
-                            <span>Žádné třídy k dispozici</span>
+                    <div class="no-selection">
+                        <div class="illustration">
+                            <i-tabler name="user-off"></i-tabler>
                         </div>
+                        <span>Žádné třídy k dispozici</span>
+                    </div>
                     }
                 </div>
 
@@ -174,7 +174,8 @@
                 <div class="options-list">
                     @for (option of poll_options; track $index) {
 
-                   <label class="option-toggle" [class.disabled]="!checkIfEnabled(option)" (click)="toggleValue(option)">
+                    <label class="option-toggle" [class.disabled]="!checkIfEnabled(option)"
+                        (click)="toggleValue(option)">
                         <div class="option-info">
                             <i-tabler [name]="option.icon"></i-tabler>
                             <div>
@@ -187,7 +188,8 @@
                             </div>
                         </div>
                         <div class="toggle">
-                            <input type="checkbox" [formControlName]="option.formName" [checked]="checkIfEnabled(option) ? this.assignForm.get(option.formName)?.value : false" />
+                            <input type="checkbox" [formControlName]="option.formName"
+                                [checked]="checkIfEnabled(option) ? this.assignForm.get(option.formName)?.value : false" />
                             <span class="toggle-slider"></span>
                         </div>
                     </label>
@@ -234,7 +236,9 @@
                         </div>
                         <div class="stat-info">
                             <span class="stat-label">Časový limit</span>
-                            <span class="stat-value">{{ assignForm.get('time_limit')?.value > 0 ? `${assignForm.get('time_limit')?.value} ${l.s(assignForm.get('time_limit')?.value > 1 ? 'time.minutes' : 'time.minute')}` : 'Neomezený' }}</span>
+                            <span class="stat-value">{{ assignForm.get('time_limit')?.value > 0 ?
+                                `${assignForm.get('time_limit')?.value} ${l.s(assignForm.get('time_limit')?.value > 1 ?
+                                'time.minutes' : 'time.minute')}` : 'Neomezený' }}</span>
                         </div>
                     </div>
                 </div>
@@ -247,8 +251,7 @@
                 <i-tabler name="x"></i-tabler>
                 Zrušit
             </button>
-            <button type="submit" class="btn btn--primary btn--lg"
-                [disabled]="assignForm.invalid || selectedClasses.length === 0">
+            <button type="button" class="btn btn--primary btn--lg" (click)="submit()">
                 <i-tabler name="send"></i-tabler>
                 Spustit test
             </button>
