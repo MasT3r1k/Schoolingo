@@ -81,6 +81,11 @@ export const config: SidebarGroup[] = [
                 item: 'sidebar.teach.main',
                 icon: 'book',
                 children: [{
+                    item: 'sidebar.teach.myClass',
+                    url: 'teach/my-class',
+                    icon: 'chalkboard',
+                    permission: ['teacher']
+                }, {
                     item: 'sidebar.teach.timetable',
                     url: 'teach/timetable',
                     icon: 'calendar-time',
@@ -399,7 +404,7 @@ export const config: SidebarGroup[] = [
                         permission: ['manager:system:admin']
                     },
                     {
-                        item: 'sidebar.school_years',
+                        item: 'admin.schoolYears.title',
                         url: "admin/school-years",
                         icon: 'calendar-stats',
                         permission: ['manager:system:admin']

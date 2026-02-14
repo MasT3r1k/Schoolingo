@@ -1,0 +1,32 @@
+<div class="create-form p-0">
+    <div class="form-row">
+        <div class="form-group">
+            <label>Název lekce *</label>
+            <input type="text" [(ngModel)]="newSession.title" placeholder="např. Příprava na maturitu z matematiky">
+        </div>
+        <div class="form-group">
+            <label>Datum a čas *</label>
+            <input type="datetime-local" [(ngModel)]="newSession.date">
+        </div>
+    </div>
+    <div class="form-row">
+        <div class="form-group">
+            <label>Místnost</label>
+            <input type="text" [(ngModel)]="newSession.room" placeholder="např. U12">
+        </div>
+        <div class="form-group">
+            <label>Max. počet studentů</label>
+            <input type="number" [(ngModel)]="newSession.maxStudents" min="1" max="30">
+        </div>
+    </div>
+    <div class="form-group">
+        <label>Popis</label>
+        <textarea [(ngModel)]="newSession.description" rows="3" placeholder="Detaily o lekci..."></textarea>
+    </div>
+    <div class="buttons end mt-4">
+        <button class="btn btn--secondary" (click)="closeModal()">Zrušit</button>
+        <button class="btn btn--primary" (click)="createSession()" [disabled]="!newSession.title || !newSession.date">
+            <i-tabler name="check"></i-tabler> Vytvořit lekci
+        </button>
+    </div>
+</div>

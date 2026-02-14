@@ -106,7 +106,7 @@ export class ManagefilesComponent implements OnInit {
         this.isLoading = true;
 
         this.http.get<FileItem[]>(
-            `${Config.API_URL}/v1/files?limit=${this.pageSize}&offset=${this.pageSize * (this.currentPage - 1)}`,
+            `${Config.API_URL}/v1/files?limit=${this.pageSize}&offset=${this.pageSize * (this.currentPage - 1)}&name=${this.filters.search}&type=${this.filters.type}`,
             { withCredentials: true }
         )
         .subscribe((data) => {

@@ -134,6 +134,7 @@ export class MessageManager {
 
   // Receivers
   public receivers: number[] = [];
+  public selectedReceivers$ = new BehaviorSubject<messageReceiver[]>([]);
 
   // Files
   public files: UploadFile[] = [];

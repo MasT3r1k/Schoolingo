@@ -3,6 +3,7 @@ import { AuthComponent } from './Auth/auth.component';
 import { NotUserGuard, UserGuard } from './Guards/Auth.guard';
 import { BoardComponent } from './board/board.component';
 import { MainComponent } from './board/main/main.component';
+import { MyClassComponent } from './board/Teach/MyClass/my-class.component';
 import { SettingsComponent } from './board/User/settings/settings.component';
 import { AccountComponent } from './board/User/account/account.component';
 import { PersonalInformationComponent } from './board/User/personal-information/personal-information.component';
@@ -220,6 +221,10 @@ export const routes: Routes = [
                     {
                         path: 'tutoring',
                         component: TutoringComponent
+                    },
+                    {
+                        path: 'my-class',
+                        component: MyClassComponent
                     }
                 ]
             },

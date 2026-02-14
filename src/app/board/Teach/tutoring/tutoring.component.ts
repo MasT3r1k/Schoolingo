@@ -1,15 +1,16 @@
 import { Component, inject, OnInit } from '@angular/core';
-import { FormsModule } from '@angular/forms';
 import { IconsModule } from '@Schoolingo/icons';
 import { Locale } from '@Schoolingo/locale';
 import { Permission } from '@Schoolingo/permission';
 import { TutoringService, TutoringSession } from '../../../infrastructure/tutoring/tutoring.service';
 import moment from 'moment';
+import { ModalManager } from '@Schoolingo/modal';
+import { AddSessionComponent } from './modals/add-session/add-session.component';
 
 @Component({
   selector: 'app-tutoring',
   standalone: true,
-  imports: [FormsModule, IconsModule],
+  imports: [IconsModule],
   templateUrl: './tutoring.component.html',
   styleUrls: ['./tutoring.component.css']
 })
@@ -17,56 +18,24 @@ export class TutoringComponent implements OnInit {
   public l = inject(Locale);
   public perm = inject(Permission);
   public tutoringService = inject(TutoringService);
+  private modalManager = inject(ModalManager);
 
-  public sessions: TutoringSession[] = [];
-  public loading = true;
-  public showCreateForm = false;
-
-  // Form fields
-  public newSession = {
-    subjectId: 0,
-    title: '',
-    description: '',
-    date: '',
-    room: '',
-    maxStudents: 10
-  };
+  public sessions = this.tutoringService.sessions;
+  public loading = this.tutoringService.loading;
 
   ngOnInit(): void {
-    this.loadSessions();
-  }
+    this.tutoringService.loadSessions().subscribe();
 
-  private loadSessions(): void {
-    this.loading = true;
-    this.tutoringService.loadSessions().subscribe({
-      next: (data) => {
-        this.sessions = data;
-        this.loading = false;
-      },
-      error: () => {
-        this.loading = false;
+    this.modalManager.addModal(
+      'add_tutoring_session',
+      {
+        title: 'Nová lekce doučování',
+        closeable: true,
+        items: [
+          { type: 'component', component: AddSessionComponent }
+        ]
       }
-    });
-  }
-
-  public createSession(): void {
-    if (!this.newSession.title || !this.newSession.date) return;
-
-    this.tutoringService.createSession({
-      subjectId: this.newSession.subjectId,
-      title: this.newSession.title,
-      description: this.newSession.description,
-      date: this.newSession.date,
-      room: this.newSession.room,
-      maxStudents: this.newSession.maxStudents
-    }).subscribe({
-      next: (response) => {
-        if (response.success) {
-          this.loadSessions();
-          this.resetForm();
-        }
-      }
-    });
+    )
   }
 
   public cancelSession(session: TutoringSession): void {
@@ -75,7 +44,7 @@ export class TutoringComponent implements OnInit {
     this.tutoringService.cancelSession(session.sessionId).subscribe({
       next: (response) => {
         if (response.success) {
-          this.sessions = this.sessions.filter(s => s.sessionId !== session.sessionId);
+          this.tutoringService.loadSessions().subscribe();
         }
       }
     });
@@ -89,19 +58,7 @@ export class TutoringComponent implements OnInit {
     return new Date(date) > new Date();
   }
 
-  private resetForm(): void {
-    this.newSession = {
-      subjectId: 0,
-      title: '',
-      description: '',
-      date: '',
-      room: '',
-      maxStudents: 10
-    };
-    this.showCreateForm = false;
-  }
-
-  public toggleCreateForm(): void {
-    this.showCreateForm = !this.showCreateForm;
+  public openCreateForm(): void {
+    this.modalManager.openModal('add_tutoring_session');
   }
 }

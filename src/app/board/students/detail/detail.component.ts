@@ -26,7 +26,10 @@ export interface Student {
   birthday: Date;
   email: string;
   phone: string;
-  address: string;
+  street: string;
+  houseNumber: string;
+  city: string;
+  postcode: string;
   enrollmentDate: string;
   graduationDate?: string;
   averageGrade: string;
@@ -245,5 +248,122 @@ export class DetailComponent implements OnInit {
     if (parseFloat(grade) <= 3.0) return 'grade-good';
     if (parseFloat(grade) <= 4.0) return 'grade-fair';
     return 'grade-poor';
+  }
+
+  // Parent Management
+  showAddParentModal = false;
+  addParentMode: 'existing' | 'new' = 'existing';
+  searchParentQuery = '';
+  foundParents: any[] = [];
+  selectedParentId: number | null = null;
+  
+  newParent = {
+    firstName: '',
+    lastName: '',
+    email: '',
+    phone: '',
+    role: 'father'
+  };
+
+  searchParents() {
+    if (this.searchParentQuery.length < 3) return;
+    
+    this.http.get<any[]>(`${Config.API_URL}/v1/student/parent/search`, {
+      params: { q: this.searchParentQuery },
+      withCredentials: true
+    }).subscribe(parents => {
+      this.foundParents = parents;
+    });
+  }
+
+  selectParent(id: number) {
+    this.selectedParentId = id;
+  }
+
+  addParent() {
+    if (!this.selectedStudent) return;
+
+    const payload: any = {
+      mode: this.addParentMode,
+      role: this.newParent.role
+    };
+
+    if (this.addParentMode === 'existing') {
+        if (!this.selectedParentId) return;
+        payload.personId = this.selectedParentId;
+    } else {
+        if (!this.newParent.firstName || !this.newParent.lastName) return;
+        payload.firstName = this.newParent.firstName;
+        payload.lastName = this.newParent.lastName;
+        payload.email = this.newParent.email;
+        payload.phone = this.newParent.phone;
+    }
+
+    this.http.post(`${Config.API_URL}/v1/student/${this.selectedStudent.personId}/parent`, payload, {
+      withCredentials: true
+    }).subscribe({
+      next: () => {
+        this.showAddParentModal = false;
+        // Reload student data
+        this.ngOnInit();
+        // Reset form
+        this.resetParentForm();
+      },
+      error: (err) => {
+        console.error('Failed to add parent', err);
+        alert('Nepodařilo se přidat rodiče.');
+      }
+    });
+  }
+
+  resetParentForm() {
+    this.searchParentQuery = '';
+    this.foundParents = [];
+    this.selectedParentId = null;
+    this.newParent = {
+      firstName: '',
+      lastName: '',
+      email: '',
+      phone: '',
+      role: 'father'
+    };
+    this.addParentMode = 'existing';
+  }
+
+  // Address Management
+  showEditAddressModal = false;
+  editingAddress = {
+    street: '',
+    houseNumber: '',
+    city: '',
+    postcode: ''
+  };
+
+  openEditAddress() {
+    if (!this.selectedStudent) return;
+    this.editingAddress = {
+      street: this.selectedStudent.street || '',
+      houseNumber: this.selectedStudent.houseNumber || '',
+      city: this.selectedStudent.city || '',
+      postcode: this.selectedStudent.postcode || ''
+    };
+    this.showEditAddressModal = true;
+  }
+
+  saveAddress() {
+    if (!this.selectedStudent) return;
+
+    this.http.patch(`${Config.API_URL}/v1/student/${this.selectedStudent.personId}/address`, this.editingAddress, {
+      withCredentials: true
+    }).subscribe({
+      next: () => {
+        this.showEditAddressModal = false;
+        this.ngOnInit();
+      },
+      error: (err) => {
+        console.error('Failed to update address', err);
+        alert('Nepodařilo se uložit adresu.');
+      }
+    });
   }
 }

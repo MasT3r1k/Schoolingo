@@ -1,0 +1,49 @@
+<div class="form-grid" [formGroup]="form">
+    <div class="form-group">
+        <label>
+            <i-tabler name="calendar-event"></i-tabler>
+            {{ l.s('admin.schoolYears.startDate') || 'Datum začátku' }}
+        </label>
+        <input type="date" formControlName="start" class="input">
+    </div>
+
+    <div class="form-group">
+        <label>
+            <i-tabler name="calendar-check"></i-tabler>
+            {{ l.s('admin.schoolYears.endDate') || 'Datum konce' }}
+        </label>
+        <input type="date" formControlName="end" class="input">
+    </div>
+
+    <div class="form-group" style="grid-column: 1 / -1; max-width: 50%;">
+        <label>
+            <i-tabler name="calendar-stats"></i-tabler>
+            {{ l.s('admin.schoolYears.midtermDate') || 'Datum pololetí' }}
+        </label>
+        <input type="date" formControlName="midterm" class="input">
+    </div>
+</div>
+
+<div class="form-group toggle-row" [formGroup]="form" style="margin-top: 1rem;">
+    <label class="toggle-label">
+        <span class="label-text">
+            <i-tabler name="star-filled"></i-tabler>
+            {{ l.s('admin.schoolYears.setAsCurrent') || 'Nastavit jako aktivní školní rok' }}
+        </span>
+        <span class="label-description">{{ l.s('admin.schoolYears.setAsCurrentDesc') || 'Toto automaticky deaktivuje všechny ostatní školní roky' }}</span>
+    </label>
+    <label class="toggle">
+        <input type="checkbox" formControlName="current">
+        <span class="toggle-slider"></span>
+    </label>
+</div>
+
+<div class="modal-footer">
+    <button type="button" class="btn btn--ghost" (click)="close()">
+        {{ l.s('buttons.cancel') || 'Zrušit' }}
+    </button>
+    <button type="button" class="btn btn--primary" [disabled]="form.invalid" (click)="save()">
+        <i-tabler [name]="isEditing ? 'check' : 'plus'"></i-tabler>
+        {{ isEditing ? (l.s('buttons.save') || 'Uložit') : (l.s('admin.schoolYears.create') || 'Vytvořit') }}
+    </button>
+</div>

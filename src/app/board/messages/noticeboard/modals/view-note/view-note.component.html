@@ -9,9 +9,13 @@
         <p>{{ l.s('messages.error_loading') }}</p>
     </div>
     } @else if (note) {
-    <div class="note-header">
-        <div class="meta">
-            <div class="author">
+    <div class="note-content-wrapper">
+        <div class="note-header-visual">
+            <div class="pattern-overlay"></div>
+        </div>
+
+        <div class="note-header-content">
+            <div class="author-badge">
                 <div class="avatar-placeholder">
                     {{ note.author.first_name ? note.author.first_name[0] : '' }}{{ note.author.last_name ?
                     note.author.last_name[0] : '' }}
@@ -24,10 +28,26 @@
         </div>
 
         <h1 class="topic">{{ note.topic }}</h1>
-    </div>
 
-    <div class="note-body">
-        {{ note.message }}
+        <div class="note-body">
+            {{ note.message }}
+        </div>
+
+        @if (note.target_groups?.length) {
+        <div class="note-footer">
+            <div class="footer-section">
+                <div class="section-title">
+                    <i-tabler name="users"></i-tabler>
+                    {{ l.s('messages.target_groups') }}
+                </div>
+                <div class="groups-list">
+                    @for (group of note.target_groups; track $index) {
+                    <div class="group-chip">{{ group }}</div>
+                    }
+                </div>
+            </div>
+        </div>
+        }
     </div>
     }
 </div>

@@ -4,54 +4,16 @@
         <h2>{{ l.s('sidebar.teach.tutoring')}}</h2>
         <div class="flex-items">
             @if (perm.checkPermission(['teacher'])) {
-            <button class="btn btn--primary btn--sm" (click)="toggleCreateForm()">
+            <button class="btn btn--primary btn--sm" (click)="openCreateForm()">
                 <i-tabler name="plus"></i-tabler>
-                {{ showCreateForm ? 'Zrušit' : 'Nová lekce' }}
+                Nová lekce
             </button>
             }
         </div>
     </div>
-    <div class="card-body" [class.center]="!loading && sessions.length == 0">
-        <!-- Create form -->
-        @if (showCreateForm) {
-        <div class="create-form">
-            <div class="form-row">
-                <div class="form-group">
-                    <label>Název lekce *</label>
-                    <input type="text" [(ngModel)]="newSession.title"
-                        placeholder="např. Příprava na maturitu z matematiky">
-                </div>
-                <div class="form-group">
-                    <label>Datum a čas *</label>
-                    <input type="datetime-local" [(ngModel)]="newSession.date">
-                </div>
-            </div>
-            <div class="form-row">
-                <div class="form-group">
-                    <label>Místnost</label>
-                    <input type="text" [(ngModel)]="newSession.room" placeholder="např. U12">
-                </div>
-                <div class="form-group">
-                    <label>Max. počet studentů</label>
-                    <input type="number" [(ngModel)]="newSession.maxStudents" min="1" max="30">
-                </div>
-            </div>
-            <div class="form-group">
-                <label>Popis</label>
-                <textarea [(ngModel)]="newSession.description" rows="3" placeholder="Detaily o lekci..."></textarea>
-            </div>
-            <div class="buttons end mt-4">
-                <button class="btn btn--secondary" (click)="toggleCreateForm()">Zrušit</button>
-                <button class="btn btn--primary" (click)="createSession()"
-                    [disabled]="!newSession.title || !newSession.date">
-                    <i-tabler name="check"></i-tabler> Vytvořit lekci
-                </button>
-            </div>
-        </div>
-        }
-
+    <div class="card-body" [class.center]="!loading() && sessions().length == 0">
         <!-- Loading state -->
-        @if (loading) {
+        @if (loading()) {
         <div class="loading-state">
             @for (i of [1,2,3]; track $index) {
             <div class="skeleton-card skeleton"></div>
@@ -60,9 +22,9 @@
         }
 
         <!-- Sessions list -->
-        @if (!loading) {
+        @if (!loading()) {
         <div class="sessions-grid">
-            @for (session of sessions; track session.sessionId) {
+            @for (session of sessions(); track session.sessionId) {
             <div class="session-card" [class.past]="!isUpcoming(session.date)">
                 <div class="session-header">
                     @if (session.subject) {

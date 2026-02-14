@@ -7,6 +7,7 @@ import { HttpClient } from '@angular/common/http';
 import { Config } from '@Schoolingo/config';
 import { Utils } from '@Schoolingo/utils';
 import { DropdownManager } from '@Schoolingo/dropdown';
+import { Locale } from '@Schoolingo/locale';
 
 // Interfaces
 export interface User {
@@ -66,6 +67,7 @@ interface UserAPIResponse {
 })
 export class ManageusersComponent implements OnInit {
   private http = inject(HttpClient);
+  public l = inject(Locale);
   public Utils = Utils;
   public dropdownManager = inject(DropdownManager);
 

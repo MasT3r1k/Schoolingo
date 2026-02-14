@@ -1,0 +1,425 @@
+<div class="card">
+    <div class="card-header">
+        <h2 class="flex" style="align-items: center; gap: 10px;">
+            Správa třídy
+            <span *ngIf="classInfo" style="color: var(--text-muted)">
+            </span>
+        </h2>
+
+        <!-- Class Selector if teacher has multiple classes -->
+        <div *ngIf="classes.length > 1" class="class-selector" style="margin-left: 20px;">
+            <select [(ngModel)]="selectedClassId" (change)="onClassChange()" class="form-input"
+                style="padding: 6px 12px; border-radius: 6px;">
+                <option *ngFor="let c of classes" [value]="c.classId">{{ c.prefix }}{{ c.suffix }}</option>
+            </select>
+        </div>
+
+        <div class="flex-items" *ngIf="classInfo">
+            <schoolingo-tabs [value]="activeTab" [options]="tabs"></schoolingo-tabs>
+        </div>
+    </div>
+
+    <div class="card-body">
+        <div *ngIf="loading" class="loading-state">
+            <div class="loading-spinner"></div>
+            <p>Načítám data...</p>
+        </div>
+
+        <div *ngIf="error" class="error-state">
+            <i-tabler name="alert-circle"></i-tabler>
+            <p>{{ error }}</p>
+        </div>
+
+        <!-- No classes assigned state -->
+        <div *ngIf="!loading && !classInfo && classes.length === 0" class="no-selection">
+            <div class="illustration">
+                <i-tabler name="chalkboard-off"></i-tabler>
+            </div>
+            <h3>Přiřazení ke třídě</h3>
+            <p>Nejste třídním učitelem žádné třídy.</p>
+        </div>
+
+        <div *ngIf="!loading && !error && classInfo">
+            <!-- Overview Section -->
+            <div class="overview-section"
+                style="display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 15px; margin-bottom: 25px;">
+                <div class="stat-card"
+                    style="background: var(--surface-2); padding: 15px; border-radius: 8px; border: 1px solid var(--border);">
+                    <div style="font-size: 13px; color: var(--text-muted); margin-bottom: 5px; font-weight: 500;">Počet
+                        žáků</div>
+                    <div style="font-size: 24px; font-weight: 700; color: var(--text);">{{ students.length }}</div>
+                </div>
+
+                <div class="stat-card"
+                    style="background: var(--surface-2); padding: 15px; border-radius: 8px; border: 1px solid var(--border);">
+                    <div style="font-size: 13px; color: var(--text-muted); margin-bottom: 5px; font-weight: 500;">Výuka
+                        dnes</div>
+                    <div style="font-size: 24px; font-weight: 700;"
+                        [style.color]="todayStats?.active ? 'var(--green)' : 'var(--text-muted)'">
+                        {{ todayStats?.active ? 'Ano' : 'Ne' }}
+                    </div>
+                </div>
+
+                <ng-container *ngIf="todayStats?.active">
+                    <div class="stat-card"
+                        style="background: var(--surface-2); padding: 15px; border-radius: 8px; border: 1px solid var(--border);">
+                        <div style="font-size: 13px; color: var(--text-muted); margin-bottom: 5px; font-weight: 500;">
+                            Přítomno</div>
+                        <div style="font-size: 24px; font-weight: 700; color: var(--green);">{{ todayStats.present }}
+                        </div>
+                    </div>
+                    <div class="stat-card"
+                        style="background: var(--surface-2); padding: 15px; border-radius: 8px; border: 1px solid var(--border);">
+                        <div style="font-size: 13px; color: var(--text-muted); margin-bottom: 5px; font-weight: 500;">
+                            Chybí</div>
+                        <div style="font-size: 24px; font-weight: 700;"
+                            [style.color]="todayStats.absent > 0 ? 'var(--red)' : ''">{{ todayStats.absent }}</div>
+                    </div>
+                    <div class="stat-card"
+                        style="background: var(--surface-2); padding: 15px; border-radius: 8px; border: 1px solid var(--border);">
+                        <div style="font-size: 13px; color: var(--text-muted); margin-bottom: 5px; font-weight: 500;">
+                            Omluveno</div>
+                        <div style="font-size: 24px; font-weight: 700;">{{ todayStats.excusedPercent }}%</div>
+                    </div>
+                </ng-container>
+            </div>
+
+            <!-- Students Tab -->
+            <div *ngIf="activeTab.getValue() === 0">
+                <div class="students-table-wrapper">
+                    <table class="students-table" style="width: 100%;">
+                        <thead>
+                            <tr>
+                                <th class="col-student">Student</th>
+                                <th class="col-info">Info</th>
+                                <th class="col-avg">Průměr</th>
+                                <th class="col-abs">Absence</th>
+                                <th class="col-actions"></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr *ngFor="let student of students" class="table-row">
+                                <td class="col-student">
+                                    <div class="student-cell" style="display: flex; align-items: center; gap: 10px;">
+                                        <div class="student-avatar-sm"
+                                            style="width: 32px; height: 32px; background: var(--surface-2); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 600; font-size: 12px;">
+                                            {{ student.firstName[0] }}{{ student.lastName[0] }}
+                                        </div>
+                                        <div class="student-name-cell" style="display: flex; flex-direction: column;">
+                                            <span class="name" style="font-weight: 500;">{{ student.firstName }} {{
+                                                student.lastName }}</span>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="col-info">
+                                    <div style="font-size: 13px; color: var(--text-muted); line-height: 1.4;">
+                                        <div>{{ Utils.getAge(student.birthday) }} let</div>
+                                        <div>{{ Utils.formatDateShort(student.birthday) }}</div>
+                                    </div>
+                                </td>
+                                <td class="col-avg">
+                                    <span class="badge" [ngClass]="getGradeClass(student.averageGrade)"
+                                        style="padding: 4px 8px; border-radius: 4px; font-size: 13px; font-weight: 600;">
+                                        {{ student.averageGrade || '—' }}
+                                    </span>
+                                </td>
+                                <td class="col-abs">
+                                    <span style="font-weight: 500;"
+                                        [style.color]="(student.absenceRate > 20) ? 'var(--red)' : ''">
+                                        {{ student.absenceRate || 0 }}%
+                                    </span>
+                                </td>
+                                <td class="col-actions" style="text-align: right;">
+                                    <button class="btn btn--icon" title="Profil">
+                                        <i-tabler name="user"></i-tabler>
+                                    </button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Absence Tab -->
+            <div *ngIf="activeTab.getValue() === 1">
+                <!-- Absence Stats -->
+                <div class="absence-stats" *ngIf="absenceStats"
+                    style="display: flex; gap: 20px; margin-bottom: 25px; padding: 20px; background: var(--surface-2); border-radius: 12px; border: 1px solid var(--border); align-items: center; justify-content: space-around;">
+                    <div style="text-align: center;">
+                        <div style="font-size: 13px; color: var(--text-muted); margin-bottom: 6px; font-weight: 500;">
+                            Omluvená absence</div>
+                        <div style="font-size: 24px; font-weight: 700; color: var(--green);">{{
+                            absenceStats.totalExcused }}</div>
+                    </div>
+                    <div style="width: 1px; height: 50px; background: var(--border);"></div>
+                    <div style="text-align: center;">
+                        <div style="font-size: 13px; color: var(--text-muted); margin-bottom: 6px; font-weight: 500;">
+                            Neomluvená absence</div>
+                        <div style="font-size: 24px; font-weight: 700; color: var(--red);">{{
+                            absenceStats.totalUnexcused }}</div>
+                    </div>
+                    <div style="width: 1px; height: 50px; background: var(--border);"></div>
+                    <div style="text-align: center;">
+                        <div style="font-size: 13px; color: var(--text-muted); margin-bottom: 6px; font-weight: 500;">
+                            Průměrná absence</div>
+                        <div style="font-size: 24px; font-weight: 700;">{{ absenceStats.classAverage }}%</div>
+                    </div>
+                </div>
+                <div *ngIf="absences.length === 0" class="empty-state"
+                    style="text-align: center; padding: 40px; color: var(--text-muted);">
+                    <div class="empty-icon" style="font-size: 48px; margin-bottom: 20px;">
+                        <i-tabler name="check"></i-tabler>
+                    </div>
+                    <p>Žádná neomluvená absence.</p>
+                </div>
+
+                <table *ngIf="absences.length > 0" class="students-table" style="width: 100%;">
+                    <thead>
+                        <tr>
+                            <th>Žák</th>
+                            <th>Datum</th>
+                            <th>Hodina</th>
+                            <th>Akce</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngFor="let absence of absences" class="table-row">
+                            <td>
+                                <div class="student-cell" style="display: flex; align-items: center; gap: 10px;">
+                                    <div class="student-avatar-sm"
+                                        style="width: 32px; height: 32px; background: var(--surface-2); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 600; font-size: 12px;">
+                                        {{ absence.firstName[0] }}{{ absence.lastName[0] }}
+                                    </div>
+                                    <span>{{ absence.firstName }} {{ absence.lastName }}</span>
+                                </div>
+                            </td>
+                            <td>{{ Utils.formatDateShort(absence.date) }}</td>
+                            <td>{{ absence.dayHour }}</td>
+                            <td>
+                                <div class="excuse-form" style="display: flex; gap: 10px;">
+                                    <input type="text" [(ngModel)]="excuseReason" placeholder="Důvod omluvy"
+                                        class="form-input"
+                                        style="padding: 6px 12px; border-radius: 6px; border: 1px solid var(--border);">
+                                    <button (click)="excuse(absence)" class="btn btn--primary btn--sm">Omluvit</button>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Service Tab -->
+            <div *ngIf="activeTab.getValue() === 2">
+                <div class="services-grid" style="display: grid; grid-template-columns: 2fr 1fr; gap: 20px;">
+                    <div class="service-list">
+                        <!-- Current Service -->
+                        <h3 style="margin-bottom: 15px;">Aktuální služba</h3>
+                        <div *ngIf="currentServices.length === 0" class="empty-state"
+                            style="padding: 20px; text-align: center; background: var(--surface-2); border-radius: 8px;">
+                            Žádná aktivní služba.
+                        </div>
+                        <table *ngIf="currentServices.length > 0" class="students-table"
+                            style="width: 100%; margin-bottom: 30px;">
+                            <thead>
+                                <tr>
+                                    <th>Žák</th>
+                                    <th>Od</th>
+                                    <th>Do</th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr *ngFor="let service of currentServices" class="table-row">
+                                    <td>
+                                        <div class="student-cell"
+                                            style="display: flex; align-items: center; gap: 10px;">
+                                            <div class="student-avatar-sm"
+                                                style="width: 32px; height: 32px; background: var(--surface-2); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 600; font-size: 12px;">
+                                                {{ service.firstName[0] }}{{ service.lastName[0] }}
+                                            </div>
+                                            <span>{{ service.firstName }} {{ service.lastName }}</span>
+                                        </div>
+                                    </td>
+                                    <td>{{ Utils.formatDateShort(service.start) }}</td>
+                                    <td>{{ Utils.formatDateShort(service.end) }}</td>
+                                    <td>
+                                        <button (click)="removeService(service.csId)" class="btn btn--icon danger"
+                                            title="Odebrat">
+                                            <i-tabler name="x"></i-tabler>
+                                        </button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+
+                        <!-- Planned Service -->
+                        <h3
+                            style="margin-bottom: 15px; margin-top: 20px; padding-top: 20px; border-top: 1px solid var(--border);">
+                            Naplánovaná služba</h3>
+                        <div *ngIf="plannedServices.length === 0"
+                            style="color: var(--text-muted); font-style: italic; margin-bottom: 30px;">
+                            Žádná naplánovaná služba.
+                        </div>
+                        <table *ngIf="plannedServices.length > 0" class="students-table"
+                            style="width: 100%; margin-bottom: 30px;">
+                            <thead>
+                                <tr>
+                                    <th>Žák</th>
+                                    <th>Od</th>
+                                    <th>Do</th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr *ngFor="let service of plannedServices" class="table-row">
+                                    <td>
+                                        <div class="student-cell"
+                                            style="display: flex; align-items: center; gap: 10px;">
+                                            <div class="student-avatar-sm"
+                                                style="width: 32px; height: 32px; background: var(--surface-2); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 600; font-size: 12px;">
+                                                {{ service.firstName[0] }}{{ service.lastName[0] }}
+                                            </div>
+                                            <span>{{ service.firstName }} {{ service.lastName }}</span>
+                                        </div>
+                                    </td>
+                                    <td>{{ Utils.formatDateShort(service.start) }}</td>
+                                    <td>{{ Utils.formatDateShort(service.end) }}</td>
+                                    <td>
+                                        <button (click)="removeService(service.csId)" class="btn btn--icon danger"
+                                            title="Odebrat">
+                                            <i-tabler name="x"></i-tabler>
+                                        </button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+
+                        <!-- History Section -->
+                        <h3
+                            style="margin-bottom: 15px; margin-top: 20px; padding-top: 20px; border-top: 1px solid var(--border);">
+                            Historie služeb</h3>
+                        <div *ngIf="serviceHistory.length === 0" style="color: var(--text-muted); font-style: italic;">
+                            Žádná historie služeb.</div>
+
+                        <table *ngIf="serviceHistory.length > 0" class="students-table history-table"
+                            style="width: 100%; opacity: 0.8;">
+                            <thead>
+                                <tr>
+                                    <th>Žák</th>
+                                    <th>Od</th>
+                                    <th>Do</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr *ngFor="let h of serviceHistory" class="table-row">
+                                    <td>
+                                        <div class="student-cell"
+                                            style="display: flex; align-items: center; gap: 10px;">
+                                            <div class="student-avatar-sm"
+                                                style="width: 24px; height: 24px; background: var(--surface-2); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 600; font-size: 10px;">
+                                                {{ h.firstName[0] }}{{ h.lastName[0] }}
+                                            </div>
+                                            <span>{{ h.firstName }} {{ h.lastName }}</span>
+                                        </div>
+                                    </td>
+                                    <td>{{ Utils.formatDateShort(h.start) }}</td>
+                                    <td>{{ Utils.formatDateShort(h.end) }}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+
+                    </div>
+
+                    <div class="add-service-wrapper" style="display: flex; flex-direction: column; gap: 20px;">
+                        <!-- Manual Add -->
+                        <div class="add-service-form"
+                            style="background: var(--surface-2); padding: 20px; border-radius: 12px; height: fit-content;">
+                            <h3 style="margin-bottom: 15px;">Přidat službu</h3>
+                            <div class="form-vertical" style="display: flex; flex-direction: column; gap: 15px;">
+                                <div class="form-group">
+                                    <label
+                                        style="display: block; margin-bottom: 5px; color: var(--text-muted); font-size: 14px;">Žák</label>
+                                    <div class="custom-select" style="position: relative;">
+                                        <select [(ngModel)]="newService.studentId" name="studentId" class="form-input"
+                                            style="width: 100%; padding: 8px 12px; border-radius: 6px; border: 1px solid var(--border); background: var(--surface);">
+                                            <option [ngValue]="null">Vyberte žáka...</option>
+                                            <option *ngFor="let s of students" [value]="s.personId">
+                                                {{ s.lastName }} {{ s.firstName }}
+                                            </option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label
+                                        style="display: block; margin-bottom: 5px; color: var(--text-muted); font-size: 14px;">Od</label>
+                                    <input type="date" [(ngModel)]="newService.start" name="start" class="form-input"
+                                        style="width: 100%; padding: 8px 12px; border-radius: 6px; border: 1px solid var(--border); background: var(--surface);">
+                                </div>
+                                <div class="form-group">
+                                    <label
+                                        style="display: block; margin-bottom: 5px; color: var(--text-muted); font-size: 14px;">Do</label>
+                                    <input type="date" [(ngModel)]="newService.end" name="end" class="form-input"
+                                        style="width: 100%; padding: 8px 12px; border-radius: 6px; border: 1px solid var(--border); background: var(--surface);">
+                                </div>
+                                <button (click)="addService()" class="btn btn--primary"
+                                    [disabled]="!newService.studentId" style="width: 100%;">Uložit</button>
+                            </div>
+                        </div>
+
+                        <!-- Auto Assign -->
+                        <div class="add-service-form"
+                            style="background: var(--surface-2); padding: 20px; border-radius: 12px; height: fit-content; border: 1px dashed var(--primary);">
+                            <h3 style="margin-bottom: 15px; color: var(--primary);">Automatický výběr</h3>
+                            <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 15px;">Vybere náhodně 2
+                                studenty na následující týden.</p>
+                            <div class="form-vertical" style="display: flex; flex-direction: column; gap: 10px;">
+                                <div class="form-group">
+                                    <label
+                                        style="display: block; margin-bottom: 5px; color: var(--text-muted); font-size: 14px;">Termín</label>
+                                    <div style="display: flex; gap: 5px;">
+                                        <input type="date" [(ngModel)]="autoServiceRange.start" class="form-input"
+                                            style="width: 100%; font-size: 12px;">
+                                        <input type="date" [(ngModel)]="autoServiceRange.end" class="form-input"
+                                            style="width: 100%; font-size: 12px;">
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label
+                                        style="display: block; margin-bottom: 5px; color: var(--text-muted); font-size: 14px;">Počet
+                                        studentů</label>
+                                    <input type="number" [(ngModel)]="autoServiceRange.count" min="1" max="10"
+                                        class="form-input" style="width: 100%; font-size: 12px;">
+                                </div>
+                                <div class="form-group">
+                                    <label
+                                        style="display: block; margin-bottom: 5px; color: var(--text-muted); font-size: 14px;">Metoda
+                                        výběru</label>
+                                    <div class="custom-select" style="position: relative;">
+                                        <select [(ngModel)]="autoServiceRange.method" class="form-input"
+                                            style="width: 100%; padding: 6px 10px; border-radius: 6px; border: 1px solid var(--border); background: var(--surface); font-size: 12px;">
+                                            <option value="random">Náhodně</option>
+                                            <option value="alphabetical">Abecedně (dle příjmení)</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="form-group" *ngIf="autoServiceRange.method === 'alphabetical'">
+                                    <label
+                                        style="display: block; margin-bottom: 5px; color: var(--text-muted); font-size: 14px;">Posun
+                                        (offset)</label>
+                                    <input type="number" [(ngModel)]="autoServiceRange.offset" min="0"
+                                        class="form-input" style="width: 100%; font-size: 12px;">
+                                    <small style="color: var(--text-muted); font-size: 11px;">Přeskočí prvních X
+                                        studentů.</small>
+                                </div>
+                                <button (click)="autoAssignService()" class="btn btn--secondary" style="width: 100%;">
+                                    <i-tabler name="wand" style="width: 16px;height: 16px; margin-right: 5px;"></i-tabler>
+                                    Generovat službu
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

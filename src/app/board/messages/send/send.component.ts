@@ -148,14 +148,13 @@ export class SendComponent implements OnInit {
       })
     );
 
-    // Load recipients
-    this.http
-      .post<messageReceiver[]>(
-        `${Config.API_URL}/v1/messages/recipients`,
-        { message_type: this.messageManager.messageType.getValue() },
-        { withCredentials: true }
-      )
-      .subscribe((rows) => (this.receivers = rows));
+
+    // Subscribe to selected receivers from modal
+    this.subscribers.push(
+      this.messageManager.selectedReceivers$.subscribe((receivers) => {
+        this.selectedReceivers = receivers;
+      })
+    );
 
     // Load message config
     this.http

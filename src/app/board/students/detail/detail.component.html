@@ -189,9 +189,9 @@
                                 <span class="info-label">Pojišťovna</span>
                                 <span class="info-value">
                                     @if (selectedStudent.insuranceId) {
-                                        {{ selectedStudent.insuranceShort }} ({{ selectedStudent.insuranceId }})
+                                    {{ selectedStudent.insuranceShort }} ({{ selectedStudent.insuranceId }})
                                     } @else {
-                                        Nemá nastavenou pojištovnu
+                                    Nemá nastavenou pojištovnu
                                     }
 
                                 </span>
@@ -422,11 +422,25 @@
 
                     <div class="info-card full">
                         <div class="card-header">
-                            <i-tabler name="home"></i-tabler>
-                            <h3>Trvalé bydliště</h3>
+                            <button class="card-action-btn" (click)="openEditAddress()">
+                                <i-tabler name="edit"></i-tabler>
+                                Upravit
+                            </button>
                         </div>
                         <div class="data-grid">
-
+                            <div class="data-item">
+                                <span class="data-label">Ulice a č.p.</span>
+                                <span class="data-value">{{ selectedStudent.street }} {{ selectedStudent.houseNumber
+                                    }}</span>
+                            </div>
+                            <div class="data-item">
+                                <span class="data-label">Město</span>
+                                <span class="data-value">{{ selectedStudent.city }}</span>
+                            </div>
+                            <div class="data-item">
+                                <span class="data-label">PSČ</span>
+                                <span class="data-value">{{ selectedStudent.postcode }}</span>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -435,31 +449,12 @@
                 <!-- Parents Tab -->
                 @if (activeTab === 'parents') {
                 <div class="select-parent">
-                    <div class="parents">
-                        <div class="parent active">
-                            Adam Adamec
-                        </div>
-                        <div class="parent">
-                            Adam Adamec
-                        </div>
-                        <div class="parent">
-                            Adam Adamec
-                        </div>
-                        <div class="parent">
-                            Adam Adamec
-                        </div>
-                        <div class="parent">
-                            Adam Adamec
+                    <div class="header-actions">
+                        <div class="add-parent btn btn--small btn--secondary" (click)="showAddParentModal = true">
+                            <i-tabler name="plus"></i-tabler>
+                            <span>Přidat rodiče</span>
                         </div>
                     </div>
-                    <div class="add-parent btn btn--small btn--secondary">
-                        <i-tabler name="plus"></i-tabler>
-                        <span>Přidat rodiče</span>
-                    </div>
-                </div>
-
-                <div class="parent-info">
-                    <div class="bg-pattern"></div>
                 </div>
 
                 <div class="parents-grid">
@@ -620,3 +615,128 @@
         </main>
     </div>
 </div>
+
+<!-- Edit Address Modal -->
+@if (showEditAddressModal) {
+<div class="modal-overlay">
+    <div class="modal">
+        <div class="modal-header">
+            <h3>Upravit adresu</h3>
+            <button class="close-btn" (click)="showEditAddressModal = false">
+                <i-tabler name="x"></i-tabler>
+            </button>
+        </div>
+        <div class="modal-body">
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Ulice</label>
+                    <input type="text" class="form-control" [(ngModel)]="editingAddress.street">
+                </div>
+                <div class="form-group">
+                    <label>Číslo popisné</label>
+                    <input type="text" class="form-control" [(ngModel)]="editingAddress.houseNumber">
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Město</label>
+                    <input type="text" class="form-control" [(ngModel)]="editingAddress.city">
+                </div>
+                <div class="form-group">
+                    <label>PSČ</label>
+                    <input type="text" class="form-control" [(ngModel)]="editingAddress.postcode">
+                </div>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-secondary" (click)="showEditAddressModal = false">Zrušit</button>
+            <button class="btn btn-primary" (click)="saveAddress()">Uložit</button>
+        </div>
+    </div>
+</div>
+}
+
+<!-- Add Parent Modal -->
+@if (showAddParentModal) {
+<div class="modal-overlay">
+    <div class="modal">
+        <div class="modal-header">
+            <h3>Přidat příbuzného</h3>
+            <button class="close-btn" (click)="showAddParentModal = false">
+                <i-tabler name="x"></i-tabler>
+            </button>
+        </div>
+        <div class="modal-body">
+            <!-- Tabs -->
+            <div class="modal-tabs">
+                <button class="tab-btn" [class.active]="addParentMode === 'existing'"
+                    (click)="addParentMode = 'existing'">Existující osoba</button>
+                <button class="tab-btn" [class.active]="addParentMode === 'new'" (click)="addParentMode = 'new'">Nová
+                    osoba</button>
+            </div>
+
+            <!-- Existing Mode -->
+            @if (addParentMode === 'existing') {
+            <div class="form-group">
+                <label>Vyhledat osobu</label>
+                <input type="text" class="form-control" [(ngModel)]="searchParentQuery" (input)="searchParents()"
+                    placeholder="Jméno...">
+                <div class="search-results">
+                    @for (p of foundParents; track p.personId) {
+                    <div class="search-item" (click)="selectParent(p.personId)"
+                        [class.selected]="selectedParentId === p.personId">
+                        <div class="name">{{ p.firstName }} {{ p.lastName }}</div>
+                        <div class="meta">{{ Utils.formatDateShort(p.birthday) }}</div>
+                    </div>
+                    }
+                </div>
+            </div>
+            }
+
+            <!-- New Mode -->
+            @if (addParentMode === 'new') {
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Jméno</label>
+                    <input type="text" class="form-control" [(ngModel)]="newParent.firstName">
+                </div>
+                <div class="form-group">
+                    <label>Příjmení</label>
+                    <input type="text" class="form-control" [(ngModel)]="newParent.lastName">
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Email</label>
+                    <input type="email" class="form-control" [(ngModel)]="newParent.email">
+                </div>
+                <div class="form-group">
+                    <label>Telefon</label>
+                    <input type="text" class="form-control" [(ngModel)]="newParent.phone">
+                </div>
+            </div>
+            }
+
+            <!-- Role Selection (Common) -->
+            <div class="form-group">
+                <label>Vztah</label>
+                <select class="form-control" [(ngModel)]="newParent.role">
+                    <option value="father">Otec</option>
+                    <option value="mother">Matka</option>
+                    <option value="guardian">Zákonný zástupce</option>
+                    <option value="stepfather">Nevlastní otec</option>
+                    <option value="stepmother">Nevlastní matka</option>
+                    <option value="grandfather">Dědeček</option>
+                    <option value="grandmother">Babička</option>
+                    <option value="uncle">Strýc</option>
+                    <option value="aunt">Teta</option>
+                </select>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-secondary" (click)="showAddParentModal = false">Zrušit</button>
+            <button class="btn btn-primary" (click)="addParent()">Uložit</button>
+        </div>
+    </div>
+</div>
+}

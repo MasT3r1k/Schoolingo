@@ -112,7 +112,7 @@ export class CompaniesComponent implements OnInit {
   public scopeSupported: string[] = [];
   public toggleScope(scopeName: string,state: boolean): void {
     if (this.scopeSupported.includes(scopeName) && state == false) {
-      this.scopeSupported.slice(this.scopeSupported.indexOf(scopeName));
+      this.scopeSupported.splice(this.scopeSupported.indexOf(scopeName), 1);
       return;
     }
 
