@@ -1,199 +1,216 @@
-  /* --- board container (korková textura impression) --- */
 :host {
-        /* layout */
-    --note-width: 320px;
+    --note-width: 300px;
+    --paper-yellow: #eaddcf; 
+    --paper-blue: #d0e1e6;
+    --paper-pink: #ebd4d8;
+    --paper-green: #d6e3d2;
+    --ink-color: #2b2b2b; /* Tmavý inkoust pro kontrast na papíře */
+    --pin-shadow: rgba(0,0,0,0.4);
 }
 
 .noticeboard-container {
-    padding: 2rem;
+    padding: 3rem;
     position: relative;
-    min-height: 420px;
-    overflow: hidden;
+    min-height: 500px;
     display: flex;
     flex-direction: column;
     gap: 2rem;
-}
-
-/* header */
-.noticeboard-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 12px;
-}
-
-.board-title {
-    font-size:1.25rem;
-    font-weight:600;
-    color:var(--text);
-    letter-spacing:0.2px;
-    display:flex;
-    align-items:center;
-    gap:12px;
-    text-shadow: var(--header-shadow);
-}
-
-.board-description {
-    color:var(--text-muted);
-    font-size:0.875rem;
+    
+    /* Tmavé pozadí s texturou (dírkovaná deska / noise) */
+    /* background-color: #202023;
+    background-image: 
+        radial-gradient(rgba(255,255,255,0.03) 1px, transparent 1px),
+        radial-gradient(rgba(255,255,255,0.02) 1px, transparent 1px);
+    background-size: 20px 20px;
+    background-position: 0 0, 10px 10px;
+    box-shadow: inset 0 0 100px rgba(0,0,0,0.7); Vinětace na okrajích */
 }
 
 /* grid of notes */
 .notes {
-    display:grid;
-    grid-template-columns: repeat(auto-fill, minmax(var(--note-width), 1fr));
-    gap: 8px;
-    align-items:start;
+    display: flex; /* Flexbox s wrapem vypadá organičtěji než grid pro tento účel */
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 2rem;
+    align-items: flex-start;
 }
 
-  /* single note (paper) */
+/* --- SINGLE NOTE (PAPER) --- */
 .note {
     --rotate: 0deg;
+    --bg-color: var(--paper-yellow);
+    
     position: relative;
-    width: 100%;
-    max-width: var(--note-width);
-    min-height: 110px;
-    border-radius: var(--radius);
-    padding: 14px 14px 12px 14px;
-    color: var(--text);
-    transform: rotate(var(--rotate));
-    transition: transform .18s ease, box-shadow .12s ease;
+    width: var(--note-width);
+    min-height: 140px;
+    padding: 20px 20px 16px 20px;
+    
+    /* Vzhled papíru */
+    background: var(--bg-color);
+    color: var(--ink-color);
+    
+    /* Mírně zaoblené rohy, ne dokonalé */
+    border-radius: 2px 2px 2px 2px;
+    
+    /* Transformace a náklon */
+    transform: rotate(var(--rotate)) translateZ(0);
+    transition: transform .25s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow .2s ease;
     cursor: grab;
-    gap: 12px;
+    
     display: flex;
     flex-direction: column;
+    gap: 10px;
     user-select: none;
-    border: 1px solid rgba(0,0,0,0.06);
-    overflow: hidden;
-    background-size: 100% 28px, 28px 100%;
-
-    background: linear-gradient(180deg, var(--surface-2), #121216);
-    box-shadow: var(--shadow), inset 0 1px 0 rgba(255,255,255,0.01);
+    
+    /* Stín: Důležitý pro oddělení od podkladu */
+    box-shadow: 
+        1px 1px 0 rgba(0,0,0,0.1), /* textura okraje */
+        5px 10px 15px rgba(0,0,0,0.4); /* hluboký stín */
+        
+    /* Jemná textura papíru */
+    background-image: linear-gradient(rgba(0,0,0,0.02) 1px, transparent 1px);
+    background-size: 100% 1.5rem; /* Linkovaný papír */
 }
 
+/* --- VARIACE BAREV PAPÍRU --- */
+/* Každá 4. karta bude mít jinou barvu */
+.notes .note:nth-child(4n+1) { --bg-color: var(--paper-yellow); }
+.notes .note:nth-child(4n+2) { --bg-color: var(--paper-blue); }
+.notes .note:nth-child(4n+3) { --bg-color: var(--paper-pink); }
+.notes .note:nth-child(4n+4) { --bg-color: var(--paper-green); }
 
-  /* taped or pinned look */
+
+/* --- UCHYCENÍ: PÁSKA (TAPE) --- */
 .note .tape {
-    position:absolute;
-    left:50%;
-    transform:translateX(-50%);
-    top:-10px;
-    width:70px;
-    height:18px;
-    border-radius:4px;
-    background: linear-gradient(180deg, rgba(255,255,255,0.08), rgba(255,255,255,0.02));
-    box-shadow: 0 2px 10px rgba(0,0,0,0.35);
-    transform-origin:center;
-    z-index:4;
-    pointer-events:none;
-    opacity:.95;
-}
-.note .tape::after {
-    content:"";
-    position:absolute;
-    inset:0;
-    background: linear-gradient(90deg, rgba(255,255,255,0.02), rgba(255,255,255,0));
-    border-radius:4px;
+    position: absolute;
+    left: 50%;
+    top: -12px;
+    width: 90px;
+    height: 25px;
+    transform: translateX(-50%) rotate(-2deg);
+    
+    /* Vzhled mléčné lepící pásky */
+    background-color: rgba(255, 255, 255, 0.4);
+    box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+    backdrop-filter: blur(2px); /* Rozostří to pod páskou */
+    
+    border-left: 2px dashed rgba(255,255,255,0.3); /* Imitace utržení */
+    border-right: 2px dashed rgba(255,255,255,0.3);
+    
+    z-index: 4;
+    pointer-events: none;
+    opacity: 0.9;
 }
 
-  /* pin / tack */
-.pin{
-    position:absolute;
-    left:50%;
-    transform:translateX(-50%);
-    top:-18px;
-    width:22px;
-    height:22px;
-    border-radius:50%;
-    background: radial-gradient(circle at 35% 30%, #fff 0%, #f2f2f2 8%, #d9d9d9 18%, #a8a7a7 60%);
-    box-shadow: 0 4px 10px rgba(0,0,0,0.35), inset 0 -2px 6px rgba(0,0,0,0.08);
-    z-index:6;
-    transform-origin:center;
-}
-.pin::after{
-    content:"";
-    position:absolute;
-    left:50%;
-    top:62%;
-    transform:translateX(-50%);
-    width:3px;
-    height:20px;
-    background:linear-gradient(180deg,#c8c7c7,#8b8a8a);
-    border-radius:2px;
+/* --- UCHYCENÍ: ŠPENDLÍK (PIN) --- */
+.pin {
+    position: absolute;
+    left: 50%;
+    top: -15px;
+    transform: translateX(-50%);
+    width: 16px;
+    height: 16px;
+    z-index: 10;
 }
 
-  /* note content */
-.note .meta{
+/* Hlavička špendlíku */
+.pin::before {
+    content: "";
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    background: radial-gradient(circle at 30% 30%, #ff5e57, #b33939);
+    box-shadow: 1px 2px 4px rgba(0,0,0,0.3);
+}
+
+/* Stín špendlíku na papíře (dodává hloubku) */
+.pin::after {
+    content: "";
+    position: absolute;
+    top: 8px;
+    left: 4px;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: rgba(0,0,0,0.3);
+    transform: scaleY(0.4) skewX(20deg);
+    filter: blur(1px);
+    z-index: -1;
+}
+
+/* --- OBSAH KARTY --- */
+.note .meta {
     display: flex;
     justify-content: space-between;
-    align-items: center;
-    gap: 8px;
-}
-.note .meta .subject{
-    font-weight: 700;
-    color: var(--primary-50);
-    font-size: 0.95rem;
-    letter-spacing: 0.2px;
-}
-.note .meta .time{
-    font-size: 0.78rem;
-    color: var(--muted);
-}
-
-.note .body{
-    color: var(--text-muted);
-    font-size: 12px;
-    line-height: 1.25;
-    max-height: 7.5rem;
-    overflow: hidden;
-    text-overflow: ellipsis;
-}
-
-.note .tags{
-    display: flex;
+    align-items: flex-end;
+    border-bottom: 1px solid rgba(0,0,0,0.15);
+    padding-bottom: 8px;
+    margin-bottom: 4px;
     gap: 1rem;
-    align-items: center;
-    flex-wrap: wrap;
 }
-.tag {
-    padding: 4px 8px;
+
+.note .meta .subject {
+    font-weight: 800;
+    color: var(--ink-color);
+    font-family: 'Segoe UI', sans-serif; /* Nebo nějaký handwriting font */
+    font-size: 1.1rem;
+    line-height: 1.1;
+}
+
+.note .meta .time {
     font-size: 0.75rem;
-    border-radius: 999px;
-    background-color: var(--surface-2);
-    /* background: linear-gradient(90deg,var(--primary-900),var(--primary-700)); */
-    color: var(--primary-50);
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    border: 1px solid rgba(255,255,255,0.03);
+    color: rgba(0,0,0,0.5);
+    font-weight: 500;
 }
 
-.tag i-tabler {
-    margin-right: .25rem;
+.note .body {
+    color: rgba(0,0,0,0.8);
+    font-size: 0.9rem;
+    line-height: 1.4;
+    font-weight: 500;
 }
 
-/* small footer with actions */
-.note .actions {
-    display: flex;
-    align-items: center;
+/* Tags - upravené pro papírový vzhled */
+.note .tags {
+    margin-top: auto;
+    padding-top: 10px;
 }
 
-/* rotate variety for realism */
-.notes .note:nth-child(6n+1){ --rotate: -2.7deg; }
-.notes .note:nth-child(6n+2){ --rotate: 1.7deg; }
-.notes .note:nth-child(6n+3){ --rotate: -0.9deg; }
-.notes .note:nth-child(6n+4){ --rotate: 2.6deg; }
-.notes .note:nth-child(6n+5){ --rotate: -1.8deg; }
-.notes .note:nth-child(6n+6){ --rotate: 0.6deg; }
+.tag {
+    padding: 2px 8px;
+    font-size: 0.7rem;
+    border-radius: 4px;
+    background-color: rgba(0,0,0,0.05); /* Tmavší flek na papíře */
+    color: rgba(0,0,0,0.7);
+    border: 1px solid rgba(0,0,0,0.1);
+    font-weight: 600;
+    text-transform: uppercase;
+}
 
-/* hover emphasis */
-.note:hover{ z-index:8; box-shadow: 0 18px 40px rgba(0,0,0,0.6); transform: scale(1.02) rotate(var(--rotate)); }
-.note:active{ cursor:grabbing; transform: scale(.995) rotate(var(--rotate)); }
+/* --- RANDOMIZACE NATOČENÍ (CHAOS) --- */
+.notes .note:nth-child(6n+1) { --rotate: -2deg; margin-top: 0px; }
+.notes .note:nth-child(6n+2) { --rotate: 1.5deg; margin-top: 20px; } /* Posun dolů */
+.notes .note:nth-child(6n+3) { --rotate: -1deg; margin-top: 5px; }
+.notes .note:nth-child(6n+4) { --rotate: 2.5deg; margin-top: 15px; }
+.notes .note:nth-child(6n+5) { --rotate: -2.5deg; margin-top: -10px; }
+.notes .note:nth-child(6n+6) { --rotate: 0.5deg; margin-top: 10px; }
 
+/* --- HOVER EFEKTY --- */
+.note:hover {
+    z-index: 100;
+    transform: scale(1.05) rotate(0deg); /* Narovná se při najetí */
+    box-shadow: 0 20px 30px rgba(0,0,0,0.5);
+}
 
-  /* responsive tweaks */
-  @media (max-width:720px){
-    .notes{ grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap:14px }
-    .board{ padding:18px }
-    .board-title{ font-size:1rem }
-  }
+.note:active {
+    cursor: grabbing;
+    transform: scale(0.98);
+}
+
+/* --- RESPONZIVITA --- */
+@media (max-width: 720px) {
+    .noticeboard-container { padding: 1rem; }
+    .notes { gap: 1rem; }
+    .note { width: 100%; max-width: none; margin-top: 0 !important; --rotate: 0deg !important; }
+}

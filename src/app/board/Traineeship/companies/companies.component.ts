@@ -77,14 +77,25 @@ export class CompaniesComponent implements OnInit {
   private route = inject(ActivatedRoute);
   private http = inject(HttpClient);
 
-  public creatingCompany: {[key: string]: string} = {
+  public creatingCompany: any = {
     name: "",
+    ico: "",
     dic: "",
+    vatId: "",
     street: "",
     houseNumber: "",
     city: "",
     postcode: "",
-    web: ""
+    web: "",
+    email: "",
+    phone: "",
+    rp_firstName: "",
+    rp_lastName: "",
+    contact: "",
+    description: "",
+    activity: "",
+    equipment: "",
+    status: "approved"
   };
 
   public countryCodes = ['CZ'];
@@ -109,15 +120,15 @@ export class CompaniesComponent implements OnInit {
   public iframeURL = this.sanitizer.bypassSecurityTrustResourceUrl("");
   public reviews: any[] = [];
 
-  public scopeSupported: string[] = [];
-  public toggleScope(scopeName: string,state: boolean): void {
-    if (this.scopeSupported.includes(scopeName) && state == false) {
-      this.scopeSupported.splice(this.scopeSupported.indexOf(scopeName), 1);
+  public scopeSupported: number[] = [];
+  public toggleScope(scopeId: number, state: boolean): void {
+    if (this.scopeSupported.includes(scopeId) && state == false) {
+      this.scopeSupported.splice(this.scopeSupported.indexOf(scopeId), 1);
       return;
     }
 
-    if (!this.scopeSupported.includes(scopeName) && state == true) {
-      this.scopeSupported.push(scopeName);
+    if (!this.scopeSupported.includes(scopeId) && state == true) {
+      this.scopeSupported.push(scopeId);
       return;
     }
   }
@@ -140,7 +151,96 @@ export class CompaniesComponent implements OnInit {
   }
 
   public requestCompany(): void {
+    this.creatingCompany = {
+      name: "",
+      ico: "",
+      dic: "",
+      vatId: "",
+      street: "",
+      houseNumber: "",
+      city: "",
+      postcode: "",
+      web: "",
+      email: "",
+      phone: "",
+      rp_firstName: "",
+      rp_lastName: "",
+      contact: "",
+      description: "",
+      activity: "",
+      equipment: "",
+      status: "approved"
+    };
+    this.scopeSupported = [];
     this.router.navigate(['/traineeship/companies/new']);
+  }
+
+  public submitForm(): void {
+    const isAdmin = this.permissions.checkPermission(["manager:traineeship:manage"]);
+    
+    // Validate mandatory fields
+    if (!this.creatingCompany['name'] || !this.creatingCompany['street'] || !this.creatingCompany['city']) {
+      Swal.fire({
+        title: this.l.s('traineeship.alerts.missing_fields_title'),
+        text: this.l.s('traineeship.alerts.missing_fields_description'),
+        icon: 'error'
+      });
+      return;
+    }
+
+    const payload = {
+      name: this.creatingCompany['name'],
+      ico: this.creatingCompany['ico'] || "",
+      dic: this.dic.value || "",
+      vatId: this.creatingCompany['vatId'] || "",
+      web: this.creatingCompany['web'] || null,
+      email: this.creatingCompany['email'] || null,
+      phone: this.creatingCompany['phone'] || null,
+      rp_firstName: this.creatingCompany['rp_firstName'] || null,
+      rp_lastName: this.creatingCompany['rp_lastName'] || null,
+      contact: this.creatingCompany['contact'] || null,
+      description: this.creatingCompany['description'] || null,
+      activity: this.creatingCompany['activity'] || null,
+      equipment: this.creatingCompany['equipment'] || null,
+      status: isAdmin ? this.creatingCompany['status'] : 'request',
+      scopes: this.scopeSupported,
+      addressOffice: {
+        street: this.creatingCompany['street'],
+        houseNumber: this.creatingCompany['houseNumber'],
+        cityName: this.creatingCompany['city'],
+        postcode: this.creatingCompany['postcode'],
+        countryCode: this.countryCode
+      },
+      addressTrainee: null 
+    };
+
+    this.http.post(`${Config.API_URL}/v1/traineeship/new_company`, payload, { withCredentials: true })
+      .subscribe({
+        next: (res: any) => {
+          if (res.status === 'success') {
+            Swal.fire({
+              title: this.l.s('traineeship.alerts.save_success_title'),
+              text: this.l.s('traineeship.alerts.save_success_description'),
+              icon: 'success'
+            }).then(() => {
+              this.goToList();
+            });
+          } else {
+            Swal.fire({
+              title: this.l.s('traineeship.alerts.save_error_title'),
+              text: this.l.s('traineeship.alerts.' + res.error) || res.error || 'Failed',
+              icon: 'error'
+            });
+          }
+        },
+        error: (err) => {
+          Swal.fire({
+            title: this.l.s('traineeship.alerts.save_error_title'),
+            text: err.message,
+            icon: 'error'
+          });
+        }
+      });
   }
   public selectedCompanyListOption = new BehaviorSubject<number>(0);
   public getCompanyListOptions(hideLocale: boolean = false): string[] {
@@ -330,7 +430,9 @@ export class CompaniesComponent implements OnInit {
         'traineeship.web',
         'traineeship.rate'
       );
-    })
+
+      this.loadCompanies();
+    });
 
   this.modalManager.addModal(
     'edit_company', {
@@ -381,8 +483,30 @@ export class CompaniesComponent implements OnInit {
     //   })
     // );
 
+    this.listeners.push(
+      this.search.valueChanges
+      .pipe(debounceTime(300), distinctUntilChanged())
+      .subscribe(() => {
+        this.loadCompanies();
+      })
+    );
+
+    this.listeners.push(
+      this.selectedCompanyListOption.subscribe(() => {
+        this.loadCompanies();
+      })
+    );
+
+    this.loadCompanies();
+  }
+
+  public loadCompanies(): void {
+    const nameFilter = this.search.value ? `&name=${encodeURIComponent(this.search.value)}` : '';
+    const statusIndex = this.selectedCompanyListOption.getValue();
+    const status = this.getCompanyListOptions(true)[statusIndex];
+    const statusFilter = status ? `&status=${status}` : '';
     this.http.get(
-      `${Config.API_URL}/v1/traineeship/companies?limit=0&offset=0`,
+      `${Config.API_URL}/v1/traineeship/companies?limit=0&offset=0${nameFilter}${statusFilter}`,
       {
         withCredentials: true
       }
@@ -411,17 +535,18 @@ export class CompaniesComponent implements OnInit {
         Object.keys(JSON.parse(JSON.stringify(this.scopes))).forEach((scopeId: string) => {
           row.push({ value: scopeList[scopeId] ? '✅' : '❌', isLocale: false })
         });
-        
+
         row.push(
           { value: Utils.formatWeb(company.web), isLocale: false },
           { value: this.traineeship.getRating(company), isLocale: company.rating ? false : true }
         );
         companiesList.push(row);
-        
+
       })
       this.metadata.rows = data.rows;
       this.companies.next(companiesList);
     });
+  }
 
     // this.listeners.push(
     //   this.schoolingo.socketService.addFunction("traineeship:selectCompany")
@@ -457,8 +582,6 @@ export class CompaniesComponent implements OnInit {
     //       }
     //     }
     //   })
-    // );
-  }
 
   public getAllScopes(): Scope[] {
     return Object.values(JSON.parse(JSON.stringify(this.scopes)));

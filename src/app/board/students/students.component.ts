@@ -8,6 +8,9 @@ import { Utils } from '@Schoolingo/utils';
 import { DropdownManager } from '@Schoolingo/dropdown';
 import { Locale } from '@Schoolingo/locale';
 import { RouterLink } from '@angular/router';
+import { CalendarComponent } from '@Components/calendar';
+import { CalendarManager } from '@Components/calendar-dropdown';
+import moment from 'moment';
 
 // Interfaces
 export interface Student {
@@ -90,7 +93,7 @@ interface StudentAPIResponse {
 @Component({
   selector: 'app-students',
   standalone: true,
-  imports: [CommonModule, IconsModule, FormsModule, RouterLink],
+  imports: [CommonModule, IconsModule, FormsModule, RouterLink, CalendarComponent],
   templateUrl: './students.component.html',
   styleUrl: './students.component.css'
 })
@@ -99,6 +102,7 @@ export class StudentsComponent implements OnInit {
   public Utils = Utils;
   public dropdownManager = inject(DropdownManager);
   public l = inject(Locale);
+  public calendarManager = inject(CalendarManager);
 
   // Loading state
   isLoading = false;
@@ -182,6 +186,11 @@ export class StudentsComponent implements OnInit {
   ngOnInit() {
     this.loadFilters();
     this.loadStudents();
+
+    // Subscribe to calendar changes
+    this.calendarManager.getCalendarData('student_birthday').selected_date[0].subscribe((date) => {
+        this.newStudent.birthday = date.format('YYYY-MM-DD');
+    });
   }
 
   // Load available filters (classes, scopes)

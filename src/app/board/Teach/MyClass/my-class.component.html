@@ -352,14 +352,12 @@
                                 <div class="form-group">
                                     <label
                                         style="display: block; margin-bottom: 5px; color: var(--text-muted); font-size: 14px;">Od</label>
-                                    <input type="date" [(ngModel)]="newService.start" name="start" class="form-input"
-                                        style="width: 100%; padding: 8px 12px; border-radius: 6px; border: 1px solid var(--border); background: var(--surface);">
+                                    <app-calendar id="myClass_newService_start" size="full"></app-calendar>
                                 </div>
                                 <div class="form-group">
                                     <label
                                         style="display: block; margin-bottom: 5px; color: var(--text-muted); font-size: 14px;">Do</label>
-                                    <input type="date" [(ngModel)]="newService.end" name="end" class="form-input"
-                                        style="width: 100%; padding: 8px 12px; border-radius: 6px; border: 1px solid var(--border); background: var(--surface);">
+                                    <app-calendar id="myClass_newService_end" size="full"></app-calendar>
                                 </div>
                                 <button (click)="addService()" class="btn btn--primary"
                                     [disabled]="!newService.studentId" style="width: 100%;">Uložit</button>
@@ -376,11 +374,9 @@
                                 <div class="form-group">
                                     <label
                                         style="display: block; margin-bottom: 5px; color: var(--text-muted); font-size: 14px;">Termín</label>
-                                    <div style="display: flex; gap: 5px;">
-                                        <input type="date" [(ngModel)]="autoServiceRange.start" class="form-input"
-                                            style="width: 100%; font-size: 12px;">
-                                        <input type="date" [(ngModel)]="autoServiceRange.end" class="form-input"
-                                            style="width: 100%; font-size: 12px;">
+                                    <div style="display: flex; gap: 5px; width: 100%;">
+                                        <app-calendar id="myClass_autoService_start" size="full"></app-calendar>
+                                        <app-calendar id="myClass_autoService_end" size="full"></app-calendar>
                                     </div>
                                 </div>
                                 <div class="form-group">
@@ -412,7 +408,8 @@
                                         studentů.</small>
                                 </div>
                                 <button (click)="autoAssignService()" class="btn btn--secondary" style="width: 100%;">
-                                    <i-tabler name="wand" style="width: 16px;height: 16px; margin-right: 5px;"></i-tabler>
+                                    <i-tabler name="wand"
+                                        style="width: 16px;height: 16px; margin-right: 5px;"></i-tabler>
                                     Generovat službu
                                 </button>
                             </div>

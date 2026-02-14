@@ -773,6 +773,20 @@ p.title {
     color: var(--danger);
 }
 
+.status-card.info {
+    background: linear-gradient(to right, rgba(var(--info-rgb), 0.05), transparent);
+    border-color: rgba(var(--info-rgb), 0.2);
+}
+
+.status-card.info .status-card__icon {
+    background: rgba(var(--info-rgb), 0.1);
+    color: var(--info);
+}
+
+.update-tag.info {
+    background: var(--info);
+}
+
 .status-card.loading .status-card__content {
     flex: 0;
     text-align: center;
@@ -1087,5 +1101,112 @@ p.title {
     to {
         transform: translateY(0);
         opacity: 1;
+    }
+}
+
+.version-badge {
+    padding: 2px 8px;
+    border-radius: 6px;
+    font-size: 0.7em;
+    font-weight: 700;
+    text-transform: uppercase;
+    vertical-align: middle;
+    margin-left: 8px;
+}
+
+.version-badge.major {
+    background: rgba(var(--primary-rgb), 0.1);
+    color: var(--primary);
+    border: 1px solid rgba(var(--primary-rgb), 0.2);
+}
+
+/* === System Update UI === */
+.update-progress-container {
+    margin-top: 24px;
+    background: var(--surface);
+    padding: 16px;
+    border-radius: 12px;
+    border: 1px solid var(--border);
+}
+
+.update-progress-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 12px;
+    color: var(--text);
+    font-weight: 500;
+}
+
+.update-progress-bar {
+    height: 8px;
+    background: var(--surface-2);
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.update-progress-fill {
+    height: 100%;
+    background: var(--primary);
+    width: 0%;
+    border-radius: 4px;
+}
+
+.update-progress-fill.animating {
+    width: 100%;
+    animation: progressBounce 2s infinite ease-in-out;
+    transform-origin: left;
+}
+
+@keyframes progressBounce {
+    0% {
+        transform: scaleX(0);
+    }
+
+    50% {
+        transform: scaleX(1);
+    }
+
+    100% {
+        transform: scaleX(0);
+        transform-origin: right;
+    }
+}
+
+.update-error {
+    margin-top: 12px;
+    color: var(--danger);
+    font-size: 13px;
+    padding: 8px;
+    background: rgba(var(--danger-rgb), 0.1);
+    border-radius: 6px;
+}
+
+.update-actions {
+    margin-top: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.rollback-container {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding-top: 16px;
+    border-top: 1px dashed var(--border);
+}
+
+.animate-spin {
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    from {
+        transform: rotate(0deg);
+    }
+
+    to {
+        transform: rotate(360deg);
     }
 }

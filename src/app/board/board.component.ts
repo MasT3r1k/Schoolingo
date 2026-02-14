@@ -27,6 +27,7 @@ import { WsService, NotificationPayload } from '@Schoolingo/websocket';
 import { SeasonalService } from '@Schoolingo/seasonal';
 import { SnowEffectComponent } from '@Components/seasonal/snow-effect/snow-effect.component';
 import { studentSummaryComponent } from '@Components/student-summary/student-summary.component';
+import { Cookies } from '@Schoolingo/cookies';
 
 export interface SidebarItem {
     item: string;
@@ -96,6 +97,7 @@ interface Notification {
 })
 export class BoardComponent implements OnInit, OnDestroy {
   public dashboard = inject(Dashboard);
+  private cookies = inject(Cookies);
   public dropdownManager = inject(DropdownManager);
   private tokenExpirationService = inject(TokenExpirationService);
   private sessionExpiredService = inject(SessionExpiredService);
@@ -400,17 +402,17 @@ export class BoardComponent implements OnInit, OnDestroy {
     this.wsService.close();
   }
 
-  public updateCookies(cookies: number): void {
-    this.dashboard.cookies = cookies;
-    this.http.post(
-      `${Config.API_URL}/v1/cookies`,
-      { cookies },
-      { withCredentials: true }
-    )
-    .subscribe((data) => {
-      if ('success' in data && data.success == true) return;
-      this.dashboard.cookies = 0;
-    });
+  public updateCookies(cookies: 'max' | 'min'): void {
+    switch(cookies) {
+      case 'max':
+        this.cookies.acceptAll();
+        break;
+      case 'min':
+        this.cookies.acceptEssentialOnly();
+        break;
+    }
+
+    this.dashboard.cookies = this.cookies.preferencesToDecimal();
   }
 
   public getUserRole(): string {

@@ -13,6 +13,8 @@ import { Classbook } from '@Schoolingo/classbook';
 import { ClassbookAbsenceComponent } from './modals/absence/absence.component';
 import { BehaviorSubject } from 'rxjs';
 import { Authentication } from '@Schoolingo/authentication';
+import { CalendarComponent } from '@Components/calendar';
+import { CalendarManager } from '@Components/calendar-dropdown';
 import moment from 'moment';
 import { TimetableHours } from '../timetable/timetable.component';
 import { School } from '@Schoolingo/school';
@@ -28,7 +30,7 @@ interface ClassbookLesson {
 
 @Component({
   selector: 'app-classbook',
-  imports: [IconsModule, NgClass, FormsModule, ReactiveFormsModule],
+  imports: [IconsModule, NgClass, FormsModule, ReactiveFormsModule, CalendarComponent],
   templateUrl: './classbook.component.html',
   styleUrl: './classbook.component.css'
 })
@@ -40,6 +42,7 @@ export class ClassbookComponent implements OnInit {
   public l = inject(Locale);
   public absenceConfig = absence;
   public classbook = inject(Classbook);
+  public calendarManager = inject(CalendarManager);
   Utils = Utils;
 
   public max_hours = 8;
@@ -111,6 +114,17 @@ export class ClassbookComponent implements OnInit {
 
   ngOnInit(): void {
     this.updateLessons();
+
+    // Initialize calendar
+    setTimeout(() => {
+        this.calendarManager.getCalendarData('classbook_date').selected_date[0].next(moment(this.selected_date));
+    });
+
+    // Subscribe to calendar changes
+    this.calendarManager.getCalendarData('classbook_date').selected_date[0].subscribe((date) => {
+        this.selected_date = date.format('YYYY-MM-DD');
+        this.updateLessons();
+    });
 
     this.modalManager.addModal(
       'add_homework',

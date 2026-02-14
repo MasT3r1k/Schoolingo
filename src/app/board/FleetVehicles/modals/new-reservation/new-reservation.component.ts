@@ -7,9 +7,12 @@ import { Locale } from '@Schoolingo/locale';
 import { ModalManager } from '@Schoolingo/modal';
 
 import { DropdownManager } from '@Schoolingo/dropdown';
+import { CalendarComponent } from '@Components/calendar';
+import { CalendarManager } from '@Components/calendar-dropdown';
+import moment from 'moment';
 
 @Component({
-  imports: [IconsModule, FormsModule, ReactiveFormsModule],
+  imports: [IconsModule, FormsModule, ReactiveFormsModule, CalendarComponent],
   templateUrl: './new-reservation.component.html',
   styleUrl: './new-reservation.component.css'
 })
@@ -18,17 +21,32 @@ export class NewReservationComponent {
   public modalManager = inject(ModalManager);
   public dropdownManager = inject(DropdownManager);
   private http = inject(HttpClient);
+  public calendarManager = inject(CalendarManager);
 
   public vehicles: any[] = [];
 
   public newReservation = {
     vehicleId: 0,
-    startDate: '',
-    endDate: '',
+    startDate: moment().format('YYYY-MM-DD'),
+    endDate: moment().format('YYYY-MM-DD'),
     purpose: '',
     destination: '',
     notes: ''
   };
+
+  ngOnInit(): void {
+    setTimeout(() => {
+        this.calendarManager.getCalendarData('fleet_reservation_start').selected_date[0].next(moment(this.newReservation.startDate));
+        this.calendarManager.getCalendarData('fleet_reservation_end').selected_date[0].next(moment(this.newReservation.endDate));
+    });
+
+    this.calendarManager.getCalendarData('fleet_reservation_start').selected_date[0].subscribe((date) => {
+        this.newReservation.startDate = date.format('YYYY-MM-DD');
+    });
+    this.calendarManager.getCalendarData('fleet_reservation_end').selected_date[0].subscribe((date) => {
+        this.newReservation.endDate = date.format('YYYY-MM-DD');
+    });
+  }
 
   public closeNewReservationForm(): void {
     this.modalManager.closeModal('fleetvehicles.new_reservation');

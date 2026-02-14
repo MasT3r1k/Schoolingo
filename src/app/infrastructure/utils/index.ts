@@ -327,11 +327,15 @@ export namespace Utils {
     if (!Number.isFinite(bytes)) return '—';
 
     const k = 1024;
-    const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB', 'PB'];
-
-    const i = Math.floor(Math.log(bytes) / Math.log(k));
-    const value = bytes / Math.pow(k, i);
-
-    return `${value.toFixed(2)} ${sizes[i]}`;
+    const units = ['Bytes', 'KB', 'MB', 'GB', 'TB', 'PB'];
+    let size = bytes;
+    let unit = 0;
+    
+    while (size >= k && unit < units.length - 1) {
+        size /= k;
+        unit++;
+    }
+    
+    return `${size.toFixed(2)} ${units[unit]}`;
   }
 }

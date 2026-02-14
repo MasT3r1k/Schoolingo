@@ -1,0 +1,109 @@
+<div class="license-container">
+    @if (isLoading) {
+    <div class="loading-container">
+        <i-tabler name="loader" class="animate-spin" style="width: 2rem; height: 2rem;"></i-tabler>
+        <span>Načítání informací o licenci...</span>
+    </div>
+    } @else {
+
+    <!-- Header -->
+    <div class="license-header">
+        <div class="license-badge">
+            <i-tabler name="certificate"></i-tabler>
+        </div>
+        <div class="license-title">
+            <div style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 0.5rem;">
+                <h2 style="margin: 0;">{{ license.schoolName }}</h2>
+                <span class="status-badge" [class.active]="license.status === 'active'"
+                    [class.expired]="license.status === 'expired'">
+                    {{ license.status === 'active' ? 'Aktivní' : 'Expirovaná' }}
+                </span>
+            </div>
+
+            <div class="license-meta">
+                <span>Licenční klíč:</span>
+                <div class="license-key-box">
+                    SCH-{{ license.schoolCode | uppercase }}-{{ license.year }}-X892
+                </div>
+                <div class="copy-btn" (click)="copyLicenseKey()" title="Zkopírovat">
+                    <i-tabler name="copy" style="width: 1.25rem; height: 1.25rem;"></i-tabler>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Grid Info -->
+    <div class="license-grid">
+        <div class="info-card">
+            <div class="info-card-label">Edice systému</div>
+            <div class="info-card-value">
+                <i-tabler name="award"></i-tabler>
+                {{ license.type }}
+            </div>
+        </div>
+
+        <div class="info-card">
+            <div class="info-card-label">Platnost do</div>
+            <div class="info-card-value">
+                <i-tabler name="calendar"></i-tabler>
+                {{ license.validUntil ? (license.validUntil | date:'d. M. y') : 'Navždy' }}
+            </div>
+        </div>
+
+        <div class="info-card">
+            <div class="info-card-label">Podpora</div>
+            <div class="info-card-value">
+                <i-tabler name="headset"></i-tabler>
+                {{ license.supportLevel }}
+            </div>
+        </div>
+
+        <div class="info-card">
+            <div class="info-card-label">Úložiště</div>
+            <div class="info-card-value">
+                <i-tabler name="cloud"></i-tabler>
+                {{ license.storageLimit }}
+            </div>
+        </div>
+    </div>
+
+    <!-- Usage Stats -->
+    <div class="usage-section">
+        <div class="usage-header">
+            <div class="usage-title">Využití studentů</div>
+            <div class="usage-stats">
+                <strong>{{ license.currentStudents }}</strong> / {{ license.maxStudents === -1 ? '∞' :
+                license.maxStudents }}
+            </div>
+        </div>
+        <div class="usage-bar">
+            <div class="usage-fill" [style.width.%]="getUsagePercent()" [class.danger]="getUsagePercent() > 90"
+                [class.warning]="getUsagePercent() > 75 && getUsagePercent() <= 90">
+            </div>
+        </div>
+        <div style="font-size: 0.8125rem; color: var(--text-muted); margin-top: 0.5rem;">
+            Počet aktivních účtů studentů v systému.
+        </div>
+    </div>
+
+    <!-- Modules -->
+    <div class="modules-section">
+        <h3
+            style="font-size: 0.9375rem; color: var(--text-muted); text-transform: uppercase; font-weight: 600; margin: 0;">
+            Aktivní moduly</h3>
+        <div class="modules-list">
+            @for (module of license.modules; track module) {
+            <div class="module-chip">
+                <i-tabler name="puzzle"></i-tabler>
+                {{ module }}
+            </div>
+            }
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="license-actions">
+        <button class="btn btn--secondary" (click)="close()">Zavřít</button>
+    </div>
+    }
+</div>

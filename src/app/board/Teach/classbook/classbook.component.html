@@ -4,14 +4,14 @@
         <h2>
             {{ l.s('sidebar.teach.classbook') }}
         </h2>
-        <div class="flex-items">
-            <input type="date" [(ngModel)]="selected_date" (ngModelChange)="updateLessons()">
+        <div class="flex-items" style="min-width: 150px;">
+            <app-calendar id="classbook_date" size="full"></app-calendar>
         </div>
     </div>
 
     <div class="card-body" [class.center]="timetable.length == 0">
         <div class="lessons-list">
-        @if (!is_loading) {
+            @if (!is_loading) {
             @if (timetable.length > 0) {
             @for (lesson of timetable; track $index) {
             <div class="lesson-card" [class.active]="selected_lesson.getValue() == $index"
@@ -64,7 +64,7 @@
             </div>
 
             }
-        }
+            }
         </div>
 
         @if (timetable.length > 0) {
@@ -284,7 +284,8 @@
                             <div>
                                 <div class="homework-title">Vypočítat příklady 1-15</div>
                                 <div class="homework-date">
-                                    {{ l.s('classbook.homework_timeline', { start: '18. 11. 2025', end: '22. 11. 2025', submitted: 0, total: 28 }) }}
+                                    {{ l.s('classbook.homework_timeline', { start: '18. 11. 2025', end: '22. 11. 2025',
+                                    submitted: 0, total: 28 }) }}
                                 </div>
                             </div>
                         </div>

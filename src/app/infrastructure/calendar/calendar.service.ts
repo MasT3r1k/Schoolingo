@@ -9,6 +9,7 @@ export interface CalendarEvent {
   description?: string;
   date: Date;
   type: string;
+  classId?: number | null;
 }
 
 @Injectable({
@@ -65,7 +66,7 @@ export class CalendarService {
   /**
    * Create new event
    */
-  createEvent(data: { name: string; description?: string; date: string; type?: string }): Observable<{ event_id: number; success: boolean }> {
+  createEvent(data: { name: string; description?: string; date: string; type?: string; classId?: number | null }): Observable<{ event_id: number; success: boolean }> {
     return this.http.post<{ event_id: number; success: boolean }>(
       `${Config.API_URL}/v1/calendar/events`,
       data,
@@ -102,5 +103,18 @@ export class CalendarService {
     const lastDay = new Date(year, month, 0).getDate();
     const end = `${year}-${String(month).padStart(2, '0')}-${lastDay}`;
     return this.loadEvents(start, end);
+  }
+
+  /**
+   * Get all classes for event assignment
+   */
+  getClasses(): Observable<{ classId: number; className: string }[]> {
+    return this.http.get<{ classes: { classId: number; className: string }[] }>(
+      `${Config.API_URL}/v1/schedule/classes`,
+      { withCredentials: true }
+    ).pipe(
+      map(response => response.classes),
+      catchError(() => of([]))
+    );
   }
 }

@@ -81,10 +81,10 @@ export const config: SidebarGroup[] = [
                 item: 'sidebar.teach.main',
                 icon: 'book',
                 children: [{
-                    item: 'sidebar.teach.myClass',
+                    item: 'sidebar.teach.my_class',
                     url: 'teach/my-class',
                     icon: 'chalkboard',
-                    permission: ['teacher']
+                    permission: ['classteacher']
                 }, {
                     item: 'sidebar.teach.timetable',
                     url: 'teach/timetable',

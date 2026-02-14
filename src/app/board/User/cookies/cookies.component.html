@@ -9,19 +9,19 @@
     <!-- Quick Actions Section -->
     <div class="section quick-actions-section">
         <div class="quick-actions">
-            <button class="btn btn--primary btn--lg" (click)="acceptAll()" [disabled]="saving">
+            <button class="btn btn--primary btn--lg" (click)="cookies.acceptAll()" [disabled]="cookies.saving">
                 <i-tabler name="check"></i-tabler>
                 Přijmout vše
             </button>
-            <button class="btn btn--secondary btn--lg" (click)="acceptEssentialOnly()" [disabled]="saving">
+            <button class="btn btn--secondary btn--lg" (click)="cookies.acceptEssentialOnly()" [disabled]="cookies.saving">
                 <i-tabler name="shield-check"></i-tabler>
                 Pouze nezbytné
             </button>
         </div>
         <div class="cookies-summary">
             <div class="summary-stat">
-                <span class="stat-value">{{ getEnabledCount() }}</span>
-                <span class="stat-label">z {{ getTotalCategories() }} kategorií povoleno</span>
+                <span class="stat-value">{{ cookies.getEnabledCount() }}</span>
+                <span class="stat-label">z {{ cookies.getTotalCategories() }} kategorií povoleno</span>
             </div>
         </div>
     </div>
@@ -38,7 +38,7 @@
             </div>
         </div>
         <div class="section-content">
-            @if (loading) {
+            @if (cookies.loading) {
             <div class="loading">
                 <div class="loading-spinner"></div>
                 <span>Načítání nastavení...</span>
@@ -46,10 +46,10 @@
             } @else {
             <div class="categories-list">
                 @for (category of cookies.cookieCategories; track category.id) {
-                @let pref = getCategoryPreference(category.id);
+                @let pref = cookies.getCategoryPreference(category.id);
                 <div class="category-card" [class.active]="pref?.enabled" [class.required]="category.required"
-                    [class.expanded]="selectedCategory === category.id">
-                    <div class="category-main" (click)="toggleCategoryDetails(category.id)">
+                    [class.expanded]="cookies.selectedCategory === category.id">
+                    <div class="category-main" (click)="cookies.toggleCategoryDetails(category.id)">
                         <div class="category-icon" [style.background]="category.color + '20'"
                             [style.color]="category.color">
                             <i-tabler [name]="category.icon"></i-tabler>
@@ -67,17 +67,17 @@
                             @if (!category.required) {
                             <label class="toggle-switch" (click)="$event.stopPropagation()">
                                 <input type="checkbox" [checked]="pref?.enabled || false"
-                                    (change)="toggleCategory(category.id)">
+                                    (change)="cookies.toggleCategory(category.id)">
                                 <span class="slider"></span>
                             </label>
                             }
-                            <button class="expand-btn" [class.rotated]="selectedCategory === category.id">
+                            <button class="expand-btn" [class.rotated]="cookies.selectedCategory === category.id">
                                 <i-tabler name="chevron-down"></i-tabler>
                             </button>
                         </div>
                     </div>
 
-                    @if (selectedCategory === category.id) {
+                    @if (cookies.selectedCategory === category.id) {
                     <div class="category-details" @fadeInOut>
                         <div class="examples-list">
                             <h5>Příklady použití:</h5>
@@ -103,7 +103,7 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    @for (cookie of getCookiesByCategory(category.id); track cookie.name) {
+                                    @for (cookie of cookies.getCookiesByCategory(category.id); track cookie.name) {
                                     <tr>
                                         <td><code>{{ cookie.name }}</code></td>
                                         <td>{{ cookie.purpose }}</td>
@@ -121,8 +121,8 @@
             </div>
 
             <div class="save-section">
-                <button class="btn btn--primary" (click)="savePreferences()" [disabled]="saving">
-                    @if (saving) {
+                <button class="btn btn--primary" (click)="cookies.savePreferences()" [disabled]="cookies.saving">
+                    @if (cookies.saving) {
                     <div class="btn-spinner"></div>
                     Ukládání...
                     } @else {
@@ -244,7 +244,7 @@
                     </p>
                 </div>
             </div>
-            <button class="btn btn--danger" (click)="clearAllCookies()">
+            <button class="btn btn--danger" (click)="cookies.clearAllCookies()">
                 <i-tabler name="trash"></i-tabler>
                 Smazat všechny cookies
             </button>

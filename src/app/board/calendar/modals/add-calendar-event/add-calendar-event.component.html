@@ -1,0 +1,66 @@
+<div class="modal-form">
+    <div class="form-group">
+        <label>{{ 'Druh události' }}</label>
+        <div class="custom-select"
+            (click)="$event.stopPropagation(); dropdownManager.selected_dropdown = dropdownManager.selected_dropdown == 'calendar_add_event_type' ? '' : 'calendar_add_event_type'">
+            <div class="selected-value">
+                {{ getSelectedTypeName() }}
+                <i-tabler name="chevron-down"></i-tabler>
+            </div>
+            @if (dropdownManager.selected_dropdown == 'calendar_add_event_type') {
+            <div class="options-dropdown">
+                <div class="list">
+                    @for (type of eventTypes; track type.id) {
+                    <div class="option" (click)="selectType(type.id)">
+                        {{ type.name }}
+                    </div>
+                    }
+                </div>
+            </div>
+            }
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label>{{ 'Pro třídu' }}</label>
+        <div class="custom-select"
+            (click)="$event.stopPropagation(); dropdownManager.selected_dropdown = dropdownManager.selected_dropdown == 'calendar_add_event_class' ? '' : 'calendar_add_event_class'">
+            <div class="selected-value">
+                {{ selectedClassName }}
+                <i-tabler name="chevron-down"></i-tabler>
+            </div>
+            @if (dropdownManager.selected_dropdown == 'calendar_add_event_class') {
+            <div class="options-dropdown">
+                <div class="list">
+                    <div class="option" (click)="selectClass(null)">Všechny třídy</div>
+                    @for (cls of classes; track cls.classId) {
+                    <div class="option" (click)="selectClass(cls)">
+                        {{ cls.className }}
+                    </div>
+                    }
+                </div>
+            </div>
+            }
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label class="form-label">Název události</label>
+        <input type="text" class="form-input" [(ngModel)]="event.name" placeholder="např. Výlet do Prahy" required>
+    </div>
+
+    <div class="form-group">
+        <label class="form-label">Datum</label>
+        <input type="date" class="form-input" [(ngModel)]="event.date" required>
+    </div>
+
+    <div class="form-group">
+        <label class="form-label">Popis (volitelné)</label>
+        <textarea class="form-input" [(ngModel)]="event.description" rows="3"></textarea>
+    </div>
+
+    <div class="modal-actions">
+        <div class="btn" (click)="closeModal()">Zrušit</div>
+        <div class="btn btn--primary" (click)="submit()" [class.disabled]="!event.name || !event.date">Přidat</div>
+    </div>
+</div>

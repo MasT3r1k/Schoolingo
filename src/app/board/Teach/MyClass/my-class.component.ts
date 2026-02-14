@@ -9,12 +9,14 @@ import { TabsComponent } from '../../../Components/Tabs';
 import { IconsModule } from '@Schoolingo/icons';
 import { Locale } from '@Schoolingo/locale';
 import { Utils } from '@Schoolingo/utils';
+import { CalendarComponent } from '@Components/calendar';
+import { CalendarManager } from '@Components/calendar-dropdown';
 import moment from 'moment';
 
 @Component({
   selector: 'app-my-class',
   standalone: true,
-  imports: [CommonModule, FormsModule, TabsComponent, IconsModule],
+  imports: [CommonModule, FormsModule, TabsComponent, IconsModule, CalendarComponent],
   templateUrl: './my-class.component.html',
   styleUrls: ['./my-class.component.css']
 })
@@ -24,6 +26,7 @@ export class MyClassComponent implements OnInit {
 
   l = inject(Locale);
   Utils = Utils;
+  public calendarManager = inject(CalendarManager);
 
   classes: any[] = [];
   selectedClassId: number | null = null;
@@ -63,6 +66,28 @@ export class MyClassComponent implements OnInit {
 
   ngOnInit() {
     this.fetchData();
+
+    // Initialize calendars
+    setTimeout(() => {
+        this.calendarManager.getCalendarData('myClass_newService_start').selected_date[0].next(moment(this.newService.start));
+        this.calendarManager.getCalendarData('myClass_newService_end').selected_date[0].next(moment(this.newService.end));
+        this.calendarManager.getCalendarData('myClass_autoService_start').selected_date[0].next(moment(this.autoServiceRange.start));
+        this.calendarManager.getCalendarData('myClass_autoService_end').selected_date[0].next(moment(this.autoServiceRange.end));
+    });
+
+    // Subscribe to calendar changes
+    this.calendarManager.getCalendarData('myClass_newService_start').selected_date[0].subscribe((date) => {
+        this.newService.start = date.format('YYYY-MM-DD');
+    });
+    this.calendarManager.getCalendarData('myClass_newService_end').selected_date[0].subscribe((date) => {
+        this.newService.end = date.format('YYYY-MM-DD');
+    });
+    this.calendarManager.getCalendarData('myClass_autoService_start').selected_date[0].subscribe((date) => {
+        this.autoServiceRange.start = date.format('YYYY-MM-DD');
+    });
+    this.calendarManager.getCalendarData('myClass_autoService_end').selected_date[0].subscribe((date) => {
+        this.autoServiceRange.end = date.format('YYYY-MM-DD');
+    });
   }
 
   fetchData() {

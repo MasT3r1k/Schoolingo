@@ -750,8 +750,8 @@ body {
     font-family: var(--font-family);
     background-color: var(--surface);
     background-image:
-    radial-gradient(ellipse at 20% 30%, rgba(var(--primary-rgb), 0.08) 0%, transparent 50%),
-    radial-gradient(ellipse at 80% 70%, rgba(var(--accent-rgb), 0.05) 0%, transparent 50%);
+        radial-gradient(ellipse at 20% 30%, rgba(var(--primary-rgb), 0.08) 0%, transparent 50%),
+        radial-gradient(ellipse at 80% 70%, rgba(var(--accent-rgb), 0.05) 0%, transparent 50%);
     color: var(--text);
     overflow: hidden;
     display: flex;
@@ -1950,7 +1950,8 @@ input:disabled {
     background: rgba(231, 76, 60, 0.1);
 }
 
-.stats-cards, .stats-grid {
+.stats-cards,
+.stats-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
     gap: 16px;
@@ -1991,48 +1992,78 @@ input:disabled {
     opacity: 0.75;
 }
 
+/* --- Definice barev zůstávají stejné --- */
 .stat-card.stat--primary {
     --accent-color: var(--primary);
-    --accent-bg: rgba(var(--primary-rgb), 0.1);
 }
 
 .stat-card.stat--success {
     --accent-color: #22c55e;
-    --accent-bg: rgba(34, 197, 94, 0.1);
 }
 
 .stat-card.stat--warning {
     --accent-color: #f59e0b;
-    --accent-bg: rgba(245, 158, 11, 0.1);
 }
 
 .stat-card.stat--danger {
     --accent-color: var(--danger);
-    --accent-bg: rgba(var(--danger-rgb), 0.1);
 }
 
 .stat-card.stat--info {
     --accent-color: var(--accent);
-    --accent-bg: rgba(var(--accent-rgb), 0.1);
 }
 
 .stat-card:hover {
     transform: translateY(-2px);
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-    /* border-color: var(--accent-color); */
 }
 
+/* --- ZDE JE HLAVNÍ ZMĚNA --- */
 .stat-icon {
+    /* Původní rozměry a centrování */
     width: 48px;
     height: 48px;
-    border-radius: var(--radius);
+    flex-shrink: 0;
     display: flex;
     align-items: center;
     justify-content: center;
-    flex-shrink: 0;
     transition: all 0.3s ease;
+    
+    /* DŮLEŽITÉ PRO POZICOVÁNÍ PSEUDO-ELEMENTU */
+    position: relative;
+    /* Zajistí, že obsah (skutečná ikona) bude nad pozadím */
+    z-index: 1;
+
+    /* Barva samotné ikony uvnitř (pokud je to text/font ikona) */
     color: var(--accent-color);
-    background: var(--accent-bg);
+
+    /* Původní background a clip-path odstraníme */
+}
+
+/* --- ZDE TVOŘÍME POZADÍ --- */
+.stat-icon::before {
+    content: '';
+    /* Roztáhneme přes celý kontejner */
+    position: absolute;
+    inset: 0; /* Zkratka pro top:0, right:0, bottom:0, left:0 */
+    
+    /* Pošleme ho za skutečný obsah */
+    z-index: -1;
+
+    /* 1. BARVA POZADÍ - použijeme plnou akcentní barvu */
+    background-color: var(--accent-color);
+
+    /* 2. TVAR POZADÍ - SVG maska (ta "čistá" verze) */
+    /* Díky průhlednosti v SVG masce se plná barva změní na poloprůhlednou "skleněnou" */
+    -webkit-mask-image: url("data:image/svg+xml;utf8,%3Csvg viewBox='0 0 42 47' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M38.5271 37.7758C40.6776 36.5214 42 34.2191 42 31.7294V15.2706C42 12.7809 40.6776 10.4786 38.5271 9.22415L24.5271 1.05748C22.3476 -0.213921 19.6524 -0.213921 17.4729 1.05748L3.4729 9.22415C1.32238 10.4786 0 12.7809 0 15.2706V31.7294C0 34.2191 1.32238 36.5214 3.4729 37.7758L17.4729 45.9425C19.6524 47.2139 22.3476 47.2139 24.5271 45.9425L38.5271 37.7758Z' fill='url(%23grad)'/%3E%3Cpath d='M41.5 15.2706V31.7294C41.5 34.0412 40.2721 36.1791 38.2752 37.344L24.2752 45.5106C22.2513 46.6912 19.7487 46.6912 17.7248 45.5106L3.72484 37.344C1.72792 36.1791 0.5 34.0412 0.5 31.7294V15.2706C0.5 12.9588 1.72792 10.8209 3.72484 9.65604L17.7248 1.48937C19.7487 0.308782 22.2513 0.308783 24.2752 1.48937L38.2752 9.65604C40.2721 10.8209 41.5 12.9588 41.5 15.2706Z' stroke='black' stroke-opacity='0.1'/%3E%3Cdefs%3E%3CradialGradient id='grad' cx='0' cy='0' r='1' gradientUnits='userSpaceOnUse' gradientTransform='translate(10.9773 11.9706) rotate(41.0251) scale(37.3254 32.232)'%3E%3Cstop stop-color='black' stop-opacity='0.2'/%3E%3Cstop offset='0.89' stop-color='black' stop-opacity='0.06'/%3E%3C/radialGradient%3E%3C/defs%3E%3C/svg%3E");
+    mask-image: url("data:image/svg+xml;utf8,%3Csvg viewBox='0 0 42 47' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M38.5271 37.7758C40.6776 36.5214 42 34.2191 42 31.7294V15.2706C42 12.7809 40.6776 10.4786 38.5271 9.22415L24.5271 1.05748C22.3476 -0.213921 19.6524 -0.213921 17.4729 1.05748L3.4729 9.22415C1.32238 10.4786 0 12.7809 0 15.2706V31.7294C0 34.2191 1.32238 36.5214 3.4729 37.7758L17.4729 45.9425C19.6524 47.2139 22.3476 47.2139 24.5271 45.9425L38.5271 37.7758Z' fill='url(%23grad)'/%3E%3Cpath d='M41.5 15.2706V31.7294C41.5 34.0412 40.2721 36.1791 38.2752 37.344L24.2752 45.5106C22.2513 46.6912 19.7487 46.6912 17.7248 45.5106L3.72484 37.344C1.72792 36.1791 0.5 34.0412 0.5 31.7294V15.2706C0.5 12.9588 1.72792 10.8209 3.72484 9.65604L17.7248 1.48937C19.7487 0.308782 22.2513 0.308783 24.2752 1.48937L38.2752 9.65604C40.2721 10.8209 41.5 12.9588 41.5 15.2706Z' stroke='black' stroke-opacity='0.1'/%3E%3Cdefs%3E%3CradialGradient id='grad' cx='0' cy='0' r='1' gradientUnits='userSpaceOnUse' gradientTransform='translate(10.9773 11.9706) rotate(41.0251) scale(37.3254 32.232)'%3E%3Cstop stop-color='black' stop-opacity='0.2'/%3E%3Cstop offset='0.89' stop-color='black' stop-opacity='0.06'/%3E%3C/radialGradient%3E%3C/defs%3E%3C/svg%3E");
+
+    -webkit-mask-size: contain;
+    mask-size: contain;
+    -webkit-mask-repeat: no-repeat;
+    mask-repeat: no-repeat;
+    -webkit-mask-position: center;
+    mask-position: center;
 }
 
 .stat-card:hover .stat-icon {
@@ -2099,8 +2130,8 @@ input:disabled {
     align-items: center;
     justify-content: center;
     background: var(--surface-2);
-    border-radius: var(--radius);
     color: var(--text-muted);
+    clip-path: polygon(25% 0%, 75% 0%, 100% 50%, 75% 100%, 25% 100%, 0% 50%);
 }
 
 .quick-stats .stat-icon i-tabler {

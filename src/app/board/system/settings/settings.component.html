@@ -76,8 +76,8 @@
         <div class="form-section">
             <h3 class="section-title">Stav systému</h3>
 
-            <div class="status-card" [class.success]="version.isUpToDate"
-                [class.warning]="version && !version.isUpToDate">
+            <div class="status-card" [class.success]="version?.isUpToDate"
+                [class.warning]="version && !version.isUpToDate && !version.isAhead" [class.info]="version?.isAhead">
                 <div class="status-card__icon">
                     @if (version) {
                     <i-tabler [name]="version.isUpToDate ? 'check' : 'alert-triangle'"></i-tabler>
@@ -86,18 +86,29 @@
                     }
                 </div>
                 <div class="status-card__content">
-                    @if (version) {
-                    <h4>{{ l.s(version.isUpToDate ? 'system.system_is_up_to_date' : 'system.system_has_update') }}</h4>
-                    <div class="status-meta">
-                        <span>{{ l.s('system.version') }}: <strong>{{ Config.APP_VERSION }}</strong></span>
-                        @if (!version.isUpToDate) {
-                        <span class="update-tag">{{ l.s('system.version_available') }}: {{ version.remoteVersion ?
-                            version.remoteVersion : version.latest }}</span>
-                        }
-                    </div>
+                    @if (version.isAhead) {
+                    <h4>{{ l.s('system.system_is_newer') }} <span class="version-badge major">(dev)</span></h4>
+                    } @else if (version.isBehind) {
+                    <h4>{{ l.s('system.system_has_update') }}</h4>
+
+                    } @else if (version.isUpToDate) {
+                    <h4>{{ l.s('system.system_is_up_to_date') }}</h4>
                     } @else {
                     <h4>{{ l.s('system.system_update_loading') }}</h4>
                     }
+                    <div class="status-meta">
+                        <span>{{ l.s('system.version') }}: <strong>{{ Config.APP_VERSION }}</strong></span>
+                        @if (version.isAhead) {
+                        <span class="update-tag info">{{ l.s('system.ahead_count', { count: version.aheadCount })
+                            }}</span>
+                        }
+                        @if (version.isBehind) {
+                        <span class="update-tag">{{ l.s('system.behind_count', { count: version.behindCount }) }}</span>
+                        <span class="update-tag">{{ l.s('system.version_available') }}: {{ version.remoteVersion !=
+                            'unknown' ? version.remoteVersion : version.latest }}</span>
+                        }
+                    </div>
+
                 </div>
                 <div class="status-card__actions">
                     <button class="btn btn--secondary btn--small" (click)="checkUpdate()"
@@ -136,10 +147,65 @@
                     <div class="setting-desc">Zapne automatické stahování a instalaci menších aktualizací.</div>
                 </div>
                 <div class="setting-control">
-                    <div class="switch" [class.on]="options.auto_update"
-                        (click)="options.auto_update = !options.auto_update">
+                    <div class="switch" [class.on]="options.auto_updates"
+                        (click)="options.auto_updates = !options.auto_updates; saveUpdateConfig()">
                         <div class="knob"></div>
                     </div>
+                </div>
+            </div>
+
+            @if (updateStatus.isUpdating) {
+            <div class="update-progress-container">
+                <div class="update-progress-header">
+                    <i-tabler name="loader" class="animate-spin"></i-tabler>
+                    <span>{{ updateStatus.progress }}</span>
+                </div>
+                <div class="update-progress-bar">
+                    <div class="update-progress-fill animating"></div>
+                </div>
+                @if (updateStatus.error) {
+                <div class="update-error">{{ updateStatus.error }}</div>
+                }
+            </div>
+            }
+
+            <div class="update-actions">
+                @if (version && !version.isUpToDate && !updateStatus.isUpdating && !version.isAhead) {
+                <button class="btn btn--primary" (click)="triggerUpdate()">
+                    <i-tabler name="download"></i-tabler>
+                    Aktualizovat nyní na {{ version.remoteVersion != 'unknown' ? version.remoteVersion : 'novou verzi'
+                    }}
+                </button>
+                }
+
+                <div class="rollback-container">
+                    <div class="form-group" style="margin-bottom: 0; flex: 1;">
+                        <div class="custom-select" style="width: 100%"
+                            (click)="$event.stopPropagation(); dropdownManager.selected_dropdown = dropdownManager.selected_dropdown == 'rollbackBackup' ? '' : 'rollbackBackup'">
+                            <div class="selected-value">
+                                {{ selected_backup_to_rollback ? selected_backup_to_rollback : 'Vyberte zálohu pro
+                                návrat...' }}
+                                <i-tabler name="chevron-down"></i-tabler>
+                            </div>
+                            @if (dropdownManager.selected_dropdown == 'rollbackBackup') {
+                            <div class="options-dropdown">
+                                <div class="list">
+                                    @for (backup of backups; track backup.filename) {
+                                    <div class="option"
+                                        (click)="$event.stopPropagation();dropdownManager.selected_dropdown = '';selected_backup_to_rollback = backup.filename">
+                                        {{ backup.filename }} ({{ (backup.size / 1024 / 1024).toFixed(2) }} MB)
+                                    </div>
+                                    }
+                                </div>
+                            </div>
+                            }
+                        </div>
+                    </div>
+                    <button class="btn btn--danger" [disabled]="!selected_backup_to_rollback || updateStatus.isUpdating"
+                        (click)="rollbackToBackup()">
+                        <i-tabler name="rotate-clockwise"></i-tabler>
+                        Návrat zpět (Rollback)
+                    </button>
                 </div>
             </div>
 
@@ -160,7 +226,7 @@
                             <div class="list">
                                 @for (type of interval_backups; track $index) {
                                 <div class="option"
-                                    (click)="$event.stopPropagation();dropdownManager.selected_dropdown = '';selected_interval_backup = $index">
+                                    (click)="$event.stopPropagation();dropdownManager.selected_dropdown = '';update_backup_interval($index)">
                                     {{ l.s('time.' + type) }}
                                 </div>
                                 }
@@ -202,7 +268,7 @@
                         </div>
                     </div>
                     <div style="margin-left: auto;">
-                        <button class="btn btn--secondary btn--small" onclick="alert('Spravovat licenci (demo)')">
+                        <button class="btn btn--secondary btn--small" (click)="openLicense()">
                             <i-tabler name="settings"></i-tabler>
                             Spravovat
                         </button>

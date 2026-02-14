@@ -3,6 +3,8 @@ import { CommonModule } from '@angular/common';
 import { IconsModule } from '@Schoolingo/icons';
 import { Locale } from '@Schoolingo/locale';
 import { CalendarService, CalendarEvent as ApiCalendarEvent } from '../../infrastructure/calendar/calendar.service';
+import { ModalManager } from '@Schoolingo/modal';
+import { CalendarAddEventComponent } from './modals/add-calendar-event/add-calendar-event.component';
 
 interface CalendarEvent {
   id: number;
@@ -25,6 +27,7 @@ interface CalendarEvent {
 export class CalendarComponent implements OnInit {
   public l = inject(Locale);
   public calendarService = inject(CalendarService);
+  public modalManager = inject(ModalManager);
   
   public currentDate: Date = new Date();
   public today = new Date();
@@ -37,6 +40,12 @@ export class CalendarComponent implements OnInit {
   public loading = false;
 
   ngOnInit(): void {
+    this.modalManager.addModal('calendar_add_event', {
+      title: 'Přidat novou událost',
+      closeable: true,
+      items: [{ type: 'component', component: CalendarAddEventComponent }],
+      width: 500
+    });
     this.generateWeekDays();
     this.loadEvents();
   }
@@ -193,6 +202,10 @@ export class CalendarComponent implements OnInit {
     this.currentDate.setDate(this.currentDate.getDate() + 7);
     this.generateWeekDays();
     this.loadEvents();
+  }
+
+  public openAddEventModal(): void {
+    this.modalManager.openModal('calendar_add_event');
   }
 }
 

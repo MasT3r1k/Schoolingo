@@ -1,3 +1,7 @@
+import { HttpClient } from "@angular/common/http";
+import { inject } from "@angular/core";
+import { Config } from "@Schoolingo/config";
+
 export interface CookiePreference {
   category: string;
   enabled: boolean;
@@ -13,7 +17,189 @@ export interface CookieInfo {
 }
 
 export class Cookies {
-      // Cookie categories
+  private http = inject(HttpClient);
+  public preferences: CookiePreference[] = [];
+
+  public loading = false;
+  public saving = false;
+  public showCookieDetails = false;
+  public selectedCategory: string | null = null;
+
+  public getCategoryPreference(categoryId: string): CookiePreference | undefined {
+    return this.preferences.find(p => p.category === categoryId);
+  }
+
+  public loadPreferences(): void {
+    this.loading = true;
+    this.preferences = [];
+
+    this.http.get<{ success: boolean; cookies: number }>(
+      `${Config.API_URL}/v1/cookies`,
+      { withCredentials: true }
+    ).subscribe({
+      next: (data) => {
+        if (data.cookies !== undefined && data.cookies !== null) {
+          // dec → bin → reverse → zarovnat na počet kategorií
+          const bits = data.cookies
+            .toString(2)
+            .split('')
+            .reverse()
+            .map(b => b === '1');
+
+          this.preferences = this.cookieCategories.map((cat, i) => ({
+            category: cat.id,
+            enabled: cat.required ? true : bits[i] ?? false,
+            required: cat.required
+          }));
+        } else {
+          this.initDefaultPreferences();
+        }
+
+        this.loading = false;
+      },
+      error: () => {
+        this.initDefaultPreferences();
+        this.loading = false;
+      }
+    });
+  }
+
+  public initDefaultPreferences(): void {
+    this.preferences = this.cookieCategories.map(cat => ({
+      category: cat.id,
+      enabled: cat.required,
+      required: cat.required
+    }));
+  }
+
+  public toggleCategory(categoryId: string): void {
+    const pref = this.getCategoryPreference(categoryId);
+    const config = this.getCategoryConfig(categoryId);
+
+    if (config?.required) {
+      return; // Cannot toggle required categories
+    }
+
+    if (pref) {
+      pref.enabled = !pref.enabled;
+    } else {
+      this.preferences.push({
+        category: categoryId,
+        enabled: true,
+        required: false
+      });
+    }
+  }
+
+  public acceptAll(): void {
+    this.cookieCategories.forEach(cat => {
+      const pref = this.getCategoryPreference(cat.id);
+      if (pref) {
+        pref.enabled = true;
+      } else {
+        this.preferences.push({
+          category: cat.id,
+          enabled: true,
+          required: cat.required
+        });
+      }
+    });
+    this.savePreferences();
+  }
+
+  public acceptEssentialOnly(): void {
+    this.cookieCategories.forEach(cat => {
+      const pref = this.getCategoryPreference(cat.id);
+      if (pref) {
+        pref.enabled = cat.required;
+      } else {
+        this.preferences.push({
+          category: cat.id,
+          enabled: cat.required,
+          required: cat.required
+        });
+      }
+    });
+    this.savePreferences();
+  }
+
+  public savePreferences(): void {
+    this.saving = true;
+    this.http.post(
+      `${Config.API_URL}/v1/cookies`,
+      { cookies: this.preferencesToDecimal() },
+      { withCredentials: true }
+    ).subscribe({
+      next: () => {
+        this.saving = false;
+        // Apply cookie settings
+        this.applyCookieSettings();
+      },
+      error: () => {
+        this.saving = false;
+      }
+    });
+  }
+
+  public applyCookieSettings(): void {
+    // Remove cookies from disabled categories
+    this.cookieCategories.forEach(cat => {
+      const pref = this.getCategoryPreference(cat.id);
+      if (pref && !pref.enabled) {
+        this.getCookiesByCategory(cat.id).forEach(cookie => {
+          this.deleteCookie(cookie.name);
+        });
+      }
+    });
+  }
+
+  public clearAllCookies(): void {
+    const cookies = document.cookie.split(';');
+    cookies.forEach(cookie => {
+      const name = cookie.split('=')[0].trim();
+      if (name) {
+        this.deleteCookie(name);
+      }
+    });
+    this.initDefaultPreferences();
+    this.savePreferences();
+  }
+
+  public toggleCategoryDetails(categoryId: string): void {
+    if (this.selectedCategory === categoryId) {
+      this.selectedCategory = null;
+    } else {
+      this.selectedCategory = categoryId;
+    }
+  }
+
+  public getEnabledCount(): number {
+    return this.preferences.filter(p => p.enabled).length;
+  }
+
+  public getTotalCategories(): number {
+    return this.cookieCategories.length;
+  }
+
+  private deleteCookie(name: string): void {
+    document.cookie = `${name}=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/`;
+  }
+
+  public getCategoryConfig(categoryId: string) {
+    return this.cookieCategories.find(c => c.id === categoryId);
+  }
+
+  public getCookiesByCategory(categoryId: string): CookieInfo[] {
+    return this.cookiesList.filter(c => c.category === categoryId);
+  }
+
+  public preferencesToDecimal(): number {
+    return this.preferences.reduce((acc, pref, index) => {
+      return acc + (pref.enabled ? (1 << index) : 0);
+    }, 0);
+  }
+
+  // Cookie categories
   public cookieCategories = [
     {
       id: 'essential',

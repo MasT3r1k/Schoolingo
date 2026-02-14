@@ -63,7 +63,7 @@ export class Permission {
                             permCount++;
                         }
                     }
-                } else if (permission == "classteacher" && this.user.getUser().classes.length) {
+                } else if (permission == "classteacher" && this.user.getUser().classes.length && this.user.getUser().role == "teacher") {
                     permCount++;
                 } else if (permission == "all") {
                     permCount++;

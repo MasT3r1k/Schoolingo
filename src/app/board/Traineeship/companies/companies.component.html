@@ -5,32 +5,16 @@
       <h2>{{ l.s("sidebar.traineeship.companies") }}</h2>
       <span class="meta muted">Procházejte a vybírejte firmy pro vaši praxi</span>
     </div>
+    <div class="right">
+      <button (click)="requestCompany()" class="btn btn--primary">
+        <i-tabler name="building-plus" style="width: 18px; height: 18px;"></i-tabler>
+        {{ l.s(permissions.checkPermission(["manager:traineeship:manage"]) ? "traineeship.add_company" : "traineeship.request_add_company") }}
+      </button>
+    </div>
   </div>
 
   <!-- Search & Actions Section -->
   <div class="section">
-    <div class="section-header">
-      <div class="header-content">
-        <i-tabler name="search"></i-tabler>
-        <div>
-          <h3>Vyhledat firmu</h3>
-          <span class="meta muted">Filtrujte firmy podle názvu, města nebo oboru</span>
-        </div>
-      </div>
-      <div class="header-actions">
-        @if (!permissions.checkPermission(["manager:traineeship:manage"])) {
-        <button (click)="requestCompany()" class="btn btn--secondary">
-          <i-tabler name="building-plus" style="width: 18px; height: 18px;"></i-tabler>
-          {{ l.s("traineeship.request_add_company") }}
-        </button>
-        } @else {
-        <button class="btn btn--primary">
-          <i-tabler name="plus" style="width: 18px; height: 18px;"></i-tabler>
-          {{ l.s("traineeship.add_company") }}
-        </button>
-        }
-      </div>
-    </div>
     <div class="section-content">
       <div class="search-container">
         <div class="search-input-wrapper">
@@ -42,21 +26,6 @@
           <schoolingo-tabs [options]="getCompanyListOptions()" [value]="selectedCompanyListOption"></schoolingo-tabs>
         </div>
       </div>
-    </div>
-  </div>
-
-  <!-- Companies List Section -->
-  <div class="section">
-    <div class="section-header">
-      <div class="header-content">
-        <i-tabler name="building"></i-tabler>
-        <div>
-          <h3>Seznam firem</h3>
-          <span class="meta muted">Klikněte na firmu pro zobrazení detailu</span>
-        </div>
-      </div>
-    </div>
-    <div class="section-content">
       <schoolingo-datalist (datalist)="receivedDatalist($event)" [options]="{
           search: false,
           ignore: [
@@ -507,11 +476,12 @@
         <i-tabler name="chevron-left" style="width: 18px; height: 18px;"></i-tabler>
         {{ l.s("buttons.back") }}
       </button>
-      <h2>{{ l.s("traineeship.request_company") }}</h2>
+      <h2>{{ l.s(permissions.checkPermission(["manager:traineeship:manage"]) ? "traineeship.add_company" :
+        "traineeship.request_company") }}</h2>
     </div>
   </div>
 
-  <div class="section info-banner">
+  <div class="section info-banner" *ngIf="!permissions.checkPermission(['manager:traineeship:manage'])">
     <div class="banner-content">
       <div class="banner-icon">
         <i-tabler name="bulb" style="width: 24px; height: 24px;"></i-tabler>
@@ -552,26 +522,14 @@
             @if (dropdownManager.selected_dropdown == 'countryCodeSelect') {
             <div class="options-dropdown">
               <div class="list">
+                @for (c of [{code: 'CZ', name: 'Česko', flag: '🇨🇿'}, {code: 'SK', name: 'Slovensko', flag: '🇸🇰'},
+                {code: 'DE', name: 'Německo', flag: '🇩🇪'}, {code: 'FR', name: 'Francie', flag: '🇫🇷'}, {code: 'IT',
+                name: 'Itálie', flag: '🇮🇹'}]; track $index) {
                 <div class="option row" style="gap: .5rem"
-                  (click)="$event.stopPropagation(); dropdownManager.selected_dropdown = ''; countryCode = 'CZ'">
-                  🇨🇿 Česko
+                  (click)="$event.stopPropagation(); dropdownManager.selected_dropdown = ''; countryCode = c.code">
+                  {{ c.flag }} {{ c.name }}
                 </div>
-                <div class="option row" style="gap: .5rem"
-                  (click)="$event.stopPropagation(); dropdownManager.selected_dropdown = ''; countryCode = 'SK'">
-                  🇸🇰 Slovensko
-                </div>
-                <div class="option row" style="gap: .5rem"
-                  (click)="$event.stopPropagation(); dropdownManager.selected_dropdown = ''; countryCode = 'DE'">
-                  🇩🇪 Německo
-                </div>
-                <div class="option row" style="gap: .5rem"
-                  (click)="$event.stopPropagation(); dropdownManager.selected_dropdown = ''; countryCode = 'FR'">
-                  🇫🇷 Francie
-                </div>
-                <div class="option row" style="gap: .5rem"
-                  (click)="$event.stopPropagation(); dropdownManager.selected_dropdown = ''; countryCode = 'IT'">
-                  🇮🇹 Itálie
-                </div>
+                }
               </div>
             </div>
             }
@@ -579,7 +537,7 @@
         </div>
 
         <div class="form-group">
-          <label class="form-label" for="CIN">
+          <label class="form-label" for="DIC">
             <i-tabler name="id" style="width: 16px; height: 16px;"></i-tabler>
             {{ l.s("traineeship.DIC") }}
           </label>
@@ -601,8 +559,34 @@
             <i-tabler name="building" style="width: 16px; height: 16px;"></i-tabler>
             {{ l.s('traineeship.company_name') }}
           </label>
-          <input type="text" class="form-input" name="name" [value]="creatingCompany['name']"
+          <input type="text" class="form-input" name="name" [(ngModel)]="creatingCompany['name']"
             [placeholder]="l.s('traineeship.company_name')">
+        </div>
+
+        <div class="form-group" *ngIf="permissions.checkPermission(['manager:traineeship:manage'])">
+          <label class="form-label" for="status">
+            <i-tabler name="settings" style="width: 16px; height: 16px;"></i-tabler>
+            {{ l.s('traineeship.status') }}
+          </label>
+          <div class="custom-select" id="statusSelect"
+            (click)="$event.stopPropagation(); dropdownManager.selected_dropdown = dropdownManager.selected_dropdown == 'statusSelect' ? '' : 'statusSelect'">
+            <div class="selected-value">
+              {{ l.s('traineeship.status_company.' + creatingCompany['status']) }}
+              <i-tabler name="chevron-down"></i-tabler>
+            </div>
+            @if (dropdownManager.selected_dropdown == 'statusSelect') {
+            <div class="options-dropdown">
+              <div class="list">
+                @for (status of ['approved', 'acceptable', 'request', 'deleted']; track $index) {
+                <div class="option row" style="gap: .5rem"
+                  (click)="$event.stopPropagation(); dropdownManager.selected_dropdown = ''; creatingCompany['status'] = status">
+                  {{ l.s('traineeship.status_company.' + status) }}
+                </div>
+                }
+              </div>
+            </div>
+            }
+          </div>
         </div>
       </div>
     </div>
@@ -623,25 +607,25 @@
       <div class="form-grid">
         <div class="form-group">
           <label class="form-label" for="street">{{ l.s('street') }}</label>
-          <input type="text" class="form-input" name="street" [value]="creatingCompany['street']"
+          <input type="text" class="form-input" name="street" [(ngModel)]="creatingCompany['street']"
             [placeholder]="l.s('street')">
         </div>
 
         <div class="form-group">
           <label class="form-label" for="houseNumber">{{ l.s('houseNumber') }}</label>
-          <input type="text" class="form-input" name="houseNumber" [value]="creatingCompany['houseNumber']"
+          <input type="text" class="form-input" name="houseNumber" [(ngModel)]="creatingCompany['houseNumber']"
             [placeholder]="l.s('houseNumber')">
         </div>
 
         <div class="form-group">
           <label class="form-label" for="city">{{ l.s('traineeship.city') }}</label>
-          <input type="text" class="form-input" name="city" [value]="creatingCompany['city']"
+          <input type="text" class="form-input" name="city" [(ngModel)]="creatingCompany['city']"
             [placeholder]="l.s('traineeship.city')">
         </div>
 
         <div class="form-group">
           <label class="form-label" for="postcode">{{ l.s('postcode') }}</label>
-          <input type="text" class="form-input" name="postcode" [value]="creatingCompany['postcode']"
+          <input type="text" class="form-input" name="postcode" [(ngModel)]="creatingCompany['postcode']"
             [placeholder]="l.s('postcode')">
         </div>
 
@@ -650,7 +634,7 @@
             <i-tabler name="world" style="width: 16px; height: 16px;"></i-tabler>
             {{ l.s('traineeship.web') }}
           </label>
-          <input type="text" class="form-input" name="web" [value]="creatingCompany['web']"
+          <input type="text" class="form-input" name="web" [(ngModel)]="creatingCompany['web']"
             [placeholder]="l.s('traineeship.web')">
         </div>
       </div>
@@ -671,17 +655,54 @@
     <div class="section-content">
       <div class="scopes-list">
         @for (scope of getAllScopes(); track $index) {
-        <div class="scope-item" [class.selected]="scopeSupported.includes(scope.name)"
-          (click)="toggleScope(scope.name, !scopeSupported.includes(scope.name))">
+        <div class="scope-item" [class.selected]="scopeSupported.includes(scope.scopeId)"
+          (click)="toggleScope(scope.scopeId, !scopeSupported.includes(scope.scopeId))">
           <span class="scope-name">{{ scope.name }}</span>
           <div class="scope-toggle">
-            <span class="toggle-label">{{ scopeSupported.includes(scope.name) ? l.s("yes") : l.s("no") }}</span>
-            <div class="toggle-switch" [class.active]="scopeSupported.includes(scope.name)">
+            <span class="toggle-label">{{ scopeSupported.includes(scope.scopeId) ? l.s("yes") : l.s("no") }}</span>
+            <div class="toggle-switch" [class.active]="scopeSupported.includes(scope.scopeId)">
               <span class="toggle-knob"></span>
             </div>
           </div>
         </div>
         }
+      </div>
+    </div>
+  </div>
+
+  <!-- Contact & Person Section -->
+  <div class="section">
+    <div class="section-header">
+      <div class="header-content">
+        <i-tabler name="user"></i-tabler>
+        <div>
+          <h3>Odpovědná osoba a kontakt</h3>
+          <span class="meta muted">Údaje o kontaktní osobě ve firmě</span>
+        </div>
+      </div>
+    </div>
+    <div class="section-content">
+      <div class="form-grid">
+        <div class="form-group">
+          <label class="form-label">{{ l.s("person.first_name") }}</label>
+          <input type="text" class="form-input" name="rp_firstName" [(ngModel)]="creatingCompany['rp_firstName']"
+            [placeholder]="l.s('person.first_name')" />
+        </div>
+        <div class="form-group">
+          <label class="form-label">{{ l.s("person.last_name") }}</label>
+          <input type="text" class="form-input" name="rp_lastName" [(ngModel)]="creatingCompany['rp_lastName']"
+            [placeholder]="l.s('person.last_name')" />
+        </div>
+        <div class="form-group">
+          <label class="form-label">{{ l.s("traineeship.email") }}</label>
+          <input type="email" class="form-input" name="email" [(ngModel)]="creatingCompany['email']"
+            [placeholder]="l.s('traineeship.email')" />
+        </div>
+        <div class="form-group">
+          <label class="form-label">{{ l.s("traineeship.phone") }}</label>
+          <input type="text" class="form-input" name="phone" [(ngModel)]="creatingCompany['phone']"
+            [placeholder]="l.s('traineeship.phone')" />
+        </div>
       </div>
     </div>
   </div>
@@ -700,28 +721,27 @@
     <div class="section-content">
       <div class="form-grid">
         <div class="form-group full-width">
-          <label class="form-label" for="contact">{{ l.s("contact") }}</label>
-          <input type="text" class="form-input" name="contact" [placeholder]="l.s('contact')" />
+          <label class="form-label" for="contact">{{ l.s("traineeship.contact") }}</label>
+          <input type="text" class="form-input" name="contact" [(ngModel)]="creatingCompany['contact']"
+            [placeholder]="l.s('traineeship.contact')" />
         </div>
 
         <div class="form-group full-width">
-          <label class="form-label" for="description">{{ l.s("description") }}</label>
-          <textarea class="form-textarea" name="description" rows="3" [placeholder]="l.s('description')"></textarea>
+          <label class="form-label" for="description">{{ l.s("traineeship.description") }}</label>
+          <textarea class="form-textarea" name="description" [(ngModel)]="creatingCompany['description']" rows="3"
+            [placeholder]="l.s('traineeship.description')"></textarea>
         </div>
 
         <div class="form-group">
           <label class="form-label" for="activity">{{ l.s("traineeship.activity") }}</label>
-          <input type="text" class="form-input" name="activity" [placeholder]="l.s('traineeship.activity')" />
+          <input type="text" class="form-input" name="activity" [(ngModel)]="creatingCompany['activity']"
+            [placeholder]="l.s('traineeship.activity')" />
         </div>
 
         <div class="form-group">
           <label class="form-label" for="equipment">{{ l.s("traineeship.equipment") }}</label>
-          <input type="text" class="form-input" name="equipment" [placeholder]="l.s('traineeship.equipment')" />
-        </div>
-
-        <div class="form-group full-width">
-          <label class="form-label" for="note">{{ l.s("traineeship.note") }}</label>
-          <textarea class="form-textarea" name="note" rows="2" [placeholder]="l.s('traineeship.note')"></textarea>
+          <input type="text" class="form-input" name="equipment" [(ngModel)]="creatingCompany['equipment']"
+            [placeholder]="l.s('traineeship.equipment')" />
         </div>
       </div>
     </div>
@@ -730,9 +750,10 @@
   <!-- Submit Section -->
   <div class="form-actions">
     <button class="btn btn--ghost" (click)="goToList()">Zrušit</button>
-    <button class="btn btn--primary btn--lg">
+    <button class="btn btn--primary btn--lg" (click)="submitForm()">
       <i-tabler name="send" style="width: 18px; height: 18px;"></i-tabler>
-      {{ l.s("traineeship.request_add_company") }}
+      {{ l.s(permissions.checkPermission(["manager:traineeship:manage"]) ? "traineeship.add_company" :
+      "traineeship.request_add_company") }}
     </button>
   </div>
 </div>

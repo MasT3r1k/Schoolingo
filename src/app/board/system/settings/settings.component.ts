@@ -9,13 +9,25 @@ import { DropdownManager } from '@Schoolingo/dropdown';
 import { ModalManager } from '@Schoolingo/modal';
 import { CommonModule } from '@angular/common';
 import { ChangelogModalComponent } from './modals/changelog/changelog.component';
+import { LicenseModalComponent } from './modals/license/license.component';
 
 interface ElysiaVersion {
   current: string;
   latest: string;
   isUpToDate: boolean;
+  isAhead: boolean;
+  isBehind: boolean;
+  aheadCount: number;
+  behindCount: number;
   version: string;
   remoteVersion?: string;
+}
+
+interface UpdateStatus {
+  isUpdating: boolean;
+  lastCheck: Date | null;
+  error: string | null;
+  progress: string;
 }
 
 interface ElysiaVersionLoading {
@@ -95,6 +107,9 @@ type ElysiaSystemAPI = {
     auth_passkeys: boolean;
     session_lifetime_minutes: number;
     max_login_attempts: number;
+    backup_interval: number | null;
+    auto_update: boolean;
+    auto_update_interval: number;
   };
 
   ldap_config: LdapConfig | null;
@@ -155,6 +170,16 @@ export class SettingsComponent implements OnInit {
     is_loading: true,
     error: null
   }
+  
+  public updateStatus: UpdateStatus = {
+    isUpdating: false,
+    lastCheck: null,
+    error: null,
+    progress: 'Idle'
+  };
+
+  public backups: any[] = [];
+  public selected_backup_to_rollback: string | null = null;
 
   public checkUpdate(): void {
     this.version_loading.is_loading = true;
@@ -165,6 +190,66 @@ export class SettingsComponent implements OnInit {
     }, () => {
         this.version_loading.error = 'failed_load_version';
         this.version_loading.is_loading = false;
+    });
+  }
+
+  public getUpdateStatus(): void {
+    this.http.get<UpdateStatus>(`${Config.API_URL}/v1/system/update/status`, { withCredentials: true }).subscribe((data) => {
+        this.updateStatus = data;
+        if (data.isUpdating) {
+            setTimeout(() => this.getUpdateStatus(), 2000);
+        }
+    });
+  }
+
+  public triggerUpdate(): void {
+    if (this.updateStatus.isUpdating) return;
+    this.updateStatus.isUpdating = true;
+    this.updateStatus.progress = 'Iniciuji...';
+    this.http.post<any>(`${Config.API_URL}/v1/system/update/trigger`, {}, { withCredentials: true }).subscribe((res) => {
+        if (res.success) {
+            this.getUpdateStatus();
+        } else {
+            this.updateStatus.isUpdating = false;
+            this.updateStatus.error = res.message;
+        }
+    }, () => {
+        this.updateStatus.isUpdating = false;
+        this.updateStatus.error = 'Update failed';
+    });
+  }
+
+  public rollbackToBackup(): void {
+    if (!this.selected_backup_to_rollback) return;
+    if (!confirm('Opravdu chcete obnovit systém ze zálohy? Tato akce může restartovat systém.')) return;
+
+    this.updateStatus.isUpdating = true;
+    this.updateStatus.progress = 'Obnovuji ze zálohy...';
+    this.http.post<any>(`${Config.API_URL}/v1/system/update/rollback`, { 
+        backupFilename: this.selected_backup_to_rollback 
+    }, { withCredentials: true }).subscribe((res) => {
+        if (res.success) {
+            alert('Obnova proběhla úspěšně. Systém se může restartovat.');
+            location.reload();
+        } else {
+            this.updateStatus.isUpdating = false;
+            this.updateStatus.error = res.message;
+        }
+    });
+  }
+
+  public saveUpdateConfig(): void {
+    this.http.post(`${Config.API_URL}/v1/system/update/config`, {
+        auto_update: this.options.auto_updates,
+        auto_update_interval: 24
+    }, { withCredentials: true }).subscribe(() => {
+        console.log('Update config saved');
+    });
+  }
+
+  public loadBackups(): void {
+    this.http.get<any[]>(`${Config.API_URL}/v1/system/backup/list`, { withCredentials: true }).subscribe((data: any) => {
+        this.backups = data.backups || data;
     });
   }
 
@@ -183,6 +268,10 @@ export class SettingsComponent implements OnInit {
   // === Changelog ===
   public openChangelog(): void {
     this.modalManager.openModal('changelog');
+  }
+
+  public openLicense(): void {
+    this.modalManager.openModal('license');
   }
 
   // === Scopes ===
@@ -462,6 +551,11 @@ export class SettingsComponent implements OnInit {
           this.subject_hours[subject.subjectId] = [0, 0, 0, 0, 0];
         }
       }
+
+      if (data.settings.backup_interval != null) {
+        this.selected_interval_backup = data.settings.backup_interval;
+      }
+      this.options.auto_updates = data.settings.auto_update;
     });
 
     this.http.get<ElysiaVersion>(
@@ -488,8 +582,21 @@ export class SettingsComponent implements OnInit {
         ]
       }
     )
+
+    this.modalManager.addModal(
+        'license',
+        {
+            title: 'Správa licence',
+            closeable: true,
+            items: [
+                { type: 'component', component: LicenseModalComponent }
+            ]
+        }
+    )
     
     this.load_teachers();
+    this.getUpdateStatus();
+    this.loadBackups();
   }
 
   // === Save School information ===
@@ -601,6 +708,17 @@ export class SettingsComponent implements OnInit {
     )
     .subscribe((data) => {
       console.log('Email settings updated', data);
+    });
+  }
+
+  public update_backup_interval(index: number): void {
+    this.selected_interval_backup = index;
+    this.http.post(
+      `${Config.API_URL}/v1/system/backup/interval`,
+      { interval: index },
+      { withCredentials: true }
+    ).subscribe((data) => {
+      console.log('Backup interval updated', data);
     });
   }
 

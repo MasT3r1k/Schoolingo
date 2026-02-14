@@ -7,6 +7,9 @@ import { DropdownManager } from '@Schoolingo/dropdown';
 import { HttpClient } from '@angular/common/http';
 import { Config } from '@Schoolingo/config';
 import { debounceTime, distinctUntilChanged } from 'rxjs';
+import { CalendarComponent } from '@Components/calendar';
+import { CalendarManager } from '@Components/calendar-dropdown';
+import moment from 'moment';
 
 export interface StudentSearchDataAPI {
   personId: number;
@@ -34,7 +37,7 @@ export interface StudentBehaveAPI {
 }
 
 @Component({
-  imports: [FormsModule, ReactiveFormsModule, IconsModule],
+  imports: [FormsModule, ReactiveFormsModule, IconsModule, CalendarComponent],
   templateUrl: './add-measure.component.html',
   styleUrl: './add-measure.component.css'
 })
@@ -43,6 +46,7 @@ export class AddMeasureComponent implements OnInit {
   private measuresService = inject(EducationMeasuresService);
   public dropdownManager = inject(DropdownManager);
   private http = inject(HttpClient);
+  public calendarManager = inject(CalendarManager);
 
   public measureTypes: MeasureType[] = ['praise', 'reprimand', 'warning', 'reduced_behavior', 'other'];
   public measureCategories: MeasureCategory[] = ['positive', 'negative'];
@@ -81,6 +85,16 @@ export class AddMeasureComponent implements OnInit {
         this.students = data.data;
       }, (err) => {}, () => this.filters.loading = false);
     })
+
+    // Initialize calendar
+    setTimeout(() => {
+        this.calendarManager.getCalendarData('add_measure_date').selected_date[0].next(moment(this.newMeasure.date));
+    });
+
+    // Subscribe to calendar changes
+    this.calendarManager.getCalendarData('add_measure_date').selected_date[0].subscribe((date) => {
+        this.newMeasure.date = date.format('YYYY-MM-DD');
+    });
   }
 
   public getTypeLabel(type: MeasureType | 'all'): string {

@@ -2,27 +2,30 @@
     <div class="sidebar">
         <div class="header">
             <h3>{{ l.s('documents.folders') }}</h3>
-            <div class="item-btn" (click)="$event.stopPropagation();dropdownManager.selected_dropdown = (dropdownManager.selected_dropdown == 'documents_add') ? '' : 'documents_add'">
+            <div class="item-btn"
+                (click)="$event.stopPropagation();dropdownManager.selected_dropdown = (dropdownManager.selected_dropdown == 'documents_add') ? '' : 'documents_add'">
                 <div class="icon">
                     <i-tabler name="plus"></i-tabler>
                 </div>
-                <div class="dropdown" style="min-width: 225px;" [hidden]="dropdownManager.selected_dropdown !== 'documents_add'" (click)="$event.stopPropagation()">
+                <div class="dropdown" style="min-width: 225px;"
+                    [hidden]="dropdownManager.selected_dropdown !== 'documents_add'" (click)="$event.stopPropagation()">
                     <ul>
                         @for (item of addDropdown; track $index) {
-                            <li [ngClass]="[item.type ? item.type : '']" (click)="dropdownManager.selected_dropdown = '';item?.action()">
-                                <div class="item">
-                                    <div class="row">
-                                        @if (item.icon) {
-                                            <div class="icon">
-                                                <i-tabler [name]="item.icon"></i-tabler>
-                                            </div>
-                                        }
-                                        <div class="item-label">
-                                            {{ l.s(item.item) }}
-                                        </div>
+                        <li [ngClass]="[item.type ? item.type : '']"
+                            (click)="dropdownManager.selected_dropdown = '';item?.action()">
+                            <div class="item">
+                                <div class="row">
+                                    @if (item.icon) {
+                                    <div class="icon">
+                                        <i-tabler [name]="item.icon"></i-tabler>
+                                    </div>
+                                    }
+                                    <div class="item-label">
+                                        {{ l.s(item.item) }}
                                     </div>
                                 </div>
-                            </li>
+                            </div>
+                        </li>
                         }
                     </ul>
                 </div>
@@ -31,7 +34,7 @@
         <div class="sidebar-content">
             <ul>
                 @for (tree of documents.getTree(); track $index) {
-                    <ng-container [ngTemplateOutlet]="tree_content" [ngTemplateOutletContext]="{ item: tree }" />
+                <ng-container [ngTemplateOutlet]="tree_content" [ngTemplateOutletContext]="{ item: tree }" />
                 }
             </ul>
         </div>
@@ -52,7 +55,7 @@
 
             <div class="right">
                 <div class="btn-icon" (click)="refreshFiles()">
-                    <i-tabler name="refresh"></i-tabler>
+                    <i-tabler name="refresh" [class.spinning]="isRefreshing"></i-tabler>
                 </div>
                 <div class="btn btn--sm primary" (click)="openUploadFiles()">
                     <i-tabler name="upload"></i-tabler>
@@ -71,25 +74,26 @@
             }
             <div class="explorer" [class.explorer-grid]="layout == 'grid'" [class.explorer-list]="layout == 'list'">
                 @for(file of documents.getFiles(search.value ?? '');track $index) {
-                <div class="file-card" [class.selected]="documents.getSelectedFile()?.document_id == file.document_id" (contextmenu)="$event.stopPropagation();rightClickOnItem(file.document_id, $event)" (click)="documents.showProperties(file)"
-                    (dblclick)="documents.selectFolder(file)">
+                <div class="file-card" [class.selected]="documents.getSelectedFile()?.document_id == file.document_id"
+                    (contextmenu)="$event.stopPropagation();rightClickOnItem(file.document_id, $event)"
+                    (click)="documents.showProperties(file)" (dblclick)="documents.selectFolder(file)">
                     <div class="icon-wrapper">
                         <i-tabler [name]="documents.getIcon(file.type)"></i-tabler>
                     </div>
                     <div class="file-info">
                         <div class="name" [title]="file.name">{{ file.name }}</div>
                         @if (layout == 'list') {
-                            <div class="meta">
-                                {{ Utils.formatDateShort(file.modified_at) }}
-                            </div>
+                        <div class="meta">
+                            {{ Utils.formatDateShort(file.modified_at) }}
+                        </div>
 
-                            <div class="meta">
-                                {{ l.s('documents.types.' + file.type) }}
-                            </div>
+                        <div class="meta">
+                            {{ l.s('documents.types.' + file.type) }}
+                        </div>
 
-                            <div class="meta">
-                                {{ file.file_size }} B
-                            </div>
+                        <div class="meta">
+                            {{ file.file_size }} B
+                        </div>
                         }
                     </div>
                 </div>
@@ -103,7 +107,7 @@
         </div>
     </div>
 
- @let file = documents.getSelectedFile();
+    @let file = documents.getSelectedFile();
     <div class="details-panel" [class.open]="file">
         <div class="detail-header header">
             <h3>{{ l.s('documents.file_details') }}</h3>
@@ -135,21 +139,21 @@
 
             <div class="buttons">
                 @if (file.type == 'folder') {
-                    <div class="btn btn--secondary" (click)="documents.selectFolder(file)">
-                        <i-tabler name="folder-open"></i-tabler>
-                        {{ l.s('documents.open_folder') }}
-                    </div>
+                <div class="btn btn--secondary" (click)="documents.selectFolder(file)">
+                    <i-tabler name="folder-open"></i-tabler>
+                    {{ l.s('documents.open_folder') }}
+                </div>
                 }
                 @if (file.type == 'file') {
-                    <div class="btn btn--secondary" (click)="documents.openFile(file)">
-                        <i-tabler name="click"></i-tabler>
-                        {{ l.s('documents.open_file') }}
-                    </div>
+                <div class="btn btn--secondary" (click)="documents.openFile(file)">
+                    <i-tabler name="click"></i-tabler>
+                    {{ l.s('documents.open_file') }}
+                </div>
 
-                    <div class="btn btn--secondary" (click)="documents.downloadFile(file)">
-                        <i-tabler name="download"></i-tabler>
-                        {{ l.s('documents.download_file') }}
-                    </div>
+                <div class="btn btn--secondary" (click)="documents.downloadFile(file)">
+                    <i-tabler name="download"></i-tabler>
+                    {{ l.s('documents.download_file') }}
+                </div>
                 }
                 <div class="btn btn--secondary" (click)="renameFile(file)">
                     <i-tabler name="edit"></i-tabler>
@@ -168,7 +172,7 @@
         }
     </div>
     } @else {
-        @let open_file = documents.getOpenedFile()!;
+    @let open_file = documents.getOpenedFile()!;
     <div class="main-area">
         <div class="navbar header">
             <div class="left">
@@ -177,11 +181,11 @@
                 </span>
                 <span>&ndash;</span>
                 @if (documents.fileData != null) {
-                    <span>
-                        {{ documents.fileData.lines }} lines
-                        ·
-                        {{ Utils.formatBytes(open_file.file_size) }}
-                    </span>
+                <span>
+                    {{ documents.fileData.lines }} lines
+                    ·
+                    {{ Utils.formatBytes(open_file.file_size) }}
+                </span>
                 }
             </div>
 
@@ -197,28 +201,20 @@
         </div>
         <div class="document-explorer">
             @if (['.docx', '.doc', '.pptx', '.pdf'].includes(open_file.file_format ?? '')) {
-                <iframe [src]="documents.preview_url" frameborder="0" height="100%" width="100%"></iframe>
-            } @else if (['.pdf'].includes(open_file.file_format ?? '') && open_file.file_uuid && documents.fileData.access_token) {
-                {{ `${Config.API_URL}/file/${open_file.file_uuid}` }}
-                <object
-                    data="{{ documents.preview_url }}"
-                    type="application/pdf"
-                    width="100%"
-                    height="100%"
-                    title="Embedded PDF Viewer"
-                    >
-                    <iframe
-                        src="{{ documents.preview_url }}"
-                        width="100%"
-                        height="100%"
-                        style="border: none"
-                        title="Fallback PDF Viewer"
-                    >
-                        <p>Your browser does not support PDFs. [Download the PDF](document.pdf)</p>
-                    </iframe>
-                </object>
+            <iframe [src]="documents.preview_url" frameborder="0" height="100%" width="100%"></iframe>
+            } @else if (['.pdf'].includes(open_file.file_format ?? '') && open_file.file_uuid &&
+            documents.fileData.access_token) {
+            {{ `${Config.API_URL}/file/${open_file.file_uuid}` }}
+            <object data="{{ documents.preview_url }}" type="application/pdf" width="100%" height="100%"
+                title="Embedded PDF Viewer">
+                <iframe src="{{ documents.preview_url }}" width="100%" height="100%" style="border: none"
+                    title="Fallback PDF Viewer">
+                    <p>Your browser does not support PDFs. [Download the PDF](document.pdf)</p>
+                </iframe>
+            </object>
             } @else {
-            <pre class="code-container">@if (documents.fileData) {<code>@for (line of documents.fileData.content.split('\n'); track $index) {<span class="line"><span class="line-number">{{ $index + 1 }}</span>{{ line }}</span>}</code>}</pre>
+            <pre
+                class="code-container">@if (documents.fileData) {<code>@for (line of documents.fileData.content.split('\n'); track $index) {<span class="line"><span class="line-number">{{ $index + 1 }}</span>{{ line }}</span>}</code>}</pre>
             }
         </div>
     </div>
@@ -227,23 +223,28 @@
 
 <ng-template #tree_content let-item="item">
     <li>
-        <div class="tree-content" (click)="context_menu.hideContextMenu();documents.selectFolder(item)" (contextmenu)="rightClickOnItem(item.document_id, $event)" [class.active]="(item.document_id === documents.getSelectedFolder()?.document_id && documents.getOpenedFile() == null) || item.document_id === documents.getOpenedFile()?.document_id && documents.getOpenedFile()?.document_id">
+        <div class="tree-content" (click)="context_menu.hideContextMenu();documents.selectFolder(item)"
+            (contextmenu)="rightClickOnItem(item.document_id, $event)"
+            [class.active]="(item.document_id === documents.getSelectedFolder()?.document_id && documents.getOpenedFile() == null) || item.document_id === documents.getOpenedFile()?.document_id && documents.getOpenedFile()?.document_id">
             @if ((item.files_count || (item.children && item.children.length))) {
-            <span class="toggle-icon" (click)="context_menu.hideContextMenu();toggleFolder(item, $event)" [class.expanded]="isFolderExpanded(item)">
-                <i-tabler [name]="isFolderExpanded(item) ? 'chevron-down' : 'chevron-right'" style="width: 16px; height: 16px;"></i-tabler>
+            <span class="toggle-icon" (click)="context_menu.hideContextMenu();toggleFolder(item, $event)"
+                [class.expanded]="isFolderExpanded(item)">
+                <i-tabler [name]="isFolderExpanded(item) ? 'chevron-down' : 'chevron-right'"
+                    style="width: 16px; height: 16px;"></i-tabler>
             </span>
             } @else {
             <span class="toggle-spacer"></span>
             }
             <span class="tree-label">
-                <i-tabler [name]="documents.getIcon(item.type) == 'folder-filled' ? isFolderExpanded(item) ? 'folder-open' : 'folder'  : documents.getIcon(item.type)"></i-tabler>
+                <i-tabler
+                    [name]="documents.getIcon(item.type) == 'folder-filled' ? isFolderExpanded(item) ? 'folder-open' : 'folder'  : documents.getIcon(item.type)"></i-tabler>
                 {{ item.name || l.s('documents.all_files') }}
             </span>
         </div>
         @if ((item.files_count || (item.children && item.children.length)) && isFolderExpanded(item)) {
         <ul class="tree">
             @for (tree of item.children; track $index) {
-                <ng-container [ngTemplateOutlet]="tree_content" [ngTemplateOutletContext]="{ item: tree }" />
+            <ng-container [ngTemplateOutlet]="tree_content" [ngTemplateOutletContext]="{ item: tree }" />
             }
         </ul>
         }

@@ -44,6 +44,7 @@ export class DocumentsComponent implements OnInit {
   public searchFiles: (FileItem | FolderItem)[] = [];
   public search = new FormControl('');
   public expandedFolders = new Set<string | null>();
+  public isRefreshing: boolean = false;
   private modalManager = inject(ModalManager);
   Utils = Utils;
   Config = Config;
@@ -53,7 +54,10 @@ export class DocumentsComponent implements OnInit {
   }
 
   public refreshFiles(): void {
+    if (this.isRefreshing) return;
+    this.isRefreshing = true;
     this.documents.loadFiles(this.documents.getSelectedFolder()?.file_id ?? null)
+    setTimeout(() => this.isRefreshing = false, 800);
   }
 
   public rightClickOnGrid(event: MouseEvent): void {
