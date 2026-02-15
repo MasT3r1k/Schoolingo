@@ -65,7 +65,7 @@ p.title {
 .panel-list {
     width: 375px;
     min-width: 280px;
-    background: linear-gradient(180deg, var(--surface), var(--surface-2));
+    background: var(--surface);
     padding: 16px;
     box-shadow: var(--shadow);
     border: 1px solid rgba(255, 255, 255, 0.02);
@@ -89,7 +89,6 @@ p.title {
     overflow: auto;
 }
 
-.panel-list #list>.panel-item,
 .teachers-list>.teacher-row {
     display: flex;
     gap: 12px;
@@ -100,8 +99,43 @@ p.title {
     transition: all .15s;
 }
 
+.panel-list #list>.panel-item {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    padding: 12px 16px;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.2s cubic-bezier(0.2, 0.8, 0.2, 1);
+    border: 1px solid transparent;
+    position: relative;
+    overflow: hidden;
+}
+
+.panel-list #list>.panel-item:hover {
+    background: var(--surface-2);
+}
+
 .panel-list #list>.panel-item.active {
-    background-color: var(--active-bg);
+    background: var(--surface-2);
+    border-color: rgba(var(--primary-rgb), 0.2);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+.panel-list #list>.panel-item.active::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    height: 20px;
+    width: 3px;
+    background: var(--primary);
+    border-radius: 0 4px 4px 0;
+}
+
+.panel-list #list>.panel-item.active .panel-title h3 {
+    color: var(--primary);
 }
 
 .panel-meta {
@@ -119,18 +153,24 @@ p.title {
 .panel-title h3 {
     margin: 0;
     font-size: 15px;
+    font-weight: 600;
+    color: var(--text);
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+    transition: color 0.2s;
 }
 
 .badge {
-    background: var(--primary-200);
-    color: var(--primary-900);
-    padding: 4px 8px;
-    border-radius: 999px;
-    font-weight: 600;
-    font-size: 12px;
+    background: rgba(var(--primary-rgb), 0.1);
+    color: var(--primary);
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-weight: 700;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    border: 1px solid rgba(var(--primary-rgb), 0.1);
 }
 
 .meta-small {
@@ -1209,4 +1249,186 @@ p.title {
     to {
         transform: rotate(360deg);
     }
+}
+
+/* === System Health Dashboard (Elegant Premium Design) === */
+.system-health-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 24px;
+    margin-bottom: 40px;
+}
+
+.health-card {
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.03) 0%, rgba(255, 255, 255, 0) 100%), var(--surface-2);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    border-radius: 20px;
+    /* More rounded */
+    padding: 28px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    position: relative;
+    transition: all 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    backdrop-filter: blur(10px);
+}
+
+.health-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.15);
+    border-color: rgba(var(--primary-rgb), 0.3);
+}
+
+.health-card__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+}
+
+.health-card__icon {
+    width: 44px;
+    height: 44px;
+    border-radius: 14px;
+    /* Soft square */
+    background: var(--surface);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-muted);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    transition: all 0.3s ease;
+}
+
+.health-card:hover .health-card__icon {
+    background: var(--surface-3);
+    color: var(--text);
+    transform: scale(1.05);
+}
+
+/* Elegant Status Badges */
+.health-card__status {
+    padding: 6px 14px;
+    border-radius: 100px;
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    backdrop-filter: blur(4px);
+}
+
+/* Pulsing Dots */
+.health-card__status.success::before,
+.health-card__status.info::before,
+.health-card__status.warning::before,
+.health-card__status.danger::before {
+    content: '';
+    display: block;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: currentColor;
+}
+
+
+
+@keyframes pulse-green {
+    0% {
+        transform: scale(0.95);
+        box-shadow: 0 0 0 0 rgba(var(--success-rgb), 0.7);
+    }
+
+    70% {
+        transform: scale(1);
+        box-shadow: 0 0 0 10px rgba(var(--success-rgb), 0);
+    }
+
+    100% {
+        transform: scale(0.95);
+        box-shadow: 0 0 0 0 rgba(var(--success-rgb), 0);
+    }
+}
+
+.health-card__status.success {
+    background: rgba(var(--success-rgb), 0.1);
+    color: var(--success);
+    border: 1px solid rgba(var(--success-rgb), 0.2);
+}
+
+.health-card__status.warning {
+    background: rgba(var(--warning-rgb), 0.1);
+    color: var(--warning);
+    border: 1px solid rgba(var(--warning-rgb), 0.2);
+}
+
+.health-card__status.danger {
+    background: rgba(var(--danger-rgb), 0.1);
+    color: var(--danger);
+    border: 1px solid rgba(var(--danger-rgb), 0.2);
+}
+
+.health-card__status.info {
+    background: rgba(var(--info-rgb), 0.1);
+    color: var(--info);
+    border: 1px solid rgba(var(--info-rgb), 0.2);
+}
+
+.health-card__content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.health-card__label {
+    font-size: 13px;
+    color: var(--text-muted);
+    margin-bottom: 8px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.health-card__value {
+    font-size: 32px;
+    /* WOW effect: Bigger numbers */
+    font-weight: 800;
+    /* WOW effect: Bolder font */
+    color: var(--text);
+    margin-bottom: 8px;
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+    line-height: 1;
+    letter-spacing: -1px;
+}
+
+.health-card__value small {
+    font-size: 16px;
+    color: var(--text-muted);
+    font-weight: 600;
+    letter-spacing: normal;
+}
+
+.health-card__meta {
+    font-size: 13px;
+    color: var(--text-muted);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: 500;
+}
+
+.health-card__actions {
+    margin-top: 12px;
+    padding-top: 16px;
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
+    /* subtler border */
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
 }

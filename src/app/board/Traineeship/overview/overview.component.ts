@@ -16,7 +16,7 @@ type Box = {
 
 @Component({
   standalone: true,
-  imports: [RouterLink, writeDairyComponent, IconsModule, NgClass],
+  imports: [RouterLink, writeDairyComponent, IconsModule],
   templateUrl: './overview.component.html',
   styleUrls: ['./overview.component.css']
 })

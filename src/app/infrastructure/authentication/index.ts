@@ -62,13 +62,22 @@ export class Authentication {
             })
     }
 
-    public logout(): void {
+    public logout(reason: string = 'user_logout', returnUrl?: string): void {
+        const queryParams = returnUrl ? { returnUrl } : {};
         this.http.get(Config.API_URL + '/logout', { withCredentials: true })
-            .subscribe((data) => {
-                sessionStorage.setItem('logoutReason', 'user_logout');
-                this.setAuthState(false);
-                this.tokenExpirationService.clearExpiration();
-                this.router.navigate(['', 'login']);
+            .subscribe({
+                next: () => {
+                    sessionStorage.setItem('logoutReason', reason);
+                    this.setAuthState(false);
+                    this.tokenExpirationService.clearExpiration();
+                    this.router.navigate(['', 'login'], { queryParams });
+                },
+                error: () => {
+                    sessionStorage.setItem('logoutReason', reason);
+                    this.setAuthState(false);
+                    this.tokenExpirationService.clearExpiration();
+                    this.router.navigate(['', 'login'], { queryParams });
+                }
             });
     }
 

@@ -28,7 +28,7 @@ interface Message {
 }
 
 @Component({
-  imports: [NgClass, FormsModule, IconsModule],
+  imports: [FormsModule, IconsModule],
   templateUrl: './sent.component.html',
   styleUrls: ['./sent.component.css', '../messages.css']
 })

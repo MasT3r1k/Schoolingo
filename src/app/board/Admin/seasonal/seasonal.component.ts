@@ -17,7 +17,7 @@ interface SeasonConfig {
 @Component({
   selector: 'app-admin-seasonal',
   standalone: true,
-  imports: [IconsModule, ReactiveFormsModule, NgClass],
+  imports: [IconsModule, ReactiveFormsModule],
   templateUrl: './seasonal.component.html',
   styleUrl: './seasonal.component.css'
 })

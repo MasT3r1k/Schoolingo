@@ -22,7 +22,7 @@ import moment from 'moment';
 })
 export class MyClassComponent implements OnInit {
   activeTab = new BehaviorSubject<number>(0);
-  tabs = ['sidebar.students', 'sidebar.absence', 'Služba']; 
+  tabs = ['sidebar.students', 'sidebar.absence', 'classbook.class_service']; 
 
   l = inject(Locale);
   Utils = Utils;

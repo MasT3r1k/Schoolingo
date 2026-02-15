@@ -5,16 +5,12 @@
             {{ l.s('sidebar.teach.timetable') }}
         </h2>
         <div class="flex-items">
-
-            @if (perms.checkPermission([["teacher", "classTeacher"]])) {
+            @if (perms.checkPermission([["teacher"]])) {
                 <div class="select-items">
-                    <schoolingo-tabs [value]="selectedTimetable" [options]="[
-                        'dropdown.select_timetable.my_timetable',
-                        'dropdown.select_timetable.class_timetable'
-                    ]"></schoolingo-tabs>
+                    <schoolingo-tabs [value]="selectedTimetable" [options]="teacherOptions"></schoolingo-tabs>
                 </div>
 
-                @if (selectedTimetable.getValue() == 1) {
+                @if (selectedTimetable.getValue() == this.teacherOptions.indexOf('dropdown.select_timetable.class_timetable')) {
                     <div class="form-group">
                         <div class="custom-select" (click)="$event.stopPropagation(); dropdownManager.selected_dropdown = dropdownManager.selected_dropdown == 'timetable_selectClass' ? '' : 'timetable_selectClass'">
                         <div class="selected-value">
@@ -168,10 +164,10 @@
                                                     {{ lesson.subjectShortcut }}
                                                 </div>
                                                 <div class="teacher">
-                                                    @if (lesson.className && perms.checkPermission(['teacher']) && selectedTimetable.getValue() == 0) {
+                                                    @if (lesson.className && perms.checkPermission(['teacher']) && selectedTimetable.getValue() == this.teacherOptions.indexOf('dropdown.select_timetable.my_timetable')) {
                                                         {{ lesson.className }}
                                                     }
-                                                    @if (lesson.lastName && !perms.checkPermission(['teacher']) || selectedTimetable.getValue() == 1) {
+                                                    @if (lesson.lastName && !perms.checkPermission(['teacher']) || selectedTimetable.getValue() == this.teacherOptions.indexOf('dropdown.select_timetable.class_timetable')) {
                                                         {{ lesson.lastName }}
                                                     }
                                                 </div>

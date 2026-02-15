@@ -9,7 +9,7 @@ import { RouterLink } from '@angular/router';
 @Component({
   selector: 'app-seasonal-countdown',
   standalone: true,
-  imports: [IconsModule, RouterLink],
+  imports: [IconsModule],
   template: `
     <div class="seasonal-widget seasonal-countdown-widget">
       <div class="seasonal-widget-body">

@@ -15,7 +15,7 @@ import { Settings } from '@Schoolingo/settings';
 
 @Component({
   standalone: true,
-  imports: [ReactiveFormsModule, NgClass, AlertComponent, IconsModule],
+  imports: [ReactiveFormsModule, AlertComponent, IconsModule],
   selector: 'settings-change-password',
   templateUrl: './change-password.component.html',
   styleUrl: './change-password.component.css'

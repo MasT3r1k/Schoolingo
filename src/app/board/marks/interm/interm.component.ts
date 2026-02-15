@@ -41,6 +41,9 @@ export class IntermComponent implements OnInit {
 
   // === Data ===
   public marks: any;
+  public subjectStats: any = {};
+  public markStats: any = {};
+  public selectedMark: any | null = null;
   public marksCopy: any[] = [];   // kopie pro prediktor
 
   // === Predictor ===
@@ -68,8 +71,14 @@ export class IntermComponent implements OnInit {
         { withCredentials: true }
       )
       .subscribe((data) => {
-        if ('marks' in data) {
+          if ('marks' in data) {
           this.marks = data.marks;
+        }
+        if ('subjectStats' in data) {
+          this.subjectStats = data.subjectStats;
+        }
+        if ('markStats' in data) {
+          this.markStats = data.markStats;
         }
       });
 
@@ -247,6 +256,28 @@ export class IntermComponent implements OnInit {
     let displayMark = config.mark_display[idIndex];
     if (displayMark) return displayMark;
     return mark_id.toString();
+  }
+
+  public getMarkTooltip(mark: any): string {
+    let tooltip = `${mark.topic} (${this.utils.formatDateShort(mark.created)})`;
+    if (this.markStats[mark.columnId]) {
+      const stats = this.markStats[mark.columnId];
+      tooltip += `\n${this.l.s('marks.class_average')}: ${stats.avg}`;
+      tooltip += `\n${this.l.s('marks.class_rank')}: ${stats.rank}`;
+    }
+    return tooltip;
+  }
+
+  public selectMark(mark: any): void {
+    if (this.selectedTab.getValue() === 2) return; // Prevent opening modal in predictor mode if desired, or allow it. Assuming allow for read-only. But usually predictor items are mutable.
+    // If it's a predicted mark, maybe don't open details? The user asked for "received marks".
+    // Predicted marks don't have ID from DB usually or have `isPredicted`.
+    if (mark.isPredicted) return;
+    this.selectedMark = mark;
+  }
+
+  public closeMarkDetails(): void {
+    this.selectedMark = null;
   }
 
   /** Dynamická velikost písma podle váhy */

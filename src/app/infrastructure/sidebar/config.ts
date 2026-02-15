@@ -133,6 +133,12 @@ export const config: SidebarGroup[] = [
                 }]
             },
             {
+                item: 'sidebar.online.main',
+                icon: 'video',
+                url: 'online',
+                permission: ['student', 'teacher', 'parent']
+            },
+            {
                 item: 'sidebar.messages.main',
                 icon: 'message',
                 children: [

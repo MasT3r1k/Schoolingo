@@ -52,13 +52,14 @@
                 </div>
                 }
 
-                <div class="item-btn"
-                    (click)="$event.stopPropagation();openNotificationDropdown()">
+                <div class="item-btn" (click)="$event.stopPropagation();openNotificationDropdown()">
                     <div class="icon">
                         <i-tabler name="bell"></i-tabler>
                     </div>
                     @if (dashboard.newNotifications > 0) {
-                    <div class="badge" style="position: absolute;bottom: -.5rem;right: -.5rem;background: var(--danger);aspect-ratio: 1;max-width: 14px;">{{ dashboard.newNotifications }}</div>
+                    <div class="badge"
+                        style="position: absolute;bottom: -.5rem;right: -.5rem;background: var(--danger);aspect-ratio: 1;max-width: 14px;">
+                        {{ dashboard.newNotifications }}</div>
                     }
                     <div class="dropdown notification-dropdown"
                         [hidden]="dropdownManager.selected_dropdown !== 'notification'"
@@ -115,17 +116,17 @@
                             </div>
                             }
                             } @else {
-                                @for (_ of [].constructor(5); track $index) {
-                                    <div class="notification-item skeleton" style="min-height: 76px;">
-                                        <div class="notification-icon center"></div>
-                                        <div class="notification-content">
-                                            <div class="notification-top">
-                                                <span class="notification-title"></span>
-                                            </div>
-                                            <div class="notification-text"></div>
-                                        </div>
+                            @for (_ of [].constructor(5); track $index) {
+                            <div class="notification-item skeleton" style="min-height: 76px;">
+                                <div class="notification-icon center"></div>
+                                <div class="notification-content">
+                                    <div class="notification-top">
+                                        <span class="notification-title"></span>
                                     </div>
-                                }
+                                    <div class="notification-text"></div>
+                                </div>
+                            </div>
+                            }
                             }
                         </div>
                     </div>

@@ -60,10 +60,320 @@
             </li>
 
             <li class="section-label">{{ l.s('system.section_modules') }}</li>
+
+            <li [class.active]="sidebar==enumSidebar.ONLINE_SETTINGS" (click)="sidebar = enumSidebar.ONLINE_SETTINGS">
+                <div class="item">
+                    <div class="icon"><i-tabler name="video"></i-tabler></div>
+                    <div class="item-label">{{ l.s('system.online_settings') }}</div>
+                </div>
+            </li>
+
+            <li [class.active]="sidebar==enumSidebar.PRACTICES_SETTINGS"
+                (click)="sidebar = enumSidebar.PRACTICES_SETTINGS">
+                <div class="item">
+                    <div class="icon"><i-tabler name="briefcase"></i-tabler></div>
+                    <div class="item-label">{{ l.s('system.practices_settings') }}</div>
+                </div>
+            </li>
+
+            <li [class.active]="sidebar==enumSidebar.MESSAGES_SETTINGS"
+                (click)="sidebar = enumSidebar.MESSAGES_SETTINGS">
+                <div class="item">
+                    <div class="icon"><i-tabler name="messages"></i-tabler></div>
+                    <div class="item-label">{{ l.s('system.messages_settings') }}</div>
+                </div>
+            </li>
+
+            <li [class.active]="sidebar==enumSidebar.TESTS_SETTINGS" (click)="sidebar = enumSidebar.TESTS_SETTINGS">
+                <div class="item">
+                    <div class="icon"><i-tabler name="checklist"></i-tabler></div>
+                    <div class="item-label">{{ l.s('system.tests_settings') }}</div>
+                </div>
+            </li>
+
+            <li [class.active]="sidebar==enumSidebar.REWARDS_SETTINGS" (click)="sidebar = enumSidebar.REWARDS_SETTINGS">
+                <div class="item">
+                    <div class="icon"><i-tabler name="award"></i-tabler></div>
+                    <div class="item-label">{{ l.s('system.rewards_settings') }}</div>
+                </div>
+            </li>
+
+            <li [class.active]="sidebar==enumSidebar.TUTORING_SETTINGS"
+                (click)="sidebar = enumSidebar.TUTORING_SETTINGS">
+                <div class="item">
+                    <div class="icon"><i-tabler name="user-check"></i-tabler></div>
+                    <div class="item-label">{{ l.s('system.tutoring_settings') }}</div>
+                </div>
+            </li>
+
+            <li [class.active]="sidebar==enumSidebar.GDPR_SETTINGS" (click)="sidebar = enumSidebar.GDPR_SETTINGS">
+                <div class="item">
+                    <div class="icon"><i-tabler name="shield-check"></i-tabler></div>
+                    <div class="item-label">{{ l.s('system.gdpr_settings') }}</div>
+                </div>
+            </li>
         </ul>
     </div>
 
     @switch (sidebar) {
+    @case(enumSidebar.ONLINE_SETTINGS) {
+    <div class="container-content">
+        <div class="settings-header">
+            <h1>{{ l.s('system.online_settings') }}</h1>
+            <p class="settings-subtitle">Konfigurace modulu pro distanční výuku a online schůzky</p>
+        </div>
+
+        <div class="form-section">
+            <h3 class="section-title">Online výuka</h3>
+
+            <div class="setting-row">
+                <div class="setting-info">
+                    <div class="setting-title">Povolit online výuku</div>
+                    <div class="setting-desc">Umožní učitelům vytvářet online hodiny a generovat odkazy.</div>
+                </div>
+                <div class="setting-control">
+                    <div class="switch" [class.on]="hasModule('online')" (click)="toggleModule('online')">
+                        <div class="knob"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group" *ngIf="hasModule('online')">
+                <label>Výchozí platforma</label>
+                <div class="custom-select" style="max-width: 300px;"
+                    (click)="$event.stopPropagation(); dropdownManager.selected_dropdown = dropdownManager.selected_dropdown == 'onlinePlatform' ? '' : 'onlinePlatform'">
+                    <div class="selected-value">
+                        <div class="row" style="gap: .5rem; align-items: center;">
+                            <i-tabler *ngIf="system.settings.online_default_platform == 'teams'"
+                                name="brand-teams"></i-tabler>
+                            <i-tabler *ngIf="system.settings.online_default_platform == 'meet'"
+                                name="brand-google"></i-tabler>
+                            <i-tabler *ngIf="system.settings.online_default_platform == 'zoom'"
+                                name="brand-zoom"></i-tabler>
+                            <span style="text-transform: capitalize;">{{ system.settings.online_default_platform
+                                }}</span>
+                        </div>
+                        <i-tabler name="chevron-down"></i-tabler>
+                    </div>
+                    <div class="options-dropdown" *ngIf="dropdownManager.selected_dropdown == 'onlinePlatform'">
+                        <div class="list">
+                            <div class="option"
+                                (click)="$event.stopPropagation(); dropdownManager.selected_dropdown = ''; system.settings.online_default_platform = 'teams'; update_school()">
+                                <i-tabler name="brand-teams" style="margin-right: 8px;"></i-tabler> Microsoft Teams
+                            </div>
+                            <div class="option"
+                                (click)="$event.stopPropagation(); dropdownManager.selected_dropdown = ''; system.settings.online_default_platform = 'meet'; update_school()">
+                                <i-tabler name="brand-google" style="margin-right: 8px;"></i-tabler> Google Meet
+                            </div>
+                            <div class="option"
+                                (click)="$event.stopPropagation(); dropdownManager.selected_dropdown = ''; system.settings.online_default_platform = 'zoom'; update_school()">
+                                <i-tabler name="brand-zoom" style="margin-right: 8px;"></i-tabler> Zoom
+                            </div>
+                            <div class="option"
+                                (click)="$event.stopPropagation(); dropdownManager.selected_dropdown = ''; system.settings.online_default_platform = 'other'; update_school()">
+                                <i-tabler name="video" style="margin-right: 8px;"></i-tabler> Jiné
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="form-section">
+            <h3 class="section-title">Generování odkazů</h3>
+            <p class="section-desc">Testování připojení k API pro generování odkazů na schůzky.</p>
+
+            <div class="status-card" [class.success]="true" style="margin-bottom: 20px;">
+                <div class="status-card__icon"><i-tabler name="brand-google"></i-tabler></div>
+                <div class="status-card__content">
+                    <h4>Google Calendar API</h4>
+                    <p>Integrace pro Google Meet</p>
+                </div>
+                <div class="status-card__actions">
+                    <button class="btn btn--secondary btn--small" (click)="testConnection('google')">
+                        Test připojení
+                    </button>
+                </div>
+            </div>
+
+            <div class="status-card" [class.success]="true">
+                <div class="status-card__icon"><i-tabler name="brand-teams"></i-tabler></div>
+                <div class="status-card__content">
+                    <h4>Microsoft Graph API</h4>
+                    <p>Integrace pro Microsoft Teams</p>
+                </div>
+                <div class="status-card__actions">
+                    <button class="btn btn--secondary btn--small" (click)="testConnection('microsoft')">
+                        Test připojení
+                    </button>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    }
+    @case(enumSidebar.GDPR_SETTINGS) {
+    <div class="container-content">
+        <div class="settings-header">
+            <h1>{{ l.s('system.gdpr_settings') }}</h1>
+            <p class="settings-subtitle">Nastavení ochrany osobních údajů a kontaktní osoby.</p>
+        </div>
+
+        <div class="form-section">
+            <div class="setting-row">
+                <div class="setting-info">
+                    <div class="setting-title">Povolit GDPR modul</div>
+                    <div class="setting-desc">Aktivuje modul pro správu souhlasů a DPO.</div>
+                </div>
+                <div class="setting-control">
+                    <div class="switch" [class.on]="hasModule('gdpr')" (click)="toggleModule('gdpr')">
+                        <div class="knob"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="form-section">
+            <h3 class="section-title">Kontaktní osoba (DPO)</h3>
+            <div class="form-grid">
+                <div class="form-group">
+                    <label>Jméno</label>
+                    <input type="text" [(ngModel)]="system.settings.gdpr_firstname" (change)="update_school()">
+                </div>
+                <div class="form-group">
+                    <label>Příjmení</label>
+                    <input type="text" [(ngModel)]="system.settings.gdpr_lastname" (change)="update_school()">
+                </div>
+                <div class="form-group">
+                    <label>Telefon</label>
+                    <input type="text" [(ngModel)]="system.settings.gdpr_phone" (change)="update_school()">
+                </div>
+                <div class="form-group">
+                    <label>Email</label>
+                    <input type="text" [(ngModel)]="system.settings.gdpr_email" (change)="update_school()">
+                </div>
+                <div class="form-group">
+                    <label>Mobil</label>
+                    <input type="text" [(ngModel)]="system.settings.gdpr_mobile" (change)="update_school()">
+                </div>
+                <div class="form-group">
+                    <label>Datová schránka</label>
+                    <input type="text" [(ngModel)]="system.settings.gdpr_databox" (change)="update_school()">
+                </div>
+                <div class="form-group">
+                    <label>Web</label>
+                    <input type="text" [(ngModel)]="system.settings.gdpr_web" (change)="update_school()">
+                </div>
+            </div>
+        </div>
+    </div>
+    }
+    @case(enumSidebar.PRACTICES_SETTINGS) {
+    <div class="container-content">
+        <div class="settings-header">
+            <h1>{{ l.s('system.practices_settings') }}</h1>
+            <p class="settings-subtitle">Konfigurace modulu odborných praxí.</p>
+        </div>
+        <div class="form-section">
+            <div class="setting-row">
+                <div class="setting-info">
+                    <div class="setting-title">Povolit odborné praxe</div>
+                    <div class="setting-desc">Aktivuje modul pro správu praxí, smluv a firem.</div>
+                </div>
+                <div class="setting-control">
+                    <div class="switch" [class.on]="hasModule('practices')" (click)="toggleModule('practices')">
+                        <div class="knob"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    }
+    @case(enumSidebar.MESSAGES_SETTINGS) {
+    <div class="container-content">
+        <div class="settings-header">
+            <h1>{{ l.s('system.messages_settings') }}</h1>
+            <p class="settings-subtitle">Nastavení systému zpráv a komunikace.</p>
+        </div>
+        <div class="form-section">
+            <div class="setting-row">
+                <div class="setting-info">
+                    <div class="setting-title">Povolit zprávy</div>
+                    <div class="setting-desc">Umožní uživatelům posílat si vzájemně zprávy.</div>
+                </div>
+                <div class="setting-control">
+                    <div class="switch" [class.on]="hasModule('messages')" (click)="toggleModule('messages')">
+                        <div class="knob"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    }
+    @case(enumSidebar.TESTS_SETTINGS) {
+    <div class="container-content">
+        <div class="settings-header">
+            <h1>{{ l.s('system.tests_settings') }}</h1>
+            <p class="settings-subtitle">Konfigurace testování a zkoušení.</p>
+        </div>
+        <div class="form-section">
+            <div class="setting-row">
+                <div class="setting-info">
+                    <div class="setting-title">Povolit testy</div>
+                    <div class="setting-desc">Aktivuje modul pro plánování testů a písemek.</div>
+                </div>
+                <div class="setting-control">
+                    <div class="switch" [class.on]="hasModule('tests')" (click)="toggleModule('tests')">
+                        <div class="knob"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    }
+    @case(enumSidebar.REWARDS_SETTINGS) {
+    <div class="container-content">
+        <div class="settings-header">
+            <h1>{{ l.s('system.rewards_settings') }}</h1>
+            <p class="settings-subtitle">Nastavení gamifikace a odměn pro studenty.</p>
+        </div>
+        <div class="form-section">
+            <div class="setting-row">
+                <div class="setting-info">
+                    <div class="setting-title">Povolit odměny</div>
+                    <div class="setting-desc">Aktivuje systém bodování a odměn za aktivitu.</div>
+                </div>
+                <div class="setting-control">
+                    <div class="switch" [class.on]="hasModule('rewards')" (click)="toggleModule('rewards')">
+                        <div class="knob"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    }
+    @case(enumSidebar.TUTORING_SETTINGS) {
+    <div class="container-content">
+        <div class="settings-header">
+            <h1>{{ l.s('system.tutoring_settings') }}</h1>
+            <p class="settings-subtitle">Konfigurace modulu pro doučování.</p>
+        </div>
+        <div class="form-section">
+            <div class="setting-row">
+                <div class="setting-info">
+                    <div class="setting-title">Povolit doučování</div>
+                    <div class="setting-desc">Umožní nabízet a poptávat doučování mezi studenty a učiteli.</div>
+                </div>
+                <div class="setting-control">
+                    <div class="switch" [class.on]="hasModule('tutoring')" (click)="toggleModule('tutoring')">
+                        <div class="knob"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    }
     @case(enumSidebar.SYSTEM) {
     @if (this.system) {
     <div class="container-content">
@@ -72,12 +382,11 @@
             <p class="settings-subtitle">Správa verze systému, aktualizací a licence</p>
         </div>
 
-        <!-- System Status / Version -->
         <div class="form-section">
             <h3 class="section-title">Stav systému</h3>
 
-            <div class="status-card" [class.success]="version?.isUpToDate"
-                [class.warning]="version && !version.isUpToDate && !version.isAhead" [class.info]="version?.isAhead">
+            <div class="status-card" [class.success]="version && version.isUpToDate"
+                [class.warning]="version && !version.isUpToDate && !version.isAhead" [class.info]="version.isAhead">
                 <div class="status-card__icon">
                     @if (version) {
                     <i-tabler [name]="version.isUpToDate ? 'check' : 'alert-triangle'"></i-tabler>
@@ -137,7 +446,8 @@
             </div>
         </div>
 
-        <!-- Security & Updates -->
+
+
         <div class="form-section">
             <h3 class="section-title">Bezpečnost & Aktualizace</h3>
 
@@ -251,7 +561,6 @@
             </div>
         </div>
 
-        <!-- License Info -->
         <div class="form-section">
             <h3 class="section-title">Licence</h3>
 
@@ -328,6 +637,38 @@
                 </div>
 
                 <div class="form-group">
+                    <label for="country">Stát</label>
+                    <div class="custom-select" id="country" style="width: 100%"
+                        (click)="$event.stopPropagation(); dropdownManager.selected_dropdown = dropdownManager.selected_dropdown == 'country' ? '' : 'country'">
+                        <div class="selected-value">
+                            <div class="row" style="gap: .5rem">
+                                @let selectedCountry = getCountry(system.settings.country);
+                                @if (selectedCountry) {
+                                {{ `${countryManager.getCountryByCode(selectedCountry.code2)?.flag}
+                                ${selectedCountry.nationality}` }}
+                                } @else {
+                                Vyberte stát
+                                }
+                            </div>
+                            <i-tabler name="chevron-down"></i-tabler>
+                        </div>
+                        @if (dropdownManager.selected_dropdown == 'country') {
+                        <div class="options-dropdown">
+                            <div class="list">
+                                @for (country of system.countries; track country.countryId) {
+                                <div class="option row" style="gap: .5rem"
+                                    (click)="$event.stopPropagation(); dropdownManager.selected_dropdown = ''; system.settings.country = country.countryId">
+                                    {{ `${countryManager.getCountryByCode(country.code2)?.flag} ${country.nationality}`
+                                    }}
+                                </div>
+                                }
+                            </div>
+                        </div>
+                        }
+                    </div>
+                </div>
+
+                <div class="form-group">
                     <label for="district">{{ l.s('system.school_district') }}</label>
                     <div class="custom-select" id="district" style="width: 100%"
                         (click)="$event.stopPropagation(); dropdownManager.selected_dropdown = dropdownManager.selected_dropdown == 'district' ? '' : 'district'">
@@ -348,6 +689,46 @@
                                 <div class="option row" style="gap: .5rem"
                                     (click)="$event.stopPropagation(); dropdownManager.selected_dropdown = ''; system.settings.district = district.district">
                                     {{ district.district }}
+                                </div>
+                                }
+                            </div>
+                        </div>
+                        }
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-grid">
+                <div class="form-group">
+                    <label for="ico">{{ l.s('system.ico') }}</label>
+                    <input type="text" id="ico" [(ngModel)]="system.settings.ico">
+                </div>
+                <div class="form-group">
+                    <label for="red_izo">{{ l.s('system.red_izo') }}</label>
+                    <input type="text" id="red_izo" [(ngModel)]="system.settings.red_izo">
+                </div>
+            </div>
+
+            <div class="form-grid">
+                <div class="form-group">
+                    <label for="izo">{{ l.s('system.izo') }}</label>
+                    <input type="text" id="izo" [(ngModel)]="system.settings.izo">
+                </div>
+                <div class="form-group">
+                    <label for="school_type">{{ l.s('system.school_type') }}</label>
+                    <div class="custom-select" id="schoolType"
+                        (click)="$event.stopPropagation(); dropdownManager.selected_dropdown = dropdownManager.selected_dropdown == 'schoolType' ? '' : 'schoolType'">
+                        <div class="selected-value">
+                            {{ l.s('system.school_types.' + system.settings.school_type) }}
+                            <i-tabler name="chevron-down"></i-tabler>
+                        </div>
+                        @if (dropdownManager.selected_dropdown == 'schoolType') {
+                        <div class="options-dropdown">
+                            <div class="list">
+                                @for (type of school_types; track $index) {
+                                <div class="option"
+                                    (click)="$event.stopPropagation();dropdownManager.selected_dropdown = '';system.settings.school_type = type">
+                                    {{ l.s('system.school_types.' + type) }}
                                 </div>
                                 }
                             </div>
@@ -513,7 +894,6 @@
             </div>
         </div>
     </div>
-    <!-- <system-login></system-login> -->
     }
 
     @case(enumSidebar.LDAP) {
@@ -713,7 +1093,6 @@
 
             <div class="form-group">
                 <label>Zabezpečení (Encryption)</label>
-                <!-- Custom select for encryption -->
                 <div class="custom-select"
                     (click)="$event.stopPropagation(); dropdownManager.selected_dropdown = dropdownManager.selected_dropdown == 'encType' ? '' : 'encType'">
                     <div class="selected-value">
@@ -878,7 +1257,6 @@
             </div>
         </div>
 
-        <!-- základní pole -->
         <div class="row" style="gap: 8px">
             <div class="form-group" style="flex:1">
                 <label for="name" [class.error-color]="input_errors['scope_name']">
@@ -955,7 +1333,6 @@
             </div>
         </div>
 
-        <!-- předměty -->
         <section class="grid">
             <div class="grid-header">
                 <h1 id="detailName">
@@ -1001,228 +1378,6 @@
         }
     </main>
     }
-
-    @case(enumSidebar.SCOPES) {
-    <aside class="panel-list">
-        <div class="panel-header">
-            <div>
-                <h2>{{ l.s('system.list_subjects') }}</h2>
-                <small style="font-size: 13px;color: var(--text-muted);">
-                    {{ l.s('system.subject_details', { subjects: system.subjects.length }) }}
-                </small>
-            </div>
-            <div style="margin-left:auto">
-                <div class="btn small primary" (click)="new_subject()">
-                    <i-tabler name="plus"></i-tabler>
-                    {{ l.s('system.add_subject') }}
-                </div>
-            </div>
-        </div>
-
-        <div class="form-group">
-            <input id="search" [placeholder]="l.s('system.search_subjects')">
-        </div>
-
-        <div id="list">
-            @for (subject of system.subjects; track $index) {
-            <div class="panel-item" [class.active]="selected_subject == $index" (click)="selected_subject = $index">
-                <div class="panel-meta">
-                    <div class="panel-title">
-                        <h3>
-                            {{ subject.subjectName || l.s('system.subject_no_name') }}
-                        </h3>
-                    </div>
-                </div>
-            </div>
-            }
-        </div>
-    </aside>
-    @if (selected_scope) {
-
-    <div class="panel-detail">
-        <div class="header">
-            <div class="detail-left">
-                <div class="detail-title">
-                    <div>
-                        <h1 id="detailName">
-                            {{ system.subjects[selected_subject].subjectName || l.s('system.subject_no_name') }}
-                        </h1>
-                    </div>
-                </div>
-            </div>
-            <div style="display:flex; gap:8px; align-items:center">
-                <div id="btnSave" class="btn small primary">
-                    <i-tabler
-                        [name]="system.subjects[selected_subject].subjectId != null ? 'device-floppy' : 'plus'"></i-tabler>
-                    {{ l.s('system.' + (system.subjects[selected_subject].subjectId != null ? 'save_subject' :
-                    'create_subject')) }}
-                </div>
-            </div>
-        </div>
-
-        @if (checkCollisionSubject()) {
-        <div class="alerts">
-            <div class="alert error">Nastala kolize s předměty</div>
-        </div>
-        }
-
-        <!-- základní pole -->
-        <div>
-            <div class="form-group">
-                <label for="name">{{ l.s('system.subject_name') }}</label>
-                <input id="name" placeholder="Např. Informační technologie"
-                    [(ngModel)]="system.subjects[selected_subject].subjectName" (input)="onInputSubjectName()">
-            </div>
-
-            <div class="form-group">
-                <label for="translateSubject">{{ l.s('system.subject_traslate') }}</label>
-                <div class="custom-select" id="translate-subject-1"
-                    (click)="$event.stopPropagation(); dropdownManager.selected_dropdown = dropdownManager.selected_dropdown == 'translate_subject_1' ? '' : 'translate_subject_1'">
-                    <div class="selected-value">
-                        <div class="row" style="gap: .5rem">
-                            @let selectedTranslation = getSelectedTranslation();
-                            {{ selectedTranslation ? selectedTranslation[1] : '' }}
-                        </div>
-                        <i-tabler name="chevron-down"></i-tabler>
-                    </div>
-                    @if (dropdownManager.selected_dropdown == 'translate_subject_1') {
-                    <div class="options-dropdown">
-                        <div class="list">
-                            <div class="option row" style="gap: .5rem"
-                                (click)="$event.stopPropagation(); dropdownManager.selected_dropdown = ''; translate_subject = ''">
-                                &nbsp;
-                            </div>
-                            @for (subject of get_translate_subjects(); track $index) {
-                            <div class="option row" style="gap: .5rem"
-                                (click)="$event.stopPropagation(); dropdownManager.selected_dropdown = ''; translate_subject = subject[0]">
-                                {{ subject[1] }}
-                            </div>
-                            }
-                        </div>
-                    </div>
-                    }
-                </div>
-                <small class="note">{{ l.s('system.subject_traslate_note') }}</small>
-            </div>
-
-            <div class="form-group">
-                <label for="shortcut">{{ l.s('system.subject_shortcut') }}</label>
-                <input id="shortcut" [(ngModel)]="system.subjects[selected_subject].shortcut" placeholder="IT"
-                    maxlength="6">
-            </div>
-
-            <hr>
-
-            <section class="grid">
-                <div class="grid-header">
-                    <h1 id="detailName">
-                        {{ 'Oprávnění učitelé učit tento předmět' }}
-                    </h1>
-                    <div class="btn primary small">{{ l.s('system.add_teacher') }}</div>
-                </div>
-
-                <div class="teachers-list">
-                    <div class="teacher-row">
-                        <div class="teacher-name">
-                            Jožko Evelyn
-                        </div>
-                        <div class="teacher-actions">
-                            <div class="btn danger icon-only">
-                                <i-tabler name="trash-x"></i-tabler>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="teacher-row">
-                        <div class="teacher-name">
-                            Jožko Evelyn
-                        </div>
-                        <div class="teacher-actions">
-                            <div class="btn danger icon-only">
-                                <i-tabler name="trash-x"></i-tabler>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </section>
-        </div>
-
-        <div class="form-group" style="width:200px">
-            <label for="years">{{ l.s('system.scope_number_years_study') }}</label>
-            <div class="custom-select" id="scope-years-2"
-                (click)="$event.stopPropagation(); dropdownManager.selected_dropdown = dropdownManager.selected_dropdown == 'scope_years_2' ? '' : 'scope_years_2'">
-                <div class="selected-value">
-                    <div class="row" style="gap: .5rem">
-                        {{ selected_scope.years }}
-                    </div>
-                    <i-tabler name="chevron-down"></i-tabler>
-                </div>
-                @if (dropdownManager.selected_dropdown == 'scope_years_2') {
-                <div class="options-dropdown">
-                    <div class="list">
-                        @for (year of [1, 2, 3, 4, 5]; track $index) {
-                        <div class="option row" style="gap: .5rem"
-                            (click)="$event.stopPropagation(); dropdownManager.selected_dropdown = ''; selected_scope.years = year">
-                            {{ year }}
-                        </div>
-                        }
-                    </div>
-                </div>
-                }
-            </div>
-        </div>
-    </div>
-
-    <div class="row" style="gap: 8px">
-        <div class="form-group" style="width:50%">
-            <label for="studentsPerClass">{{ l.s('system.scope_capacity_students_in_one_class') }}</label>
-            <input id="studentsPerClass" [(ngModel)]="selected_scope.students_per_class" type="number" min="1"
-                value="30">
-        </div>
-        <div class="form-group" style="width:50%">
-            <label for="classesPerYear">{{ l.s('system.scope_count_classes_in_year') }}</label>
-            <input id="classesPerYear" [(ngModel)]="selected_scope.number_of_classes" type="number" min="0" value="1">
-        </div>
-    </div>
-
-    <!-- předměty -->
-    <section class="grid">
-        <div class="grid-header">
-            <h1 id="detailName">
-                {{ l.s('system.table_subjects') }}
-            </h1>
-        </div>
-
-        <table>
-            <thead>
-                <th>{{ l.s('subject') }}</th>
-                @for (_ of [].constructor(+(selected_scope.years)); track $index) {
-                <th class="hour">
-                    {{ l.s('system.hours_per_week_for_year', { year: $index + 1 }) }}
-                </th>
-                }
-            </thead>
-            <tbody>
-                @for (subject of system.subjects; track $index) {
-                @if (subject.subjectId && subject_hours[subject.subjectId]) {
-                <tr>
-                    <td>{{ subject.subjectName }}</td>
-                    @for (_ of [].constructor(+selected_scope.years); track $index) {
-                    <td class="hour">
-                        @if (subject.subjectId != null) {
-                        <input type="number" [(ngModel)]="subject_hours[subject.subjectId][$index]">
-                        }
-                    </td>
-                    }
-                </tr>
-                }
-                }
-            </tbody>
-        </table>
-    </section>
-    }
-    }
-
 
     @case(enumSidebar.SUBJECTS) {
     <aside class="panel-list">
@@ -1291,7 +1446,6 @@
         </div>
         }
 
-        <!-- základní pole -->
         <div>
             <div class="form-group">
                 <label for="name">{{ l.s('system.subject_name') }}</label>

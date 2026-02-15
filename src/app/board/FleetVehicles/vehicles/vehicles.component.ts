@@ -20,7 +20,7 @@ import { DropdownManager } from '@Schoolingo/dropdown';
 
 @Component({
   standalone: true,
-  imports: [RouterLink, IconsModule, NgClass, NgStyle, FormsModule, TabsComponent],
+  imports: [RouterLink, IconsModule, NgClass, FormsModule],
   templateUrl: './vehicles.component.html',
   styleUrls: ['./vehicles.component.css']
 })

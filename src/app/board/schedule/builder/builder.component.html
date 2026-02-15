@@ -83,12 +83,12 @@
                             @if (dropdownManager.selected_dropdown == 'scheduleBuilder_selectClass') {
                             <div class="options-dropdown">
                                 <div class="list">
-                                @for (class of scheduleBuilder.classes; track $index) {
-                                <div class="option"
-                                    (click)="$event.stopPropagation();dropdownManager.selected_dropdown = '';selectClass(class.classId)">
-                                    {{ class.className }}
-                                </div>
-                                }
+                                    @for (class of scheduleBuilder.classes; track $index) {
+                                    <div class="option"
+                                        (click)="$event.stopPropagation();dropdownManager.selected_dropdown = '';selectClass(class.classId)">
+                                        {{ class.className }}
+                                    </div>
+                                    }
                                 </div>
                             </div>
                             }
@@ -172,8 +172,8 @@
                                 </div>
 
 
-                                @if (scheduleBuilder.timetable[index] && scheduleBuilder.timetable[index]?.length &&
-                                scheduleBuilder.timetable[index][0]?.length &&
+                                @if (scheduleBuilder.timetable[index] && scheduleBuilder.timetable[index].length &&
+                                scheduleBuilder.timetable[index][0].length &&
                                 scheduleBuilder.timetable[index][1][0]?.all_day) {
                                 <div class="item all-day"
                                     [style.backgroundColor]="scheduleBuilder.timetable[index][1][0].color">
@@ -190,7 +190,7 @@
                                 $index) {
                                 <div class="item lesson-hour" cdkDropList
                                     (cdkDropListDropped)="drop($event, index, index2)">
-                                    @for (lesson of scheduleBuilder.timetable[index][index2] ?? []; track $index) {
+                                    @for (lesson of scheduleBuilder.timetable[index][index2]; track $index) {
                                     <div [ngClass]="getLessonClasses(index, index2, lesson)"
                                         (click)="openEditLessonModal(lesson)" [style.backgroundColor]="lesson.color">
                                         <div class="group">

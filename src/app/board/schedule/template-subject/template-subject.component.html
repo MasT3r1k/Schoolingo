@@ -1,1 +1,61 @@
-<p>template-subject works!</p>
+<div class="card">
+    <div class="card-header">
+        <h2>Šablony předmětů</h2>
+        <div class="right">
+            <!-- Potential extra actions -->
+        </div>
+    </div>
+
+    <div class="card-body">
+        @if (loading) {
+        <div class="loading-state">
+            <div class="loader"></div>
+            <p>Načítání šablon...</p>
+        </div>
+        } @else {
+        <div class="table-wrapper">
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th style="width: 80px;">Zkratka</th>
+                        <th>Název předmětu</th>
+                        <th style="width: 120px; text-align: center;">Hlavní</th>
+                        <th>Primární hodiny (např. 1,2,3)</th>
+                        <th style="width: 80px;"></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @for (subject of subjects; track subject.subjectId) {
+                    <tr>
+                        <td class="shortcut-cell">
+                            <span class="badge">{{ subject.shortcut }}</span>
+                        </td>
+                        <td class="font-bold">{{ subject.label }}</td>
+                        <td class="text-center">
+                            <label class="checkbox-wrapper">
+                                <input type="checkbox" [(ngModel)]="subject.isMainBool">
+                                <span class="checkmark"></span>
+                            </label>
+                        </td>
+                        <td>
+                            <input type="text" class="form-input" [(ngModel)]="subject.primaryHoursString"
+                                placeholder="Např. 1,2,3">
+                        </td>
+                        <td>
+                            <button class="btn-icon" (click)="saveSubject(subject)" title="Uložit">
+                                <i-tabler name="device-floppy"></i-tabler>
+                            </button>
+                        </td>
+                    </tr>
+                    }
+                    @empty {
+                    <tr>
+                        <td colspan="5" class="text-center p-4 text-muted">Žádné předměty k zobrazení.</td>
+                    </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+        }
+    </div>
+</div>

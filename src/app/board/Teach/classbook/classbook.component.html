@@ -39,8 +39,8 @@
             </div>
             }
             } @else {
-            <div class="empty-state-sidebar">
-                <div class="empty-illustration">
+            <div class="no-selection">
+                <div class="illustration">
                     <i-tabler name="coffee"></i-tabler>
                 </div>
                 <h3>Volný den!</h3>
@@ -185,29 +185,44 @@
                 }
 
                 @if (selected_tab == 1) {
-                <div class="stats-bar">
-                    <div class="stat-item">
-                        <div class="stat-value">
-                            {{ get_total_students() }}
+                <div class="stats-cards">
+                    <div class="stat-card stat--primary">
+                        <div class="stat-icon">
+                            <i-tabler name="users"></i-tabler>
                         </div>
-                        <div class="stat-label">
-                            {{ l.s('classbook.total_students') }}
-                        </div>
-                    </div>
-                    <div class="stat-item">
-                        <div class="stat-value">
-                            {{ get_present_students() }}
-                        </div>
-                        <div class="stat-label">
-                            {{ l.s('classbook.present_students') }}
+                        <div class="stat-info">
+                            <div class="stat-value">
+                                {{ get_total_students() }}
+                            </div>
+                            <div class="stat-label">
+                                {{ l.s('classbook.total_students') }}
+                            </div>
                         </div>
                     </div>
-                    <div class="stat-item">
-                        <div class="stat-value">
-                            {{ get_missing_students() }}
+                    <div class="stat-card stat--success">
+                        <div class="stat-icon">
+                            <i-tabler name="user-check"></i-tabler>
                         </div>
-                        <div class="stat-label">
-                            {{ l.s('classbook.missing_students') }}
+                        <div class="stat-info">
+                            <div class="stat-value">
+                                {{ get_present_students() }}
+                            </div>
+                            <div class="stat-label">
+                                {{ l.s('classbook.present_students') }}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="stat-card stat--danger">
+                        <div class="stat-icon">
+                            <i-tabler name="user-x"></i-tabler>
+                        </div>
+                        <div class="stat-info">
+                            <div class="stat-value">
+                                {{ get_missing_students() }}
+                            </div>
+                            <div class="stat-label">
+                                {{ l.s('classbook.missing_students') }}
+                            </div>
                         </div>
                     </div>
                 </div>

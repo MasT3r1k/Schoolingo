@@ -8,7 +8,8 @@
     <div class="right">
       <button (click)="requestCompany()" class="btn btn--primary">
         <i-tabler name="building-plus" style="width: 18px; height: 18px;"></i-tabler>
-        {{ l.s(permissions.checkPermission(["manager:traineeship:manage"]) ? "traineeship.add_company" : "traineeship.request_add_company") }}
+        {{ l.s(permissions.checkPermission(["manager:traineeship:manage"]) ? "traineeship.add_company"
+        :"traineeship.request_add_company") }}
       </button>
     </div>
   </div>
@@ -342,7 +343,8 @@
                     <div class="info-value">
                       <div class="instructors-list">
                         @for (instructor of traineeship.selectedCompany.instructors; track $index) {
-                        <span class="instructor-badge">
+                        <span class="instructor-badge" (click)="openInstructorModal(instructor)"
+                          style="cursor: pointer">
                           <i-tabler name="user" style="width: 14px; height: 14px;"></i-tabler>
                           {{ instructor.name }}
                         </span>
@@ -606,27 +608,27 @@
     <div class="section-content">
       <div class="form-grid">
         <div class="form-group">
-          <label class="form-label" for="street">{{ l.s('street') }}</label>
+          <label class="form-label" for="street">{{ l.s('address.street') }}</label>
           <input type="text" class="form-input" name="street" [(ngModel)]="creatingCompany['street']"
-            [placeholder]="l.s('street')">
+            [placeholder]="l.s('address.street')">
         </div>
 
         <div class="form-group">
-          <label class="form-label" for="houseNumber">{{ l.s('houseNumber') }}</label>
+          <label class="form-label" for="houseNumber">{{ l.s('address.house_number') }}</label>
           <input type="text" class="form-input" name="houseNumber" [(ngModel)]="creatingCompany['houseNumber']"
-            [placeholder]="l.s('houseNumber')">
+            [placeholder]="l.s('address.house_number')">
         </div>
 
         <div class="form-group">
-          <label class="form-label" for="city">{{ l.s('traineeship.city') }}</label>
+          <label class="form-label" for="city">{{ l.s('address.city') }}</label>
           <input type="text" class="form-input" name="city" [(ngModel)]="creatingCompany['city']"
-            [placeholder]="l.s('traineeship.city')">
+            [placeholder]="l.s('address.city')">
         </div>
 
         <div class="form-group">
-          <label class="form-label" for="postcode">{{ l.s('postcode') }}</label>
+          <label class="form-label" for="postcode">{{ l.s('address.postcode') }}</label>
           <input type="text" class="form-input" name="postcode" [(ngModel)]="creatingCompany['postcode']"
-            [placeholder]="l.s('postcode')">
+            [placeholder]="l.s('address.postcode')">
         </div>
 
         <div class="form-group full-width">

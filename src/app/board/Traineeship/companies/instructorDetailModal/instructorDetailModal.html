@@ -1,0 +1,138 @@
+<div class="modal" [class.edit-mode]="isEditMode" *ngIf="instructor">
+    <div class="modal-header">
+        <div style="display: flex; align-items: center; gap: 1rem;">
+            <div class="avatar-placeholder">
+                <i-tabler name="user" style="width: 32px; height: 32px;"></i-tabler>
+            </div>
+            <div>
+                @if (!isEditMode) {
+                <h2>{{ instructor.name }}</h2>
+                }
+            </div>
+        </div>
+        <div class="actions">
+            @if (canEdit && !isEditMode) {
+            <button class="btn btn--sm btn--secondary" (click)="toggleEdit()">
+                <i-tabler name="pencil"></i-tabler>
+                {{ l.s("buttons.edit") }}
+            </button>
+            }
+        </div>
+    </div>
+
+    <div class="modal-body">
+        <!-- View Mode -->
+        @if (!isEditMode) {
+        <div class="info-list">
+            <div class="item info-item">
+                <div class="label">
+                    <i-tabler name="mail" style="width: 14px; height: 14px; margin-right: 4px;"></i-tabler>
+                    {{ l.s("traineeship.email") }}
+                </div>
+                <div class="value">
+                    <a *ngIf="instructor.email" [href]="'mailto:' + instructor.email">{{ instructor.email }}</a>
+                    <span *ngIf="!instructor.email" class="text-muted">{{ l.s("traineeship.no_email") }}</span>
+                </div>
+            </div>
+
+            <div class="item info-item">
+                <div class="label">
+                    <i-tabler name="phone" style="width: 14px; height: 14px; margin-right: 4px;"></i-tabler>
+                    {{ l.s("traineeship.phone") }}
+                </div>
+                <div class="value">
+                    <a *ngIf="instructor.phone" [href]="'tel:' + instructor.phone">{{
+                        Utils.formatPhone(instructor.phone) }}</a>
+                    <span *ngIf="!instructor.phone" class="text-muted">{{ l.s("traineeship.no_phone") }}</span>
+                </div>
+            </div>
+
+            <div class="item info-item">
+                <div class="label">
+                    <i-tabler name="id" style="width: 14px; height: 14px; margin-right: 4px;"></i-tabler>
+                    {{ l.s("traineeship.role") }}
+                </div>
+                <div class="value">
+                    {{ instructor.role || l.s("traineeship.no_role") }}
+                </div>
+            </div>
+
+            <div class="item info-item">
+                <div class="label">
+                    <i-tabler name="calendar" style="width: 14px; height: 14px; margin-right: 4px;"></i-tabler>
+                    {{ l.s("traineeship.added_in") }}
+                </div>
+                <div class="value">
+                    {{ Utils.formatDateShort(instructor.created) }}
+                </div>
+            </div>
+        </div>
+        }
+
+        <!-- Edit Mode -->
+        @if (isEditMode) {
+        <div class="form-grid">
+            <div class="form-group">
+                <label class="form-label">{{ l.s("person.first_name") }}</label>
+                <input type="text" class="form-input" [(ngModel)]="editData.firstname"
+                    [placeholder]="l.s('person.first_name')" />
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">{{ l.s("person.last_name") }}</label>
+                <input type="text" class="form-input" [(ngModel)]="editData.lastname"
+                    [placeholder]="l.s('person.last_name')" />
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">{{ l.s("traineeship.email") }}</label>
+                <input type="email" class="form-input" [(ngModel)]="editData.email"
+                    [placeholder]="l.s('traineeship.no_email')" />
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">{{ l.s("traineeship.phone") }}</label>
+                <input type="tel" class="form-input" [(ngModel)]="editData.phone"
+                    [placeholder]="l.s('traineeship.no_phone')" />
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">{{ l.s("traineeship.role") }}</label>
+                <input type="text" class="form-input" [(ngModel)]="editData.role"
+                    [placeholder]="l.s('traineeship.no_role')" />
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">{{ l.s("traineeship.status") }}</label>
+                <div class="custom-select" (click)="toggleStatusDropdown($event)">
+                    <div class="selected-value">
+                        {{ l.s('traineeship.status_instructor.' + (editData.status || 'active')) }}
+                        <i-tabler name="chevron-down"></i-tabler>
+                    </div>
+                    <div class="options-dropdown" *ngIf="showStatusDropdown">
+                        <div class="option" (click)="selectStatus('active')">{{
+                            l.s('traineeship.status_instructor.active') }}</div>
+                        <div class="option" (click)="selectStatus('deleted')">{{
+                            l.s('traineeship.status_instructor.deleted') }}</div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+        }
+    </div>
+
+    @if (isEditMode) {
+    <div class="modal-actions">
+        <button class="btn btn--ghost" (click)="cancelEdit()">{{ l.s("buttons.cancel") }}</button>
+        <button class="btn btn--primary" (click)="saveInstructor()">
+            <i-tabler name="check"></i-tabler>
+            {{ l.s("buttons.save") }}
+        </button>
+    </div>
+    } @else {
+    <div class="modal-actions">
+        <button class="btn btn--primary" (click)="closeModal()">{{ l.s("buttons.cancel") }}</button>
+    </div>
+    }
+</div>

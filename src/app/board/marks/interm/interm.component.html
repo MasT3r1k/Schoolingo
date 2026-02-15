@@ -3,10 +3,7 @@
   <div class="card-header">
     <h2>{{ l.s("sidebar.marks.interm") }}</h2>
     <div class="flex-items">
-      <schoolingo-tabs
-        [value]="selectedTab"
-        [options]="options"
-      ></schoolingo-tabs>
+      <schoolingo-tabs [value]="selectedTab" [options]="options"></schoolingo-tabs>
     </div>
   </div>
   <div class="card-body" style="overflow: unset;">
@@ -25,10 +22,8 @@
         </div>
         <div class="grades-row">
           @for(mark of subject.marks; track $index) {
-          <div
-            class="grade-item"
-            [style.fontSize.px]="getFontSize(mark.weight)"
-          >
+          <div class="grade-item" [style.fontSize.px]="getFontSize(mark.weight)" [title]="getMarkTooltip(mark)"
+            (click)="selectMark(mark)">
             <span class="mark">{{ formatMark(mark.mark) }}</span>
             <span class="topic">{{ mark.topic }}</span>
           </div>
@@ -63,7 +58,7 @@
       <div class="table-subject-name bold">
         {{ mark.subjectName }}
       </div>
-      <div class="table-mark bold">
+      <div class="table-mark bold" [title]="getMarkTooltip(mark)" (click)="selectMark(mark)" style="cursor: pointer;">
         {{ formatMark(mark.mark) }}
       </div>
       <div class="table-topic">
@@ -81,19 +76,19 @@
     </div>
     } } @case(2) {
     @if (!getAllSubjects().length) {
-      <div class="alerts">
-        <div class="alert alert--danger">
-          {{ l.s("marks.predictor.no_subjects") }}
-        </div>
+    <div class="alerts">
+      <div class="alert alert--danger">
+        {{ l.s("marks.predictor.no_subjects") }}
       </div>
+    </div>
     }
 
     @if (alert == 'already_editing_mark') {
-      <div class="alerts mb">
-        <div class="alert alert--danger">
-          {{ l.s("marks.predictor.already_editing_mark") }}
-        </div>
+    <div class="alerts mb">
+      <div class="alert alert--danger">
+        {{ l.s("marks.predictor.already_editing_mark") }}
       </div>
+    </div>
     }
 
 
@@ -116,22 +111,24 @@
             {{ l.s("subject") }}
           </label>
 
-          <div class="custom-select" (click)="$event.stopPropagation();dropdownManager.selected_dropdown = dropdownManager.selected_dropdown == 'interm_predictor_subject' ? '' : 'interm_predictor_subject'">
-              <div class="selected-value">
-                  {{ selected_subject }}
-                  <i-tabler name="chevron-down"></i-tabler>
-              </div>
-              @if (dropdownManager.selected_dropdown == 'interm_predictor_subject') {
-              <div class="options-dropdown">
-                <div class="list">
-                  @for (subject of getAllSubjects(); track $index) {
-                  <div class="option" style="text-align: left;" (click)="$event.stopPropagation();dropdownManager.selected_dropdown = '';selected_subject = subject">
-                      {{ subject }}
-                  </div>
-                  }
+          <div class="custom-select"
+            (click)="$event.stopPropagation();dropdownManager.selected_dropdown = dropdownManager.selected_dropdown == 'interm_predictor_subject' ? '' : 'interm_predictor_subject'">
+            <div class="selected-value">
+              {{ selected_subject }}
+              <i-tabler name="chevron-down"></i-tabler>
+            </div>
+            @if (dropdownManager.selected_dropdown == 'interm_predictor_subject') {
+            <div class="options-dropdown">
+              <div class="list">
+                @for (subject of getAllSubjects(); track $index) {
+                <div class="option" style="text-align: left;"
+                  (click)="$event.stopPropagation();dropdownManager.selected_dropdown = '';selected_subject = subject">
+                  {{ subject }}
                 </div>
+                }
               </div>
-              }
+            </div>
+            }
           </div>
         </div>
 
@@ -140,22 +137,24 @@
             {{ l.s("marks.mark") }}
           </label>
 
-          <div class="custom-select" (click)="$event.stopPropagation();dropdownManager.selected_dropdown = dropdownManager.selected_dropdown == 'interm_predictor_mark' ? '' : 'interm_predictor_mark'">
-              <div class="selected-value">
-                  {{ formatMark(selected_mark) }}
-                  <i-tabler name="chevron-down"></i-tabler>
-              </div>
-              @if (dropdownManager.selected_dropdown == 'interm_predictor_mark') {
-              <div class="options-dropdown">
-                <div class="list">
-                  @for (mark of marksManager.getConfig().mark_ids; track $index) {
-                  <div class="option" style="text-align: left;" (click)="$event.stopPropagation();dropdownManager.selected_dropdown = '';selected_mark = mark">
-                      {{ formatMark(mark) }}
-                  </div>
-                  }
+          <div class="custom-select"
+            (click)="$event.stopPropagation();dropdownManager.selected_dropdown = dropdownManager.selected_dropdown == 'interm_predictor_mark' ? '' : 'interm_predictor_mark'">
+            <div class="selected-value">
+              {{ formatMark(selected_mark) }}
+              <i-tabler name="chevron-down"></i-tabler>
+            </div>
+            @if (dropdownManager.selected_dropdown == 'interm_predictor_mark') {
+            <div class="options-dropdown">
+              <div class="list">
+                @for (mark of marksManager.getConfig().mark_ids; track $index) {
+                <div class="option" style="text-align: left;"
+                  (click)="$event.stopPropagation();dropdownManager.selected_dropdown = '';selected_mark = mark">
+                  {{ formatMark(mark) }}
                 </div>
+                }
               </div>
-              }
+            </div>
+            }
           </div>
         </div>
 
@@ -164,40 +163,42 @@
             {{ l.s("marks.weight") }}
           </label>
 
-          <div class="custom-select" (click)="$event.stopPropagation();dropdownManager.selected_dropdown = dropdownManager.selected_dropdown == 'interm_predictor_weight' ? '' : 'interm_predictor_weight'">
-              <div class="selected-value">
-                  {{ selected_weight }}
-                  <i-tabler name="chevron-down"></i-tabler>
-              </div>
-              @if (dropdownManager.selected_dropdown == 'interm_predictor_weight') {
-              <div class="options-dropdown">
-                <div class="list">
-                  @for (columnType of [].constructor(10); track $index) {
-                  <div class="option" style="text-align: left;" (click)="$event.stopPropagation();dropdownManager.selected_dropdown = '';selected_weight = $index + 1">
-                      {{ `${l.s('marks.weight')} ${$index + 1}` }}
-                  </div>
-                  }
+          <div class="custom-select"
+            (click)="$event.stopPropagation();dropdownManager.selected_dropdown = dropdownManager.selected_dropdown == 'interm_predictor_weight' ? '' : 'interm_predictor_weight'">
+            <div class="selected-value">
+              {{ selected_weight }}
+              <i-tabler name="chevron-down"></i-tabler>
+            </div>
+            @if (dropdownManager.selected_dropdown == 'interm_predictor_weight') {
+            <div class="options-dropdown">
+              <div class="list">
+                @for (columnType of [].constructor(10); track $index) {
+                <div class="option" style="text-align: left;"
+                  (click)="$event.stopPropagation();dropdownManager.selected_dropdown = '';selected_weight = $index + 1">
+                  {{ `${l.s('marks.weight')} ${$index + 1}` }}
                 </div>
+                }
               </div>
-              }
+            </div>
+            }
           </div>
         </div>
       </div>
       <div class="buttons">
         @if (editingIndex != null) {
-            <div class="btn btn--primary" (click)="updateMark()">
-                <i-tabler name="edit"></i-tabler>
-                {{ l.s("marks.predictor.edit_mark") }}
-            </div>
+        <div class="btn btn--primary" (click)="updateMark()">
+          <i-tabler name="edit"></i-tabler>
+          {{ l.s("marks.predictor.edit_mark") }}
+        </div>
 
-            <div class="btn btn--primary only-text" (click)="this.editingIndex = null;alert=''">
-                {{ l.s('marks.predictor.stop_edit_mark') }}
-            </div>
+        <div class="btn btn--primary only-text" (click)="this.editingIndex = null;alert=''">
+          {{ l.s('marks.predictor.stop_edit_mark') }}
+        </div>
         } @else {
-            <div class="btn btn--primary" (click)="addMarkToPredictor()">
-                <i-tabler name="plus"></i-tabler>
-                {{ l.s("marks.predictor.add_mark") }}
-            </div>
+        <div class="btn btn--primary" (click)="addMarkToPredictor()">
+          <i-tabler name="plus"></i-tabler>
+          {{ l.s("marks.predictor.add_mark") }}
+        </div>
         }
 
         <div class="btn btn--secondary only-text" (click)="resetPredictor()">
@@ -235,18 +236,10 @@
       </div>
       <div class="table-2-actions center">
         <div class="buttons">
-          <div
-            class="btn btn--ghost"
-            style="color: var(--primary)"
-            (click)="editMark(mark.id)"
-          >
+          <div class="btn btn--ghost" style="color: var(--primary)" (click)="editMark(mark.id)">
             {{ l.s("marks.predictor.edit") }}
           </div>
-          <div
-            class="btn btn--ghost"
-            style="color: var(--danger)"
-            (click)="removeMark(mark.id)"
-          >
+          <div class="btn btn--ghost" style="color: var(--danger)" (click)="removeMark(mark.id)">
             {{ l.s("marks.predictor.remove") }}
           </div>
         </div>
@@ -255,3 +248,53 @@
     } } }
   </div>
 </div>
+
+@if (selectedMark) {
+<div class="overlay" (click)="closeMarkDetails()">
+  <div class="modal" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h3>{{ selectedMark.topic }}</h3>
+      <div class="close-btn" (click)="closeMarkDetails()">
+        <i-tabler name="x"></i-tabler>
+      </div>
+    </div>
+    <div class="modal-body">
+      <div class="detail-row">
+        <span class="label">{{ l.s('subject') }}</span>
+        <span class="value">{{ selectedMark.subjectName }}</span>
+      </div>
+      <div class="detail-row">
+        <span class="label">{{ l.s('marks.mark') }}</span>
+        <span class="value mark-value">{{ formatMark(selectedMark.mark) }}</span>
+      </div>
+      <div class="detail-row">
+        <span class="label">{{ l.s('date') }}</span>
+        <span class="value">{{ utils.formatDateShort(selectedMark.created) }}</span>
+      </div>
+      <div class="detail-row">
+        <span class="label">{{ l.s('marks.weight') }}</span>
+        <span class="value">{{ selectedMark.weight }}</span>
+      </div>
+      @if (selectedMark.teacherFirst) {
+      <div class="detail-row">
+        <span class="label">{{ l.s('roles.teacher') }}</span>
+        <span class="value">{{ selectedMark.teacherFirst }} {{ selectedMark.teacherLast }}</span>
+      </div>
+      }
+      @if (markStats[selectedMark.columnId]) {
+      <div class="detail-row">
+        <span class="label">{{ l.s('marks.class_rank') }}</span>
+        <span class="value">{{ markStats[selectedMark.columnId].rank }} (∑ {{ markStats[selectedMark.columnId].count }},
+          Ø {{ markStats[selectedMark.columnId].avg }})</span>
+      </div>
+      }
+      @if (selectedMark.description) {
+      <div class="detail-row description">
+        <span class="label">{{ l.s('marks.description') }}</span>
+        <p>{{ selectedMark.description }}</p>
+      </div>
+      }
+    </div>
+  </div>
+</div>
+}

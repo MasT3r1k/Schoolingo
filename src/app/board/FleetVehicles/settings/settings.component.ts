@@ -12,7 +12,7 @@ import Swal from 'sweetalert2';
 
 @Component({
   standalone: true,
-  imports: [IconsModule, FormsModule, NgClass],
+  imports: [IconsModule, FormsModule],
   templateUrl: './settings.component.html',
   styleUrls: ['./settings.component.css']
 })

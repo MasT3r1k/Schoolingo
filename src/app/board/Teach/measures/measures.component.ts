@@ -8,6 +8,7 @@ import moment from 'moment';
 import { DropdownManager } from '@Schoolingo/dropdown';
 import { ModalManager } from '@Schoolingo/modal';
 import { AddMeasureComponent } from './modals/add-measure/add-measure.component';
+import { Utils } from '@Schoolingo/utils';
 
 @Component({
   selector: 'app-measures',
@@ -102,9 +103,7 @@ export class MeasuresComponent implements OnInit {
     });
   }
 
-  public formatDate(date: Date): string {
-    return moment(date).format('D. M. YYYY');
-  }
+  public formatDate = Utils.formatDate;
 
   public getTypeLabel(type: typeof this.filterType): string {
     const labels: Record<typeof this.filterType, string> = {

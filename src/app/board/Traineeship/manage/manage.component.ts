@@ -9,7 +9,7 @@ import { Utils } from '@Schoolingo/utils';
 
 @Component({
   standalone: true,
-  imports: [NgClass, NgIf, FormsModule, AsyncPipe, IconsModule],
+  imports: [FormsModule, AsyncPipe, IconsModule],
   templateUrl: './manage.component.html',
   styleUrls: ['./manage.component.css']
 })

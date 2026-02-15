@@ -15,7 +15,7 @@ import { ModalManager } from '@Schoolingo/modal';
 
 @Component({
   standalone: true,
-  imports: [DatalistComponent, NgClass, writeDairyComponent, HttpClientModule, IconsModule],
+  imports: [DatalistComponent, writeDairyComponent, HttpClientModule, IconsModule],
   templateUrl: './diary.component.html',
   styleUrls: ['../manage/manage.component.css']
 })

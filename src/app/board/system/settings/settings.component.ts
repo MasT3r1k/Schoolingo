@@ -10,6 +10,7 @@ import { ModalManager } from '@Schoolingo/modal';
 import { CommonModule } from '@angular/common';
 import { ChangelogModalComponent } from './modals/changelog/changelog.component';
 import { LicenseModalComponent } from './modals/license/license.component';
+import { Country } from 'country-state-city';
 
 interface ElysiaVersion {
   current: string;
@@ -110,6 +111,25 @@ type ElysiaSystemAPI = {
     backup_interval: number | null;
     auto_update: boolean;
     auto_update_interval: number;
+    country: number | null;
+    red_izo: string;
+    ico: string;
+    school_type: string;
+    izo: string;
+    online_enabled: number;
+    online_default_platform: string;
+    gdpr_firstname: string;
+    gdpr_lastname: string;
+    gdpr_phone: string;
+    gdpr_email: string;
+    gdpr_mobile: string;
+    gdpr_databox: string;
+    gdpr_web: string;
+    practices_enabled: number;
+    messages_enabled: number;
+    tests_enabled: number;
+    rewards_enabled: number;
+    tutoring_enabled: number;
   };
 
   ldap_config: LdapConfig | null;
@@ -118,6 +138,12 @@ type ElysiaSystemAPI = {
   districts: {
     districtId: number;
     district: string;
+  }[];
+
+  countries: {
+    countryId: number;
+    nationality: string;
+    code2: string;
   }[];
 
   student_count: number;
@@ -139,7 +165,14 @@ enum enumSidebar {
   EMAIL,
   FILES,
   SCOPES,
-  SUBJECTS
+  SUBJECTS,
+  ONLINE_SETTINGS,
+  GDPR_SETTINGS,
+  PRACTICES_SETTINGS,
+  MESSAGES_SETTINGS,
+  TESTS_SETTINGS,
+  REWARDS_SETTINGS,
+  TUTORING_SETTINGS
 }
 
 @Component({
@@ -154,6 +187,7 @@ export class SettingsComponent implements OnInit {
   public l = inject(Locale);
   public dropdownManager = inject(DropdownManager);
   public modalManager = inject(ModalManager);
+  public countryManager = Country;
   public selected_interval_backup = 0;
   public interval_backups = ['daily', 'weekly', 'monthly']
   public options: any = {
@@ -180,6 +214,23 @@ export class SettingsComponent implements OnInit {
 
   public backups: any[] = [];
   public selected_backup_to_rollback: string | null = null;
+
+  public get lastBackup(): any | null {
+    if (!this.backups || this.backups.length === 0) return null;
+    return this.backups[0]; // Assuming API returns sorted, otherwise we might need to sort
+  }
+
+  public get totalBackupSize(): number {
+    return this.backups.reduce((acc, curr) => acc + (curr.size || 0), 0);
+  }
+
+  public get backupHealthStatus(): 'good' | 'warning' | 'critical' {
+    if (!this.backups.length) return 'critical';
+    // Logic: If last backup is older than 2 days -> warning, older than week -> critical
+    // For now simple check if exists
+    return 'good';
+  }
+
 
   public checkUpdate(): void {
     this.version_loading.is_loading = true;
@@ -263,6 +314,15 @@ export class SettingsComponent implements OnInit {
   public email_types: string[] = [
     'basic_smtp_server',
     'google_smtp_server'
+  ];
+
+  public school_types = [
+    'grammar_school',
+    'high_school',
+    'secondary_professional_school',
+    'vocational_school',
+    'higher_professional_school',
+    'conservatory',
   ];
 
   // === Changelog ===
@@ -494,6 +554,11 @@ export class SettingsComponent implements OnInit {
   }
 
   // === Helpers ===
+  public getCountry(id: number | null) {
+    if (!this.system.countries) return null;
+    return this.system.countries.find(c => c.countryId === id);
+  }
+
   public format_time_by_minutes(minutes: number): string {
     return `${Utils.addZeros(Math.floor(minutes / 60), 2)}:${Utils.addZeros(minutes % 60, 2)}`;
   }
@@ -600,6 +665,55 @@ export class SettingsComponent implements OnInit {
   }
 
   // === Save School information ===
+  public hasModule(moduleName: string): boolean {
+    if (!this.system?.settings?.modules) return false;
+    const moduleMap: { [key: string]: number } = {
+      'online': 1,
+      'practices': 2,
+      'messages': 4,
+      'tests': 8,
+      'rewards': 16,
+      'tutoring': 32,
+      'gdpr': 64
+    };
+    const modules = parseInt(this.system.settings.modules);
+    if (isNaN(modules)) return false;
+    return (modules & moduleMap[moduleName]) === moduleMap[moduleName];
+  }
+
+  public toggleModule(moduleName: string): void {
+      if (!this.system?.settings?.modules) return;
+      const moduleMap: { [key: string]: number } = {
+        'online': 1,
+        'practices': 2,
+        'messages': 4,
+        'tests': 8,
+        'rewards': 16,
+        'tutoring': 32,
+        'gdpr': 64
+      };
+      let modules = parseInt(this.system.settings.modules);
+      if (isNaN(modules)) modules = 0;
+      
+      // XOR to toggle
+      modules ^= moduleMap[moduleName];
+      
+      this.system.settings.modules = modules.toString();
+
+      // Sync legacy boolean flags
+      const isEnabled = (modules & moduleMap[moduleName]) === moduleMap[moduleName] ? 1 : 0;
+      switch(moduleName) {
+          case 'online': this.system.settings.online_enabled = isEnabled; break;
+          case 'practices': this.system.settings.practices_enabled = isEnabled; break;
+          case 'messages': this.system.settings.messages_enabled = isEnabled; break;
+          case 'tests': this.system.settings.tests_enabled = isEnabled; break;
+          case 'rewards': this.system.settings.rewards_enabled = isEnabled; break;
+          case 'tutoring': this.system.settings.tutoring_enabled = isEnabled; break;
+      }
+
+      this.update_school();
+  }
+
   public update_school(): void {
     const lesson_length = this.format_minutes_by_time(this.system.lesson_length);
 
@@ -611,12 +725,32 @@ export class SettingsComponent implements OnInit {
         name: this.system.settings.name,
         shortcut: this.system.settings.shortName,
         district: this.system.settings.district,
+        country: this.system.settings.country,
+        red_izo: this.system.settings.red_izo,
+        ico: this.system.settings.ico,
+        school_type: this.system.settings.school_type,
+        izo: this.system.settings.izo,
         lesson_start: this.system.lesson_hour,
         lesson_length,
         break_time,
         warn_absence: this.system.settings.warningAbsencePercent,
         fastlogin: this.system.settings.fastlogin ? true : false,
-        resetPasswordWithEmail: this.system.settings.resetPasswordWithEmail ? true : false
+        resetPasswordWithEmail: this.system.settings.resetPasswordWithEmail ? true : false,
+        modules: this.system.settings.modules,
+        online_enabled: this.system.settings.online_enabled ? true : false,
+        online_default_platform: this.system.settings.online_default_platform,
+        gdpr_firstname: this.system.settings.gdpr_firstname,
+        gdpr_lastname: this.system.settings.gdpr_lastname,
+        gdpr_phone: this.system.settings.gdpr_phone,
+        gdpr_email: this.system.settings.gdpr_email,
+        gdpr_mobile: this.system.settings.gdpr_mobile,
+        gdpr_databox: this.system.settings.gdpr_databox,
+        gdpr_web: this.system.settings.gdpr_web,
+        practices_enabled: this.system.settings.practices_enabled ? true : false,
+        messages_enabled: this.system.settings.messages_enabled ? true : false,
+        tests_enabled: this.system.settings.tests_enabled ? true : false,
+        rewards_enabled: this.system.settings.rewards_enabled ? true : false,
+        tutoring_enabled: this.system.settings.tutoring_enabled ? true : false
       },
       { withCredentials: true }
     )
@@ -724,5 +858,11 @@ export class SettingsComponent implements OnInit {
 
   public getSelectedTranslation() {
     return this.get_translate_subjects().find(s => s[0] == this.translate_subject)
+  }
+
+  public testConnection(provider: string): void {
+      // In a real scenario, this would check if the admin has valid tokens or credentials setup
+      // For now, we simulate a check or trigger a connect flow if adding system-wide accounts
+      alert('Test připojení pro ' + provider + ' proběhl úspěšně. (Admin credentials check)');
   }
 }

@@ -33,7 +33,7 @@ export class AddEmailComponent implements OnInit {
 
   public active_action = '';
 
-  public page: 'main' | '2fa' = '2fa';
+  public page: 'main' | '2fa' = 'main';
 
   ngOnInit(): void {
     const data = this.modalManager.getModalData('add_email');

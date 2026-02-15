@@ -1,4 +1,4 @@
-import { NgClass, NgStyle } from '@angular/common';
+import { NgClass, NgStyle, NgIf } from '@angular/common';
 import { Component, inject, OnInit } from '@angular/core';
 import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { DomSanitizer } from '@angular/platform-browser';
@@ -21,6 +21,7 @@ import { ModalManager } from '@Schoolingo/modal';
 import { DropdownManager } from '@Schoolingo/dropdown';
 import { editCompanyModalComponent } from './editCompanyModal/editCompanyModal';
 import { selectCompanyModalComponent } from './selectCompanyModal/selectCompanyModal';
+import { instructorDetailModalComponent } from './instructorDetailModal/instructorDetailModal';
 
 type Scope = {
   scopeId: number;
@@ -31,7 +32,7 @@ type Scope = {
 
 @Component({
   standalone: true,
-  imports: [FormsModule, ReactiveFormsModule, DatalistComponent, TabsComponent, NgClass, NgStyle, IconsModule],
+  imports: [FormsModule, ReactiveFormsModule, DatalistComponent, TabsComponent, NgClass, NgStyle, IconsModule, NgIf],
   templateUrl: './companies.component.html',
   styleUrls: ['./companies.component.css']
 })
@@ -460,6 +461,20 @@ export class CompaniesComponent implements OnInit {
     }
   )
 
+  this.modalManager.addModal(
+    'instructor_detail', {
+      closeable: true,
+      title: 'traineeship.instructor_detail',
+      width: 500,
+      items: [
+        {
+          type: 'component',
+          component: instructorDetailModalComponent
+        }
+      ]
+    }
+  )
+
     // this.listeners.push(
     //   this.schoolingo.socketService.addFunction("traineeship:getCompanyInstructors")
     //   .subscribe((data: { personId: number }[]) => {
@@ -607,6 +622,11 @@ export class CompaniesComponent implements OnInit {
     let scopes = Object.values<Scope>(JSON.parse(company.scopes)).filter((value: Scope) => value.scopeId === scopeId);
     if (scopes.length == 0) return false;
     return true;
+  }
+
+  public openInstructorModal(instructor: any): void {
+    this.traineeship.selectedInstructor = instructor;
+    this.modalManager.openModal('instructor_detail');
   }
 
   ngOnDestroy(): void {

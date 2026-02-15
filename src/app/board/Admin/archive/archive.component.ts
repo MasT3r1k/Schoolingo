@@ -9,7 +9,7 @@ import moment from 'moment';
 @Component({
   selector: 'app-archive',
   standalone: true,
-  imports: [NgClass, IconsModule],
+  imports: [IconsModule],
   templateUrl: './archive.component.html',
   styleUrls: ['./archive.component.css']
 })

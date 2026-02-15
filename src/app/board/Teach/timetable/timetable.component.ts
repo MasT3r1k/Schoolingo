@@ -81,6 +81,7 @@ export class TimetableComponent implements OnInit {
     groups: new BehaviorSubject<boolean>(true),
     rooms: new BehaviorSubject<boolean>(true)
   };
+  public teacherOptions: string[] = [];
 
   public timetable_types: any = {
     teaching: {
@@ -180,6 +181,13 @@ export class TimetableComponent implements OnInit {
       this.refreshData()
     })
 
+    if (this.perms.checkPermission(['teacher'])) {
+      this.teacherOptions.push('dropdown.select_timetable.my_timetable', 'dropdown.select_timetable.supervision');
+      if (this.perms.checkPermission(['classTeacher'])) {
+        this.teacherOptions.push('dropdown.select_timetable.class_timetable')
+      }
+    }
+
   }
 
   public refreshData(): void {
@@ -192,13 +200,13 @@ export class TimetableComponent implements OnInit {
       id: this.u.getId()
     }
     switch(this.selectedTimetable.getValue()) {
-      case 0:
+      case this.teacherOptions.indexOf('dropdown.select_timetable.my_timetable'):
         timetableData = {
           type: "person",
           id: this.u.getId()
         }
         break;
-      case 1:
+      case this.teacherOptions.indexOf('dropdown.select_timetable.class_timetable'):
         timetableData = {
           type: "class",
           id: this.selectedClass.getValue()

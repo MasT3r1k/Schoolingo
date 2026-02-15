@@ -10,7 +10,7 @@ import { IconsModule } from '@Schoolingo/icons';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 
 @Component({
-  imports: [DatalistComponent, IconsModule, RouterLink],
+  imports: [IconsModule, RouterLink],
   templateUrl: './login-history.component.html',
   styleUrl: './login-history.component.css'
 })
@@ -23,9 +23,11 @@ export class LoginHistoryComponent implements OnInit {
   public page = new BehaviorSubject(1);
   public selected_id = null;
 
-  public metadata: DatalistMetadata = {
+  public metadata: DatalistMetadata & { validLogins: number;failedLogins:number; } = {
     rows: 0,
-    limit: 15
+    limit: 15,
+    validLogins: 0,
+    failedLogins: 0
   };
 
   public getPageList(): number[] {
@@ -73,23 +75,25 @@ export class LoginHistoryComponent implements OnInit {
   }
 
   public LoadDevices(page: number): void {
-    this.http.get<{data: any[], count: number}>(
+    this.http.get<{data: any[], count: number, validLogins: number,failedLogins:number}>(
       Config.API_URL + '/v1/login_history?limit=10&offset=' + (page - 1) * 10,
       { withCredentials: true })
       .subscribe(async(dataRaw) => {
       if (!dataRaw.data) return;
       let data: any[] = [];
       this.metadata.rows = dataRaw.count;
+      this.metadata.validLogins = dataRaw.validLogins;
+      this.metadata.failedLogins = dataRaw.failedLogins;
       this.history.next(dataRaw.data);
     });
   }
 
   public getSuccessfulLogins(): number {
-    return this.history.getValue().filter(item => item.success).length;
+    return this.metadata.validLogins;
   }
 
   public getFailedLogins(): number {
-    return this.history.getValue().filter(item => !item.success).length;
+    return this.metadata.failedLogins;
   }
   public getSelectedLogin(): any {
     if (!this.selected_id) return null;
@@ -98,8 +102,6 @@ export class LoginHistoryComponent implements OnInit {
   }
 
   public closeDetail(): void {
-      // Remove query param to close detail
-      // We need to navigate to the same route without the 'id' param
-      // But since we are using routerLink in HTML, we can just use router navigation here or rely on specific close button linking to ./
+
   }
 }

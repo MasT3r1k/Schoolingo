@@ -8,7 +8,7 @@ import { Theme } from '@Schoolingo/theme';
 @Component({
   selector: 'settings-change-theme',
   standalone: true,
-  imports: [NgClass, NgStyle, IconsModule],
+  imports: [NgClass, IconsModule],
   templateUrl: './theme.component.html',
   styleUrls: ['../settings.component.css', './theme.component.css']
 })

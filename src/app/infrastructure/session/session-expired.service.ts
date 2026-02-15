@@ -29,13 +29,14 @@ export class SessionExpiredService {
     this.modalManager.closeAllModals();
 
     // Set logout reason for display on login page
-    sessionStorage.setItem('logoutReason', 'session_expired');
+    // sessionStorage.setItem('logoutReason', 'session_expired');
     
     // Clear authentication state session
-    this.auth.setAuthState(false);
+    // this.auth.setAuthState(false);
     
     // Redirect to login
-    this.router.navigate(['/login'], { queryParams: { returnUrl: this.router.url } });
+    this.auth.logout('session_expired', this.router.url);
+    // this.router.navigate(['/login'], { queryParams: { returnUrl: this.router.url } });
   }
 
   /**

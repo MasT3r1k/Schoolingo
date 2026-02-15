@@ -1,0 +1,132 @@
+<div class="card">
+    <div class="card-header">
+        <h2 class="flex" style="align-items: center; gap: 10px;">
+            {{ l.s('online.title') }}
+        </h2>
+
+        <div class="actions">
+            <button *ngIf="isTeacher()" (click)="toggleCreate()" class="btn btn-primary">
+                <i class="ti ti-plus"></i> {{ l.s('online.create_lesson') }}
+            </button>
+        </div>
+    </div>
+
+    <div class="card-body">
+        <div class="create-form" *ngIf="showCreateForm">
+            <h3 style="margin-bottom: 20px;">{{ l.s('online.create.title') }}</h3>
+            <form [formGroup]="createForm" (ngSubmit)="createLesson()">
+                <div class="form-group">
+                    <label>Název hodiny</label>
+                    <input formControlName="title" type="text" class="form-control"
+                        placeholder="Např. Matematika - Doučování">
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>{{ l.s('online.start') }}</label>
+                        <input formControlName="start" type="datetime-local" class="form-control">
+                    </div>
+                    <div class="form-group">
+                        <label>{{ l.s('online.end') }}</label>
+                        <input formControlName="end" type="datetime-local" class="form-control">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>{{ l.s('online.platform') }}</label>
+                        <div class="custom-select">
+                            <select formControlName="platform" class="form-control">
+                                <option value="teams">Microsoft Teams</option>
+                                <option value="meet">Google Meet</option>
+                                <option value="zoom">Zoom</option>
+                                <option value="other">Jiné</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>{{ l.s('online.link') }}</label>
+                        <div class="input-group">
+                            <input formControlName="link" type="text" class="form-control" placeholder="https://..."
+                                style="flex:1">
+                            <button type="button" (click)="generateLink()" class="btn btn-secondary"
+                                *ngIf="createForm.get('platform')?.value === 'meet' || createForm.get('platform')?.value === 'teams'"
+                                title="Vygenerovat odkaz">
+                                <i class="ti ti-wand"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>{{ l.s('online.target') }} (Typ)</label>
+                        <select formControlName="target_type" class="form-control">
+                            <option value="class">Třída</option>
+                            <option value="group">Skupina</option>
+                            <option value="student">Student</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>{{ l.s('online.target') }} (ID)</label>
+                        <input formControlName="target_id" type="number" class="form-control"
+                            placeholder="ID třídy/skupiny/studenta">
+                    </div>
+                </div>
+                <div class="actions">
+                    <button type="button" (click)="toggleCreate()" class="btn btn-secondary">{{ l.s('cancel')
+                        }}</button>
+                    <button type="submit" class="btn btn-success">{{ l.s('save') }}</button>
+                </div>
+            </form>
+        </div>
+
+        <div class="lessons-list">
+            <div *ngIf="loading" class="loading">
+                <div class="loading-spinner"></div>
+                Naplánované hodiny se načítají...
+            </div>
+
+            <div *ngIf="!loading && lessons.length === 0" class="empty">
+                <i class="ti ti-calendar-off" style="font-size: 48px; margin-bottom: 20px; display: block;"></i>
+                {{ l.s('online.no_lessons') }}
+            </div>
+
+            <div *ngFor="let lesson of lessons" class="lesson-card">
+                <div class="lesson-icon">
+                    <i class="ti" [ngClass]="{
+                         'ti-brand-teams': lesson.platform === 'teams', 
+                         'ti-brand-google': lesson.platform === 'meet',
+                         'ti-brand-zoom': lesson.platform === 'zoom',
+                         'ti-video': lesson.platform === 'other'
+                     }"></i>
+                </div>
+                <div class="lesson-details">
+                    <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+                        <div>
+                            <h3>{{ lesson.title }}</h3>
+                            <p *ngIf="lesson.subject"
+                                style="color: var(--primary); font-weight: 500; font-size: 13px; margin-bottom: 5px;">
+                                {{ lesson.subject?.name }}
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="meta">
+                        <span title="Čas konání"><i class="ti ti-calendar-event"></i> {{ lesson.start | date:'dd.MM.yyyy
+                            HH:mm' }} - {{ lesson.end | date:'HH:mm' }}</span>
+                        <span title="Učitel"><i class="ti ti-user"></i> {{ lesson.firstName }} {{ lesson.lastName
+                            }}</span>
+                    </div>
+                    <p *ngIf="lesson.description" class="desc">{{ lesson.description }}</p>
+                </div>
+                <div class="lesson-actions">
+                    <button (click)="openLink(lesson.link)" class="btn btn-join">
+                        <i class="ti ti-video"></i> {{ l.s('online.join') }}
+                    </button>
+                    <button *ngIf="isTeacher()" (click)="deleteLesson(lesson.lessonId)" class="btn btn-danger btn-icon"
+                        title="Smazat">
+                        <i class="ti ti-trash"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

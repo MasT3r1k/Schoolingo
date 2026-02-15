@@ -11,12 +11,17 @@ export type MeasureStatus = 'draft' | 'approved' | 'cancelled';
 export interface EducationMeasure {
   id: number;
   type: MeasureType;
+  category: MeasureCategory;
+  severity: MeasureSeverity;
   reason: string;
-  note?: string;
-  date: Date;
-  studentId: number;
-  studentName?: string;
-  issuedByName?: string;
+  description: string | null;
+  issued_by: number;
+  issued_at: Date;
+  student_id: number;
+  informed_parents: boolean;
+  status: MeasureStatus;
+  student_name: string;
+  issued_by_name: string;
 }
 
 @Injectable({

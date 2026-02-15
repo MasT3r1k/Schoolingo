@@ -17,7 +17,7 @@ import { NewReservationComponent } from '../modals/new-reservation/new-reservati
 
 @Component({
   standalone: true,
-  imports: [RouterLink, IconsModule, NgClass, FormsModule, TabsComponent],
+  imports: [IconsModule, FormsModule, TabsComponent],
   templateUrl: './reservations.component.html',
   styleUrls: ['./reservations.component.css']
 })

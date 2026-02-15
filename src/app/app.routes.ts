@@ -132,6 +132,10 @@ export const routes: Routes = [
                 component: CalendarComponent
             },
             {
+                path: 'online',
+                loadComponent: () => import('./board/online/online.component').then(m => m.OnlineComponent)
+            },
+            {
                 path: 'documents',
                 component: DocumentsComponent
             },
