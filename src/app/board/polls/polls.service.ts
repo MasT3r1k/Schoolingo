@@ -13,7 +13,7 @@ export interface Poll {
   time_limit: number | null;
   created_at: string;
   authorName: string;
-  completed?: boolean;
+  submitted_at?: Date;
   questionCount?: number;
 }
 

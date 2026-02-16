@@ -44,15 +44,15 @@ export class PollsComponent implements OnInit {
   }
 
   getCompletedCount(): number {
-    return this.tests.filter(t => t.completed).length;
+    return this.tests.filter(t => t.submitted_at).length;
   }
 
   getPendingCount(): number {
-    return this.tests.filter(t => !t.completed).length;
+    return this.tests.filter(t => !t.submitted_at).length;
   }
 
   isUrgent(test: Poll): boolean {
-    if (!test.active_to || test.completed) return false;
+    if (!test.active_to || test.submitted_at) return false;
     const deadline = new Date(test.active_to);
     const now = new Date();
     const hoursLeft = (deadline.getTime() - now.getTime()) / (1000 * 60 * 60);

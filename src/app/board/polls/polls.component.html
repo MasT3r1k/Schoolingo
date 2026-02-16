@@ -67,10 +67,10 @@
             } @else {
             <div class="tests-grid">
                 @for (test of tests; track test.id) {
-                <div class="test-card" [class.completed]="test.completed" [class.urgent]="isUrgent(test)">
+                <div class="test-card" [class.completed]="test.submitted_at" [class.urgent]="isUrgent(test)">
                     <div class="test-card-header">
-                        <div class="test-badge" [class.completed]="test.completed" [class.pending]="!test.completed">
-                            @if (test.completed) {
+                        <div class="test-badge" [class.completed]="test.submitted_at" [class.pending]="!test.submitted_at">
+                            @if (test.submitted_at) {
                             <i-tabler name="circle-check"></i-tabler>
                             <span>Vyplněno</span>
                             } @else {
@@ -112,7 +112,7 @@
 
                     <div class="test-card-actions">
                         @if (perms.checkPermission(['student']) && test.type == "test") {
-                        @if (!test.completed) {
+                        @if (!test.submitted_at) {
                         <button class="btn btn--primary" [routerLink]="[test.id, 'vote']">
                             <i-tabler name="edit"></i-tabler>
                             <span>Vyplnit test</span>

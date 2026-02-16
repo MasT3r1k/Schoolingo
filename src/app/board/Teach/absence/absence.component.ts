@@ -141,6 +141,10 @@ export class AbsenceComponent implements OnInit {
           this.selectedPeriod.next(0);
           this.loadAbsence()
         }
+        if (tab === 1) {
+          this.absence = {};
+          this.loadAbsences();
+        }
       })
     );
 
@@ -213,6 +217,48 @@ export class AbsenceComponent implements OnInit {
           };
         });
       }  
+    })
+  }
+
+  public loadAbsences(): void {
+    let school_config = this.s.config.getValue();
+    if (!school_config) return;
+
+    let start = moment(school_config.year.start).clone();
+    let midterm = moment(school_config.year.midterm).clone();
+    let end = moment(school_config.year.end).clone();
+
+    switch (this.selectedPeriod.getValue()) {
+      case 0:
+        this.absenceDate.start = start.clone().startOf('day');
+        this.absenceDate.end = moment().endOf('day');
+        break;
+      case 1:
+        this.absenceDate.start = start.clone().startOf('day');
+        this.absenceDate.end = midterm.clone().endOf('day');
+        break;
+      case 2:
+        this.absenceDate.start = midterm.clone().startOf('day');
+        this.absenceDate.end = end.clone().endOf('day');
+        break;
+      case 3:
+        this.absenceDate.start = start.clone().startOf('day');
+        this.absenceDate.end = end.clone().endOf('day');
+        break;
+      default:
+        this.absenceDate.start = start.clone().startOf('day');
+        this.absenceDate.end = moment().endOf('day');
+        break;
+    }
+
+    this.http.get<any[]>(
+      `${Config.API_URL}/v1/absences/${this.u.getId()}?start=${this.absenceDate.start.format('YYYY-MM-DD')}&end=${this.absenceDate.end.format('YYYY-MM-DD')}`,
+      { withCredentials: true }
+    )
+    .subscribe((data: any[]) => {
+      data.forEach(absence => {
+        this.absence[absence.date].push(absence);
+      })
     })
   }
 }
