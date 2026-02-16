@@ -1,7 +1,8 @@
 <div class="form-group">
     <label>{{ 'Druh úpravy' }}</label>
 
-    <div class="custom-select" (click)="$event.stopPropagation();dropdownManager.selected_dropdown = dropdownManager.selected_dropdown == 'schedule_builder_edit_lesson_type' ? '' : 'schedule_builder_edit_lesson_type'">
+    <div class="custom-select"
+        (click)="$event.stopPropagation();dropdownManager.selected_dropdown = dropdownManager.selected_dropdown == 'schedule_builder_edit_lesson_type' ? '' : 'schedule_builder_edit_lesson_type'">
         <div class="selected-value">
             <span>{{ l.s('schedule.edit_lesson.types.' + selected_type) }}</span>
             <i-tabler name="chevron-down"></i-tabler>
@@ -10,7 +11,8 @@
         <div class="options-dropdown">
             <div class="list">
                 @for (type of types; track type) {
-                <div class="option" style="text-align: left;" (click)="$event.stopPropagation();dropdownManager.selected_dropdown = '';selected_type = type">
+                <div class="option" style="text-align: left;"
+                    (click)="$event.stopPropagation();dropdownManager.selected_dropdown = '';selected_type = type">
                     {{ l.s('schedule.edit_lesson.types.' + type) }}
                 </div>
                 }
@@ -21,140 +23,185 @@
 </div>
 
 @switch(selected_type) {
-    @case('cancel') {
-        <div class="form-group">
-            <div class="btn btn--primary">{{ l.s('Zrušit hodinu') }}</div>
+@case('cancel') {
+<div class="form-group">
+    <div class="btn btn--primary" (click)="deleteLesson()">{{ l.s('Zrušit hodinu') }}</div>
+</div>
+}
+
+@case ('substitution') {
+<div class="form-group">
+    <label>{{ l.s('subject') }}</label>
+
+    <div class="custom-select"
+        (click)="$event.stopPropagation();dropdownManager.selected_dropdown = dropdownManager.selected_dropdown == 'schedule_builder_edit_lesson_subjectId' ? '' : 'schedule_builder_edit_lesson_subjectId'">
+        <div class="selected-value">
+            <span>{{ getSubjectName(selectedSubjectId!) }}</span>
+            <i-tabler name="chevron-down"></i-tabler>
         </div>
-    }
-
-    @case ('substitution') {
-        <div class="form-group">
-            <label>{{ l.s('subject') }}</label>
-
-            <div class="custom-select" (click)="$event.stopPropagation();dropdownManager.selected_dropdown = dropdownManager.selected_dropdown == 'schedule_builder_edit_lesson_subjectId' ? '' : 'schedule_builder_edit_lesson_subjectId'">
-                <div class="selected-value">
-                    <span>{{ getSubjectName(selectedSubjectId!) }}</span>
-                    <i-tabler name="chevron-down"></i-tabler>
-                </div>
-                @if (dropdownManager.selected_dropdown == 'schedule_builder_edit_lesson_subjectId') {
-                <div class="options-dropdown">
-                    <div class="list">
-                    @for (subject of scheduleBuilder.subjects; track subject.subjectId) {
-                    <div class="option" style="text-align: left;" (click)="$event.stopPropagation();dropdownManager.selected_dropdown = '';selectedSubjectId = subject.subjectId">
-                        {{ subject.subjectName }}
-                    </div>
-                    }
-                    </div>
+        @if (dropdownManager.selected_dropdown == 'schedule_builder_edit_lesson_subjectId') {
+        <div class="options-dropdown">
+            <div class="list">
+                @for (subject of scheduleBuilder.subjects; track subject.subjectId) {
+                <div class="option" style="text-align: left;"
+                    (click)="$event.stopPropagation();dropdownManager.selected_dropdown = '';selectedSubjectId = subject.subjectId">
+                    {{ subject.subjectName }}
                 </div>
                 }
             </div>
         </div>
+        }
+    </div>
+</div>
 
-        <div class="form-group">
-            <label>{{ l.s('roles.teacher') }}</label>
+<div class="form-group">
+    <label>{{ l.s('roles.teacher') }}</label>
 
-            <div class="custom-select" (click)="$event.stopPropagation();dropdownManager.selected_dropdown = dropdownManager.selected_dropdown == 'schedule_builder_edit_lesson_teacherId' ? '' : 'schedule_builder_edit_lesson_teacherId'">
-                <div class="selected-value">
-                    <span>{{ selectedTeacherId ? scheduleBuilder.teachers[selectedTeacherId].teacherName : '' }}</span>
-                    <i-tabler name="chevron-down"></i-tabler>
-                </div>
-                @if (dropdownManager.selected_dropdown == 'schedule_builder_edit_lesson_teacherId') {
-                <div class="options-dropdown">
-                    <div class="list">
-                    @if (selectedSubjectId) {
-                        @for (teacher of scheduleBuilder.getTeachers(); track teacher.teacherId) {
-                        <div class="option" style="text-align: left;" (click)="$event.stopPropagation();dropdownManager.selected_dropdown = '';selectedTeacherId = teacher.teacherId">
-                            {{ teacher.teacherName }}
-                        </div>
-                        }
-                    }
-                    </div>
+    <div class="custom-select"
+        (click)="$event.stopPropagation();dropdownManager.selected_dropdown = dropdownManager.selected_dropdown == 'schedule_builder_edit_lesson_teacherId' ? '' : 'schedule_builder_edit_lesson_teacherId'">
+        <div class="selected-value">
+            <span>{{ selectedTeacherId ? scheduleBuilder.teachers[selectedTeacherId].teacherName : '' }}</span>
+            <i-tabler name="chevron-down"></i-tabler>
+        </div>
+        @if (dropdownManager.selected_dropdown == 'schedule_builder_edit_lesson_teacherId') {
+        <div class="options-dropdown">
+            <div class="list">
+                @for (teacher of scheduleBuilder.getTeachers(); track teacher.teacherId) {
+                <div class="option" style="text-align: left;"
+                    (click)="$event.stopPropagation();dropdownManager.selected_dropdown = '';selectedTeacherId = teacher.teacherId">
+                    {{ teacher.teacherName }}
                 </div>
                 }
             </div>
         </div>
+        }
+    </div>
+</div>
 
-        <div class="form-group">
-            <label>{{ l.s('schedule.builder.room') }}</label>
-            <input type="text" [(ngModel)]="selectedRoom" [placeholder]="l.s('schedule.builder.room_placeholder')">
+<div class="form-group">
+    <label>{{ l.s('schedule.builder.room') }}</label>
+    <div class="custom-select"
+        (click)="$event.stopPropagation();dropdownManager.selected_dropdown = dropdownManager.selected_dropdown == 'schedule_builder_edit_lesson_room' ? '' : 'schedule_builder_edit_lesson_room'">
+        <div class="selected-value">
+            <span>{{ selectedRoomId ? getRoomName(selectedRoomId!) : '' }}</span>
+            <i-tabler name="chevron-down"></i-tabler>
         </div>
-
-        <div class="form-group" (click)="updateSubstitution()">
-            <div class="btn btn--primary">
-                Zapsat suplování
-            </div>
-        </div>
-    }
-
-    @case ('change_timetable') {
-        <div class="form-group">
-            <label>{{ l.s('subject') }}</label>
-
-            <div class="custom-select" (click)="$event.stopPropagation();dropdownManager.selected_dropdown = dropdownManager.selected_dropdown == 'schedule_builder_edit_lesson_subjectId' ? '' : 'schedule_builder_edit_lesson_subjectId'">
-                <div class="selected-value">
-                    <span>{{ getSubjectName(selectedSubjectId!) }}</span>
-                    <i-tabler name="chevron-down"></i-tabler>
-                </div>
-                @if (dropdownManager.selected_dropdown == 'schedule_builder_edit_lesson_subjectId') {
-                <div class="options-dropdown">
-                    <div class="list">
-                    @for (subject of scheduleBuilder.subjects; track subject.subjectId) {
-                    <div class="option" style="text-align: left;" (click)="$event.stopPropagation();dropdownManager.selected_dropdown = '';selectedSubjectId = subject.subjectId">
-                        {{ subject.subjectName }}
-                    </div>
-                    }
-                    </div>
+        @if (dropdownManager.selected_dropdown == 'schedule_builder_edit_lesson_room') {
+        <div class="options-dropdown">
+            <div class="list">
+                @for (room of rooms; track room.br_id) {
+                <div class="option" style="text-align: left;"
+                    (click)="$event.stopPropagation();dropdownManager.selected_dropdown = '';selectedRoomId = room.br_id">
+                    {{ room.name }}
                 </div>
                 }
             </div>
         </div>
+        }
+    </div>
+</div>
 
-        <div class="form-group">
-            <label>{{ l.s('roles.teacher') }}</label>
-            <div class="custom-select" (click)="$event.stopPropagation();dropdownManager.selected_dropdown = dropdownManager.selected_dropdown == 'schedule_builder_edit_lesson_teacherId' ? '' : 'schedule_builder_edit_lesson_teacherId'">
-                <div class="selected-value">
-                    <span>{{ selectedTeacherId ? scheduleBuilder.teachers[selectedTeacherId].teacherName : '' }}</span>
-                    <i-tabler name="chevron-down"></i-tabler>
-                </div>
-                @if (dropdownManager.selected_dropdown == 'schedule_builder_edit_lesson_teacherId') {
-                <div class="options-dropdown">
-                    @if (selectedSubjectId) {
-                        <div class="list">
-                        @for (teacher of scheduleBuilder.getTeachers(); track teacher.teacherId) {
-                        <div class="option" style="text-align: left;" (click)="$event.stopPropagation();dropdownManager.selected_dropdown = '';selectedTeacherId = teacher.teacherId">
-                            {{ teacher.teacherName }}
-                        </div>
-                        }
-                        </div>
-                    }
+<div class="form-group" (click)="save()">
+    <div class="btn btn--primary">
+        Zapsat suplování
+    </div>
+</div>
+}
+
+@case ('change_timetable') {
+<div class="form-group">
+    <label>{{ l.s('subject') }}</label>
+
+    <div class="custom-select"
+        (click)="$event.stopPropagation();dropdownManager.selected_dropdown = dropdownManager.selected_dropdown == 'schedule_builder_edit_lesson_subjectId' ? '' : 'schedule_builder_edit_lesson_subjectId'">
+        <div class="selected-value">
+            <span>{{ getSubjectName(selectedSubjectId!) }}</span>
+            <i-tabler name="chevron-down"></i-tabler>
+        </div>
+        @if (dropdownManager.selected_dropdown == 'schedule_builder_edit_lesson_subjectId') {
+        <div class="options-dropdown">
+            <div class="list">
+                @for (subject of scheduleBuilder.subjects; track subject.subjectId) {
+                <div class="option" style="text-align: left;"
+                    (click)="$event.stopPropagation();dropdownManager.selected_dropdown = '';selectedSubjectId = subject.subjectId">
+                    {{ subject.subjectName }}
                 </div>
                 }
             </div>
         </div>
+        }
+    </div>
+</div>
 
-        <div class="form-group">
-            <label>{{ l.s('schedule.builder.room') }}</label>
-            <input type="text" [(ngModel)]="selectedRoom" [placeholder]="l.s('schedule.builder.room_placeholder')">
+<div class="form-group">
+    <label>{{ l.s('roles.teacher') }}</label>
+    <div class="custom-select"
+        (click)="$event.stopPropagation();dropdownManager.selected_dropdown = dropdownManager.selected_dropdown == 'schedule_builder_edit_lesson_teacherId' ? '' : 'schedule_builder_edit_lesson_teacherId'">
+        <div class="selected-value">
+            <span>{{ selectedTeacherId ? scheduleBuilder.teachers[selectedTeacherId].teacherName : '' }}</span>
+            <i-tabler name="chevron-down"></i-tabler>
         </div>
-
-        <div class="form-group">
-            <label>{{ 'Skupina' }}</label>
-
-        </div>
-
-        <div class="form-group">
-            <label>{{ l.s('schedule.builder.week') }}</label>
-            <div class="week-selector">
-                <div class="week-option" [class.active]="selectedWeek === 'both'" (click)="selectedWeek = 'both'">
-                    {{ l.s('schedule.builder.week_both') }}
+        @if (dropdownManager.selected_dropdown == 'schedule_builder_edit_lesson_teacherId') {
+        <div class="options-dropdown">
+            <div class="list">
+                @for (teacher of scheduleBuilder.getTeachers(); track teacher.teacherId) {
+                <div class="option" style="text-align: left;"
+                    (click)="$event.stopPropagation();dropdownManager.selected_dropdown = '';selectedTeacherId = teacher.teacherId">
+                    {{ teacher.teacherName }}
                 </div>
-                <div class="week-option" [class.active]="selectedWeek === 'odd'" (click)="selectedWeek = 'odd'">
-                    {{ l.s('schedule.builder.week_odd') }}
-                </div>
-                <div class="week-option" [class.active]="selectedWeek === 'even'" (click)="selectedWeek = 'even'">
-                    {{ l.s('schedule.builder.week_even') }}
-                </div>
+                }
             </div>
         </div>
-    }
+        }
+    </div>
+</div>
+
+<div class="form-group">
+    <label>{{ l.s('schedule.builder.room') }}</label>
+    <div class="custom-select"
+        (click)="$event.stopPropagation();dropdownManager.selected_dropdown = dropdownManager.selected_dropdown == 'schedule_builder_edit_lesson_room' ? '' : 'schedule_builder_edit_lesson_room'">
+        <div class="selected-value">
+            <span>{{ selectedRoomId ? getRoomName(selectedRoomId!) : '' }}</span>
+            <i-tabler name="chevron-down"></i-tabler>
+        </div>
+        @if (dropdownManager.selected_dropdown == 'schedule_builder_edit_lesson_room') {
+        <div class="options-dropdown">
+            <div class="list">
+                @for (room of rooms; track room.br_id) {
+                <div class="option" style="text-align: left;"
+                    (click)="$event.stopPropagation();dropdownManager.selected_dropdown = '';selectedRoomId = room.br_id">
+                    {{ room.name }}
+                </div>
+                }
+            </div>
+        </div>
+        }
+    </div>
+</div>
+
+<div class="form-group">
+    <label>{{ 'Skupina' }}</label>
+
+</div>
+
+<div class="form-group">
+    <label>{{ l.s('schedule.builder.week') }}</label>
+    <div class="week-selector">
+        <div class="week-option" [class.active]="selectedWeek === 'both'" (click)="selectedWeek = 'both'">
+            {{ l.s('schedule.builder.week_both') }}
+        </div>
+        <div class="week-option" [class.active]="selectedWeek === 'odd'" (click)="selectedWeek = 'odd'">
+            {{ l.s('schedule.builder.week_odd') }}
+        </div>
+        <div class="week-option" [class.active]="selectedWeek === 'even'" (click)="selectedWeek = 'even'">
+            {{ l.s('schedule.builder.week_even') }}
+        </div>
+    </div>
+</div>
+
+<div class="form-group row">
+    <div class="btn btn--primary" (click)="save()">{{ l.s('Uložit') }}</div>
+    <div class="btn btn--danger" style="margin-left: auto;" (click)="deleteLesson()">{{ l.s('Smazat') }}</div>
+</div>
+}
 }

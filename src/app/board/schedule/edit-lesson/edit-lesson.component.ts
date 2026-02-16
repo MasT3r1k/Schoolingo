@@ -32,28 +32,55 @@ export class EditLessonComponent implements OnInit {
 
   public types: string[] = [];
   public selected_type = '';
+  public rooms: {br_id: number, name: string}[] = [];
+  public selectedRoomId: number | null = null;
 
   ngOnInit(): void {
     const lesson = this.scheduleBuilder.activeLesson;
+    
+    // Fetch rooms
+    this.http.get<{br_id: number, name: string}[]>(`${Config.API_URL}/v1/timetable/rooms`)
+        .subscribe((rooms) => {
+            this.rooms = rooms;
+            // Set initial room if lesson has one
+            if (lesson && lesson.room) {
+                 const found = this.rooms.find(r => r.name === lesson.room);
+                 if (found) {
+                     this.selectedRoomId = found.br_id;
+                 }
+            }
+        });
+
     this.types = [];
 
     if (lesson && !lesson.empty) {
+      this.types.push('substitution');
+      
       if (lesson.lessonId) {
-          this.types.push('substitution', 'cancel');
+          this.types.push('cancel');
       }
       
       this.selectedSubjectId = lesson.subjectId;
       this.selectedTeacherId = lesson.teacherId;
       this.selectedWeek = lesson.week || 'both';
-      this.selectedRoom = lesson.room ? String(lesson.room) : '';
+      // selectedRoomId handled in subscribe
     }
     
     this.types.push('classroom_lesson', 'change_timetable');
-    this.selected_type = this.types[0];
+    
+    if (lesson && !lesson.lessonId) {
+        this.selected_type = 'classroom_lesson';
+    } else {
+        this.selected_type = this.types[0];
+    }
   }
 
   public getSubjectName(subject_id: number): string {
     return this.scheduleBuilder.subjects.find((subject) => subject.subjectId == subject_id)?.subjectName ?? '';
+  }
+
+  public getRoomName(room_id: number): string {
+    return this.rooms.find((r) => r.br_id == room_id)?.name ?? '';
   }
 
   public save(): void {
@@ -73,11 +100,11 @@ export class EditLessonComponent implements OnInit {
         {
             action: action,
             lessonId: lesson.lessonId,
-            day: lesson.day,
-            hour: lesson.hour,
+            day: lesson.day + 1,
+            hour: lesson.hour + 1,
             subjectId: this.selectedSubjectId,
             teacherId: this.selectedTeacherId,
-            roomId: this.selectedRoom ? parseInt(this.selectedRoom) : null,
+            roomId: this.selectedRoomId,
             groupId: lesson.groupId
         },
         { withCredentials: true }
@@ -126,7 +153,7 @@ export class EditLessonComponent implements OnInit {
   public updateSubstitution(): void {
     if (!this.scheduleBuilder.activeLesson) return;
     const currentWeek = this.calendarManager.getCalendarData('scheduleBuilder_date').selected_date[0].getValue();
-    const currentDay = Utils.getDayOfWeek(currentWeek, this.scheduleBuilder.activeLesson.day);
+    const currentDay = Utils.getDayOfWeek(currentWeek, this.scheduleBuilder.activeLesson.day + 1);
     this.http.post(
       `${Config.API_URL}/v1/timetable/substitution`,
       {

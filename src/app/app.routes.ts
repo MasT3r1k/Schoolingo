@@ -63,10 +63,12 @@ import { PollEditComponent } from './board/polls/poll-edit/poll-edit.component';
 import { DetailComponent } from './board/students/detail/detail.component';
 import { TemplateSubjectComponent } from './board/schedule/template-subject/template-subject.component';
 import { TemplateTimetableComponent } from './board/schedule/template-timetable/template-timetable.component';
+import { SupervisionBuilderComponent } from './board/schedule/supervision-builder/supervision-builder.component';
 import { MonitoringComponent } from './board/Admin/monitoring/monitoring.component';
 import { SeasonalAdminComponent } from './board/Admin/seasonal/seasonal.component';
 import { PollManageComponent } from './board/polls/poll-manage/poll-manage.component';
 import { SchoolYearsComponent } from './board/Admin/school-years/school-years.component';
+import { OnlineComponent } from './board/online/online.component';
 
 
 export const routes: Routes = [
@@ -124,6 +126,10 @@ export const routes: Routes = [
                     {
                         path: 'template_subject',
                         component: TemplateSubjectComponent
+                    },
+                    {
+                        path: 'supervision',
+                        component: SupervisionBuilderComponent
                     }
                 ]
             },
@@ -133,7 +139,7 @@ export const routes: Routes = [
             },
             {
                 path: 'online',
-                loadComponent: () => import('./board/online/online.component').then(m => m.OnlineComponent)
+                component: OnlineComponent
             },
             {
                 path: 'documents',

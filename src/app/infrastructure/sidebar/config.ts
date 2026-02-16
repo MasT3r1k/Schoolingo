@@ -48,6 +48,10 @@ export const config: SidebarGroup[] = [
                     {
                         item: 'sidebar.schedule.builder',
                         url: 'schedule/builder'
+                    },
+                    {
+                        item: 'sidebar.schedule.supervision',
+                        url: 'schedule/supervision'
                     }
                 ]
             },

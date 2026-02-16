@@ -121,16 +121,60 @@ export class TimetableComponent implements OnInit {
       },
       { withCredentials: true })
     .subscribe((data: any) => {
+      const timetableData: TimetableAPI[] = [];
+
       if ('timetable' in data) {
-        this.timetable = data.timetable.map((lesson: TimetableAPI) => ({...lesson, free: false}));
+         data.timetable.forEach((lesson: any) => {
+             timetableData.push({ ...lesson, free: false });
+         });
+      }
+
+      if ('substitution' in data) {
+         data.substitution.forEach((sub: any) => {
+             const subDate = moment(sub.start_date);
+             const subLesson: any = { 
+                 day: subDate.isoWeekday(),
+                 hour: sub.start_hour, 
+                 type: 0,
+                 room: sub.room,
+                 free: false,
+                 end: false,
+                 subjectId: sub.subjectId,
+                 subjectName: sub.subjectName || sub.event_name || 'Suplování',
+                 subjectShortcut: sub.subjectShortcut || 'SUPL',
+                 lastName: sub.lastName,
+                 teacher: sub.teacher,
+                 isSubstitution: true
+             };
+
+             for (let h = sub.start_hour; h <= sub.end_hour; h++) {
+                 const existingIdx = timetableData.findIndex(l => l.day === subLesson.day && l.hour === h);
+                 if (existingIdx !== -1) {
+                     timetableData[existingIdx] = { ...timetableData[existingIdx], ...subLesson, hour: h };
+                 } else {
+                     timetableData.push({ ...subLesson, hour: h });
+                 }
+             }
+         });
+      }
+
+      this.timetable = timetableData;
+
+      if (this.timetable.length > 0) {
         const existingHours = this.timetable.map(l => l.hour);
         this.max_hours = Math.max(...existingHours);
+        
+        // Ensure max_hours includes substitution hours
+        // Already done via spread? No, safely recalculate
+        if (this.max_hours === -Infinity) this.max_hours = 0;
 
         let schoolConfig = this.school.config.getValue();
         let time = moment()
         .set('hours', schoolConfig?.startHour!)
         .set('minutes', schoolConfig?.startMinute!);
 
+        this.hours = []; // Reset hours to avoid duplicates on re-load
+        
         for(let i = 1;i <= this.max_hours;i++) {
           let startHour = time.clone();
           time.add(schoolConfig?.lessonHour, 'minutes');
@@ -146,7 +190,6 @@ export class TimetableComponent implements OnInit {
           time.add(customBreak || schoolConfig?.breakTime, 'minutes');
         }
       }
-      console.log(data)
     });
   }
 

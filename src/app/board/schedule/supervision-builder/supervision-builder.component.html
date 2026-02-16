@@ -1,0 +1,148 @@
+<div class="builder-container" cdkDropListGroup>
+    <div class="builder-layout">
+        <!-- Sidebar -->
+        <aside class="builder-sidebar">
+            <!-- Teachers List -->
+            <div class="sidebar-section subjects-section">
+                <div class="section-header">
+                    <h3>{{ l.s('dashboard.teachers') }}</h3>
+                    <div class="badge">{{ supervisionBuilder.teachers.length }}</div>
+                </div>
+
+                <div class="subjects-list custom-scrollbar" id="teacherList" cdkDropList
+                    [cdkDropListData]="supervisionBuilder.teachers">
+                    @if (!supervisionBuilder.isTeachersLoading) {
+                    @for (teacher of supervisionBuilder.teachers; track $index) {
+                    <div class="subject-card" cdkDrag [cdkDragData]="teacher">
+                        <div class="card-left">
+                            <div class="subject-color-indicator" [style.backgroundColor]="'var(--primary-color)'"></div>
+                        </div>
+                        <div class="card-content">
+                            <div class="subject-name">{{ teacher.lastName }} {{ teacher.firstName }}</div>
+                        </div>
+                        <div class="drag-handle">
+                            <i-tabler name="grip-vertical"></i-tabler>
+                        </div>
+                    </div>
+                    }
+                    } @else {
+                    <div class="center" style="margin: auto;">
+                        <div class="loader bigger"></div>
+                    </div>
+                    }
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="builder-main">
+            <!-- Toolbar -->
+            <header class="builder-toolbar">
+                <div class="toolbar-group">
+                    <div class="input-group">
+                        <label for="place" style="margin: 0;">{{ l.s('supervision.place') }}</label>
+                        <div class="custom-select"
+                            (click)="$event.stopPropagation(); dropdownManager.selected_dropdown = dropdownManager.selected_dropdown == 'supervisionBuilder_selectPlace' ? '' : 'supervisionBuilder_selectPlace'">
+                            <div class="selected-value">
+                                <span>{{ supervisionBuilder.getPlaceName(supervisionBuilder.selectedPlace.getValue()) ||
+                                    'Vyberte místo' }}</span>
+                                <i-tabler name="chevron-down"></i-tabler>
+                            </div>
+                            @if (dropdownManager.selected_dropdown == 'supervisionBuilder_selectPlace') {
+                            <div class="options-dropdown">
+                                <div class="list">
+                                    @for (place of supervisionBuilder.places; track $index) {
+                                    <div class="option"
+                                        (click)="$event.stopPropagation();dropdownManager.selected_dropdown = ''; selectPlace(place.placeId)">
+                                        {{ place.name }}
+                                    </div>
+                                    }
+                                </div>
+                            </div>
+                            }
+                        </div>
+                    </div>
+
+                    <div class="divider"></div>
+
+                    <div class="row" style="gap: 8px; display: flex; align-items: center;">
+                        <div class="btn icon-only" (click)="selectWeek(-1)">
+                            <i-tabler name="chevron-left"></i-tabler>
+                        </div>
+                        <app-calendar id="supervisionBuilder_date" size="center"></app-calendar>
+                        <div class="btn icon-only" (click)="selectWeek(1)">
+                            <i-tabler name="chevron-right"></i-tabler>
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Timetable Grid -->
+            <div class="timetable-wrapper custom-scrollbar">
+                @if(supervisionBuilder.isScheduleLoading) {
+                <div class="loading-state">
+                    <div class="loader bigger"></div>
+                </div>
+                } @else {
+                <div class="timetable">
+                    <div class="hours">
+                        <div class="week-type"></div>
+                        @for (hour of supervisionBuilder.hours; track $index) {
+                        <div class="hour-info">
+                            <div class="hour-id">
+                                {{ $index + 1 }}
+                            </div>
+                            <div class="hour-time">
+                                {{ hour.start + ' - ' + hour.end }}
+                            </div>
+                        </div>
+                        }
+                    </div>
+
+                    <div class="days">
+                        @for (day of [].constructor(5); track index;let index = $index) {
+                        <div class="day">
+                            <div class="name">
+                                {{ l.s('days.' + (index + 1)) }}
+                                <div class="time" style="font-size: 12px; opacity: 0.7; font-weight: 300;">
+                                    {{
+                                    Utils
+                                    .getDayOfWeek(selected_date.clone(), index + 1)
+                                    .format('D. M.')
+                                    }}
+                                </div>
+                            </div>
+                            @for (hour of [].constructor(supervisionBuilder.hours.length); track index2;let index2 =
+                            $index) {
+                            <div class="item lesson-hour" cdkDropList
+                                (cdkDropListDropped)="drop($event, index, index2)">
+                                @if(supervisionBuilder.schedule[index] && supervisionBuilder.schedule[index][index2]) {
+                                @for (supervision of supervisionBuilder.schedule[index][index2]; track $index) {
+                                <div class="sub-lesson-hour" [style.backgroundColor]="'var(--bg-secondary)'">
+                                    <div class="subject">
+                                        {{ supervision.lastName }} {{ supervision.firstName }}
+                                    </div>
+                                    <div class="teacher">Dozor</div>
+                                    <div class="actions" (click)="deleteSupervision(supervision.supervisionId)">
+                                        <i-tabler name="trash" style="cursor: pointer; color: red;"></i-tabler>
+                                    </div>
+                                </div>
+                                } @empty {
+                                <div class="sub-lesson-hour empty">
+                                    <div class="subject">
+                                        <!-- Empty Slot -->
+                                    </div>
+                                </div>
+                                }
+                                }
+                            </div>
+                            }
+                        </div>
+                        }
+                    </div>
+                </div>
+                }
+            </div>
+        </main>
+    </div>
+</div>

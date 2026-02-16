@@ -42,6 +42,7 @@ export interface TimetableLesson {
   className: string;
   group: { id: number, text: string, num: string };
   empty: boolean;
+  isSubstitution?: boolean;
 }
 
 export interface TimetableHours {
@@ -127,6 +128,10 @@ export class TimetableComponent implements OnInit {
     exam: {
       name: 'Zkouška',
       color: '#c0392b'
+    },
+    supervision: {
+      name: 'Dozor',
+      color: '#e67e22'
     }
   }
 
@@ -211,6 +216,13 @@ export class TimetableComponent implements OnInit {
           type: "class",
           id: this.selectedClass.getValue()
         }
+        break;
+      case this.teacherOptions.indexOf('dropdown.select_timetable.supervision'):
+        timetableData = {
+          type: "supervision",
+          id: this.u.getId()
+        }
+        break;
     }
 
     this.http.post(
@@ -229,6 +241,8 @@ export class TimetableComponent implements OnInit {
       }
 
       Object.values(data.timetable).forEach((item: any) => {
+        
+
         item.color = "";
         item.all_day = false;
         if (item.hour + 1 > maxHours) {
@@ -243,24 +257,39 @@ export class TimetableComponent implements OnInit {
           timetableBuild[item.day][item.hour - 1] = [];
         }
 
+        const currentDay = moment(Utils.getDayOfWeek(this.timetableSelectedWeek.getValue() ?? moment(), item.day));
+
+        if (data.absences) {
+          data.absences.forEach((absence: any) => {
+            if (currentDay.format('YYYY-MM-DD') == moment(absence.date).format('YYYY-MM-DD') && item.hour == absence.hour + 1) {
+              item.absence = absence.type;
+            }
+          });
+        }
+
         let substitution = data.substitution.find((sub: any) => {
-          return moment(Utils.getDayOfWeek(this.timetableSelectedWeek.getValue() ?? moment(), item.day)).isBetween(sub.start_date, sub.end_date, 'day', '[]');
-        })
+            const isCorrectDay = currentDay.isBetween(sub.start_date, sub.end_date, 'day', '[]');
+
+            const isCorrectHour = item.hour >= sub.start_hour && item.hour <= sub.end_hour;
+
+            return isCorrectDay && isCorrectHour;
+        });
 
         if (substitution && substitution.start_hour >= item.hour && substitution.end_hour <= item.hour && this.timetableSelectedWeek.getValue() != null) {
           timetableBuild[item.day][item.hour - 1].push({
             ...item,
             type: substitution.type,
-            subjectName: substitution.event_name,
-            subjectShortcut: substitution.subject_shortcut,
+            subjectName: substitution.subjectName || substitution.event_name,
+            subjectShortcut: substitution.subjectShortcut,
             all_day: (substitution.start_hour == -1 || substitution.end_hour == -1) ? true : false,
             color: this.timetable_types[substitution.type]?.color ??  "",
-            teacher: substitution.teacher_id,
+            teacher: substitution.teacherId,
+            lastName: substitution.lastName,
             room: substitution.room,
-            oldTeacher: substitution.old_teacher_id,
-            oldSubject: substitution.old_subjects || [],
-            className: substitution.class_name,
-            group: substitution.group || { id: 0, text: '', num: '' },
+            oldTeacher: item.lastName,
+            oldSubject: item.subjectName || [],
+            className: substitution.className,
+            group: { id: substitution.groupId || 0, text: substitution.groupName || '', num: substitution.groupNum || '' },
             hour: item.hour - 1,
             empty: false
           });
@@ -329,9 +358,9 @@ export class TimetableComponent implements OnInit {
 
     // let day = thissubstitution[Utils.getDayOfWeek(this.timetableSelectedWeek.getValue()!, index - 1).format('YYYY-MM-DD')];
 
-    // if (day && day[index2]) {
-    //   classes.push('substitution');
-    // }
+    if (lesson.oldSubject && lesson.oldTeacher) {
+      classes.push('substitution');
+    }
 
     return classes;
   }

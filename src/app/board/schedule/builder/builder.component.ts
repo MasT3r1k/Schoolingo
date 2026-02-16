@@ -128,7 +128,7 @@ export class BuilderComponent implements OnInit {
     },
     substitution: {
       name: 'Suplování',
-      color: '#9b59b6'
+      color: 'hsla(353deg, 85%, 53%, .16)'
     },
     cancelled_hour: {
       name: 'Zrušená hodina',
@@ -184,26 +184,38 @@ export class BuilderComponent implements OnInit {
     this.modalManager.openModal('schedule_settings');
   }
 
-  public drop(event: CdkDragDrop<any[]>, dayIndex?: number, hourIndex?: number): void {
-    if (event.previousContainer === event.container) return;
+    public drop(event: CdkDragDrop<any[]>, dayIndex?: number, hourIndex?: number): void {
+    if (event.previousContainer === event.container && event.currentIndex === event.previousIndex) return;
 
     if (dayIndex !== undefined && hourIndex !== undefined && event.item.data) {
-        const subject = event.item.data;
-        const newLesson = {
-            lessonId: null,
-            day: dayIndex,
-            hour: hourIndex,
-            subjectId: subject.subjectId,
-            subjectName: subject.subjectName,
-            subjectShortcut: subject.subjectShortcut,
-            teacherId: null, // Will be selected in modal
-            room: '',
-            groupId: this.scheduleBuilder.classes.find(c => c.classId == this.scheduleBuilder.selectedClass.getValue())?.groupId || 0,
-            type: 0,
-            week: 'both',
-            empty: false
-        };
-        this.openEditLessonModal(newLesson as any);
+        const data = event.item.data;
+        let newLesson: any;
+
+        if ('lessonId' in data && data.lessonId) {
+            // Existing lesson being moved
+            newLesson = {
+                ...data,
+                day: dayIndex,
+                hour: hourIndex
+            };
+        } else {
+            // New subject from sidebar
+            newLesson = {
+                lessonId: null,
+                day: dayIndex,
+                hour: hourIndex,
+                subjectId: data.subjectId,
+                subjectName: data.subjectName,
+                subjectShortcut: data.subjectShortcut,
+                teacherId: null,
+                room: '',
+                groupId: this.scheduleBuilder.classes.find(c => c.classId == this.scheduleBuilder.selectedClass.getValue())?.groupId || 0,
+                type: 0,
+                week: 'both',
+                empty: false
+            };
+        }
+        this.openEditLessonModal(newLesson);
     }
   }
 
@@ -213,6 +225,8 @@ export class BuilderComponent implements OnInit {
 
   public refreshLoad(): void {
     if (!this.calendarManager.getCalendarData('scheduleBuilder_date').selected_date[0].getValue()) return;
+    const currentWeekStart = this.calendarManager.getCalendarData('scheduleBuilder_date').selected_date[0].getValue().clone().startOf('isoWeek');
+
     this.scheduleBuilder.isTimetableLoading = true;
     this.http.get<any[]>(
       Config.API_URL + '/v1/teachers',
@@ -233,63 +247,92 @@ export class BuilderComponent implements OnInit {
       },
       { withCredentials: true })
     .subscribe((data: any) => {
-      console.log(data)
-      let timetableBuild: any[] = [];
-      let maxHours = 0;
+      
+      // Initialize 5 days, 8 hours (or dynamic)
+      // We'll use 0-4 as indices for the view.
+      let timetableBuild: any[][][] = Array.from({ length: 5 }, () => []); 
 
-      if (data.timetable.length == 0 && data.substitution.length == 0) {
-        this.scheduleBuilder.timetable = [];
-        this.scheduleBuilder.hours = [];
-        this.scheduleBuilder.isTimetableLoading = false
-        return;
+      // Helper to ensure hour slot exists
+      const ensureSlot = (d: number, h: number) => {
+         if (!timetableBuild[d]) timetableBuild[d] = []; // Should exist from init, but safety
+         if (!timetableBuild[d][h]) timetableBuild[d][h] = [];
+      };
+
+      // 1. Fill with regular timetable lessons
+      if (data.timetable) {
+          Object.values(data.timetable).forEach((item: any) => {
+            // Assume DB day is 1-based (Monday=1). View is 0-based.
+            const dayIndex = item.day - 1; 
+            const hourIndex = item.hour - 1;
+
+            if (dayIndex < 0 || dayIndex > 4) return; // Skip weekends or invalid
+
+            ensureSlot(dayIndex, hourIndex);
+
+            timetableBuild[dayIndex][hourIndex].push({
+                ...item,
+                color: "",
+                all_day: false,
+                hour: hourIndex,     // Store 0-based hour
+                day: dayIndex,       // Store 0-based day
+                subjectName: item.subjectName,
+                subjectShortcut: item.subjectShortcut,
+                empty: false
+            });
+          });
       }
 
-      Object.values(data.timetable).forEach((item: any) => {
-        item.color = "";
-        item.all_day = false;
-        if (item.hour + 1 > maxHours) {
-          maxHours = item.hour + 1;
-        }
+      // 2. Apply Substitutions
+      if (data.substitution) {
+          data.substitution.forEach((sub: any) => {
+            const subMoment = moment(sub.start_date);
+            
+            const dayIndex = subMoment.isoWeekday() - 1;
+            
+            if (dayIndex < 0 || dayIndex > 4) return;
 
-        if (!timetableBuild[item.day]) {
-          timetableBuild[item.day] = [];
-        }
+            // Determine Start/End Hour (0-based)
+            const startHour = sub.start_hour - 1;
+            const endHour = sub.end_hour - 1;
 
-        if (!timetableBuild[item.day][item.hour - 1]) {
-          timetableBuild[item.day][item.hour - 1] = [];
-        }
+            for (let h = startHour; h <= endHour; h++) {
+                if (h < 0) continue;
+                ensureSlot(dayIndex, h);
+                const existingIndex = timetableBuild[dayIndex][h].findIndex(l => l.groupId === sub.groupId);
+                let item = timetableBuild[dayIndex][h][existingIndex];
 
-        let substitution = data.substitution.find((sub: any) => {
-          return moment(Utils.getDayOfWeek(this.calendarManager.getCalendarData('scheduleBuilder_date').selected_date[0].getValue() ?? moment(), item.day)).isBetween(sub.start_date, sub.end_date, 'day', '[]');
-        })
-
-        if (substitution && substitution.start_hour >= item.hour && substitution.end_hour <= item.hour) {
-          timetableBuild[item.day][item.hour - 1].push({
-            ...item,
-            type: 0,
-            subjectName: substitution.subjectName,
-            subjectShortcut: substitution.subjectShortcut,
-            all_day: (substitution.start_hour == -1 || substitution.end_hour == -1) ? true : false,
-            color: this.timetable_types[substitution.type]?.color ??  "",
-            teacher: substitution.teacher_id,
-            room: substitution.room,
-            oldTeacher: substitution.old_teacher_id,
-            oldSubject: substitution.old_subjects || [],
-            className: substitution.class_name,
-            group: substitution.group || { id: 0, text: '', num: '' },
-            hour: item.hour - 1,
-            empty: false
+                const subLesson = {
+                    lessonId: null,
+                    ...sub,
+                    type: 0,
+                    subjectName: sub.subjectName,
+                    subjectShortcut: sub.subjectShortcut,
+                    all_day: (sub.start_hour == -1 || sub.end_hour == -1),
+                    teacher: sub.teacherId,
+                    lastName: sub.lastName,
+                    room: sub.room,
+                    oldTeacher: item.teacher,
+                    oldSubject: item.subjectShortcut,
+                    className: sub.className,
+                    group: { id: sub.groupId || -1, text: sub.groupName || '', num: sub.groupNum || '' },
+                    day: dayIndex,
+                    hour: h,
+                    empty: false,
+                    isSubstitution: true // Marker
+                };
+                
+                if (existingIndex !== -1) {
+                  timetableBuild[dayIndex][h][existingIndex] = {
+                    ...timetableBuild[dayIndex][h][existingIndex],
+                    ...subLesson,
+                    type: 0
+                  };
+                } else {
+                    timetableBuild[dayIndex][h].push(subLesson);
+                }
+            } 
           });
-        } else {
-          timetableBuild[item.day][item.hour - 1].push({
-            ...item,
-            hour: item.hour - 1,
-            subjectName: item.subjectName,
-            subjectShortcut: item.subjectShortcut,
-            empty: false
-          });
-        }
-      });
+      }
 
       this.scheduleBuilder.timetable = timetableBuild;
       this.scheduleBuilder.isTimetableLoading = false;
@@ -306,6 +349,20 @@ export class BuilderComponent implements OnInit {
           for(let i = 0;i < hour.length;i++) {
             if (hour[i].subjectId == subject_id) {
               used += hour[i].type == 0 ? 1 : 0.5;
+            }
+          }
+        })
+    })
+    return used;
+  }
+
+  public countSubstitutionLesson(): number {
+    let used = 0;
+    this.scheduleBuilder.timetable.forEach((day) => {
+        day.forEach((hour) => {
+          for(let i = 0;i < hour.length;i++) {
+            if (hour[i].isSubstitution == true) {
+              used += 1;
             }
           }
         })
@@ -340,9 +397,9 @@ export class BuilderComponent implements OnInit {
 
   // let day = thissubstitution[Utils.getDayOfWeek(this.timetableSelectedWeek.getValue()!, index - 1).format('YYYY-MM-DD')];
 
-  // if (day && day[index2]) {
-  //   classes.push('substitution');
-  // }
+  if (lesson.isSubstitution) {
+    classes.push('substitution');
+  }
 
   return classes;
 }
@@ -351,7 +408,23 @@ export class BuilderComponent implements OnInit {
     this.modalManager.openModal('schedule_add_event');
   }
 
-  public openEditLessonModal(lesson: TimetableLesson | null): void {
+  public openEditLessonModal(lesson: TimetableLesson | null, day?: number, hour?: number): void {
+    if (!lesson && day !== undefined && hour !== undefined) {
+        lesson = {
+            lessonId: null,
+            day: day,
+            hour: hour,
+            subjectId: 0,
+            subjectName: '',
+            subjectShortcut: '',
+            teacherId: 0,
+            room: '',
+            groupId: this.scheduleBuilder.classes.find(c => c.classId == this.scheduleBuilder.selectedClass.getValue())?.groupId || 0,
+            type: 0,
+            week: 'both',
+            empty: false
+        } as unknown as TimetableLesson;
+    }
     this.scheduleBuilder.activeLesson = lesson;
     this.modalManager.openModal('schedule_edit_lesson');
   }

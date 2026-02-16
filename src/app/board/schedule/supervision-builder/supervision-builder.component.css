@@ -1,0 +1,302 @@
+.builder-container {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    position: relative;
+}
+
+.builder-layout {
+    display: flex;
+    height: 100%;
+    gap: 1rem;
+}
+
+/* Sidebar */
+.builder-sidebar {
+    flex: 0 0 320px;
+    background: var(--surface);
+    border-right: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    padding: 1rem;
+    border-radius: var(--radius);
+    border: 1px solid var(--border);
+}
+
+.sidebar-section {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    flex: 1;
+    overflow: hidden;
+}
+
+.section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.section-header h3 {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.badge {
+    background: var(--surface-2);
+    color: var(--text);
+    padding: 0.125rem 0.5rem;
+    border-radius: 100px;
+    font-size: 0.75rem;
+    font-weight: 600;
+}
+
+.subjects-list {
+    flex: 1;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    padding: 0.25rem;
+}
+
+.subject-card {
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 0.75rem;
+    display: flex;
+    gap: 0.75rem;
+    cursor: grab;
+    transition: all 0.2s;
+}
+
+.subject-card:hover {
+    border-color: var(--primary);
+    transform: translateY(-1px);
+    box-shadow: var(--shadow);
+}
+
+.card-left {
+    display: flex;
+    align-items: center;
+}
+
+.subject-color-indicator {
+    width: 4px;
+    height: 100%;
+    border-radius: 2px;
+}
+
+.card-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+.subject-name {
+    font-weight: 600;
+    font-size: 0.9rem;
+    color: var(--text);
+}
+
+.drag-handle {
+    color: var(--text-muted);
+    cursor: grab;
+    display: flex;
+    align-items: center;
+    opacity: 0.5;
+}
+
+.subject-card:hover .drag-handle {
+    opacity: 1;
+}
+
+/* Main Content */
+.builder-main {
+    flex: 1;
+    background: var(--surface);
+    border-radius: var(--radius);
+    border: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.builder-toolbar {
+    padding: 1rem 1.5rem;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: var(--surface);
+}
+
+.toolbar-group {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+}
+
+.input-group {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.input-group label {
+    font-weight: 500;
+    color: var(--text-muted);
+}
+
+/* Timetable Grid */
+.timetable-wrapper {
+    padding: 1rem;
+    overflow: auto;
+    background: var(--bg);
+    height: 100%;
+}
+
+.timetable {
+    display: flex;
+    flex-direction: column;
+    width: fit-content;
+    padding-block: 1rem;
+}
+
+.timetable>.hours {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    margin-bottom: 8px;
+}
+
+.timetable>.hours>div {
+    display: flex;
+    justify-content: end;
+    align-items: center;
+    flex-direction: column;
+    min-width: 128px;
+}
+
+.timetable>.hours>.hour-info>.hour-id {
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--primary);
+}
+
+.timetable>.hours>.hour-info>.hour-time {
+    font-size: 12px;
+    color: var(--text);
+    opacity: .7;
+}
+
+.timetable>.days>.day {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    border-collapse: collapse;
+}
+
+.timetable>.days>.day:not(:last-child) {
+    border-bottom: 1px solid var(--border);
+}
+
+.timetable>.days>.day>.name {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    font-weight: 600;
+    color: var(--primary);
+    text-transform: capitalize;
+    min-width: 128px;
+    height: 96px;
+}
+
+.timetable>.days>.day:nth-child(2n)>.name,
+.timetable>.days>.day:nth-child(2n)>.item {
+    background-color: var(--hover-bg);
+}
+
+.item.lesson-hour {
+    min-width: 128px;
+    height: 96px;
+    border-left: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    padding: 4px;
+}
+
+.sub-lesson-hour {
+    width: 100%;
+    height: 100%;
+    cursor: pointer;
+    justify-content: center;
+    align-items: center;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    border-radius: 4px;
+    background: var(--surface-2);
+}
+
+.sub-lesson-hour.empty {
+    background: transparent;
+    cursor: default;
+}
+
+.sub-lesson-hour .subject {
+    font-weight: 600;
+    font-size: 0.9rem;
+    color: var(--text);
+}
+
+.sub-lesson-hour .teacher {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+}
+
+.actions {
+    position: absolute;
+    top: 4px;
+    right: 4px;
+    opacity: 0;
+    transition: opacity 0.2s;
+}
+
+.sub-lesson-hour:hover .actions {
+    opacity: 1;
+}
+
+.loading-state {
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Custom Scrollbar */
+.custom-scrollbar::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+    background: var(--border);
+    border-radius: 3px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: var(--text-muted);
+}

@@ -22,7 +22,7 @@
                     </div>
                     <div class="stat-item warning">
                         <span class="label">{{ l.s('schedule.builder.substitution_week') }}</span>
-                        <span class="value" id="substitutions">0</span>
+                        <span class="value" id="substitutions">{{ countSubstitutionLesson() }}</span>
                     </div>
                 </div>
             </div>
@@ -161,11 +161,11 @@
                         (!scheduleBuilder.timetable[0] && scheduleBuilder.timetable.length <= 6 && index> 0)) {
                             <div class="day">
                                 <div class="name">
-                                    {{ l.s('days.' + $index) }}
+                                    {{ l.s('days.' + ($index + 1)) }}
                                     <div class="time">
                                         {{
                                         Utils
-                                        .getDayOfWeek(selected_date, index)
+                                        .getDayOfWeek(selected_date.clone(), index + 1)
                                         .format('D. M.')
                                         }}
                                     </div>
@@ -191,8 +191,8 @@
                                 <div class="item lesson-hour" cdkDropList
                                     (cdkDropListDropped)="drop($event, index, index2)">
                                     @for (lesson of scheduleBuilder.timetable[index][index2]; track $index) {
-                                    <div [ngClass]="getLessonClasses(index, index2, lesson)"
-                                        (click)="openEditLessonModal(lesson)" [style.backgroundColor]="lesson.color">
+                                    <div [ngClass]="getLessonClasses(index, index2, lesson)" cdkDrag
+                                        [cdkDragData]="lesson" (click)="openEditLessonModal(lesson)">
                                         <div class="group">
                                             <span>{{ formatGroupName(lesson) }}</span>
                                         </div>
@@ -213,7 +213,8 @@
 
                                     </div>
                                     } @empty {
-                                    <div class="sub-lesson-hour empty" (click)="openEditLessonModal(null)">
+                                    <div class="sub-lesson-hour empty"
+                                        (click)="openEditLessonModal(null, index + 1, index2 + 1)">
                                         <div class="group">
                                             <span></span>
                                         </div>
