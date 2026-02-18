@@ -56,10 +56,19 @@ export class Authentication {
                     if (AuthConfig.ignored_redirect.includes(url)) {
                         this.router.navigate(['', 'login']);
                     } else {
+                        // eslint-disable-next-line @typescript-eslint/no-explicit-any
                         this.router.navigate(['', 'login'], { queryParams: { returnUrl: url } });
                     }
                     return;
                 }
+
+                if (err.status === 400 && (err.error?.error === 'invalid_school' || err.error?.error === 'no_school')) {
+                    this.setAuthState(false);
+                    this.tokenExpirationService.clearExpiration();
+                    this.router.navigate(['', 'login']);
+                    return;
+                }
+
                 this.setAuthState('offline')
                 handleHttpException(err);
             })
