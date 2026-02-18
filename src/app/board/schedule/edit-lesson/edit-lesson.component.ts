@@ -82,7 +82,14 @@ export class EditLessonComponent implements OnInit {
     this.types = [];
 
     if (lesson && !lesson.empty) {
-      this.types.push('substitution');
+      if (!(lesson.groupName == null && lesson.groupNum == null || lesson.type == 0)) {
+        this.types.push('add_timetable')
+      }
+      if (lesson.isSubstitution) {
+        this.types.push('cancel_substitution');
+      } else {
+        this.types.push('substitution');
+      }
       
       if (lesson.lessonId) {
           this.types.push('cancel');
@@ -98,7 +105,11 @@ export class EditLessonComponent implements OnInit {
     if (lesson && !lesson.lessonId) {
         this.selected_type = 'classroom_lesson';
     } else {
-        this.selected_type = this.types[0];
+        if (this.types.includes('change_timetable')) {
+             this.selected_type = 'change_timetable';
+        } else {
+             this.selected_type = this.types[0];
+        }
     }
   }
 
@@ -120,20 +131,26 @@ export class EditLessonComponent implements OnInit {
   public save(): void {
     if (!this.scheduleBuilder.activeLesson) return;
 
+    const lesson = this.scheduleBuilder.activeLesson;
+    let action = lesson.lessonId ? 'update' : 'create';
+    let lessonId: number | null = lesson.lessonId;
+
+    if (this.selected_type === 'add_timetable') {
+        action = 'create';
+        lessonId = null;
+    }
+
     // Pokud je vybrána suplování
     if (this.selected_type === 'substitution') {
         this.updateSubstitution();
         return;
     }
 
-    const lesson = this.scheduleBuilder.activeLesson;
-    const action = lesson.lessonId ? 'update' : 'create';
-
     this.http.post(
         `${Config.API_URL}/v1/timetable/manage`,
         {
             action: action,
-            lessonId: lesson.lessonId,
+            lessonId: lessonId,
             day: lesson.day,
             hour: lesson.hour + 1,
             subjectId: this.selectedSubjectId,
@@ -195,10 +212,36 @@ export class EditLessonComponent implements OnInit {
         group_id: this.scheduleBuilder.activeLesson.groupId,
         subject_id: this.selectedSubjectId,
         teacher_id: this.selectedTeacherId,
+        room_id: this.selectedRoomId,
         start_date: currentDay.format('YYYY-MM-DD'),
         start_hour: this.scheduleBuilder.activeLesson.hour + 1,
         end_date: currentDay.format('YYYY-MM-DD'),
         end_hour: this.scheduleBuilder.activeLesson.hour + 1
+      },
+      { withCredentials: true }
+    )
+    .subscribe((data) => {
+      this.closeModal();
+      const currentClass = this.scheduleBuilder.selectedClass.getValue();
+      this.scheduleBuilder.selectedClass.next(currentClass);
+    })
+  }
+
+  public cancelSubstitution(): void {
+    if (!this.scheduleBuilder.activeLesson) return;
+    const lesson = this.scheduleBuilder.activeLesson;
+    const currentWeek = this.calendarManager.getCalendarData('scheduleBuilder_date').selected_date[0].getValue();
+    const currentDay = Utils.getDayOfWeek(currentWeek, lesson.day + 1);
+    this.http.post(
+      `${Config.API_URL}/v1/timetable/cancel_substitution`,
+      {
+        group_id: lesson.groupId,
+        subject_id: this.selectedSubjectId,
+        teacher_id: this.selectedTeacherId,
+        start_date: lesson.start_date,
+        start_hour: lesson.start_hour,
+        end_date: lesson.end_date,
+        end_hour: lesson.end_hour
       },
       { withCredentials: true }
     )

@@ -115,6 +115,33 @@
         </ul>
     </div>
 
+    @if (system_loading_error) {
+    <div class="container-content">
+        <div class="settings-header">
+            <h1>{{ l.s('system.system_settings') }}</h1>
+            <p class="settings-subtitle">Nastala chyba při načítání konfigurace.</p>
+        </div>
+        <div class="form-section">
+            <div class="status-card" [class.error]="true"
+                style="border-color: var(--danger); background: var(--bg-danger-light);">
+                <div class="status-card__icon" style="color: var(--danger);">
+                    <i-tabler name="alert-triangle"></i-tabler>
+                </div>
+                <div class="status-card__content">
+                    <h4 style="color: var(--danger);">Nepodařilo se načíst nastavení</h4>
+                    <p>Při komunikaci se serverem došlo k chybě. Zkuste stránku načíst znovu.</p>
+                </div>
+                <div class="status-card__actions">
+                    <button class="btn btn--danger btn--small" (click)="reload()">
+                        <i-tabler name="refresh"></i-tabler>
+                        Načíst znovu
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    } @else {
+
     @switch (sidebar) {
     @case(enumSidebar.ONLINE_SETTINGS) {
     <div class="container-content">
@@ -493,7 +520,8 @@
                         <div class="custom-select" style="width: 100%"
                             (click)="$event.stopPropagation(); dropdownManager.selected_dropdown = dropdownManager.selected_dropdown == 'rollbackBackup' ? '' : 'rollbackBackup'">
                             <div class="selected-value">
-                                {{ selected_backup_to_rollback ? selected_backup_to_rollback : 'Vyberte zálohu pro návrat...' }}
+                                {{ selected_backup_to_rollback ? selected_backup_to_rollback : 'Vyberte zálohu pro
+                                návrat...' }}
                                 <i-tabler name="chevron-down"></i-tabler>
                             </div>
                             @if (dropdownManager.selected_dropdown == 'rollbackBackup') {
@@ -571,7 +599,8 @@
                     <div>
                         <div class="license-type">{{ system.settings.license_type || 'FREE' }} LICENSE</div>
                         <div class="license-status">
-                            {{ system.settings.license_until ? 'Platné do ' + system.settings.license_until : 'Trvalá licence' }}
+                            {{ system.settings.license_until ? 'Platné do ' + system.settings.license_until : 'Trvalá
+                            licence' }}
                         </div>
                     </div>
                     <div style="margin-left: auto;">
@@ -755,6 +784,37 @@
                     <label for="default_length_break">{{ l.s('system.school_break_length') }}</label>
                     <input type="time" id="default_length_break" [(ngModel)]="system.break_time">
                 </div>
+            </div>
+        </div>
+
+        <div class="form-section">
+            <h3 class="section-title">Povolené domény</h3>
+            <p class="section-desc">Seznam domén, na kterých je systém dostupný.</p>
+
+            <div class="domains-list" style="display: flex; flex-direction: column; gap: 0.5rem; margin-bottom: 1rem;">
+                @for (domain of system.domains; track domain.domainId) {
+                <div class="domain-item"
+                    style="display: flex; justify-content: space-between; align-items: center; padding: 0.5rem; background: var(--bg-secondary); border-radius: var(--radius-sm); border: 1px solid var(--border-color);">
+                    <span>{{ domain.domain }}</span>
+                    <button class="btn btn--icon btn--danger btn--small" (click)="removeDomain(domain.domainId)">
+                        <i-tabler name="trash"></i-tabler>
+                    </button>
+                </div>
+                }
+                @if (!system.domains || system.domains.length === 0) {
+                <div class="empty-state"
+                    style="padding: 1rem; text-align: center; color: var(--text-secondary); background: var(--bg-secondary); border-radius: var(--radius-sm); border: 1px dashed var(--border-color);">
+                    Žádné nastavené domény
+                </div>
+                }
+            </div>
+
+            <div class="add-domain-form" style="display: flex; gap: 1rem;">
+                <input type="text" [(ngModel)]="new_domain" placeholder="https://skola.cz" style="flex: 1;">
+                <button class="btn btn--primary btn--xs" (click)="addDomain()">
+                    <i-tabler name="plus"></i-tabler>
+                    Přidat
+                </button>
             </div>
         </div>
 
@@ -1545,6 +1605,7 @@
             </section>
         </div>
     </main>
+    }
     }
     }
 </div>

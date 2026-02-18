@@ -105,9 +105,10 @@ export class BuilderComponent implements OnInit {
     .subscribe((data) => {
       if ('classes' in data) {
         this.scheduleBuilder.classes = data.classes as any[];
-        console.log(this.scheduleBuilder.classes)
+        if (this.scheduleBuilder.classes.length) {
+          this.selectClass(this.scheduleBuilder.classes[0].classId);
+        }
       }
-      console.log(data)
     })
   }
 

@@ -152,6 +152,11 @@ type ElysiaSystemAPI = {
 
   scopes: ScopeAPI[];
 
+  domains: {
+    domainId: number;
+    domain: string;
+  }[];
+
   lesson_hour: string;
   lesson_length: string;
   break_time: string;
@@ -197,6 +202,76 @@ export class SettingsComponent implements OnInit {
   public input_errors: { [key: string]: string } = {};
 
   public sidebar: enumSidebar = 0;
+  
+  public system_loading_error = false;
+  
+  public reload(): void {
+    this.system_loading_error = false;
+    this.loadSystemSettings();
+  }
+
+  public loadSystemSettings(): void {
+    this.http.get<ElysiaSystemAPI>(
+      `${Config.API_URL}/v1/system`,
+      { withCredentials: true }
+    )
+    .subscribe({
+      next: (data) => {
+      this.system = {
+        ...data,
+        lesson_hour: `${Utils.addZeros(data.settings.startHour, 2)}:${Utils.addZeros(data.settings.startMinute, 2)}`,
+        lesson_length: this.format_time_by_minutes(data.settings.lessonHour),
+        break_time: this.format_time_by_minutes(data.settings.breakTime)
+      };
+
+      if (!this.system.email_config) {
+        this.system.email_config = {
+          provider: this.email_types[0],
+          host: '',
+          port: 587,
+          username: '',
+          password: '',
+          encryption: 'tls',
+          from_email: '',
+          from_name: 'Schoolingo',
+          enabled: true
+        }
+      }
+
+      if (!this.system.ldap_config) {
+        this.system.ldap_config = {
+            config_id: 0,
+            type: 0,
+            server_url: 'ldap://',
+            bind_dn: '',
+            bind_password: '',
+            search_base: '',
+            user_filter: '(uid=%u)',
+            mapping_username: 'uid',
+            mapping_email: 'mail',
+            mapping_name: 'cn',
+            enabled: false
+        }
+      }
+
+      for(let subject of data.subjects) {
+        if (subject.subjectId != null) {
+          this.subject_hours[subject.subjectId] = [0, 0, 0, 0, 0];
+        }
+      }
+
+      if (data.settings.backup_interval != null) {
+        this.selected_interval_backup = data.settings.backup_interval;
+      }
+      this.options.auto_updates = data.settings.auto_update;
+      this.system_loading_error = false;
+    },
+    error: () => {
+      this.system_loading_error = true;
+    }
+  });
+  }
+
   // === API data ===
   public declare system: ElysiaSystemAPI;
   public declare version: ElysiaVersion;
@@ -214,6 +289,7 @@ export class SettingsComponent implements OnInit {
 
   public backups: any[] = [];
   public selected_backup_to_rollback: string | null = null;
+  public new_domain: string = '';
 
   public get lastBackup(): any | null {
     if (!this.backups || this.backups.length === 0) return null;
@@ -567,61 +643,40 @@ export class SettingsComponent implements OnInit {
     const splitted_time = time.split(':');
     return parseInt(splitted_time[0]) * 60 + parseInt(splitted_time[1]);
   }
+  
+  public addDomain(): void {
+    if (!this.new_domain) return;
+    this.http.post(`${Config.API_URL}/v1/system/domain`, { domain: this.new_domain }, { withCredentials: true })
+      .subscribe((res: any) => {
+          if (res.success) {
+              this.new_domain = '';
+              this.ngOnInit();
+          } else {
+              alert('Chyba při přidávání domény.');
+          }
+      }, (err) => {
+          if (err.error?.error === 'domain_exists') {
+              alert('Tato doména již existuje.');
+          }
+      });
+  }
+
+  public removeDomain(domainId: number): void {
+      if (this.system.domains.length <= 1) {
+          alert('Musí zůstat alespoň jedna doména.');
+          return;
+      }
+      if (!confirm('Opravdu chcete odebrat tuto doménu?')) return;
+      this.http.delete(`${Config.API_URL}/v1/system/domain`, { 
+        body: { domainId }, 
+        withCredentials: true 
+      }).subscribe(() => {
+          this.loadSystemSettings();
+      });
+  }
 
   ngOnInit(): void {
-    this.http.get<ElysiaSystemAPI>(
-      `${Config.API_URL}/v1/system`,
-      { withCredentials: true }
-    )
-    .subscribe((data) => {
-      this.system = {
-        ...data,
-        lesson_hour: `${Utils.addZeros(data.settings.startHour, 2)}:${Utils.addZeros(data.settings.startMinute, 2)}`,
-        lesson_length: this.format_time_by_minutes(data.settings.lessonHour),
-        break_time: this.format_time_by_minutes(data.settings.breakTime)
-      };
-
-      if (!this.system.email_config) {
-        this.system.email_config = {
-          provider: this.email_types[0],
-          host: '',
-          port: 587,
-          username: '',
-          password: '',
-          encryption: 'tls',
-          from_email: '',
-          from_name: 'Schoolingo',
-          enabled: true
-        }
-      }
-
-      if (!this.system.ldap_config) {
-        this.system.ldap_config = {
-            config_id: 0,
-            type: 0,
-            server_url: 'ldap://',
-            bind_dn: '',
-            bind_password: '',
-            search_base: '',
-            user_filter: '(uid=%u)',
-            mapping_username: 'uid',
-            mapping_email: 'mail',
-            mapping_name: 'cn',
-            enabled: false
-        }
-      }
-
-      for(let subject of data.subjects) {
-        if (subject.subjectId != null) {
-          this.subject_hours[subject.subjectId] = [0, 0, 0, 0, 0];
-        }
-      }
-
-      if (data.settings.backup_interval != null) {
-        this.selected_interval_backup = data.settings.backup_interval;
-      }
-      this.options.auto_updates = data.settings.auto_update;
-    });
+    this.loadSystemSettings();
 
     this.http.get<ElysiaVersion>(
       `${Config.API_URL}/v1/version`
@@ -759,6 +814,7 @@ export class SettingsComponent implements OnInit {
     })
 
   }
+
 
   // === Auth & LDAP ===
   public update_login(): void {
