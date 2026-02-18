@@ -685,17 +685,17 @@ export class EmployeesComponent implements OnInit, OnDestroy {
   exportAttendanceCSV() {
     const headers = ['Datum', 'Příchod', 'Odchod', 'Pauza (min)', 'Odpracováno (h)', 'Typ'];
     const rows = this.attendanceRecords.map(r => [
-      r.date,
+      Utils.formatDateShort(r.date),
       r.checkIn || '',
       r.checkOut || '',
-      // r.breakMinutes || 0,
-      r.workedMinutes ? (r.workedMinutes / 60).toFixed(2) : '',
+      `${r.breakMinutes || 0} minut`,
+      `${r.workedMinutes ? (r.workedMinutes / 60).toFixed(2) : '0.00'} hod`,
       r.type || 'office'
     ]);
 
-    let csv = headers.join(',') + '\n';
+    let csv = headers.join(';') + '\n';
     rows.forEach(row => {
-      csv += row.join(',') + '\n';
+      csv += row.join(';') + '\n';
     });
 
     const blob = new Blob([csv], { type: 'text/csv' });
