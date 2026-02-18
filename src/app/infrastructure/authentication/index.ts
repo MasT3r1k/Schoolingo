@@ -49,6 +49,9 @@ export class Authentication {
                 if (err.status === 401) {
                     this.setAuthState(false);
                     // this.tokenExpirationService.clearExpiration();
+                    
+                    if (window.location.pathname.startsWith('/setup')) return;
+
                     const url = this.router.url;
                     if (AuthConfig.ignored_redirect.includes(url)) {
                         this.router.navigate(['', 'login']);

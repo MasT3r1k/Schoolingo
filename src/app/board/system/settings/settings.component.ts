@@ -125,11 +125,6 @@ type ElysiaSystemAPI = {
     gdpr_mobile: string;
     gdpr_databox: string;
     gdpr_web: string;
-    practices_enabled: number;
-    messages_enabled: number;
-    tests_enabled: number;
-    rewards_enabled: number;
-    tutoring_enabled: number;
   };
 
   ldap_config: LdapConfig | null;
@@ -171,13 +166,7 @@ enum enumSidebar {
   FILES,
   SCOPES,
   SUBJECTS,
-  ONLINE_SETTINGS,
-  GDPR_SETTINGS,
-  PRACTICES_SETTINGS,
-  MESSAGES_SETTINGS,
-  TESTS_SETTINGS,
-  REWARDS_SETTINGS,
-  TUTORING_SETTINGS
+  GDPR_SETTINGS
 }
 
 @Component({
@@ -755,17 +744,6 @@ export class SettingsComponent implements OnInit {
       
       this.system.settings.modules = modules.toString();
 
-      // Sync legacy boolean flags
-      const isEnabled = (modules & moduleMap[moduleName]) === moduleMap[moduleName] ? 1 : 0;
-      switch(moduleName) {
-          case 'online': this.system.settings.online_enabled = isEnabled; break;
-          case 'practices': this.system.settings.practices_enabled = isEnabled; break;
-          case 'messages': this.system.settings.messages_enabled = isEnabled; break;
-          case 'tests': this.system.settings.tests_enabled = isEnabled; break;
-          case 'rewards': this.system.settings.rewards_enabled = isEnabled; break;
-          case 'tutoring': this.system.settings.tutoring_enabled = isEnabled; break;
-      }
-
       this.update_school();
   }
 
@@ -800,12 +778,7 @@ export class SettingsComponent implements OnInit {
         gdpr_email: this.system.settings.gdpr_email,
         gdpr_mobile: this.system.settings.gdpr_mobile,
         gdpr_databox: this.system.settings.gdpr_databox,
-        gdpr_web: this.system.settings.gdpr_web,
-        practices_enabled: this.system.settings.practices_enabled ? true : false,
-        messages_enabled: this.system.settings.messages_enabled ? true : false,
-        tests_enabled: this.system.settings.tests_enabled ? true : false,
-        rewards_enabled: this.system.settings.rewards_enabled ? true : false,
-        tutoring_enabled: this.system.settings.tutoring_enabled ? true : false
+        gdpr_web: this.system.settings.gdpr_web
       },
       { withCredentials: true }
     )

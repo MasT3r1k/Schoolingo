@@ -1,0 +1,668 @@
+<div class="setup-container" (click)="dropdownManager.selected_dropdown = ''">
+    <!-- Top Bar Controls -->
+    <div class="top">
+        <div class="logo-small">
+            <img src="/assets/logo/logo_64.webp" width="170" alt="Schoolingo">
+        </div>
+        <div class="top-controls">
+            <!-- Language Dropdown -->
+            <div class="control-dropdown"
+                (click)="$event.stopPropagation();dropdownManager.selected_dropdown = dropdownManager.selected_dropdown == '' ? 'language' : ''">
+                <div class="control-trigger">
+                    <img class="control-flag" [src]="l.getLanguage(l.getSelectedLanguage().getValue())?.flag"
+                        [alt]="l.getLanguage(l.getSelectedLanguage().getValue())?.name">
+                    <span class="control-label">{{ l.getLanguage(l.getSelectedLanguage().getValue())?.name }}</span>
+                    <i-tabler name="chevron-down" class="control-chevron"
+                        [class.open]="dropdownManager.selected_dropdown == 'language'"></i-tabler>
+                </div>
+                <div class="dropdown-menu" [hidden]="dropdownManager.selected_dropdown != 'language'"
+                    (click)="$event.stopPropagation();">
+                    <ul>
+                        @for (language of l.getLanguages(); track $index) {
+                        <li class="dropdown-item" [class.active]="l.getSelectedLanguage().getValue() == language"
+                            (click)="$event.stopPropagation();l.setLanguage(language);dropdownManager.selected_dropdown = ''">
+                            <img class="dropdown-flag" [src]="l.getLanguage(language)?.flag"
+                                [alt]="l.getLanguage(language)?.name">
+                            <span>{{ l.getLanguage(language)?.name }}</span>
+                            @if (l.getSelectedLanguage().getValue() == language) {
+                            <i-tabler name="check" class="dropdown-check"></i-tabler>
+                            }
+                        </li>
+                        }
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Theme Dropdown -->
+            <div class="control-dropdown"
+                (click)="$event.stopPropagation();dropdownManager.selected_dropdown = dropdownManager.selected_dropdown == '' ? 'theme' : ''">
+                <div class="control-trigger">
+                    <div class="theme-indicator" [class.dark]="t.getThemeColor() == 'dark'">
+                        @switch (t.getTheme().getValue()) {
+                        @case('system') {
+                        <i-tabler name="device-desktop"></i-tabler>
+                        }
+                        @case('moon') {
+                        <i-tabler name="moon-stars"></i-tabler>
+                        }
+                        @case('dark') {
+                        <i-tabler name="moon"></i-tabler>
+                        }
+                        @case('light') {
+                        <i-tabler name="sun"></i-tabler>
+                        }
+                        }
+                    </div>
+                    <span class="control-label">{{ l.s('themes.' + t.getTheme().getValue()) }}</span>
+                    <i-tabler name="chevron-down" class="control-chevron"
+                        [class.open]="dropdownManager.selected_dropdown == 'theme'"></i-tabler>
+                </div>
+                <div class="dropdown-menu" [hidden]="dropdownManager.selected_dropdown != 'theme'"
+                    (click)="$event.stopPropagation();">
+                    <ul>
+                        @for (theme of t.getThemes(); track $index) {
+                        <li class="dropdown-item" [class.active]="t.getTheme().getValue() == theme"
+                            (click)="t.updateTheme(theme);dropdownManager.selected_dropdown = ''">
+                            <div class="theme-indicator-menu">
+                                @switch (theme) {
+                                @case('system') {
+                                <i-tabler name="device-desktop"></i-tabler>
+                                }
+                                @case('moon') {
+                                <i-tabler name="moon-stars"></i-tabler>
+                                }
+                                @case('dark') {
+                                <i-tabler name="moon"></i-tabler>
+                                }
+                                @case('light') {
+                                <i-tabler name="sun"></i-tabler>
+                                }
+                                }
+                            </div>
+                            <span>{{ l.s('themes.' + theme) }}</span>
+                            @if (t.getTheme().getValue() == theme) {
+                            <i-tabler name="check" class="dropdown-check"></i-tabler>
+                            }
+                        </li>
+                        }
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Card -->
+    <div class="setup-card">
+        <div class="card-header">
+            <h2>{{ l.s('setup.title') }}</h2>
+
+            <!-- Progress Steps -->
+            <div class="progress-steps">
+                <div class="step" [class.active]="step >= 1" [class.completed]="step > 1">
+                    <div class="step-icon">
+                        <i-tabler name="search"></i-tabler>
+                    </div>
+                    <span>{{ l.s('setup.steps.identification') }}</span>
+                </div>
+                <div class="step-line" [class.active]="step > 1"></div>
+                <div class="step" [class.active]="step >= 2" [class.completed]="step > 2">
+                    <div class="step-icon">
+                        <i-tabler name="school"></i-tabler>
+                    </div>
+                    <span>{{ l.s('setup.steps.school') }}</span>
+                </div>
+                <div class="step-line" [class.active]="step > 2"></div>
+                <div class="step" [class.active]="step >= 3" [class.completed]="step > 3">
+                    <div class="step-icon">
+                        <i-tabler name="user-shield"></i-tabler>
+                    </div>
+                    <span>{{ l.s('setup.steps.admin') }}</span>
+                </div>
+                <div class="step-line" [class.active]="step > 3"></div>
+                <div class="step" [class.active]="step >= 4">
+                    <div class="step-icon">
+                        <i-tabler name="check"></i-tabler>
+                    </div>
+                    <span>{{ l.s('setup.steps.finish') }}</span>
+                </div>
+            </div>
+        </div>
+
+        <form [formGroup]="setupForm" (ngSubmit)="onSubmit()">
+            <div class="card-body">
+                @switch (step) {
+                @case (1) {
+                <div class="step-content">
+                    <h3>{{ l.s('setup.step1.title') }}</h3>
+                    <p class="text-muted">{{ l.s('setup.step1.description') }}</p>
+
+                    <div class="form-group" style="margin-bottom: 1.5rem;">
+                        <label>{{ l.s('setup.step2.country') }} <span class="required">*</span></label>
+                        <div class="custom-select" id="country_step1" style="width: 100%"
+                            (click)="$event.stopPropagation(); dropdownManager.selected_dropdown = dropdownManager.selected_dropdown == 'country_step1' ? '' : 'country_step1'">
+                            <div class="selected-value">
+                                <div class="row" style="gap: .5rem">
+                                    @let selectedCountry1 = getSelectedCountry();
+                                    @if (selectedCountry1) {
+                                    {{ countryManager.getCountryByCode(selectedCountry1.code2)?.flag }}
+                                    {{ selectedCountry1.nationality }}
+                                    } @else {
+                                    {{ l.s('setup.step2.select_country') }}
+                                    }
+                                </div>
+                                <i-tabler name="chevron-down"></i-tabler>
+                            </div>
+                            @if (dropdownManager.selected_dropdown == 'country_step1') {
+                            <div class="options-dropdown">
+                                <div class="list">
+                                    @for (country of countries; track country.countryId) {
+                                    <div class="option row" style="gap: .5rem"
+                                        (click)="$event.stopPropagation(); dropdownManager.selected_dropdown = ''; setupForm.get('country')?.setValue(country.countryId)">
+                                        {{ countryManager.getCountryByCode(country.code2)?.flag }} {{
+                                        country.nationality }}
+                                    </div>
+                                    }
+                                </div>
+                            </div>
+                            }
+                        </div>
+                    </div>
+
+                    @if (isAresSupported()) {
+                    <div class="form-group" style="position: relative;">
+                        <label>{{ l.s('setup.step1.school_search_label') || 'Vyhledat školu podle názvu' }}</label>
+                        <div class="input-with-button">
+                            <input type="text" [ngModel]="schoolSearchQuery" [ngModelOptions]="{standalone: true}"
+                                (input)="dropdownManager.selected_dropdown = 'schoolSearch'; onSchoolSearch($any($event.target).value)"
+                                (click)="$event.stopPropagation(); dropdownManager.selected_dropdown = 'schoolSearch'"
+                                [placeholder]="l.s('setup.step1.school_search_placeholder')">
+                        </div>
+
+                        @if (dropdownManager.selected_dropdown == 'schoolSearch' && schoolSearchQuery) {
+                        <div class="options-dropdown search-results" (click)="$event.stopPropagation()">
+                            <div class="list" (scroll)="onSchoolScroll($event)">
+                                @for (school of schoolSearchResults; track (school.ico || school.icoId)) {
+                                <div class="option" (click)="selectSchool(school)">
+                                    <div class="school-info">
+                                        <div class="school-name">{{ school.obchodniJmeno || school.nazev }}</div>
+                                        <div class="school-details">IČO: {{ school.ico || school.icoId }}
+                                            @if(school.sidlo?.nazevObce || school.adresaSubjektuObec) {
+                                            • {{ school.sidlo?.nazevObce || school.adresaSubjektuObec }} }</div>
+                                    </div>
+                                </div>
+                                }
+                                @if (schoolSearchLoading) {
+                                <div class="option loading-option">
+                                    <span class="spinner small"></span>
+                                    <span>{{ l.s('setup.step1.loading') }}</span>
+                                </div>
+                                }
+                                @if (!schoolSearchLoading && schoolSearchResults.length === 0) {
+                                <div class="option empty-option">{{ l.s('setup.step1.no_results') }}</div>
+                                }
+                            </div>
+                        </div>
+                        }
+                    </div>
+
+                    <div class="divider">
+                        <span>{{ l.s('setup.step1.or') }}</span>
+                    </div>
+                    }
+
+                    <div class="manual-option">
+                        <button type="button" class="btn btn-outline" (click)="nextStep()">
+                            <i-tabler name="pencil"></i-tabler>
+                            {{ l.s('setup.step1.manual_btn') }}
+                        </button>
+                    </div>
+                </div>
+                }
+
+                @case (2) {
+                <div class="step-content">
+                    <h3>{{ l.s('setup.step2.title') }}</h3>
+                    <div class="form-grid">
+                        <div class="form-group full-width">
+                            <label>{{ l.s('setup.step2.school_name') }} <span class="required">*</span></label>
+                            <input type="text" formControlName="schoolName" placeholder="">
+                        </div>
+
+                        <div class="form-group full-width">
+                            <label>{{ l.s('setup.step2.school_short_name') }}</label>
+                            <input type="text" formControlName="schoolShortName" placeholder="">
+                        </div>
+
+                        <div class="form-group full-width">
+                            <label>{{ l.s('setup.step2.country') }} <span class="required">*</span></label>
+                            <div class="custom-select" id="country" style="width: 100%"
+                                (click)="$event.stopPropagation(); dropdownManager.selected_dropdown = dropdownManager.selected_dropdown == 'country' ? '' : 'country'">
+                                <div class="selected-value">
+                                    <div class="row" style="gap: .5rem">
+                                        @let selectedCountry = getSelectedCountry();
+                                        @if (selectedCountry) {
+                                        {{ countryManager.getCountryByCode(selectedCountry.code2)?.flag }}
+                                        {{ selectedCountry.nationality }}
+                                        } @else {
+                                        {{ l.s('setup.step2.select_country') }}
+                                        }
+                                    </div>
+                                    <i-tabler name="chevron-down"></i-tabler>
+                                </div>
+                                @if (dropdownManager.selected_dropdown == 'country') {
+                                <div class="options-dropdown">
+                                    <div class="list">
+                                        @for (country of countries; track country.countryId) {
+                                        <div class="option row" style="gap: .5rem"
+                                            (click)="$event.stopPropagation(); dropdownManager.selected_dropdown = ''; setupForm.get('country')?.setValue(country.countryId)">
+                                            {{ countryManager.getCountryByCode(country.code2)?.flag }} {{
+                                            country.nationality }}
+                                        </div>
+                                        }
+                                    </div>
+                                </div>
+                                }
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label>{{ l.s('setup.step2.district') }}</label>
+                            <div class="custom-select" id="district" style="width: 100%"
+                                (click)="$event.stopPropagation(); dropdownManager.selected_dropdown = dropdownManager.selected_dropdown == 'district' ? '' : 'district'">
+                                <div class="selected-value">
+                                    <div class="row" style="gap: .5rem">
+                                        {{ getSelectedDistrict()?.district || l.s('setup.step2.select_district') }}
+                                    </div>
+                                    <i-tabler name="chevron-down"></i-tabler>
+                                </div>
+                                @if (dropdownManager.selected_dropdown == 'district') {
+                                <div class="options-dropdown">
+                                    <div class="list">
+                                        <div class="option row" style="gap: .5rem"
+                                            (click)="$event.stopPropagation(); dropdownManager.selected_dropdown = ''; setupForm.get('districtId')?.setValue(null)">
+                                            &nbsp;
+                                        </div>
+                                        @for (district of districts; track $index) {
+                                        <div class="option row" style="gap: .5rem"
+                                            (click)="$event.stopPropagation(); dropdownManager.selected_dropdown = ''; setupForm.get('districtId')?.setValue(district.districtId)">
+                                            {{ district.district }}
+                                        </div>
+                                        }
+                                    </div>
+                                </div>
+                                }
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label>{{ l.s('setup.step2.school_type') }}</label>
+                            <div class="custom-select"
+                                (click)="$event.stopPropagation();dropdownManager.selected_dropdown = dropdownManager.selected_dropdown == 'schoolType' ? '' : 'schoolType'">
+                                <div class="selected-value">
+                                    <span>{{ l.s('setup.step2.school_types.' + setupForm.get('schoolType')?.value)
+                                        }}</span>
+                                    <i-tabler name="chevron-down"></i-tabler>
+                                </div>
+                                @if (dropdownManager.selected_dropdown == 'schoolType') {
+                                <div class="options-dropdown">
+                                    <div class="list">
+                                        @for (type of schoolTypes; track $index) {
+                                        <div class="option"
+                                            (click)="$event.stopPropagation();setupForm.get('schoolType')?.setValue(type.value);dropdownManager.selected_dropdown = ''">
+                                            {{ l.s('setup.step2.school_types.' + type.value) }}
+                                        </div>
+                                        }
+                                    </div>
+                                </div>
+                                }
+                            </div>
+                        </div>
+
+                        <div class="form-group full-width">
+                            <label>{{ l.s('setup.step2.domain') }}</label>
+                            <input type="text" formControlName="domain" readonly class="readonly">
+                        </div>
+
+                        <!-- Identifikátory -->
+                        <div class="divider full-width" style="margin: 1rem 0;">
+                            <span>{{ l.s('setup.step2.identifiers') }}</span>
+                        </div>
+
+                        <div class="form-group">
+                            <label>IČO</label>
+                            <input type="text" formControlName="ico" readonly class="readonly">
+                        </div>
+
+                        <div class="form-group">
+                            <label>RED_IZO</label>
+                            <input type="text" formControlName="redIzo">
+                        </div>
+
+                        <div class="form-group">
+                            <label>IZO</label>
+                            <input type="text" formControlName="izo">
+                        </div>
+
+                        <div class="form-group">
+                            <label>Datová schránka</label>
+                            <input type="text" formControlName="databox">
+                        </div>
+
+                        <div class="form-group full-width">
+                            <label>Ředitel / Statutární orgán</label>
+                            <input type="text" formControlName="director">
+                        </div>
+
+                        <!-- Kontaktní údaje -->
+                        <div class="divider full-width" style="margin: 1rem 0;">
+                            <span>{{ l.s('setup.step2.contact_info') }}</span>
+                        </div>
+
+                        <div class="form-group full-width">
+                            <label>Webová stránka</label>
+                            <input type="text" formControlName="schoolWeb">
+                        </div>
+
+                        <div class="form-group">
+                            <label>E-mail</label>
+                            <input type="email" formControlName="schoolEmail">
+                        </div>
+
+                        <div class="form-group">
+                            <label>Telefon</label>
+                            <input type="text" formControlName="schoolPhone">
+                        </div>
+
+                        <div class="form-group full-width">
+                            <label>{{ l.s('setup.step2.street') }}</label>
+                            <input type="text" formControlName="street">
+                        </div>
+
+                        <div class="form-group">
+                            <label>{{ l.s('setup.step2.house_number') }}</label>
+                            <input type="text" formControlName="houseNumber">
+                        </div>
+
+                        <div class="form-group">
+                            <label>{{ l.s('setup.step2.orientation_number') }}</label>
+                            <input type="text" formControlName="orientationNumber">
+                        </div>
+
+                        <div class="form-group">
+                            <label>{{ l.s('setup.step2.zip') }}</label>
+                            <input type="text" formControlName="zip">
+                        </div>
+
+                        @if (availableBranches.length > 0) {
+                        <div class="form-group full-width">
+                            <label>{{ l.s('setup.step2.available_branches') }}</label>
+                            <div class="branches-container card-glass">
+                                <div class="branches-list">
+                                    @for (branch of availableBranches; track branch.id) {
+                                    <div class="branch-item" (click)="toggleBranch(branch)">
+                                        <div class="branch-checkbox">
+                                            <div class="checkbox" [class.checked]="isBranchSelected(branch.id)">
+                                                <i-tabler name="check" *ngIf="isBranchSelected(branch.id)"></i-tabler>
+                                            </div>
+                                        </div>
+                                        <div class="branch-info">
+                                            <div class="branch-name">{{ branch.name }}</div>
+                                            <div class="branch-meta">{{ branch.code }} • {{ branch.type }}</div>
+                                        </div>
+                                    </div>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                        }
+                    </div>
+                </div>
+                }
+
+                @case (3) {
+                <div class="step-content">
+                    <h3>{{ l.s('setup.step3.title') }}</h3>
+                    <p class="text-muted">{{ l.s('setup.step3.description') }}</p>
+
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label>Jméno <span class="required">*</span></label>
+                            <input type="text" formControlName="adminFirstName">
+                        </div>
+                        <div class="form-group">
+                            <label>Příjmení <span class="required">*</span></label>
+                            <input type="text" formControlName="adminLastName">
+                        </div>
+                        <div class="form-group full-width">
+                            <label>Uživatelské jméno <span class="required">*</span></label>
+                            <input type="text" formControlName="adminUsername">
+                        </div>
+                        <div class="form-group full-width">
+                            <label>Heslo <span class="required">*</span></label>
+                            <input type="password" formControlName="adminPassword">
+                        </div>
+                        <div class="form-group full-width">
+                            <label>Email</label>
+                            <input type="email" formControlName="adminEmail">
+                        </div>
+
+                        <!-- Login Settings -->
+                        <div class="divider full-width" style="margin: 1rem 0;">
+                            <span>{{ l.s('setup.step3.login_settings') }}</span>
+                        </div>
+
+                        <div class="form-group">
+                            <label>{{ l.s('setup.step3.auth_classic') }}</label>
+                            <div class="toggle-switch"
+                                (click)="setupForm.patchValue({auth_classic: !setupForm.get('auth_classic')?.value})">
+                                <div class="switch" [class.active]="setupForm.get('auth_classic')?.value"></div>
+                                <span [class.active]="setupForm.get('auth_classic')?.value">{{
+                                    setupForm.get('auth_classic')?.value ? 'Aktivní' : 'Neaktivní' }}</span>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label>{{ l.s('setup.step3.auth_qr') }}</label>
+                            <div class="toggle-switch"
+                                (click)="setupForm.patchValue({auth_qr: !setupForm.get('auth_qr')?.value})">
+                                <div class="switch" [class.active]="setupForm.get('auth_qr')?.value"></div>
+                                <span [class.active]="setupForm.get('auth_qr')?.value">{{
+                                    setupForm.get('auth_qr')?.value ? 'Aktivní' : 'Neaktivní' }}</span>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label>{{ l.s('setup.step3.auth_ldap') }}</label>
+                            <div class="toggle-switch"
+                                (click)="setupForm.patchValue({auth_ldap: !setupForm.get('auth_ldap')?.value})">
+                                <div class="switch" [class.active]="setupForm.get('auth_ldap')?.value"></div>
+                                <span [class.active]="setupForm.get('auth_ldap')?.value">{{
+                                    setupForm.get('auth_ldap')?.value ? 'Aktivní' : 'Neaktivní' }}</span>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label>{{ l.s('setup.step3.auth_passkeys') }}</label>
+                            <div class="toggle-switch"
+                                (click)="setupForm.patchValue({auth_passkeys: !setupForm.get('auth_passkeys')?.value})">
+                                <div class="switch" [class.active]="setupForm.get('auth_passkeys')?.value"></div>
+                                <span [class.active]="setupForm.get('auth_passkeys')?.value">{{
+                                    setupForm.get('auth_passkeys')?.value ? 'Aktivní' : 'Neaktivní' }}</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                }
+
+                @case (4) {
+                <div class="step-content">
+                    <h3>{{ l.s('setup.step4.title') }}</h3>
+
+                    <div class="summary-grid">
+                        <!-- School & Identifiers -->
+                        <div class="summary-card card-glass">
+                            <div class="card-title">
+                                <i-tabler name="school"></i-tabler>
+                                {{ l.s('setup.step4.school') }}
+                            </div>
+                            <div class="card-content">
+                                <div class="data-row">
+                                    <span class="data-label">Název:</span>
+                                    <span class="data-value">{{ setupForm.get('schoolName')?.value }}</span>
+                                </div>
+                                @if(setupForm.get('schoolShortName')?.value) {
+                                <div class="data-row">
+                                    <span class="data-label">Zkratka:</span>
+                                    <span class="data-value">{{ setupForm.get('schoolShortName')?.value }}</span>
+                                </div>
+                                }
+                                <div class="data-row">
+                                    <span class="data-label">IČO:</span>
+                                    <span class="data-value">{{ setupForm.get('ico')?.value }}</span>
+                                </div>
+                                @if(setupForm.get('redIzo')?.value) {
+                                <div class="data-row">
+                                    <span class="data-label">RED_IZO:</span>
+                                    <span class="data-value">{{ setupForm.get('redIzo')?.value }}</span>
+                                </div>
+                                }
+                                @if(setupForm.get('izo')?.value) {
+                                <div class="data-row">
+                                    <span class="data-label">IZO:</span>
+                                    <span class="data-value">{{ setupForm.get('izo')?.value }}</span>
+                                </div>
+                                }
+                            </div>
+                        </div>
+
+                        <!-- Vedení a Kontakt -->
+                        <div class="summary-card card-glass">
+                            <div class="card-title">
+                                <i-tabler name="user-check"></i-tabler>
+                                {{ l.s('setup.step4.contacts_and_management') }}
+                            </div>
+                            <div class="card-content">
+                                @if(setupForm.get('director')?.value) {
+                                <div class="data-row">
+                                    <span class="data-label">Statutár:</span>
+                                    <span class="data-value">{{ setupForm.get('director')?.value }}</span>
+                                </div>
+                                }
+                                @if(setupForm.get('schoolEmail')?.value) {
+                                <div class="data-row">
+                                    <span class="data-label">E-mail:</span>
+                                    <span class="data-value">{{ setupForm.get('schoolEmail')?.value }}</span>
+                                </div>
+                                }
+                                @if(setupForm.get('schoolPhone')?.value) {
+                                <div class="data-row">
+                                    <span class="data-label">Telefon:</span>
+                                    <span class="data-value">{{ setupForm.get('schoolPhone')?.value }}</span>
+                                </div>
+                                }
+                                @if(setupForm.get('schoolWeb')?.value) {
+                                <div class="data-row">
+                                    <span class="data-label">Web:</span>
+                                    <span class="data-value">{{ setupForm.get('schoolWeb')?.value }}</span>
+                                </div>
+                                }
+                            </div>
+                        </div>
+
+                        <!-- Lokalita -->
+                        <div class="summary-card card-glass">
+                            <div class="card-title">
+                                <i-tabler name="map-pin"></i-tabler>
+                                {{ l.s('setup.step4.location') }}
+                            </div>
+                            <div class="card-content">
+                                <div class="data-row">
+                                    <span class="data-label">Adresa:</span>
+                                    <span class="data-value">
+                                        {{ setupForm.get('street')?.value }}
+                                        {{ setupForm.get('houseNumber')?.value }}{{
+                                        setupForm.get('orientationNumber')?.value ? '/' +
+                                        setupForm.get('orientationNumber')?.value : '' }}<br>
+                                        {{ setupForm.get('zip')?.value }} {{ setupForm.get('city')?.value }}
+                                    </span>
+                                </div>
+                                @let summaryCountry = getSelectedCountry();
+                                <div class="data-row">
+                                    <span class="data-label">Kraj/Stát:</span>
+                                    <span class="data-value">
+                                        {{ summaryCountry ? (countryManager.getCountryByCode(summaryCountry.code2)?.flag
+                                        + ' ' + summaryCountry.nationality) : '' }}
+                                        {{ getSelectedDistrict() ? ' (' + getSelectedDistrict()?.district + ')' : '' }}
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Systém a Administrátor -->
+                        <div class="summary-card card-glass">
+                            <div class="card-title">
+                                <i-tabler name="settings"></i-tabler>
+                                {{ l.s('setup.step4.system_and_admin') }}
+                            </div>
+                            <div class="card-content">
+                                <div class="data-row">
+                                    <span class="data-label">Doména:</span>
+                                    <span class="data-value primary-text">{{ setupForm.get('domain')?.value }}</span>
+                                </div>
+                                <div class="data-row">
+                                    <span class="data-label">Správce:</span>
+                                    <span class="data-value">{{ setupForm.get('adminFirstName')?.value }} {{
+                                        setupForm.get('adminLastName')?.value }}</span>
+                                </div>
+                                <div class="data-row">
+                                    <span class="data-label">{{ l.s('setup.step4.login_methods') }}:</span>
+                                    <span class="data-value">
+                                        {{ getSelectedAuthMethods().join(', ') }}
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    @if (setupForm.get('branches')?.value?.length > 0) {
+                    <div class="summary-branches card-glass" style="margin-top: 1rem;">
+                        <div class="card-title">
+                            <i-tabler name="list-details"></i-tabler>
+                            {{ l.s('setup.step4.branches') }}
+                        </div>
+                        <div class="branches-badges">
+                            @for (branch of setupForm.get('branches')?.value; track branch.id) {
+                            <span class="branch-badge">{{ branch.name }} ({{ branch.code }})</span>
+                            }
+                        </div>
+                    </div>
+                    }
+
+                    <div class="error-message" *ngIf="error">
+                        {{ error }}
+                    </div>
+                </div>
+                }
+                }
+            </div>
+
+            <div class="card-footer">
+                <button type="button" class="btn btn-ghost" *ngIf="step > 1" (click)="prevStep()">
+                    <i-tabler name="arrow-left"></i-tabler>
+                    {{ l.s('setup.actions.back') }}
+                </button>
+                <div class="spacer"></div>
+                <button type="button" class="btn btn-primary" *ngIf="step < 4" (click)="nextStep()"
+                    [disabled]="(step === 2 && setupForm.get('schoolName')?.invalid) || (step === 3 && setupForm.get('adminUsername')?.invalid)">
+                    {{ l.s('setup.actions.continue') }}
+                    <i-tabler name="arrow-right"></i-tabler>
+                </button>
+                <button type="submit" class="btn btn-success" *ngIf="step === 4"
+                    [disabled]="setupForm.invalid || loading">
+                    <span *ngIf="!loading">{{ l.s('setup.actions.finish') }}</span>
+                    <span *ngIf="loading" class="spinner"></span>
+                </button>
+            </div>
+        </form>
+    </div>
+</div>

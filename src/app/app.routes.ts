@@ -69,9 +69,14 @@ import { SeasonalAdminComponent } from './board/Admin/seasonal/seasonal.componen
 import { PollManageComponent } from './board/polls/poll-manage/poll-manage.component';
 import { SchoolYearsComponent } from './board/Admin/school-years/school-years.component';
 import { OnlineComponent } from './board/online/online.component';
+import { SetupComponent } from './setup/setup.component';
 
 
 export const routes: Routes = [
+    {
+        path: 'setup',
+        component: SetupComponent
+    },
     {
         path: '',
         pathMatch: 'full',

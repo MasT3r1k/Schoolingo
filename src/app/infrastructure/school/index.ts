@@ -18,6 +18,10 @@ export class School {
     public school_loading_error = null;
 
     constructor() {
+        if (window.location.pathname.startsWith('/setup')) {
+            return;
+        }
+
         this.http.get<SchoolConfig>(Config.API_URL + '/v1/school')
         .subscribe(
             (school: SchoolConfig) => {
@@ -27,6 +31,12 @@ export class School {
             },
             (err) => {
                 this.school_loading_error = err.status;
+                if (err.status === 412) {
+                    if (!window.location.pathname.startsWith('/setup')) {
+                        window.location.href = '/setup';
+                    }
+                    return;
+                }
                 switch(err.status) {
                     case 429:
                         this.alert.alert("error", "schools.errors.429", []);

@@ -59,6 +59,7 @@ export const httpInterceptor: HttpInterceptorFn = (req, next) => {
         
         // Handle no_user error
         if (error.error?.error === 'no_user') {
+          if (window.location.pathname.startsWith('/setup')) return;
           router.navigate(['/login'], { queryParams: { returnUrl: router.url } });
           monitoringService.logAuthError('no_user', error);
           sessionExpiredService.handleSessionExpired();
