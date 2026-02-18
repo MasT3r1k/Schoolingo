@@ -180,8 +180,26 @@
 </div>
 
 <div class="form-group">
-    <label>{{ 'Skupina' }}</label>
-
+    <label>{{ l.s('schedule.builder.group') }}</label>
+    <div class="custom-select"
+        (click)="$event.stopPropagation();dropdownManager.selected_dropdown = dropdownManager.selected_dropdown == 'schedule_builder_edit_lesson_group' ? '' : 'schedule_builder_edit_lesson_group'">
+        <div class="selected-value">
+            <span>{{ getGroupName(selectedGroupId) }}</span>
+            <i-tabler name="chevron-down"></i-tabler>
+        </div>
+        @if (dropdownManager.selected_dropdown == 'schedule_builder_edit_lesson_group') {
+        <div class="options-dropdown">
+            <div class="list">
+                @for (group of groups; track group.groupId) {
+                <div class="option" style="text-align: left;"
+                    (click)="$event.stopPropagation();dropdownManager.selected_dropdown = '';selectedGroupId = group.groupId">
+                    {{ getGroupName(group.groupId) }}
+                </div>
+                }
+            </div>
+        </div>
+        }
+    </div>
 </div>
 
 <div class="form-group">

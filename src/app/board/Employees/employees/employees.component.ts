@@ -781,7 +781,7 @@ export class EmployeesComponent implements OnInit, OnDestroy {
       { withCredentials: true }
     ).subscribe({
       next: () => {
-        alert('��dost byla zam�tnuta');
+        alert('žádost byla zamítnuta');
         if (this.selectedEmployee) {
           this.loadVacationData(this.selectedEmployee.personId);
           this.loadVacationRequests();

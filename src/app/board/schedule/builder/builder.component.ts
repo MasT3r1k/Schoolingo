@@ -77,9 +77,6 @@ export class BuilderComponent implements OnInit {
           return ('' + a.subjectName).localeCompare(b.subjectName);
         });
       }
-      if ('teachers' in data) {
-        this.scheduleBuilder.teachers = data.teachers as any;
-      }
     });
 
     this.scheduleBuilder.selectedClass.subscribe((data) => {
@@ -412,20 +409,25 @@ export class BuilderComponent implements OnInit {
     if (!lesson && day !== undefined && hour !== undefined) {
         lesson = {
             lessonId: null,
-            day: day,
+            day: day - 1,
             hour: hour,
             subjectId: 0,
             subjectName: '',
             subjectShortcut: '',
             teacherId: 0,
             room: '',
+            classId: this.scheduleBuilder.selectedClass.getValue(),
             groupId: this.scheduleBuilder.classes.find(c => c.classId == this.scheduleBuilder.selectedClass.getValue())?.groupId || 0,
             type: 0,
             week: 'both',
             empty: false
         } as unknown as TimetableLesson;
     }
-    this.scheduleBuilder.activeLesson = lesson;
+
+    this.scheduleBuilder.activeLesson = {
+      ...lesson,
+      classId: this.scheduleBuilder.selectedClass.getValue()
+    };
     this.modalManager.openModal('schedule_edit_lesson');
   }
 }

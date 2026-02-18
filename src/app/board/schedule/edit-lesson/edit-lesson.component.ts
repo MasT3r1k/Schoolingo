@@ -10,6 +10,18 @@ import { ModalManager } from '@Schoolingo/modal';
 import { ScheduleBuilder } from '@Schoolingo/schedule_builder';
 import { Utils } from '@Schoolingo/utils';
 
+interface roomAPI {
+  br_id: number;
+  name: string;
+}
+
+interface groupAPI {
+  groupId: number;
+  name: string;
+  num: number;
+  className: string;
+}
+
 @Component({
   selector: 'app-edit-lesson',
   standalone: true,
@@ -27,19 +39,23 @@ export class EditLessonComponent implements OnInit {
 
   public selectedSubjectId: number | null = null;
   public selectedTeacherId: number | null = null;
+  public weeks = ['both', 'odd', 'even'];
   public selectedWeek: 'both' | 'odd' | 'even' = 'both';
   public selectedRoom: string = '';
 
   public types: string[] = [];
   public selected_type = '';
-  public rooms: {br_id: number, name: string}[] = [];
+  public rooms: roomAPI[] = [];
+  public groups: groupAPI[] = [];
   public selectedRoomId: number | null = null;
+  public selectedGroupId: number | null = null;
 
   ngOnInit(): void {
     const lesson = this.scheduleBuilder.activeLesson;
+    console.log(lesson)
     
     // Fetch rooms
-    this.http.get<{br_id: number, name: string}[]>(`${Config.API_URL}/v1/timetable/rooms`)
+    this.http.get<roomAPI[]>(`${Config.API_URL}/v1/timetable/rooms`)
         .subscribe((rooms) => {
             this.rooms = rooms;
             // Set initial room if lesson has one
@@ -47,6 +63,18 @@ export class EditLessonComponent implements OnInit {
                  const found = this.rooms.find(r => r.name === lesson.room);
                  if (found) {
                      this.selectedRoomId = found.br_id;
+                 }
+            }
+        });
+
+    // Fetch groups
+    this.http.get<groupAPI[]>(`${Config.API_URL}/v1/timetable/groups?classId=${lesson.classId}`)
+        .subscribe((groups) => {
+            this.groups = groups;
+            if (lesson && lesson.groupId) {
+                 const found = this.groups.find(g => g.groupId === lesson.groupId);
+                 if (found) {
+                     this.selectedGroupId = found.groupId;
                  }
             }
         });
@@ -62,8 +90,7 @@ export class EditLessonComponent implements OnInit {
       
       this.selectedSubjectId = lesson.subjectId;
       this.selectedTeacherId = lesson.teacherId;
-      this.selectedWeek = lesson.week || 'both';
-      // selectedRoomId handled in subscribe
+      this.selectedWeek = lesson.week || this.weeks[0];
     }
     
     this.types.push('classroom_lesson', 'change_timetable');
@@ -83,6 +110,13 @@ export class EditLessonComponent implements OnInit {
     return this.rooms.find((r) => r.br_id == room_id)?.name ?? '';
   }
 
+  public getGroupName(group_id: number | null): string {
+    if (group_id == null) return '';
+    const group = this.groups.find((g) => g.groupId == group_id);
+    if (!group) return '';
+    return (group.name || group.className) + ' ' + (group.num || 'Celá třída')
+  }
+
   public save(): void {
     if (!this.scheduleBuilder.activeLesson) return;
 
@@ -100,12 +134,13 @@ export class EditLessonComponent implements OnInit {
         {
             action: action,
             lessonId: lesson.lessonId,
-            day: lesson.day + 1,
+            day: lesson.day,
             hour: lesson.hour + 1,
             subjectId: this.selectedSubjectId,
             teacherId: this.selectedTeacherId,
             roomId: this.selectedRoomId,
-            groupId: lesson.groupId
+            groupId: this.selectedGroupId,
+            type: this.weeks.indexOf(this.selectedWeek)
         },
         { withCredentials: true }
     ).subscribe({
@@ -127,8 +162,8 @@ export class EditLessonComponent implements OnInit {
   }
 
   public deleteLesson(): void {
+    console.log(this.scheduleBuilder.activeLesson)
     if (!this.scheduleBuilder.activeLesson?.lessonId) return;
-    if (!confirm(this.l.s('messages.confirm_delete'))) return;
 
     this.http.post(
         `${Config.API_URL}/v1/timetable/manage`,
