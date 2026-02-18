@@ -60,6 +60,7 @@ export interface AttendanceRecord {
   date: string;
   checkIn?: string;
   checkOut?: string;
+  breakMinutes: number;
   workedMinutes: number;
   type: string;
   approved: boolean;
