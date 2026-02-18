@@ -1,4 +1,5 @@
 import { AppType } from "./app_types";
+export * from "./school-types";
 
 export namespace Config {
     // Routes

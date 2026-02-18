@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
-import { Config } from '../infrastructure/config';
+import { Config, SchoolTypes } from '../infrastructure/config';
 import { Locale } from '@Schoolingo/locale';
 import { Theme } from '@Schoolingo/theme';
 import { DropdownManager } from '@Schoolingo/dropdown';
@@ -131,7 +131,7 @@ export class SetupComponent implements OnInit {
     orientationNumber: [''],
     districtId: [null],
     country: [null, Validators.required],
-    schoolType: ['zakladni'],
+    schoolType: ['primary_school'],
     branches: [[]],
     redIzo: [''],
     izo: [''],
@@ -157,17 +157,7 @@ export class SetupComponent implements OnInit {
     auth_passkeys: [false]
   });
 
-  public schoolTypes = [
-    { value: 'zakladni', label: 'Základní škola' },
-    { value: 'stredni', label: 'Střední škola' },
-    { value: 'gymnazium', label: 'Gymnázium' },
-    { value: 'sos', label: 'SOŠ' },
-    { value: 'sps', label: 'SPŠ' },
-    { value: 'sou', label: 'SOU' },
-    { value: 'vysoka', label: 'Vysoká škola' },
-    { value: 'skolka', label: 'Mateřská škola' },
-    { value: 'zus', label: 'ZUŠ' }
-  ];
+  public schoolTypes = SchoolTypes;
 
   public isAresSupported(): boolean {
       const country = this.getSelectedCountry();
@@ -348,33 +338,36 @@ export class SetupComponent implements OnInit {
   }
 
   public applyAresData(data: any) {
-      let schoolType = 'zakladni';
+      let schoolType = 'primary_school';
       const nameLower = data.name.toLowerCase();
       const nace = data.czNace || [];
       
       // First try NACE codes for more precise classification
-      if (nace.includes('85100')) schoolType = 'skolka';
-      else if (nace.includes('85200')) schoolType = 'zakladni';
-      else if (nace.includes('85410') || nace.includes('85420')) schoolType = 'vysoka'; // Post-secondary non-tertiary & Tertiary
-      else if (nace.includes('85520')) schoolType = 'zus'; // Cultural education
-      else if (nace.includes('85310')) schoolType = 'gymnazium'; // General secondary
+      if (nace.includes('85100')) schoolType = 'kindergarten';
+      else if (nace.includes('85200')) schoolType = 'primary_school';
+      else if (nace.includes('85420')) schoolType = 'university'; // Tertiary
+      else if (nace.includes('85410')) schoolType = 'higher_professional_school'; // Post-secondary non-tertiary
+      else if (nace.includes('85520')) schoolType = 'art_school'; // Cultural education (ZUŠ)
+      else if (nace.includes('85310')) schoolType = 'grammar_school'; // General secondary
       else if (nace.includes('85320')) { 
          // Technical secondary - differentiate by name if possible, otherwise generic secondary
-         if (nameLower.includes('střední odborná') || nameLower.includes('soš')) schoolType = 'sos';
-         else if (nameLower.includes('střední průmyslová') || nameLower.includes('spš')) schoolType = 'sps';
-         else if (nameLower.includes('učiliště') || nameLower.includes('sou')) schoolType = 'sou';
-         else schoolType = 'stredni';
+         if (nameLower.includes('střední odborná') || nameLower.includes('soš')) schoolType = 'secondary_professional_school';
+         else if (nameLower.includes('střední průmyslová') || nameLower.includes('spš')) schoolType = 'secondary_professional_school';
+         else if (nameLower.includes('učiliště') || nameLower.includes('sou')) schoolType = 'vocational_school';
+         else schoolType = 'high_school';
       }
       // Fallback to name-based detection if NACE is ambiguous or missing
       else {
-          if (nameLower.includes('mateřská') || nameLower.includes('mš ')) schoolType = 'skolka';
-          else if (nameLower.includes('gymnázium') || nameLower.includes('gymnazium')) schoolType = 'gymnazium';
-          else if (nameLower.includes('střední') || nameLower.includes('sš ') || nameLower.includes('soš') || nameLower.includes('ou ')) schoolType = 'stredni';
-          else if (nameLower.includes('vysoká') || nameLower.includes('univerzita')) schoolType = 'vysoka';
-          else if (nameLower.includes('základní umělecká') || nameLower.includes('zuš')) schoolType = 'zus';
-          else if (nameLower.includes('střední odborná')) schoolType = 'sos';
-          else if (nameLower.includes('střední průmyslová')) schoolType = 'sps';
-          else if (nameLower.includes('odborné učiliště')) schoolType = 'sou';
+          if (nameLower.includes('mateřská') || nameLower.includes('mš ')) schoolType = 'kindergarten';
+          else if (nameLower.includes('základní') || nameLower.includes('zš ')) schoolType = 'primary_school';
+          else if (nameLower.includes('gymnázium') || nameLower.includes('gymnazium')) schoolType = 'grammar_school';
+          else if (nameLower.includes('střední') || nameLower.includes('sš ') || nameLower.includes('soš') || nameLower.includes('ou ')) schoolType = 'high_school';
+          else if (nameLower.includes('vysoká') || nameLower.includes('univerzita')) schoolType = 'university';
+          else if (nameLower.includes('konzervatoř')) schoolType = 'conservatory';
+          else if (nameLower.includes('základní umělecká') || nameLower.includes('zuš')) schoolType = 'art_school';
+          else if (nameLower.includes('střední odborná')) schoolType = 'secondary_professional_school';
+          else if (nameLower.includes('střední průmyslová')) schoolType = 'secondary_professional_school';
+          else if (nameLower.includes('odborné učiliště')) schoolType = 'vocational_school';
       }
 
       // Clean ZIP code (remove spaces)

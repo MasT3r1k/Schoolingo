@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Component, inject, OnInit } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { Config } from '@Schoolingo/config';
+import { Config, SchoolTypes } from '@Schoolingo/config';
 import { IconsModule } from '@Schoolingo/icons';
 import { Locale } from '@Schoolingo/locale';
 import { Utils } from '@Schoolingo/utils';
@@ -381,14 +381,7 @@ export class SettingsComponent implements OnInit {
     'google_smtp_server'
   ];
 
-  public school_types = [
-    'grammar_school',
-    'high_school',
-    'secondary_professional_school',
-    'vocational_school',
-    'higher_professional_school',
-    'conservatory',
-  ];
+public school_types = SchoolTypes;
 
   // === Changelog ===
   public openChangelog(): void {
