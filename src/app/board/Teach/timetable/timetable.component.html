@@ -35,6 +35,7 @@
                 }
             }
 
+            @if (perms.checkPermission(['student', 'parent'])) {
             <div class="item-btn text" (click)="$event.stopPropagation();dropdownManager.selected_dropdown = (dropdownManager.selected_dropdown == 'timetable_absence') ? '' : 'timetable_absence'">
                 <div class="text">
                     {{ l.s('sidebar.absence') }}
@@ -50,6 +51,24 @@
                     </ul>
                 </div>
             </div>
+            }
+            @if (perms.checkPermission(['teacher'])) {
+            <div class="item-btn text" (click)="$event.stopPropagation();dropdownManager.selected_dropdown = (dropdownManager.selected_dropdown == 'timetable_working_mode') ? '' : 'timetable_working_mode'">
+                <div class="text">
+                    {{ l.s('timetable.timetable_working_mode') }}
+                </div>
+                <div class="dropdown" style="min-width: 225px;" [hidden]="dropdownManager.selected_dropdown !== 'timetable_working_mode'" (click)="$event.stopPropagation()">
+                    <ul>
+                        @for (working_mode of workingModeConfig; track $index) {                            
+                            <div class="flex align-items-center absence-item">
+                                <div [style.--absence-color]="working_mode.color" class="absence"></div>
+                                {{ l.s('working_mode.' + working_mode.locale) }}
+                            </div>
+                        }
+                    </ul>
+                </div>
+            </div>
+            }
 
             <div class="select-items">
                 <schoolingo-tabs [value]="selectedTab" [options]="['timetable.this_week', 'timetable.next_week', 'timetable.permanent', 'sidebar.calendar']"></schoolingo-tabs>

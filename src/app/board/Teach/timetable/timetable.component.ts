@@ -2,7 +2,7 @@ import { NgClass, NgStyle } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { Component, inject, OnInit } from '@angular/core';
 import { TabsComponent } from '../../../Components/Tabs';
-import { absence } from '@Schoolingo/absence';
+import { absence, working_mode } from '@Schoolingo/absence';
 import { Authentication } from '@Schoolingo/authentication';
 import { Config } from '@Schoolingo/config';
 import { IconsModule } from '@Schoolingo/icons';
@@ -65,6 +65,7 @@ export class TimetableComponent implements OnInit {
   public u = inject(Authentication);
   public Utils = Utils;
   public absenceConfig = absence;
+  public workingModeConfig = working_mode
   private school = inject(School);
 
   private declare refreshDataTimeout;

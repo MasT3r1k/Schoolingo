@@ -138,12 +138,11 @@ export class RewardsComponent implements OnInit {
   }
   
   getTypeLabel(type: string): string {
-    switch (type) {
-      case 'financial': return this.l.s('rewards.type.financial');
-      case 'certificate': return this.l.s('rewards.type.certificate');
-      case 'prize': return this.l.s('rewards.type.prize');
-      default: return this.l.s('rewards.type.other');
+    let type_id = 'other';
+    if (['financial', 'certificate', 'prize'].includes(type)) {
+      type_id = type;
     }
+    return this.l.s(`rewards.type.${type_id}`);
   }
   
   markAsCollected(reward: Reward) {
