@@ -61,6 +61,16 @@ interface AbsenceHeatmap {
   hour: number; // 1-10
   count: number;
 }
+interface ClassInfo {
+  classId: number;
+  className: string;
+  studentCount: number;
+  absence: {
+    currentMonth: number;
+    lastMonth: number;
+    trend: number;
+  };
+}
 
 @Component({
   standalone: true,
@@ -98,12 +108,34 @@ export class DashboardComponent implements OnInit {
 
   // Absence heatmap data
   public absenceHeatmap: AbsenceHeatmap[] = [];
+  
+  // Class info
+  public classInfo: ClassInfo | null = null;
+  
+  // Selected Class Detail
+  public detailedClass: any | null = null;
+  public viewClassDetail = false;
 
   public selectedView = new BehaviorSubject<ViewSelector>(0);
 
+  public openClassDetail(classId: number): void {
+    this.http.get(
+        `${Config.API_URL}/v1/admin/management/class/${classId}`,
+        { withCredentials: true }
+    ).subscribe((data: any) => {
+        this.detailedClass = data;
+        this.viewClassDetail = true;
+    });
+  }
+
+  public closeClassDetail(): void {
+      this.detailedClass = null;
+      this.viewClassDetail = false;
+  }
+
   ngOnInit(): void {
     this.http.get(
-      `${Config.API_URL}/v1/dashboard/admin`,
+      `${Config.API_URL}/v1/admin/management`,
       { withCredentials: true }
     )
     .subscribe((data: any) => {
@@ -125,6 +157,9 @@ export class DashboardComponent implements OnInit {
       }
       if ('absenceHeatmap' in data) {
         this.absenceHeatmap = data.absenceHeatmap;
+      }
+      if ('classInfo' in data) {
+        this.classInfo = data.classInfo;
       }
     })
   }

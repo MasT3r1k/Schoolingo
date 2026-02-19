@@ -69,8 +69,11 @@ import { SeasonalAdminComponent } from './board/Admin/seasonal/seasonal.componen
 import { PollManageComponent } from './board/polls/poll-manage/poll-manage.component';
 import { SchoolYearsComponent } from './board/Admin/school-years/school-years.component';
 import { OnlineComponent } from './board/online/online.component';
+import { PollSharesComponent } from './board/polls/poll-shares/poll-shares.component';
+import { ArchitectureDashboardComponent } from './board/Admin/architecture/dashboard/dashboard.component';
+import { ArchitectureBuildingsComponent } from './board/Admin/architecture/buildings/buildings.component';
+import { ArchitectureRoomsComponent } from './board/Admin/architecture/rooms/rooms.component';
 import { SetupComponent } from './setup/setup.component';
-
 
 export const routes: Routes = [
     {
@@ -180,6 +183,10 @@ export const routes: Routes = [
                     {
                         path: ':id/results',
                         component: PollResultsComponent
+                    },
+                    {
+                        path: ':id/shares',
+                        component: PollSharesComponent
                     }
                 ]
             },
@@ -410,6 +417,23 @@ export const routes: Routes = [
                     {
                         path: 'school-years',
                         component: SchoolYearsComponent
+                    },
+                    {
+                        path: 'architecture',
+                        children: [
+                            {
+                                path: '',
+                                component: ArchitectureDashboardComponent
+                            },
+                            {
+                                path: 'buildings',
+                                component: ArchitectureBuildingsComponent
+                            },
+                            {
+                                path: 'rooms',
+                                component: ArchitectureRoomsComponent
+                            }
+                        ]
                     }
                 ]
             },

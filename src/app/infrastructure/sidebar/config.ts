@@ -22,12 +22,18 @@ export const config: SidebarGroup[] = [
                 item: "sidebar.employees",
                 url: 'employees',
                 icon: 'user-screen',
-                permission: ['manager:admin', 'principal']
+                permission: ['teacher']
             },
             {
                 item: "sidebar.management",
                 url: 'dashboard',
                 icon: 'dashboard',
+                permission: ['manager:admin', 'principal']
+            },
+            {
+                item: "architecture.title",
+                url: 'admin/architecture',
+                icon: 'building-community',
                 permission: ['manager:admin', 'principal']
             },
             {

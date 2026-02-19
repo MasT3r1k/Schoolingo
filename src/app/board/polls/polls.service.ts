@@ -111,6 +111,20 @@ export class PollsService {
       { withCredentials: true }
     ) as any;
   }
+
+  public getShares(id: number): ObservableLike<{ shares: any[] }> {
+    return this.http.get<any>(
+      `${Config.API_URL}/v1/polls/${id}/shares`,
+      { withCredentials: true }
+    ) as any;
+  }
+
+  public removeShare(pollId: number, shareId: number): ObservableLike<{ success: boolean }> {
+    return this.http.delete<any>(
+      `${Config.API_URL}/v1/polls/${pollId}/shares/${shareId}`,
+      { withCredentials: true }
+    ) as any;
+  }
   public startPoll(id: number): ObservableLike<{ success: boolean, responseId: number }> {
     return this.http.post<any>(
       `${Config.API_URL}/v1/polls/${id}/start`,

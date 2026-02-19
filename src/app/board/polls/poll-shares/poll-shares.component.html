@@ -1,0 +1,85 @@
+<div class="card detail-view">
+    @if (loading) {
+    <div class="loading-state">
+        <div class="spinner"></div>
+        <p>Načítání informací o sdílení...</p>
+    </div>
+    } @else {
+    <!-- Detail Header -->
+    <div class="detail-header">
+        <button class="btn-back" [routerLink]="['/tests', pollId, 'manage']">
+            <i-tabler name="arrow-left"></i-tabler>
+            <span>Zpět na detail testu</span>
+        </button>
+        <h2 class="page-title">Sdílení testu: {{ poll?.title }}</h2>
+    </div>
+
+    <div class="detail-layout">
+        <!-- Sidebar -->
+        <aside class="profile-sidebar">
+            <div class="profile-card">
+                <div class="profile-avatar poll-avatar">
+                    <i-tabler name="share"></i-tabler>
+                </div>
+                <h1 class="profile-name">{{ poll?.title }}</h1>
+                <div class="profile-role">
+                    Správa sdílení s kolegy
+                </div>
+            </div>
+
+            <div class="quick-info">
+                <div class="info-item">
+                    <i-tabler name="users"></i-tabler>
+                    <div>
+                        <span class="label">Počet sdílení</span>
+                        <span class="val">{{ shares.length }} učitelů</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="sidebar-help">
+                <i-tabler name="info-circle"></i-tabler>
+                <p>Učitelé, se kterými je test sdílen, jej mohou vidět ve svém seznamu a používat jej pro své studenty.
+                </p>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="detail-main">
+            <div class="info-card no-padding">
+                <div class="card-header">
+                    <i-tabler name="users-group"></i-tabler>
+                    <h3>Učitelé s přístupem</h3>
+                </div>
+
+                <div class="shares-list">
+                    @for (share of shares; track share.id) {
+                    <div class="share-item">
+                        <div class="teacher-avatar">
+                            {{ share.teacherName.charAt(0) }}
+                        </div>
+                        <div class="share-info">
+                            <span class="teacher-name">{{ share.teacherName }}</span>
+                            <span class="share-date">Sdíleno od: {{ share.added_at | date:'dd.MM.yyyy HH:mm' }}</span>
+                        </div>
+                        <div class="share-actions">
+                            <button class="btn-remove" (click)="removeShare(share.id)" title="Odebrat sdílení">
+                                <i-tabler name="trash"></i-tabler>
+                                <span>Odebrat</span>
+                            </button>
+                        </div>
+                    </div>
+                    } @empty {
+                    <div class="empty-state">
+                        <i-tabler name="users-off"></i-tabler>
+                        <p>Tento test zatím není sdílen s žádným kolegou.</p>
+                        <button class="btn btn--primary" [routerLink]="['/tests', pollId, 'manage']">Sdílet
+                            test</button>
+                    </div>
+                    }
+                </div>
+            </div>
+        </main>
+    </div>
+    }
+</div>

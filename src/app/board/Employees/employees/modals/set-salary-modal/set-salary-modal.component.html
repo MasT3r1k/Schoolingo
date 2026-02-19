@@ -2,10 +2,43 @@
     <div class="form-section">
         <h3 class="section-title">Nastavení platu</h3>
 
+        <div class="form-group">
+            <label>Zaměstnanec <span class="required">*</span></label>
+            <div class="custom-select" id="salary-employee"
+                (click)="$event.stopPropagation(); dropdownManager.selected_dropdown = dropdownManager.selected_dropdown == 'salary_employee' ? '' : 'salary_employee'">
+                <div class="selected-value">
+                    <div class="row" style="gap: .5rem">
+                        @if (newSalary.teacherId) {
+                        @for (emp of employees; track emp.personId) {
+                        @if (emp.personId == newSalary.teacherId) {
+                        {{ emp.firstName }} {{ emp.lastName }}
+                        }
+                        }
+                        } @else {
+                        Vybrat zaměstnance
+                        }
+                    </div>
+                    <i-tabler name="chevron-down"></i-tabler>
+                </div>
+                @if (dropdownManager.selected_dropdown == 'salary_employee') {
+                <div class="options-dropdown">
+                    <div class="list">
+                        @for (emp of employees; track emp.personId) {
+                        <div class="option row" style="gap: .5rem"
+                            (click)="$event.stopPropagation(); dropdownManager.selected_dropdown = ''; newSalary.teacherId = emp.personId">
+                            {{ emp.firstName }} {{ emp.lastName }}
+                        </div>
+                        }
+                    </div>
+                </div>
+                }
+            </div>
+        </div>
+
         <div class="form-row">
             <div class="form-group" style="flex: 2">
                 <label>Částka <span class="required">*</span></label>
-                <input type="number" class="form-input" [(ngModel)]="newSalary.amount" name="amount" placeholder="0"
+                <input type="number" class="form-input" [(ngModel)]="newSalary.salary" name="salary" placeholder="0"
                     min="0" required>
             </div>
             <div class="form-group">
@@ -56,7 +89,7 @@
     <div class="modal-actions">
         <button type="button" class="btn btn--ghost" (click)="close()">Zrušit</button>
         <button type="button" class="btn btn--primary" (click)="submitNewSalary()"
-            [disabled]="!newSalary.amount || !newSalary.validFrom">
+            [disabled]="!newSalary.salary || !newSalary.validFrom || !newSalary.teacherId">
             <i-tabler name="check"></i-tabler>
             Nastavit plat
         </button>

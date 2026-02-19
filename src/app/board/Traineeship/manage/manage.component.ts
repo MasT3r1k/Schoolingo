@@ -48,7 +48,9 @@ export class ManageComponent {
   public selectWeek(week: DiaryWeek): void {
     this.selectedWeek = week;
     this.traineeship.selectDairy(week);
-    this.students = this.traineeship.getStudentsForTraineeship(week.traineeship);
+    this.traineeship.fetchStudents(week.traineeship).subscribe((students) => {
+        this.students = students;
+    });
   }
 
   public backToList(): void {

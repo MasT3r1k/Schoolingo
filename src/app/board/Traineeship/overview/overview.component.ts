@@ -57,8 +57,11 @@ export class OverviewComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.loadAdminStats();
-    this.loadRecentStudents();
+    this.traineeship.fetchStudents().subscribe((students) => {
+        this.traineeship.students.next(students);
+        this.loadAdminStats();
+        this.loadRecentStudents();
+    });
   }
 
   ngOnDestroy(): void {
@@ -73,7 +76,6 @@ export class OverviewComponent implements OnInit {
       this.traineeship.getStateOfTraineeship(w) === 'ongoing'
     ).length;
 
-    // Mock student stats - in real app, this would come from API
     const allStudents = this.getAllStudents();
     this.adminStats.studentsWithContract = allStudents.filter(s => s.hasContract).length;
     this.adminStats.studentsWithoutContract = allStudents.filter(s => !s.hasContract).length;
@@ -82,7 +84,7 @@ export class OverviewComponent implements OnInit {
   }
 
   private loadRecentStudents(): void {
-    this.recentStudents = this.getAllStudents().slice(0, 10);
+    this.recentStudents = this.getAllStudents();
   }
 
   private getAllStudents(): StudentTraineeshipStatus[] {

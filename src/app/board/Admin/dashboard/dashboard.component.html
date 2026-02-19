@@ -2,16 +2,42 @@
     <div class="card-top"></div>
     <div class="card-header">
         <h2>{{ l.s('sidebar.management') }}</h2>
-        <schoolingo-tabs [options]="['dashboard.overview', 'dashboard.classes', 'subjects', 'dashboard.teachers', 'dashboard.risks']" [icons]="['dashboard', 'school', 'book', 'users', 'alert-triangle']" [value]="selectedView"></schoolingo-tabs>
+        <schoolingo-tabs
+            [options]="['dashboard.overview', 'dashboard.classes', 'subjects', 'dashboard.teachers', 'dashboard.risks']"
+            [icons]="['dashboard', 'school', 'book', 'users', 'alert-triangle']"
+            [value]="selectedView"></schoolingo-tabs>
     </div>
 
     <div class="card-body">
         @switch (selectedView.getValue()) {
-            @case(ViewSelector.overview) {
+        @case(ViewSelector.overview) {
         <!-- OVERVIEW -->
         <div class="overview-grid">
             <!-- Stats Cards -->
             <div class="stats-cards">
+                @if (classInfo) {
+                <div class="stat-card stat--info">
+                    <div class="stat-icon">
+                        <i-tabler name="school"></i-tabler>
+                    </div>
+                    <div class="stat-info">
+                        <div class="stat-value">
+                            {{ classInfo.className }}
+                            <span class="muted" style="font-size: 0.5em; vertical-align: middle;">
+                                {{ classInfo.studentCount }} žáků
+                            </span>
+                        </div>
+                        <div class="stat-label">
+                            Absence: {{ classInfo.absence.currentMonth }}m
+                            @if (classInfo.absence.trend !== 0) {
+                            <span [style.color]="classInfo.absence.trend > 0 ? 'var(--success)' : 'var(--danger)'">
+                                ({{ classInfo.absence.trend > 0 ? '+' : '' }}{{ classInfo.absence.trend }})
+                            </span>
+                            }
+                        </div>
+                    </div>
+                </div>
+                }
                 <div class="stat-card stat--primary">
                     <div class="stat-icon">
                         <i-tabler name="users"></i-tabler>
@@ -19,11 +45,11 @@
                     <div class="stat-info">
                         <div class="stat-value">
                             {{ Utils.formatNumber(schoolStats.totalStudents) }}
-                            <span class="muted">ze 
+                            <span class="muted">ze
                                 @if (schoolStats.limitStudents == -1) {
-                                    <span style="color: var(--primary-100);font-weight: 500;">NEOMEZENO</span> 
+                                <span style="color: var(--primary-100);font-weight: 500;">NEOMEZENO</span>
                                 } @else {
-                                    {{ schoolStats.limitStudents }}
+                                {{ schoolStats.limitStudents }}
                                 }
                             </span>
                         </div>
@@ -146,10 +172,68 @@
                 </div>
             </div>
         </div>
-            }
-            @case (ViewSelector.classes) {
+        }
+        @case (ViewSelector.classes) {
         <!-- CLASSES VIEW -->
         <div class="classes-view">
+            @if (viewClassDetail && detailedClass) {
+            <div class="section-card">
+                <div class="section-header">
+                    <h3>
+                        <button class="btn-back" (click)="closeClassDetail()">
+                            <i-tabler name="arrow-left"></i-tabler>
+                        </button>
+                        <span>{{ detailedClass.classDetails.className }}</span>
+                        <small class="muted" style="margin-left: 10px; font-weight: 400; font-size: 0.8em;">
+                            {{ detailedClass.classDetails.teacherName }}
+                        </small>
+                    </h3>
+                </div>
+
+                <!-- Groups Grid -->
+                <h4>Skupiny</h4>
+                <div class="classes-grid">
+                    @for (group of detailedClass.groupsStats; track $index) {
+                    <div class="class-card">
+                        <div class="class-header">
+                            <h4>
+                                {{ group.groupName || detailedClass.classDetails.className }}
+                                @if (group.groupNum) {
+                                <small class="muted">
+                                    sk. {{ group.groupNum }}
+                                </small>
+                                } @else if (!group.groupName) {
+                                <small class="muted">
+                                    (Celá třída)
+                                </small>
+                                }
+                            </h4>
+                        </div>
+                        <div class="class-stats">
+                            <div class="class-stat">
+                                <i-tabler name="users"></i-tabler>
+                                <span>{{ group.studentCount }} studentů</span>
+                            </div>
+                            <div class="class-stat highlight">
+                                <i-tabler name="trophy"></i-tabler>
+                                <span>Ø {{ Utils.formatNumber(group.averageGrade, 2) }}</span>
+                            </div>
+                            <div class="class-stat" [class.warning]="group.absenceRate > 10">
+                                <i-tabler name="calendar-x"></i-tabler>
+                                <span>{{ Utils.formatNumber(group.absenceRate, 2) }}% absence</span>
+                            </div>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" [style.width.%]="(5 - group.averageGrade) * 25"
+                                [class.good]="group.averageGrade < 2.5"
+                                [class.warning]="group.averageGrade >= 2.5 && group.averageGrade < 3.5"
+                                [class.danger]="group.averageGrade >= 3.5"></div>
+                        </div>
+                    </div>
+                    }
+                </div>
+            </div>
+            } @else {
             <div class="section-card">
                 <div class="section-header">
                     <h3>
@@ -169,17 +253,17 @@
                 </div>
                 <div class="classes-grid">
                     @for (classItem of classStats; track $index) {
-                    <div class="class-card">
+                    <div class="class-card" (click)="openClassDetail(classItem.class_id)" style="cursor: pointer;">
                         <div class="class-header">
                             <h4>
                                 {{ classItem.class_name }}
                                 @if (classItem.group_name != null || classItem.group_num != null) {
                                 <small class="muted">
-                                {{ classItem.group_name || 'sk.' }}
-                                {{ classItem.group_num }}
+                                    {{ classItem.group_name || 'sk.' }}
+                                    {{ classItem.group_num }}
                                 </small>
                                 }
-                            
+
                             </h4>
                             <i-tabler [name]="getTrendIcon(classItem.trend)"
                                 [class]="'trend-' + classItem.trend"></i-tabler>
@@ -208,9 +292,10 @@
                     }
                 </div>
             </div>
-        </div>
             }
-            @case(ViewSelector.subjects) {
+        </div>
+        }
+        @case(ViewSelector.subjects) {
         <!-- SUBJECTS VIEW -->
         <div class="subjects-view">
             <div class="section-card">
@@ -258,8 +343,8 @@
                 </div>
             </div>
         </div>
-            }
-            @case (ViewSelector.teachers) {
+        }
+        @case (ViewSelector.teachers) {
         <!-- TEACHERS VIEW -->
         <div class="teachers-view">
             <div class="section-card">
@@ -307,8 +392,8 @@
                 </div>
             </div>
         </div>
-            }
-            @case(ViewSelector.risks) {
+        }
+        @case(ViewSelector.risks) {
         <!-- RISKS VIEW -->
         <div class="risks-view">
             <div class="section-card">
@@ -352,7 +437,7 @@
                 </div>
             </div>
         </div>
-            }
+        }
         }
     </div>
 </div>

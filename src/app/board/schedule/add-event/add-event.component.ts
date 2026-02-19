@@ -16,9 +16,7 @@ export class AddEventComponent {
   public l = inject(Locale);
 
   public types = [
-    'Doučování',
-    'Školní výlet',
-    'Třídnická hodina'
+    'Školní výlet'
   ];
   public selected_type = this.types[0];
 

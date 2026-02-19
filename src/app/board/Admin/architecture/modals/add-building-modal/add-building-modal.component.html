@@ -1,0 +1,34 @@
+<div class="modal-body">
+    <div class="form-group">
+        <label class="form-label">{{ l.s('architecture.building_name') }}</label>
+        <input type="text" class="form-input" [(ngModel)]="buildingForm.name" placeholder="Např. Budova A, Hlavní budova...">
+    </div>
+    <div class="form-group">
+        <label class="form-label">{{ l.s('architecture.building_type') }}</label>
+        <div class="custom-select" id="building_type"
+            (click)="$event.stopPropagation();dropdownManager.selected_dropdown = dropdownManager.selected_dropdown == 'building_type' ? '' : 'building_type'">
+            <div class="selected-value">
+                <div class="row" style="gap: .5rem">
+                    {{ getSelectedTypeLabel() }}
+                </div>
+                <i-tabler name="chevron-down"></i-tabler>
+            </div>
+            @if (dropdownManager.selected_dropdown == 'building_type') {
+            <div class="options-dropdown">
+                <div class="list">
+                    @for (type of buildingTypes; track type.value) {
+                    <div class="option row" style="gap: .5rem"
+                        (click)="$event.stopPropagation();dropdownManager.selected_dropdown = '';selected_type = type.value">
+                        {{ type.label }}
+                    </div>
+                    }
+                </div>
+            </div>
+            }
+        </div>
+    </div>
+</div>
+<div class="modal-footer modal-actions">
+    <button class="btn btn--secondary" (click)="closeModal()">{{ l.s('cancel') }}</button>
+    <button class="btn btn--primary" (click)="saveBuilding()">{{ l.s('buttons.save') }}</button>
+</div>

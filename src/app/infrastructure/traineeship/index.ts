@@ -1,8 +1,10 @@
-import { Injectable } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 import { DiaryDay, DiaryWeek, StudentTraineeshipStatus, TraineeshipData } from './index.d';
 export type { DiaryWeek, DiaryDay, StudentTraineeshipStatus, TraineeshipData };
-import { BehaviorSubject } from 'rxjs';
+import { BehaviorSubject, Observable } from 'rxjs';
 import moment from 'moment';
+import { HttpClient } from '@angular/common/http';
+import { Config } from '@Schoolingo/config';
 
 type Data = { value: string, localePrefix?: string, isLocale: boolean };
 
@@ -10,8 +12,11 @@ type Data = { value: string, localePrefix?: string, isLocale: boolean };
     providedIn: 'root'
 })
 export class Traineeship {
+    private http = inject(HttpClient);
     public selectedCompany: any = null;
     public selectedInstructor: number | null = null;
+    
+    public students = new BehaviorSubject<StudentTraineeshipStatus[]>([]);
 
     public scopes: any[] = [];
     
@@ -129,15 +134,11 @@ export class Traineeship {
         return company.rating != null ? Number(company.rating).toFixed(1) : 'traineeship.no_rating';
     }
 
+    public fetchStudents(traineeshipId?: number): Observable<StudentTraineeshipStatus[]> {
+        return this.http.get<StudentTraineeshipStatus[]>(`${Config.API_URL}/v1/traineeship/students${traineeshipId ? '?traineeship=' + traineeshipId : ''}`, { withCredentials: true });
+    }
+
     public getStudentsForTraineeship(traineeshipId: number): StudentTraineeshipStatus[] {
-        // Mock data
-        const students: StudentTraineeshipStatus[] = [
-            { studentId: 1, name: 'Jan Novák', class: '4.A', company: 'Tech Corp', instructor: 'Petr Svoboda', hasContract: true, isProcessed: true },
-            { studentId: 2, name: 'Petr Pavel', class: '4.A', company: null, instructor: null, hasContract: false, isProcessed: false },
-            { studentId: 3, name: 'Eva Dvořáková', class: '4.B', company: 'Soft s.r.o.', instructor: 'Jana Malá', hasContract: true, isProcessed: false },
-            { studentId: 4, name: 'Adam Černý', class: '4.B', company: 'WebDesign', instructor: null, hasContract: false, isProcessed: false },
-            { studentId: 5, name: 'Lucie Bílá', class: '4.A', company: 'Tech Corp', instructor: 'Petr Svoboda', hasContract: true, isProcessed: true },
-        ];
-        return students;
+        return this.students.getValue();
     }
 }

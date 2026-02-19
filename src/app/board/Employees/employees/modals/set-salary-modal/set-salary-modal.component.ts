@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { DropdownManager } from '@Schoolingo/dropdown';
 import { HttpClient } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
@@ -13,22 +13,44 @@ import { ModalManager } from '@Schoolingo/modal';
   templateUrl: './set-salary-modal.component.html',
   styleUrls: ['./set-salary-modal.component.css']
 })
-export class SetSalaryModalComponent {
+export class SetSalaryModalComponent implements OnInit {
   private http = inject(HttpClient);
   public modalManager = inject(ModalManager);
   public dropdownManager = inject(DropdownManager);
+  public data: any;
+  public employees: any[] = [];
 
   public newSalary = {
-    personId: 0,
-    amount: 0,
+    teacherId: 0,
+    salary: 0,
     currency: 'CZK',
+    role: '',
     validFrom: new Date().toISOString().split('T')[0],
     validTo: null as string | null,
     deductions: 0
   };
 
+  ngOnInit() {
+    this.data = this.modalManager.getModalData('set_salary');
+    if (this.data && this.data.personId) {
+      this.newSalary.teacherId = this.data.personId;
+    }
+    this.loadEmployees();
+  }
+
+  loadEmployees() {
+    this.http.get<{ data: any[] }>(`${Config.API_URL}/v1/employees`, { withCredentials: true }).subscribe({
+      next: (resp) => this.employees = resp.data
+    });
+  }
+
   submitNewSalary() {
-    if (!this.newSalary.amount || this.newSalary.amount <= 0) {
+    if (!this.newSalary.teacherId) {
+      alert('Vyberte zaměstnance');
+      return;
+    }
+
+    if (!this.newSalary.salary || this.newSalary.salary <= 0) {
       alert('Zadejte platnou částku platu');
       return;
     }
@@ -47,7 +69,11 @@ export class SetSalaryModalComponent {
         this.modalManager.closeModal('set_salary');
         this.resetForm();
         alert('Plat byl úspěšně nastaven');
-        window.location.reload();
+        if (this.data && this.data.onSave) {
+          this.data.onSave();
+        } else {
+          window.location.reload();
+        }
       },
       error: (error) => {
         console.error('Failed to set salary:', error);
@@ -59,8 +85,9 @@ export class SetSalaryModalComponent {
 
   resetForm() {
     this.newSalary = {
-      personId: 0,
-      amount: 0,
+      teacherId: this.data?.personId || 0,
+      salary: 0,
+      role: '',
       currency: 'CZK',
       validFrom: new Date().toISOString().split('T')[0],
       validTo: null,

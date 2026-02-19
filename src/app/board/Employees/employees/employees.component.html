@@ -1,20 +1,27 @@
 <div class="employees-page card">
     <!-- Employee Detail View -->
-    @if (selectedEmployee) {
+    @if (selectedEmployee()) {
     <div class="detail-view">
+        <!-- Detail Header -->
         <div class="detail-header">
             <button class="btn-back" (click)="closeDetail()">
                 <i-tabler name="arrow-left"></i-tabler>
                 <span>Zpět na seznam</span>
             </button>
             <div class="detail-actions">
+                <button class="action-btn" title="Poslat zprávu">
+                    <i-tabler name="mail"></i-tabler>
+                </button>
                 @if (canManage) {
-                <button class="action-btn" title="Upravit">
+                <button class="action-btn" title="Upravit" (click)="openEditEmployeeModal()">
                     <i-tabler name="edit"></i-tabler>
                 </button>
                 }
-                <button class="action-btn" title="Poslat zprávu">
-                    <i-tabler name="mail"></i-tabler>
+                <button class="action-btn" title="Tisk">
+                    <i-tabler name="printer"></i-tabler>
+                </button>
+                <button class="action-btn more" title="Více akcí">
+                    <i-tabler name="dots-vertical"></i-tabler>
                 </button>
             </div>
         </div>
@@ -25,99 +32,175 @@
                 <div class="profile-card">
                     <div class="profile-avatar">
                         <span class="avatar-initials">
-                            {{ Utils.getInitials(`${selectedEmployee.firstName} ${selectedEmployee.lastName}`) }}
+                            {{ Utils.getInitials(selectedEmployee()!.fullName) }}
                         </span>
-                        <span class="status-dot" [class]="selectedEmployee.status"></span>
+                        <span class="status-dot" [class]="getStatusClass(selectedEmployee()!.status)"></span>
                     </div>
-                    <h1 class="profile-name">{{ selectedEmployee.fullName }}</h1>
+                    <h1 class="profile-name">{{ selectedEmployee()!.fullName }}</h1>
                     <div class="profile-role">
                         <i-tabler name="briefcase"></i-tabler>
-                        {{ l.s('roles.' + selectedEmployee.role) }}
+                        {{ l.s('roles.' + selectedEmployee()!.role) }}
                     </div>
-                    <span class="status-badge" [class]="getStatusClass(selectedEmployee.status)">
-                        {{ getStatusText(selectedEmployee.status) }}
+                    <span class="status-badge" [class]="getStatusClass(selectedEmployee()!.status)">
+                        {{ getStatusLabel(selectedEmployee()!.status) }}
                     </span>
                 </div>
 
-                <!-- Quick Info -->
-                <div class="quick-info">
-                    @if (selectedEmployee.department) {
-                    <div class="info-item">
-                        <i-tabler name="building"></i-tabler>
-                        <span>{{ selectedEmployee.department }}</span>
+                <!-- Quick Stats -->
+                <div class="quick-stats">
+                    <div class="stat-card clickable" (click)="selectedDetailTab.set(1)">
+                        <div class="stat-icon">
+                            <i-tabler name="clock"></i-tabler>
+                        </div>
+                        <div class="stat-info">
+                            <span class="stat-value">{{ attendanceStats().totalHours }}h</span>
+                            <span class="stat-label">Odpracováno</span>
+                        </div>
                     </div>
-                    }
-                    @if (selectedEmployee.email) {
-                    <a href="mailto:{{selectedEmployee.email}}" class="info-item">
+                    <div class="stat-card clickable" (click)="selectedDetailTab.set(2)">
+                        <div class="stat-icon">
+                            <i-tabler name="beach"></i-tabler>
+                        </div>
+                        <div class="stat-info">
+                            <span class="stat-value">{{ vacationBalance().remaining || 0 }} dní</span>
+                            <span class="stat-label">Zbývá dovolené</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Quick Contact -->
+                <div class="quick-contact">
+                    <h3>Kontakt</h3>
+                    <a href="mailto:{{selectedEmployee()!.email}}" class="contact-item">
                         <i-tabler name="mail"></i-tabler>
-                        <span>{{ selectedEmployee.email }}</span>
+                        <span>{{ selectedEmployee()!.email || 'Není nastaven' }}</span>
                     </a>
-                    }
-                    @if (selectedEmployee.phone) {
-                    <a href="tel:{{selectedEmployee.phone}}" class="info-item">
+                    <a href="tel:{{selectedEmployee()!.phone}}" class="contact-item">
                         <i-tabler name="phone"></i-tabler>
-                        <span>{{ selectedEmployee.phone }}</span>
+                        <span>{{ selectedEmployee()!.phone || 'Není nastaven' }}</span>
                     </a>
+                    @if (selectedEmployee()!.cabinet) {
+                    <div class="contact-item">
+                        <i-tabler name="door"></i-tabler>
+                        <span>Kabinet {{ selectedEmployee()!.cabinet }}</span>
+                    </div>
                     }
                 </div>
             </aside>
 
             <!-- Main Content -->
             <main class="detail-main">
-                <schoolingo-tabs [options]="detailTabOptions" [icons]="detailTabIcons"
-                    [value]="selectedDetailTab"></schoolingo-tabs>
+                <!-- Tabs Navigation -->
+                <nav class="tabs-nav">
+                    @for (tab of detailTabOptions; track $index) {
+                    <button class="tab-btn" [class.active]="selectedDetailTab() === $index"
+                        (click)="selectedDetailTab.set($index)">
+                        <i-tabler [name]="detailTabIcons[$index]"></i-tabler>
+                        <span>{{ l.s(tab) }}</span>
+                    </button>
+                    }
+                </nav>
 
                 <div class="tab-content">
-                    @if (selectedDetailTab.getValue() === 0) {
+                    @if (selectedDetailTab() === 0) {
                     <div class="overview-grid">
-
+                        <!-- Work Information -->
                         <div class="info-card">
                             <div class="card-header">
-                                <i-tabler name="info-circle"></i-tabler>
-                                <h3>Pracovní údaje</h3>
+                                <i-tabler name="briefcase"></i-tabler>
+                                <h3>Podrobnosti úvazku</h3>
                             </div>
                             <div class="info-list">
                                 <div class="info-row">
                                     <span class="info-label">Osobní číslo</span>
-                                    <span class="info-value">{{ selectedEmployee.employeeNumber || '-' }}</span>
+                                    <span class="info-value copyable" title="Zkopírovat">{{
+                                        selectedEmployee()!.employeeNumber || '-' }}</span>
                                 </div>
                                 <div class="info-row">
                                     <span class="info-label">Typ smlouvy</span>
-                                    <span class="info-value">{{ getContractTypeLabel(selectedEmployee.contractType)
-                                        }}</span>
+                                    <span class="info-value">
+                                        <span class="badge badge--light">{{
+                                            getContractTypeLabel(selectedEmployee()!.contractType) }}</span>
+                                    </span>
                                 </div>
                                 <div class="info-row">
                                     <span class="info-label">Úvazek</span>
-                                    <span class="info-value">{{ selectedEmployee.hoursPerWeek || 40 }} h/týden</span>
+                                    <span class="info-value">{{ selectedEmployee()!.hoursPerWeek || 0 }} hod/týden</span>
                                 </div>
                                 <div class="info-row">
-                                    <span class="info-label">Datum nástupu</span>
-                                    <span class="info-value">{{ selectedEmployee.startDate || '-' }}</span>
+                                    <span class="info-label">Platnost od</span>
+                                    <span class="info-value">{{ selectedEmployee()!.startDate ?
+                                        Utils.formatDate(selectedEmployee()!.startDate!) : '-' }}</span>
                                 </div>
-                                @if (selectedEmployee.endDate) {
                                 <div class="info-row">
-                                    <span class="info-label">Datum ukončení</span>
-                                    <span class="info-value">{{ selectedEmployee.endDate }}</span>
+                                    <span class="info-label">Platnost do</span>
+                                    <span class="info-value">{{ selectedEmployee()!.endDate ?
+                                        Utils.formatDate(selectedEmployee()!.endDate!) : 'Na dobu neurčitou' }}</span>
+                                </div>
+                                @if (selectedEmployee()!.rank) {
+                                <div class="info-row">
+                                    <span class="info-label">Platová třída</span>
+                                    <span class="info-value">{{ selectedEmployee()!.rank }}</span>
                                 </div>
                                 }
-                                @if (selectedEmployee.rank) {
+                            </div>
+                        </div>
+
+                        <!-- Organization & Location -->
+                        <div class="info-card">
+                            <div class="card-header">
+                                <i-tabler name="building-skyscraper"></i-tabler>
+                                <h3>Zařazení a umístění</h3>
+                            </div>
+                            <div class="info-list">
                                 <div class="info-row">
-                                    <span class="info-label">Hodnost/Platová třída</span>
-                                    <span class="info-value">{{ selectedEmployee.rank }}</span>
+                                    <span class="info-label">Role</span>
+                                    <span class="info-value">{{ l.s('roles.' + selectedEmployee()!.role) }}</span>
                                 </div>
-                                }
-                                @if (selectedEmployee.cabinet) {
+                                <div class="info-row">
+                                    <span class="info-label">Oddělení</span>
+                                    <span class="info-value">{{ selectedEmployee()!.department || '-' }}</span>
+                                </div>
                                 <div class="info-row">
                                     <span class="info-label">Kabinet</span>
-                                    <span class="info-value">{{ selectedEmployee.cabinet }}</span>
+                                    <span class="info-value">{{ selectedEmployee()!.cabinet ? 'Kabinet č. ' +
+                                        selectedEmployee()!.cabinet : '-' }}</span>
                                 </div>
-                                }
+                            </div>
+                        </div>
+
+                        <!-- Personal Information -->
+                        <div class="info-card">
+                            <div class="card-header">
+                                <i-tabler name="user"></i-tabler>
+                                <h3>Osobní údaje</h3>
+                            </div>
+                            <div class="info-list">
+                                <div class="info-row">
+                                    <span class="info-label">Celé jméno</span>
+                                    <span class="info-value">{{ selectedEmployee()!.fullName }}</span>
+                                </div>
+                                <div class="info-row">
+                                    <span class="info-label">Datum narození</span>
+                                    <span class="info-value">{{ selectedEmployee()!.dateOfBirth ?
+                                        Utils.formatDateShort(selectedEmployee()!.dateOfBirth!) : '-' }}</span>
+                                </div>
+                                <div class="info-row">
+                                    <span class="info-label">Email</span>
+                                    <a class="info-value link" href="mailto:{{selectedEmployee()!.email}}">{{
+                                        selectedEmployee()!.email || '-' }}</a>
+                                </div>
+                                <div class="info-row">
+                                    <span class="info-label">Telefon</span>
+                                    <a class="info-value link" href="tel:{{selectedEmployee()!.phone}}">{{
+                                        selectedEmployee()!.phone || '-' }}</a>
+                                </div>
                             </div>
                         </div>
                     </div>
                     }
 
-                    @if (selectedDetailTab.getValue() === 1) {
+                    @if (selectedDetailTab() === 1) {
                     <!-- Attendance Tab -->
                     <div class="attendance-tab">
                         <!-- Statistics Cards -->
@@ -127,7 +210,7 @@
                                     <i-tabler name="clock"></i-tabler>
                                 </div>
                                 <div class="stat-info">
-                                    <span class="stat-value">{{ attendanceStats.totalHours }}h</span>
+                                    <span class="stat-value">{{ attendanceStats().totalHours }}h</span>
                                     <span class="stat-label">Celkem hodin</span>
                                 </div>
                             </div>
@@ -136,7 +219,7 @@
                                     <i-tabler name="calendar-check"></i-tabler>
                                 </div>
                                 <div class="stat-info">
-                                    <span class="stat-value">{{ attendanceStats.daysPresent }}</span>
+                                    <span class="stat-value">{{ attendanceStats().daysPresent }}</span>
                                     <span class="stat-label">Dní přítomen</span>
                                 </div>
                             </div>
@@ -145,7 +228,7 @@
                                     <i-tabler name="chart-bar"></i-tabler>
                                 </div>
                                 <div class="stat-info">
-                                    <span class="stat-value">{{ attendanceStats.avgDaily }}h</span>
+                                    <span class="stat-value">{{ attendanceStats().avgDaily }}h</span>
                                     <span class="stat-label">Průměr/den</span>
                                 </div>
                             </div>
@@ -155,104 +238,102 @@
                         <div class="filters-row">
                             <div class="filter-group">
                                 <label>Období</label>
-                                <div class="filter-group">
-                                    <label>Období</label>
-                                    <div class="custom-select" id="attendance-period-1" style="min-width: 150px;"
-                                        (click)="$event.stopPropagation(); dropdownManager.selected_dropdown = dropdownManager.selected_dropdown == 'attendance_period_1' ? '' : 'attendance_period_1'">
-                                        <div class="selected-value">
-                                            <div class="row" style="gap: .5rem">
-                                                {{ getFilterLabel('attendancePeriod', attendanceFilter.period) }}
-                                            </div>
-                                            <i-tabler name="chevron-down"></i-tabler>
+                                <div class="custom-select" id="attendance-period-1" style="min-width: 150px;"
+                                    (click)="$event.stopPropagation(); dropdownManager.selected_dropdown = dropdownManager.selected_dropdown == 'attendance_period_1' ? '' : 'attendance_period_1'">
+                                    <div class="selected-value">
+                                        <div class="row" style="gap: .5rem">
+                                            {{ getFilterLabel('attendancePeriod', attendanceFilter().period) }}
                                         </div>
-                                        @if (dropdownManager.selected_dropdown == 'attendance_period_1') {
-                                        <div class="options-dropdown">
-                                            <div class="list">
-                                                @for (opt of getFilterOptions('attendancePeriod'); track $index) {
-                                                <div class="option row" style="gap: .5rem"
-                                                    (click)="$event.stopPropagation(); dropdownManager.selected_dropdown = ''; attendanceFilter.period = opt.value; loadAttendanceRecords(selectedEmployee.personId)">
-                                                    {{ opt.label }}
-                                                </div>
-                                                }
-                                            </div>
-                                        </div>
-                                        }
+                                        <i-tabler name="chevron-down"></i-tabler>
                                     </div>
-                                </div>
-                                @if (attendanceFilter.period === 'custom') {
-                                <div class="filter-group">
-                                    <label>Od</label>
-                                    <input type="date" class="form-input" [(ngModel)]="attendanceFilter.startDate">
-                                </div>
-                                <div class="filter-group">
-                                    <label>Do</label>
-                                    <input type="date" class="form-input" [(ngModel)]="attendanceFilter.endDate">
-                                </div>
-                                }
-                                <button class="btn btn--primary btn--sm" (click)="exportAttendanceCSV()">
-                                    <i-tabler name="download"></i-tabler>
-                                    Export CSV
-                                </button>
-                            </div>
-
-                            <!-- Attendance Records Table -->
-                            @if (attendanceRecords.length > 0) {
-                            <div class="table-container">
-                                <table class="data-table">
-                                    <thead>
-                                        <tr>
-                                            <th>Datum</th>
-                                            <th>Příchod</th>
-                                            <th>Odchod</th>
-                                            <th>Pauza (min)</th>
-                                            <th>Odpracováno</th>
-                                            <th>Typ</th>
-                                            @if (canManage) {
-                                            <th>Akce</th>
+                                    @if (dropdownManager.selected_dropdown == 'attendance_period_1') {
+                                    <div class="options-dropdown">
+                                        <div class="list">
+                                            @for (opt of getFilterOptions('attendancePeriod'); track $index) {
+                                            <div class="option row" style="gap: .5rem"
+                                                (click)="$event.stopPropagation(); dropdownManager.selected_dropdown = ''; setAttendanceFilterPeriod(opt.value)">
+                                                {{ opt.label }}
+                                            </div>
                                             }
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        @for (record of attendanceRecords; track record.attendanceId) {
-                                        <tr>
-                                            <td>{{ record.date | date:'dd.MM.yyyy' }}</td>
-                                            <td>{{ record.checkIn || '-' }}</td>
-                                            <td>{{ record.checkOut || 'Aktivní' }}</td>
-                                            <td>{{ record.breakMinutes || 0 }}</td>
-                                            <td>
-                                            <span class="hours-worked">{{ (record.workedMinutes / 60).toFixed(1) }}h</span>
-                                            </td>
-                                            <td>
-                                                <span class="type-badge" [class]="'type-' + record.type">
-                                                    {{ record.type || 'office' }}
-                                                </span>
-                                            </td>
-                                            @if (canManage) {
-                                            <td>
-                                                <button class="btn-icon" (click)="editAttendanceRecord(record)">
-                                                    <i-tabler name="edit"></i-tabler>
-                                                </button>
-                                            </td>
-                                            }
-                                        </tr>
-                                        }
-                                    </tbody>
-                                </table>
-                            </div>
-                            } @else {
-                            <div class="no-selection">
-                                <div class="illustration">
-                                    <i-tabler name="calendar-off"></i-tabler>
+                                        </div>
+                                    </div>
+                                    }
                                 </div>
-                                <h3>Žádné záznamy docházky</h3>
-                                <p>U tohoto člověka není evidována žádná docházka</p>
+                            </div>
+                            @if (attendanceFilter().period === 'custom') {
+                            <div class="filter-group">
+                                <label>Od</label>
+                                <input type="date" class="form-input" [ngModel]="attendanceFilter().startDate" (ngModelChange)="setAttendanceFilterStartDate($event)">
+                            </div>
+                            <div class="filter-group">
+                                <label>Do</label>
+                                <input type="date" class="form-input" [ngModel]="attendanceFilter().endDate" (ngModelChange)="setAttendanceFilterEndDate($event)">
                             </div>
                             }
+                            <button class="btn btn--primary btn--sm" (click)="exportAttendanceCSV()">
+                                <i-tabler name="download"></i-tabler>
+                                Export CSV
+                            </button>
                         </div>
+
+                        <!-- Attendance Records Table -->
+                        @if (attendanceRecords().length > 0) {
+                        <div class="table-container">
+                            <table class="data-table">
+                                <thead>
+                                    <tr>
+                                        <th>Datum</th>
+                                        <th>Příchod</th>
+                                        <th>Odchod</th>
+                                        <th>Pauza (min)</th>
+                                        <th>Odpracováno</th>
+                                        <th>Typ</th>
+                                        @if (canManage) {
+                                        <th>Akce</th>
+                                        }
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @for (record of attendanceRecords(); track record.attendanceId) {
+                                    <tr>
+                                        <td>{{ record.date | date:'dd.MM.yyyy' }}</td>
+                                        <td>{{ record.checkIn || '-' }}</td>
+                                        <td>{{ record.checkOut || 'Aktivní' }}</td>
+                                        <td>{{ record.breakMinutes || 0 }}</td>
+                                        <td>
+                                            <span class="hours-worked">{{ (record.workedMinutes / 60).toFixed(1)
+                                                }}h</span>
+                                        </td>
+                                        <td>
+                                            <span class="type-badge" [class]="'type-' + record.type">
+                                                {{ record.type || 'office' }}
+                                            </span>
+                                        </td>
+                                        @if (canManage) {
+                                        <td>
+                                            <button class="btn-icon" (click)="editAttendanceRecord(record)">
+                                                <i-tabler name="edit"></i-tabler>
+                                            </button>
+                                        </td>
+                                        }
+                                    </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                        } @else {
+                        <div class="no-selection">
+                            <div class="illustration">
+                                <i-tabler name="calendar-off"></i-tabler>
+                            </div>
+                            <h3>Žádné záznamy docházky</h3>
+                            <p>U tohoto člověka není evidována žádná docházka</p>
+                        </div>
+                        }
                     </div>
                     }
 
-                    @if (selectedDetailTab.getValue() === 2) {
+                    @if (selectedDetailTab() === 2) {
                     <!-- Vacations Tab -->
                     <div class="vacations-tab">
                         <!-- Balance Card -->
@@ -264,7 +345,7 @@
                                         <i-tabler name="sum"></i-tabler>
                                     </div>
                                     <div class="stat-info">
-                                        <span class="stat-value">{{ vacationBalance.total || 0 }} dní</span>
+                                        <span class="stat-value">{{ vacationBalance().total || 0 }} dní</span>
                                         <span class="stat-label">Celkem</span>
                                     </div>
                                 </div>
@@ -273,7 +354,7 @@
                                         <i-tabler name="progress"></i-tabler>
                                     </div>
                                     <div class="stat-info">
-                                        <span class="stat-value">{{ vacationBalance.used || 0 }} dní</span>
+                                        <span class="stat-value">{{ vacationBalance().used || 0 }} dní</span>
                                         <span class="stat-label">Čerpáno</span>
                                     </div>
                                 </div>
@@ -282,14 +363,14 @@
                                         <i-tabler name="hourglass-empty"></i-tabler>
                                     </div>
                                     <div class="stat-info">
-                                        <span class="stat-value">{{ vacationBalance.remaining || 0 }} dní</span>
+                                        <span class="stat-value">{{ vacationBalance().remaining || 0 }} dní</span>
                                         <span class="stat-label">Zbývá</span>
                                     </div>
                                 </div>
                             </div>
                         </div>
 
-                        @if (vacationRequests.length > 0) {
+                        @if (vacationRequests().length > 0) {
                         <div class="table-container">
                             <table class="data-table">
                                 <thead>
@@ -305,7 +386,7 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    @for (request of vacationRequests; track request.requestId) {
+                                    @for (request of vacationRequests(); track request.requestId) {
                                     <tr>
                                         <td>{{ getVacationTypeLabel(request.type) }}</td>
                                         <td>{{ request.startDate | date:'dd.MM.yyyy' }} - {{ request.endDate |
@@ -348,677 +429,289 @@
                     </div>
                     }
 
-                    @if (selectedDetailTab.getValue() === 3) {
+                    @if (selectedDetailTab() === 3) {
                     <!-- Salaries Tab -->
                     <div class="salaries-tab">
-                        <!-- Current Salary Card -->
-                        <div class="current-salary-card">
-                            <h3>Aktuální plat</h3>
-                            @if (currentSalary) {
-                            <div class="salary-amount">
-                                <span class="amount">{{ currentSalary.amount }} {{ currentSalary.currency }}</span>
-                                <span class="period">/ měsíc</span>
+                        <div class="overview-grid">
+                            <!-- Current Salary -->
+                            <div class="info-card">
+                                <div class="card-header">
+                                    <i-tabler name="wallet"></i-tabler>
+                                    <h3>Aktuální plat</h3>
+                                    @if (canManage) {
+                                    <button class="card-link-btn" (click)="openSetSalaryModal()">
+                                        Změnit
+                                        <i-tabler name="pencil"></i-tabler>
+                                    </button>
+                                    }
+                                </div>
+                                <div class="salary-display-premium">
+                                    @if (currentSalary()) {
+                                    <div class="salary-main">
+                                        <span class="amount">{{ currentSalary()!.amount | number:'1.0-0' }}</span>
+                                        <span class="currency">{{ currentSalary()!.currency }}</span>
+                                        <span class="period">/ měsíc</span>
+                                    </div>
+                                    <div class="salary-details">
+                                        <div class="detail-item">
+                                            <span class="label">Platnost od:</span>
+                                            <span class="value">{{ currentSalary()!.validFrom | date:'dd.MM.yyyy' }}</span>
+                                        </div>
+                                    </div>
+                                    } @else {
+                                    <div class="empty-salary">
+                                        <i-tabler name="cash-off"></i-tabler>
+                                        <p>Plat nebyl nastaven</p>
+                                    </div>
+                                    }
+                                </div>
                             </div>
-                            <div class="salary-meta">
-                                <span>Platný od: {{ currentSalary.validFrom | date:'dd.MM.yyyy' }}</span>
+
+                            <!-- Payroll Export Card -->
+                            <div class="info-card">
+                                <div class="card-header">
+                                    <i-tabler name="file-export"></i-tabler>
+                                    <h3>Exporty mezd</h3>
+                                </div>
+                                <div class="export-actions-grid">
+                                    <button class="btn btn--outline" (click)="exportPayrollXML()">
+                                        <i-tabler name="file-code"></i-tabler>
+                                        Export do XML
+                                    </button>
+                                    <button class="btn btn--outline" (click)="exportAttendanceCSV()">
+                                        <i-tabler name="file-spreadsheet"></i-tabler>
+                                        Export docházky
+                                    </button>
+                                </div>
                             </div>
-                            } @else {
-                            <p>Plat nebyl nastaven</p>
-                            }
-                            @if (canManage) {
-                            <button class="btn btn--primary btn--sm" (click)="openSetSalaryModal()">
-                                <i-tabler name="edit"></i-tabler>
-                                Nastavit plat
-                            </button>
-                            }
                         </div>
 
                         <!-- Salary History -->
-                        <div class="section-header">
-                            <h4>Historie platů</h4>
-                            <button class="btn btn--ghost btn--sm" (click)="exportPayrollXML()">
-                                <i-tabler name="download"></i-tabler>
-                                Export XML
-                            </button>
-                        </div>
+                        <div class="section-container mt">
+                            <div class="subsection-header">
+                                <h3>Historie platových změn</h3>
+                            </div>
 
-                        @if (salaryHistory.length > 0) {
-                        <div class="table-container">
-                            <table class="data-table">
-                                <thead>
-                                    <tr>
-                                        <th>Částka</th>
-                                        <th>Měna</th>
-                                        <th>Platný od</th>
-                                        <th>Platný do</th>
-                                        <th>Srážky</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    @for (salary of salaryHistory; track salary.salaryId) {
-                                    <tr>
-                                        <td><strong>{{ salary.amount }}</strong></td>
-                                        <td>{{ salary.currency }}</td>
-                                        <td>{{ salary.validFrom | date:'dd.MM.yyyy' }}</td>
-                                        <td>{{ salary.validTo ? (salary.validTo | date:'dd.MM.yyyy') : 'Dosud' }}
-                                        </td>
-                                        <td>{{ salary.deductions || 0 }}</td>
-                                    </tr>
-                                    }
-                                </tbody>
-                            </table>
+                            @if (salaryHistory().length > 0) {
+                            <div class="table-container">
+                                <table class="data-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Základní plat</th>
+                                            <th>Měna</th>
+                                            <th>Platný od</th>
+                                            <th>Platný do</th>
+                                            <th>Srážky</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @for (salary of salaryHistory(); track salary.salaryId) {
+                                        <tr>
+                                            <td><strong>{{ salary.amount | number:'1.0-0' }}</strong></td>
+                                            <td>{{ salary.currency }}</td>
+                                            <td>{{ salary.validFrom | date:'dd.MM.yyyy' }}</td>
+                                            <td>{{ salary.validTo ? (salary.validTo | date:'dd.MM.yyyy') : 'Dosud' }}
+                                            </td>
+                                            <td>
+                                                <span class="deduction-tag"
+                                                    [class.has-deductions]="salary.deductions > 0">
+                                                    {{ salary.deductions || 0 }} {{ salary.currency }}
+                                                </span>
+                                            </td>
+                                        </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
+                            } @else {
+                            <div class="empty-state">
+                                <i-tabler name="history"></i-tabler>
+                                <p>Dosud nebyla zaznamenána žádná změna platu</p>
+                            </div>
+                            }
                         </div>
-                        } @else {
-                        <div class="empty-state">
-                            <i-tabler name="cash-off"></i-tabler>
-                            <p>Žádná historie platů</p>
-                        </div>
-                        }
                     </div>
                     }
 
-                    @if (selectedDetailTab.getValue() === 4) {
+                    @if (selectedDetailTab() === 4) {
                     <!-- Bonuses Tab -->
                     <div class="bonuses-tab">
-                        <!-- Bonuses Summary -->
-                        <div class="stats-cards">
-                            <div class="stat-card stat--success">
-                                <div class="stat-icon">
+                        <div class="overview-grid">
+                            <!-- Statistics Cards -->
+                            <div class="info-card">
+                                <div class="card-header">
                                     <i-tabler name="coins"></i-tabler>
+                                    <h3>Přehled prémií</h3>
                                 </div>
-                                <div class="stat-info">
-                                    <span class="stat-value">{{ bonusesTotal || 0 }} CZK</span>
-                                    <span class="stat-label">Celkové prémie</span>
-                                </div>
-                            </div>
-                            <div class="stat-card stat--warning">
-                                <div class="stat-icon">
-                                    <i-tabler name="coin-off"></i-tabler>
-                                </div>
-                                <div class="stat-info">
-                                    <span class="stat-value">{{ bonusesUnpaid || 0 }} CZK</span>
-                                    <span class="stat-label">Nevyplacené prémie</span>
+                                <div class="bonus-quick-stats">
+                                    <div class="b-stat success">
+                                        <span class="label">Celkem vyplaceno</span>
+                                        <span class="value">{{ bonusesTotal() | number:'1.0-0' }} CZK</span>
+                                    </div>
+                                    <div class="b-stat warning">
+                                        <span class="label">K vyplacení</span>
+                                        <span class="value">{{ bonusesUnpaid() | number:'1.0-0' }} CZK</span>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
 
-                        <!-- Filters and Actions -->
-                        <div class="section-header">
-                            <div class="filters-inline">
-                                <div class="custom-select" id="bonus-status" style="min-width: 150px;"
-                                    (click)="$event.stopPropagation(); dropdownManager.selected_dropdown = dropdownManager.selected_dropdown == 'bonus_status' ? '' : 'bonus_status'">
-                                    <div class="selected-value">
-                                        <div class="row" style="gap: .5rem">
-                                            {{ getFilterLabel('bonusStatus', bonusFilter.status) }}
-                                        </div>
-                                        <i-tabler name="chevron-down"></i-tabler>
-                                    </div>
-                                    @if (dropdownManager.selected_dropdown == 'bonus_status') {
-                                    <div class="options-dropdown">
-                                        <div class="list">
-                                            @for (opt of getFilterOptions('bonusStatus'); track $index) {
-                                            <div class="option row" style="gap: .5rem"
-                                                (click)="$event.stopPropagation(); dropdownManager.selected_dropdown = ''; bonusFilter.status = opt.value; filterBonuses()">
-                                                {{ opt.label }}
-                                            </div>
-                                            }
-                                        </div>
-                                    </div>
+                            <!-- Actions & Controls -->
+                            <div class="info-card">
+                                <div class="card-header">
+                                    <i-tabler name="settings"></i-tabler>
+                                    <h3>Nástroje a filtry</h3>
+                                    @if (canManage) {
+                                    <button class="card-link-btn" (click)="openAddBonusModal()">
+                                        Nová prémie
+                                        <i-tabler name="plus"></i-tabler>
+                                    </button>
                                     }
                                 </div>
-                                <div class="custom-select" id="bonus-type" style="min-width: 150px;"
-                                    (click)="$event.stopPropagation(); dropdownManager.selected_dropdown = dropdownManager.selected_dropdown == 'bonus_type' ? '' : 'bonus_type'">
-                                    <div class="selected-value">
-                                        <div class="row" style="gap: .5rem">
-                                            {{ getFilterLabel('bonusType', bonusFilter.type) }}
+                                <div class="bonus-filters-grid">
+                                    <div class="custom-select" id="bonus-status"
+                                        (click)="$event.stopPropagation(); dropdownManager.selected_dropdown = dropdownManager.selected_dropdown == 'bonus_status' ? '' : 'bonus_status'">
+                                        <div class="selected-value">
+                                            <span>{{ getFilterLabel('bonusStatus', bonusFilter().status) }}</span>
+                                            <i-tabler name="chevron-down"></i-tabler>
                                         </div>
-                                        <i-tabler name="chevron-down"></i-tabler>
-                                    </div>
-                                    @if (dropdownManager.selected_dropdown == 'bonus_type') {
-                                    <div class="options-dropdown">
-                                        <div class="list">
-                                            @for (opt of getFilterOptions('bonusType'); track $index) {
-                                            <div class="option row" style="gap: .5rem"
-                                                (click)="$event.stopPropagation(); dropdownManager.selected_dropdown = ''; bonusFilter.type = opt.value; filterBonuses()">
-                                                {{ opt.label }}
-                                            </div>
-                                            }
-                                        </div>
-                                    </div>
-                                    }
-                                </div>
-                            </div>
-                            @if (canManage) {
-                            <button class="btn btn--primary btn--sm" (click)="openAddBonusModal()">
-                                <i-tabler name="plus"></i-tabler>
-                                Přidat prémii
-                            </button>
-                            }
-                        </div>
-
-                        <!-- Bonuses Table -->
-                        @if (filteredBonuses.length > 0) {
-                        <div class="table-container">
-                            <table class="data-table">
-                                <thead>
-                                    <tr>
-                                        <th>Datum</th>
-                                        <th>Typ</th>
-                                        <th>Částka</th>
-                                        <th>Důvod</th>
-                                        <th>Status</th>
-                                        @if (canManage) {
-                                        <th>Akce</th>
-                                        }
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    @for (bonus of filteredBonuses; track bonus.bonusId) {
-                                    <tr>
-                                        <td>{{ bonus.date | date:'dd.MM.yyyy' }}</td>
-                                        <td>{{ getBonusTypeLabel(bonus.type) }}</td>
-                                        <td><strong>{{ bonus.amount }} CZK</strong></td>
-                                        <td>{{ bonus.reason }}</td>
-                                        <td>
-                                            <span class="status-badge"
-                                                [class]="bonus.paid ? 'status-success' : 'status-warning'">
-                                                {{ bonus.paid ? 'Vyplaceno' : 'Nevyplaceno' }}
-                                            </span>
-                                        </td>
-                                        @if (canManage) {
-                                        <td>
-                                            <div class="action-buttons">
-                                                @if (!bonus.paid) {
-                                                <button class="btn btn--xs btn--success"
-                                                    (click)="markBonusAsPaid(bonus.bonusId)">
-                                                    Vyplatit
-                                                </button>
-                                                <button class="btn btn--xs btn--danger"
-                                                    (click)="deleteBonus(bonus.bonusId)">
-                                                    Smazat
-                                                </button>
+                                        @if (dropdownManager.selected_dropdown == 'bonus_status') {
+                                        <div class="options-dropdown">
+                                            <div class="list">
+                                                @for (opt of getFilterOptions('bonusStatus'); track $index) {
+                                                <div class="option"
+                                                    (click)="$event.stopPropagation(); dropdownManager.selected_dropdown = ''; setBonusFilterStatus(opt.value)">
+                                                    {{ opt.label }}
+                                                </div>
                                                 }
                                             </div>
-                                        </td>
+                                        </div>
                                         }
-                                    </tr>
-                                    }
-                                </tbody>
-                            </table>
+                                    </div>
+                                    <div class="custom-select" id="bonus-type"
+                                        (click)="$event.stopPropagation(); dropdownManager.selected_dropdown = dropdownManager.selected_dropdown == 'bonus_type' ? '' : 'bonus_type'">
+                                        <div class="selected-value">
+                                            <span>{{ getFilterLabel('bonusType', bonusFilter().type) }}</span>
+                                            <i-tabler name="chevron-down"></i-tabler>
+                                        </div>
+                                        @if (dropdownManager.selected_dropdown == 'bonus_type') {
+                                        <div class="options-dropdown">
+                                            <div class="list">
+                                                @for (opt of getFilterOptions('bonusType'); track $index) {
+                                                <div class="option"
+                                                    (click)="$event.stopPropagation(); dropdownManager.selected_dropdown = ''; setBonusFilterType(opt.value)">
+                                                    {{ opt.label }}
+                                                </div>
+                                                }
+                                            </div>
+                                        </div>
+                                        }
+                                    </div>
+                                </div>
+                            </div>
                         </div>
-                        } @else {
-                        <div class="empty-state">
-                            <i-tabler name="gift-off"></i-tabler>
-                            <p>Žádné prémie</p>
+
+                        <!-- Bonuses List -->
+                        <div class="section-container mt">
+                            <div class="subsection-header">
+                                <h3>Seznam odměn a prémií</h3>
+                            </div>
+
+                            @if (filteredBonuses().length > 0) {
+                            <div class="table-container">
+                                <table class="data-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Datum</th>
+                                            <th>Typ</th>
+                                            <th>Částka</th>
+                                            <th>Důvod</th>
+                                            <th>Status</th>
+                                            @if (canManage) {
+                                            <th>Akce</th>
+                                            }
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @for (bonus of filteredBonuses(); track bonus.bonusId) {
+                                        <tr>
+                                            <td>{{ bonus.date | date:'dd.MM.yyyy' }}</td>
+                                            <td>
+                                                <span class="type-badge-alt">
+                                                    {{ getBonusTypeLabel(bonus.type) }}
+                                                </span>
+                                            </td>
+                                            <td><strong class="text-primary">{{ bonus.amount | number:'1.0-0' }}
+                                                    CZK</strong></td>
+                                            <td>{{ bonus.reason }}</td>
+                                            <td>
+                                                <span class="status-badge"
+                                                    [class]="bonus.paid ? 'status-success' : 'status-warning'">
+                                                    {{ bonus.paid ? 'Vyplaceno' : 'Nevyplaceno' }}
+                                                </span>
+                                            </td>
+                                            @if (canManage) {
+                                            <td>
+                                                <div class="action-buttons">
+                                                    @if (!bonus.paid) {
+                                                    <button class="btn-icon btn-icon--success"
+                                                        (click)="markBonusAsPaid(bonus.bonusId)" title="Vyplatit">
+                                                        <i-tabler name="check"></i-tabler>
+                                                    </button>
+                                                    <button class="btn-icon btn-icon--danger"
+                                                        (click)="deleteBonus(bonus.bonusId)" title="Smazat">
+                                                        <i-tabler name="trash"></i-tabler>
+                                                    </button>
+                                                    }
+                                                </div>
+                                            </td>
+                                            }
+                                        </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
+                            } @else {
+                            <div class="empty-state">
+                                <i-tabler name="gift-off"></i-tabler>
+                                <p>Nenalezeny žádné prémie odpovídající filtrům</p>
+                            </div>
+                            }
                         </div>
-                        }
                     </div>
                     }
                 </div>
             </main>
         </div>
     </div>
-    <!-- Employee Detail View -->
-    @if (selectedEmployee && false) {
-    <div class="detail-view">
-        <!-- Tab Content -->
-        <div class="tab-content">
-
-            @if (selectedDetailTab.getValue() === 0) {
-            <!-- Overview Tab -->
-            <div class="overview-tab">
-                <div class="info-grid">
-                    <div class="info-card">
-                        <h4>Kontaktní informace</h4>
-                        <div class="info-row">
-                            <i-tabler name="mail"></i-tabler>
-                            <span>{{ selectedEmployee.email || 'Neuvedeno' }}</span>
-                        </div>
-                        <div class="info-row">
-                            <i-tabler name="phone"></i-tabler>
-                            <span>{{ selectedEmployee.phone || 'Neuvedeno' }}</span>
-                        </div>
-                    </div>
-                    <div class="info-card">
-                        <h4>Pracovní údaje</h4>
-                        <div class="info-row">
-                            <i-tabler name="briefcase"></i-tabler>
-                            <span>{{ l.s('roles.' + selectedEmployee.role) }}</span>
-                        </div>
-                        <div class="info-row">
-                            <i-tabler name="door"></i-tabler>
-                            <span>Kabinet: {{ selectedEmployee.cabinet || 'Neuvedeno' }}</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            }
-
-            @if (selectedDetailTab.getValue() === 1) {
-            <!-- Attendance Tab -->
-            <div class="attendance-tab">
-                <!-- Statistics Cards -->
-                <div class="stats-grid">
-                    <div class="stat-card stat--primary">
-                        <div class="stat-icon">
-                            <i-tabler name="clock"></i-tabler>
-                        </div>
-                        <div class="stat-content">
-                            <span class="stat-value">{{ attendanceStats.totalHours }}h</span>
-                            <span class="stat-label">Celkem hodin</span>
-                        </div>
-                    </div>
-                    <div class="stat-card stat--success">
-                        <div class="stat-icon">
-                            <i-tabler name="calendar-check"></i-tabler>
-                        </div>
-                        <div class="stat-content">
-                            <span class="stat-value">{{ attendanceStats.daysPresent }}</span>
-                            <span class="stat-label">Dní přítomen</span>
-                        </div>
-                    </div>
-                    <div class="stat-card stat--info">
-                        <div class="stat-icon">
-                            <i-tabler name="chart-bar"></i-tabler>
-                        </div>
-                        <div class="stat-content">
-                            <span class="stat-value">{{ attendanceStats.avgDaily }}h</span>
-                            <span class="stat-label">Průměr/den</span>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Filters -->
-                <div class="filters-row">
-                    <div class="filter-group">
-                        <label>Období</label>
-                        <div class="custom-select" id="attendance-period-2" style="min-width: 150px;"
-                            (click)="$event.stopPropagation(); dropdownManager.selected_dropdown = dropdownManager.selected_dropdown == 'attendance_period_2' ? '' : 'attendance_period_2'">
-                            <div class="selected-value">
-                                <div class="row" style="gap: .5rem">
-                                    {{ getFilterLabel('attendancePeriod', attendanceFilter.period) }}
-                                </div>
-                                <i-tabler name="chevron-down"></i-tabler>
-                            </div>
-                            @if (dropdownManager.selected_dropdown == 'attendance_period_2') {
-                            <div class="options-dropdown">
-                                <div class="list">
-                                    @for (opt of getFilterOptions('attendancePeriod'); track $index) {
-                                    <div class="option row" style="gap: .5rem"
-                                        (click)="$event.stopPropagation(); dropdownManager.selected_dropdown = ''; attendanceFilter.period = opt.value; loadAttendanceRecords(selectedEmployee.personId)">
-                                        {{ opt.label }}
-                                    </div>
-                                    }
-                                </div>
-                            </div>
-                            }
-                        </div>
-                    </div>
-                    @if (attendanceFilter.period === 'custom') {
-                    <div class="filter-group">
-                        <label>Od</label>
-                        <input type="date" class="form-input" [(ngModel)]="attendanceFilter.startDate">
-                    </div>
-                    <div class="filter-group">
-                        <label>Do</label>
-                        <input type="date" class="form-input" [(ngModel)]="attendanceFilter.endDate">
-                    </div>
-                    }
-                    <button class="btn btn--primary btn--sm" (click)="exportAttendanceCSV()">
-                        <i-tabler name="download"></i-tabler>
-                        Export CSV
-                    </button>
-                </div>
-
-                <!-- Attendance Records Table -->
-                @if (attendanceRecords.length > 0) {
-                <div class="table-container">
-                    <table class="data-table">
-                        <thead>
-                            <tr>
-                                <th>Datum</th>
-                                <th>Příchod</th>
-                                <th>Odchod</th>
-                                <th>Pauza (min)</th>
-                                <th>Odpracováno</th>
-                                <th>Typ</th>
-                                @if (canManage) {
-                                <th>Akce</th>
-                                }
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @for (record of attendanceRecords; track record.attendanceId) {
-                            <tr>
-                                <td>{{ record.date | date:'dd.MM.yyyy' }}</td>
-                                <td>{{ record.checkIn || '-' }}</td>
-                                <td>{{ record.checkOut || 'Aktivní' }}</td>
-                                <!-- <td>{{ record.breakMinutes || 0 }}</td> -->
-                                <td>
-                                    @if (record.workedMinutes) {
-                                    <span class="hours-worked">{{ (record.workedMinutes / 60).toFixed(1) }}h</span>
-                                    }
-                                </td>
-                                <td>
-                                    <span class="type-badge" [class]="'type-' + record.type">
-                                        {{ record.type || 'office' }}
-                                    </span>
-                                </td>
-                                @if (canManage) {
-                                <td>
-                                    <button class="btn-icon" (click)="editAttendanceRecord(record)">
-                                        <i-tabler name="edit"></i-tabler>
-                                    </button>
-                                </td>
-                                }
-                            </tr>
-                            }
-                        </tbody>
-                    </table>
-                </div>
-                } @else {
-                <div class="empty-state">
-                    <i-tabler name="calendar-off"></i-tabler>
-                    <p>Žádné záznamy docházky</p>
-                </div>
-                }
-            </div>
-            }
-
-            @if (selectedDetailTab.getValue() === 2) {
-            <!-- Vacations Tab -->
-            <div class="vacations-tab">
-                <!-- Balance Card -->
-                <div class="vacation-balance-card">
-                    <div class="card-header-row">
-                        <h3>Stav dovolené {{ currentYear }}</h3>
-                        @if (canManage) {
-                        <button class="btn btn--secondary btn--sm" (click)="changeVacationEntitlement()"
-                            title="Upravit nárok">
-                            <i-tabler name="adjustments"></i-tabler>
-                            Upravit nárok
-                        </button>
-                        }
-                    </div>
-                    <div class="balance-info">
-                        <div class="balance-item">
-                            <span class="balance-label">Nárok</span>
-                            <span class="balance-value primary">{{ vacationBalance.entitlement || 0 }} dní</span>
-                        </div>
-                        <div class="balance-item">
-                            <span class="balance-label">Čerpáno</span>
-                            <span class="balance-value danger">{{ vacationBalance.used || 0 }} dní</span>
-                        </div>
-                        <div class="balance-item">
-                            <span class="balance-label">Zbývá</span>
-                            <span class="balance-value success">{{ vacationBalance.remaining || 0 }} dní</span>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Requests Table -->
-                <div class="section-header">
-                    <h4>Žádosti o dovolenou</h4>
-                    <button class="btn btn--primary btn--sm" (click)="openVacationRequestModal()">
-                        <i-tabler name="plus"></i-tabler>
-                        Nová žádost
-                    </button>
-                </div>
-
-                @if (vacationRequests.length > 0) {
-                <div class="table-container">
-                    <table class="data-table">
-                        <thead>
-                            <tr>
-                                <th>Typ</th>
-                                <th>Od - Do</th>
-                                <th>Dní</th>
-                                <th>Status</th>
-                                <th>Důvod</th>
-                                @if (canManage) {
-                                <th>Akce</th>
-                                }
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @for (request of vacationRequests; track request.requestId) {
-                            <tr>
-                                <td>{{ getVacationTypeLabel(request.type) }}</td>
-                                <td>{{ request.startDate | date:'dd.MM.yyyy' }} - {{ request.endDate | date:'dd.MM.yyyy'
-                                    }}
-                                </td>
-                                <td>{{ request.days }}</td>
-                                <td>
-                                    <span class="status-badge" [class]="getVacationStatusClass(request.status)">
-                                        {{ getVacationStatusLabel(request.status) }}
-                                    </span>
-                                </td>
-                                <td>{{ request.reason || '-' }}</td>
-                                @if (canManage && request.status === 'pending') {
-                                <td>
-                                    <div class="action-buttons">
-                                        <button class="btn btn--xs btn--success"
-                                            (click)="approveVacation(request.requestId)">
-                                            Schválit
-                                        </button>
-                                        <button class="btn btn--xs btn--danger"
-                                            (click)="rejectVacation(request.requestId)">
-                                            Zamítnout
-                                        </button>
-                                    </div>
-                                </td>
-                                }
-                            </tr>
-                            }
-                        </tbody>
-                    </table>
-                </div>
-                } @else {
-                <div class="empty-state">
-                    <i-tabler name="beach-off"></i-tabler>
-                    <p>Žádné žádosti o dovolenou</p>
-                </div>
-                }
-            </div>
-            }
-
-            @if (selectedDetailTab.getValue() === 3) {
-            <!-- Salaries Tab -->
-            <div class="salaries-tab">
-                <!-- Current Salary Card -->
-                <div class="current-salary-card">
-                    <h3>Aktuální plat</h3>
-                    @if (currentSalary) {
-                    <div class="salary-amount">
-                        <span class="amount">{{ currentSalary.amount }} {{ currentSalary.currency }}</span>
-                        <span class="period">/ měsíc</span>
-                    </div>
-                    <div class="salary-meta">
-                        <span>Platný od: {{ currentSalary.validFrom | date:'dd.MM.yyyy' }}</span>
-                    </div>
-                    } @else {
-                    <p>Plat nebyl nastaven</p>
-                    }
-                    @if (canManage) {
-                    <button class="btn btn--primary btn--sm" (click)="openSetSalaryModal()">
-                        <i-tabler name="edit"></i-tabler>
-                        Nastavit plat
-                    </button>
-                    }
-                </div>
-
-                <!-- Salary History -->
-                <div class="section-header">
-                    <h4>Historie platů</h4>
-                    <button class="btn btn--ghost btn--sm" (click)="exportPayrollXML()">
-                        <i-tabler name="download"></i-tabler>
-                        Export XML
-                    </button>
-                </div>
-
-                @if (salaryHistory.length > 0) {
-                <div class="table-container">
-                    <table class="data-table">
-                        <thead>
-                            <tr>
-                                <th>Částka</th>
-                                <th>Měna</th>
-                                <th>Platný od</th>
-                                <th>Platný do</th>
-                                <th>Srážky</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @for (salary of salaryHistory; track salary.salaryId) {
-                            <tr>
-                                <td><strong>{{ salary.amount }}</strong></td>
-                                <td>{{ salary.currency }}</td>
-                                <td>{{ salary.validFrom | date:'dd.MM.yyyy' }}</td>
-                                <td>{{ salary.validTo ? (salary.validTo | date:'dd.MM.yyyy') : 'Dosud' }}</td>
-                                <td>{{ salary.deductions || 0 }}</td>
-                            </tr>
-                            }
-                        </tbody>
-                    </table>
-                </div>
-                } @else {
-                <div class="empty-state">
-                    <i-tabler name="cash-off"></i-tabler>
-                    <p>Žádná historie platů</p>
-                </div>
-                }
-            </div>
-            }
-
-            @if (selectedDetailTab.getValue() === 4) {
-            <!-- Bonuses Tab -->
-            <div class="bonuses-tab">
-                <!-- Bonuses Summary -->
-                <div class="bonuses-summary">
-                    <div class="summary-card">
-                        <h4>Celkové prémie</h4>
-                        <div class="summary-amount success">{{ bonusesTotal }} CZK</div>
-                    </div>
-                    <div class="summary-card">
-                        <h4>Nevyplaceno</h4>
-                        <div class="summary-amount warning">{{ bonusesUnpaid }} CZK</div>
-                    </div>
-                </div>
-
-                <!-- Filters and Actions -->
-                <div class="section-header">
-                    <div class="filters-inline">
-                        <select class="form-select" [(ngModel)]="bonusFilter.status" (change)="filterBonuses()">
-                            <option value="all">Všechny</option>
-                            <option value="paid">Vyplacené</option>
-                            <option value="unpaid">Nevyplacené</option>
-                        </select>
-                        <select class="form-select" [(ngModel)]="bonusFilter.type" (change)="filterBonuses()">
-                            <option value="all">Všechny typy</option>
-                            <option value="performance">Výkon</option>
-                            <option value="project">Projekt</option>
-                            <option value="holiday">Svátky</option>
-                            <option value="other">Ostatní</option>
-                        </select>
-                    </div>
-                    @if (canManage) {
-                    <button class="btn btn--primary btn--sm" (click)="openAddBonusModal()">
-                        <i-tabler name="plus"></i-tabler>
-                        Přidat prémii
-                    </button>
-                    }
-                </div>
-
-                <!-- Bonuses Table -->
-                @if (filteredBonuses.length > 0) {
-                <div class="table-container">
-                    <table class="data-table">
-                        <thead>
-                            <tr>
-                                <th>Datum</th>
-                                <th>Typ</th>
-                                <th>Částka</th>
-                                <th>Důvod</th>
-                                <th>Status</th>
-                                @if (canManage) {
-                                <th>Akce</th>
-                                }
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @for (bonus of filteredBonuses; track bonus.bonusId) {
-                            <tr>
-                                <td>{{ bonus.date | date:'dd.MM.yyyy' }}</td>
-                                <td>{{ getBonusTypeLabel(bonus.type) }}</td>
-                                <td><strong>{{ bonus.amount }} CZK</strong></td>
-                                <td>{{ bonus.reason }}</td>
-                                <td>
-                                    <span class="status-badge"
-                                        [class]="bonus.paid ? 'status-success' : 'status-warning'">
-                                        {{ bonus.paid ? 'Vyplaceno' : 'Nevyplaceno' }}
-                                    </span>
-                                </td>
-                                @if (canManage) {
-                                <td>
-                                    <div class="action-buttons">
-                                        @if (!bonus.paid) {
-                                        <button class="btn btn--xs btn--success"
-                                            (click)="markBonusAsPaid(bonus.bonusId)">
-                                            Vyplatit
-                                        </button>
-                                        <button class="btn btn--xs btn--danger" (click)="deleteBonus(bonus.bonusId)">
-                                            Smazat
-                                        </button>
-                                        }
-                                    </div>
-                                </td>
-                                }
-                            </tr>
-                            }
-                        </tbody>
-                    </table>
-                </div>
-                } @else {
-                <div class="empty-state">
-                    <i-tabler name="gift-off"></i-tabler>
-                    <p>Žádné prémie</p>
-                </div>
-                }
-            </div>
-            }
-
-        </div>
-    </div>
-    }
-
     } @else {
     @if (!perm.checkPermission(['manager:employees_manage'])) {
     <div class="alert alert--danger mb">
         Nemáte dostatečná oprávnění na vidění ostatních zaměstnanců, zobrazujeme pouze Vás.
     </div>
     }
+
     <!-- Employee List View -->
     <div class="list-view">
-        <!-- Page Header -->
+        <!-- Header -->
         <div class="card-header">
             <h2>Zaměstnanci</h2>
             <div class="header-actions">
-                <!-- Attendance Check-in/out -->
+                <!-- Attendance Quick Actions -->
                 <div class="attendance-quick">
-                    @if (!isCheckedIn) {
+                    @if (!isCheckedIn()) {
                     <button class="btn btn--success btn--sm" (click)="performCheckIn()">
                         <i-tabler name="login"></i-tabler>
                         Příchod
                     </button>
                     } @else {
-                    <div class="checked-in-info">
+                    <div class="checked-in-info" style="display: flex; align-items: center; gap: 0.75rem;">
                         <span class="check-time">
                             <i-tabler name="clock"></i-tabler>
-                            Od {{ checkInTime }}
+                            Od {{ checkInTime() }}
                         </span>
                         <button class="btn btn--warning btn--sm" (click)="performCheckOut(30)">
                             <i-tabler name="logout"></i-tabler>
-                            Odchod
+                            {{ currentAttendanceRecord()?.checkOut ? 'Dřívější odchod' : 'Odchod' }}
                         </button>
                     </div>
                     }
@@ -1031,120 +724,99 @@
 
                 @if (canManage) {
                 <button class="btn btn--sm btn--primary" (click)="openAddEmployeeModal()">
-                    <i-tabler name="user-plus"></i-tabler>
-                    Přidat zaměstnance
+                    <i-tabler name="plus"></i-tabler>
+                    Nový zaměstnanec
                 </button>
                 }
             </div>
         </div>
 
         <!-- View Tabs -->
-        <schoolingo-tabs [options]="viewTabOptions" [icons]="viewTabIcons" [value]="selectedViewTab"></schoolingo-tabs>
+        <schoolingo-tabs [options]="viewTabOptions" [icons]="viewTabIcons" [value]="selectedViewTabSubject"></schoolingo-tabs>
 
-        @if (selectedViewTab.getValue() === 0) {
-        <!-- Search & Filters -->
-        <div class="filters-row-container">
-            <div class="search-wrapper">
-                <i-tabler name="search"></i-tabler>
-                <input type="search" placeholder="Hledat zaměstnance..." [(ngModel)]="filters.search"
-                    (ngModelChange)="onFilterChange()">
-            </div>
-
-            <div class="filter-group">
-                <div class="custom-select" id="type"
-                    (click)="$event.stopPropagation();dropdownManager.selected_dropdown = dropdownManager.selected_dropdown == 'employees_update_filter_status' ? '' : 'employees_update_filter_status'">
-                    <div class="selected-value">
-                        <div class="row" style="gap: .5rem">
-                            {{ l.s('employees.status.' + filters.status) }}
+        <!-- TAB 0: LIST -->
+        @if (selectedViewTab() === 0) {
+        <div class="filters-card">
+            <div class="filters-row-container">
+                <div class="search-wrapper full-width">
+                    <i-tabler name="search"></i-tabler>
+                    <input type="text" placeholder="Hledat zaměstnance..." [ngModel]="filters().search"
+                        (ngModelChange)="updateFilter('search', $event); onFilterChange()">
+                    <button *ngIf="filters().search" class="clear-search" (click)="updateFilter('search', ''); onFilterChange()">
+                        <i-tabler name="x"></i-tabler>
+                    </button>
+                </div>
+                <div class="filter-group">
+                    <div class="custom-select" id="role-filter" style="min-width: 180px;"
+                        (click)="$event.stopPropagation(); dropdownManager.selected_dropdown = dropdownManager.selected_dropdown == 'role_filter' ? '' : 'role_filter'">
+                        <div class="selected-value">
+                            <span *ngIf="filters().role === 'all'">Všechny role</span>
+                            <span *ngIf="filters().role !== 'all'">{{ l.s('roles.' + filters().role) }}</span>
+                            <i-tabler name="chevron-down"></i-tabler>
                         </div>
-                        <i-tabler name="chevron-down"></i-tabler>
-                    </div>
-                    @if (dropdownManager.selected_dropdown == 'employees_update_filter_status') {
-                    <div class="options-dropdown">
-                        <div class="list">
-                            @for (status of EMPLOYEE_CONFIG.EMPLOYEE_STATUSES; track $index) {
-                            <div class="option row" style="gap: .5rem"
-                                (click)="$event.stopPropagation();dropdownManager.selected_dropdown = '';filters.status = status;onFilterChange()">
-                                {{ l.s('employees.status.' + status) }}
+                        @if (dropdownManager.selected_dropdown == 'role_filter') {
+                        <div class="options-dropdown">
+                            <div class="list">
+                                <div class="option"
+                                    (click)="$event.stopPropagation(); dropdownManager.selected_dropdown = ''; updateFilter('role', 'all'); onFilterChange()">
+                                    Všechny role</div>
+                                <div class="option"
+                                    (click)="$event.stopPropagation(); dropdownManager.selected_dropdown = ''; updateFilter('role', 'teacher'); onFilterChange()">
+                                    {{ l.s('roles.teacher') }}</div>
+                                <div class="option"
+                                    (click)="$event.stopPropagation(); dropdownManager.selected_dropdown = ''; updateFilter('role', 'director'); onFilterChange()">
+                                    {{ l.s('roles.director') }}</div>
+                                <div class="option"
+                                    (click)="$event.stopPropagation(); dropdownManager.selected_dropdown = ''; updateFilter('role', 'deputy_director'); onFilterChange()">
+                                    {{ l.s('roles.deputy_director') }}</div>
+                                <div class="option"
+                                    (click)="$event.stopPropagation(); dropdownManager.selected_dropdown = ''; updateFilter('role', 'caretaker'); onFilterChange()">
+                                    {{ l.s('roles.caretaker') }}</div>
+                                <div class="option"
+                                    (click)="$event.stopPropagation(); dropdownManager.selected_dropdown = ''; updateFilter('role', 'kitchen_staff'); onFilterChange()">
+                                    {{ l.s('roles.kitchen_staff') }}</div>
+                                <div class="option"
+                                    (click)="$event.stopPropagation(); dropdownManager.selected_dropdown = ''; updateFilter('role', 'cleaner'); onFilterChange()">
+                                    {{ l.s('roles.cleaner') }}</div>
+                                <div class="option"
+                                    (click)="$event.stopPropagation(); dropdownManager.selected_dropdown = ''; updateFilter('role', 'economist'); onFilterChange()">
+                                    {{ l.s('roles.economist') }}</div>
+                                <div class="option"
+                                    (click)="$event.stopPropagation(); dropdownManager.selected_dropdown = ''; updateFilter('role', 'schedule_manager'); onFilterChange()">
+                                    {{ l.s('roles.schedule_manager') }}</div>
+                                <div class="option"
+                                    (click)="$event.stopPropagation(); dropdownManager.selected_dropdown = ''; updateFilter('role', 'it_admin'); onFilterChange()">
+                                    {{ l.s('roles.it_admin') }}</div>
+                                <div class="option"
+                                    (click)="$event.stopPropagation(); dropdownManager.selected_dropdown = ''; updateFilter('role', 'admin'); onFilterChange()">
+                                    {{ l.s('roles.admin') }}</div>
                             </div>
-                            }
                         </div>
+                        }
                     </div>
-                    }
                 </div>
             </div>
-
-            <div class="filter-group">
-                <div class="custom-select" id="role"
-                    (click)="$event.stopPropagation();dropdownManager.selected_dropdown = dropdownManager.selected_dropdown == 'employees_update_filter_role' ? '' : 'employees_update_filter_role'">
-                    <div class="selected-value">
-                        <div class="row" style="gap: .5rem">
-                            {{ l.s('roles.' + filters.role) }}
-                        </div>
-                        <i-tabler name="chevron-down"></i-tabler>
-                    </div>
-                    @if (dropdownManager.selected_dropdown == 'employees_update_filter_role') {
-                    <div class="options-dropdown">
-                        <div class="list">
-                            @for (role of EMPLOYEE_CONFIG.EMPLOYEE_ROLES; track $index) {
-                            <div class="option row" style="gap: .5rem"
-                                (click)="$event.stopPropagation();dropdownManager.selected_dropdown = '';filters.role = role;onFilterChange()">
-                                {{ l.s('roles.' + role) }}
-                            </div>
-                            }
-                        </div>
-                    </div>
-                    }
-                </div>
-            </div>
-
-            <button class="btn btn--ghost btn--sm" (click)="clearFilters()">
-                <i-tabler name="filter-off"></i-tabler>
-            </button>
         </div>
 
-        <!-- Loading State -->
-        @if (isLoading) {
-        <div class="loading-state">
-            <div class="loading-spinner"></div>
-            <p>Načítání zaměstnanců...</p>
-        </div>
-        }
-
-        <!-- Error State -->
-        @else if (loadError) {
-        <div class="error-state">
-            <i-tabler name="alert-circle"></i-tabler>
-            <h3>Chyba načítání</h3>
-            <p>{{ loadError }}</p>
-            <button class="btn btn--primary" (click)="loadEmployees()">
-                <i-tabler name="refresh"></i-tabler>
-                Zkusit znovu
-            </button>
-        </div>
-        }
-
-        <!-- Employees Table -->
-        @else if (employees.length > 0) {
         <div class="employees-table-wrapper">
             <table class="employees-table">
                 <thead>
                     <tr>
-                        <th class="col-employee">Zaměstnanec</th>
-                        <th class="col-role">Role</th>
-                        <th class="col-department">Oddělení</th>
-                        <th class="col-contract">Typ smlouvy</th>
-                        <th class="col-status">Status</th>
-                        <th class="col-actions"></th>
+                        <th>Zaměstnanec</th>
+                        <th>Role</th>
+                        <th>Kontakt</th>
+                        <th>Úvazek</th>
+                        <th>Status</th>
+                        <th></th>
                     </tr>
                 </thead>
                 <tbody>
-                    @for (employee of employees; track employee.personId) {
+                    @for (employee of employees(); track employee.personId) {
                     <tr (click)="selectEmployee(employee)">
-                        <td class="col-employee">
+                        <td>
                             <div class="employee-cell">
                                 <div class="employee-avatar-sm">
-                                    <span>{{ employee.firstName[0] }}{{ employee.lastName[0] }}</span>
+                                    {{ Utils.getInitials(employee.fullName) }}
                                 </div>
                                 <div class="employee-name-cell">
                                     <span class="name">{{ employee.fullName }}</span>
@@ -1152,19 +824,28 @@
                                 </div>
                             </div>
                         </td>
-                        <td class="col-role">
-                            <span class="role-badge">{{ l.s('roles.' + employee.role) }}</span>
+                        <td>
+                            <div class="role-badge">
+                                {{ l.s('roles.' + employee.role) }}
+                            </div>
                         </td>
-                        <td class="col-department">{{ employee.department || '-' }}</td>
-                        <td class="col-contract">{{ getContractTypeLabel(employee.contractType) }}</td>
-                        <td class="col-status">
-                            <span class="status-pill" [class]="employee.status">
+                        <td>
+                            <div class="employee-name-cell">
+                                <span class="name" style="font-size: 0.8125rem;">{{ employee.phone || '-' }}</span>
+                                <span class="email">Kabinet {{ employee.cabinet || '-' }}</span>
+                            </div>
+                        </td>
+                        <td>
+                            <span class="average-badge">{{ employee.hoursPerWeek || 0 }}h</span>
+                        </td>
+                        <td>
+                            <span class="status-pill" [class]="getStatusClass(employee.status)">
                                 {{ getStatusText(employee.status) }}
                             </span>
                         </td>
                         <td class="col-actions">
-                            <button class="row-action" (click)="$event.stopPropagation()">
-                                <i-tabler name="dots"></i-tabler>
+                            <button class="row-action">
+                                <i-tabler name="chevron-right"></i-tabler>
                             </button>
                         </td>
                     </tr>
@@ -1173,55 +854,43 @@
             </table>
         </div>
 
-        <!-- Pagination -->
-        @if (totalItems > pageSize) {
         <div class="bottom">
             <div class="left">
                 <span class="pagination-info">
-                    Zobrazeno {{ (currentPage - 1) * pageSize + 1 }} - {{ Utils.MathMin([currentPage * pageSize,
-                    totalItems]) }} z {{ totalItems }} zaměstnanců
+                    Zobrazeno {{ (currentPage() - 1) * pageSize() + 1 }} - {{ (currentPage() * pageSize()) > totalItems() ?
+                    totalItems() : (currentPage() * pageSize()) }} z {{ totalItems() }} zaměstnanců
                 </span>
             </div>
             <div class="right">
-                <div class="page center previous" [class.disabled]="currentPage == 1"
-                    (click)="currentPage > 1 && loadEmployees(currentPage - 1)">
+                @if (totalPages() > 1) {
+                <div class="page center previous" [class.disabled]="currentPage() == 1"
+                    (click)="currentPage() > 1 && loadEmployees(currentPage() - 1)">
                     <i-tabler name="chevron-left" style="width:18px;height:18px;"></i-tabler>
                 </div>
-                @for (p of getPageList(); track $index) {
-                <div class="page center" [class.active]="currentPage === p" (click)="loadEmployees(p)">{{ p }}</div>
+                @for (p of getPageList(); track p) {
+                <div class="page center" [class.active]="currentPage() === p" (click)="loadEmployees(p)">
+                    {{ p }}
+                </div>
                 }
-                <div class="page center next" [class.disabled]="currentPage == totalPages"
-                    (click)="currentPage < totalPages && loadEmployees(currentPage + 1)">
+                <div class="page center next" [class.disabled]="currentPage() == totalPages()"
+                    (click)="currentPage() < totalPages() && loadEmployees(currentPage() + 1)">
                     <i-tabler name="chevron-right" style="width:18px;height:18px;"></i-tabler>
                 </div>
+                }
             </div>
         </div>
         }
-        }
 
-        <!-- Empty State -->
-        @else {
-        <div class="no-selection">
-            <div class="illustration">
-                <i-tabler name="users-minus"></i-tabler>
-            </div>
-            <h3>Žádní zaměstnanci nenalezeni</h3>
-            <p>Zkuste upravit filtry nebo přidat nového zaměstnance</p>
-        </div>
-        }
-        }
-
-        @if (selectedViewTab.getValue() === 1) {
-        <!-- Attendance Tab Content -->
+        <!-- TAB 1: ATTENDANCE -->
+        @if (selectedViewTab() === 1) {
         <div class="attendance-wrapper">
-            <div class="card-header"
-                style="justify-content: space-between; align-items: center; display: flex; margin-bottom: 20px;">
+            <div class="card-header" style="justify-content: space-between; align-items: center; display: flex; margin-bottom: 20px;">
                 <h3>Přehled docházky</h3>
                 <div class="filters-inline">
                     <div class="filter-group">
                         <label>Datum</label>
-                        <input type="date" class="form-input" [(ngModel)]="attendanceFilter.startDate"
-                            (change)="loadAllAttendance()">
+                        <input type="date" class="form-input" [ngModel]="attendanceFilter().startDate"
+                            (ngModelChange)="setAttendanceFilterStartDateAndReload($event)">
                     </div>
                 </div>
             </div>
@@ -1239,8 +908,8 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @if (allAttendanceRecords.length > 0) {
-                        @for (record of allAttendanceRecords; track record.attendanceId) {
+                        @if (allAttendanceRecords().length > 0) {
+                        @for (record of allAttendanceRecords(); track record.attendanceId) {
                         <tr>
                             <td class="col-name">
                                 <div class="name-cell">
@@ -1262,12 +931,16 @@
                                 }
                             </td>
                             <td>
-                                @if (!record.checkOut && record.checkIn) {
+                                @switch (getAttendanceStatus(record)) {
+                                @case ('active') {
                                 <span class="status-badge status-active">Přítomen</span>
-                                } @else if (record.checkOut) {
+                                }
+                                @case ('inactive') {
                                 <span class="status-badge status-inactive">Nepřítomen</span>
-                                } @else {
+                                }
+                                @default {
                                 <span class="status-badge">Neznámo</span>
+                                }
                                 }
                             </td>
                             <td>
@@ -1293,8 +966,8 @@
         </div>
         }
 
-        @if (selectedViewTab.getValue() === 2) {
-        <!-- Vacation Requests View -->
+        <!-- TAB 2: VACATION REQUESTS -->
+        @if (selectedViewTab() === 2) {
         <div class="vacations-view">
             <div class="subsection-header">
                 <h3>Žádosti o dovolenou</h3>
@@ -1304,9 +977,9 @@
                 </button>
             </div>
 
-            @if (vacationRequests.length > 0) {
+            @if (vacationRequests().length > 0) {
             <div class="vacation-list">
-                @for (request of vacationRequests; track request.requestId) {
+                @for (request of vacationRequests(); track request.requestId) {
                 <div class="vacation-card" [class]="getVacationStatusClass(request.status)">
                     <div class="vacation-info">
                         <div class="vacation-type">
@@ -1343,14 +1016,11 @@
                 <p>Není podána žádná žádost o dovolenou</p>
             </div>
             }
-
         </div>
-
-
         }
 
-        @if (selectedViewTab.getValue() === 3 && canManage) {
-        <!-- Salaries View -->
+        <!-- TAB 3: SALARIES -->
+        @if (selectedViewTab() === 3 && canManage) {
         <div class="salaries-view">
             <div class="subsection-header">
                 <h3>Platy a mzdy</h3>

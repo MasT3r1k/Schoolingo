@@ -1,0 +1,81 @@
+<form class="employee-form">
+    <div class="form-section">
+        <h3 class="section-title">Úprava zaměstnance: {{ employee.firstName }} {{ employee.lastName }}</h3>
+
+        <div class="form-row">
+            <div class="form-group">
+                <label>Role</label>
+                <div class="custom-select" id="role"
+                    (click)="$event.stopPropagation();dropdownManager.selected_dropdown = dropdownManager.selected_dropdown == 'edit_employee_role' ? '' : 'edit_employee_role'">
+                    <div class="selected-value">
+                        <div class="row" style="gap: .5rem">
+                            {{ roleLabel(employee.role) }}
+                        </div>
+                        <i-tabler name="chevron-down"></i-tabler>
+                    </div>
+                    @if (dropdownManager.selected_dropdown == 'edit_employee_role') {
+                    <div class="options-dropdown">
+                        <div class="list">
+                            @for (role of roles; track $index) {
+                            <div class="option row" style="gap: .5rem"
+                                (click)="$event.stopPropagation();dropdownManager.selected_dropdown = '';employee.role = role">
+                                {{ roleLabel(role) }}
+                            </div>
+                            }
+                        </div>
+                    </div>
+                    }
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>Typ smlouvy</label>
+                <div class="custom-select" id="contract"
+                    (click)="$event.stopPropagation();dropdownManager.selected_dropdown = dropdownManager.selected_dropdown == 'edit_employee_contract' ? '' : 'edit_employee_contract'">
+                    <div class="selected-value">
+                        <div class="row" style="gap: .5rem">
+                            {{ getContractTypeLabel(employee.contractType) }}
+                        </div>
+                        <i-tabler name="chevron-down"></i-tabler>
+                    </div>
+                    @if (dropdownManager.selected_dropdown == 'edit_employee_contract') {
+                    <div class="options-dropdown">
+                        <div class="list">
+                            @for (type of contractTypes; track $index) {
+                            <div class="option row" style="gap: .5rem"
+                                (click)="$event.stopPropagation();dropdownManager.selected_dropdown = '';employee.contractType = type.value">
+                                {{ type.label }}
+                            </div>
+                            }
+                        </div>
+                    </div>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <div class="form-row">
+            <div class="form-group">
+                <label>Oddělení</label>
+                <input type="text" class="form-input" [(ngModel)]="employee.department" name="department"
+                    placeholder="Např. IT, Jazyky, ...">
+            </div>
+
+            <div class="form-group">
+                <label>Kabinet</label>
+                <input type="number" class="form-input" [(ngModel)]="employee.cabinet" name="cabinet"
+                    placeholder="Číslo kabinetu">
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-actions">
+        <button type="button" class="btn btn--ghost" (click)="close()">
+            {{ l.s('cancel') }}
+        </button>
+        <button type="button" class="btn btn--primary" (click)="submitEditEmployee()">
+            <i-tabler name="check"></i-tabler>
+            Uložit změny
+        </button>
+    </div>
+</form>

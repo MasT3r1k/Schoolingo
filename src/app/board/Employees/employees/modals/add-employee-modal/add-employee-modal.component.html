@@ -1,32 +1,41 @@
 <form class="employee-form">
+    <!-- Personal Information -->
     <div class="form-section">
-        <h3 class="section-title">{{ l.s('user.personal_information') }}</h3>
+        <h3 class="section-title">
+            <i-tabler name="user"></i-tabler>
+            {{ l.s('user.personal_information') }}
+        </h3>
         <div class="form-row">
             <div class="form-group">
                 <label>{{ l.s('person.first_name') }} <span class="required">*</span></label>
-                <input type="text" class="form-input" [(ngModel)]="newEmployee.firstName" name="firstName" required>
+                <input type="text" class="form-input" [(ngModel)]="newEmployee.firstName" name="firstName" required
+                    placeholder="Jan">
             </div>
             <div class="form-group">
                 <label>{{ l.s('person.last_name') }} <span class="required">*</span></label>
-                <input type="text" class="form-input" [(ngModel)]="newEmployee.lastName" name="lastName" required>
+                <input type="text" class="form-input" [(ngModel)]="newEmployee.lastName" name="lastName" required
+                    placeholder="Novák">
             </div>
         </div>
         <div class="form-row">
             <div class="form-group">
                 <label>{{ l.s('person.gender') }}</label>
-                <div class="custom-select" id="type" (click)="$event.stopPropagation();dropdownManager.selected_dropdown = dropdownManager.selected_dropdown == 'employees_add_employee_gender' ? '' : 'employees_add_employee_gender'">
+                <div class="custom-select" id="gender"
+                    (click)="$event.stopPropagation();dropdownManager.selected_dropdown = dropdownManager.selected_dropdown == 'add_gender' ? '' : 'add_gender'">
                     <div class="selected-value">
                         <div class="row" style="gap: .5rem">
-                            <i-tabler [style.color]="genderColor(selected_gender)" [name]="genderIcon(selected_gender)"></i-tabler>
+                            <i-tabler [style.color]="genderColor(selected_gender)"
+                                [name]="genderIcon(selected_gender)"></i-tabler>
                             {{ l.s('genders.' + selected_gender) }}
                         </div>
                         <i-tabler name="chevron-down"></i-tabler>
                     </div>
-                    @if (dropdownManager.selected_dropdown == 'employees_add_employee_gender') {
+                    @if (dropdownManager.selected_dropdown == 'add_gender') {
                     <div class="options-dropdown">
                         <div class="list">
                             @for (gender of ['male', 'female']; track $index) {
-                            <div class="option row" style="gap: .5rem" (click)="$event.stopPropagation();dropdownManager.selected_dropdown = '';selected_gender = gender">
+                            <div class="option row" style="gap: .5rem"
+                                (click)="$event.stopPropagation();dropdownManager.selected_dropdown = '';selected_gender = gender">
                                 <i-tabler [style.color]="genderColor(gender)" [name]="genderIcon(gender)"></i-tabler>
                                 {{ l.s('genders.' + gender) }}
                             </div>
@@ -42,56 +51,110 @@
             </div>
         </div>
     </div>
+
+    <!-- Contact Information -->
     <div class="form-section">
-        <h3 class="section-title">Kontaktní údaje</h3>
+        <h3 class="section-title">
+            <i-tabler name="address-book"></i-tabler>
+            Kontaktní údaje
+        </h3>
         <div class="form-group">
             <label>Email</label>
-            <input type="email" class="form-input" [(ngModel)]="newEmployee.email" name="email"
-                placeholder="jmeno.prijmeni@skola.cz">
+            <div class="input-with-icon">
+                <i-tabler name="mail"></i-tabler>
+                <input type="email" class="form-input" [(ngModel)]="newEmployee.email" name="email"
+                    placeholder="jan.novak@skola.cz">
+            </div>
         </div>
         <div class="form-row">
-            <div class="form-group" style="flex: 0 0 120px">
-                <label>Kód</label>
+            <div class="form-group" style="flex: 0 0 100px">
+                <label>Předvolba</label>
                 <input type="number" class="form-input" [(ngModel)]="newEmployee.phoneCode" name="phoneCode"
                     placeholder="420">
             </div>
             <div class="form-group">
                 <label>Telefon</label>
-                <input type="tel" class="form-input" [(ngModel)]="newEmployee.phone" name="phone"
-                    placeholder="123456789">
+                <div class="input-with-icon">
+                    <i-tabler name="phone"></i-tabler>
+                    <input type="tel" class="form-input" [(ngModel)]="newEmployee.phone" name="phone"
+                        placeholder="123 456 789">
+                </div>
             </div>
         </div>
     </div>
+
+    <!-- Work Information -->
     <div class="form-section">
-        <h3 class="section-title">Pracovní údaje</h3>
+        <h3 class="section-title">
+            <i-tabler name="briefcase"></i-tabler>
+            Pracovní zařazení
+        </h3>
         <div class="form-row">
             <div class="form-group">
                 <label>Role</label>
-
-                <div class="custom-select" id="type" (click)="$event.stopPropagation();dropdownManager.selected_dropdown = dropdownManager.selected_dropdown == 'employees_add_employee_role' ? '' : 'employees_add_employee_role'">
+                <div class="custom-select" id="role"
+                    (click)="$event.stopPropagation();dropdownManager.selected_dropdown = dropdownManager.selected_dropdown == 'add_role' ? '' : 'add_role'">
                     <div class="selected-value">
                         <div class="row" style="gap: .5rem">
                             {{ roleLabel(selected_role) }}
                         </div>
                         <i-tabler name="chevron-down"></i-tabler>
                     </div>
-                    @if (dropdownManager.selected_dropdown == 'employees_add_employee_role') {
+                    @if (dropdownManager.selected_dropdown == 'add_role') {
                     <div class="options-dropdown">
                         <div class="list">
-                        @for (role of roles; track $index) {
-                        <div class="option row" style="gap: .5rem" (click)="$event.stopPropagation();dropdownManager.selected_dropdown = '';selected_role = role">
-                            {{ roleLabel(role) }}
-                        </div>
-                        }
+                            @for (role of roles; track $index) {
+                            <div class="option row" style="gap: .5rem"
+                                (click)="$event.stopPropagation();dropdownManager.selected_dropdown = '';selected_role = role">
+                                {{ roleLabel(role) }}
+                            </div>
+                            }
                         </div>
                     </div>
                     }
                 </div>
             </div>
             <div class="form-group">
+                <label>Typ smlouvy</label>
+                <div class="custom-select" id="contract"
+                    (click)="$event.stopPropagation();dropdownManager.selected_dropdown = dropdownManager.selected_dropdown == 'add_contract' ? '' : 'add_contract'">
+                    <div class="selected-value">
+                        <div class="row" style="gap: .5rem">
+                            {{ getContractTypeLabel(newEmployee.contractType) }}
+                        </div>
+                        <i-tabler name="chevron-down"></i-tabler>
+                    </div>
+                    @if (dropdownManager.selected_dropdown == 'add_contract') {
+                    <div class="options-dropdown">
+                        <div class="list">
+                            @for (type of contractTypes; track $index) {
+                            <div class="option row" style="gap: .5rem"
+                                (click)="$event.stopPropagation();dropdownManager.selected_dropdown = '';newEmployee.contractType = type.value">
+                                {{ type.label }}
+                            </div>
+                            }
+                        </div>
+                    </div>
+                    }
+                </div>
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="form-group">
+                <label>Oddělení</label>
+                <div class="input-with-icon">
+                    <i-tabler name="building-arch"></i-tabler>
+                    <input type="text" class="form-input" [(ngModel)]="newEmployee.department" name="department"
+                        placeholder="Např. IT, Jazyky...">
+                </div>
+            </div>
+            <div class="form-group">
                 <label>Kabinet</label>
-                <input type="number" class="form-input" [(ngModel)]="newEmployee.cabinet" name="cabinet"
-                    placeholder="např. 101">
+                <div class="input-with-icon">
+                    <i-tabler name="door"></i-tabler>
+                    <input type="number" class="form-input" [(ngModel)]="newEmployee.cabinet" name="cabinet"
+                        placeholder="Číslo">
+                </div>
             </div>
         </div>
     </div>
@@ -102,7 +165,7 @@
         </button>
         <button type="button" class="btn btn--primary" (click)="submitNewEmployee()"
             [disabled]="!newEmployee.firstName || !newEmployee.lastName">
-            <i-tabler name="check"></i-tabler>
+            <i-tabler name="plus"></i-tabler>
             Přidat zaměstnance
         </button>
     </div>

@@ -1,22 +1,27 @@
-import { Component, OnInit, inject, OnDestroy } from '@angular/core';
+import { Component, OnInit, inject, signal, computed, effect } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { IconsModule } from '@Schoolingo/icons';
 import { FormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
+import { toSignal } from '@angular/core/rxjs-interop';
 import { Config } from '@Schoolingo/config';
 import { Utils } from '@Schoolingo/utils';
 import { DropdownManager } from '@Schoolingo/dropdown';
 import { Locale } from '@Schoolingo/locale';
 import { Permission } from '@Schoolingo/permission';
+import { Authentication } from '@Schoolingo/authentication';
 import { TabsComponent } from '@Components/Tabs';
-import { BehaviorSubject, Subscription } from 'rxjs';
 import { ModalManager } from '@Schoolingo/modal';
+import { BoardAlertManager } from '../../../infrastructure/alert/board.alert.manager';
+import { BehaviorSubject } from 'rxjs';
 import { AddEmployeeModalComponent } from './modals/add-employee-modal/add-employee-modal.component';
 import { VacationRequestModalComponent } from './modals/vacation-request-modal/vacation-request-modal.component';
 import { AddBonusModalComponent } from './modals/add-bonus-modal/add-bonus-modal.component';
 import { SetSalaryModalComponent } from './modals/set-salary-modal/set-salary-modal.component';
 import { EditAttendanceModalComponent } from './modals/edit-attendance-modal/edit-attendance-modal.component';
+import { EditEmployeeModalComponent } from './modals/edit-employee-modal/edit-employee-modal.component';
 import { EMPLOYEE_CONFIG } from '../../../infrastructure/employees/const';
+import moment from 'moment';
 
 export interface Employee {
   personId: number;
@@ -80,72 +85,92 @@ export interface EmployeeFilters {
   templateUrl: './employees.component.html',
   styleUrl: './employees.component.css'
 })
-export class EmployeesComponent implements OnInit, OnDestroy {
+export class EmployeesComponent implements OnInit {
   private http = inject(HttpClient);
   public Utils = Utils;
   public dropdownManager = inject(DropdownManager);
   public l = inject(Locale);
   public perm = inject(Permission);
-  private subscriptions: Subscription[] = [];
+  private auth = inject(Authentication);
   public modalManager = inject(ModalManager);
+  private alertManager = inject(BoardAlertManager) as BoardAlertManager;
   EMPLOYEE_CONFIG = EMPLOYEE_CONFIG
 
+  // Loading state - Signals
+  isLoading = signal(false);
+  loadError = signal<string | null>(null);
 
-  // Loading state
-  isLoading = false;
-  loadError: string | null = null;
-
-  // Selected employee for detail view
-  selectedEmployee: Employee | null = null;
+  // Selected employee for detail view - Signal
+  selectedEmployee = signal<Employee | null>(null);
   
-  // Main view tabs
-  selectedViewTab = new BehaviorSubject<number>(0);
+  // Main view tabs - Signals
+  selectedViewTab = signal(0);
+  // Wrapper for TabsComponent compatibility (it expects BehaviorSubject)
+  selectedViewTabSubject = new BehaviorSubject<number>(0);
   viewTabOptions = ['employees.list', 'employees.attendance', 'employees.vacations', 'employees.salaries', 'employees.bonuses'];
   viewTabIcons = ['users', 'clock', 'beach', 'cash', 'gift'];
   
-  // Detail tabs
-  selectedDetailTab = new BehaviorSubject<number>(0);
+  // Detail tabs - Signals
+  selectedDetailTab = signal(0);
   detailTabOptions = ['employees.overview', 'employees.attendance', 'employees.vacations', 'employees.salary', 'employees.bonuses'];
   detailTabIcons = ['layout-dashboard', 'clock', 'beach', 'cash', 'gift'];
 
-  // Filters
-  filters: EmployeeFilters = {
+  // Filters - Signals
+  filters = signal<EmployeeFilters>({
     search: '',
     status: 'all',
     role: 'all',
     department: ''
-  };
+  });
 
-  // Pagination
-  currentPage = 1;
-  pageSize = 20;
-  totalItems = 0;
-  totalPages = 0;
+  // Pagination - Signals
+  currentPage = signal(1);
+  pageSize = signal(20);
+  totalItems = signal(0);
+  totalPages = computed(() => Math.ceil(this.totalItems() / this.pageSize()));
 
-  // Data
-  employees: Employee[] = [];
-  vacationRequests: VacationRequest[] = [];
-  attendanceRecords: AttendanceRecord[] = [];
-  allAttendanceRecords: AttendanceRecord[] = [];
+  // Data - Signals
+  employees = signal<Employee[]>([]);
+  vacationRequests = signal<VacationRequest[]>([]);
+  attendanceRecords = signal<AttendanceRecord[]>([]);
+  allAttendanceRecords = signal<AttendanceRecord[]>([]);
+  currentAttendanceRecord = signal<AttendanceRecord | null>(null);
 
-  // Check-in/out state
-  isCheckedIn = false;
-  checkInTime: string | null = null;
+  // Check-in/out state - Signals
+  isCheckedIn = signal(false);
+  checkInTime = signal<string | null>(null);
 
-  // Detail view data
-  attendanceStats: any = { totalHours: 0, daysPresent: 0, avgDaily: 0 };
-  attendanceFilter: any = { period: 'month', startDate: '', endDate: '' };
+  // Detail view data - Signals
+  attendanceStats = signal<{ totalHours: number; daysPresent: number; avgDaily: number }>({ totalHours: 0, daysPresent: 0, avgDaily: 0 });
+  attendanceFilter = signal<{ period: string; startDate: string; endDate: string }>({ period: 'month', startDate: '', endDate: '' });
   
-  salaryHistory: any[] = [];
-  currentSalary: any = null;
+  salaryHistory = signal<any[]>([]);
+  currentSalary = signal<any>(null);
   
-  bonuses: any[] = [];
-  filteredBonuses: any[] = [];
-  bonusesTotal = 0;
-  bonusesUnpaid = 0;
-  bonusFilter: any = { status: 'all', type: 'all' };
+  bonuses = signal<any[]>([]);
+  bonusFilter = signal<{ status: string; type: string }>({ status: 'all', type: 'all' });
   
-  vacationBalance: any = { total: 0, used: 0, remaining: 0 };
+  // Computed signals for filtered bonuses and totals
+  filteredBonuses = computed(() => {
+    const bonuses = this.bonuses();
+    const filter = this.bonusFilter();
+    return bonuses.filter(bonus => {
+      if (filter.status !== 'all') {
+        const isPaid = bonus.paid;
+        if (filter.status === 'paid' && !isPaid) return false;
+        if (filter.status === 'unpaid' && isPaid) return false;
+      }
+      if (filter.type !== 'all' && bonus.type !== filter.type) {
+        return false;
+      }
+      return true;
+    });
+  });
+  
+  bonusesTotal = computed(() => this.bonuses().reduce((sum, b) => sum + (b.amount || 0), 0));
+  bonusesUnpaid = computed(() => this.bonuses().filter(b => !b.paid).reduce((sum, b) => sum + (b.amount || 0), 0));
+  
+  vacationBalance = signal<{ total: number; used: number; remaining: number }>({ total: 0, used: 0, remaining: 0 });
   currentYear = new Date().getFullYear();
 
   public getFilterLabel(type: 'attendancePeriod' | 'bonusStatus' | 'bonusType', value: any): string {
@@ -196,7 +221,20 @@ export class EmployeesComponent implements OnInit, OnDestroy {
         }]
       }
     );
-    
+
+    this.modalManager.addModal(
+      'edit_employee',
+      {
+        title: 'Upravit zaměstnance',
+        closeable: true,
+        width: 600,
+        items: [{
+          type: 'component',
+          component: EditEmployeeModalComponent
+        }]
+      }
+    );
+
     this.modalManager.addModal(
       'request_vacation',
       {
@@ -249,90 +287,122 @@ export class EmployeesComponent implements OnInit, OnDestroy {
       }
     );
 
-    this.subscriptions.push(
-      this.selectedViewTab.subscribe(tab => {
-        if (tab === 1) { // attendance tab
-          this.loadAllAttendance();
-        }
-        if (tab === 2) { // vacations tab
-          this.loadVacationRequests();
-        }
-      })
-    );
-    this.subscriptions.push(
-      this.selectedDetailTab.subscribe(tab => {
-        if (!this.selectedEmployee) return;
+    // Sync signal with BehaviorSubject for TabsComponent compatibility (bidirectional)
+    effect(() => {
+      const tab = this.selectedViewTab();
+      if (this.selectedViewTabSubject.value !== tab) {
+        this.selectedViewTabSubject.next(tab);
+      }
+    });
 
-        if (tab === 1) { // Attendance
-             this.loadAttendanceForDetail(this.selectedEmployee.personId);
-        }
-        if (tab === 2) { // Vacation
-             this.loadVacationData(this.selectedEmployee.personId);
-             this.loadVacationRequests(this.selectedEmployee.personId);
-        }
-        if (tab === 3) { // Salary
-             this.loadSalaryData(this.selectedEmployee.personId);
-        }
-        if (tab === 4) { // Bonuses
-             this.loadBonusesData(this.selectedEmployee.personId);
-        }
-      })
-    );
+    // Subscribe to BehaviorSubject changes from TabsComponent and update signal
+    this.selectedViewTabSubject.subscribe(tab => {
+      if (this.selectedViewTab() !== tab) {
+        this.selectedViewTab.set(tab);
+      }
+    });
+
+    // Use effect() instead of subscriptions for reactive updates
+    effect(() => {
+      const tab = this.selectedViewTab();
+      if (tab === 1) { // attendance tab
+        this.loadAllAttendance();
+      }
+      if (tab === 2) { // vacations tab
+        this.loadVacationRequests();
+      }
+    });
+
+    effect(() => {
+      const tab = this.selectedDetailTab();
+      const employee = this.selectedEmployee();
+      if (!employee) return;
+
+      if (tab === 1) { // Attendance
+        this.loadAttendanceForDetail(employee.personId);
+      }
+      if (tab === 2) { // Vacation
+        this.loadVacationData(employee.personId);
+        this.loadVacationRequests(employee.personId);
+      }
+      if (tab === 3) { // Salary
+        this.loadSalaryData(employee.personId);
+      }
+      if (tab === 4) { // Bonuses
+        this.loadBonusesData(employee.personId);
+      }
+    });
   }
-  
-  ngOnDestroy() {
-    this.subscriptions.forEach(s => s.unsubscribe());
-  }
 
-  // Load employees from API
-  loadEmployees(page = this.currentPage) {
-    this.currentPage = page;
-    this.isLoading = true;
-    this.loadError = null;
+  // Load employees from API - Using Signals
+  loadEmployees(page = this.currentPage()) {
+    this.currentPage.set(page);
+    this.isLoading.set(true);
+    this.loadError.set(null);
 
+    const filters = this.filters();
     let params: any = {
-      limit: this.pageSize,
-      offset: (page - 1) * this.pageSize,
-      search: this.filters.search,
-      status: this.filters.status,
+      limit: this.pageSize(),
+      offset: (page - 1) * this.pageSize(),
+      search: filters.search,
+      status: filters.status,
     };
 
-    if (this.filters.role !== 'all') params.role = this.filters.role;
-    if (this.filters.department) params.department = this.filters.department;
+    if (filters.role !== 'all') params.role = filters.role;
+    if (filters.department) params.department = filters.department;
 
     this.http.get<{ data: Employee[], meta: { total: number } }>(
       `${Config.API_URL}/v1/employees`,
       { withCredentials: true, params }
     ).subscribe({
       next: (response) => {
-        this.employees = response.data;
-        this.totalItems = response.meta.total;
-        this.totalPages = Math.ceil(this.totalItems / this.pageSize);
-        this.isLoading = false;
+        this.employees.set(response.data);
+        this.totalItems.set(response.meta.total);
+        this.isLoading.set(false);
       },
       error: (error) => {
         console.error('Error loading employees:', error);
-        this.loadError = 'Nepodařilo se načíst seznam zaměstnanců';
-        this.isLoading = false;
+        this.loadError.set('Nepodařilo se načíst seznam zaměstnanců');
+        this.isLoading.set(false);
+        this.alertManager.alert('error', 'employees.errors.load_failed').closeable(true);
       }
     });
   }
 
   // Check current attendance status
   checkAttendanceStatus() {
-    const today = new Date().toISOString().split('T')[0];
+    const personId = this.auth.getId();
+    if (!personId) return;
+
+    const now = new Date();
+    const today = moment();
+    
     this.http.get<{ data: AttendanceRecord[] }>(
       `${Config.API_URL}/v1/employees/attendance`,
       { 
         withCredentials: true, 
-        params: { dateFrom: today, dateTo: today } 
+        params: { 
+          dateFrom: today.format('YYYY-MM-DD'),
+          employeeId: personId 
+        } 
       }
     ).subscribe({
       next: (response) => {
-        const todayRecord = response.data.find(r => !r.checkOut);
-        if (todayRecord) {
-          this.isCheckedIn = true;
-          this.checkInTime = todayRecord.checkIn || null;
+        // Find specifically my record for today that is "active"
+        const myRecord = response.data.find(r => 
+          Number(r.teacherId) === personId && 
+          moment(r.date).format('YYYY-MM-DD') == today.format('YYYY-MM-DD') &&
+          this.getAttendanceStatus(r) == 'active'
+        );
+
+        if (myRecord) {
+          this.isCheckedIn.set(true);
+          this.checkInTime.set(myRecord.checkIn ? String(myRecord.checkIn).substring(0, 5) : null);
+          this.currentAttendanceRecord.set(myRecord);
+        } else {
+          this.isCheckedIn.set(false);
+          this.checkInTime.set(null);
+          this.currentAttendanceRecord.set(null);
         }
       }
     });
@@ -346,11 +416,14 @@ export class EmployeesComponent implements OnInit, OnDestroy {
       { withCredentials: true }
     ).subscribe({
       next: (response) => {
-        this.isCheckedIn = true;
-        this.checkInTime = response.time;
+        this.isCheckedIn.set(true);
+        this.checkInTime.set(response.time);
+        this.checkAttendanceStatus();
+        this.alertManager.alert('success', 'employees.attendance.checkin_success').closeable(true);
       },
       error: (error) => {
         console.error('Check-in failed:', error);
+        this.alertManager.alert('error', 'employees.attendance.checkin_failed').closeable(true);
       }
     });
   }
@@ -363,11 +436,15 @@ export class EmployeesComponent implements OnInit, OnDestroy {
       { withCredentials: true }
     ).subscribe({
       next: () => {
-        this.isCheckedIn = false;
-        this.checkInTime = null;
+        this.isCheckedIn.set(false);
+        this.checkInTime.set(null);
+        this.currentAttendanceRecord.set(null);
+        this.checkAttendanceStatus();
+        this.alertManager.alert('success', 'employees.attendance.checkout_success').closeable(true);
       },
       error: (error) => {
         console.error('Check-out failed:', error);
+        this.alertManager.alert('error', 'employees.attendance.checkout_failed').closeable(true);
       }
     });
   }
@@ -384,7 +461,11 @@ export class EmployeesComponent implements OnInit, OnDestroy {
       { withCredentials: true }
     ).subscribe({
       next: (response) => {
-        this.vacationRequests = response.data;
+        this.vacationRequests.set(response.data);
+      },
+      error: (error) => {
+        console.error('Failed to load vacation requests:', error);
+        this.alertManager.alert('error', 'employees.vacations.load_failed').closeable(true);
       }
     });
   }
@@ -394,28 +475,58 @@ export class EmployeesComponent implements OnInit, OnDestroy {
     this.loadEmployees(1);
   }
 
+  // Helper method to update filters safely
+  updateFilter<K extends keyof EmployeeFilters>(key: K, value: EmployeeFilters[K]) {
+    this.filters.set({ ...this.filters(), [key]: value });
+  }
+
+  // Attendance filter helpers (template cannot use spread syntax)
+  setAttendanceFilterPeriod(period: string) {
+    this.attendanceFilter.set({ ...this.attendanceFilter(), period });
+    const emp = this.selectedEmployee();
+    if (emp) this.loadAttendanceRecords(emp.personId);
+  }
+  setAttendanceFilterStartDate(startDate: string) {
+    this.attendanceFilter.set({ ...this.attendanceFilter(), startDate });
+  }
+  setAttendanceFilterEndDate(endDate: string) {
+    this.attendanceFilter.set({ ...this.attendanceFilter(), endDate });
+  }
+  setAttendanceFilterStartDateAndReload(startDate: string) {
+    this.attendanceFilter.set({ ...this.attendanceFilter(), startDate });
+    this.loadAllAttendance();
+  }
+
+  // Bonus filter helpers (template cannot use spread syntax)
+  setBonusFilterStatus(status: string) {
+    this.bonusFilter.set({ ...this.bonusFilter(), status });
+  }
+  setBonusFilterType(type: string) {
+    this.bonusFilter.set({ ...this.bonusFilter(), type });
+  }
+
   clearFilters() {
-    this.filters = {
+    this.filters.set({
       search: '',
       status: 'all',
       role: 'all',
       department: ''
-    };
+    });
     this.loadEmployees(1);
   }
 
-  // Pagination helpers
-  getPageList(): number[] {
-    let pages = [-2, -1, 0, 1, 2];
+  // Pagination helpers - Computed signal
+  getPageList = computed(() => {
+    const pages = [-2, -1, 0, 1, 2];
     return pages
-      .map(p => p + this.currentPage)
-      .filter(p => p > 0 && p <= this.totalPages);
-  }
+      .map(p => p + this.currentPage())
+      .filter(p => p > 0 && p <= this.totalPages());
+  });
 
   // Employee selection
   selectEmployee(employee: Employee) {
-    this.selectedEmployee = employee;
-    this.selectedDetailTab.next(0);
+    this.selectedEmployee.set(employee);
+    this.selectedDetailTab.set(0);
     this.loadEmployeeDetail(employee.personId);
     this.loadAttendanceRecords(employee.personId);
     this.loadVacationData(employee.personId);
@@ -429,12 +540,14 @@ export class EmployeesComponent implements OnInit, OnDestroy {
       { withCredentials: true }
     ).subscribe({
       next: (response) => {
-        if (this.selectedEmployee) {
-          this.selectedEmployee = { ...this.selectedEmployee, ...response };
+        const current = this.selectedEmployee();
+        if (current) {
+          this.selectedEmployee.set({ ...current, ...response });
         }
       },
       error: (error) => {
         console.error('Failed to load employee detail:', error);
+        this.alertManager.alert('error', 'employees.errors.load_detail_failed').closeable(true);
       }
     });
   }
@@ -455,10 +568,11 @@ export class EmployeesComponent implements OnInit, OnDestroy {
       { withCredentials: true }
     ).subscribe({
       next: (response) => {
-        this.attendanceRecords = response.data;
+        this.attendanceRecords.set(response.data);
       },
       error: (error) => {
         console.error('Failed to load attendance:', error);
+        this.alertManager.alert('error', 'employees.attendance.load_failed').closeable(true);
       }
     });
   }
@@ -476,20 +590,25 @@ export class EmployeesComponent implements OnInit, OnDestroy {
     ).subscribe({
       next: (response) => {
         // Store bonuses for display
-        if (this.selectedEmployee) {
-          (this.selectedEmployee as any).bonuses = response.data;
+        const current = this.selectedEmployee();
+        if (current) {
+          this.selectedEmployee.set({ ...current, bonuses: response.data } as any);
         }
       },
       error: (error) => {
         console.error('Failed to load bonuses:', error);
+        this.alertManager.alert('error', 'employees.bonuses.load_failed').closeable(true);
       }
     });
   }
 
   loadAllAttendance() {
     // Default to today if not set
-    if (!this.attendanceFilter.startDate) {
-      this.attendanceFilter.startDate = new Date().toISOString().split('T')[0];
+    const filter = this.attendanceFilter();
+    const startDate = filter.startDate || new Date().toISOString().split('T')[0];
+    
+    if (!filter.startDate) {
+      this.attendanceFilter.set({ ...filter, startDate });
     }
     
     this.http.get<{ data: AttendanceRecord[] }>(
@@ -497,16 +616,17 @@ export class EmployeesComponent implements OnInit, OnDestroy {
       { 
         withCredentials: true,
         params: { 
-          dateFrom: this.attendanceFilter.startDate,
-          dateTo: this.attendanceFilter.startDate
+          dateFrom: startDate,
+          dateTo: startDate
         }
       }
     ).subscribe({
       next: (response) => {
-        this.allAttendanceRecords = response.data;
+        this.allAttendanceRecords.set(response.data);
       },
       error: (error) => {
         console.error('Failed to load all attendance:', error);
+        this.alertManager.alert('error', 'employees.attendance.load_all_failed').closeable(true);
       }
     });
   }
@@ -518,6 +638,20 @@ export class EmployeesComponent implements OnInit, OnDestroy {
 
   closeAddEmployeeModal() {
     this.modalManager.closeModal('add_employee');
+  }
+
+  openEditEmployeeModal() {
+    const employee = this.selectedEmployee();
+    if (!employee) return;
+    this.modalManager.openModal('edit_employee', {
+      employee: employee,
+      onSave: () => {
+        const current = this.selectedEmployee();
+        if (current) {
+          this.loadEmployeeDetail(current.personId);
+        }
+      }
+    });
   }
 
   openVacationRequestModal() {
@@ -573,6 +707,51 @@ export class EmployeesComponent implements OnInit, OnDestroy {
     }
   }
 
+  public getAttendanceStatus(record: AttendanceRecord): 'active' | 'inactive' | 'unknown' {
+    if (!record || !record.checkIn) return 'unknown';
+
+    const now = moment();
+    const todayStr = now.format('YYYY-MM-DD');
+
+    // Robust date matching (strip time/ISO parts)
+    let recordDateStr = '';
+    if (record.date) {
+        if (typeof record.date === 'string') {
+            recordDateStr = moment(record.date).format('YYYY-MM-DD');
+        } else {
+            const rd = moment(record.date);
+            recordDateStr = rd.format('YYYY-MM-DD')
+        }
+    }
+
+    // If it's not today, respect checkout for status (historic)
+    if (recordDateStr !== todayStr) {
+      return record.checkOut ? 'inactive' : 'unknown';
+    }
+
+    const currentMinutes = now.hours() * 60 + now.minutes();
+    const parse = (t: any) => {
+      if (!t || typeof t !== 'string') return 0;
+      const parts = t.split(':');
+      return parseInt(parts[0]) * 60 + (parseInt(parts[1]) || 0);
+    };
+
+    const startMinutes = parse(record.checkIn);
+
+    // If no checkOut, it's definitely active if it's today and started
+    if (!record.checkOut) {
+        return currentMinutes >= startMinutes ? 'active' : 'unknown';
+    }
+
+    const endMinutes = parse(record.checkOut);
+    // If current time is within record range, it's active
+    if (currentMinutes >= startMinutes && currentMinutes <= endMinutes) {
+        return 'active';
+    }
+
+    return 'inactive';
+  }
+
   getVacationStatusClass(status: string): string {
     switch (status) {
       case 'approved': return 'status-approved';
@@ -602,17 +781,9 @@ export class EmployeesComponent implements OnInit, OnDestroy {
     return this.perm.checkPermission(['manager:admin']);
   }
 
-  // ==================== Detail View Methods ====================
-  
-  // selectEmployee(employee: Employee) {
-  //   this.selectedEmployee = employee;
-  //   this.selectedDetailTab.next(0);
-  //   this.loadEmployeeDetailData(employee.personId);
-  // }
-
   closeDetail() {
-    this.selectedEmployee = null;
-    this.selectedDetailTab.next(0);
+    this.selectedEmployee.set(null);
+    this.selectedDetailTab.set(0);
   }
 
   loadEmployeeDetailData(personId: number) {
@@ -624,18 +795,19 @@ export class EmployeesComponent implements OnInit, OnDestroy {
 
   // Attendance methods
   loadAttendanceForDetail(personId: number) {
+    const filter = this.attendanceFilter();
     const params: any = { employeeId: personId };
     
-    if (this.attendanceFilter.period === 'week') {
+    if (filter.period === 'week') {
       const now = new Date();
       const weekStart = new Date(now.setDate(now.getDate() - now.getDay()));
       params.startDate = weekStart.toISOString().split('T')[0];
-    } else if (this.attendanceFilter.period === 'month') {
+    } else if (filter.period === 'month') {
       const now = new Date();
       params.startDate = new Date(now.getFullYear(), now.getMonth(), 1).toISOString().split('T')[0];
-    } else if (this.attendanceFilter.period === 'custom') {
-      params.startDate = this.attendanceFilter.startDate;
-      params.endDate = this.attendanceFilter.endDate;
+    } else if (filter.period === 'custom') {
+      params.startDate = filter.startDate;
+      params.endDate = filter.endDate;
     }
 
     this.http.get<{ data: any[] }>(
@@ -643,29 +815,33 @@ export class EmployeesComponent implements OnInit, OnDestroy {
       { params, withCredentials: true }
     ).subscribe({
       next: (response) => {
-        this.attendanceRecords = response.data;
+        this.attendanceRecords.set(response.data);
         this.calculateAttendanceStats();
       },
-      error: (error) => console.error('Failed to load attendance:', error)
+      error: (error) => {
+        console.error('Failed to load attendance:', error);
+        this.alertManager.alert('error', 'employees.attendance.load_detail_failed').closeable(true);
+      }
     });
   }
 
   calculateAttendanceStats() {
+    const records = this.attendanceRecords();
     let totalMinutes = 0;
     let daysWithRecords = 0;
 
-    this.attendanceRecords.forEach(record => {
+    records.forEach(record => {
       if (record.workedMinutes) {
         totalMinutes += record.workedMinutes;
         daysWithRecords++;
       }
     });
 
-    this.attendanceStats = {
-      totalHours: (totalMinutes / 60).toFixed(1),
+    this.attendanceStats.set({
+      totalHours: Number((totalMinutes / 60).toFixed(1)),
       daysPresent: daysWithRecords,
-      avgDaily: daysWithRecords > 0 ? (totalMinutes / 60 / daysWithRecords).toFixed(1) : 0
-    };
+      avgDaily: daysWithRecords > 0 ? Number((totalMinutes / 60 / daysWithRecords).toFixed(1)) : 0
+    });
   }
 
   editAttendanceRecord(record: any) {
@@ -673,9 +849,10 @@ export class EmployeesComponent implements OnInit, OnDestroy {
       record: { ...record }, // Copy to avoid direct mutation
       onSave: () => {
         // Refresh data
-        if (this.selectedEmployee) {
-          this.loadAttendanceForDetail(this.selectedEmployee.personId);
-        } else if (this.selectedViewTab.getValue() === 1) {
+        const employee = this.selectedEmployee();
+        if (employee) {
+          this.loadAttendanceForDetail(employee.personId);
+        } else if (this.selectedViewTab() === 1) {
           this.loadAllAttendance();
         }
       }
@@ -684,7 +861,9 @@ export class EmployeesComponent implements OnInit, OnDestroy {
 
   exportAttendanceCSV() {
     const headers = ['Datum', 'Příchod', 'Odchod', 'Pauza (min)', 'Odpracováno (h)', 'Typ'];
-    const rows = this.attendanceRecords.map(r => [
+    const records = this.attendanceRecords();
+    const employee = this.selectedEmployee();
+    const rows = records.map(r => [
       Utils.formatDateShort(r.date),
       r.checkIn || '',
       r.checkOut || '',
@@ -702,8 +881,9 @@ export class EmployeesComponent implements OnInit, OnDestroy {
     const url = window.URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = `attendance_${this.selectedEmployee?.lastName}_${new Date().toISOString().split('T')[0]}.csv`;
+    a.download = `attendance_${employee?.lastName || 'unknown'}_${new Date().toISOString().split('T')[0]}.csv`;
     a.click();
+    window.URL.revokeObjectURL(url);
   }
 
   // Vacation methods
@@ -714,82 +894,96 @@ export class EmployeesComponent implements OnInit, OnDestroy {
     ).subscribe({
       next: (response) => {
         // Direct object response or wrapped
-        this.vacationBalance = response.balance || response;
+        this.vacationBalance.set(response.balance || response);
       },
-      error: (error) => console.error('Failed to load vacation balance:', error)
+      error: (error) => {
+        console.error('Failed to load vacation balance:', error);
+        this.alertManager.alert('error', 'employees.vacations.load_balance_failed').closeable(true);
+      }
     });
   }
 
   changeVacationEntitlement() {
-    if (!this.selectedEmployee) return;
-    const amountStr = prompt('Zadejte počet dní, o které chcete změnit nárok (např. 5 nebo -2):');
-    if (!amountStr) return;
+    const employee = this.selectedEmployee();
+    if (!employee) return;
     
-    const amount = parseInt(amountStr);
-    if (isNaN(amount) || amount === 0) return;
-
-    this.http.post(
-      `${Config.API_URL}/v1/employees/vacations/balance/adjust`,
-      { 
-        employeeId: this.selectedEmployee.personId,
-        amount: amount,
-        reason: 'Manual adjustment'
-      },
-      { withCredentials: true }
-    ).subscribe({
-      next: () => {
-         if (this.selectedEmployee) {
-            this.loadVacationData(this.selectedEmployee.personId);
-         }
-      },
-      error: (error) => {
-        console.error('Failed to adjust balance:', error);
-        alert('Nepodařilo se upravit zůstatek');
+    // Use modal instead of prompt for security
+    this.modalManager.openModal('adjust_vacation', {
+      employee: employee,
+      onConfirm: (amount: number) => {
+        this.http.post(
+          `${Config.API_URL}/v1/employees/vacations/balance/adjust`,
+          { 
+            employeeId: employee.personId,
+            amount: amount,
+            reason: 'Manual adjustment'
+          },
+          { withCredentials: true }
+        ).subscribe({
+          next: () => {
+            this.loadVacationData(employee.personId);
+            this.alertManager.alert('success', 'employees.vacations.balance_adjusted').closeable(true);
+          },
+          error: (error) => {
+            console.error('Failed to adjust balance:', error);
+            this.alertManager.alert('error', 'employees.vacations.adjust_failed').closeable(true);
+          }
+        });
       }
     });
   }
 
   approveVacation(requestId: number) {
-    if (!confirm('Schválit tuto žádost o dovolenou?')) return;
-
+    // Use alert manager for confirmation - show warning alert
+    const confirmAlert = this.alertManager.alert('warning', 'employees.vacations.confirm_approve');
+    confirmAlert.closeable(true);
+    
+    // For now, directly approve - in future, implement proper confirmation modal
     this.http.put(
       `${Config.API_URL}/v1/employees/vacations/request/${requestId}/approve`,
       {},
       { withCredentials: true }
     ).subscribe({
       next: () => {
-        alert('žádost byla schválena');
-        if (this.selectedEmployee) {
-          this.loadVacationData(this.selectedEmployee.personId);
+        confirmAlert.close();
+        this.alertManager.alert('success', 'employees.vacations.approved').closeable(true);
+        const employee = this.selectedEmployee();
+        if (employee) {
+          this.loadVacationData(employee.personId);
           this.loadVacationRequests();
         }
       },
       error: (error) => {
         console.error('Failed to approve:', error);
-        alert('Nepodařilo se schválit žádost');
+        confirmAlert.close();
+        this.alertManager.alert('error', 'employees.vacations.approve_failed').closeable(true);
       }
     });
   }
 
   rejectVacation(requestId: number) {
-    const reason = prompt('Zadejte důvod zamítnutí:');
-    if (!reason) return;
-
-    this.http.put(
-      `${Config.API_URL}/v1/employees/vacations/request/${requestId}/reject`,
-      { reason },
-      { withCredentials: true }
-    ).subscribe({
-      next: () => {
-        alert('žádost byla zamítnuta');
-        if (this.selectedEmployee) {
-          this.loadVacationData(this.selectedEmployee.personId);
-          this.loadVacationRequests();
-        }
-      },
-      error: (error) => {
-        console.error('Failed to reject:', error);
-        alert('Nepodařilo se zamítnout žádost');
+    // Use modal instead of prompt for security
+    this.modalManager.openModal('reject_vacation', {
+      requestId: requestId,
+      onConfirm: (reason: string) => {
+        this.http.put(
+          `${Config.API_URL}/v1/employees/vacations/request/${requestId}/reject`,
+          { reason },
+          { withCredentials: true }
+        ).subscribe({
+          next: () => {
+            this.alertManager.alert('success', 'employees.vacations.rejected').closeable(true);
+            const employee = this.selectedEmployee();
+            if (employee) {
+              this.loadVacationData(employee.personId);
+              this.loadVacationRequests();
+            }
+          },
+          error: (error) => {
+            console.error('Failed to reject:', error);
+            this.alertManager.alert('error', 'employees.vacations.reject_failed').closeable(true);
+          }
+        });
       }
     });
   }
@@ -801,12 +995,16 @@ export class EmployeesComponent implements OnInit, OnDestroy {
       { withCredentials: true }
     ).subscribe({
       next: (response) => {
-        this.salaryHistory = response.data;
-        this.currentSalary = this.salaryHistory.find(s => 
+        this.salaryHistory.set(response.data);
+        const current = response.data.find(s => 
           !s.validTo || new Date(s.validTo) > new Date()
         ) || null;
+        this.currentSalary.set(current);
       },
-      error: (error) => console.error('Failed to load salary:', error)
+      error: (error) => {
+        console.error('Failed to load salary:', error);
+        this.alertManager.alert('error', 'employees.salaries.load_failed').closeable(true);
+      }
     });
   }
 
@@ -815,7 +1013,7 @@ export class EmployeesComponent implements OnInit, OnDestroy {
   }
 
   exportPayrollXML() {
-    alert('XML export - zatím neimplementováno');
+    this.alertManager.alert('info', 'employees.salaries.xml_export_not_implemented').closeable(true);
   }
 
   // Bonus methods
@@ -825,31 +1023,14 @@ export class EmployeesComponent implements OnInit, OnDestroy {
       { withCredentials: true }
     ).subscribe({
       next: (response) => {
-        this.bonuses = response.data;
-        this.filterBonuses();
-        this.calculateBonusTotals();
+        this.bonuses.set(response.data);
+        // Filtering and totals are now computed signals
       },
-      error: (error) => console.error('Failed to load bonuses:', error)
-    });
-  }
-
-  filterBonuses() {
-    this.filteredBonuses = this.bonuses.filter(bonus => {
-      if (this.bonusFilter.status !== 'all') {
-        const isPaid = bonus.paid;
-        if (this.bonusFilter.status === 'paid' && !isPaid) return false;
-        if (this.bonusFilter.status === 'unpaid' && isPaid) return false;
+      error: (error) => {
+        console.error('Failed to load bonuses:', error);
+        this.alertManager.alert('error', 'employees.bonuses.load_failed').closeable(true);
       }
-      if (this.bonusFilter.type !== 'all' && bonus.type !== this.bonusFilter.type) {
-        return false;
-      }
-      return true;
     });
-  }
-
-  calculateBonusTotals() {
-    this.bonusesTotal = this.bonuses.reduce((sum, b) => sum + (b.amount || 0), 0);
-    this.bonusesUnpaid = this.bonuses.filter(b => !b.paid).reduce((sum, b) => sum + (b.amount || 0), 0);
   }
 
   openAddBonusModal() {
@@ -857,42 +1038,54 @@ export class EmployeesComponent implements OnInit, OnDestroy {
   }
 
   markBonusAsPaid(bonusId: number) {
-    if (!confirm('Označit prémii jako vyplacenou?')) return;
-
+    // Use alert manager for confirmation - show warning alert
+    const confirmAlert = this.alertManager.alert('warning', 'employees.bonuses.confirm_mark_paid');
+    confirmAlert.closeable(true);
+    
+    // For now, directly mark as paid - in future, implement proper confirmation modal
     this.http.put(
       `${Config.API_URL}/v1/employees/bonuses/${bonusId}/paid`,
       {},
       { withCredentials: true }
     ).subscribe({
       next: () => {
-        alert('Prémie označena jako vyplacená');
-        if (this.selectedEmployee) {
-          this.loadBonusesData(this.selectedEmployee.personId);
+        confirmAlert.close();
+        this.alertManager.alert('success', 'employees.bonuses.marked_paid').closeable(true);
+        const employee = this.selectedEmployee();
+        if (employee) {
+          this.loadBonusesData(employee.personId);
         }
       },
       error: (error) => {
         console.error('Failed to mark as paid:', error);
-        alert('Nepodařilo se označit jako vyplacenou');
+        confirmAlert.close();
+        this.alertManager.alert('error', 'employees.bonuses.mark_paid_failed').closeable(true);
       }
     });
   }
 
   deleteBonus(bonusId: number) {
-    if (!confirm('Opravdu smazat tuto prémii?')) return;
-
+    // Use alert manager for confirmation - show warning alert
+    const confirmAlert = this.alertManager.alert('warning', 'employees.bonuses.confirm_delete');
+    confirmAlert.closeable(true);
+    
+    // For now, directly delete - in future, implement proper confirmation modal
     this.http.delete(
       `${Config.API_URL}/v1/employees/bonuses/${bonusId}`,
       { withCredentials: true }
     ).subscribe({
       next: () => {
-        alert('Prémie byla smazána');
-        if (this.selectedEmployee) {
-          this.loadBonusesData(this.selectedEmployee.personId);
+        confirmAlert.close();
+        this.alertManager.alert('success', 'employees.bonuses.deleted').closeable(true);
+        const employee = this.selectedEmployee();
+        if (employee) {
+          this.loadBonusesData(employee.personId);
         }
       },
       error: (error) => {
         console.error('Failed to delete:', error);
-        alert('Nepodařilo se smazat prémii');
+        confirmAlert.close();
+        this.alertManager.alert('error', 'employees.bonuses.delete_failed').closeable(true);
       }
     });
   }

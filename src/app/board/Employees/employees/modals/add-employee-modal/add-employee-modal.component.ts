@@ -40,6 +40,18 @@ export class AddEmployeeModalComponent implements OnInit {
   }
   public selected_role = 'teacher';
 
+  public contractTypes = [
+    { value: 'fulltime', label: 'Plný úvazek' },
+    { value: 'parttime', label: 'Částečný úvazek' },
+    { value: 'dpp', label: 'DPP' },
+    { value: 'dpc', label: 'DPČ' }
+  ];
+
+  public getContractTypeLabel(type: string | null): string {
+    return this.contractTypes.find(t => t.value === type)?.label || 'Neuvedeno';
+  }
+  public selected_contract = 'fulltime';
+
   public genderIcon(gender: Utils.genders | string): string {
     return 'gender-' + gender;
   }
@@ -74,6 +86,8 @@ export class AddEmployeeModalComponent implements OnInit {
     phoneCode: 420,
     role: '',
     cabinet: null as number | null,
+    department: '' as string | null,
+    contractType: 'fulltime' as string | null,
     degrees: [] as number[]
   };
 
@@ -167,6 +181,8 @@ export class AddEmployeeModalComponent implements OnInit {
           phoneCode: 420,
           role: '',
           cabinet: null,
+          department: '',
+          contractType: 'fulltime',
           degrees: []
         };
         alert('Zaměstnanec byl úspěšně přidán');
