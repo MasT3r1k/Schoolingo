@@ -602,12 +602,12 @@ export class CompaniesComponent implements OnInit {
     return Object.values(JSON.parse(JSON.stringify(this.scopes)));
   }
 
-  public getScopes(company: any): string[] {
-    let scopeList: string[] = [];
+  public getScopes(company: any): Scope[] {
+    let scopeList: Scope[] = [];
     if (!company || !company.scopes) return [];
     Object.values<Scope>(JSON.parse(company.scopes)).forEach((value) => {
       if (this.scopes?.[value.scopeId] && value.status == true) {
-        scopeList.push(this.scopes?.[value.scopeId]?.name)
+        scopeList.push(this.scopes?.[value.scopeId])
       }
     });
     return scopeList;
@@ -622,6 +622,13 @@ export class CompaniesComponent implements OnInit {
     let scopes = Object.values<Scope>(JSON.parse(company.scopes)).filter((value: Scope) => value.scopeId === scopeId);
     if (scopes.length == 0) return false;
     return true;
+  }
+
+  public checkIfScopeIsSuitableForMe(scopeId: number): boolean {
+    let user = this.auth.getUser();
+    if (!user || user.role != "student" || !user.classes.length || !user.classes[0].scopeId) return false;
+    let userScopeId = user.classes[0].scopeId;
+    return userScopeId == scopeId;
   }
 
   public openInstructorModal(instructor: any): void {

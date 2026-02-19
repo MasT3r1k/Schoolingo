@@ -135,9 +135,11 @@
       </div>
       } @if (!checkIfCompanyIsSuitableForMe() && permissions.checkPermission(["student"])) {
       <div class="alerts mb">
-        <div class="alert alert--warning">
-          <i-tabler name="alert-triangle" style="width: 20px; height: 20px;"></i-tabler>
-          <span>{{ l.s("traineeship.alerts.company_not_suitable_for_you") }}</span>
+        <div class="alert alert--warning center">
+          <div class="center" style="gap: 8px;">
+            <!-- <i-tabler name="alert-triangle" style="width: 20px; height: 20px;"></i-tabler> -->
+            <span>{{ l.s("traineeship.alerts.company_not_suitable_for_you") }}</span>
+          </div>
         </div>
       </div>
       }
@@ -325,7 +327,7 @@
                     <div class="info-value">
                       <div class="scope-tags">
                         @for (scope of getScopes(traineeship.selectedCompany); track $index) {
-                        <span class="scope-tag">{{ scope }}</span>
+                        <span class="scope-tag" [class.active]="checkIfScopeIsSuitableForMe(scope.scopeId)">{{ scope.name }}</span>
                         } @empty {
                         <span class="text-muted">{{ l.s("traineeship.no_scopes") }}</span>
                         }
