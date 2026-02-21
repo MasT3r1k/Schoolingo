@@ -27,7 +27,7 @@ export class ScheduleBuilder {
     }
 
     public getSubject(subjectId: number): any {
-        return this.all_subjects.find((subject) => subject.subjectId == subjectId);
+        return this.all_subjects.find((subject) => subject.subject_id == subjectId);
     }
     
     public selectedSubject = 0;
@@ -35,7 +35,7 @@ export class ScheduleBuilder {
     public selectedClass = new BehaviorSubject<number>(0);
 
     public getClassName(class_id: number): string {
-        return this.classes.find((item) => item.classId == class_id)?.className ?? '';
+        return this.classes.find((item) => item.class_id == class_id)?.class_name ?? '';
     }
     
     // Timetable structure: Day -> Hour -> Lessons

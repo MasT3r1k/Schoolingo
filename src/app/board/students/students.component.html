@@ -208,36 +208,36 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @for (student of filteredStudents; track student.personId) {
-                    <tr [routerLink]="['/', 'students', student.personId]">
+                    @for (student of filteredStudents; track student.person_id) {
+                    <tr [routerLink]="['/', 'students', student.person_id]">
                         <td class="col-student">
                             <div class="student-cell">
                                 <div class="student-avatar-sm">
-                                    @if (student.photoUrl) {
-                                    <img [src]="student.photoUrl" [alt]="student.fullName">
+                                    @if (student.photo_url) {
+                                    <img [src]="student.photo_url" [alt]="student.full_name">
                                     } @else {
-                                    <span>{{ student.firstName[0] }}{{ student.lastName[0] }}</span>
+                                    <span>{{ Utils.getInitials(student.full_name) }}</span>
                                     }
                                 </div>
                                 <div class="student-name-cell">
-                                    <span class="name">{{ student.fullName }}</span>
+                                    <span class="name">{{ student.full_name }}</span>
                                     <span class="email">{{ student.email }}</span>
                                 </div>
                             </div>
                         </td>
-                        <td class="col-class">{{ student.className }}</td>
-                        <td class="col-field">{{ student.fieldOfStudy }}</td>
+                        <td class="col-class">{{ student.class_name }}</td>
+                        <td class="col-field">{{ student.field_of_study }}</td>
                         <td class="col-field">{{ Utils.formatDateShort(student.birthday) }}</td>
                         <td class="col-field">{{ Utils.getAge(student.birthday) }}</td>
                         <td class="col-average">
-                            <span class="average-badge" [class]="getGradeClass(student.averageGrade)">
-                                {{ student.averageGrade ?? '---' }}
+                            <span class="average-badge" [class]="getGradeClass(student.average_grade)">
+                                {{ student.average_grade ?? '---' }}
                             </span>
                         </td>
                         <td class="col-absence">
                             <span class="absence-value"
-                                [class.warning]="Utils.formatAsNumber(student.absenceRate) > 10">
-                                {{ student.absenceRate }}%
+                                [class.warning]="Utils.formatAsNumber(student.absence_rate) > 10">
+                                {{ student.absence_rate }}%
                             </span>
                         </td>
                         <td class="col-actions">

@@ -10,88 +10,9 @@ import { Locale } from '@Schoolingo/locale';
 import { ActivatedRoute, Router } from '@angular/router';
 import moment from 'moment';
 import { TimetableHours } from '../../Teach/timetable/timetable.component';
+import { Student } from '../students.component';
 
 // Interfaces
-export interface Student {
-  id: number;
-  firstName: string;
-  lastName: string;
-  fullName: string;
-  photoUrl?: string;
-  className: string;
-  year: number;
-  fieldOfStudy: string;
-  status: 'active' | 'former' | 'suspended';
-  gender: number;
-  birthday: Date;
-  email: string;
-  phone: string;
-  street: string;
-  houseNumber: string;
-  city: string;
-  postcode: string;
-  enrollmentDate: string;
-  graduationDate?: string;
-  averageGrade: string;
-  absenceRate: string;
-  disciplinaryIssues: number;
-  
-  // Parent info
-  parents: ParentInfo[];
-  
-  // Additional details
-  notes?: string;
-  allergies?: string[];
-  medicalConditions?: string[];
-}
-
-export interface ParentInfo {
-  id: number;
-  firstName: string;
-  lastName: string;
-  relationship: 'mother' | 'father' | 'guardian';
-  email: string;
-  phone: string;
-  occupation?: string;
-}
-
-export interface StudentFilters {
-  search: string;
-  status: 'all' | 'active' | 'former' | 'suspended';
-  scopeId: number | null;
-  classId: number | null;
-  year: number | null;
-  avgGradeDates: { from: number | null; to: number | null };
-  absenceRates: { from: number | null; to: number | null };
-  missingInfo: boolean;
-}
-
-// Backend API response interface
-interface StudentAPIResponse {
-  data: {
-    personId: number;
-    firstName: string;
-    lastName: string;
-    fullName: string;
-    email?: string;
-    phone?: string;
-    gender: number;
-    birthday: Date;
-    status: string;
-    startStudy: string;
-    className?: string;
-    year?: number;
-    fieldOfStudy?: string;
-    averageGrade?: string;
-    absenceRate?: string;
-  }[];
-  meta: {
-    total: number;
-    page: number;
-    limit: number;
-  }
-}
-
 interface TimetableAPI {
   day: number;
   hour: number;

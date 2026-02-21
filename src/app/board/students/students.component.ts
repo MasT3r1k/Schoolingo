@@ -67,21 +67,21 @@ export interface StudentFilters {
 // Backend API response interface
 interface StudentAPIResponse {
   data: {
-    personId: number;
-    firstName: string;
-    lastName: string;
-    fullName: string;
+    person_id: number;
+    first_name: string;
+    last_name: string;
+    full_name: string;
     email?: string;
     phone?: string;
     gender: number;
     birthday: Date;
     status: string;
-    startStudy: string;
-    className?: string;
+    start_study: string;
+    class_name?: string;
     year?: number;
-    fieldOfStudy?: string;
-    averageGrade?: string;
-    absenceRate?: string;
+    field_of_study?: string;
+    average_grade?: string;
+    absence_rate?: string;
   }[];
   meta: {
     total: number;
@@ -181,7 +181,7 @@ export class StudentsComponent implements OnInit {
   totalPages = 0;
   
   // Students data from API
-  students: any[] = [];
+  students: Student[] = [];
 
   ngOnInit() {
     this.loadFilters();

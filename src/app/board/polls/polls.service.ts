@@ -125,6 +125,14 @@ export class PollsService {
       { withCredentials: true }
     ) as any;
   }
+
+  public updatePoll(id: number, data: any): ObservableLike<{ success: boolean }> {
+    return this.http.put<any>(
+      `${Config.API_URL}/v1/polls/${id}`,
+      data,
+      { withCredentials: true }
+    ) as any;
+  }
   public startPoll(id: number): ObservableLike<{ success: boolean, responseId: number }> {
     return this.http.post<any>(
       `${Config.API_URL}/v1/polls/${id}/start`,

@@ -1,6 +1,7 @@
 <div class="employees-page card">
     <!-- Employee Detail View -->
-    @if (selectedEmployee()) {
+    @let get_employee = selectedEmployee.getValue();
+    @if (get_employee) {
     <div class="detail-view">
         <!-- Detail Header -->
         <div class="detail-header">
@@ -32,23 +33,23 @@
                 <div class="profile-card">
                     <div class="profile-avatar">
                         <span class="avatar-initials">
-                            {{ Utils.getInitials(selectedEmployee()!.fullName) }}
+                            {{ Utils.getInitials(get_employee.full_name) }}
                         </span>
-                        <span class="status-dot" [class]="getStatusClass(selectedEmployee()!.status)"></span>
+                        <span class="status-dot" [class]="getStatusClass(get_employee.status)"></span>
                     </div>
-                    <h1 class="profile-name">{{ selectedEmployee()!.fullName }}</h1>
+                    <h1 class="profile-name">{{ get_employee.full_name }}</h1>
                     <div class="profile-role">
                         <i-tabler name="briefcase"></i-tabler>
-                        {{ l.s('roles.' + selectedEmployee()!.role) }}
+                        {{ l.s('roles.' + get_employee.role) }}
                     </div>
-                    <span class="status-badge" [class]="getStatusClass(selectedEmployee()!.status)">
-                        {{ getStatusLabel(selectedEmployee()!.status) }}
+                    <span class="status-badge" [class]="getStatusClass(get_employee.status)">
+                        {{ getStatusLabel(get_employee.status) }}
                     </span>
                 </div>
 
                 <!-- Quick Stats -->
                 <div class="quick-stats">
-                    <div class="stat-card clickable" (click)="selectedDetailTab.set(1)">
+                    <div class="stat-card clickable" (click)="selectedDetailTab.next(1)">
                         <div class="stat-icon">
                             <i-tabler name="clock"></i-tabler>
                         </div>
@@ -57,7 +58,7 @@
                             <span class="stat-label">Odpracováno</span>
                         </div>
                     </div>
-                    <div class="stat-card clickable" (click)="selectedDetailTab.set(2)">
+                    <div class="stat-card clickable" (click)="selectedDetailTab.next(2)">
                         <div class="stat-icon">
                             <i-tabler name="beach"></i-tabler>
                         </div>
@@ -71,18 +72,18 @@
                 <!-- Quick Contact -->
                 <div class="quick-contact">
                     <h3>Kontakt</h3>
-                    <a href="mailto:{{selectedEmployee()!.email}}" class="contact-item">
+                    <a href="mailto:{{get_employee.email}}" class="contact-item">
                         <i-tabler name="mail"></i-tabler>
-                        <span>{{ selectedEmployee()!.email || 'Není nastaven' }}</span>
+                        <span>{{ get_employee.email || 'Není nastaven' }}</span>
                     </a>
-                    <a href="tel:{{selectedEmployee()!.phone}}" class="contact-item">
+                    <a href="tel:{{get_employee.phone}}" class="contact-item">
                         <i-tabler name="phone"></i-tabler>
-                        <span>{{ selectedEmployee()!.phone || 'Není nastaven' }}</span>
+                        <span>{{ get_employee.phone || 'Není nastaven' }}</span>
                     </a>
-                    @if (selectedEmployee()!.cabinet) {
+                    @if (get_employee.cabinet) {
                     <div class="contact-item">
                         <i-tabler name="door"></i-tabler>
-                        <span>Kabinet {{ selectedEmployee()!.cabinet }}</span>
+                        <span>Kabinet {{ get_employee.cabinet }}</span>
                     </div>
                     }
                 </div>
@@ -93,8 +94,8 @@
                 <!-- Tabs Navigation -->
                 <nav class="tabs-nav">
                     @for (tab of detailTabOptions; track $index) {
-                    <button class="tab-btn" [class.active]="selectedDetailTab() === $index"
-                        (click)="selectedDetailTab.set($index)">
+                    <button class="tab-btn" [class.active]="selectedDetailTab.getValue() === $index"
+                        (click)="selectedDetailTab.next($index)">
                         <i-tabler [name]="detailTabIcons[$index]"></i-tabler>
                         <span>{{ l.s(tab) }}</span>
                     </button>
@@ -102,7 +103,7 @@
                 </nav>
 
                 <div class="tab-content">
-                    @if (selectedDetailTab() === 0) {
+                    @if (selectedDetailTab.getValue() === 0) {
                     <div class="overview-grid">
                         <!-- Work Information -->
                         <div class="info-card">
@@ -114,33 +115,33 @@
                                 <div class="info-row">
                                     <span class="info-label">Osobní číslo</span>
                                     <span class="info-value copyable" title="Zkopírovat">{{
-                                        selectedEmployee()!.employeeNumber || '-' }}</span>
+                                        get_employee.employee_number || '-' }}</span>
                                 </div>
                                 <div class="info-row">
                                     <span class="info-label">Typ smlouvy</span>
                                     <span class="info-value">
                                         <span class="badge badge--light">{{
-                                            getContractTypeLabel(selectedEmployee()!.contractType) }}</span>
+                                            getContractTypeLabel(get_employee.contract_type) }}</span>
                                     </span>
                                 </div>
                                 <div class="info-row">
                                     <span class="info-label">Úvazek</span>
-                                    <span class="info-value">{{ selectedEmployee()!.hoursPerWeek || 0 }} hod/týden</span>
+                                    <span class="info-value">{{ get_employee.hours_per_week || 0 }} hod/týden</span>
                                 </div>
                                 <div class="info-row">
                                     <span class="info-label">Platnost od</span>
-                                    <span class="info-value">{{ selectedEmployee()!.startDate ?
-                                        Utils.formatDate(selectedEmployee()!.startDate!) : '-' }}</span>
+                                    <span class="info-value">{{ get_employee.start_date ?
+                                        Utils.formatDate(get_employee.start_date!) : '-' }}</span>
                                 </div>
                                 <div class="info-row">
                                     <span class="info-label">Platnost do</span>
-                                    <span class="info-value">{{ selectedEmployee()!.endDate ?
-                                        Utils.formatDate(selectedEmployee()!.endDate!) : 'Na dobu neurčitou' }}</span>
+                                    <span class="info-value">{{ get_employee.end_date ?
+                                        Utils.formatDate(get_employee.end_date!) : 'Na dobu neurčitou' }}</span>
                                 </div>
-                                @if (selectedEmployee()!.rank) {
+                                @if (get_employee.rank) {
                                 <div class="info-row">
                                     <span class="info-label">Platová třída</span>
-                                    <span class="info-value">{{ selectedEmployee()!.rank }}</span>
+                                    <span class="info-value">{{ get_employee.rank }}</span>
                                 </div>
                                 }
                             </div>
@@ -155,16 +156,16 @@
                             <div class="info-list">
                                 <div class="info-row">
                                     <span class="info-label">Role</span>
-                                    <span class="info-value">{{ l.s('roles.' + selectedEmployee()!.role) }}</span>
+                                    <span class="info-value">{{ l.s('roles.' + get_employee.role) }}</span>
                                 </div>
                                 <div class="info-row">
                                     <span class="info-label">Oddělení</span>
-                                    <span class="info-value">{{ selectedEmployee()!.department || '-' }}</span>
+                                    <span class="info-value">{{ get_employee.department || '-' }}</span>
                                 </div>
                                 <div class="info-row">
                                     <span class="info-label">Kabinet</span>
-                                    <span class="info-value">{{ selectedEmployee()!.cabinet ? 'Kabinet č. ' +
-                                        selectedEmployee()!.cabinet : '-' }}</span>
+                                    <span class="info-value">{{ get_employee.cabinet ? 'Kabinet č. ' +
+                                        get_employee.cabinet : '-' }}</span>
                                 </div>
                             </div>
                         </div>
@@ -178,29 +179,29 @@
                             <div class="info-list">
                                 <div class="info-row">
                                     <span class="info-label">Celé jméno</span>
-                                    <span class="info-value">{{ selectedEmployee()!.fullName }}</span>
+                                    <span class="info-value">{{ get_employee.full_name }}</span>
                                 </div>
                                 <div class="info-row">
                                     <span class="info-label">Datum narození</span>
-                                    <span class="info-value">{{ selectedEmployee()!.dateOfBirth ?
-                                        Utils.formatDateShort(selectedEmployee()!.dateOfBirth!) : '-' }}</span>
+                                    <span class="info-value">{{ get_employee.date_of_birth ?
+                                        Utils.formatDateShort(get_employee.date_of_birth!) : '-' }}</span>
                                 </div>
                                 <div class="info-row">
                                     <span class="info-label">Email</span>
-                                    <a class="info-value link" href="mailto:{{selectedEmployee()!.email}}">{{
-                                        selectedEmployee()!.email || '-' }}</a>
+                                    <a class="info-value link" href="mailto:{{get_employee.email}}">{{
+                                        get_employee.email || '-' }}</a>
                                 </div>
                                 <div class="info-row">
                                     <span class="info-label">Telefon</span>
-                                    <a class="info-value link" href="tel:{{selectedEmployee()!.phone}}">{{
-                                        selectedEmployee()!.phone || '-' }}</a>
+                                    <a class="info-value link" href="tel:{{get_employee.phone}}">{{
+                                        get_employee.phone || '-' }}</a>
                                 </div>
                             </div>
                         </div>
                     </div>
                     }
 
-                    @if (selectedDetailTab() === 1) {
+                    @if (selectedDetailTab.getValue() === 1) {
                     <!-- Attendance Tab -->
                     <div class="attendance-tab">
                         <!-- Statistics Cards -->
@@ -294,14 +295,14 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    @for (record of attendanceRecords(); track record.attendanceId) {
+                                    @for (record of attendanceRecords(); track record.attendance_id) {
                                     <tr>
                                         <td>{{ record.date | date:'dd.MM.yyyy' }}</td>
-                                        <td>{{ record.checkIn || '-' }}</td>
-                                        <td>{{ record.checkOut || 'Aktivní' }}</td>
-                                        <td>{{ record.breakMinutes || 0 }}</td>
+                                        <td>{{ record.check_in || '-' }}</td>
+                                        <td>{{ record.check_out || 'Aktivní' }}</td>
+                                        <td>{{ record.break_minutes || 0 }}</td>
                                         <td>
-                                            <span class="hours-worked">{{ (record.workedMinutes / 60).toFixed(1)
+                                            <span class="hours-worked">{{ (record.worked_minutes / 60).toFixed(1)
                                                 }}h</span>
                                         </td>
                                         <td>
@@ -333,7 +334,7 @@
                     </div>
                     }
 
-                    @if (selectedDetailTab() === 2) {
+                    @if (selectedDetailTab.getValue() === 2) {
                     <!-- Vacations Tab -->
                     <div class="vacations-tab">
                         <!-- Balance Card -->
@@ -429,7 +430,7 @@
                     </div>
                     }
 
-                    @if (selectedDetailTab() === 3) {
+                    @if (selectedDetailTab.getValue() === 3) {
                     <!-- Salaries Tab -->
                     <div class="salaries-tab">
                         <div class="overview-grid">
@@ -533,7 +534,7 @@
                     </div>
                     }
 
-                    @if (selectedDetailTab() === 4) {
+                    @if (selectedDetailTab.getValue() === 4) {
                     <!-- Bonuses Tab -->
                     <div class="bonuses-tab">
                         <div class="overview-grid">
@@ -711,7 +712,7 @@
                         </span>
                         <button class="btn btn--warning btn--sm" (click)="performCheckOut(30)">
                             <i-tabler name="logout"></i-tabler>
-                            {{ currentAttendanceRecord()?.checkOut ? 'Dřívější odchod' : 'Odchod' }}
+                            {{ currentAttendanceRecord()?.check_out ? 'Dřívější odchod' : 'Odchod' }}
                         </button>
                     </div>
                     }
@@ -735,7 +736,7 @@
         <schoolingo-tabs [options]="viewTabOptions" [icons]="viewTabIcons" [value]="selectedViewTabSubject"></schoolingo-tabs>
 
         <!-- TAB 0: LIST -->
-        @if (selectedViewTab() === 0) {
+        @if (selectedViewTab.getValue() === 0) {
         <div class="filters-card">
             <div class="filters-row-container">
                 <div class="search-wrapper full-width">
@@ -811,15 +812,15 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @for (employee of employees(); track employee.personId) {
+                    @for (employee of employees(); track employee.person_id) {
                     <tr (click)="selectEmployee(employee)">
                         <td>
                             <div class="employee-cell">
                                 <div class="employee-avatar-sm">
-                                    {{ Utils.getInitials(employee.fullName) }}
+                                    {{ Utils.getInitials(employee.full_name) }}
                                 </div>
                                 <div class="employee-name-cell">
-                                    <span class="name">{{ employee.fullName }}</span>
+                                    <span class="name">{{ employee.full_name }}</span>
                                     <span class="email">{{ employee.email }}</span>
                                 </div>
                             </div>
@@ -836,7 +837,7 @@
                             </div>
                         </td>
                         <td>
-                            <span class="average-badge">{{ employee.hoursPerWeek || 0 }}h</span>
+                            <span class="average-badge">{{ employee.hours_per_week || 0 }}h</span>
                         </td>
                         <td>
                             <span class="status-pill" [class]="getStatusClass(employee.status)">
@@ -882,7 +883,7 @@
         }
 
         <!-- TAB 1: ATTENDANCE -->
-        @if (selectedViewTab() === 1) {
+        @if (selectedViewTab.getValue() === 1) {
         <div class="attendance-wrapper">
             <div class="card-header" style="justify-content: space-between; align-items: center; display: flex; margin-bottom: 20px;">
                 <h3>Přehled docházky</h3>
@@ -909,23 +910,23 @@
                     </thead>
                     <tbody>
                         @if (allAttendanceRecords().length > 0) {
-                        @for (record of allAttendanceRecords(); track record.attendanceId) {
+                        @for (record of allAttendanceRecords(); track record.attendance_id) {
                         <tr>
                             <td class="col-name">
                                 <div class="name-cell">
                                     <div class="avatar-circle">
-                                        {{ Utils.getInitials(record.firstName + ' ' + record.lastName) }}
+                                        {{ Utils.getInitials(record.full_name) }}
                                     </div>
                                     <div class="details">
-                                        <span class="name">{{ record.firstName }} {{ record.lastName }}</span>
+                                        <span class="name">{{ record.first_name }} {{ record.last_name }}</span>
                                     </div>
                                 </div>
                             </td>
-                            <td>{{ record.checkIn || '-' }}</td>
-                            <td>{{ record.checkOut || '-' }}</td>
+                            <td>{{ record.check_in || '-' }}</td>
+                            <td>{{ record.check_out || '-' }}</td>
                             <td>
-                                @if (record.workedMinutes) {
-                                {{ (record.workedMinutes / 60).toFixed(1) }}h
+                                @if (record.worked_minutes) {
+                                {{ (record.worked_minutes / 60).toFixed(1) }}h
                                 } @else {
                                 -
                                 }
@@ -967,7 +968,7 @@
         }
 
         <!-- TAB 2: VACATION REQUESTS -->
-        @if (selectedViewTab() === 2) {
+        @if (selectedViewTab.getValue() === 2) {
         <div class="vacations-view">
             <div class="subsection-header">
                 <h3>Žádosti o dovolenou</h3>
@@ -1020,7 +1021,7 @@
         }
 
         <!-- TAB 3: SALARIES -->
-        @if (selectedViewTab() === 3 && canManage) {
+        @if (selectedViewTab.getValue() === 3 && canManage) {
         <div class="salaries-view">
             <div class="subsection-header">
                 <h3>Platy a mzdy</h3>

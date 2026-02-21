@@ -135,12 +135,12 @@ export class TemplateTimetableComponent implements OnInit {
 
     let hours: TimetableHours[] = [];
     let time = moment()
-    .set('hours', schoolConfig?.startHour!)
-    .set('minutes', schoolConfig?.startMinute!);
+    .set('hours', schoolConfig?.start_hour!)
+    .set('minutes', schoolConfig?.start_minute!);
 
     for(let i = 1;i <= this.maxHours;i++) {
         let startHour = time.clone();
-        time.add(schoolConfig?.lessonHour, 'minutes');
+        time.add(schoolConfig?.lesson_hour, 'minutes');
         hours.push(
           {
             startMoment: startHour.clone(),
@@ -150,7 +150,7 @@ export class TemplateTimetableComponent implements OnInit {
           }
         );
         let customBreak = schoolConfig?.breaks.filter((_) => _.hour == i + 1)[0]?.minutes;
-        time.add(customBreak || schoolConfig?.breakTime, 'minutes');
+        time.add(customBreak || schoolConfig?.break_time, 'minutes');
     }
 
     this.hours = hours;

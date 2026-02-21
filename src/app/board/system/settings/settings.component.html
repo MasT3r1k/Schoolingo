@@ -123,11 +123,11 @@
             <div class="form-grid">
                 <div class="form-group">
                     <label>Jméno</label>
-                    <input type="text" [(ngModel)]="system.settings.gdpr_firstname" (change)="update_school()">
+                    <input type="text" [(ngModel)]="system.settings.gdpr_first_name" (change)="update_school()">
                 </div>
                 <div class="form-group">
                     <label>Příjmení</label>
-                    <input type="text" [(ngModel)]="system.settings.gdpr_lastname" (change)="update_school()">
+                    <input type="text" [(ngModel)]="system.settings.gdpr_last_name" (change)="update_school()">
                 </div>
                 <div class="form-group">
                     <label>Telefon</label>
@@ -372,9 +372,10 @@
                     <div class="stat-item">
                         <div class="stat-label">Využití studentů</div>
                         <div class="stat-value">
-                            {{ system.student_count }} <span class="stat-limit">/ {{ system.settings.studentsLimit == -1
+                            {{ system.student_count }} <span class="stat-limit">/ {{ system.settings.students_limit ==
+                                -1
                                 ?
-                                '∞' : system.settings.studentsLimit }}</span>
+                                '∞' : system.settings.students_limit }}</span>
                         </div>
                         <div class="progress-bar">
                             <div class="progress-fill" [style.width.%]="getStudentPercentage()"></div>
@@ -409,7 +410,7 @@
 
                 <div class="form-group">
                     <label for="shortcut">{{ l.s('system.school_short_name') }}</label>
-                    <input type="text" id="shortcut" [(ngModel)]="system.settings.shortName">
+                    <input type="text" id="shortcut" [(ngModel)]="system.settings.short_name">
                 </div>
             </div>
 
@@ -426,7 +427,7 @@
                         (click)="$event.stopPropagation(); dropdownManager.selected_dropdown = dropdownManager.selected_dropdown == 'country' ? '' : 'country'">
                         <div class="selected-value">
                             <div class="row" style="gap: .5rem">
-                                @let selectedCountry = getCountry(system.settings.country);
+                                @let selectedCountry = getCountry(system.settings.country_id);
                                 @if (selectedCountry) {
                                 {{ `${countryManager.getCountryByCode(selectedCountry.code2)?.flag}
                                 ${selectedCountry.nationality}` }}
@@ -439,9 +440,9 @@
                         @if (dropdownManager.selected_dropdown == 'country') {
                         <div class="options-dropdown">
                             <div class="list">
-                                @for (country of system.countries; track country.countryId) {
+                                @for (country of system.countries; track country.country_id) {
                                 <div class="option row" style="gap: .5rem"
-                                    (click)="$event.stopPropagation(); dropdownManager.selected_dropdown = ''; system.settings.country = country.countryId">
+                                    (click)="$event.stopPropagation(); dropdownManager.selected_dropdown = ''; system.settings.country_id = country.country_id">
                                     {{ `${countryManager.getCountryByCode(country.code2)?.flag} ${country.nationality}`
                                     }}
                                 </div>
@@ -549,11 +550,11 @@
             <p class="section-desc">Seznam domén, na kterých je systém dostupný.</p>
 
             <div class="domains-list" style="display: flex; flex-direction: column; gap: 0.5rem; margin-bottom: 1rem;">
-                @for (domain of system.domains; track domain.domainId) {
+                @for (domain of system.domains; track domain.domain_id) {
                 <div class="domain-item"
                     style="display: flex; justify-content: space-between; align-items: center; padding: 0.5rem; background: var(--bg-secondary); border-radius: var(--radius-sm); border: 1px solid var(--border-color);">
                     <span>{{ domain.domain }}</span>
-                    <button class="btn btn--icon btn--danger btn--small" (click)="removeDomain(domain.domainId)">
+                    <button class="btn btn--icon btn--danger btn--small" (click)="removeDomain(domain.domain_id)">
                         <i-tabler name="trash"></i-tabler>
                     </button>
                 </div>
@@ -580,7 +581,7 @@
 
             <div class="form-group">
                 <label for="warn_absence">{{ l.s('system.warn_above_absence') }}</label>
-                <input type="number" min="1" max="100" [(ngModel)]="system.settings.warningAbsencePercent"
+                <input type="number" min="1" max="100" [(ngModel)]="system.settings.warning_absence_percent"
                     id="warn_absence">
                 <small class="note">Procento absence, při kterém se zobrazí upozornění</small>
             </div>
@@ -678,8 +679,8 @@
                     <p>Umožní uživatelům resetovat zapomenuté heslo přes email</p>
                 </div>
                 <div class="auth-card__toggle">
-                    <div class="switch" [class.on]="system.settings.resetPasswordWithEmail"
-                        (click)="system.settings.resetPasswordWithEmail = !system.settings.resetPasswordWithEmail;update_login()">
+                    <div class="switch" [class.on]="system.settings.reset_password_with_email"
+                        (click)="system.settings.reset_password_with_email = !system.settings.reset_password_with_email;update_login()">
                         <div class="knob"></div>
                     </div>
                 </div>
@@ -1016,7 +1017,7 @@
 
         <div id="list">
             @for (scope of system.scopes; track $index) {
-            <div class="panel-item" [class.active]="selected_scope?.scopeId == scope.scopeId"
+            <div class="panel-item" [class.active]="selected_scope?.scope_id == scope.scope_id"
                 (click)="select_scope(scope)">
                 <div class="panel-meta">
                     <div class="panel-title">
@@ -1060,14 +1061,14 @@
                 </div>
             </div>
             <div class="detail-right">
-                @if (selected_scope.scopeId == null) {
-                <span class="clickable" style="color: var(--danger)" (click)="remove_scope(selected_scope.scopeId)">
+                @if (selected_scope.scope_id == null) {
+                <span class="clickable" style="color: var(--danger)" (click)="remove_scope(selected_scope.scope_id)">
                     {{ l.s('system.remove_scope') }}
                 </span>
                 }
                 <div class="btn small primary" (click)="update_scope()">
-                    <i-tabler [name]="selected_scope.scopeId != null ? 'device-floppy' : 'plus'"></i-tabler>
-                    {{ l.s('system.' + (selected_scope.scopeId != null ? 'save_scope' : 'create_scope')) }}
+                    <i-tabler [name]="selected_scope.scope_id != null ? 'device-floppy' : 'plus'"></i-tabler>
+                    {{ l.s('system.' + (selected_scope.scope_id != null ? 'save_scope' : 'create_scope')) }}
                 </div>
             </div>
         </div>
@@ -1166,13 +1167,13 @@
                 </thead>
                 <tbody>
                     @for (subject of system.subjects; track $index) {
-                    @if (subject.subjectId && subject_hours[subject.subjectId]) {
+                    @if (subject.subject_id && subject_hours[subject.subject_id]) {
                     <tr>
-                        <td>{{ subject.subjectName }}</td>
+                        <td>{{ subject.subject_name }}</td>
                         @for (_ of [].constructor(+selected_scope.years); track $index) {
                         <td class="hour">
-                            @if (subject.subjectId != null) {
-                            <input type="number" [(ngModel)]="subject_hours[subject.subjectId][$index]">
+                            @if (subject.subject_id != null) {
+                            <input type="number" [(ngModel)]="subject_hours[subject.subject_id][$index]">
                             }
                         </td>
                         }
@@ -1221,7 +1222,7 @@
                 <div class="panel-meta">
                     <div class="panel-title">
                         <h3>
-                            {{ subject.subjectName || l.s('system.subject_no_name') }}
+                            {{ subject.subject_name || l.s('system.subject_no_name') }}
                         </h3>
                     </div>
                 </div>
@@ -1235,7 +1236,7 @@
                 <div class="detail-title">
                     <div>
                         <h1 id="detailName">
-                            {{ system.subjects[selected_subject].subjectName || l.s('system.subject_no_name') }}
+                            {{ system.subjects[selected_subject].subject_name || l.s('system.subject_no_name') }}
                         </h1>
                     </div>
                 </div>
@@ -1247,9 +1248,9 @@
                     <i-tabler name="loader" class="animate-spin"></i-tabler>
                     } @else {
                     <i-tabler
-                        [name]="system.subjects[selected_subject].subjectId != null ? 'device-floppy' : 'plus'"></i-tabler>
+                        [name]="system.subjects[selected_subject].subject_id != null ? 'device-floppy' : 'plus'"></i-tabler>
                     }
-                    {{ l.s('system.' + (system.subjects[selected_subject].subjectId != null ? 'save_subject' :
+                    {{ l.s('system.' + (system.subjects[selected_subject].subject_id != null ? 'save_subject' :
                     'create_subject')) }}
                 </div>
             </div>
@@ -1265,7 +1266,7 @@
             <div class="form-group">
                 <label for="name">{{ l.s('system.subject_name') }}</label>
                 <input id="name" placeholder="Např. Informační technologie"
-                    [(ngModel)]="system.subjects[selected_subject].subjectName" (input)="onInputSubjectName()">
+                    [(ngModel)]="system.subjects[selected_subject].subject_name" (input)="onInputSubjectName()">
             </div>
 
             <div class="form-group">
@@ -1326,10 +1327,10 @@
                         @if (dropdownManager.selected_dropdown == 'add_teacher_subject') {
                         <div class="options-dropdown">
                             <div class="list">
-                                @for (teacher of available_teachers; track teacher.teacherId) {
+                                @for (teacher of available_teachers; track teacher.teacher_id) {
                                 <div class="option row" style="gap: .5rem"
-                                    (click)="$event.stopPropagation(); dropdownManager.selected_dropdown = ''; selected_teacher_to_add = teacher.teacherId">
-                                    {{ teacher.teacherName }}
+                                    (click)="$event.stopPropagation(); dropdownManager.selected_dropdown = ''; selected_teacher_to_add = teacher.teacher_id">
+                                    {{ teacher.teacher_name }}
                                 </div>
                                 }
                             </div>
@@ -1343,13 +1344,13 @@
                 </div>
 
                 <div class="teachers-list">
-                    @for (teacher of assigned_teachers; track teacher.teacherId) {
+                    @for (teacher of assigned_teachers; track teacher.teacher_id) {
                     <div class="teacher-row">
                         <div class="teacher-name">
-                            {{ teacher.firstName }} {{ teacher.lastName }}
+                            {{ teacher.first_name }} {{ teacher.last_name }}
                         </div>
                         <div class="teacher-actions">
-                            <div class="btn danger icon-only" (click)="remove_teacher_from_subject(teacher.teacherId)">
+                            <div class="btn danger icon-only" (click)="remove_teacher_from_subject(teacher.teacher_id)">
                                 <i-tabler name="trash-x"></i-tabler>
                             </div>
                         </div>

@@ -1,11 +1,11 @@
 import moment from "moment";
 
 export interface User {
-    fullName: string;
+    full_name: string;
     expires: Date;
     username: string;
-    userId: number;
-    personId: number;
+    user_id: number;
+    person_id: number;
     gender: number;
     role: 'student' | 'teacher' | 'parent';
     manager: number;
@@ -21,7 +21,7 @@ export interface User {
     theme: number;
     level: number;
     '2fa': boolean;
-    passwordChanged: Date;
+    password_changed: Date;
     lastLogins7Days: number;
     failedLogins7Days: number;
     emails: UserEmail[];
@@ -33,18 +33,18 @@ export interface User {
 }
 
 export interface SchoolClass {
-    classId: number;
-    className: string;
-    scopeId: number;
+    class_id: number;
+    class_name: string;
+    scope_id: number;
+    scope_name: string;
+    scope_years: number;
     students: number;
-    scopeName: string;
-    scopeYears: number;
 }
 
 export interface Child {
-    childId: number;
-    firstName: string;
-    lastName: string;
+    child_id: number;
+    first_name: string;
+    last_name: string;
     gender: number;
     classes: SchoolClass[];
 }

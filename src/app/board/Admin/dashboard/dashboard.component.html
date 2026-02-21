@@ -44,12 +44,12 @@
                     </div>
                     <div class="stat-info">
                         <div class="stat-value">
-                            {{ Utils.formatNumber(schoolStats.totalStudents) }}
+                            {{ Utils.formatNumber(schoolStats.total_students) }}
                             <span class="muted">ze
-                                @if (schoolStats.limitStudents == -1) {
+                                @if (schoolStats.limit_students == -1) {
                                 <span style="color: var(--primary-100);font-weight: 500;">NEOMEZENO</span>
                                 } @else {
-                                {{ schoolStats.limitStudents }}
+                                {{ schoolStats.limit_students }}
                                 }
                             </span>
                         </div>
@@ -62,7 +62,7 @@
                         <i-tabler name="trophy"></i-tabler>
                     </div>
                     <div class="stat-info">
-                        <div class="stat-value">{{ Utils.formatNumber(schoolStats.averageGrade, 2) }}</div>
+                        <div class="stat-value">{{ Utils.formatNumber(schoolStats.average_grade, 2) }}</div>
                         <div class="stat-label">Průměrný prospěch</div>
                     </div>
                 </div>
@@ -72,7 +72,7 @@
                         <i-tabler name="calendar-x"></i-tabler>
                     </div>
                     <div class="stat-info">
-                        <div class="stat-value">{{ Utils.formatNumber(schoolStats.absenceRate, 2) }}%</div>
+                        <div class="stat-value">{{ Utils.formatNumber(schoolStats.absence_rate, 2) }}%</div>
                         <div class="stat-label">Míra absence</div>
                     </div>
                 </div>
@@ -82,7 +82,7 @@
                         <i-tabler name="alert-triangle"></i-tabler>
                     </div>
                     <div class="stat-info">
-                        <div class="stat-value">{{ Utils.formatNumber(schoolStats.atRiskStudents) }}</div>
+                        <div class="stat-value">{{ Utils.formatNumber(schoolStats.at_risk_students) }}</div>
                         <div class="stat-label">Rizikoví studenti</div>
                     </div>
                 </div>
@@ -145,7 +145,7 @@
                         }
                         <div class="risk-info">
                             <div class="risk-name">{{ student.full_name }}</div>
-                            <div class="risk-class">{{ student?.class_name ?? '' }}</div>
+                            <div class="risk-class"></div>
                         </div>
                         <div class="risk-factors">
                             @if (student.absence_rate) {
@@ -183,9 +183,9 @@
                         <button class="btn-back" (click)="closeClassDetail()">
                             <i-tabler name="arrow-left"></i-tabler>
                         </button>
-                        <span>{{ detailedClass.classDetails.className }}</span>
+                        <span>{{ detailedClass.class_details.class_name }}</span>
                         <small class="muted" style="margin-left: 10px; font-weight: 400; font-size: 0.8em;">
-                            {{ detailedClass.classDetails.teacherName }}
+                            {{ detailedClass.class_details.teacher_name }}
                         </small>
                     </h3>
                 </div>
@@ -193,16 +193,16 @@
                 <!-- Groups Grid -->
                 <h4>Skupiny</h4>
                 <div class="classes-grid">
-                    @for (group of detailedClass.groupsStats; track $index) {
+                    @for (group of detailedClass.groups_stats; track $index) {
                     <div class="class-card">
                         <div class="class-header">
                             <h4>
-                                {{ group.groupName || detailedClass.classDetails.className }}
-                                @if (group.groupNum) {
+                                {{ group.group_name || detailedClass.class_details.class_name }}
+                                @if (group.group_num) {
                                 <small class="muted">
-                                    sk. {{ group.groupNum }}
+                                    sk. {{ group.group_num }}
                                 </small>
-                                } @else if (!group.groupName) {
+                                } @else if (!group.group_name) {
                                 <small class="muted">
                                     (Celá třída)
                                 </small>
@@ -212,22 +212,22 @@
                         <div class="class-stats">
                             <div class="class-stat">
                                 <i-tabler name="users"></i-tabler>
-                                <span>{{ group.studentCount }} studentů</span>
+                                <span>{{ group.student_count }} studentů</span>
                             </div>
                             <div class="class-stat highlight">
                                 <i-tabler name="trophy"></i-tabler>
-                                <span>Ø {{ Utils.formatNumber(group.averageGrade, 2) }}</span>
+                                <span>Ø {{ Utils.formatNumber(group.average_grade, 2) }}</span>
                             </div>
-                            <div class="class-stat" [class.warning]="group.absenceRate > 10">
+                            <div class="class-stat" [class.warning]="group.absence_rate > 10">
                                 <i-tabler name="calendar-x"></i-tabler>
-                                <span>{{ Utils.formatNumber(group.absenceRate, 2) }}% absence</span>
+                                <span>{{ Utils.formatNumber(group.absence_rate, 2) }}% absence</span>
                             </div>
                         </div>
                         <div class="progress-bar">
-                            <div class="progress-fill" [style.width.%]="(5 - group.averageGrade) * 25"
-                                [class.good]="group.averageGrade < 2.5"
-                                [class.warning]="group.averageGrade >= 2.5 && group.averageGrade < 3.5"
-                                [class.danger]="group.averageGrade >= 3.5"></div>
+                            <div class="progress-fill" [style.width.%]="(5 - group.average_grade) * 25"
+                                [class.good]="group.average_grade < 2.5"
+                                [class.warning]="group.average_grade >= 2.5 && group.average_grade < 3.5"
+                                [class.danger]="group.average_grade >= 3.5"></div>
                         </div>
                     </div>
                     }
@@ -257,13 +257,6 @@
                         <div class="class-header">
                             <h4>
                                 {{ classItem.class_name }}
-                                @if (classItem.group_name != null || classItem.group_num != null) {
-                                <small class="muted">
-                                    {{ classItem.group_name || 'sk.' }}
-                                    {{ classItem.group_num }}
-                                </small>
-                                }
-
                             </h4>
                             <i-tabler [name]="getTrendIcon(classItem.trend)"
                                 [class]="'trend-' + classItem.trend"></i-tabler>
@@ -408,7 +401,6 @@
                     <div class="table-header">
                         <div class="col-rank">Riziko</div>
                         <div class="col-student">Student</div>
-                        <div class="col-class">Třída</div>
                         <div class="col-absence">Absence</div>
                         <div class="col-grades">Známky</div>
                         <div class="col-discipline">Kázeň</div>
@@ -420,7 +412,6 @@
                             <div class="rank-badge">{{ Utils.formatNumber(student.risk_score) }}</div>
                         </div>
                         <div class="col-student">{{ student.full_name }}</div>
-                        <div class="col-class">{{ student.class_name }}</div>
                         <div class="col-absence">{{ Utils.formatNumber(student.absence_rate, 2) }}%</div>
                         <div class="col-grades">{{ Utils.formatNumber(student.grade_average, 2) }}</div>
                         <div class="col-discipline">{{ Utils.formatNumber(student.disciplinary_issues) }}</div>

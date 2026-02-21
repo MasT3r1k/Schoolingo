@@ -27,19 +27,68 @@ export interface SidebarItem {
   action?: Function;
 }
 
+export interface TimetableAPI {
+  timetable: TimetableLessonAPI[];
+  substitution:TimetableSubstitutionAPI[];
+  absences: TimetableAbsence[];
+}
+
+export interface TimetableLessonAPI {
+  lesson_id: number;
+  group_id: number;
+  group_name: string | null;
+  group_num: number  | null;
+  day: number;
+  hour: number;
+  type: number;
+  room: string;
+  subject_id: number;
+  subject_name: string;
+  subject_shortcut: string;
+  teacher_id: number;
+  teacher: string;
+  class_name: string;
+}
+
+export interface TimetableSubstitutionAPI {
+  group_id: number;
+  group_name: string | null;
+  group_num: number  | null;
+  start_date: Date;
+  end_date: Date;
+  start_hour: number;
+  end_hour: number;
+  type: number;
+  event_name: string | null;
+  event_description: string | null;
+  room: string;
+  subject_name: string;
+  subject_shortcut: string;
+  teacher_id: number;
+  teacher: string;
+  last_name: string;
+  class_name: string; 
+}
+
+export interface TimetableAbsence {
+  date: Date;
+  hour: number;
+  type: number;
+}
+
 export interface TimetableLesson {
-  groupId: number;
-  groupName: string;
-  groupNum: number;
+  group_id: number;
+  group_name: string;
+  group_num: number;
   type: number;
   teacher: number;
   room: string;
   subject: number;
-  subjectName: string;
-  subjectShortcut: string;
+  subject_name: string;
+  subject_shortcut: string;
   oldTeacher: number;
   oldSubject: string[];
-  className: string;
+  class_name: string;
   group: { id: number, text: string, num: string };
   empty: boolean;
   isSubstitution?: boolean;
@@ -71,6 +120,7 @@ export class TimetableComponent implements OnInit {
   private declare refreshDataTimeout;
   public dropdownManager = inject(DropdownManager)
   public isLoadingTimetable = false;
+  public generatingPdf = false;
   public selectedTimetable = new BehaviorSubject<number>(0);
   public selectedTab = new BehaviorSubject<number>(0);
   public selectedClass = new BehaviorSubject(0);
@@ -137,7 +187,7 @@ export class TimetableComponent implements OnInit {
   }
 
   public getClassName(class_id: number): string {
-    return this.u.getUser().classes.find((item) => item.classId == class_id)?.className ?? '';
+    return this.u.getUser().classes.find((item) => item.class_id == class_id)?.class_name ?? '';
   }
 
   ngOnInit(): void {
@@ -176,7 +226,7 @@ export class TimetableComponent implements OnInit {
     .pipe(distinctUntilChanged())
     .subscribe(() => {
       if (this.selectedClass.getValue() === 0 && this.u.getUser().classes.length) {
-        this.selectedClass.next(this.u.getUser().classes[0].classId)
+        this.selectedClass.next(this.u.getUser().classes[0].class_id)
       }
       this.refreshData()
     });
@@ -226,11 +276,11 @@ export class TimetableComponent implements OnInit {
         break;
     }
 
-    this.http.post(
+    this.http.post<TimetableAPI>(
       Config.API_URL + '/v1/timetable',
       {...timetableData, time: (this.timetableSelectedWeek.getValue() ?? moment()).format("YYYY-MM-DD")},
       { withCredentials: true })
-    .subscribe((data: any) => {
+    .subscribe((data: TimetableAPI) => {
       console.log(data)
       let maxHours = 0;
 
@@ -269,28 +319,28 @@ export class TimetableComponent implements OnInit {
         }
 
         let substitution = data.substitution.find((sub: any) => {
-            const isCorrectDay = currentDay.isBetween(sub.start_date, sub.end_date, 'day', '[]');
+            const isCorrectDay = currentDay.isBetween(sub.start_date, sub.end_date, 'day', '[]') || currentDay.format('YYYY-MM-DD') == moment(sub.start_date).format('YYYY-MM-DD') || currentDay.format('YYYY-MM-DD') == moment(sub.end_date).format('YYYY-MM-DD');
 
             const isCorrectHour = item.hour >= sub.start_hour && item.hour <= sub.end_hour;
 
             return isCorrectDay && isCorrectHour;
         });
 
-        if (substitution && substitution.start_hour >= item.hour && substitution.end_hour <= item.hour && this.timetableSelectedWeek.getValue() != null) {
+        if (substitution && this.timetableSelectedWeek.getValue() != null) {
           timetableBuild[item.day][item.hour - 1].push({
             ...item,
             type: substitution.type,
-            subjectName: substitution.subjectName || substitution.event_name,
-            subjectShortcut: substitution.subjectShortcut,
+            subjectName: substitution.subject_name || substitution.event_name,
+            subjectShortcut: substitution.subject_shortcut,
             all_day: (substitution.start_hour == -1 || substitution.end_hour == -1) ? true : false,
             color: this.timetable_types[substitution.type]?.color ??  "",
-            teacher: substitution.teacherId,
-            lastName: substitution.lastName,
+            teacher: substitution.teacher_id,
+            lastName: substitution.last_name,
             room: substitution.room,
-            oldTeacher: item.lastName,
-            oldSubject: item.subjectName || [],
-            className: substitution.className,
-            group: { id: substitution.groupId || 0, text: substitution.groupName || '', num: substitution.groupNum || '' },
+            oldTeacher: item.last_name,
+            oldSubject: item.subject_name || [],
+            className: substitution.class_name,
+            group: { id: substitution.group_id || 0, text: substitution.group_name || '', num: substitution.group_num || '' },
             hour: item.hour - 1,
             empty: false
           });
@@ -315,12 +365,12 @@ export class TimetableComponent implements OnInit {
 
       let hours: TimetableHours[] = [];
       let time = moment()
-      .set('hours', schoolConfig?.startHour!)
-      .set('minutes', schoolConfig?.startMinute!);
+      .set('hours', schoolConfig?.start_hour!)
+      .set('minutes', schoolConfig?.start_minute!);
 
       for(let i = 1;i <= maxHours;i++) {
           let startHour = time.clone();
-          time.add(schoolConfig?.lessonHour, 'minutes');
+          time.add(schoolConfig?.lesson_hour, 'minutes');
           hours.push(
               {
                   startMoment: startHour.clone(),
@@ -330,7 +380,7 @@ export class TimetableComponent implements OnInit {
               }
           );
           let customBreak = schoolConfig?.breaks.filter((_) => _.hour == i + 1)[0]?.minutes;
-          time.add(customBreak || schoolConfig?.breakTime, 'minutes');
+          time.add(customBreak || schoolConfig?.break_time, 'minutes');
       }
 
       this.timetableHours = hours;
@@ -364,6 +414,52 @@ export class TimetableComponent implements OnInit {
     }
 
     return classes;
+  }
+
+  public exportPdf(): void {
+    this.generatingPdf = true;
+    let targetType = 'person';
+    let targetId = this.u.getId();
+
+    if (this.perms.checkPermission(['teacher'])) {
+      switch(this.selectedTimetable.getValue()) {
+        case this.teacherOptions.indexOf('dropdown.select_timetable.class_timetable'):
+          targetType = 'class';
+          targetId = this.selectedClass.getValue();
+          break;
+        case this.teacherOptions.indexOf('dropdown.select_timetable.supervision'):
+          targetType = 'supervision';
+          break;
+      }
+    }
+
+    const data = {
+      type: 'rozvrh',
+      timetableData: {
+        timetable: this.timetable,
+        timetableHours: this.timetableHours,
+        selectedTab: this.selectedTab.getValue(),
+        timetableSelectedWeek: this.timetableSelectedWeek.getValue() ? this.timetableSelectedWeek.getValue()!.format('YYYY-MM-DD') : null,
+        targetType,
+        targetId
+      }
+    };
+
+    this.http.post(Config.API_URL + '/documents/generate', data, {
+      withCredentials: true,
+      responseType: 'blob'
+    }).subscribe({
+      next: (response: Blob) => {
+        const url = window.URL.createObjectURL(response);
+        window.open(url, '_blank');
+        // Cleanup URL after opening (optional, might need slight delay if some browsers close it immediately)
+        setTimeout(() => window.URL.revokeObjectURL(url), 100);
+        this.generatingPdf = false;
+      },
+      error: () => {
+        this.generatingPdf = false;
+      }
+    });
   }
 
 }

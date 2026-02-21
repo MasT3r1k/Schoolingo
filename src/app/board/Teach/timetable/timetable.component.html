@@ -1,3 +1,12 @@
+@if (generatingPdf) {
+<div
+    style="position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0, 0, 0, 0.7); display: flex; align-items: center; justify-content: center; z-index: 9999; flex-direction: column;">
+    <div class="loader"
+        style="width: 48px; height: 48px; border-width: 4px; border-color: #fff; border-top-color: transparent;"></div>
+    <p style="margin-top: 20px; color: #fff; font-size: 18px; font-weight: 500;">{{ l.s('timetable.generating_pdf') }}</p>
+</div>
+}
+
 <div class="card">
     <div class="card-top"></div>
     <div class="card-header">
@@ -6,64 +15,74 @@
         </h2>
         <div class="flex-items">
             @if (perms.checkPermission([["teacher"]])) {
-                <div class="select-items">
-                    <schoolingo-tabs [value]="selectedTimetable" [options]="teacherOptions"></schoolingo-tabs>
-                </div>
+            <div class="select-items">
+                <schoolingo-tabs [value]="selectedTimetable" [options]="teacherOptions"></schoolingo-tabs>
+            </div>
 
-                @if (selectedTimetable.getValue() == this.teacherOptions.indexOf('dropdown.select_timetable.class_timetable')) {
-                    <div class="form-group">
-                        <div class="custom-select" (click)="$event.stopPropagation(); dropdownManager.selected_dropdown = dropdownManager.selected_dropdown == 'timetable_selectClass' ? '' : 'timetable_selectClass'">
-                        <div class="selected-value">
-                            {{ getClassName(selectedClass.getValue()) }}
-                            @if (u.getUser().classes.length >= 2) {
-                            <i-tabler name="chevron-down"></i-tabler>
+            @if (selectedTimetable.getValue() ==
+            this.teacherOptions.indexOf('dropdown.select_timetable.class_timetable')) {
+            <div class="form-group">
+                <div class="custom-select"
+                    (click)="$event.stopPropagation(); dropdownManager.selected_dropdown = dropdownManager.selected_dropdown == 'timetable_selectClass' ? '' : 'timetable_selectClass'">
+                    <div class="selected-value">
+                        {{ getClassName(selectedClass.getValue()) }}
+                        @if (u.getUser().classes.length >= 2) {
+                        <i-tabler name="chevron-down"></i-tabler>
+                        }
+                    </div>
+                    @if (dropdownManager.selected_dropdown == 'timetable_selectClass' && u.getUser().classes.length >=
+                    2) {
+                    <div class="options-dropdown">
+                        <div class="list">
+                            @for (class of u.getUser().classes; track $index) {
+                            <div class="option"
+                                (click)="$event.stopPropagation();dropdownManager.selected_dropdown = '';selectedClass.next(class.class_id)">
+                                {{ class.class_name }}
+                            </div>
                             }
                         </div>
-                        @if (dropdownManager.selected_dropdown == 'timetable_selectClass' && u.getUser().classes.length >= 2) {
-                            <div class="options-dropdown">
-                                <div class="list">
-                                    @for (class of u.getUser().classes; track $index) {
-                                        <div class="option" (click)="$event.stopPropagation();dropdownManager.selected_dropdown = '';selectedClass.next(class.classId)">
-                                        {{ class.className }}
-                                        </div>
-                                    }
-                                </div>
-                            </div>
-                        }
-                        </div>
                     </div>
-                }
+                    }
+                </div>
+            </div>
+            }
             }
 
             @if (perms.checkPermission(['student', 'parent'])) {
-            <div class="item-btn text" (click)="$event.stopPropagation();dropdownManager.selected_dropdown = (dropdownManager.selected_dropdown == 'timetable_absence') ? '' : 'timetable_absence'">
+            <div class="item-btn text"
+                (click)="$event.stopPropagation();dropdownManager.selected_dropdown = (dropdownManager.selected_dropdown == 'timetable_absence') ? '' : 'timetable_absence'">
                 <div class="text">
                     {{ l.s('sidebar.absence') }}
                 </div>
-                <div class="dropdown" style="min-width: 225px;" [hidden]="dropdownManager.selected_dropdown !== 'timetable_absence'" (click)="$event.stopPropagation()">
+                <div class="dropdown" style="min-width: 225px;"
+                    [hidden]="dropdownManager.selected_dropdown !== 'timetable_absence'"
+                    (click)="$event.stopPropagation()">
                     <ul>
-                        @for (absence of absenceConfig; track $index) {                            
-                            <div class="flex align-items-center absence-item">
-                                <div [ngClass]="['absence', 'ab-' + absence.locale]"></div>
-                                {{ l.s('absence.' + absence.locale) }}
-                            </div>
+                        @for (absence of absenceConfig; track $index) {
+                        <div class="flex align-items-center absence-item">
+                            <div [ngClass]="['absence', 'ab-' + absence.locale]"></div>
+                            {{ l.s('absence.' + absence.locale) }}
+                        </div>
                         }
                     </ul>
                 </div>
             </div>
             }
             @if (perms.checkPermission(['teacher'])) {
-            <div class="item-btn text" (click)="$event.stopPropagation();dropdownManager.selected_dropdown = (dropdownManager.selected_dropdown == 'timetable_working_mode') ? '' : 'timetable_working_mode'">
+            <div class="item-btn text"
+                (click)="$event.stopPropagation();dropdownManager.selected_dropdown = (dropdownManager.selected_dropdown == 'timetable_working_mode') ? '' : 'timetable_working_mode'">
                 <div class="text">
                     {{ l.s('timetable.timetable_working_mode') }}
                 </div>
-                <div class="dropdown" style="min-width: 225px;" [hidden]="dropdownManager.selected_dropdown !== 'timetable_working_mode'" (click)="$event.stopPropagation()">
+                <div class="dropdown" style="min-width: 225px;"
+                    [hidden]="dropdownManager.selected_dropdown !== 'timetable_working_mode'"
+                    (click)="$event.stopPropagation()">
                     <ul>
-                        @for (working_mode of workingModeConfig; track $index) {                            
-                            <div class="flex align-items-center absence-item">
-                                <div [style.--absence-color]="working_mode.color" class="absence"></div>
-                                {{ l.s('working_mode.' + working_mode.locale) }}
-                            </div>
+                        @for (working_mode of workingModeConfig; track $index) {
+                        <div class="flex align-items-center absence-item">
+                            <div [style.--absence-color]="working_mode.color" class="absence"></div>
+                            {{ l.s('working_mode.' + working_mode.locale) }}
+                        </div>
                         }
                     </ul>
                 </div>
@@ -71,20 +90,21 @@
             }
 
             <div class="select-items">
-                <schoolingo-tabs [value]="selectedTab" [options]="['timetable.this_week', 'timetable.next_week', 'timetable.permanent', 'sidebar.calendar']"></schoolingo-tabs>
+                <schoolingo-tabs [value]="selectedTab"
+                    [options]="['timetable.this_week', 'timetable.next_week', 'timetable.permanent', 'sidebar.calendar']"></schoolingo-tabs>
             </div>
 
             @if (selectedTab.getValue() === 3) {
-                <div class="button" (click)="$event.stopPropagation();">
-                    <i-tabler name="calendar-month"></i-tabler>
-                    {{
-                        timetableSelectedWeek.getValue()!.clone().startOf('isoWeek')
-                        .format('DD. MM. YYYY')
-                         + ' - ' + 
-                        timetableSelectedWeek.getValue()!.clone().endOf('isoWeek')
-                         .format('DD. MM. YYYY')
-                    }}
-                </div>
+            <div class="button" (click)="$event.stopPropagation();">
+                <i-tabler name="calendar-month"></i-tabler>
+                {{
+                timetableSelectedWeek.getValue()!.clone().startOf('isoWeek')
+                .format('DD. MM. YYYY')
+                + ' - ' +
+                timetableSelectedWeek.getValue()!.clone().endOf('isoWeek')
+                .format('DD. MM. YYYY')
+                }}
+            </div>
             }
 
             <!-- <div [ngClass]="{'item-btn': true, active: dropdown.isOpen(timetableOptionsName)}" [attr.dropdown]="timetableOptionsName" (click)="$event.stopPropagation();dropdown.toggle(timetableOptionsName)">
@@ -92,11 +112,17 @@
                     <i-tabler name="dots-vertical"></i-tabler>
                 </div>
             </div> -->
+
+            <div class="item-btn text" (click)="exportPdf()">
+                <div class="icon">
+                    <i-tabler name="printer"></i-tabler>
+                </div>
+            </div>
         </div>
     </div>
     <div class="alerts">
         @if (isClassService) {
-            <!-- <div class="alert alert--info" [ngStyle]="{ maxWidth: (schoolingo.getTimetableHours().length + 1) * 128 + 'px' }">
+        <!-- <div class="alert alert--info" [ngStyle]="{ maxWidth: (schoolingo.getTimetableHours().length + 1) * 128 + 'px' }">
                 {{ l.s('timetable/classService')
                     .replaceAll('%start%', schoolingo.studentService.start.format('DD. MM. YYYY'))
                     .replaceAll('%end%',   schoolingo.studentService.end  .format('DD. MM. YYYY'))
@@ -106,92 +132,99 @@
     </div>
     <div class="card-body center">
         @if (isLoadingTimetable) {
-            <div class="loading">
-                <div class="loader"></div>
-            </div>
+        <div class="loading">
+            <div class="loader"></div>
+        </div>
         } @else if (this.timetable.length) {
         <div class="timetable">
             <div class="hours">
                 <div class="week-type">
                     @if ([0, 1, 3].includes(selectedTab.getValue())) {
-                        {{ l.s('weeks.' + (Utils.isOdd(timetableSelectedWeek.getValue()?.isoWeek()!) ? 'odd' : 'even')) }}
+                    {{ l.s('weeks.' + (Utils.isOdd(timetableSelectedWeek.getValue()?.isoWeek()!) ? 'odd' : 'even')) }}
                     }
                 </div>
 
                 @for (hour of timetableHours; track $index) {
-                    <div class="hour-info">
-                        <div class="hour-id">
-                            {{ $index + 1 }}
-                        </div>
-                        <div class="hour-time">
-                            {{ hour.start + ' - ' + hour.end }}
-                        </div>
+                <div class="hour-info">
+                    <div class="hour-id">
+                        {{ $index + 1 }}
                     </div>
+                    <div class="hour-time">
+                        {{ hour.start + ' - ' + hour.end }}
+                    </div>
+                </div>
                 }
             </div>
 
             <div class="days">
-                @for (day of [].constructor((timetable[0] || timetable.length > 6) ? 7 : 6); track index;let index = $index) {
-                    @if (((timetable[0] || timetable.length > 6)) || (!timetable[0] && timetable.length <= 6 && index > 0)) {
+                @for (day of [].constructor((timetable[0] || timetable.length > 6) ? 7 : 6); track index;let index =
+                $index) {
+                @if (((timetable[0] || timetable.length > 6)) || (!timetable[0] && timetable.length <= 6 && index> 0)) {
                     <div class="day">
                         <div class="name">
                             {{ l.s('days.' + $index) }}
 
                             @if (selectedTab.getValue() !== 2) {
-                                <div class="time">
-                                    {{
-                                        Utils
-                                        .getDayOfWeek(timetableSelectedWeek.getValue()!, index)
-                                        .format('D. M.')
-                                    }}
-                                </div>
+                            <div class="time">
+                                {{
+                                Utils
+                                .getDayOfWeek(timetableSelectedWeek.getValue()!, index)
+                                .format('D. M.')
+                                }}
+                            </div>
                             }
                         </div>
 
 
-                        @if (timetable[index] && timetable[index]?.length && timetable[index][0]?.length && timetable[index][1][0]?.all_day) {
-                            <div class="item all-day" [style.backgroundColor]="timetable[index][1][0].color">
+                        @if (timetable[index] && timetable[index]?.length && timetable[index][0]?.length &&
+                        timetable[index][1][0]?.all_day) {
+                        <div class="item all-day" [style.backgroundColor]="timetable[index][1][0].color">
+                            <div class="group">
+                                <span></span>
+                            </div>
+                            <div class="room">
+                                {{ timetable[index][1][0].room }}
+                            </div>
+                            <div class="subject">
+                                {{ timetable[index][1][0].subject_name }}
+                            </div>
+                        </div>
+                        } @else {
+                        @for (hour of [].constructor(timetableHours.length); track index2;let index2 = $index) {
+                        <div class="item lesson-hour">
+                            @if (timetable[index]?.[index2]) {
+                            @for (lesson of timetable[index][index2] ?? []; track $index) {
+                            <div [ngClass]="getLessonClasses(index, index2, lesson)"
+                                [style.backgroundColor]="lesson.color">
                                 <div class="group">
-                                    <span></span>
+                                    <span>{{
+                                        (lesson.group_name ? lesson.group_name : lesson.class_name) + ' ' +
+                                        lesson.group_num ? lesson.group_num : ''
+                                        }}</span>
                                 </div>
                                 <div class="room">
-                                    {{ timetable[index][1][0].room }}
+                                    {{ lesson.room }}
                                 </div>
                                 <div class="subject">
-                                    {{ timetable[index][1][0].subjectName }}
+                                    @if (selectedTab.getValue() === 2 && lesson.type !== 0) {
+                                    {{ l.s('weeks.' + (lesson.type == 1 ? 'odd' : 'even')).charAt(0) + ': ' }}
+                                    }
+                                    {{ lesson.subject_shortcut }}
                                 </div>
-                            </div>
-                        } @else {
-                            @for (hour of [].constructor(timetableHours.length); track index2;let index2 = $index) {
-                                <div class="item lesson-hour">
-                                    @if (timetable[index]?.[index2]) {
-                                        @for (lesson of timetable[index][index2] ?? []; track $index) { 
-                                            <div [ngClass]="getLessonClasses(index, index2, lesson)" [style.backgroundColor]="lesson.color">
-                                                <div class="group">
-                                                    <span>{{ 
-                                                        (lesson.groupName ? lesson.groupName : lesson.className) + ' ' +
-                                                        lesson.groupNum ? lesson.groupNum : ''
-                                                        }}</span>
-                                                </div> 
-                                                <div class="room">
-                                                    {{ lesson.room }}
-                                                </div>
-                                                <div class="subject">
-                                                    @if (selectedTab.getValue() === 2 && lesson.type !== 0) {
-                                                        {{ l.s('weeks.' + (lesson.type == 1 ? 'odd' : 'even')).charAt(0) + ': ' }}
-                                                    }
-                                                    {{ lesson.subjectShortcut }}
-                                                </div>
-                                                <div class="teacher">
-                                                    @if (lesson.className && perms.checkPermission(['teacher']) && selectedTimetable.getValue() == this.teacherOptions.indexOf('dropdown.select_timetable.my_timetable')) {
-                                                        {{ lesson.className }}
-                                                    }
-                                                    @if (lesson.lastName && !perms.checkPermission(['teacher']) || selectedTimetable.getValue() == this.teacherOptions.indexOf('dropdown.select_timetable.class_timetable')) {
-                                                        {{ lesson.lastName }}
-                                                    }
-                                                </div>
+                                <div class="teacher">
+                                    @if (lesson.class_name && perms.checkPermission(['teacher']) &&
+                                    selectedTimetable.getValue() ==
+                                    this.teacherOptions.indexOf('dropdown.select_timetable.my_timetable')) {
+                                    {{ lesson.class_name }}
+                                    }
+                                    @if (lesson.last_name && !perms.checkPermission(['teacher']) ||
+                                    selectedTimetable.getValue() ==
+                                    this.teacherOptions.indexOf('dropdown.select_timetable.class_timetable')) {
+                                    {{ lesson.last_name }}
+                                    }
+                                </div>
 
-                                                <!-- @if (options['groups'].getValue() === true && lesson.group) {
+                                <!-- @if (options['groups'].getValue() === true && lesson.group) {
                                                     <div class="group">
                                                         @if (lesson.group.text != '') {
                                                             <span>{{ lesson.group.text }}</span>
@@ -220,22 +253,22 @@
                                                     </div>
                                                 } -->
 
-                                                @if (lesson.absence != -1) {
-                                                    <div [ngClass]="['absence', 'ab-' + absenceConfig[lesson.absence]?.locale]"></div>
-                                                }
-                                            </div>
-                                        }
-                                    }
-                                </div>
+                                @if (lesson.absence != -1 && selectedTab.getValue() != 2) {
+                                <div [ngClass]="['absence', 'ab-' + absenceConfig[lesson.absence]?.locale]"></div>
+                                }
+                            </div>
                             }
+                            }
+                        </div>
+                        }
                         }
                     </div>
                     }
-                }
+                    }
             </div>
         </div>
         } @else {
-            <p>Nemáte tento týden žádné hodiny</p>
+        <p>Nemáte tento týden žádné hodiny</p>
         }
     </div>
 </div>

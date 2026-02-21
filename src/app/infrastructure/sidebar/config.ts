@@ -32,9 +32,30 @@ export const config: SidebarGroup[] = [
             },
             {
                 item: "architecture.title",
-                url: 'admin/architecture',
                 icon: 'building-community',
-                permission: ['manager:admin', 'principal']
+                permission: ['manager:admin', 'principal'],
+                children: [
+                    {
+                        item: 'architecture.dashboard',
+                        url: 'admin/architecture',
+                        icon: 'dashboard'
+                    },
+                    {
+                        item: 'architecture.buildings',
+                        url: 'admin/architecture/buildings',
+                        icon: 'building'
+                    },
+                    {
+                        item: 'architecture.rooms',
+                        url: 'admin/architecture/rooms',
+                        icon: 'door-enter'
+                    },
+                    {
+                        item: 'architecture.inventory',
+                        url: 'admin/architecture/inventory',
+                        icon: 'package'
+                    }
+                ]
             },
             {
                 item: 'sidebar.schedule.main',

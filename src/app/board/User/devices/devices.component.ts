@@ -43,10 +43,10 @@ export class DevicesComponent implements OnInit {
     .subscribe((data: any[]) => {
       this.sessions = data.map((device: any) => ({
         ...device,
-        browser: Utils.getBrowser(device.userAgent),
-        os: Utils.getOS(device.userAgent),
-        icon: Utils.getOSIcon(device.userAgent),
-        isMobile: Utils.getMobile(device.userAgent),
+        browser: Utils.getBrowser(device.user_agent),
+        os: Utils.getOS(device.user_agent),
+        icon: Utils.getOSIcon(device.user_agent),
+        isMobile: Utils.getMobile(device.user_agent),
         _showIp: false
       }))
     });

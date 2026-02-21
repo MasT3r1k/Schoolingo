@@ -37,20 +37,20 @@ interface ElysiaVersionLoading {
 }
 
 interface SubjectAPI {
-  subjectId: number | null;
-  subjectName: string;
+  subject_id: number | null;
+  subject_name: string;
   shortcut: string;
 }
 
 interface TeacherAPI {
-  teacherId: number;
-  teacherName: string; // Full name from backend
-  firstName: string;
-  lastName: string;
+  teacher_id: number;
+  teacher_name: string; // Full name from backend
+  first_name: string;
+  last_name: string;
 }
 
 interface ScopeAPI {
-  scopeId: number | null;
+  scope_id: number | null;
   name: string;
   code: string;
   shortcut: string;
@@ -88,19 +88,19 @@ interface EmailConfig {
 type ElysiaSystemAPI = {
   settings: {
     name: string;
-    shortName: string;
+    short_name: string;
     code: string;
     district: string;
-    startHour: number;
-    startMinute: number;
-    lessonHour: number;
-    breakTime: number;
-    warningAbsencePercent: number;
-    resetPasswordWithEmail: boolean;
+    start_hour: number;
+    start_minute: number;
+    lesson_hour: number;
+    break_time: number;
+    warning_absence_percent: number;
+    reset_password_with_email: boolean;
     fastlogin: boolean;
     license_type: string;
     license_until: Date | null;
-    studentsLimit: number;
+    students_limit: number;
     modules: string;
     // Auth
     auth_classic: boolean;
@@ -111,15 +111,15 @@ type ElysiaSystemAPI = {
     backup_interval: number | null;
     auto_update: boolean;
     auto_update_interval: number;
-    country: number | null;
+    country_id: number | null;
     red_izo: string;
     ico: string;
     school_type: string;
     izo: string;
     online_enabled: number;
     online_default_platform: string;
-    gdpr_firstname: string;
-    gdpr_lastname: string;
+    gdpr_first_name: string;
+    gdpr_last_name: string;
     gdpr_phone: string;
     gdpr_email: string;
     gdpr_mobile: string;
@@ -131,12 +131,12 @@ type ElysiaSystemAPI = {
   email_config: EmailConfig | null;
 
   districts: {
-    districtId: number;
+    district_id: number;
     district: string;
   }[];
 
   countries: {
-    countryId: number;
+    country_id: number;
     nationality: string;
     code2: string;
   }[];
@@ -148,7 +148,7 @@ type ElysiaSystemAPI = {
   scopes: ScopeAPI[];
 
   domains: {
-    domainId: number;
+    domain_id: number;
     domain: string;
   }[];
 
@@ -208,9 +208,9 @@ export class SettingsComponent implements OnInit {
       next: (data) => {
       this.system = {
         ...data,
-        lesson_hour: `${Utils.addZeros(data.settings.startHour, 2)}:${Utils.addZeros(data.settings.startMinute, 2)}`,
-        lesson_length: this.format_time_by_minutes(data.settings.lessonHour),
-        break_time: this.format_time_by_minutes(data.settings.breakTime)
+        lesson_hour: `${Utils.addZeros(data.settings.start_hour, 2)}:${Utils.addZeros(data.settings.start_minute, 2)}`,
+        lesson_length: this.format_time_by_minutes(data.settings.lesson_hour),
+        break_time: this.format_time_by_minutes(data.settings.break_time)
       };
 
       if (!this.system.email_config) {
@@ -244,8 +244,8 @@ export class SettingsComponent implements OnInit {
       }
 
       for(let subject of data.subjects) {
-        if (subject.subjectId != null) {
-          this.subject_hours[subject.subjectId] = [0, 0, 0, 0, 0];
+        if (subject.subject_id != null) {
+          this.subject_hours[subject.subject_id] = [0, 0, 0, 0, 0];
         }
       }
 
@@ -370,8 +370,8 @@ export class SettingsComponent implements OnInit {
   }
 
   public getStudentPercentage(): number {
-    if (this.system.settings.studentsLimit == -1) return 100;
-    return this.system.student_count / this.system.settings.studentsLimit * 100;
+    if (this.system.settings.students_limit == -1) return 100;
+    return this.system.student_count / this.system.settings.students_limit * 100;
   }
 
   // === Email settings ===
@@ -399,7 +399,7 @@ public school_types = SchoolTypes;
   public select_scope(scope: ScopeAPI | undefined): void {
     this.selected_scope = JSON.parse(JSON.stringify(scope));
     this.http.get<any[]>(
-      `${Config.API_URL}/v1/system/scope?scope_id=${scope?.scopeId}`,
+      `${Config.API_URL}/v1/system/scope?scope_id=${scope?.scope_id}`,
       { withCredentials: true }
     )
     .subscribe((data: any[]) => {
@@ -409,8 +409,8 @@ public school_types = SchoolTypes;
         this.subject_hours[item.subject_id][item.year] = item.hours_per_week;
       });
       for(let subject of this.system.subjects) {
-        if (subject.subjectId != null && !this.subject_hours[subject.subjectId]) {
-          this.subject_hours[subject.subjectId] = [0, 0, 0, 0, 0];
+        if (subject.subject_id != null && !this.subject_hours[subject.subject_id]) {
+          this.subject_hours[subject.subject_id] = [0, 0, 0, 0, 0];
         }
       }
 
@@ -419,18 +419,18 @@ public school_types = SchoolTypes;
   }
 
   public get_selected_scope_index(): number {
-    return this.system.scopes.findIndex((scope) => scope.scopeId == this.selected_scope?.scopeId);
+    return this.system.scopes.findIndex((scope) => scope.scope_id == this.selected_scope?.scope_id);
   }
 
   public new_scope(): void {
-    const scope = this.system.scopes.find((scope) => scope.scopeId == null);
+    const scope = this.system.scopes.find((scope) => scope.scope_id == null);
     if (scope) {
       this.selected_scope = scope;
       return;
     }
 
     this.system.scopes.unshift({
-      scopeId: null,
+      scope_id: null,
       name: "",
       code: "",
       shortcut: "",
@@ -442,8 +442,8 @@ public school_types = SchoolTypes;
     this.select_scope(this.system.scopes[0]);
   }
 
-  public remove_scope(scopeId: number | null): void {
-    const scopeIndex = this.system.scopes.findIndex((scope) => scope.scopeId == scopeId);
+  public remove_scope(scope_id: number | null): void {
+    const scopeIndex = this.system.scopes.findIndex((scope) => scope.scope_id == scope_id);
     if (scopeIndex == -1) return;
     this.system.scopes.splice(scopeIndex, 1);
     this.selected_scope = undefined;
@@ -473,7 +473,7 @@ public school_types = SchoolTypes;
     this.http.post(
       `${Config.API_URL}/v1/system/update_scope`,
       {
-        scopeId: scope.scopeId,
+        scopeId: scope.scope_id,
         name: scope.name,
         shortcut: scope.shortcut,
         code: scope.code,
@@ -488,8 +488,8 @@ public school_types = SchoolTypes;
       const scope = this.selected_scope;
       if (scope == undefined) return;
       if ('scopeId' in data) {
-        if (scope.scopeId == null) {
-          scope.scopeId = data.scopeId as number;
+        if (scope.scope_id == null) {
+          scope.scope_id = data.scopeId as number;
         }
       }
       console.log(data)
@@ -512,15 +512,15 @@ public school_types = SchoolTypes;
   public select_subject_item(index: number): void {
     this.selected_subject = index;
     const subject = this.system.subjects[index];
-    if (subject && subject.subjectId) {
-        this.load_assigned_teachers(subject.subjectId);
+    if (subject && subject.subject_id) {
+        this.load_assigned_teachers(subject.subject_id);
     } else {
         this.assigned_teachers = [];
     }
   }
 
   public new_subject(): void {
-    const subjectIndex = this.system.subjects.findIndex((subject) => subject.subjectId == null);
+    const subjectIndex = this.system.subjects.findIndex((subject) => subject.subject_id == null);
     if (subjectIndex != -1) {
       this.selected_subject = subjectIndex;
       this.assigned_teachers = [];
@@ -528,8 +528,8 @@ public school_types = SchoolTypes;
     }
 
     this.system.subjects.unshift({
-      subjectId: null,
-      subjectName: "",
+      subject_id: null,
+      subject_name: "",
       shortcut: ""
     });
 
@@ -539,21 +539,21 @@ public school_types = SchoolTypes;
 
   public save_subject(): void {
     const subject = this.system.subjects[this.selected_subject];
-    if (!subject.subjectName || !subject.shortcut) return;
+    if (!subject.subject_name || !subject.shortcut) return;
 
     this.subject_save_loading = true;
     this.http.post<{ success: boolean; subjectId: number }>(
         `${Config.API_URL}/v1/system/update_subject`,
         {
-            subjectId: subject.subjectId,
-            subjectName: subject.subjectName,
+            subjectId: subject.subject_id,
+            subjectName: subject.subject_name,
             shortcut: subject.shortcut
         },
         { withCredentials: true }
     ).subscribe((res) => {
         this.subject_save_loading = false;
         if (res.success) {
-            subject.subjectId = res.subjectId;
+            subject.subject_id = res.subjectId;
         }
     }, () => {
         this.subject_save_loading = false;
@@ -575,31 +575,31 @@ public school_types = SchoolTypes;
 
   public add_teacher_to_subject(): void {
     const subject = this.system.subjects[this.selected_subject];
-    if (!subject.subjectId || !this.selected_teacher_to_add) return;
+    if (!subject.subject_id || !this.selected_teacher_to_add) return;
 
     this.http.post(`${Config.API_URL}/v1/system/subject_teachers/add`, {
-        subjectId: subject.subjectId,
+        subjectId: subject.subject_id,
         teacherId: this.selected_teacher_to_add
     }, { withCredentials: true }).subscribe(() => {
-        this.load_assigned_teachers(subject.subjectId!);
+        this.load_assigned_teachers(subject.subject_id!);
         this.selected_teacher_to_add = null;
     });
   }
 
   public remove_teacher_from_subject(teacherId: number): void {
     const subject = this.system.subjects[this.selected_subject];
-    if (!subject.subjectId) return;
+    if (!subject.subject_id) return;
 
     this.http.post(`${Config.API_URL}/v1/system/subject_teachers/remove`, {
-        subjectId: subject.subjectId,
+        subjectId: subject.subject_id,
         teacherId: teacherId
     }, { withCredentials: true }).subscribe(() => {
-        this.load_assigned_teachers(subject.subjectId!);
+        this.load_assigned_teachers(subject.subject_id!);
     });
   }
 
   public onInputSubjectName(): void {
-    const translation = this.get_translate_subjects().find((sub) => sub[1].toLowerCase() == this.system.subjects[this.selected_subject].subjectName.toLowerCase());
+    const translation = this.get_translate_subjects().find((sub) => sub[1].toLowerCase() == this.system.subjects[this.selected_subject].subject_name.toLowerCase());
     if (translation) {
       this.translate_subject = translation[0];
     }
@@ -607,14 +607,14 @@ public school_types = SchoolTypes;
 
   public checkCollisionSubject(): boolean {
     const currentSubject = this.system.subjects[this.selected_subject];
-    const subjects = this.system.subjects.filter((subject) => (subject.subjectName.toLowerCase() == currentSubject.subjectName.toLowerCase() || subject.shortcut.toLowerCase() == currentSubject.shortcut.toLowerCase()) && subject.subjectId != currentSubject.subjectId);
+    const subjects = this.system.subjects.filter((subject) => (subject.subject_name.toLowerCase() == currentSubject.subject_name.toLowerCase() || subject.shortcut.toLowerCase() == currentSubject.shortcut.toLowerCase()) && subject.subject_id != currentSubject.subject_id);
     return !!subjects.length;
   }
 
   // === Helpers ===
   public getCountry(id: number | null) {
     if (!this.system.countries) return null;
-    return this.system.countries.find(c => c.countryId === id);
+    return this.system.countries.find(c => c.country_id === id);
   }
 
   public format_time_by_minutes(minutes: number): string {
@@ -643,14 +643,14 @@ public school_types = SchoolTypes;
       });
   }
 
-  public removeDomain(domainId: number): void {
+  public removeDomain(domain_id: number): void {
       if (this.system.domains.length <= 1) {
           alert('Musí zůstat alespoň jedna doména.');
           return;
       }
       if (!confirm('Opravdu chcete odebrat tuto doménu?')) return;
       this.http.delete(`${Config.API_URL}/v1/system/domain`, { 
-        body: { domainId }, 
+        body: { domainId: domain_id }, 
         withCredentials: true 
       }).subscribe(() => {
           this.loadSystemSettings();
@@ -749,9 +749,9 @@ public school_types = SchoolTypes;
       `${Config.API_URL}/v1/system/update_school`,
       {
         name: this.system.settings.name,
-        shortcut: this.system.settings.shortName,
+        shortcut: this.system.settings.short_name,
         district: this.system.settings.district,
-        country: this.system.settings.country,
+        country: this.system.settings.country_id,
         red_izo: this.system.settings.red_izo,
         ico: this.system.settings.ico,
         school_type: this.system.settings.school_type,
@@ -759,14 +759,14 @@ public school_types = SchoolTypes;
         lesson_start: this.system.lesson_hour,
         lesson_length,
         break_time,
-        warn_absence: this.system.settings.warningAbsencePercent,
+        warn_absence: this.system.settings.warning_absence_percent,
         fastlogin: this.system.settings.fastlogin ? true : false,
-        resetPasswordWithEmail: this.system.settings.resetPasswordWithEmail ? true : false,
+        resetPasswordWithEmail: this.system.settings.reset_password_with_email ? true : false,
         modules: this.system.settings.modules,
         online_enabled: this.system.settings.online_enabled ? true : false,
         online_default_platform: this.system.settings.online_default_platform,
-        gdpr_firstname: this.system.settings.gdpr_firstname,
-        gdpr_lastname: this.system.settings.gdpr_lastname,
+        gdpr_firstname: this.system.settings.gdpr_first_name,
+        gdpr_lastname: this.system.settings.gdpr_last_name,
         gdpr_phone: this.system.settings.gdpr_phone,
         gdpr_email: this.system.settings.gdpr_email,
         gdpr_mobile: this.system.settings.gdpr_mobile,
@@ -791,7 +791,7 @@ public school_types = SchoolTypes;
         auth_ldap: this.system.settings.auth_ldap ? true : false,
         auth_qr: this.system.settings.fastlogin ? true : false,
         auth_passkeys: this.system.settings.auth_passkeys ? true : false,
-        reset_password_with_email: this.system.settings.resetPasswordWithEmail ? true : false,
+        reset_password_with_email: this.system.settings.reset_password_with_email ? true : false,
         session_lifetime_minutes: this.system.settings.session_lifetime_minutes,
         max_login_attempts: this.system.settings.max_login_attempts
       },
@@ -804,7 +804,7 @@ public school_types = SchoolTypes;
 
   public get_teacher_name(id: number | null): string {
     if (!id) return '';
-    return this.available_teachers.find(t => t.teacherId == id)?.teacherName || '';
+    return this.available_teachers.find(t => t.teacher_id == id)?.teacher_name || '';
   }
 
   public update_ldap(): void {

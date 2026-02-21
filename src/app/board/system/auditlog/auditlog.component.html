@@ -136,9 +136,9 @@
                         </div>
                         <div class="audit-details">
                             <div class="audit-user">
-                                <div class="user-avatar-tiny">{{ getUserInitials(log.userFullName) }}</div>
-                                <span class="user-name">{{ log.userFullName }}</span>
-                                <span class="user-role">({{ l.s('roles.' + log.userRole) }})</span>
+                                <div class="user-avatar-tiny">{{ getUserInitials(log.user_full_name) }}</div>
+                                <span class="user-name">{{ log.user_full_name }}</span>
+                                <span class="user-role">({{ l.s('roles.' + log.user_role) }})</span>
                             </div>
                             <div class="audit-info">
                                 @if (log.details?.device && log.details?.browser) {
@@ -147,18 +147,18 @@
                                     {{ log.details?.device }}, {{ log.details?.browser }}
                                 </span>
                                 }
-                                @if (log.details?.ipAddress) {
+                                @if (log.details?.ip_address) {
                                 <span class="info-item">
                                     <i-tabler name="map-pin"></i-tabler>
-                                    {{ log.details?.ipAddress }}
+                                    {{ log.details?.ip_address }}
                                 </span>
                                 }
-                                @if (log.targetType && log.targetName) {
+                                @if (log.target_type && log.target_name) {
                                 <span class="info-item">
                                     <i-tabler name="file"></i-tabler>
-                                    {{ log.targetType }}: {{ log.targetName }}
-                                    @if (log.targetId) {
-                                    (ID: {{ log.targetId }})
+                                    {{ log.target_type }}: {{ log.target_name }}
+                                    @if (log.target_id) {
+                                    (ID: {{ log.target_id }})
                                     }
                                 </span>
                                 }
@@ -168,10 +168,10 @@
                                     Důvod: {{ log.details?.reason }}
                                 </span>
                                 }
-                                @if (log.details?.sessionDuration) {
+                                @if (log.details?.session_duration) {
                                 <span class="info-item">
                                     <i-tabler name="clock"></i-tabler>
-                                    Doba relace: {{ log.details?.sessionDuration }}
+                                    Doba relace: {{ log.details?.session_duration }}
                                 </span>
                                 }
                             </div>

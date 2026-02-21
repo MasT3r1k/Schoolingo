@@ -11,6 +11,42 @@ import { MarksManager } from '@Schoolingo/marks';
 import { Utils } from '@Schoolingo/utils';
 import { BehaviorSubject } from 'rxjs';
 
+interface StudentIntermAPI {
+  status: boolean;
+  marks: StudentIntermMarkAPI[];
+  subject_stats: Record<number, StudentIntermSubjectStat>;
+  mark_stats: Record<number, StudentIntermMarkStat>;
+}
+
+interface StudentIntermMarkAPI {
+  mark: number;
+  column_id: number;
+  teacher_id: number;
+  teacher_first_name: string;
+  teacher_last_name: string;
+  teacher_full_name: string;
+  created: Date;
+  topic: string;
+  weight: number;
+  type: number;
+  column_index: number;
+  subject_id: number;
+  subject_name: number;
+  group_id: number;
+}
+
+interface StudentIntermSubjectStat {
+  rank: string;
+  total_students: number;
+  class_avg: string;
+}
+
+interface StudentIntermMarkStat {
+  rank: string;
+  count: number;
+  avg: string;
+}
+
 interface PredictorGrade {
   subjectName: string;
   mark: number;
@@ -40,9 +76,9 @@ export class IntermComponent implements OnInit {
   public alert: '' | 'already_editing_mark' = '';
 
   // === Data ===
-  public marks: any;
-  public subjectStats: any = {};
-  public markStats: any = {};
+  public marks: StudentIntermMarkAPI[] = [];
+  public subjectStats: Record<number, StudentIntermSubjectStat> = {};
+  public markStats: Record<number, StudentIntermMarkStat> = {};
   public selectedMark: any | null = null;
   public marksCopy: any[] = [];   // kopie pro prediktor
 
@@ -65,20 +101,20 @@ export class IntermComponent implements OnInit {
 
   ngOnInit(): void {
     this.http
-      .post(
+      .post<StudentIntermAPI>(
         `${Config.API_URL}/v1/marks/student`,
         { student_id: this.auth.getId() },
         { withCredentials: true }
       )
-      .subscribe((data) => {
+      .subscribe((data: StudentIntermAPI) => {
           if ('marks' in data) {
           this.marks = data.marks;
         }
-        if ('subjectStats' in data) {
-          this.subjectStats = data.subjectStats;
+        if ('subject_stats' in data) {
+          this.subjectStats = data.subject_stats;
         }
-        if ('markStats' in data) {
-          this.markStats = data.markStats;
+        if ('mark_stats' in data) {
+          this.markStats = data.mark_stats;
         }
       });
 
@@ -212,7 +248,7 @@ export class IntermComponent implements OnInit {
 
   /** Všechny známky včetně predikcí */
   public getGradesBySubject(subject: string, addPredicted: boolean = false): any[] {
-    const original = this.marksCopy?.filter((mark: any) => mark.subjectName === subject) || [];
+    const original = this.marksCopy?.filter((mark: any) => mark.subject_name === subject) || [];
     let predicted: any[] = [];
     if (addPredicted) {
       predicted = this.predictorMap[subject] || [];
@@ -225,7 +261,7 @@ export class IntermComponent implements OnInit {
   /** Výpočet průměru i s predikcí */
   public getAverageBySubject(subject: string, addPredicted: boolean = false): string {
     if (!subject) return "";
-    const original = this.marks?.filter((mark: any) => mark.subjectName === subject) || [];
+    const original = this.marks?.filter((mark: any) => mark.subject_name === subject) || [];
     let predicted: any[] = [];
     let grades = [...original];
     if (addPredicted) {
@@ -239,8 +275,8 @@ export class IntermComponent implements OnInit {
 
     for (const grade of grades) {
       if (grade.type === 0 && typeof grade.mark === "number") {
-        const weight = (typeof grade.weight === "number" ? parseInt(grade.weight) : 0) + 1;
-        total += parseFloat(grade.mark) * weight;
+        const weight = (typeof grade.weight === "number" ? grade.weight : 0) + 1;
+        total += grade.mark * weight;
         totalDivide += weight;
       }
     }
@@ -269,10 +305,9 @@ export class IntermComponent implements OnInit {
   }
 
   public selectMark(mark: any): void {
-    if (this.selectedTab.getValue() === 2) return; // Prevent opening modal in predictor mode if desired, or allow it. Assuming allow for read-only. But usually predictor items are mutable.
-    // If it's a predicted mark, maybe don't open details? The user asked for "received marks".
-    // Predicted marks don't have ID from DB usually or have `isPredicted`.
+    if (this.selectedTab.getValue() === 2) return;
     if (mark.isPredicted) return;
+    console.log(mark)
     this.selectedMark = mark;
   }
 
@@ -298,7 +333,7 @@ export class IntermComponent implements OnInit {
       return [];
     }
     for (const mark of this.marks) {
-      const subject = mark.subjectName;
+      const subject = mark.subject_name;
       if (!result[subject]) {
         result[subject] = [];
       }

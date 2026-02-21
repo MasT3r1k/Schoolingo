@@ -1,300 +1,498 @@
 <div class="card">
     <div class="card-header">
         <div class="left">
-            <h2>{{ l.s('admin.monitoring.title') }}</h2>
+            <div class="m-header__title-row">
+                <div class="live-dot"></div>
+                <h2>{{ l.s('admin.monitoring.title') }}</h2>
+            </div>
             <span class="meta muted">Sledujte návštěvnost a aktivitu uživatelů v aplikaci</span>
         </div>
-        <div class="period-switcher">
-            <button [class.active]="period === 'day'" (click)="setPeriod('day')">
-                <i-tabler name="sun"></i-tabler>
-                {{ l.s('admin.monitoring.period.today') }}
-            </button>
-            <button [class.active]="period === 'week'" (click)="setPeriod('week')">
-                <i-tabler name="calendar-week"></i-tabler>
-                {{ l.s('admin.monitoring.period.week') }}
-            </button>
-            <button [class.active]="period === 'month'" (click)="setPeriod('month')">
-                <i-tabler name="calendar-month"></i-tabler>
-                {{ l.s('admin.monitoring.period.month') }}
-            </button>
-        </div>
+        <schoolingo-tabs [options]="['admin.monitoring.period.today', 'admin.monitoring.period.week', 'admin.monitoring.period.month']" [icons]="['sun', 'calendar-week', 'calendar-month']" [value]="selectedPeriodTab"></schoolingo-tabs>
     </div>
 
-    @if (loading) {
-    <div class="loading">
-        <div class="loading-spinner"></div>
-        <span>{{ l.s('admin.monitoring.loading') }}</span>
-    </div>
-    } @else if (error) {
-    <div class="error-box">
-        <i-tabler name="alert-circle"></i-tabler>
-        <div>
-            <p><strong>{{ l.s(error) }}</strong></p>
-            <button class="btn btn--primary btn--sm" (click)="fetchStats()">
-                <i-tabler name="refresh"></i-tabler>
-                {{ l.s('admin.monitoring.retry') }}
-            </button>
-        </div>
-    </div>
-    } @else if (stats) {
+    <div class="monitoring-body">
 
-    <!-- Key Metrics -->
-    <div class="section">
-        <div class="section-header">
-            <div class="header-content">
-                <i-tabler name="chart-line"></i-tabler>
-                <div>
-                    <h3>Klíčové metriky</h3>
-                    <span class="meta muted">Přehled nejdůležitějších statistik</span>
-                </div>
+        @if (loading) {
+        <div class="m-loading">
+            <div class="m-loading__spinner"></div>
+            <span>{{ l.s('admin.monitoring.loading') }}</span>
+        </div>
+        } @else if (error) {
+        <div class="m-error">
+            <i-tabler name="alert-triangle"></i-tabler>
+            <div>
+                <p><strong>{{ l.s(error) }}</strong></p>
+                <button class="btn btn--primary btn--sm" (click)="fetchStats()">
+                    <i-tabler name="refresh"></i-tabler>
+                    {{ l.s('admin.monitoring.retry') }}
+                </button>
             </div>
         </div>
-        <div class="section-content">
-            <div class="kpi-grid">
-                <div class="kpi-card">
-                    <div class="kpi-icon" style="background: rgba(74, 163, 255, 0.1); color: #4AA3FF;">
-                        <i-tabler name="users"></i-tabler>
-                    </div>
-                    <div class="kpi-content">
-                        <div class="kpi-title">{{ l.s('admin.monitoring.visits') }}</div>
-                        <div class="kpi-value">{{ stats.nb_visits || 0 }}</div>
-                        <div class="kpi-sub">{{ l.s('admin.monitoring.total_sessions') }}</div>
-                    </div>
-                </div>
-                <div class="kpi-card">
-                    <div class="kpi-icon" style="background: rgba(124, 214, 124, 0.1); color: #7CD67C;">
-                        <i-tabler name="user-check"></i-tabler>
-                    </div>
-                    <div class="kpi-content">
-                        <div class="kpi-title">{{ l.s('admin.monitoring.unique_visitors') }}</div>
-                        <div class="kpi-value">{{ stats.nb_uniq_visitors || 0 }}</div>
-                        <div class="kpi-sub">{{ l.s('admin.monitoring.individual_users') }}</div>
-                    </div>
-                </div>
-                <div class="kpi-card">
-                    <div class="kpi-icon" style="background: rgba(255, 159, 67, 0.1); color: #FF9F43;">
-                        <i-tabler name="eye"></i-tabler>
-                    </div>
-                    <div class="kpi-content">
-                        <div class="kpi-title">{{ l.s('admin.monitoring.page_views') }}</div>
-                        <div class="kpi-value">{{ stats.nb_actions || 0 }}</div>
-                        <div class="kpi-sub">{{ l.s('admin.monitoring.total_interactions') }}</div>
-                    </div>
-                </div>
-                <div class="kpi-card">
-                    <div class="kpi-icon" style="background: rgba(238, 82, 83, 0.1); color: #EE5253;">
-                        <i-tabler name="clock"></i-tabler>
-                    </div>
-                    <div class="kpi-content">
-                        <div class="kpi-title">{{ l.s('admin.monitoring.avg_duration') }}</div>
-                        <div class="kpi-value">{{ stats.avg_time_on_site || 0 }}s</div>
-                        <div class="kpi-sub">{{ l.s('admin.monitoring.per_session') }}</div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
+        } @else if (stats) {
 
-    <!-- Visits Chart -->
-    <div class="section">
-        <div class="section-header">
-            <div class="header-content">
-                <i-tabler name="chart-area"></i-tabler>
-                <div>
-                    <h3>{{ l.s('admin.monitoring.visits_overview') }}</h3>
-                    <span class="meta muted">Návštěvnost v čase</span>
+        <!-- KPI Metrics -->
+        <div class="kpi-grid">
+            <div class="kpi-card kpi-card--blue">
+                <div class="kpi-card__glow"></div>
+                <div class="kpi-card__icon">
+                    <i-tabler name="users"></i-tabler>
+                </div>
+                <div class="kpi-card__body">
+                    <span class="kpi-card__label">{{ l.s('admin.monitoring.visits') }}</span>
+                    <div class="kpi-card__value">{{ stats.nb_visits || 0 }}</div>
+                    <div class="kpi-card__sub">{{ l.s('admin.monitoring.total_sessions') }}</div>
+                </div>
+                <div class="kpi-card__trend kpi-card__trend--up">
+                    <i-tabler name="trending-up"></i-tabler>
+                </div>
+            </div>
+            <div class="kpi-card kpi-card--green">
+                <div class="kpi-card__glow"></div>
+                <div class="kpi-card__icon">
+                    <i-tabler name="user-check"></i-tabler>
+                </div>
+                <div class="kpi-card__body">
+                    <span class="kpi-card__label">{{ l.s('admin.monitoring.unique_visitors') }}</span>
+                    <div class="kpi-card__value">{{ stats.nb_uniq_visitors || 0 }}</div>
+                    <div class="kpi-card__sub">{{ l.s('admin.monitoring.individual_users') }}</div>
+                </div>
+                <div class="kpi-card__trend kpi-card__trend--up">
+                    <i-tabler name="trending-up"></i-tabler>
+                </div>
+            </div>
+            <div class="kpi-card kpi-card--orange">
+                <div class="kpi-card__glow"></div>
+                <div class="kpi-card__icon">
+                    <i-tabler name="eye"></i-tabler>
+                </div>
+                <div class="kpi-card__body">
+                    <span class="kpi-card__label">{{ l.s('admin.monitoring.page_views') }}</span>
+                    <div class="kpi-card__value">{{ stats.nb_actions || 0 }}</div>
+                    <div class="kpi-card__sub">{{ l.s('admin.monitoring.total_interactions') }}</div>
+                </div>
+                <div class="kpi-card__trend kpi-card__trend--neutral">
+                    <i-tabler name="minus"></i-tabler>
+                </div>
+            </div>
+            <div class="kpi-card kpi-card--purple">
+                <div class="kpi-card__glow"></div>
+                <div class="kpi-card__icon">
+                    <i-tabler name="clock"></i-tabler>
+                </div>
+                <div class="kpi-card__body">
+                    <span class="kpi-card__label">{{ l.s('admin.monitoring.avg_duration') }}</span>
+                    <div class="kpi-card__value">{{ formatDuration(stats.avg_time_on_site || 0) }}</div>
+                    <div class="kpi-card__sub">{{ l.s('admin.monitoring.per_session') }}</div>
+                </div>
+                <div class="kpi-card__trend kpi-card__trend--up">
+                    <i-tabler name="trending-up"></i-tabler>
                 </div>
             </div>
         </div>
-        <div class="section-content">
-            <div class="chart-container">
-                <div class="chart-bars">
-                    @for (point of chartData; track point.label) {
-                    <div class="chart-bar-wrapper" [title]="point.label + ': ' + point.value">
-                        <div class="bar-value-tooltip">{{ point.value }}</div>
-                        <div class="chart-bar" [style.height.%]="point.height"></div>
-                        <div class="bar-label">{{ point.label }}</div>
-                    </div>
-                    }
-                </div>
-            </div>
-        </div>
-    </div>
 
-    <!-- User Activity Chart -->
-    <div class="section">
-        <div class="section-header">
-            <div class="header-content">
-                <i-tabler name="activity"></i-tabler>
-                <div>
-                    <h3>Aktivita uživatelů</h3>
-                    <span class="meta muted">Průměrná aktivita během dne</span>
-                </div>
-            </div>
-        </div>
-        <div class="section-content">
-            <div class="chart-container">
-                <div class="chart-bars">
-                    @for (point of activityChartData; track point.label) {
-                    <div class="chart-bar-wrapper" [title]="point.label + ': ' + point.value + ' aktivit'">
-                        <div class="bar-value-tooltip">{{ point.value }}</div>
-                        <div class="chart-bar activity-bar" [style.height.%]="point.height"></div>
-                        <div class="bar-label">{{ point.label }}</div>
-                    </div>
-                    }
-                </div>
-            </div>
-        </div>
-    </div>
+        <!-- Two-column row: Visits Chart + Activity Heatmap -->
+        <div class="m-row">
 
-    <!-- Top Pages & Most Active Users -->
-    <div class="section dual-grid">
-        <div class="section-header">
-            <div class="header-content">
-                <i-tabler name="list-details"></i-tabler>
-                <div>
-                    <h3>Detailní statistiky</h3>
-                    <span class="meta muted">Nejnavštěvovanější stránky a nejaktivnější uživatelé</span>
+            <!-- Visits Chart -->
+            <div class="m-section m-section--wide">
+                <div class="m-section__header">
+                    <div class="m-section__title-row">
+                        <i-tabler name="chart-area"></i-tabler>
+                        <div>
+                            <h3>{{ l.s('admin.monitoring.visits_overview') }}</h3>
+                            <span class="meta muted">Návštěvnost v čase</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="m-section__body">
+                    <div class="visits-chart">
+                        <div class="visits-chart__y-axis">
+                            @for (tick of yAxisTicks; track tick) {
+                            <div class="visits-chart__y-tick">{{ tick }}</div>
+                            }
+                        </div>
+                        <div class="visits-chart__area">
+                            <div class="visits-chart__gridlines">
+                                @for (tick of yAxisTicks; track tick) {
+                                <div class="visits-chart__gridline"></div>
+                                }
+                            </div>
+                            <div class="visits-chart__bars">
+                                @for (point of chartData; track point.label) {
+                                <div class="v-bar-col" [title]="point.label + ': ' + point.value + ' návštěv'">
+                                    <div class="v-bar-tooltip">
+                                        <strong>{{ point.value }}</strong>
+                                        <span>{{ point.label }}</span>
+                                    </div>
+                                    <div class="v-bar" [style.height.%]="point.height"
+                                        [class.v-bar--peak]="point.isPeak" [class.v-bar--low]="point.isLow">
+                                        <div class="v-bar__shine"></div>
+                                    </div>
+                                    <div class="v-bar-label">{{ point.label }}</div>
+                                </div>
+                                }
+                                @if (chartData.length === 0) {
+                                <div class="m-no-data">
+                                    <i-tabler name="chart-bar-off"></i-tabler>
+                                    <span>{{ l.s('admin.monitoring.no_data') }}</span>
+                                </div>
+                                }
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
+
+            <!-- Activity Heatmap by Hour -->
+            <div class="m-section m-section--narrow">
+                <div class="m-section__header">
+                    <div class="m-section__title-row">
+                        <i-tabler name="activity"></i-tabler>
+                        <div>
+                            <h3>Aktivita dle hodiny</h3>
+                            <span class="meta muted">Průměr za den</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="m-section__body">
+                    <div class="heatmap-legend">
+                        <span class="heatmap-legend__label">Nízká</span>
+                        <div class="heatmap-legend__bar"></div>
+                        <span class="heatmap-legend__label">Vysoká</span>
+                    </div>
+                    <div class="hourly-chart">
+                        @for (point of activityChartData; track point.label) {
+                        <div class="h-bar-col" [title]="point.label + ': ' + point.value + ' aktivit'">
+                            <div class="h-bar-outer">
+                                <div class="h-bar-fill" [style.height.%]="point.height"
+                                    [class.h-bar-fill--zero]="point.isZero"
+                                    [style.background]="point.isZero ? null : getActivityColor(point.height ?? 0)">
+                                    <div class="h-bar-tooltip">
+                                        <strong>{{ point.value }}</strong>
+                                        <span>{{ point.label }}</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="h-bar-label">{{ point.label }}</div>
+                        </div>
+                        }
+                    </div>
+
+                    <!-- Peak and Low indicators -->
+                    <div class="activity-insights">
+                        <div class="activity-insight activity-insight--peak">
+                            <div class="activity-insight__dot activity-insight__dot--peak"></div>
+                            <div class="activity-insight__texts">
+                                <div class="activity-insight__label">Největší aktivita</div>
+                                <div class="activity-insight__value">{{ peakRange }}</div>
+                            </div>
+                        </div>
+                        <div class="activity-insight activity-insight--low">
+                            <div class="activity-insight__dot activity-insight__dot--low"></div>
+                            <div class="activity-insight__texts">
+                                <div class="activity-insight__label">Nejmenší aktivita</div>
+                                <div class="activity-insight__ranges">
+                                    @if (lowRanges.length === 0) {
+                                    <span class="activity-insight__value">—</span>
+                                    }
+                                    @for (range of lowRanges; track range; let last = $last) {
+                                    <span class="activity-insight__range-tag">{{ range }}</span>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
         </div>
-        <div class="section-content">
-            <div class="stats-grid">
-                <!-- Top Pages -->
-                <div class="stats-card">
-                    <h4>
+
+        <!-- Bottom row: Top Pages + Top Users + Browsers/OS -->
+        <div class="m-row m-row--triple">
+
+            <!-- Top Pages -->
+            <div class="m-section">
+                <div class="m-section__header">
+                    <div class="m-section__title-row">
                         <i-tabler name="file-text"></i-tabler>
-                        {{ l.s('admin.monitoring.most_visited_pages') }}
-                    </h4>
-                    <div class="table-responsive">
-                        <table>
-                            <thead>
-                                <tr>
-                                    <th>{{ l.s('admin.monitoring.table.page_name') }}</th>
-                                    <th>{{ l.s('admin.monitoring.table.visits') }}</th>
-                                    <th>{{ l.s('admin.monitoring.table.unique') }}</th>
-                                    <th>{{ l.s('admin.monitoring.table.avg_time') }}</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @for (page of topPages | slice:0:10; track page.label) {
-                                <tr>
-                                    <td>{{ page.label }}</td>
-                                    <td>{{ page.nb_visits }}</td>
-                                    <td>{{ page.nb_uniq_visitors }}</td>
-                                    <td>{{ page.avg_time_on_page || 0 }}s</td>
-                                </tr>
-                                }
-                                @if (topPages.length === 0) {
-                                <tr>
-                                    <td colspan="4" class="no-data">{{ l.s('admin.monitoring.no_data') }}</td>
-                                </tr>
-                                }
-                            </tbody>
-                        </table>
+                        <div>
+                            <h3>{{ l.s('admin.monitoring.most_visited_pages') }}</h3>
+                            <span class="meta muted">Top 10 stránek</span>
+                        </div>
                     </div>
                 </div>
+                <div class="m-section__body">
+                    <div class="pages-list">
+                        @for (page of topPages | slice:0:10; track page.label; let i = $index) {
+                        <div class="page-item">
+                            <span class="page-item__rank" [class.page-item__rank--top]="i < 3">#{{ i + 1 }}</span>
+                            <div class="page-item__info">
+                                <div class="page-item__name" [title]="page.label">{{ page.label }}</div>
+                                <div class="page-item__bar">
+                                    <div class="page-item__bar-fill" [style.width.%]="getPageBarWidth(page.nb_visits)">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="page-item__stats">
+                                <span class="page-item__count">{{ page.nb_visits }}</span>
+                                <span class="page-item__sub">{{ page.avg_time_on_page || 0 }}s</span>
+                            </div>
+                        </div>
+                        }
+                        @if (topPages.length === 0) {
+                        <div class="m-no-data">
+                            <i-tabler name="file-off"></i-tabler>
+                            <span>{{ l.s('admin.monitoring.no_data') }}</span>
+                        </div>
+                        }
+                    </div>
+                </div>
+            </div>
 
-                <!-- Most Active Users -->
-                <div class="stats-card">
-                    <h4>
+            <!-- Top Users -->
+            <div class="m-section">
+                <div class="m-section__header">
+                    <div class="m-section__title-row">
                         <i-tabler name="users-group"></i-tabler>
-                        Nejaktivnější uživatelé
-                    </h4>
+                        <div>
+                            <h3>Nejaktivnější uživatelé</h3>
+                            <span class="meta muted">Seřazeno dle akcí</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="m-section__body">
                     <div class="user-list">
-                        @for (user of topUsers; track user.user_id) {
+                        @for (user of topUsers; track user.user_id; let i = $index) {
                         <div class="user-item">
+                            <div class="user-item__rank">{{ i + 1 }}</div>
                             <div class="user-avatar" [style.background]="getAvatarColor(user.user_id)">
                                 {{ getInitials(user.username) }}
                             </div>
-                            <div class="user-info">
-                                <div class="user-name">{{ user.username }}</div>
-                                <div class="user-stats">{{ user.actions }} akcí</div>
+                            <div class="user-item__info">
+                                <div class="user-item__name">{{ user.username }}</div>
+                                <div class="user-item__bar">
+                                    <div class="user-item__bar-fill" [style.width.%]="getUserBarWidth(user.actions)"
+                                        [style.background]="getAvatarColor(user.user_id)"></div>
+                                </div>
                             </div>
-                            <div class="user-badge">{{ user.visits }} návštěv</div>
+                            <div class="user-item__stats">
+                                <span class="user-item__actions">{{ user.actions }}</span>
+                                <span class="user-item__visits">{{ user.visits }}×</span>
+                            </div>
                         </div>
                         }
                         @if (topUsers.length === 0) {
-                        <div class="no-data">Žádní aktivní uživatelé</div>
+                        <div class="m-no-data">
+                            <i-tabler name="user-off"></i-tabler>
+                            <span>Žádní aktivní uživatelé</span>
+                        </div>
                         }
                     </div>
                 </div>
             </div>
-        </div>
-    </div>
 
-    <!-- Browser & Device Stats -->
-    <div class="section">
-        <div class="section-header">
-            <div class="header-content">
-                <i-tabler name="devices"></i-tabler>
-                <div>
-                    <h3>{{ l.s('admin.monitoring.browsers') }} a {{ l.s('admin.monitoring.operating_systems') }}</h3>
-                    <span class="meta muted">Statistiky používaných technologií</span>
-                </div>
-            </div>
-        </div>
-        <div class="section-content">
-            <div class="stats-grid">
+            <!-- Browsers & OS stacked -->
+            <div class="m-section m-section--tech">
                 <!-- Browsers -->
-                <div class="stats-card">
-                    <h4>
-                        <i-tabler name="browser"></i-tabler>
-                        {{ l.s('admin.monitoring.browsers') }}
-                    </h4>
-                    <div class="device-grid">
-                        @for (browser of browserStats; track browser.name) {
-                        <div class="device-card">
-                            <div class="device-icon" [style.background]="browser.color + '20'"
-                                [style.color]="browser.color">
-                                <i-tabler [name]="browser.icon"></i-tabler>
-                            </div>
-                            <div class="device-info">
-                                <div class="device-name">{{ browser.name }}</div>
-                                <div class="device-percentage">{{ browser.percentage }}%</div>
-                            </div>
-                            <div class="device-bar">
-                                <div class="device-bar-fill" [style.width.%]="browser.percentage"
-                                    [style.background]="browser.color"></div>
-                            </div>
+                <div class="m-section__header">
+                    <div class="m-section__title-row">
+                        <i-tabler name="devices"></i-tabler>
+                        <div>
+                            <h3>Technologie</h3>
+                            <span class="meta muted">Prohlížeče a OS</span>
                         </div>
-                        }
-                        @if (browserStats.length === 0) {
-                        <div class="no-data">{{ l.s('admin.monitoring.no_data') }}</div>
-                        }
                     </div>
                 </div>
-
-                <!-- Operating Systems -->
-                <div class="stats-card">
-                    <h4>
-                        <i-tabler name="device-desktop"></i-tabler>
-                        {{ l.s('admin.monitoring.operating_systems') }}
-                    </h4>
-                    <div class="device-grid">
-                        @for (os of osStats; track os.name) {
-                        <div class="device-card">
-                            <div class="device-icon" [style.background]="os.color + '20'" [style.color]="os.color">
-                                <i-tabler [name]="os.icon"></i-tabler>
-                            </div>
-                            <div class="device-info">
-                                <div class="device-name">{{ os.name }}</div>
-                                <div class="device-percentage">{{ os.percentage }}%</div>
-                            </div>
-                            <div class="device-bar">
-                                <div class="device-bar-fill" [style.width.%]="os.percentage"
-                                    [style.background]="os.color"></div>
-                            </div>
+                <div class="m-section__body">
+                    <div class="tech-subsection">
+                        <div class="tech-subsection__label">
+                            <i-tabler name="browser"></i-tabler>
+                            Prohlížeče
                         </div>
-                        }
-                        @if (osStats.length === 0) {
-                        <div class="no-data">{{ l.s('admin.monitoring.no_data') }}</div>
-                        }
+                        <div class="tech-list">
+                            @for (browser of browserStats; track browser.name) {
+                            <div class="tech-item">
+                                <div class="tech-item__icon" [style.background]="browser.color + '22'"
+                                    [style.color]="browser.color">
+                                    <i-tabler [name]="browser.icon"></i-tabler>
+                                </div>
+                                <div class="tech-item__info">
+                                    <div class="tech-item__name">{{ browser.name }}</div>
+                                    <div class="tech-item__bar">
+                                        <div class="tech-item__bar-fill" [style.width.%]="browser.percentage"
+                                            [style.background]="browser.color"></div>
+                                    </div>
+                                </div>
+                                <span class="tech-item__pct">{{ browser.percentage }}%</span>
+                            </div>
+                            }
+                            @if (browserStats.length === 0) {
+                            <div class="m-no-data m-no-data--sm">{{ l.s('admin.monitoring.no_data') }}</div>
+                            }
+                        </div>
+                    </div>
+
+                    <div class="tech-divider"></div>
+
+                    <div class="tech-subsection">
+                        <div class="tech-subsection__label">
+                            <i-tabler name="device-desktop"></i-tabler>
+                            Operační systémy
+                        </div>
+                        <div class="tech-list">
+                            @for (os of osStats; track os.name) {
+                            <div class="tech-item">
+                                <div class="tech-item__icon" [style.background]="os.color + '22'"
+                                    [style.color]="os.color">
+                                    <i-tabler [name]="os.icon"></i-tabler>
+                                </div>
+                                <div class="tech-item__info">
+                                    <div class="tech-item__name">{{ os.name }}</div>
+                                    <div class="tech-item__bar">
+                                        <div class="tech-item__bar-fill" [style.width.%]="os.percentage"
+                                            [style.background]="os.color"></div>
+                                    </div>
+                                </div>
+                                <span class="tech-item__pct">{{ os.percentage }}%</span>
+                            </div>
+                            }
+                            @if (osStats.length === 0) {
+                            <div class="m-no-data m-no-data--sm">{{ l.s('admin.monitoring.no_data') }}</div>
+                            }
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
+
+        <!-- =============================================
+             SYSTEM STATUS SECTION
+             ============================================= -->
+        <div class="m-section m-section--full status-section">
+            <div class="m-section__header">
+                <div class="m-section__title-row">
+                    <i-tabler name="server"></i-tabler>
+                    <div>
+                        <h3>Stav systému</h3>
+                        <span class="meta muted">Evidence provozu, verzí a aktualizací</span>
+                    </div>
+                </div>
+                <div class="status-days-switcher">
+                    <button [class.active]="uptimeDays === 1" (click)="loadUptime(1)">24h</button>
+                    <button [class.active]="uptimeDays === 7" (click)="loadUptime(7)">7d</button>
+                    <button [class.active]="uptimeDays === 30" (click)="loadUptime(30)">30d</button>
+                </div>
+            </div>
+
+            <div class="m-section__body">
+
+                @if (uptimeLoading) {
+                <div class="status-loading">
+                    <div class="m-loading__spinner"></div>
+                    <span>Načítání…</span>
+                </div>
+                } @else if (uptimeData) {
+
+                <!-- KPI řada: dostupnost + verze + commit + stav -->
+                <div class="status-kpi-row">
+                    <div class="status-kpi status-kpi--uptime">
+                        <div class="status-kpi__value">{{ uptimeData.current.uptime_percent }}%</div>
+                        <div class="status-kpi__label">Dostupnost ({{ uptimeDays }}d)</div>
+                        <div class="status-kpi__bar">
+                            <div class="status-kpi__bar-fill" [style.width.%]="uptimeData.current.uptime_percent"></div>
+                        </div>
+                    </div>
+                    <div class="status-kpi">
+                        <div class="status-kpi__icon"><i-tabler name="tag"></i-tabler></div>
+                        <div class="status-kpi__value">v{{ uptimeData.current.version }}</div>
+                        <div class="status-kpi__label">Verze systému</div>
+                    </div>
+                    <div class="status-kpi">
+                        <div class="status-kpi__icon"><i-tabler name="git-commit"></i-tabler></div>
+                        <div class="status-kpi__value status-kpi__value--mono">{{ uptimeData.current.commit_hash |
+                            slice:0:8 }}</div>
+                        <div class="status-kpi__label">Git commit</div>
+                    </div>
+                    <div class="status-kpi" [class.status-kpi--online]="uptimeData.current.status === 'online'"
+                        [class.status-kpi--update]="uptimeData.current.status === 'update'"
+                        [class.status-kpi--offline]="uptimeData.current.status === 'offline'">
+                        <div class="status-indicator-dot"></div>
+                        <div class="status-kpi__value">
+                            @if (uptimeData.current.status === 'online') { Online }
+                            @if (uptimeData.current.status === 'update') { Aktualizace }
+                            @if (uptimeData.current.status === 'offline') { Offline }
+                        </div>
+                        <div class="status-kpi__label">Aktuální stav</div>
+                        @if (uptimeData.current.status === 'update') {
+                        <div class="status-kpi__sub">{{ uptimeData.current.update_progress }}</div>
+                        }
+                    </div>
+                </div>
+
+                <!-- Časová osa segmentů -->
+                <div class="uptime-timeline-wrap">
+                    <div class="uptime-bar-row" title="Časová osa provozu">
+                        @for (seg of uptimeData.segments; track seg.from) {
+                        <div class="uptime-bar-seg" [class.seg--online]="seg.status === 'online'"
+                            [class.seg--offline]="seg.status === 'offline'"
+                            [class.seg--update]="seg.status === 'update'"
+                            [title]="seg.status + ': ' + (seg.from | date:'d.M. H:mm') + ' – ' + (seg.to | date:'H:mm') + ' (' + seg.duration_minutes + ' min)'">
+                        </div>
+                        }
+                        @if (uptimeData.segments.length === 0) {
+                        <div class="uptime-no-data">Žádná data — systém zatím nezaznamenal heartbeat</div>
+                        }
+                    </div>
+                    <div class="uptime-legend">
+                        <span class="uptime-legend__item uptime-legend__item--online">Online</span>
+                        <span class="uptime-legend__item uptime-legend__item--update">Aktualizace</span>
+                        <span class="uptime-legend__item uptime-legend__item--offline">Offline</span>
+                    </div>
+                </div>
+
+                <!-- Tabulka segmentů -->
+                <div class="uptime-log">
+                    <div class="uptime-log__header">
+                        <span>Stav</span>
+                        <span>Od</span>
+                        <span>Do</span>
+                        <span>Trvání</span>
+                        <span>Verze</span>
+                        <span>Poznámka</span>
+                    </div>
+                    @for (seg of uptimeData.segments; track seg.from) {
+                    <div class="uptime-log__row" [class.row--online]="seg.status === 'online'"
+                        [class.row--offline]="seg.status === 'offline'" [class.row--update]="seg.status === 'update'">
+                        <span class="uptime-log__status">
+                            <span class="uptime-dot" [class.dot--online]="seg.status === 'online'"
+                                [class.dot--offline]="seg.status === 'offline'"
+                                [class.dot--update]="seg.status === 'update'">
+                            </span>
+                            @if (seg.status === 'online') { Online }
+                            @if (seg.status === 'offline') { Offline }
+                            @if (seg.status === 'update') { Update }
+                        </span>
+                        <span class="uptime-log__time">{{ seg.from | date:'d.M.yy H:mm' }}</span>
+                        <span class="uptime-log__time">{{ seg.to | date:'d.M.yy H:mm' }}</span>
+                        <span class="uptime-log__dur">{{ seg.duration_minutes }} min</span>
+                        <span class="uptime-log__ver">{{ seg.version ? 'v' + seg.version : '—' }}</span>
+                        <span class="uptime-log__note">{{ seg.note || '—' }}</span>
+                    </div>
+                    }
+                    @if (uptimeData.segments.length === 0) {
+                    <div class="m-no-data"><i-tabler name="clock-off"></i-tabler><span>Žádné záznamy</span></div>
+                    }
+                </div>
+
+                } @else {
+                <div class="m-no-data"><i-tabler name="server-off"></i-tabler> <span>Nepodařilo se načíst data
+                        systému</span></div>
+                }
+
+            </div>
+        </div>
+
+        }
     </div>
 
-    }
 </div>

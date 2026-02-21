@@ -5,6 +5,9 @@ import { IconsModule } from '@Schoolingo/icons';
 import { HttpClient } from '@angular/common/http';
 import { Config } from '@Schoolingo/config';
 import { FormsModule } from '@angular/forms';
+import { ModalManager } from '@Schoolingo/modal';
+import { RoomModalComponent } from './modals/room-modal.component';
+import { RoomTimetableModalComponent } from './modals/room-timetable-modal.component';
 
 @Component({
   standalone: true,
@@ -14,10 +17,10 @@ import { FormsModule } from '@angular/forms';
       <div class="card-header">
         <div class="left">
           <h2>{{ l.s('architecture.rooms') }}</h2>
-          <span class="meta muted">Správa místností v areálu školy.</span>
+          <span class="meta muted">{{ l.s('architecture.rooms_desc') }}</span>
         </div>
         <div class="right">
-          <button class="btn btn--primary" (click)="openModal()">
+          <button class="btn btn--primary" (click)="openRoomModal()">
             <i-tabler name="plus"></i-tabler>
             {{ l.s('architecture.new_room') }}
           </button>
@@ -33,24 +36,40 @@ import { FormsModule } from '@angular/forms';
             <th class="table__th">{{ l.s('architecture.room_name') }}</th>
             <th class="table__th">{{ l.s('architecture.room_type') }}</th>
             <th class="table__th">{{ l.s('architecture.capacity') }}</th>
+            <th class="table__th">{{ l.s('architecture.room_manager') }}</th>
             <th class="table__th">{{ l.s('actions') }}</th>
           </tr>
         </thead>
         <tbody>
-          @for (room of rooms; track room.br_id) {
+          @for (room of rooms; track room.room_id) {
             <tr class="table__row">
-              <td class="table__td">RM-{{ room.br_id }}</td>
-              <td class="table__td"><strong>{{ room.name }}</strong></td>
+              <td class="table__td">RM-{{ room.room_id }}</td>
+              <td class="table__td">
+                <strong>{{ room.name }}</strong>
+                @if (room.description) {
+                  <br><small class="muted">{{ room.description }}</small>
+                }
+              </td>
               <td class="table__td">
                 <span class="badge badge--primary">{{ l.s('architecture.types.' + room.type) }}</span>
               </td>
-              <td class="table__td">{{ room.capacity || 0 }} žáků</td>
+              <td class="table__td">{{ room.capacity || 0 }} {{ l.s('students.count') }}</td>
+              <td class="table__td">
+                @if (room.manager_firstName) {
+                  {{ room.manager_firstName }} {{ room.manager_lastName }}
+                } @else {
+                  <span class="muted">{{ l.s('architecture.no_manager') }}</span>
+                }
+              </td>
               <td class="table__td">
                 <div class="actions">
-                    <button class="btn btn--icon btn--sm btn--ghost" (click)="editRoom(room)">
+                    <button class="btn btn--icon btn--sm btn--ghost" (click)="openTimetableModal(room)">
+                        <i-tabler name="calendar-stats"></i-tabler>
+                    </button>
+                    <button class="btn btn--icon btn--sm btn--ghost" (click)="openRoomModal(room)">
                         <i-tabler name="edit"></i-tabler>
                     </button>
-                    <button class="btn btn--icon btn--sm btn--ghost btn--danger" (click)="deleteRoom(room.br_id)">
+                    <button class="btn btn--icon btn--sm btn--ghost btn--danger" (click)="deleteRoom(room.room_id)">
                         <i-tabler name="trash"></i-tabler>
                     </button>
                 </div>
@@ -58,11 +77,11 @@ import { FormsModule } from '@angular/forms';
             </tr>
           } @empty {
             <tr>
-              <td colspan="5" class="table__td" style="text-align: center; padding: 3rem;">
+              <td colspan="6" class="table__td" style="text-align: center; padding: 3rem;">
                 <div class="empty-state">
                   <i-tabler name="door-off" class="empty-state__icon"></i-tabler>
-                  <p class="empty-state__title">Žádné místnosti nebyly nalezeny</p>
-                  <p class="empty-state__description">Začněte přidáním první místnosti.</p>
+                  <p class="empty-state__title">{{ l.s('architecture.empty.rooms') }}</p>
+                  <p class="empty-state__description">{{ l.s('architecture.empty.rooms_desc') }}</p>
                 </div>
               </td>
             </tr>
@@ -72,57 +91,6 @@ import { FormsModule } from '@angular/forms';
         </div>
       </div>
     </div>
-
-    <!-- Modal for adding/editing room -->
-    @if (showModal) {
-    <div class="modal-overlay">
-        <div class="modal card">
-            <div class="card__header">
-                <h2 class="card__title">{{ editingRoom?.br_id ? 'Upravit místnost' : 'Nová místnost' }}</h2>
-                <button class="btn btn--icon btn--ghost" (click)="closeModal()">
-                    <i-tabler name="x"></i-tabler>
-                </button>
-            </div>
-            <div class="card__body">
-                @if (!editingRoom) {
-                <div class="form-group">
-                    <label class="form-label">Budova & Patro</label>
-                    <select class="form-select" [(ngModel)]="roomForm.floor_id">
-                        @for (f of floors; track f.bf_id) {
-                            <option [value]="f.bf_id">{{ f.building_name }} - {{ f.level }}. patro</option>
-                        }
-                    </select>
-                </div>
-                }
-                <div class="form-group">
-                    <label class="form-label">{{ l.s('architecture.room_name') }}</label>
-                    <input type="text" class="form-input" [(ngModel)]="roomForm.name" placeholder="Např. 402, Kabinet IT...">
-                </div>
-                <div class="form-row">
-                    <div class="form-group">
-                        <label class="form-label">{{ l.s('architecture.room_type') }}</label>
-                        <select class="form-select" [(ngModel)]="roomForm.type">
-                            <option value="classroom">Třída</option>
-                            <option value="cabinet">Kabinet</option>
-                            <option value="office">Kancelář</option>
-                            <option value="hallway">Chodba</option>
-                            <option value="canteen">Jídelna</option>
-                            <option value="other">Ostatní</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">{{ l.s('architecture.capacity') }}</label>
-                        <input type="number" class="form-input" [(ngModel)]="roomForm.capacity" placeholder="Počet studentů">
-                    </div>
-                </div>
-            </div>
-            <div class="card__footer">
-                <button class="btn btn--secondary" (click)="closeModal()">{{ l.s('cancel') }}</button>
-                <button class="btn btn--primary" (click)="saveRoom()">{{ l.s('buttons.save') }}</button>
-            </div>
-        </div>
-    </div>
-    }
   `,
   styles: [`
     .card-header {
@@ -186,147 +154,38 @@ import { FormsModule } from '@angular/forms';
         margin: 0;
         max-width: 400px;
     }
-    .modal-overlay {
-        position: fixed;
-        inset: 0;
-        background: rgba(0, 0, 0, 0.6);
-        backdrop-filter: blur(4px);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        z-index: 1000;
-        padding: 1rem;
-        animation: fadeIn 0.2s ease;
-    }
-    @keyframes fadeIn {
-        from {
-            opacity: 0;
-        }
-        to {
-            opacity: 1;
-        }
-    }
-    .modal {
-        width: 100%;
-        max-width: 600px;
-        background: var(--surface);
-        border-radius: var(--radius);
-        box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
-        animation: slideUp 0.2s ease;
-        max-height: 90vh;
-        overflow-y: auto;
-    }
-    @keyframes slideUp {
-        from {
-            transform: translateY(20px);
-            opacity: 0;
-        }
-        to {
-            transform: translateY(0);
-            opacity: 1;
-        }
-    }
-    .card__header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        padding: 1.5rem;
-        border-bottom: 1px solid var(--border);
-    }
-    .card__title {
-        font-size: 1.25rem;
-        font-weight: 600;
-        margin: 0;
-        color: var(--text);
-    }
-    .card__body {
-        padding: 1.5rem;
-        display: flex;
-        flex-direction: column;
-        gap: 1.25rem;
-    }
-    .card__footer {
-        display: flex;
-        justify-content: flex-end;
-        gap: 0.75rem;
-        padding: 1.5rem;
-        border-top: 1px solid var(--border);
-    }
-    .form-group {
-        display: flex;
-        flex-direction: column;
-        gap: 0.5rem;
-    }
-    .form-row {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 1rem;
-    }
-    .form-label {
-        font-size: 0.875rem;
-        font-weight: 500;
-        color: var(--text);
-    }
-    .form-input,
-    .form-select {
-        padding: 0.75rem 1rem;
-        background: var(--surface-2);
-        border: 1px solid var(--border);
-        border-radius: var(--radius);
-        font-size: 0.9375rem;
-        color: var(--text);
-        transition: all 0.2s ease;
-    }
-    .form-input:focus,
-    .form-select:focus {
-        outline: none;
-        border-color: var(--primary);
-        background: var(--surface);
-        box-shadow: 0 0 0 3px rgba(var(--primary-rgb), 0.1);
-    }
-    .form-input::placeholder {
-        color: var(--text-muted);
-    }
-
-    @media (max-width: 768px) {
-        .table-container {
-            overflow-x: auto;
-        }
-        .modal {
-            max-width: 100%;
-            margin: 1rem;
-        }
-        .form-row {
-            grid-template-columns: 1fr;
-        }
-    }
   `]
 })
 export class ArchitectureRoomsComponent implements OnInit {
   public l = inject(Locale);
   private http = inject(HttpClient);
+  public modalManager = inject(ModalManager);
 
   public rooms: any[] = [];
   public floors: any[] = [];
-  public showModal = false;
-  public editingRoom: any = null;
-  public roomForm = {
-    floor_id: 0,
-    name: '',
-    type: 'classroom',
-    capacity: 30
-  };
+  public employees: any[] = [];
 
   ngOnInit(): void {
+    this.modalManager.addModal('room-modal', {
+      title: 'architecture.rooms',
+      closeable: true,
+      width: 600,
+      items: [{ type: 'component', component: RoomModalComponent }]
+    });
+
+    this.modalManager.addModal('room-timetable-modal', {
+      title: 'timetable.room_timetable',
+      closeable: true,
+      width: 1000,
+      items: [{ type: 'component', component: RoomTimetableModalComponent }]
+    });
+
     this.loadRooms();
     this.loadFloors();
+    this.loadEmployees();
   }
 
   loadRooms(): void {
-    // This is simplified, usually we'd pass a floor ID or get all for school
-    // In our API we have /architecture/floors/:id/rooms
-    // For now getting all rooms (requires a new endpoint or multiple calls)
-    // I'll assume we have a way to see them all for now or I'll add the endpoint
     this.http.get(`${Config.API_URL}/v1/school/architecture/rooms`, { withCredentials: true })
       .subscribe((data: any) => {
         this.rooms = data.rooms;
@@ -340,28 +199,27 @@ export class ArchitectureRoomsComponent implements OnInit {
       });
   }
 
-  openModal(): void {
-    this.editingRoom = null;
-    this.roomForm = { floor_id: this.floors[0]?.bf_id || 0, name: '', type: 'classroom', capacity: 30 };
-    this.showModal = true;
+  loadEmployees(): void {
+    this.http.get(`${Config.API_URL}/v1/employees`, { withCredentials: true })
+      .subscribe((data: any) => {
+        this.employees = data.data;
+      });
   }
 
-  editRoom(room: any): void {
-    this.editingRoom = room;
-    this.roomForm = { ...room };
-    this.showModal = true;
+  openRoomModal(room: any = null): void {
+    this.modalManager.updateModal('room-modal', 'title', room ? this.l.s('architecture.edit_room') : this.l.s('architecture.new_room'));
+    this.modalManager.openModal('room-modal', {
+      room,
+      floors: this.floors,
+      employees: this.employees,
+      refreshCallback: () => this.loadRooms()
+    });
   }
 
-  closeModal(): void {
-    this.showModal = false;
-  }
-
-  saveRoom(): void {
-    this.http.post(`${Config.API_URL}/v1/school/architecture/rooms`, { ...this.roomForm, br_id: this.editingRoom?.br_id }, { withCredentials: true })
-        .subscribe(() => {
-            this.loadRooms();
-            this.closeModal();
-        });
+  openTimetableModal(room: any): void {
+    this.modalManager.openModal('room-timetable-modal', {
+      room
+    });
   }
 
   deleteRoom(id: number): void {

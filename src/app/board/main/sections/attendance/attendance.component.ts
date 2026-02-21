@@ -60,15 +60,15 @@ export class AttendanceComponent implements OnInit {
     ).subscribe({
       next: (response) => {
         // Find if currently checked in (no checkOut time)
-        const openSession = response.data.find(r => !r.checkOut);
+        const openSession = response.data.find(r => !r.check_out);
         
         // Calculate total worked minutes today from closed sessions
-        const closedSessions = response.data.filter(r => r.checkOut);
-        this.totalWorkedToday = closedSessions.reduce((acc, curr) => acc + (curr.workedMinutes || 0), 0);
+        const closedSessions = response.data.filter(r => r.check_out);
+        this.totalWorkedToday = closedSessions.reduce((acc, curr) => acc + (curr.worked_minutes || 0), 0);
 
         if (openSession) {
           this.isCheckedIn = true;
-          this.checkInTime = openSession.checkIn;
+          this.checkInTime = openSession.check_in;
           this.updateWorkedTime();
         } else {
           this.isCheckedIn = false;
@@ -120,7 +120,7 @@ export class AttendanceComponent implements OnInit {
     if (!confirm('Opravdu chcete odejít?')) return;
     
     this.isLoading = true;
-    this.http.post<{ success: boolean, workedMinutes: number }>(
+    this.http.post<{ success: boolean, worked_minutes: number }>(
       `${Config.API_URL}/v1/employees/attendance/checkout`,
       {},
       { withCredentials: true }
@@ -128,7 +128,7 @@ export class AttendanceComponent implements OnInit {
       next: (res) => {
         this.isCheckedIn = false;
         this.checkInTime = null;
-        this.totalWorkedToday += res.workedMinutes;
+        this.totalWorkedToday += res.worked_minutes;
         this.isLoading = false;
       },
       error: (err) => {

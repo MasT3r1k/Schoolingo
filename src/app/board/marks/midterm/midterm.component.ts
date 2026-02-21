@@ -117,37 +117,19 @@ export class MidtermComponent implements OnInit {
   public midterm_grades: {[ key: ('mandatory' | 'optional' | string) ]: any[]} = {
     null: [
       {
-        subjectName: "Chování",
+        subject_name: "Chování",
         semesters: [1, 1, 1, 1, 1, 1, null, null],
       }
     ],
-    mandatory: [
-      {
-        subjectName: "Matematika",
-        semesters: [2, 3, 2, 2, 1, 2, null, null],
-      },
-      {
-        subjectName: "Český jazyk",
-        semesters: [1, 1, 1, 1, 2, 2, null, null],
-      },
-      {
-        subjectName: "Angličtina",
-        semesters: [1, 2, 1, 1, 1, 1, null, null],
-      }
-    ],
-    optional: [
-      {
-        subjectName: "Programování",
-        semesters: [1, 1, null, null, null, null, null, null],
-      }
-    ]
+    mandatory: [],
+    optional: []
   };
 
   public getYears(): number {
     if (this.u.getUser().children.length) {
-      return this.u.getUser().children[this.u.selectedChild.getValue()].classes[0].scopeYears;
+      return this.u.getUser().children[this.u.selectedChild.getValue()].classes[0].scope_years;
     } else {
-      return this.u.getUser().classes[0].scopeYears;
+      return this.u.getUser().classes[0].scope_years;
     }
   }
 
@@ -208,7 +190,7 @@ export class MidtermComponent implements OnInit {
         ];
         
         return {
-          subjectName: subject.subjectName,
+          subject_name: subject.subject_name,
           semesters
         }
       });

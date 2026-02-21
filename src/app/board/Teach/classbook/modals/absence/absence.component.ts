@@ -61,7 +61,7 @@ export class ClassbookAbsenceComponent {
     if ([AbsenceType.EARLY, AbsenceType.LATE].includes(this.classbook.selectedAbsence)) {
       if (this.classbook.minutes < 1) {
         this.errors['minutes'] = 'classbook.add_absence.minutes_cant_be_smaller_than_1';
-      } else if (this.classbook.minutes >= this.school.config.getValue()!.lessonHour) {
+      } else if (this.classbook.minutes >= this.school.config.getValue()!.lesson_hour) {
         this.errors['minutes'] = 'classbook.add_absence.minutes_cant_be_grater_than_lesson';
       }
     }

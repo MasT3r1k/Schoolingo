@@ -106,7 +106,7 @@ export class BuilderComponent implements OnInit {
       if ('classes' in data) {
         this.scheduleBuilder.classes = data.classes as any[];
         if (this.scheduleBuilder.classes.length) {
-          this.selectClass(this.scheduleBuilder.classes[0].classId);
+          this.selectClass(this.scheduleBuilder.classes[0].class_id);
         }
       }
     })
@@ -202,12 +202,12 @@ export class BuilderComponent implements OnInit {
                 lessonId: null,
                 day: dayIndex,
                 hour: hourIndex,
-                subjectId: data.subjectId,
-                subjectName: data.subjectName,
-                subjectShortcut: data.subjectShortcut,
+                subjectId: data.subject_id,
+                subjectName: data.subject_name,
+                subjectShortcut: data.subject_shortcut,
                 teacherId: null,
                 room: '',
-                groupId: this.scheduleBuilder.classes.find(c => c.classId == this.scheduleBuilder.selectedClass.getValue())?.groupId || 0,
+                groupId: this.scheduleBuilder.classes.find(c => c.class_id == this.scheduleBuilder.selectedClass.getValue())?.group_id || 0,
                 type: 0,
                 week: 'both',
                 empty: false
@@ -273,8 +273,8 @@ export class BuilderComponent implements OnInit {
                 all_day: false,
                 hour: hourIndex,     // Store 0-based hour
                 day: dayIndex,       // Store 0-based day
-                subjectName: item.subjectName,
-                subjectShortcut: item.subjectShortcut,
+                subjectName: item.subject_name,
+                subjectShortcut: item.subject_shortcut,
                 empty: false
             });
           });
@@ -296,23 +296,23 @@ export class BuilderComponent implements OnInit {
             for (let h = startHour; h <= endHour; h++) {
                 if (h < 0) continue;
                 ensureSlot(dayIndex, h);
-                const existingIndex = timetableBuild[dayIndex][h].findIndex(l => l.groupId === sub.groupId);
+                const existingIndex = timetableBuild[dayIndex][h].findIndex(l => l.group_id === sub.group_id);
                 let item = timetableBuild[dayIndex][h][existingIndex];
 
                 const subLesson = {
                     lessonId: null,
                     ...sub,
                     type: 0,
-                    subjectName: sub.subjectName,
-                    subjectShortcut: sub.subjectShortcut,
+                    subjectName: sub.subject_name,
+                    subjectShortcut: sub.subject_shortcut,
                     all_day: (sub.start_hour == -1 || sub.end_hour == -1),
-                    teacher: sub.teacherId,
-                    lastName: sub.lastName,
+                    teacher: sub.teacher_id,
+                    lastName: sub.last_name,
                     room: sub.room,
                     oldTeacher: item.teacher,
-                    oldSubject: item.subjectShortcut,
-                    className: sub.className,
-                    group: { id: sub.groupId || -1, text: sub.groupName || '', num: sub.groupNum || '' },
+                    oldSubject: item.subject_shortcut,
+                    className: sub.class_name,
+                    group: { id: sub.group_id || -1, text: sub.group_name || '', num: sub.group_num || '' },
                     day: dayIndex,
                     hour: h,
                     empty: false,
@@ -370,15 +370,15 @@ export class BuilderComponent implements OnInit {
 
   public formatGroupName(lesson: TimetableLesson): string {
     let group = "";
-    if (lesson.groupName == null) {
-      group = lesson.className;
+    if (lesson.group_name == null) {
+      group = lesson.class_name;
     } else {
-      group = lesson.groupName;
+      group = lesson.group_name;
     }
-    if (lesson.groupNum == null) {
+    if (lesson.group_num == null) {
       group += " celá";
     } else {
-      group += " " + lesson.groupNum;
+      group += " " + lesson.group_num;
     }
     return group;
   }
@@ -418,7 +418,7 @@ export class BuilderComponent implements OnInit {
             teacherId: 0,
             room: '',
             classId: this.scheduleBuilder.selectedClass.getValue(),
-            groupId: this.scheduleBuilder.classes.find(c => c.classId == this.scheduleBuilder.selectedClass.getValue())?.groupId || 0,
+            groupId: this.scheduleBuilder.classes.find(c => c.class_id == this.scheduleBuilder.selectedClass.getValue())?.group_id || 0,
             type: 0,
             week: 'both',
             empty: false

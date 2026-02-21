@@ -56,7 +56,7 @@
     @for(mark of marks;track $index) {
     <div class="grade-row">
       <div class="table-subject-name bold">
-        {{ mark.subjectName }}
+        {{ mark.subject_name }}
       </div>
       <div class="table-mark bold" [title]="getMarkTooltip(mark)" (click)="selectMark(mark)" style="cursor: pointer;">
         {{ formatMark(mark.mark) }}
@@ -69,9 +69,6 @@
       </div>
       <div class="table-date">
         {{ utils.formatDateShort(mark.created) }}
-      </div>
-      <div class="table-description">
-        {{ mark.description }}
       </div>
     </div>
     } } @case(2) {
@@ -261,7 +258,7 @@
     <div class="modal-body">
       <div class="detail-row">
         <span class="label">{{ l.s('subject') }}</span>
-        <span class="value">{{ selectedMark.subjectName }}</span>
+        <span class="value">{{ selectedMark.subject_name }}</span>
       </div>
       <div class="detail-row">
         <span class="label">{{ l.s('marks.mark') }}</span>
@@ -275,23 +272,17 @@
         <span class="label">{{ l.s('marks.weight') }}</span>
         <span class="value">{{ selectedMark.weight }}</span>
       </div>
-      @if (selectedMark.teacherFirst) {
+      @if (selectedMark.teacher_full_name) {
       <div class="detail-row">
         <span class="label">{{ l.s('roles.teacher') }}</span>
-        <span class="value">{{ selectedMark.teacherFirst }} {{ selectedMark.teacherLast }}</span>
+        <span class="value">{{ selectedMark.teacher_full_name }}</span>
       </div>
       }
-      @if (markStats[selectedMark.columnId]) {
+      @if (markStats[selectedMark.column_id]) {
       <div class="detail-row">
         <span class="label">{{ l.s('marks.class_rank') }}</span>
-        <span class="value">{{ markStats[selectedMark.columnId].rank }} (∑ {{ markStats[selectedMark.columnId].count }},
-          Ø {{ markStats[selectedMark.columnId].avg }})</span>
-      </div>
-      }
-      @if (selectedMark.description) {
-      <div class="detail-row description">
-        <span class="label">{{ l.s('marks.description') }}</span>
-        <p>{{ selectedMark.description }}</p>
+        <span class="value">{{ markStats[selectedMark.column_id].rank }} (∑ {{ markStats[selectedMark.column_id].count }},
+          Ø {{ markStats[selectedMark.column_id].avg }})</span>
       </div>
       }
     </div>

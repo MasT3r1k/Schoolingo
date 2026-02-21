@@ -11,12 +11,12 @@ import { ScheduleBuilder } from '@Schoolingo/schedule_builder';
 import { Utils } from '@Schoolingo/utils';
 
 interface roomAPI {
-  br_id: number;
+  room_id: number;
   name: string;
 }
 
 interface groupAPI {
-  groupId: number;
+  group_id: number;
   name: string;
   num: number;
   className: string;
@@ -60,10 +60,10 @@ export class EditLessonComponent implements OnInit {
             this.rooms = rooms;
             // Set initial room if lesson has one
             if (lesson && lesson.room) {
-                 const found = this.rooms.find(r => r.name === lesson.room);
-                 if (found) {
-                     this.selectedRoomId = found.br_id;
-                 }
+              const found = this.rooms.find(r => r.name === lesson.room);
+              if (found) {
+                this.selectedRoomId = found.room_id;
+              }
             }
         });
 
@@ -71,10 +71,10 @@ export class EditLessonComponent implements OnInit {
     this.http.get<groupAPI[]>(`${Config.API_URL}/v1/timetable/groups?classId=${lesson.classId}`)
         .subscribe((groups) => {
             this.groups = groups;
-            if (lesson && lesson.groupId) {
-                 const found = this.groups.find(g => g.groupId === lesson.groupId);
+            if (lesson && lesson.group_id) {
+                 const found = this.groups.find(g => g.group_id === lesson.group_id);
                  if (found) {
-                     this.selectedGroupId = found.groupId;
+                     this.selectedGroupId = found.group_id;
                  }
             }
         });
@@ -114,16 +114,16 @@ export class EditLessonComponent implements OnInit {
   }
 
   public getSubjectName(subject_id: number): string {
-    return this.scheduleBuilder.subjects.find((subject) => subject.subjectId == subject_id)?.subjectName ?? '';
+    return this.scheduleBuilder.subjects.find((subject) => subject.subject_id == subject_id)?.subject_name ?? '';
   }
 
   public getRoomName(room_id: number): string {
-    return this.rooms.find((r) => r.br_id == room_id)?.name ?? '';
+    return this.rooms.find((r) => r.room_id == room_id)?.name ?? '';
   }
 
   public getGroupName(group_id: number | null): string {
     if (group_id == null) return '';
-    const group = this.groups.find((g) => g.groupId == group_id);
+    const group = this.groups.find((g) => g.group_id == group_id);
     if (!group) return '';
     return (group.name || group.className) + ' ' + (group.num || 'Celá třída')
   }

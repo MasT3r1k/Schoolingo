@@ -1,6 +1,6 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { UserFilesModalComponent } from './modals/user-files-modal/user-files-modal.component';
-import { CommonModule } from '@angular/common';
+import { CommonModule, DatePipe } from '@angular/common';
 import { IconsModule } from '@Schoolingo/icons';
 import { FormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
@@ -13,17 +13,32 @@ import { Locale } from '@Schoolingo/locale';
 export interface User {
   id: number;
   username: string;
-  firstName: string;
-  lastName: string;
-  fullName: string;
+  first_name: string;
+  last_name: string;
+  full_name: string;
   login_type: string;
   email: string;
   role: 'admin' | 'teacher' | 'student' | 'parent';
   status: 'active' | 'inactive' | 'suspended';
-  photoUrl?: string;
-  lastLogin: string | null;
-  createdAt: string;
-  updatedAt: string;
+  photo_url?: string;
+  last_login: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface UserDetail extends User {
+  person_id: number | null;
+  locale: string | null;
+  theme: number | null;
+  birthday: string | null;
+  gender: string | null;
+  '2fa': boolean;
+  password_changed: string | null;
+  emails: { email: string; is_verified: boolean; description: string | null }[];
+  phones: { code: string; number: string; description: string | null; is_verified: boolean }[];
+  login_history: { created: string; ip: string; user_agent: string; success: boolean }[];
+  logins_7days: number;
+  failed_logins_7days: number;
 }
 
 export interface UserFilters {
@@ -35,19 +50,19 @@ export interface UserFilters {
 // Backend API response interface
 interface UserAPIResponse {
   data: {
-    userId: number;
+    user_id: number;
     username: string;
-    firstName: string;
-    lastName: string;
-    fullName: string;
+    first_name: string;
+    last_name: string;
+    full_name: string;
     login_type: string;
     email: string;
     role: string;
     status: string;
-    photoUrl?: string;
+    photo_url?: string;
     last_login: string | null;
-    lastLoginIp: string | null;
-    lastLoginUserAgent: string | null;
+    last_login_ip: string | null;
+    last_login_user_agent: string | null;
     created_at: string;
     updated_at: string;
   }[];
@@ -61,7 +76,7 @@ interface UserAPIResponse {
 @Component({
   selector: 'app-manageusers',
   standalone: true,
-  imports: [CommonModule, IconsModule, FormsModule, UserFilesModalComponent],
+  imports: [CommonModule, IconsModule, FormsModule, UserFilesModalComponent, DatePipe],
   templateUrl: './manageusers.component.html',
   styleUrl: './manageusers.component.css'
 })
@@ -116,8 +131,33 @@ export class ManageusersComponent implements OnInit {
   totalPages = 0;
 
   // Selected User
-  selectedUser: User | null = null;
-  activeTab: 'overview' | 'permissions' | 'files' | 'activity' = 'overview'; // Mock tabs for now
+  selectedUser: UserDetail | null = null;
+  isDetailLoading = false;
+  activeTab: 'overview' | 'edit' | 'security' | 'activity' = 'overview';
+
+  // Edit form
+  editForm = {
+    username: '',
+    first_name: '',
+    last_name: '',
+    role: '',
+    birthday: '',
+    gender: ''
+  };
+  editFormErrors: Record<string, string> = {};
+  isSaving = false;
+  saveSuccess = false;
+  saveError: string | null = null;
+
+  // Reset Password
+  resetPasswordForm = {
+    new_password: '',
+    confirm_password: '',
+    showPassword: false
+  };
+  isResettingPassword = false;
+  resetPasswordSuccess = false;
+  resetPasswordError: string | null = null;
 
   // Users data from API
   users: User[] = [];
@@ -126,8 +166,8 @@ export class ManageusersComponent implements OnInit {
   showAddUserModal = false;
   newUser = {
     username: '',
-    firstName: '',
-    lastName: '',
+    first_name: '',
+    last_name: '',
     email: '',
     role: 'student' as 'admin' | 'teacher' | 'student' | 'parent',
     password: ''
@@ -135,8 +175,8 @@ export class ManageusersComponent implements OnInit {
   
   formErrors = {
     username: '',
-    firstName: '',
-    lastName: '',
+    first_name: '',
+    last_name: '',
     email: '',
     role: '',
     password: ''
@@ -228,37 +268,175 @@ export class ManageusersComponent implements OnInit {
 
   // Detail View
   selectUser(user: User) {
-      this.selectedUser = user;
-      this.activeTab = 'overview';
+    this.activeTab = 'overview';
+    this.saveSuccess = false;
+    this.saveError = null;
+    this.resetPasswordSuccess = false;
+    this.resetPasswordError = null;
+    this.isDetailLoading = true;
+    this.selectedUser = null;
+
+    this.http.get<any>(
+      `${Config.API_URL}/v1/system/users/${user.id}`,
+      { withCredentials: true }
+    ).subscribe({
+      next: (response) => {
+        this.selectedUser = {
+          id: response.user_id,
+          username: response.username,
+          first_name: response.first_name,
+          last_name: response.last_name,
+          full_name: response.full_name,
+          email: response.emails?.[0]?.email || '',
+          login_type: response.login_type,
+          role: this.mapRole(response.role),
+          status: this.mapStatus('active'),
+          last_login: response.last_login,
+          created_at: response.created_at,
+          updated_at: response.updated_at,
+          person_id: response.person_id,
+          locale: response.locale,
+          theme: response.theme,
+          birthday: response.birthday,
+          gender: response.gender,
+          '2fa': response['2fa'],
+          password_changed: response.password_changed,
+          emails: response.emails || [],
+          phones: response.phones || [],
+          login_history: response.login_history || [],
+          logins_7days: response.logins_7days || 0,
+          failed_logins_7days: response.failed_logins_7days || 0
+        };
+        this.fillEditForm();
+        this.isDetailLoading = false;
+      },
+      error: (err) => {
+        console.error('Error loading user detail:', err);
+        this.isDetailLoading = false;
+      }
+    });
+  }
+
+  fillEditForm() {
+    if (!this.selectedUser) return;
+    this.editForm = {
+      username: this.selectedUser.username,
+      first_name: this.selectedUser.first_name,
+      last_name: this.selectedUser.last_name,
+      role: this.selectedUser.role,
+      birthday: this.selectedUser.birthday ? this.selectedUser.birthday.substring(0, 10) : '',
+      gender: this.selectedUser.gender || ''
+    };
   }
 
   closeDetail() {
-      this.selectedUser = null;
+    this.selectedUser = null;
   }
 
   setActiveTab(tab: typeof this.activeTab) {
-        this.activeTab = tab;
+    this.activeTab = tab;
+    this.saveSuccess = false;
+    this.saveError = null;
+    this.resetPasswordSuccess = false;
+    this.resetPasswordError = null;
   }
 
-  // Pagination controls
+  // Save User
+  saveUser() {
+    if (!this.selectedUser) return;
+    this.isSaving = true;
+    this.saveSuccess = false;
+    this.saveError = null;
 
+    this.http.patch<any>(
+      `${Config.API_URL}/v1/system/users/${this.selectedUser.id}`,
+      this.editForm,
+      { withCredentials: true }
+    ).subscribe({
+      next: () => {
+        this.isSaving = false;
+        this.saveSuccess = true;
+        // Refresh detail
+        const userId = this.selectedUser!.id;
+        const fakeUser: User = { ...this.selectedUser!, id: userId };
+        this.selectUser(fakeUser);
+        // Also refresh list
+        this.loadUsers(this.currentPage);
+        setTimeout(() => this.saveSuccess = false, 4000);
+      },
+      error: (err) => {
+        console.error('Error saving user:', err);
+        this.isSaving = false;
+        this.saveError = 'Nepodařilo se uložit změny';
+      }
+    });
+  }
+
+  // Reset Password
+  submitResetPassword() {
+    if (!this.selectedUser) return;
+    this.resetPasswordError = null;
+    this.resetPasswordSuccess = false;
+
+    if (this.resetPasswordForm.new_password.length < 8) {
+      this.resetPasswordError = 'Heslo musí mít alespoň 8 znaků';
+      return;
+    }
+    if (this.resetPasswordForm.new_password !== this.resetPasswordForm.confirm_password) {
+      this.resetPasswordError = 'Hesla se neshodují';
+      return;
+    }
+
+    this.isResettingPassword = true;
+
+    this.http.post<any>(
+      `${Config.API_URL}/v1/system/users/${this.selectedUser.id}/reset-password`,
+      { new_password: this.resetPasswordForm.new_password },
+      { withCredentials: true }
+    ).subscribe({
+      next: () => {
+        this.isResettingPassword = false;
+        this.resetPasswordSuccess = true;
+        this.resetPasswordForm = { new_password: '', confirm_password: '', showPassword: false };
+        setTimeout(() => this.resetPasswordSuccess = false, 5000);
+      },
+      error: (err) => {
+        console.error('Error resetting password:', err);
+        this.isResettingPassword = false;
+        this.resetPasswordError = err.error?.error === 'password_too_short'
+          ? 'Heslo musí mít alespoň 8 znaků'
+          : 'Nepodařilo se resetovat heslo';
+      }
+    });
+  }
+
+  generateNewPassword() {
+    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%';
+    let password = '';
+    for (let i = 0; i < 14; i++) {
+      password += chars.charAt(Math.floor(Math.random() * chars.length));
+    }
+    this.resetPasswordForm.new_password = password;
+    this.resetPasswordForm.confirm_password = password;
+    this.resetPasswordForm.showPassword = true;
+  }
 
   // Transform API response
   private transformUser(apiUser: UserAPIResponse['data'][0]): User {
     return {
-      id: apiUser.userId,
+      id: apiUser.user_id,
       username: apiUser.username,
-      firstName: apiUser.firstName,
-      lastName: apiUser.lastName,
-      fullName: apiUser.fullName,
+      first_name: apiUser.first_name,
+      last_name: apiUser.last_name,
+      full_name: apiUser.full_name,
       email: apiUser.email,
       login_type: apiUser.login_type,
       role: this.mapRole(apiUser.role),
       status: this.mapStatus(apiUser.status),
-      photoUrl: apiUser.photoUrl,
-      lastLogin: apiUser.last_login,
-      createdAt: apiUser.created_at,
-      updatedAt: apiUser.updated_at
+      photo_url: apiUser.photo_url,
+      last_login: apiUser.last_login,
+      created_at: apiUser.created_at,
+      updated_at: apiUser.updated_at
     };
   }
 
@@ -348,8 +526,8 @@ export class ManageusersComponent implements OnInit {
   // User actions
   editUser(user: User, event: Event) {
     event.stopPropagation();
-    console.log('Edit user:', user);
-    // TODO: Open edit modal
+    this.selectUser(user);
+    setTimeout(() => this.setActiveTab('edit'), 600);
   }
 
   deleteUser(user: User, event: Event) {
@@ -360,8 +538,8 @@ export class ManageusersComponent implements OnInit {
 
   resetPassword(user: User, event: Event) {
     event.stopPropagation();
-    console.log('Reset password for:', user);
-    // TODO: Reset password
+    this.selectUser(user);
+    setTimeout(() => this.setActiveTab('security'), 600);
   }
 
   manageFiles(user: User, event: Event) {
@@ -388,16 +566,16 @@ export class ManageusersComponent implements OnInit {
   resetForm() {
     this.newUser = {
       username: '',
-      firstName: '',
-      lastName: '',
+      first_name: '',
+      last_name: '',
       email: '',
       role: 'student',
       password: ''
     };
     this.formErrors = {
       username: '',
-      firstName: '',
-      lastName: '',
+      first_name: '',
+      last_name: '',
       email: '',
       role: '',
       password: ''
@@ -418,8 +596,8 @@ export class ManageusersComponent implements OnInit {
     let isValid = true;
     this.formErrors = {
       username: '',
-      firstName: '',
-      lastName: '',
+      first_name: '',
+      last_name: '',
       email: '',
       role: '',
       password: ''
@@ -435,20 +613,20 @@ export class ManageusersComponent implements OnInit {
     }
 
     // First name validation
-    if (!this.newUser.firstName) {
-      this.formErrors.firstName = 'Jméno je povinné';
+    if (!this.newUser.first_name) {
+      this.formErrors.first_name = 'Jméno je povinné';
       isValid = false;
-    } else if (this.newUser.firstName.length < 2 || this.newUser.firstName.length > 100) {
-      this.formErrors.firstName = 'Jméno musí mít 2-100 znaků';
+    } else if (this.newUser.first_name.length < 2 || this.newUser.first_name.length > 100) {
+      this.formErrors.first_name = 'Jméno musí mít 2-100 znaků';
       isValid = false;
     }
 
     // Last name validation
-    if (!this.newUser.lastName) {
-      this.formErrors.lastName = 'Příjmení je povinné';
+    if (!this.newUser.last_name) {
+      this.formErrors.last_name = 'Příjmení je povinné';
       isValid = false;
-    } else if (this.newUser.lastName.length < 2 || this.newUser.lastName.length > 100) {
-      this.formErrors.lastName = 'Příjmení musí mít 2-100 znaků';
+    } else if (this.newUser.last_name.length < 2 || this.newUser.last_name.length > 100) {
+      this.formErrors.last_name = 'Příjmení musí mít 2-100 znaků';
       isValid = false;
     }
 
@@ -491,13 +669,11 @@ export class ManageusersComponent implements OnInit {
       next: (response) => {
         console.log('User created successfully:', response);
         this.closeAddUserModal();
-        this.loadUsers(1); // Reload first page to see new user
-        // TODO: Show success toast
+        this.loadUsers(1);
       },
       error: (error) => {
         console.error('Error creating user:', error);
         this.isSubmitting = false;
-        // TODO: Show error toast
         if (error.error?.message) {
           alert('Chyba: ' + error.error.message);
         } else {

@@ -27,50 +27,50 @@
             <div class="profile-card">
                 <div class="profile-avatar">
                     <span class="avatar-initials">
-                        {{ Utils.getInitials(`${selectedStudent.firstName} ${selectedStudent.lastName}`) }}
+                        {{ Utils.getInitials(`${selectedStudent.full_name}`) }}
                     </span>
                 </div>
-                <h1 class="profile-name">{{ selectedStudent.fullName }}</h1>
+                <h1 class="profile-name">{{ selectedStudent.full_name }}</h1>
                 <div class="student-birthday">
                     {{ Utils.formatDateShort(selectedStudent.birthday) }} ({{
                     Utils.getAge(Utils.makeMoment(selectedStudent.birthday)) }} let, {{ l.s('genders.' +
                     Utils.getGender(selectedStudent.gender)) }})
                 </div>
                 <div class="profile-class">
-                    Třída: {{ selectedStudent.className }}
+                    Třída: {{ selectedStudent.class_name }}
                 </div>
             </div>
 
             <!-- Quick Stats -->
             <div class="quick-stats">
-                <div class="stat-card clickable" [class]="getGradeClass(selectedStudent.averageGrade)"
+                <div class="stat-card clickable" [class]="getGradeClass(selectedStudent.average_grade)"
                     (click)="showGradesModal = true">
                     <div class="stat-icon">
                         <i-tabler name="chart-bar"></i-tabler>
                     </div>
                     <div class="stat-info">
-                        <span class="stat-value">{{ selectedStudent.averageGrade }}</span>
+                        <span class="stat-value">{{ selectedStudent.average_grade }}</span>
                         <span class="stat-label">Průměr</span>
                     </div>
                 </div>
                 <div class="stat-card clickable"
-                    [class.warning]="Utils.formatAsNumber(selectedStudent.absenceRate) > 10"
+                    [class.warning]="Utils.formatAsNumber(selectedStudent.absence_rate) > 10"
                     (click)="showAbsenceModal = true">
                     <div class="stat-icon">
                         <i-tabler name="calendar-off"></i-tabler>
                     </div>
                     <div class="stat-info">
-                        <span class="stat-value">{{ selectedStudent.absenceRate }}%</span>
+                        <span class="stat-value">{{ selectedStudent.absence_rate }}%</span>
                         <span class="stat-label">Absence</span>
                     </div>
                 </div>
-                <div class="stat-card clickable" [class.danger]="selectedStudent.disciplinaryIssues > 0"
+                <div class="stat-card clickable" [class.danger]="selectedStudent.disciplinary_issues > 0"
                     (click)="showDisciplineModal = true">
                     <div class="stat-icon">
                         <i-tabler name="alert-triangle"></i-tabler>
                     </div>
                     <div class="stat-info">
-                        <span class="stat-value">{{ selectedStudent.disciplinaryIssues }}</span>
+                        <span class="stat-value">{{ selectedStudent.disciplinary_issues }}</span>
                         <span class="stat-label">Kázeň</span>
                     </div>
                 </div>
@@ -171,7 +171,7 @@
                         <div class="info-list">
                             <div class="info-row">
                                 <span class="info-label">Obor studia</span>
-                                <span class="info-value">{{ selectedStudent.fieldOfStudy }}</span>
+                                <span class="info-value">{{ selectedStudent.field_of_study }}</span>
                             </div>
                             <div class="info-row">
                                 <span class="info-label">Ročník</span>
@@ -183,13 +183,13 @@
                             </div>
                             <div class="info-row">
                                 <span class="info-label">Třídní učitel</span>
-                                <span class="info-value">{{ selectedStudent.teacherName }}</span>
+                                <span class="info-value">{{ selectedStudent.teacher_name }}</span>
                             </div>
                             <div class="info-row">
                                 <span class="info-label">Pojišťovna</span>
                                 <span class="info-value">
-                                    @if (selectedStudent.insuranceId) {
-                                    {{ selectedStudent.insuranceShort }} ({{ selectedStudent.insuranceId }})
+                                    @if (selectedStudent.insurance_id) {
+                                    {{ selectedStudent.insurance_short }} ({{ selectedStudent.insurance_id }})
                                     } @else {
                                     Nemá nastavenou pojištovnu
                                     }
@@ -198,7 +198,7 @@
                             </div>
                             <div class="info-row">
                                 <span class="info-label">Datum nástupu</span>
-                                <span class="info-value">{{ Utils.formatDateShort(selectedStudent.startStudy) }}</span>
+                                <span class="info-value">{{ Utils.formatDateShort(selectedStudent.start_study) }}</span>
                             </div>
                         </div>
                     </div>
@@ -371,7 +371,7 @@
                         <div class="data-grid">
                             <div class="data-item">
                                 <span class="data-label">Jméno a příjmení</span>
-                                <span class="data-value">{{ selectedStudent.fullName }}</span>
+                                <span class="data-value">{{ selectedStudent.full_name }}</span>
                             </div>
                             <div class="data-item">
                                 <span class="data-label">Datum narození</span>
@@ -407,15 +407,15 @@
                         <div class="data-grid">
                             <div class="data-item">
                                 <span class="data-label">Třída</span>
-                                <span class="data-value">{{ selectedStudent.className }}</span>
+                                <span class="data-value">{{ selectedStudent.class_name }}</span>
                             </div>
                             <div class="data-item">
                                 <span class="data-label">Obor</span>
-                                <span class="data-value">{{ selectedStudent.fieldOfStudy }}</span>
+                                <span class="data-value">{{ selectedStudent.field_of_study }}</span>
                             </div>
                             <div class="data-item">
                                 <span class="data-label">Třídní učitel</span>
-                                <span class="data-value">{{ selectedStudent.teacherName }}</span>
+                                <span class="data-value">{{ selectedStudent.teacher_name }}</span>
                             </div>
                         </div>
                     </div>
@@ -430,12 +430,12 @@
                         <div class="data-grid">
                             <div class="data-item">
                                 <span class="data-label">Ulice a č.p.</span>
-                                <span class="data-value">{{ selectedStudent.street }} {{ selectedStudent.houseNumber
+                                <span class="data-value">{{ selectedStudent.street }} {{ selectedStudent.house_number
                                     }}</span>
                             </div>
                             <div class="data-item">
                                 <span class="data-label">Město</span>
-                                <span class="data-value">{{ selectedStudent.city }}</span>
+                                <span class="data-value">{{ selectedStudent.city_name }}</span>
                             </div>
                             <div class="data-item">
                                 <span class="data-label">PSČ</span>
@@ -508,11 +508,11 @@
                         <div class="data-grid">
                             <div class="data-item">
                                 <span class="data-label">Obor</span>
-                                <span class="data-value">{{ selectedStudent.fieldOfStudy }}</span>
+                                <span class="data-value">{{ selectedStudent.field_of_study }}</span>
                             </div>
                             <div class="data-item">
                                 <span class="data-label">Třída</span>
-                                <span class="data-value highlight">{{ selectedStudent.className }}</span>
+                                <span class="data-value highlight">{{ selectedStudent.class_name }}</span>
                             </div>
                             <div class="data-item">
                                 <span class="data-label">Ročník</span>
@@ -520,12 +520,12 @@
                             </div>
                             <div class="data-item">
                                 <span class="data-label">Datum nástupu</span>
-                                <span class="data-value">{{ Utils.formatDateShort(selectedStudent.startStudy) }}</span>
+                                <span class="data-value">{{ Utils.formatDateShort(selectedStudent.start_study) }}</span>
                             </div>
-                            @if (selectedStudent.graduationDate) {
+                            @if (selectedStudent.graduation_date) {
                             <div class="data-item">
                                 <span class="data-label">Datum ukončení</span>
-                                <span class="data-value">{{ selectedStudent.graduationDate }}</span>
+                                <span class="data-value">{{ selectedStudent.graduation_date }}</span>
                             </div>
                             }
                         </div>
@@ -556,14 +556,14 @@
                                 </div>
                             </div>
                             }
-                            @if (selectedStudent?.medicalConditions?.length) {
+                            @if (selectedStudent?.medical_conditions?.length) {
                             <div class="medical-section">
                                 <h4>
                                     <i-tabler name="stethoscope"></i-tabler>
                                     Zdravotní stavy a omezení
                                 </h4>
                                 <div class="tag-list">
-                                    @for (condition of selectedStudent?.medicalConditions; track $index) {
+                                    @for (condition of selectedStudent?.medical_conditions; track $index) {
                                     <span class="tag warning">{{ condition }}</span>
                                     }
                                 </div>

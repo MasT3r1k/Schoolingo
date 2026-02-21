@@ -13,7 +13,7 @@ import { Authentication } from '@Schoolingo/authentication';
 import { TabsComponent } from '@Components/Tabs';
 import { ModalManager } from '@Schoolingo/modal';
 import { BoardAlertManager } from '../../../infrastructure/alert/board.alert.manager';
-import { BehaviorSubject } from 'rxjs';
+import { BehaviorSubject, Subscription } from 'rxjs';
 import { AddEmployeeModalComponent } from './modals/add-employee-modal/add-employee-modal.component';
 import { VacationRequestModalComponent } from './modals/vacation-request-modal/vacation-request-modal.component';
 import { AddBonusModalComponent } from './modals/add-bonus-modal/add-bonus-modal.component';
@@ -24,23 +24,23 @@ import { EMPLOYEE_CONFIG } from '../../../infrastructure/employees/const';
 import moment from 'moment';
 
 export interface Employee {
-  personId: number;
-  firstName: string;
-  lastName: string;
-  fullName: string;
+  person_id: number;
+  first_name: string;
+  last_name: string;
+  full_name: string;
   role: string;
-  employeeNumber?: string;
+  employee_number?: string;
   department?: string;
-  contractType?: string;
+  contract_type?: string;
   status: Omit<EMPLOYEE_CONFIG.EMPLOYEE_STATUS, 'all'>;
-  hoursPerWeek?: number;
-  startDate?: string;
-  endDate?: string;
+  hours_per_week?: number;
+  start_date?: string;
+  end_date?: string;
   rank?: string;
   cabinet?: number;
   email?: string;
   phone?: string;
-  dateOfBirth?: string;
+  date_of_birth?: string;
 }
 
 export interface VacationRequest {
@@ -58,15 +58,16 @@ export interface VacationRequest {
 }
 
 export interface AttendanceRecord {
-  attendanceId: number;
-  teacherId: number;
-  firstName: string;
-  lastName: string;
+  attendance_id: number;
+  teacher_id: number;
+  full_name: string;
+  first_name: string;
+  last_name: string;
   date: string;
-  checkIn?: string;
-  checkOut?: string;
-  breakMinutes: number;
-  workedMinutes: number;
+  check_in?: string;
+  check_out?: string;
+  break_minutes: number;
+  worked_minutes: number;
   type: string;
   approved: boolean;
 }
@@ -92,6 +93,7 @@ export class EmployeesComponent implements OnInit {
   public l = inject(Locale);
   public perm = inject(Permission);
   private auth = inject(Authentication);
+  private subscriptions: Subscription[] = [];
   public modalManager = inject(ModalManager);
   private alertManager = inject(BoardAlertManager) as BoardAlertManager;
   EMPLOYEE_CONFIG = EMPLOYEE_CONFIG
@@ -101,17 +103,17 @@ export class EmployeesComponent implements OnInit {
   loadError = signal<string | null>(null);
 
   // Selected employee for detail view - Signal
-  selectedEmployee = signal<Employee | null>(null);
+  selectedEmployee = new BehaviorSubject<Employee | null>(null);
   
-  // Main view tabs - Signals
-  selectedViewTab = signal(0);
   // Wrapper for TabsComponent compatibility (it expects BehaviorSubject)
   selectedViewTabSubject = new BehaviorSubject<number>(0);
+  // Main view tabs
+  selectedViewTab = new BehaviorSubject<number>(0);
   viewTabOptions = ['employees.list', 'employees.attendance', 'employees.vacations', 'employees.salaries', 'employees.bonuses'];
   viewTabIcons = ['users', 'clock', 'beach', 'cash', 'gift'];
   
-  // Detail tabs - Signals
-  selectedDetailTab = signal(0);
+  // Detail tabs
+  selectedDetailTab = new BehaviorSubject<number>(0);
   detailTabOptions = ['employees.overview', 'employees.attendance', 'employees.vacations', 'employees.salary', 'employees.bonuses'];
   detailTabIcons = ['layout-dashboard', 'clock', 'beach', 'cash', 'gift'];
 
@@ -288,48 +290,52 @@ export class EmployeesComponent implements OnInit {
     );
 
     // Sync signal with BehaviorSubject for TabsComponent compatibility (bidirectional)
-    effect(() => {
-      const tab = this.selectedViewTab();
-      if (this.selectedViewTabSubject.value !== tab) {
-        this.selectedViewTabSubject.next(tab);
-      }
-    });
+    this.subscriptions.push(
+      this.selectedViewTab.subscribe(tab => {
+        if (tab === 1) { // attendance tab
+          this.loadAllAttendance();
+        }
+        if (tab === 2) { // vacations tab
+          this.loadVacationRequests();
+        }
+      })
+    );
+    this.subscriptions.push(
+      this.selectedDetailTab.subscribe(tab => {
+        const employee = this.selectedEmployee.getValue()
+        if (!employee) return;
+
+        if (tab === 1) { // Attendance
+             this.loadAttendanceForDetail(employee.person_id);
+        }
+        if (tab === 2) { // Vacation
+             this.loadVacationData(employee.person_id);
+             this.loadVacationRequests(employee.person_id);
+        }
+        if (tab === 3) { // Salary
+             this.loadSalaryData(employee.person_id);
+        }
+        if (tab === 4) { // Bonuses
+             this.loadBonusesData(employee.person_id);
+        }
+      })
+    );
 
     // Subscribe to BehaviorSubject changes from TabsComponent and update signal
     this.selectedViewTabSubject.subscribe(tab => {
-      if (this.selectedViewTab() !== tab) {
-        this.selectedViewTab.set(tab);
+      if (this.selectedViewTab.getValue() !== tab) {
+        this.selectedViewTab.next(tab);
       }
     });
 
     // Use effect() instead of subscriptions for reactive updates
     effect(() => {
-      const tab = this.selectedViewTab();
+      const tab = this.selectedViewTab.getValue();
       if (tab === 1) { // attendance tab
         this.loadAllAttendance();
       }
       if (tab === 2) { // vacations tab
         this.loadVacationRequests();
-      }
-    });
-
-    effect(() => {
-      const tab = this.selectedDetailTab();
-      const employee = this.selectedEmployee();
-      if (!employee) return;
-
-      if (tab === 1) { // Attendance
-        this.loadAttendanceForDetail(employee.personId);
-      }
-      if (tab === 2) { // Vacation
-        this.loadVacationData(employee.personId);
-        this.loadVacationRequests(employee.personId);
-      }
-      if (tab === 3) { // Salary
-        this.loadSalaryData(employee.personId);
-      }
-      if (tab === 4) { // Bonuses
-        this.loadBonusesData(employee.personId);
       }
     });
   }
@@ -390,14 +396,14 @@ export class EmployeesComponent implements OnInit {
       next: (response) => {
         // Find specifically my record for today that is "active"
         const myRecord = response.data.find(r => 
-          Number(r.teacherId) === personId && 
+          Number(r.teacher_id) === personId && 
           moment(r.date).format('YYYY-MM-DD') == today.format('YYYY-MM-DD') &&
           this.getAttendanceStatus(r) == 'active'
         );
 
         if (myRecord) {
           this.isCheckedIn.set(true);
-          this.checkInTime.set(myRecord.checkIn ? String(myRecord.checkIn).substring(0, 5) : null);
+          this.checkInTime.set(myRecord.check_in ? String(myRecord.check_in).substring(0, 5) : null);
           this.currentAttendanceRecord.set(myRecord);
         } else {
           this.isCheckedIn.set(false);
@@ -483,8 +489,8 @@ export class EmployeesComponent implements OnInit {
   // Attendance filter helpers (template cannot use spread syntax)
   setAttendanceFilterPeriod(period: string) {
     this.attendanceFilter.set({ ...this.attendanceFilter(), period });
-    const emp = this.selectedEmployee();
-    if (emp) this.loadAttendanceRecords(emp.personId);
+    const emp = this.selectedEmployee.getValue();
+    if (emp) this.loadAttendanceRecords(emp.person_id);
   }
   setAttendanceFilterStartDate(startDate: string) {
     this.attendanceFilter.set({ ...this.attendanceFilter(), startDate });
@@ -525,12 +531,12 @@ export class EmployeesComponent implements OnInit {
 
   // Employee selection
   selectEmployee(employee: Employee) {
-    this.selectedEmployee.set(employee);
-    this.selectedDetailTab.set(0);
-    this.loadEmployeeDetail(employee.personId);
-    this.loadAttendanceRecords(employee.personId);
-    this.loadVacationData(employee.personId);
-    this.loadBonuses(employee.personId);
+    this.selectedEmployee.next(employee);
+    this.selectedDetailTab.next(0);
+    this.loadEmployeeDetail(employee.person_id);
+    this.loadAttendanceRecords(employee.person_id);
+    this.loadVacationData(employee.person_id);
+    this.loadBonuses(employee.person_id);
   }
 
   //Load employee detail from API
@@ -540,9 +546,9 @@ export class EmployeesComponent implements OnInit {
       { withCredentials: true }
     ).subscribe({
       next: (response) => {
-        const current = this.selectedEmployee();
+        const current = this.selectedEmployee.getValue();
         if (current) {
-          this.selectedEmployee.set({ ...current, ...response });
+          this.selectedEmployee.next({ ...current, ...response });
         }
       },
       error: (error) => {
@@ -590,9 +596,9 @@ export class EmployeesComponent implements OnInit {
     ).subscribe({
       next: (response) => {
         // Store bonuses for display
-        const current = this.selectedEmployee();
+        const current = this.selectedEmployee.getValue();
         if (current) {
-          this.selectedEmployee.set({ ...current, bonuses: response.data } as any);
+          this.selectedEmployee.next({ ...current, bonuses: response.data } as any);
         }
       },
       error: (error) => {
@@ -641,14 +647,14 @@ export class EmployeesComponent implements OnInit {
   }
 
   openEditEmployeeModal() {
-    const employee = this.selectedEmployee();
+    const employee = this.selectedEmployee.getValue();
     if (!employee) return;
     this.modalManager.openModal('edit_employee', {
       employee: employee,
       onSave: () => {
-        const current = this.selectedEmployee();
+        const current = this.selectedEmployee.getValue();
         if (current) {
-          this.loadEmployeeDetail(current.personId);
+          this.loadEmployeeDetail(current.person_id);
         }
       }
     });
@@ -708,7 +714,7 @@ export class EmployeesComponent implements OnInit {
   }
 
   public getAttendanceStatus(record: AttendanceRecord): 'active' | 'inactive' | 'unknown' {
-    if (!record || !record.checkIn) return 'unknown';
+    if (!record || !record.check_in) return 'unknown';
 
     const now = moment();
     const todayStr = now.format('YYYY-MM-DD');
@@ -726,7 +732,7 @@ export class EmployeesComponent implements OnInit {
 
     // If it's not today, respect checkout for status (historic)
     if (recordDateStr !== todayStr) {
-      return record.checkOut ? 'inactive' : 'unknown';
+      return record.check_out ? 'inactive' : 'unknown';
     }
 
     const currentMinutes = now.hours() * 60 + now.minutes();
@@ -736,14 +742,14 @@ export class EmployeesComponent implements OnInit {
       return parseInt(parts[0]) * 60 + (parseInt(parts[1]) || 0);
     };
 
-    const startMinutes = parse(record.checkIn);
+    const startMinutes = parse(record.check_in);
 
     // If no checkOut, it's definitely active if it's today and started
-    if (!record.checkOut) {
+    if (!record.check_out) {
         return currentMinutes >= startMinutes ? 'active' : 'unknown';
     }
 
-    const endMinutes = parse(record.checkOut);
+    const endMinutes = parse(record.check_out);
     // If current time is within record range, it's active
     if (currentMinutes >= startMinutes && currentMinutes <= endMinutes) {
         return 'active';
@@ -782,8 +788,8 @@ export class EmployeesComponent implements OnInit {
   }
 
   closeDetail() {
-    this.selectedEmployee.set(null);
-    this.selectedDetailTab.set(0);
+    this.selectedEmployee.next(null);
+    this.selectedDetailTab.next(0);
   }
 
   loadEmployeeDetailData(personId: number) {
@@ -831,8 +837,8 @@ export class EmployeesComponent implements OnInit {
     let daysWithRecords = 0;
 
     records.forEach(record => {
-      if (record.workedMinutes) {
-        totalMinutes += record.workedMinutes;
+      if (record.worked_minutes) {
+        totalMinutes += record.worked_minutes;
         daysWithRecords++;
       }
     });
@@ -849,10 +855,10 @@ export class EmployeesComponent implements OnInit {
       record: { ...record }, // Copy to avoid direct mutation
       onSave: () => {
         // Refresh data
-        const employee = this.selectedEmployee();
+        const employee = this.selectedEmployee.getValue();
         if (employee) {
-          this.loadAttendanceForDetail(employee.personId);
-        } else if (this.selectedViewTab() === 1) {
+          this.loadAttendanceForDetail(employee.person_id);
+        } else if (this.selectedViewTab.getValue() === 1) {
           this.loadAllAttendance();
         }
       }
@@ -862,13 +868,13 @@ export class EmployeesComponent implements OnInit {
   exportAttendanceCSV() {
     const headers = ['Datum', 'Příchod', 'Odchod', 'Pauza (min)', 'Odpracováno (h)', 'Typ'];
     const records = this.attendanceRecords();
-    const employee = this.selectedEmployee();
+    const employee = this.selectedEmployee.getValue();
     const rows = records.map(r => [
       Utils.formatDateShort(r.date),
-      r.checkIn || '',
-      r.checkOut || '',
-      `${r.breakMinutes || 0} minut`,
-      `${r.workedMinutes ? (r.workedMinutes / 60).toFixed(2) : '0.00'} hod`,
+      r.check_in || '',
+      r.check_out || '',
+      `${r.break_minutes || 0} minut`,
+      `${r.worked_minutes ? (r.worked_minutes / 60).toFixed(2) : '0.00'} hod`,
       r.type || 'office'
     ]);
 
@@ -881,7 +887,7 @@ export class EmployeesComponent implements OnInit {
     const url = window.URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = `attendance_${employee?.lastName || 'unknown'}_${new Date().toISOString().split('T')[0]}.csv`;
+    a.download = `attendance_${employee?.last_name || 'unknown'}_${new Date().toISOString().split('T')[0]}.csv`;
     a.click();
     window.URL.revokeObjectURL(url);
   }
@@ -904,7 +910,7 @@ export class EmployeesComponent implements OnInit {
   }
 
   changeVacationEntitlement() {
-    const employee = this.selectedEmployee();
+    const employee = this.selectedEmployee.getValue();
     if (!employee) return;
     
     // Use modal instead of prompt for security
@@ -914,14 +920,14 @@ export class EmployeesComponent implements OnInit {
         this.http.post(
           `${Config.API_URL}/v1/employees/vacations/balance/adjust`,
           { 
-            employeeId: employee.personId,
+            employeeId: employee.person_id,
             amount: amount,
             reason: 'Manual adjustment'
           },
           { withCredentials: true }
         ).subscribe({
           next: () => {
-            this.loadVacationData(employee.personId);
+            this.loadVacationData(employee.person_id);
             this.alertManager.alert('success', 'employees.vacations.balance_adjusted').closeable(true);
           },
           error: (error) => {
@@ -947,9 +953,9 @@ export class EmployeesComponent implements OnInit {
       next: () => {
         confirmAlert.close();
         this.alertManager.alert('success', 'employees.vacations.approved').closeable(true);
-        const employee = this.selectedEmployee();
+        const employee = this.selectedEmployee.getValue();
         if (employee) {
-          this.loadVacationData(employee.personId);
+          this.loadVacationData(employee.person_id);
           this.loadVacationRequests();
         }
       },
@@ -973,9 +979,9 @@ export class EmployeesComponent implements OnInit {
         ).subscribe({
           next: () => {
             this.alertManager.alert('success', 'employees.vacations.rejected').closeable(true);
-            const employee = this.selectedEmployee();
+            const employee = this.selectedEmployee.getValue();
             if (employee) {
-              this.loadVacationData(employee.personId);
+              this.loadVacationData(employee.person_id);
               this.loadVacationRequests();
             }
           },
@@ -1051,9 +1057,9 @@ export class EmployeesComponent implements OnInit {
       next: () => {
         confirmAlert.close();
         this.alertManager.alert('success', 'employees.bonuses.marked_paid').closeable(true);
-        const employee = this.selectedEmployee();
+        const employee = this.selectedEmployee.getValue();
         if (employee) {
-          this.loadBonusesData(employee.personId);
+          this.loadBonusesData(employee.person_id);
         }
       },
       error: (error) => {
@@ -1077,9 +1083,9 @@ export class EmployeesComponent implements OnInit {
       next: () => {
         confirmAlert.close();
         this.alertManager.alert('success', 'employees.bonuses.deleted').closeable(true);
-        const employee = this.selectedEmployee();
+        const employee = this.selectedEmployee.getValue();
         if (employee) {
-          this.loadBonusesData(employee.personId);
+          this.loadBonusesData(employee.person_id);
         }
       },
       error: (error) => {

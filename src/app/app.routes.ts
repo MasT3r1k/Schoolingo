@@ -73,6 +73,7 @@ import { PollSharesComponent } from './board/polls/poll-shares/poll-shares.compo
 import { ArchitectureDashboardComponent } from './board/Admin/architecture/dashboard/dashboard.component';
 import { ArchitectureBuildingsComponent } from './board/Admin/architecture/buildings/buildings.component';
 import { ArchitectureRoomsComponent } from './board/Admin/architecture/rooms/rooms.component';
+import { InventoryComponent } from './board/Admin/inventory/inventory.component';
 import { SetupComponent } from './setup/setup.component';
 
 export const routes: Routes = [
@@ -432,6 +433,10 @@ export const routes: Routes = [
                             {
                                 path: 'rooms',
                                 component: ArchitectureRoomsComponent
+                            },
+                            {
+                                path: 'inventory',
+                                component: InventoryComponent
                             }
                         ]
                     }

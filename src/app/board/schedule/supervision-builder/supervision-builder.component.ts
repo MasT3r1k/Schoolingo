@@ -17,7 +17,7 @@ import moment from 'moment';
 @Component({
   selector: 'app-supervision-builder',
   standalone: true,
-  imports: [IconsModule, FormsModule, ReactiveFormsModule, CdkDrag, CdkDropList, CdkDropListGroup, NgClass, CalendarComponent],
+  imports: [IconsModule, FormsModule, ReactiveFormsModule, CdkDrag, CdkDropList, CdkDropListGroup, CalendarComponent],
   templateUrl: './supervision-builder.component.html',
   styleUrl: './supervision-builder.component.css',
   providers: [SupervisionBuilder]

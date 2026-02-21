@@ -83,6 +83,7 @@ export namespace Utils {
   }
 
   export function formatAsNumber(number: string | number): number {
+    if (!number) return 0;
     return parseFloat(number.toString())
   }
 
@@ -142,9 +143,9 @@ export namespace Utils {
   }
 
 
-  export function formatAddress(address: { code2: string, street: string, houseNumber: string, city: string, postcode: string }): string | null {
+  export function formatAddress(address: { code2: string, street: string, house_number: string, city: string, postcode: string }): string | null {
     if (!address.city) return '';
-    return `${(country.getCountryByCode(address.code2)?.flag || "")} ${address.street} ${address.houseNumber}, ${address.city} ${address.postcode}`
+    return `${(country.getCountryByCode(address.code2)?.flag || "")} ${address.street} ${address.house_number}, ${address.city} ${address.postcode}`
   }
 
   export function openURL(url: string): void {
@@ -317,8 +318,11 @@ export namespace Utils {
   }
 
   export function getInitials(name: string): string {
+    if (!name) return '?';
+    const words = name.trim().split(' ');
+    if (words.length === 1) return name[0];
     // Remove all degrees
-    const name_wo_degree = name.split(' ').filter((word) => !word.includes('.'))
+    const name_wo_degree = words.filter((word) => !word.includes('.'))
     return name_wo_degree.map(n => n[0]).join('').substring(0, 2).toUpperCase();
   }
 

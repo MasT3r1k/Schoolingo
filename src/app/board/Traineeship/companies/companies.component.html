@@ -217,8 +217,8 @@
                       {{ Utils.formatAddress({
                       code2: traineeship.selectedCompany.code2,
                       street: traineeship.selectedCompany.street,
-                      houseNumber: traineeship.selectedCompany.houseNumber,
-                      city: traineeship.selectedCompany.cityName,
+                      house_number: traineeship.selectedCompany.house_number,
+                      city: traineeship.selectedCompany.city_name,
                       postcode: traineeship.selectedCompany.postcode
                       }) }}
                     </div>
@@ -327,7 +327,7 @@
                     <div class="info-value">
                       <div class="scope-tags">
                         @for (scope of getScopes(traineeship.selectedCompany); track $index) {
-                        <span class="scope-tag" [class.active]="checkIfScopeIsSuitableForMe(scope.scopeId)">{{ scope.name }}</span>
+                        <span class="scope-tag" [class.active]="checkIfScopeIsSuitableForMe(scope.scope_id)">{{ scope.scope_name }}</span>
                         } @empty {
                         <span class="text-muted">{{ l.s("traineeship.no_scopes") }}</span>
                         }
@@ -659,12 +659,12 @@
     <div class="section-content">
       <div class="scopes-list">
         @for (scope of getAllScopes(); track $index) {
-        <div class="scope-item" [class.selected]="scopeSupported.includes(scope.scopeId)"
-          (click)="toggleScope(scope.scopeId, !scopeSupported.includes(scope.scopeId))">
-          <span class="scope-name">{{ scope.name }}</span>
+        <div class="scope-item" [class.selected]="scopeSupported.includes(scope.scope_id)"
+          (click)="toggleScope(scope.scope_id, !scopeSupported.includes(scope.scope_id))">
+          <span class="scope-name">{{ scope.scope_name }}</span>
           <div class="scope-toggle">
-            <span class="toggle-label">{{ scopeSupported.includes(scope.scopeId) ? l.s("yes") : l.s("no") }}</span>
-            <div class="toggle-switch" [class.active]="scopeSupported.includes(scope.scopeId)">
+            <span class="toggle-label">{{ scopeSupported.includes(scope.scope_id) ? l.s("yes") : l.s("no") }}</span>
+            <div class="toggle-switch" [class.active]="scopeSupported.includes(scope.scope_id)">
               <span class="toggle-knob"></span>
             </div>
           </div>

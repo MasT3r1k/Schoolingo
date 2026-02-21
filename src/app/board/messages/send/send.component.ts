@@ -87,7 +87,7 @@ export class SendComponent implements OnInit {
         receiver.classTeacher
       ) {
         for (let classteacher of receiver.classTeacher) {
-          if (!receiversMap.has(classteacher.person_id) && this.auth.getUser().personId != classteacher.person_id) {
+          if (!receiversMap.has(classteacher.person_id) && this.auth.getUser().person_id != classteacher.person_id) {
             receiversMap.set(classteacher.person_id, {
               ...classteacher,
               role: 'teacher'

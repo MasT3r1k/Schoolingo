@@ -50,9 +50,10 @@ export class EditAttendanceModalComponent {
     if (this.data && this.data.record) {
       this.attendance = { 
         ...this.data.record,
-        checkOut: this.data.record.checkOut || null,
-        breakMinutes: this.data.record.breakMinutes || 0,
-        workedMinutes: this.data.record.workedMinutes || 0,
+        checkIn: this.data.record.check_in || null,
+        checkOut: this.data.record.check_out || null,
+        breakMinutes: this.data.record.break_minutes || 0,
+        workedMinutes: this.data.record.worked_winutes || 0,
         notes: this.data.record.notes || '',
         approved: this.data.record.approved || false,
 
@@ -81,7 +82,7 @@ export class EditAttendanceModalComponent {
       this.attendance.workedMinutes = worked;
     }
 
-    this.http.put(`${Config.API_URL}/v1/employees/attendance/${this.attendance.attendanceId}`, this.attendance, {
+    this.http.put(`${Config.API_URL}/v1/employees/attendance/${this.attendance.attendance_id}`, this.attendance, {
       withCredentials: true
     }).pipe(
       catchError(err => {

@@ -98,7 +98,7 @@ export class LoginHistoryComponent implements OnInit {
   public getSelectedLogin(): any {
     if (!this.selected_id) return null;
     // ensure type compatibility (string vs number)
-    return this.history.getValue().find(item => item.loginId == this.selected_id);
+    return this.history.getValue().find(item => item.login_id == this.selected_id);
   }
 
   public closeDetail(): void {

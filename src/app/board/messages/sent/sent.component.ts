@@ -48,7 +48,7 @@ export class SentComponent implements OnInit {
 
   ngOnInit(): void {
     this.http.get(
-      `${Config.API_URL}/v1/messages/list?author_ids=[${this.auth.getUser().userId}]`,
+      `${Config.API_URL}/v1/messages/list?author_ids=[${this.auth.getUser().user_id}]`,
       { withCredentials: true }
     )
     .subscribe((data: any) => {

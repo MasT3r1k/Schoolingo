@@ -36,7 +36,7 @@
                     @for (subject of midterm_grades['null']; track $index) {
                     <tr>
                         <td class="subject">
-                            {{ subject.subjectName }}
+                            {{ subject.subject_name }}
                         </td>
                         @for (grade of subject.semesters; track $index) {
                         <td>{{ grade ?? '-' }}</td>
@@ -44,6 +44,7 @@
                     </tr>
                     }
                     <!-- POVINNÉ -->
+                    @if (midterm_grades['mandatory'].length) {
                     <tr class="section-row">
                         <td colspan="999">{{ l.s('marks.midterm.mandatory_subjects') }}</td>
                     </tr>
@@ -51,28 +52,30 @@
                     @for (subject of midterm_grades['mandatory']; track $index) {
                     <tr>
                         <td class="subject">
-                            {{ subject.subjectName }}
+                            {{ subject.subject_name }}
                         </td>
                         @for (grade of subject.semesters; track $index) {
                         <td>{{ grade ?? '-' }}</td>
                         }
                     </tr>
                     }
+                    }
 
                     <!-- NEPOVINNÉ -->
+                    @if (midterm_grades['optional'].length) {
                     <tr class="section-row">
                         <td colspan="999">{{ l.s('marks.midterm.optional_subjects') }}</td>
                     </tr>
-
                     @for (subject of midterm_grades['optional']; track $index) {
                     <tr>
                         <td class="subject">
-                            {{ subject.subjectName }}
+                            {{ subject.subject_name }}
                         </td>
                         @for (grade of subject.semesters; track $index) {
                         <td>{{ grade ?? '-' }}</td>
                         }
                     </tr>
+                    }
                     }
                 </tbody>
             </table>

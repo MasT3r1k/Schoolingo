@@ -5,23 +5,9 @@ import { Config } from '@Schoolingo/config';
 import { IconsModule } from '@Schoolingo/icons';
 import moment from 'moment';
 import { BehaviorSubject } from 'rxjs';
-import { TimetableHours, TimetableLesson } from '../../../Teach/timetable/timetable.component';
+import { TimetableAPI, TimetableHours, TimetableLesson, TimetableLessonAPI } from '../../../Teach/timetable/timetable.component';
 import { Locale } from '@Schoolingo/locale';
 import { School } from '@Schoolingo/school';
-
-interface TimetableAPI {
-  day: number;
-  hour: number;
-  type: number;
-  room: string;
-  free: boolean;
-  end: boolean;
-  subjectId: number;
-  subjectName: string;
-  subjectShortcut: string;
-  lastName: string;
-  teacher: string;
-}
 
 @Component({
   imports: [IconsModule],
@@ -34,23 +20,23 @@ export class TimetableComponent implements OnInit {
   private school = inject(School);
   private u = inject(Authentication);
   public selected_date = new BehaviorSubject(moment());
-  public timetable: TimetableAPI[] = [];
+  public timetable: TimetableLessonAPI[] = [];
   public hours: TimetableHours[] = [];
   public max_hours = 0;
 
-  public getSelectedDateLessons(): TimetableAPI[] {
+  public getSelectedDateLessons(): (TimetableLessonAPI | any)[] {
     const day = this.selected_date.getValue().isoWeekday();
     // Hodiny pro daný den
-    const lessons = this.timetable
+    const lessons: TimetableLessonAPI[] = this.timetable
       .filter((lesson: any) => lesson.day === day && (lesson.type == 0 || (lesson.type == 1 && this.selected_date.getValue().isoWeek() % 2) || (lesson.type == 2 && this.selected_date.getValue().isoWeek() % 2 == 0)));
 
     if (!lessons.length) return [];
 
     // Získáme seznam existujících hodin, např. [1, 2, 4, 5]
-    const existingHours = lessons.map(l => l.hour);
+    const existingHours = lessons.map((l: TimetableLessonAPI) => l.hour!);
     const maxHour = Math.max(...existingHours);
 
-    const fullList: TimetableAPI[] = [];
+    const fullList: any[] = [];
     
 
     for (let h = 1; h <= maxHour; h++) {
@@ -94,7 +80,7 @@ export class TimetableComponent implements OnInit {
     return fullList;
   }
 
-  public getLessonSubjectName(lesson: TimetableAPI): string {
+  public getLessonSubjectName(lesson: TimetableLessonAPI | any): string {
     if (lesson.end) {
       return this.l.s('timetable.end_class');
     }
@@ -103,10 +89,10 @@ export class TimetableComponent implements OnInit {
       return this.l.s('timetable.free_time');
     }
 
-    return lesson.subjectName;
+    return lesson.subject_name;
   }
 
-  public getLessonTime(lesson: TimetableAPI): string {
+  public getLessonTime(lesson: TimetableLessonAPI | any): string {
     if (lesson.end == true) return this.hours[lesson.hour - 2].end;
     return `${this.hours[lesson.hour - 1].start} - ${this.hours[lesson.hour - 1].end}`;
   }
@@ -121,7 +107,7 @@ export class TimetableComponent implements OnInit {
       },
       { withCredentials: true })
     .subscribe((data: any) => {
-      const timetableData: TimetableAPI[] = [];
+      const timetableData: TimetableLessonAPI[] = [];
 
       if ('timetable' in data) {
          data.timetable.forEach((lesson: any) => {
@@ -139,10 +125,10 @@ export class TimetableComponent implements OnInit {
                  room: sub.room,
                  free: false,
                  end: false,
-                 subjectId: sub.subjectId,
-                 subjectName: sub.subjectName || sub.event_name || 'Suplování',
-                 subjectShortcut: sub.subjectShortcut || 'SUPL',
-                 lastName: sub.lastName,
+                 subjectId: sub.subject_id,
+                 subjectName: sub.subject_name || sub.event_name || 'Suplování',
+                 subjectShortcut: sub.subject_shortcut || 'SUPL',
+                 lastName: sub.last_name,
                  teacher: sub.teacher,
                  isSubstitution: true
              };
@@ -170,14 +156,14 @@ export class TimetableComponent implements OnInit {
 
         let schoolConfig = this.school.config.getValue();
         let time = moment()
-        .set('hours', schoolConfig?.startHour!)
-        .set('minutes', schoolConfig?.startMinute!);
+        .set('hours', schoolConfig?.start_hour!)
+        .set('minutes', schoolConfig?.start_minute!);
 
         this.hours = []; // Reset hours to avoid duplicates on re-load
         
         for(let i = 1;i <= this.max_hours;i++) {
           let startHour = time.clone();
-          time.add(schoolConfig?.lessonHour, 'minutes');
+          time.add(schoolConfig?.lesson_hour, 'minutes');
           this.hours.push(
             {
               startMoment: startHour.clone(),
@@ -187,7 +173,7 @@ export class TimetableComponent implements OnInit {
             }
           );
           let customBreak = schoolConfig?.breaks.filter((_) => _.hour == i + 1)[0]?.minutes;
-          time.add(customBreak || schoolConfig?.breakTime, 'minutes');
+          time.add(customBreak || schoolConfig?.break_time, 'minutes');
         }
       }
     });

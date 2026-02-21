@@ -1,16 +1,16 @@
 export interface SchoolConfig {
   name: string;
-  shortName: string;
+  short_name: string;
   code: string;
-  startHour: number;
-  startMinute: number;
-  lessonHour: number;
-  breakTime: number;
-  resetPasswordWithEmail: number; // 0 nebo 1 – můžeš nahradit boolean, pokud to interně přetypuješ
+  start_hour: number;
+  start_minute: number;
+  lesson_hour: number;
+  break_time: number;
+  reset_password_with_email: number; // 0 nebo 1 – můžeš nahradit boolean, pokud to interně přetypuješ
   fastlogin: number;              // 0 nebo 1 – případně boolean
-  warningAbsencePercent: number;
+  warning_absence_percent: number;
   modules: string;                // např. "-1"
-  studentsLimit: number;         // -1 může znamenat "neomezeně"
+  students_limit: number;         // -1 může znamenat "neomezeně"
   district: string;
   breaks: {
     hour: number;
@@ -21,13 +21,13 @@ export interface SchoolConfig {
     midterm: Date;
     end: Date;
   };
-  loginExpires: number;
+  login_expires: number;
   // auth
   auth_classic: boolean;
   auth_ldap: boolean;
   auth_passkeys: boolean;
-  gdpr_firstname: string;
-  gdpr_lastname: string;
+  gdpr_first_name: string;
+  gdpr_last_name: string;
   gdpr_phone: string;
   gdpr_email: string;
   gdpr_mobile: string;

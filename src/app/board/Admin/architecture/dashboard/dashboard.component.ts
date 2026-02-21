@@ -52,6 +52,15 @@ import { AddBuildingModalComponent } from '../modals/add-building-modal/add-buil
           <span class="stat-label">{{ l.s('architecture.total_hallways') }}</span>
         </div>
       </div>
+      <div class="stat-card stat--warning" [routerLink]="['/admin/architecture/inventory']" style="cursor: pointer">
+        <div class="stat-icon">
+          <i-tabler name="package"></i-tabler>
+        </div>
+        <div class="stat-info">
+          <span class="stat-value">{{ stats.inventory || 0 }}</span>
+          <span class="stat-label">{{ l.s('architecture.inventory') }}</span>
+        </div>
+      </div>
     </div>
 
     <div class="section-header">
@@ -67,7 +76,6 @@ import { AddBuildingModalComponent } from '../modals/add-building-modal/add-buil
                         <h3>{{ building.name }}</h3>
                         <p>{{ l.s('architecture.types.' + building.type) }}</p>
                     </div>
-                    <div class="status-badge success">ONLINE</div>
                 </div>
                 <div class="card-stats">
                     <div class="card-stat">
@@ -237,7 +245,8 @@ export class ArchitectureDashboardComponent implements OnInit {
   public stats = {
     buildings: 0,
     rooms: 0,
-    hallways: 0
+    hallways: 0,
+    inventory: 0
   };
 
   public buildings: any[] = [];

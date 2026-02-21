@@ -24,9 +24,9 @@ import { selectCompanyModalComponent } from './selectCompanyModal/selectCompanyM
 import { instructorDetailModalComponent } from './instructorDetailModal/instructorDetailModal';
 
 type Scope = {
-  scopeId: number;
-  name: string;
-  shortcut: string;
+  scope_id: number;
+  scope_name: string;
+  scope_shortcut: string;
   status: boolean;
 }
 
@@ -269,9 +269,9 @@ export class CompaniesComponent implements OnInit {
 
   public getTableTitles(): string[] {
     let arr: string[] = [];
-    Object.keys(this.scopes).forEach((value: string) => {
-      let id = parseInt(value);
-      arr[id + 2] = this.scopes[id]?.name ?? "";
+    Object.values(this.scopes).forEach((value: Scope) => {
+      let id = value.scope_id;
+      arr[id + 2] = value.scope_name ?? "";
     })
     return arr;
   }
@@ -415,7 +415,7 @@ export class CompaniesComponent implements OnInit {
     .subscribe((data: Scope[]) => {
       this.traineeship.scopes = data;
       data.forEach((scope: Scope) => {
-        this.scopes[scope.scopeId] = scope;
+        this.scopes[scope.scope_id] = scope;
       })
       this.tableHead = [];
       this.tableHead.push(
@@ -424,7 +424,7 @@ export class CompaniesComponent implements OnInit {
       );
 
       data.forEach((scope: Scope) => {
-        this.tableHead.push(scope.shortcut);
+        this.tableHead.push(scope.scope_shortcut);
       });
 
       this.tableHead.push(
@@ -532,17 +532,17 @@ export class CompaniesComponent implements OnInit {
       data.data.forEach((company: any) => {
         let scopeList: any = {};
         Object.values(JSON.parse(company.scopes)).forEach((value: Scope | any) => {
-          scopeList[value.scopeId] = value.status;
+          scopeList[value.scope_id] = value.status;
         });
 
         let row: Data[] = [
-          { id: company.companyId },
+          { id: company.company_id },
           { value: company.name, isLocale: false },
           { value: Utils.formatAddress({
             code2: company.code2,
             street: company.street,
-            houseNumber: company.houseNumber,
-            city: company.cityName,
+            house_number: company.house_number,
+            city: company.city_name,
             postcode: company.postcode
           }), isLocale: false },
         ];
@@ -606,8 +606,8 @@ export class CompaniesComponent implements OnInit {
     let scopeList: Scope[] = [];
     if (!company || !company.scopes) return [];
     Object.values<Scope>(JSON.parse(company.scopes)).forEach((value) => {
-      if (this.scopes?.[value.scopeId] && value.status == true) {
-        scopeList.push(this.scopes?.[value.scopeId])
+      if (this.scopes?.[value.scope_id] && value.status == true) {
+        scopeList.push(this.scopes?.[value.scope_id])
       }
     });
     return scopeList;
@@ -617,17 +617,17 @@ export class CompaniesComponent implements OnInit {
     let company = this.traineeship.selectedCompany;
     if (!company || !company.scopes) return false;
     let user = this.auth.getUser();
-    if (!user || user.role != "student" || !user.classes.length || !user.classes[0].scopeId) return false;
-    let scopeId = user.classes[0].scopeId;
-    let scopes = Object.values<Scope>(JSON.parse(company.scopes)).filter((value: Scope) => value.scopeId === scopeId);
+    if (!user || user.role != "student" || !user.classes.length || !user.classes[0].scope_id) return false;
+    let scopeId = user.classes[0].scope_id;
+    let scopes = Object.values<Scope>(JSON.parse(company.scopes)).filter((value: Scope) => value.scope_id === scopeId);
     if (scopes.length == 0) return false;
     return true;
   }
 
   public checkIfScopeIsSuitableForMe(scopeId: number): boolean {
     let user = this.auth.getUser();
-    if (!user || user.role != "student" || !user.classes.length || !user.classes[0].scopeId) return false;
-    let userScopeId = user.classes[0].scopeId;
+    if (!user || user.role != "student" || !user.classes.length || !user.classes[0].scope_id) return false;
+    let userScopeId = user.classes[0].scope_id;
     return userScopeId == scopeId;
   }
 

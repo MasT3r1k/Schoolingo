@@ -19,21 +19,21 @@ enum ViewSelector {
 interface StudentRisk {
   student_id: number;
   full_name: string;
-  class_name: string;
+  absence_score: number;
+  absence_rate: number;
+  grade_score: number;
+  grade_average: number;
   risk_score: number;
   risk_factor: 'absence' | 'grades' | 'discipline' | 'combined';
-  absence_rate: number;
-  grade_average: number;
   disciplinary_issues: number;
 }
 
 interface ClassStats {
   class_id: number;
   class_name: string;
-  group_name: string;
-  group_num: string;
   student_count: number;
   average_grade: number;
+  average_grade_last: number;
   absence_rate: number;
   trend: 'up' | 'down' | 'stable';
 }
@@ -86,12 +86,12 @@ export class DashboardComponent implements OnInit {
 
   // Overall school stats
   public schoolStats = {
-    totalStudents: 0,
-    limitStudents: 0,
-    averageGrade: 1.00,
-    absenceRate: 0,
+    total_students: 0,
+    limit_students: 0,
+    average_grade: 1.00,
+    absence_rate: 0,
     disciplinaryIssues: 0,
-    atRiskStudents: 0
+    at_risk_students: 0
   };
 
   // Risk students
@@ -140,26 +140,26 @@ export class DashboardComponent implements OnInit {
     )
     .subscribe((data: any) => {
       console.log(data)
-      if ('schoolStats' in data) {
-        this.schoolStats = data.schoolStats;
+      if ('school_stats' in data) {
+        this.schoolStats = data.school_stats;
       }
-      if ('riskStudents' in data) {
-        this.riskStudents = data.riskStudents;
+      if ('risk_students' in data) {
+        this.riskStudents = data.risk_students;
       }
-      if ('classStats' in data) {
-        this.classStats = data.classStats;
+      if ('class_stats' in data) {
+        this.classStats = data.class_stats;
       }
-      if ('subjectStats' in data) {
-        this.subjectStats = data.subjectStats;
+      if ('subject_stats' in data) {
+        this.subjectStats = data.subject_stats;
       }
-      if ('teacherStats' in data) {
-        this.teacherStats = data.teacherStats;
+      if ('teacher_stats' in data) {
+        this.teacherStats = data.teacher_stats;
       }
-      if ('absenceHeatmap' in data) {
-        this.absenceHeatmap = data.absenceHeatmap;
+      if ('absence_heatmap' in data) {
+        this.absenceHeatmap = data.absence_heatmap;
       }
-      if ('classInfo' in data) {
-        this.classInfo = data.classInfo;
+      if ('class_info' in data) {
+        this.classInfo = data.class_info;
       }
     })
   }

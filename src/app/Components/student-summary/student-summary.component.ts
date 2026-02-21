@@ -69,7 +69,7 @@ export class studentSummaryComponent implements OnInit, OnDestroy, AfterViewInit
   public l = inject(Locale);
 
   public getStudentName(): string {
-    return this.auth.getUser()?.fullName ?? '';
+    return this.auth.getUser()?.full_name ?? '';
   }
 
   public getSchoolName(): string {

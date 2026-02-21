@@ -12,24 +12,24 @@ import { DropdownManager } from '@Schoolingo/dropdown';
 export interface AuditLogEntry {
   id: number;
   action: 'login' | 'logout' | 'create' | 'update' | 'delete' | 'failed_login' | 'password_reset';
-  userId: number;
+  user_id: number;
   username: string;
-  userFullName: string;
-  userRole: string;
-  targetType?: string; // e.g., 'student', 'grade', 'user'
-  targetId?: number;
-  targetName?: string;
+  user_full_name: string;
+  user_role: string;
+  target_type?: string; // e.g., 'student', 'grade', 'user'
+  target_id?: number;
+  target_name?: string;
   details?: {
-    ipAddress?: string;
-    userAgent?: string;
+    ip_address?: string;
+    user_agent?: string;
     device?: string;
     browser?: string;
     changes?: Record<string, any>;
     reason?: string;
-    sessionDuration?: string;
+    session_duration?: string;
   };
   timestamp: string;
-  createdAt: string;
+  created_at: string;
 }
 
 export interface AuditFilters {
@@ -44,20 +44,20 @@ export interface AuditFilters {
 // Backend API response interface
 interface AuditLogAPIResponse {
   data: {
-    logId: number;
+    log_id: number;
     action: string;
-    userId: number;
+    user_id: number;
     username: string;
-    userFullName: string;
-    userRole: string;
-    targetType?: string;
-    targetId?: number;
-    targetName?: string;
-    ipAddress?: string;
-    userAgent?: string;
+    user_full_name: string;
+    user_role: string;
+    target_type?: string;
+    target_id?: number;
+    target_name?: string;
+    ip_address?: string;
+    user_agent?: string;
     metadata?: Record<string, any>;
     timestamp: string;
-    createdAt: string;
+    created_at: string;
   }[];
   meta: {
     total: number;
@@ -154,7 +154,7 @@ export class AuditlogComponent implements OnInit {
     };
 
     if (this.filters.action !== 'all') params.action = this.filters.action;
-    if (this.filters.userRole !== 'all') params.userRole = this.filters.userRole;
+    if (this.filters.userRole !== 'all') params.user_role = this.filters.userRole;
     if (this.filters.timeRange !== 'custom') {
       params.timeRange = this.filters.timeRange;
     } else {
@@ -225,26 +225,26 @@ export class AuditlogComponent implements OnInit {
   // Transform API response
   private transformAuditLog(apiLog: AuditLogAPIResponse['data'][0]): AuditLogEntry {
     return {
-      id: apiLog.logId,
+      id: apiLog.log_id,
       action: this.mapAction(apiLog.action),
-      userId: apiLog.userId,
+      user_id: apiLog.user_id,
       username: apiLog.username,
-      userFullName: apiLog.userFullName,
-      userRole: apiLog.userRole,
-      targetType: apiLog.targetType,
-      targetId: apiLog.targetId,
-      targetName: apiLog.targetName,
+      user_full_name: apiLog.user_full_name,
+      user_role: apiLog.user_role,
+      target_type: apiLog.target_type,
+      target_id: apiLog.target_id,
+      target_name: apiLog.target_name,
       details: {
-        ipAddress: apiLog.ipAddress,
-        userAgent: apiLog.userAgent,
-        device: this.parseDevice(apiLog.userAgent),
-        browser: this.parseBrowser(apiLog.userAgent),
+        ip_address: apiLog.ip_address,
+        user_agent: apiLog.user_agent,
+        device: this.parseDevice(apiLog.user_agent),
+        browser: this.parseBrowser(apiLog.user_agent),
         changes: apiLog.metadata?.['changes'],
         reason: apiLog.metadata?.['reason'],
-        sessionDuration: apiLog.metadata?.['sessionDuration']
+        session_duration: apiLog.metadata?.['sessionDuration']
       },
       timestamp: apiLog.timestamp,
-      createdAt: apiLog.createdAt
+      created_at: apiLog.created_at
     };
   }
 
