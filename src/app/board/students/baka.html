@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bakaláři - Karta žáka</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-blue: #0088cc;
+            --primary-hover: #0077b3;
+            --sidebar-bg: #ffffff;
+            --bg-body: #f4f6f8;
+            --border-color: #e2e8f0;
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+            --success-bg: #f0fdf4;
+            --success-border: #bbf7d0;
+            --success-text: #166534;
+            --student-header-bg: #fdf2f8; /* Jemně narůžovělé pozadí z obrázku 2 */
+        }
+
+        * { box-sizing: border-box; font-family: 'Inter', sans-serif; margin: 0; padding: 0; }
+        body { background-color: var(--bg-body); color: var(--text-main); height: 100vh; display: flex; overflow: hidden; }
+
+        /* --- SIDEBAR --- */
+        .sidebar { width: 220px; background: var(--sidebar-bg); border-right: 1px solid var(--border-color); display: flex; flex-direction: column; flex-shrink: 0; }
+        .logo-area { padding: 20px; font-weight: 700; color: var(--primary-blue); font-size: 20px; display: flex; align-items: center; gap: 10px; border-bottom: 1px solid var(--border-color); }
+        .logo-icon { background: var(--primary-blue); color: white; width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; border-radius: 4px; }
+        .nav-menu { list-style: none; overflow-y: auto; }
+        .nav-item { padding: 12px 20px; cursor: pointer; display: flex; align-items: center; gap: 12px; color: var(--text-muted); font-size: 14px; font-weight: 500; }
+        .nav-item i { width: 16px; text-align: center; }
+        .nav-item.active { background: var(--primary-blue); color: white; }
+        .nav-item:hover:not(.active) { background: #f8fafc; color: var(--text-main); }
+
+        /* --- MAIN LAYOUT --- */
+        .main-wrapper { flex-grow: 1; display: flex; flex-direction: column; min-width: 0; }
+        .top-nav { height: 56px; background: white; border-bottom: 1px solid var(--border-color); display: flex; align-items: center; justify-content: space-between; padding: 0 20px; flex-shrink: 0; }
+        .content-area { display: flex; flex-grow: 1; overflow: hidden; padding: 16px; gap: 16px; }
+
+        /* --- STUDENT LIST (LEFT PANEL) --- */
+        .student-list-panel { width: 300px; background: white; border-radius: 8px; border: 1px solid var(--border-color); display: flex; flex-direction: column; flex-shrink: 0; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
+        .search-box { padding: 16px; border-bottom: 1px solid var(--border-color); display: flex; flex-direction: column; gap: 10px; }
+        .search-input-wrapper { position: relative; }
+        .search-input-wrapper i { position: absolute; left: 10px; top: 50%; transform: translateY(-50%); color: var(--text-muted); }
+        .search-input-wrapper input { width: 100%; padding: 8px 8px 8px 30px; border: 1px solid var(--border-color); border-radius: 6px; outline: none; transition: 0.2s; }
+        .search-input-wrapper input:focus { border-color: var(--primary-blue); }
+        .filters-btn { background: none; border: 1px solid var(--border-color); padding: 6px 12px; border-radius: 4px; font-size: 13px; cursor: pointer; display: flex; align-items: center; gap: 6px; }
+        
+        .students-scroll { flex-grow: 1; overflow-y: auto; }
+        .student-row { padding: 12px 16px; border-bottom: 1px solid #f1f5f9; cursor: pointer; display: flex; justify-content: space-between; align-items: center; font-size: 13px; transition: 0.2s; }
+        .student-row:hover { background: #f8fafc; }
+        .student-row.active { background: #eff6ff; border-left: 3px solid var(--primary-blue); padding-left: 13px; font-weight: 500; }
+        .student-row-left { display: flex; gap: 12px; }
+        .student-class { color: var(--text-muted); width: 25px; }
+
+        /* --- STUDENT DETAIL (RIGHT PANEL) --- */
+        .detail-panel { flex-grow: 1; display: flex; flex-direction: column; gap: 16px; overflow-y: auto; }
+        .card { background: white; border-radius: 8px; border: 1px solid var(--border-color); padding: 24px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
+        
+        /* Student Header */
+        .student-header-box { background: linear-gradient(to right, #f0f9ff, var(--student-header-bg)); border-radius: 8px; padding: 20px; display: flex; align-items: center; justify-content: space-between; margin-bottom: 24px; }
+        .student-info-main { display: flex; align-items: center; gap: 20px; }
+        .avatar-circle { width: 56px; height: 56px; background: #dbeafe; color: var(--primary-blue); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 600; font-size: 20px; }
+        .student-meta { font-size: 13px; color: var(--text-main); line-height: 1.6; }
+        .student-meta-right { text-align: right; font-size: 13px; color: var(--text-main); line-height: 1.6; }
+
+        /* Tabs */
+        .tabs-container { border-bottom: 1px solid var(--border-color); margin-bottom: 20px; display: flex; gap: 24px; overflow-x: auto; }
+        .tab { padding-bottom: 12px; cursor: pointer; font-size: 14px; font-weight: 500; color: var(--text-muted); border-bottom: 2px solid transparent; white-space: nowrap; }
+        .tab.active { color: var(--primary-blue); border-bottom: 2px solid var(--primary-blue); }
+
+        /* Parent Sub-tabs */
+        .parent-tabs { display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--border-color); margin-bottom: 16px; padding-bottom: 8px; }
+        .parent-tab-list { display: flex; gap: 20px; }
+        .parent-tab { font-size: 13px; font-weight: 600; color: var(--text-muted); cursor: pointer; }
+        .parent-tab.active { color: var(--success-text); border-bottom: 2px solid var(--success-text); padding-bottom: 8px; margin-bottom: -9px; }
+
+        /* Parent Card */
+        .parent-highlight { background: var(--success-bg); border: 1px solid var(--success-border); border-radius: 8px; padding: 20px; margin-bottom: 16px; }
+        .parent-top { display: flex; justify-content: space-between; margin-bottom: 16px; }
+        .parent-identity { display: flex; align-items: center; gap: 16px; }
+        .avatar-small { width: 40px; height: 40px; background: #dcfce7; color: var(--success-text); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 600; font-size: 15px; }
+        .parent-contact { font-size: 13px; text-align: right; line-height: 1.6; }
+        .parent-contact a { color: var(--text-main); text-decoration: underline; font-weight: 500; }
+        
+        .permissions { display: flex; justify-content: space-between; font-size: 12px; color: var(--success-text); border-top: 1px dashed var(--success-border); padding-top: 16px; }
+        .permissions span i { margin-right: 6px; }
+
+        /* Accordions */
+        .accordion { border: 1px solid var(--border-color); border-radius: 6px; padding: 12px 16px; display: flex; justify-content: space-between; align-items: center; font-size: 14px; font-weight: 500; cursor: pointer; margin-bottom: 8px; color: var(--text-muted); }
+        .accordion i { color: #cbd5e1; }
+
+        /* Buttons */
+        .btn { padding: 8px 16px; border-radius: 6px; cursor: pointer; font-size: 14px; font-weight: 500; transition: 0.2s; }
+        .btn-outline { background: white; border: 1px solid var(--border-color); color: var(--text-main); }
+        .btn-outline:hover { background: #f8fafc; }
+        .btn-primary { background: var(--primary-blue); border: 1px solid var(--primary-blue); color: white; }
+        .btn-primary:hover { background: var(--primary-hover); }
+        .btn-text { background: none; border: 1px solid var(--border-color); color: var(--text-main); display: flex; align-items: center; gap: 8px; }
+
+        /* --- MODAL --- */
+        .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15, 23, 42, 0.6); z-index: 1000; justify-content: center; align-items: center; backdrop-filter: blur(2px); }
+        .modal-container { background: white; width: 800px; max-height: 85vh; border-radius: 12px; display: flex; flex-direction: column; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1); }
+        .modal-header { padding: 20px 24px; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; }
+        .modal-header h3 { font-size: 18px; font-weight: 600; color: var(--text-main); }
+        .modal-body { padding: 24px; overflow-y: auto; flex-grow: 1; }
+        .modal-footer { padding: 16px 24px; border-top: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; }
+        
+        .modal-search { width: 100%; padding: 10px 12px 10px 35px; border: 1px solid var(--border-color); border-radius: 6px; margin-bottom: 16px; outline: none; }
+        .modal-search:focus { border-color: var(--primary-blue); }
+        
+        .modal-table-header { display: grid; grid-template-columns: 250px 1fr; padding: 10px 16px; font-size: 12px; font-weight: 600; color: var(--text-muted); border-bottom: 2px solid var(--border-color); }
+        .parent-select-row { display: grid; grid-template-columns: 250px 1fr; align-items: center; padding: 12px 16px; border-bottom: 1px solid #f1f5f9; font-size: 14px; cursor: pointer; }
+        .parent-select-row:hover { background: #f8fafc; }
+        .parent-select-row label { display: flex; align-items: center; gap: 12px; cursor: pointer; }
+        
+        .child-tag { background: #e0f2fe; color: var(--primary-blue); padding: 4px 10px; border-radius: 12px; font-size: 12px; font-weight: 500; display: inline-flex; align-items: center; gap: 6px; }
+        .child-tag span.initials { background: #bae6fd; width: 20px; height: 20px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 10px; }
+        .child-class { color: var(--text-muted); font-weight: 400; }
+    </style>
+</head>
+<body>
+
+    <aside class="sidebar">
+        <div class="logo-area">
+            <div class="logo-icon"><i class="fa-solid fa-b"></i></div> bakaláři
+        </div>
+        <ul class="nav-menu">
+            <li class="nav-item"><i class="fa-regular fa-circle-check"></i> Můj přehled</li>
+            <li class="nav-item active"><i class="fa-solid fa-user"></i> Karta žáka</li>
+            <li class="nav-item"><i class="fa-solid fa-list-ol"></i> Klasifikace</li>
+            <li class="nav-item"><i class="fa-solid fa-book-open"></i> Výuka</li>
+            <li class="nav-item"><i class="fa-solid fa-users"></i> Třídnictví</li>
+            <li class="nav-item"><i class="fa-regular fa-address-card"></i> Osobní údaje</li>
+            <li class="nav-item"><i class="fa-regular fa-calendar-days"></i> Plán akcí</li>
+            <li class="nav-item"><i class="fa-regular fa-comments"></i> Komens</li>
+        </ul>
+    </aside>
+
+    <main class="main-wrapper">
+        <header class="top-nav">
+            <div style="font-weight: 600; font-size: 16px;">Karta žáka</div>
+            <div style="display: flex; align-items: center; gap: 10px; font-size: 13px;">
+                <i class="fa-regular fa-user" style="color: var(--text-muted);"></i>
+                <span>Mgr. Kryštof Řeřicha<br><span style="color: var(--text-muted); font-size: 11px;">učitel - ředitelství</span></span>
+            </div>
+        </header>
+
+        <div class="content-area">
+            <div class="student-list-panel">
+                <div class="search-box">
+                    <div class="search-input-wrapper">
+                        <i class="fa-solid fa-magnifying-glass"></i>
+                        <input type="text" id="studentSearch" placeholder="Hledat" onkeyup="filterStudents()">
+                    </div>
+                    <button class="filters-btn"><i class="fa-solid fa-bars-staggered"></i> Filtry a zobrazení</button>
+                </div>
+                <div class="students-scroll" id="studentList">
+                    </div>
+            </div>
+
+            <div class="detail-panel">
+                <div class="card" style="padding: 16px 24px;">
+                    <div class="student-header-box">
+                        <div class="student-info-main">
+                            <div class="avatar-circle" id="det-avatar">AA</div>
+                            <div>
+                                <h2 style="font-size: 20px; font-weight: 600; margin-bottom: 4px;" id="det-name">Adam Adamec</h2>
+                                <div class="student-meta" id="det-meta">
+                                    * 15. 9. 2011 (14 let, Muž)
+                                </div>
+                            </div>
+                        </div>
+                        <div class="student-meta-right">
+                            obor <strong id="det-field">ŠVP</strong> &nbsp;&nbsp;&nbsp;&nbsp; číslo v třídním výkazu <strong id="det-num">1</strong><br>
+                            třída <strong id="det-class">8.A</strong> &nbsp;&nbsp;&nbsp;&nbsp; třídní učitel <strong id="det-teacher">TrKa</strong>
+                        </div>
+                    </div>
+
+                    <div class="tabs-container">
+                        <div class="tab">Osobní údaje</div>
+                        <div class="tab active">Zákonní zástupci</div>
+                        <div class="tab">Vzdělávání</div>
+                        <div class="tab">Matrika</div>
+                        <div class="tab">Poznámky</div>
+                        <div class="tab">Historie</div>
+                        <div class="tab">Průběžná klasifikace</div>
+                    </div>
+
+                    <div class="parent-tabs">
+                        <div class="parent-tab-list">
+                            <div class="parent-tab active">Adamcová Tereza</div>
+                            <div class="parent-tab">Adamec Tadeáš</div>
+                            <div class="parent-tab">Novotný Lukáš</div>
+                            <div class="parent-tab">Novotná Eliška</div>
+                        </div>
+                        <button class="btn btn-text" onclick="toggleModal(true)"><i class="fa-solid fa-plus"></i> Přidat zákonné zástupce</button>
+                    </div>
+
+                    <div class="parent-highlight">
+                        <div class="parent-top">
+                            <div class="parent-identity">
+                                <div class="avatar-small">TA</div>
+                                <div>
+                                    <strong style="font-size: 15px;">Tereza Adamcová</strong><br>
+                                    <span style="font-size: 13px; color: var(--text-muted);">rodič - matka</span>
+                                </div>
+                            </div>
+                            <div class="parent-contact">
+                                <span style="color: var(--text-muted);">telefon</span> <strong>777 123 123</strong><br>
+                                <span style="color: var(--text-muted);">e-mail</span> <a href="#">adamcova@seznam.cz</a>
+                            </div>
+                        </div>
+                        <div class="permissions">
+                            <span><i class="fa-solid fa-check"></i> Je nejbližším zák. zástupcem</span>
+                            <span><i class="fa-solid fa-check"></i> Je zák. zástupcem de jure</span>
+                            <span><i class="fa-solid fa-check"></i> Smí dostávat informace o žákovi</span>
+                        </div>
+                    </div>
+
+                    <div class="accordion">Osobní údaje <i class="fa-solid fa-plus"></i></div>
+                    <div class="accordion">Vztah k žákovi <i class="fa-solid fa-plus"></i></div>
+                    <div class="accordion">Trvalé bydliště <i class="fa-solid fa-plus"></i></div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <div class="modal-overlay" id="parentModal">
+        <div class="modal-container">
+            <div class="modal-header">
+                <h3>Přidat existující zákonné zástupce</h3>
+                <i class="fa-solid fa-xmark" style="cursor:pointer; font-size: 20px; color: var(--text-muted);" onclick="toggleModal(false)"></i>
+            </div>
+            <div class="modal-body">
+                <div style="position: relative;">
+                    <i class="fa-solid fa-magnifying-glass" style="position: absolute; left: 12px; top: 12px; color: var(--text-muted);"></i>
+                    <input type="text" id="parentSearch" class="modal-search" placeholder="Hledat" onkeyup="filterParents()">
+                </div>
+                
+                <div class="modal-table-header">
+                    <div>Jméno</div>
+                    <div>Zákonný zástupce pro...</div>
+                </div>
+                
+                <div id="parentList">
+                    <div class="parent-select-row">
+                        <label><input type="checkbox"> Adámková Markéta</label>
+                        <div><div class="child-tag"><span class="initials">AK</span> Adámková Kristýna <span class="child-class">(4.A)</span></div></div>
+                    </div>
+                    <div class="parent-select-row">
+                        <label><input type="checkbox"> Adámková Natali</label>
+                        <div><div class="child-tag"><span class="initials">AD</span> Adámek Dominik <span class="child-class">(4.B)</span></div></div>
+                    </div>
+                    <div class="parent-select-row">
+                        <label><input type="checkbox"> Andrýsek Jakub Ing.</label>
+                        <div><div class="child-tag"><span class="initials">AV</span> Andrýsek Vojtěch <span class="child-class">(4.B)</span></div></div>
+                    </div>
+                    <div class="parent-select-row">
+                        <label><input type="checkbox"> Andrýsková Emma Bc.</label>
+                        <div><div class="child-tag"><span class="initials">AV</span> Andrýsek Vojtěch <span class="child-class">(4.B)</span></div></div>
+                    </div>
+                    <div class="parent-select-row">
+                        <label><input type="checkbox"> Bača Jakub</label>
+                        <div><div class="child-tag"><span class="initials">BN</span> Bačová Nela <span class="child-class">(6.A)</span></div></div>
+                    </div>
+                    <div class="parent-select-row">
+                        <label><input type="checkbox"> Bajer Tobiáš</label>
+                        <div>
+                            <div class="child-tag"><span class="initials">NS</span> Novotná Sofie <span class="child-class">(6.A)</span></div>
+                            <div class="child-tag" style="margin-left: 5px;"><span class="initials">BE</span> Bajerová Ema <span class="child-class">(6.A)</span></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-outline" onclick="toggleModal(false)"><i class="fa-solid fa-xmark"></i> Zavřít</button>
+                <div style="display: flex; gap: 10px;">
+                    <button class="btn btn-outline"><i class="fa-solid fa-plus"></i> Vytvořit nového</button>
+                    <button class="btn btn-primary" onclick="alert('Zástupci byli přidáni.'); toggleModal(false);"><i class="fa-solid fa-check"></i> Přidat</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Data žáků pro dynamické přepínání
+        const studentsData = [
+            { id: 1, class: "8.A", name: "Adamec Adam", initials: "AA", dob: "* 15. 9. 2011 (14 let, Muž)", field: "ŠVP", num: "1", teacher: "TrKa" },
+            { id: 2, class: "8.A", name: "Bednářová Anna", initials: "BA", dob: "* 12. 5. 2011 (14 let, Žena)", field: "ŠVP", num: "2", teacher: "TrKa" },
+            { id: 3, class: "8.A", name: "Borská Babeta", initials: "BB", dob: "* 3. 11. 2011 (14 let, Žena)", field: "ŠVP", num: "3", teacher: "TrKa" },
+            { id: 4, class: "8.A", name: "Čermák Samuel", initials: "ČS", dob: "* 21. 1. 2011 (15 let, Muž)", field: "ŠVP", num: "4", teacher: "TrKa" },
+            { id: 5, class: "8.A", name: "Kolář Max", initials: "KM", dob: "* 8. 8. 2011 (14 let, Muž)", field: "ŠVP", num: "8", teacher: "TrKa" },
+            { id: 6, class: "8.A", name: "Konečná Amálie", initials: "KA", dob: "* 30. 4. 2011 (14 let, Žena)", field: "ŠVP", num: "9", teacher: "TrKa" }
+        ];
+
+        let activeStudentId = 1;
+
+        // Vykreslení seznamu žáků vlevo
+        function renderStudents() {
+            const listEl = document.getElementById('studentList');
+            listEl.innerHTML = '';
+            
+            studentsData.forEach(student => {
+                const row = document.createElement('div');
+                row.className = `student-row ${student.id === activeStudentId ? 'active' : ''}`;
+                row.onclick = () => selectStudent(student.id);
+                row.innerHTML = `
+                    <div class="student-row-left">
+                        <span class="student-class">${student.class}</span>
+                        <span class="student-name">${student.name}</span>
+                    </div>
+                    <i class="fa-solid fa-ellipsis-vertical" style="color: #cbd5e1;"></i>
+                `;
+                listEl.appendChild(row);
+            });
+        }
+
+        // Změna aktivního žáka a aktualizace detailu vpravo
+        function selectStudent(id) {
+            activeStudentId = id;
+            renderStudents(); // Překreslí seznam (aktualizuje active třídu)
+            
+            const student = studentsData.find(s => s.id === id);
+            
+            // Aktualizace DOM prvků na hlavní kartě
+            document.getElementById('det-avatar').innerText = student.initials;
+            document.getElementById('det-name').innerText = student.name;
+            document.getElementById('det-meta').innerText = student.dob;
+            document.getElementById('det-field').innerText = student.field;
+            document.getElementById('det-num').innerText = student.num;
+            document.getElementById('det-class').innerText = student.class;
+            document.getElementById('det-teacher').innerText = student.teacher;
+        }
+
+        // Vyhledávání v seznamu žáků (levý panel)
+        function filterStudents() {
+            let input = document.getElementById('studentSearch').value.toLowerCase();
+            let rows = document.querySelectorAll('#studentList .student-row');
+            
+            rows.forEach(row => {
+                let text = row.querySelector('.student-name').textContent.toLowerCase();
+                row.style.display = text.includes(input) ? 'flex' : 'none';
+            });
+        }
+
+        // --- Modální okno logiky ---
+        function toggleModal(show) {
+            document.getElementById('parentModal').style.display = show ? 'flex' : 'none';
+        }
+
+        function filterParents() {
+            let input = document.getElementById('parentSearch').value.toLowerCase();
+            let rows = document.querySelectorAll('.parent-select-row');
+            
+            rows.forEach(row => {
+                let text = row.querySelector('label').textContent.toLowerCase();
+                row.style.display = text.includes(input) ? 'grid' : 'none';
+            });
+        }
+
+        // Zavření modálu kliknutím mimo
+        window.onclick = function(event) {
+            let modal = document.getElementById('parentModal');
+            if (event.target == modal) toggleModal(false);
+        }
+
+        // Inicializace při načtení
+        renderStudents();
+    </script>
+</body>
+</html>

@@ -43,10 +43,10 @@ interface SubjectAPI {
 }
 
 interface TeacherAPI {
-  teacher_id: number;
-  teacher_name: string; // Full name from backend
-  first_name: string;
-  last_name: string;
+  teacherId: number;
+  teacherName: string; // Full name from backend
+  firstName: string;
+  lastName: string;
 }
 
 interface ScopeAPI {
@@ -804,7 +804,7 @@ public school_types = SchoolTypes;
 
   public get_teacher_name(id: number | null): string {
     if (!id) return '';
-    return this.available_teachers.find(t => t.teacher_id == id)?.teacher_name || '';
+    return this.available_teachers.find(t => t.teacherId == id)?.teacherName || '';
   }
 
   public update_ldap(): void {

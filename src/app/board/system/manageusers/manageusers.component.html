@@ -6,7 +6,7 @@
     </div>
     } @else if (selectedUser) {
     <!-- User Detail View -->
-    <div class="detail-view">
+    <div class="detail-view list-view">
         <!-- Detail Header -->
         <div class="detail-header">
             <button class="btn-back" (click)="closeDetail()">
@@ -34,8 +34,7 @@
                         @if (selectedUser.photo_url) {
                         <img [src]="selectedUser.photo_url" [alt]="selectedUser.full_name">
                         } @else {
-                        <span class="avatar-initials">{{ selectedUser.first_name?.[0] }}{{ selectedUser.last_name?.[0]
-                            }}</span>
+                        <span class="avatar-initials">{{ Utils.getInitials(selectedUser.full_name) }}</span>
                         }
                         <span class="status-dot" [class]="selectedUser.status"></span>
                     </div>
@@ -348,8 +347,8 @@
                                 <div class="form-row">
                                     <div class="form-group">
                                         <label class="form-label" for="edit-birthday">Datum narození</label>
-                                        <input type="date" id="edit-birthday" class="form-input"
-                                            [(ngModel)]="editForm.birthday" name="edit-birthday">
+                                        <app-calendar id="edit_user_birthday" [value]="editForm.birthday"
+                                            (valueChange)="editForm.birthday = $event" size="full"></app-calendar>
                                     </div>
                                     <div class="form-group">
                                         <label class="form-label">Pohlaví</label>

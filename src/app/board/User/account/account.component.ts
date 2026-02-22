@@ -13,6 +13,7 @@ import { ModalManager } from '@Schoolingo/modal';
 import { AddEmailComponent } from './modals/add-email/add-email.component';
 import { AddPhoneComponent } from './modals/add-phone/add-phone.component';
 import { DeleteEmailComponent } from './modals/delete-email/delete-email.component';
+import { DeletePhoneComponent } from './modals/delete-phone/delete-phone.component';
 
 @Component({
   imports: [NgClass, IconsModule, RouterLink, FormsModule, ReactiveFormsModule],
@@ -31,8 +32,13 @@ export class AccountComponent implements OnInit {
   phones: UserPhone[] = [];
 
   ngOnInit(): void {
-    this.emails = this.u.getUser().emails;
-    this.phones = this.u.getUser().phones;
+    this.u.getAuthState().subscribe(() => {
+      const user = this.u.getUser();
+      if (user) {
+        this.emails = user.emails;
+        this.phones = user.phones;
+      }
+    });
 
     this.modalManager.addModal(
       'add_email',
@@ -75,6 +81,20 @@ export class AccountComponent implements OnInit {
         ]
       }
     );
+    
+    this.modalManager.addModal(
+      'delete_phone',
+      {
+        title: 'user.delete_phone.title',
+        closeable: true,
+        items: [
+          {
+            type: 'component',
+            component: DeletePhoneComponent
+          }
+        ]
+      }
+    );
   }
 
   public addEmptyEmail(): void {
@@ -89,6 +109,10 @@ export class AccountComponent implements OnInit {
     this.modalManager.openModal('delete_email', email);
   }
 
+  public verifyEmailModal(email: UserEmail): void {
+    this.modalManager.openModal('add_email', { ...email, mode: 'verify' });
+  }
+
   public addEmptyPhone(): void {
     this.modalManager.openModal('add_phone', null);
   }
@@ -97,19 +121,11 @@ export class AccountComponent implements OnInit {
     this.modalManager.openModal('add_phone', phone);
   }
 
-  public removePhone(number: string): void {
-    if (!confirm('Opravdu chcete smazat toto telefonní číslo?')) return;
+  public verifyPhoneModal(phone: UserPhone): void {
+    this.modalManager.openModal('add_phone', { ...phone, mode: 'verify' });
+  }
 
-    this.http.delete(`${Config.API_URL}/v1/user/phone`, {
-      body: { number },
-      withCredentials: true
-    }).subscribe({
-      next: (response: any) => {
-        if (response.success) {
-          this.u.loadState();
-        }
-      },
-      error: (error) => console.error('Error removing phone', error)
-    });
+  public removePhone(number: string): void {
+    this.modalManager.openModal('delete_phone', number);
   }
 }

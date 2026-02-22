@@ -66,17 +66,11 @@ export class SupervisionBuilderComponent implements OnInit {
   }
 
   ngAfterViewInit(): void {
-    this.calendarManager.getCalendarData('supervisionBuilder_date').selected_date[0].subscribe((new_date) => {
-      this.selected_date = new_date.clone();
-      this.refreshLoad();
-    })
   }
 
   public selectWeek(n: number): void {
-    const current = this.calendarManager.getCalendarData('supervisionBuilder_date').selected_date[0].getValue();
-    const selectedWeek = current.clone().add(n, 'week');
-    this.calendarManager.getCalendarData('supervisionBuilder_date').selected_date[0].next(selectedWeek);
-    this.calendarManager.getCalendarData('supervisionBuilder_date').selected_date[1].next(selectedWeek);
+    this.selected_date = this.selected_date.clone().add(n, 'week');
+    this.refreshLoad();
   }
 
   public drop(event: CdkDragDrop<any[]>, dayIndex?: number, hourIndex?: number): void {

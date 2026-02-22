@@ -1,18 +1,17 @@
 <div class="calendar-wrap" id="calWrap">
-    <div
-        class="calendar-input input"
-        [class.focus]="calendarManager.isVisibleCalendar(id)"
-        (click)="calendarManager.isVisibleCalendar(id) ? calendarManager.closeCalendar(id) : updateCalendarPosition();calendarManager.showCalendar(id)"
-    >
+    <div class="calendar-input form-input" [class.focus]="calendarManager.isVisibleCalendar(id)"
+        (click)="calendarManager.isVisibleCalendar(id) ? calendarManager.closeCalendar(id) : updateCalendarPosition();calendarManager.showCalendar(id); $event.stopPropagation()"
+        style="display: flex; align-items: center; justify-content: space-between; cursor: pointer;">
         <div class="value" id="calValue">
             @if (this.calendarManager.getCalendarData(id)) {
-                {{ this.calendarManager.getCalendarData(id).selected_date[0].getValue().format('DD. MM. YYYY') }}
+            {{ this.calendarManager.getCalendarData(id).selected_date[0].getValue().format('DD. MM. YYYY') }}
             } @else {
-                {{ l.s('calendar.placeholder') }}
+            {{ l.s('calendar.placeholder') }}
             }
         </div>
-        <div class="chev">
-            <i-tabler [name]="calendarManager.getCalendarData(id).position.position == 'top' ? 'chevron-down' : 'chevron-up'"></i-tabler>
+        <div class="chev" style="display: flex; align-items: center; color: var(--text-muted);">
+            <i-tabler [name]="calendarManager.isVisibleCalendar(id) ? 'chevron-up' : 'chevron-down'"
+                style="width: 18px; height: 18px;"></i-tabler>
         </div>
     </div>
 </div>

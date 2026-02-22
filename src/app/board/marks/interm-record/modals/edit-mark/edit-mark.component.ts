@@ -8,9 +8,11 @@ import { Locale } from '@Schoolingo/locale';
 import { MarksManager } from '@Schoolingo/marks';
 import { ModalManager } from '@Schoolingo/modal';
 
+import { IconsModule } from '@Schoolingo/icons';
+
 @Component({
   standalone: true,
-  imports: [FormsModule, ReactiveFormsModule, AlertComponent],
+  imports: [FormsModule, ReactiveFormsModule, AlertComponent, IconsModule],
   templateUrl: './edit-mark.component.html',
   styleUrl: './edit-mark.component.css'
 })
@@ -23,18 +25,24 @@ export class EditMarkComponent implements OnInit {
 
   public isLoading = true;
   public action: '' | 'edit' | 'create' = '';
+  public type: string = 'marks';
   public mark: string | null = null;
   public errors: { [key: string]: string } = {};
 
   ngOnInit(): void {
     this.mark = this.marksManager.getMark();
     this.action = this.marksManager.getAction() as typeof this.action;
+    this.type = this.marksManager.getType() || 'marks';
     this.isLoading = false;
   }
 
   public isButtonActivated(): boolean {
     if (this.mark == "" || this.mark == null) return false;
     return true;
+  }
+
+  public openMarkingScale(): void {
+    this.modalManager.openModal('edit_marking_scale');
   }
 
   public editMark(): void {

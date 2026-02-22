@@ -7,8 +7,46 @@
             </div>
             <span class="meta muted">Sledujte návštěvnost a aktivitu uživatelů v aplikaci</span>
         </div>
-        <schoolingo-tabs [options]="['admin.monitoring.period.today', 'admin.monitoring.period.week', 'admin.monitoring.period.month']" [icons]="['sun', 'calendar-week', 'calendar-month']" [value]="selectedPeriodTab"></schoolingo-tabs>
+        <schoolingo-tabs
+            [options]="['admin.monitoring.period.today', 'admin.monitoring.period.week', 'admin.monitoring.period.month', 'admin.monitoring.period.custom']"
+            [icons]="['sun', 'calendar-week', 'calendar-month', 'calendar-event']"
+            [value]="selectedPeriodTab"></schoolingo-tabs>
     </div>
+
+    <!-- Custom period date picker panel -->
+    @if (showCustomPeriod) {
+    <div class="custom-period-panel">
+        <div class="custom-period-panel__inner">
+            <div class="custom-period-panel__group">
+                <label class="custom-period-panel__label">
+                    <i-tabler name="calendar" size="14"></i-tabler>
+                    Od
+                </label>
+                <input type="date" class="custom-period-panel__input" [(ngModel)]="customPeriodFrom"
+                    [max]="customPeriodTo">
+            </div>
+            <div class="custom-period-panel__sep">—</div>
+            <div class="custom-period-panel__group">
+                <label class="custom-period-panel__label">
+                    <i-tabler name="calendar-check" size="14"></i-tabler>
+                    Do
+                </label>
+                <input type="date" class="custom-period-panel__input" [(ngModel)]="customPeriodTo"
+                    [min]="customPeriodFrom">
+            </div>
+            <button class="btn btn--primary btn--sm custom-period-panel__apply" (click)="applyCustomPeriod()">
+                <i-tabler name="chart-bar" size="16"></i-tabler>
+                Zobrazit
+            </button>
+            @if (customPeriodError) {
+            <span class="custom-period-panel__error">
+                <i-tabler name="alert-circle" size="14"></i-tabler>
+                {{ customPeriodError }}
+            </span>
+            }
+        </div>
+    </div>
+    }
 
     <div class="monitoring-body">
 
@@ -377,12 +415,46 @@
                         <span class="meta muted">Evidence provozu, verzí a aktualizací</span>
                     </div>
                 </div>
-                <div class="status-days-switcher">
-                    <button [class.active]="uptimeDays === 1" (click)="loadUptime(1)">24h</button>
-                    <button [class.active]="uptimeDays === 7" (click)="loadUptime(7)">7d</button>
-                    <button [class.active]="uptimeDays === 30" (click)="loadUptime(30)">30d</button>
+                <schoolingo-tabs
+                    [options]="['admin.monitoring.period.today', 'admin.monitoring.period.week', 'admin.monitoring.period.month', 'admin.monitoring.period.custom']"
+                    [icons]="['sun', 'calendar-week', 'calendar-month', 'calendar-event']"
+                    [value]="selectedUptimeTab"></schoolingo-tabs>
+            </div>
+
+            <!-- Custom uptime date picker -->
+            @if (showCustomUptime) {
+            <div class="custom-uptime-panel">
+                <div class="custom-period-panel__inner">
+                    <div class="custom-period-panel__group">
+                        <label class="custom-period-panel__label">
+                            <i-tabler name="calendar" size="14"></i-tabler>
+                            Od
+                        </label>
+                        <input type="date" class="custom-period-panel__input" [(ngModel)]="customUptimeFrom"
+                            [max]="customUptimeTo">
+                    </div>
+                    <div class="custom-period-panel__sep">—</div>
+                    <div class="custom-period-panel__group">
+                        <label class="custom-period-panel__label">
+                            <i-tabler name="calendar-check" size="14"></i-tabler>
+                            Do
+                        </label>
+                        <input type="date" class="custom-period-panel__input" [(ngModel)]="customUptimeTo"
+                            [min]="customUptimeFrom">
+                    </div>
+                    <button class="btn btn--primary btn--sm custom-period-panel__apply" (click)="applyCustomUptime()">
+                        <i-tabler name="server" size="16"></i-tabler>
+                        Načíst
+                    </button>
+                    @if (customUptimeError) {
+                    <span class="custom-period-panel__error">
+                        <i-tabler name="alert-circle" size="14"></i-tabler>
+                        {{ customUptimeError }}
+                    </span>
+                    }
                 </div>
             </div>
+            }
 
             <div class="m-section__body">
 
@@ -453,40 +525,54 @@
                 <!-- Tabulka segmentů -->
                 <div class="uptime-log">
                     <div class="uptime-log__header">
-                        <span>Stav</span>
-                        <span>Od</span>
-                        <span>Do</span>
-                        <span>Trvání</span>
-                        <span>Verze</span>
-                        <span>Poznámka</span>
+                        <span>{{ l.s('admin.monitoring.uptime.status') }}</span>
+                        <span>{{ l.s('admin.monitoring.uptime.start') }}</span>
+                        <span>{{ l.s('admin.monitoring.uptime.end') }}</span>
+                        <span>{{ l.s('admin.monitoring.uptime.duration') }}</span>
+                        <span>{{ l.s('admin.monitoring.uptime.version') }}</span>
+                        <span>{{ l.s('admin.monitoring.uptime.note') }}</span>
                     </div>
                     @for (seg of uptimeData.segments; track seg.from) {
                     <div class="uptime-log__row" [class.row--online]="seg.status === 'online'"
                         [class.row--offline]="seg.status === 'offline'" [class.row--update]="seg.status === 'update'">
-                        <span class="uptime-log__status">
+                        <div class="uptime-log__status">
                             <span class="uptime-dot" [class.dot--online]="seg.status === 'online'"
                                 [class.dot--offline]="seg.status === 'offline'"
                                 [class.dot--update]="seg.status === 'update'">
                             </span>
-                            @if (seg.status === 'online') { Online }
-                            @if (seg.status === 'offline') { Offline }
-                            @if (seg.status === 'update') { Update }
-                        </span>
-                        <span class="uptime-log__time">{{ seg.from | date:'d.M.yy H:mm' }}</span>
-                        <span class="uptime-log__time">{{ seg.to | date:'d.M.yy H:mm' }}</span>
-                        <span class="uptime-log__dur">{{ seg.duration_minutes }} min</span>
+                            @if (seg.status === 'online') {
+                            <i-tabler name="circle-check" size="14"></i-tabler>
+                            Online
+                            }
+                            @if (seg.status === 'offline') {
+                            <i-tabler name="circle-x" size="14"></i-tabler>
+                            Offline
+                            }
+                            @if (seg.status === 'update') {
+                            <i-tabler name="refresh" size="14"></i-tabler>
+                            Update
+                            }
+                        </div>
+                        <span class="uptime-log__time">{{ seg.from | date:'d.M. H:mm' }}</span>
+                        <span class="uptime-log__time">{{ seg.to | date:'d.M. H:mm' }}</span>
+                        <div class="uptime-log__dur">
+                            <i-tabler name="clock-play" size="14"
+                                style="color: var(--text-muted); opacity: 0.6;"></i-tabler>
+                            {{ seg.duration_minutes }} min
+                        </div>
                         <span class="uptime-log__ver">{{ seg.version ? 'v' + seg.version : '—' }}</span>
-                        <span class="uptime-log__note">{{ seg.note || '—' }}</span>
+                        <span class="uptime-log__note" [title]="seg.note || ''">{{ seg.note || '—' }}</span>
                     </div>
                     }
                     @if (uptimeData.segments.length === 0) {
-                    <div class="m-no-data"><i-tabler name="clock-off"></i-tabler><span>Žádné záznamy</span></div>
+                    <div class="m-no-data"><i-tabler name="clock-off"></i-tabler><span>{{
+                            l.s('admin.monitoring.uptime.no_data') }}</span></div>
                     }
                 </div>
 
                 } @else {
-                <div class="m-no-data"><i-tabler name="server-off"></i-tabler> <span>Nepodařilo se načíst data
-                        systému</span></div>
+                <div class="m-no-data"><i-tabler name="server-off"></i-tabler> <span>{{ l.s('admin.monitoring.error')
+                        }}</span></div>
                 }
 
             </div>

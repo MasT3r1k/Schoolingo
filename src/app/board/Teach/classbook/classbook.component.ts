@@ -21,9 +21,11 @@ import { School } from '@Schoolingo/school';
 import { Utils } from '@Schoolingo/utils';
 
 interface ClassbookLesson {
-  subjectName: string;
-  className: string;
-  groupName: string | null;
+  subject_name: string;
+  class_name: string;
+  group_id: number;
+  group_name: string | null;
+  group_num: number | null;
   topic: string;
   lockClassAfterLesson: boolean;
 }
@@ -74,7 +76,7 @@ export class ClassbookComponent implements OnInit {
   public selected_tab = 0;
   public selected_absence = 0;
   public timetable: any[] = [];
-  public selected_date = moment().format('YYYY-MM-DD');
+  public selected_date = moment();
   public hours: TimetableHours[] = [];
 
   public updateLessons(): void {
@@ -83,12 +85,12 @@ export class ClassbookComponent implements OnInit {
       {
         type: "person",
         id: this.u.getId(),
-        time: this.selected_date
+        time: this.selected_date.format('YYYY-MM-DD')
       },
       { withCredentials: true }
     )
     .subscribe((data: any) => {
-      this.timetable = (data.timetable as any[]).filter((tt) => tt.day == moment(this.selected_date).isoWeekday());
+      this.timetable = (data.timetable as any[]).filter((tt) => tt.day == this.selected_date.isoWeekday());
 
       let schoolConfig = this.school.config.getValue();
       let time = moment()
@@ -115,16 +117,6 @@ export class ClassbookComponent implements OnInit {
   ngOnInit(): void {
     this.updateLessons();
 
-    // Initialize calendar
-    setTimeout(() => {
-        this.calendarManager.getCalendarData('classbook_date').selected_date[0].next(moment(this.selected_date));
-    });
-
-    // Subscribe to calendar changes
-    this.calendarManager.getCalendarData('classbook_date').selected_date[0].subscribe((date) => {
-        this.selected_date = date.format('YYYY-MM-DD');
-        this.updateLessons();
-    });
 
     this.modalManager.addModal(
       'add_homework',
@@ -170,7 +162,7 @@ export class ClassbookComponent implements OnInit {
 
     this.selected_lesson.subscribe(() => {
       this.http.get(
-        `${Config.API_URL}/v1/classbook/lesson?groupId=${this.timetable[this.selected_lesson.getValue()].groupId}&date=${this.selected_date}&hour=${this.selected_lesson.getValue()}`,
+        `${Config.API_URL}/v1/classbook/lesson?groupId=${this.timetable[this.selected_lesson.getValue()].group_id}&date=${this.selected_date.format('YYYY-MM-DD')}&hour=${this.selected_lesson.getValue()}`,
         { withCredentials: true }
       )
       .subscribe((data: any) => {
@@ -191,7 +183,7 @@ export class ClassbookComponent implements OnInit {
       });
 
       this.http.get<any[]>(
-        `${Config.API_URL}/v1/classbook/homework?groupId=${this.timetable[this.selected_lesson.getValue()].groupId}&subjectId=${this.timetable[this.selected_lesson.getValue()].subjectId}`,
+        `${Config.API_URL}/v1/classbook/homework?groupId=${this.timetable[this.selected_lesson.getValue()].group_id}&subjectId=${this.timetable[this.selected_lesson.getValue()].subject_id}`,
         { withCredentials: true }
       )
       .subscribe((data: any[]) => {
@@ -199,7 +191,7 @@ export class ClassbookComponent implements OnInit {
       })
 
       this.http.get<any[]>(
-        `${Config.API_URL}/v1/classbook/notes?groupId=${this.timetable[this.selected_lesson.getValue()].groupId}&subjectId=${this.timetable[this.selected_lesson.getValue()].subjectId}`,
+        `${Config.API_URL}/v1/classbook/notes?groupId=${this.timetable[this.selected_lesson.getValue()].group_id}&subjectId=${this.timetable[this.selected_lesson.getValue()].subject_id}`,
         { withCredentials: true }
       )
       .subscribe((data: any[]) => {

@@ -1,3 +1,10 @@
+@switch(page) {
+@case("main") {
+@if (error) {
+<div class="message message--danger" style="margin-bottom: 1rem;">
+    {{ error }}
+</div>
+}
 <div class="form-group">
     <label for="code">{{ l.s('user.add_phone.code') }}</label>
     <input type="number" name="code" id="code" [(ngModel)]="code" placeholder="420">
@@ -14,3 +21,66 @@
         {{ isEdit ? l.s('user.add_phone.save_changes') : l.s('user.add_phone.save_phone') }}
     </div>
 </div>
+}
+
+@case ("2fa") {
+@if (error) {
+<div class="message message--danger" style="margin-bottom: 1rem;">
+    {{ error }}
+</div>
+}
+<div class="message message--info">
+    {{ l.s('settings.2fa.descriptions.verify_code') }}
+</div>
+
+<div class="form-group">
+    <label for="token">
+        {{ l.s('auth.2fa.authentication_code') }}
+    </label>
+    <input type="text" [placeholder]="l.s('auth.2fa.authentication_code')" id="token" autocomplete="off" maxlength="6"
+        [(ngModel)]="token">
+</div>
+<div class="form-group">
+    <div class="btn btn--primary" (click)="savePhone()">
+        {{ l.s('auth.2fa.verify_code') }}
+    </div>
+
+    <div class="btn btn--secondary" (click)="page = 'main';token = ''">
+        {{ l.s('buttons.back') }}
+    </div>
+</div>
+}
+
+@case ("verify") {
+@if (error) {
+<div class="message message--danger" style="margin-bottom: 1rem;">
+    {{ error }}
+</div>
+}
+<div class="message message--info">
+    Zadejte kód, který jsme vám zaslali v SMS na číslo <strong>+{{ code }} {{ number }}</strong>.
+</div>
+
+<div class="form-group">
+    <label for="verificationCode">Ověřovací kód</label>
+    <input type="text" name="verificationCode" id="verificationCode" [(ngModel)]="verificationCode" placeholder="123456"
+        maxlength="6" style="text-align: center; font-size: 24px; letter-spacing: 4px;">
+</div>
+
+<div class="form-group">
+    <div class="btn btn--primary" (click)="verifyPhone()">
+        <i-tabler name="circle-check"></i-tabler>
+        Ověřit číslo
+    </div>
+
+    <div class="btn btn--secondary" (click)="resendCode()">
+        <i-tabler name="refresh"></i-tabler>
+        Zaslat kód znovu
+    </div>
+
+    <div class="btn btn--ghost" (click)="modalManager.closeModal('add_phone')">
+        Zavřít
+    </div>
+</div>
+}
+}

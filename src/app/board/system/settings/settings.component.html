@@ -1327,10 +1327,10 @@
                         @if (dropdownManager.selected_dropdown == 'add_teacher_subject') {
                         <div class="options-dropdown">
                             <div class="list">
-                                @for (teacher of available_teachers; track teacher.teacher_id) {
+                                @for (teacher of available_teachers; track teacher.teacherId) {
                                 <div class="option row" style="gap: .5rem"
-                                    (click)="$event.stopPropagation(); dropdownManager.selected_dropdown = ''; selected_teacher_to_add = teacher.teacher_id">
-                                    {{ teacher.teacher_name }}
+                                    (click)="$event.stopPropagation(); dropdownManager.selected_dropdown = ''; selected_teacher_to_add = teacher.teacherId">
+                                    {{ get_teacher_name(teacher.teacherId) }}
                                 </div>
                                 }
                             </div>
@@ -1344,13 +1344,13 @@
                 </div>
 
                 <div class="teachers-list">
-                    @for (teacher of assigned_teachers; track teacher.teacher_id) {
+                    @for (teacher of assigned_teachers; track teacher.teacherId) {
                     <div class="teacher-row">
                         <div class="teacher-name">
-                            {{ teacher.first_name }} {{ teacher.last_name }}
+                            {{ get_teacher_name(teacher.teacherId) }}
                         </div>
                         <div class="teacher-actions">
-                            <div class="btn danger icon-only" (click)="remove_teacher_from_subject(teacher.teacher_id)">
+                            <div class="btn danger icon-only" (click)="remove_teacher_from_subject(teacher.teacherId)">
                                 <i-tabler name="trash-x"></i-tabler>
                             </div>
                         </div>

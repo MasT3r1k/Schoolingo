@@ -1,0 +1,279 @@
+.loading {
+    padding: 2rem;
+    display: flex;
+    justify-content: center;
+}
+
+.timetable {
+    display: flex;
+    flex-direction: column;
+}
+
+.timetable>.hours {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    margin-bottom: 8px;
+}
+
+.timetable>.hours>div {
+    display: flex;
+    justify-content: end;
+    align-items: center;
+    flex-direction: column;
+}
+
+.timetable>.hours>.hour-info>.hour-id,
+.timetable .item .subject {
+    font-size: 18px;
+    font-weight: 600;
+    line-height: 18px;
+    min-height: 18px;
+    text-align: center;
+}
+
+.timetable>.hours>.hour-info>.hour-id {
+    color: var(--primary)
+}
+
+.timetable .item .subject {
+    color: var(--text)
+}
+
+.timetable .item .sub-lesson-hour.classbook .subject {
+    color: var(--primary)
+}
+
+.timetable .item .sub-lesson-hour.substitution {
+    background-color: hsla(353deg, 85%, 53%, .16)
+}
+
+.timetable .item .sub-lesson-hour.substitution .group {
+    color: var(--error)
+}
+
+.timetable .item .sub-lesson-hour.lesson-count-1 .subject {
+    font-size: 18px;
+    line-height: 20px;
+}
+
+.timetable>.hours>.hour-info>.hour-time,
+.timetable .item .teacher {
+    font-size: 12px;
+    color: var(--text);
+    opacity: .7;
+    line-height: 16px;
+    min-height: 12px;
+    text-align: center;
+    font-weight: 300;
+}
+
+.timetable .item .sub-lesson-hour.lesson-count-1 .teacher {
+    font-size: 14px;
+    line-height: 18px;
+}
+
+.timetable>.days>.day {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    border-collapse: collapse;
+}
+
+.timetable>.days>.day:not(:last-child) {
+    border-bottom: 1px solid var(--border);
+}
+
+.timetable>.days>.day>.all-day {
+    width: 100%;
+}
+
+.timetable>.days>.day:nth-child(2n)>.name,
+.timetable>.days>.day:nth-child(2n)>.item {
+    background-color: var(--hover-bg);
+}
+
+.timetable>.days>.day>.name {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    font-weight: 600;
+    color: var(--primary);
+    line-height: 20px;
+    text-align: center;
+    height: 100%;
+    text-transform: capitalize;
+}
+
+.timetable>.days>.day>.name>.time {
+    font-size: 12px;
+    color: var(--text);
+    opacity: .7;
+    line-height: 16px;
+    min-height: 12px;
+    text-align: center;
+    font-weight: 300;
+}
+
+.timetable>.hours>div,
+.timetable>.days>.day>div {
+    min-width: 128px;
+}
+
+.timetable>.days>.day>div {
+    min-height: 128px;
+    height: 128px;
+}
+
+.timetable>.days>.day>.item {
+    border-collapse: collapse;
+}
+
+.timetable>.days>.day:first-child>.item {
+    border-top: 1px solid var(--border)
+}
+
+.timetable>.days>.day>.item:nth-child(2) {
+    border-left: 1px solid var(--border)
+}
+
+.timetable>.days>.day:last-child>.item {
+    border-bottom: 1px solid var(--border)
+}
+
+.timetable>.days>.day>.item:last-child {
+    border-right: 1px solid var(--border)
+}
+
+.timetable .lesson-hour {
+    display: flex;
+    flex-direction: column;
+}
+
+.timetable .item .sub-lesson-hour,
+.timetable .item.all-day {
+    width: 100%;
+    height: 100%;
+    cursor: pointer;
+    justify-content: center;
+    align-items: center;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    transition: all .15s;
+}
+
+.timetable .item .sub-lesson-hour:not(:first-child)::before {
+    content: '';
+    position: absolute;
+    top: -0.5px;
+    height: 1px;
+    width: 100%;
+    background-color: var(--border);
+}
+
+.timetable .item .sub-lesson-hour.empty {
+    cursor: default !important;
+}
+
+.timetable .item .sub-lesson-hour:not(.empty, .substitution):hover {
+    background-color: var(--surface-2);
+}
+
+.timetable .item .group,
+.timetable .item .room {
+    position: absolute;
+    top: 1px;
+    font-size: 11px;
+    line-height: 12px;
+    letter-spacing: -0.05em;
+    color: var(--text-muted);
+    width: 50%;
+}
+
+.timetable .item .group {
+    left: 4px;
+    text-align: left;
+    color: var(--primary);
+}
+
+.timetable .item .room {
+    right: 4px;
+    text-align: right;
+}
+
+.timetable .item .teacher {
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+    max-width: 100%;
+}
+
+.timetable .item .absence {
+    position: absolute;
+    bottom: 4px;
+    left: 50%;
+    width: calc(100% - 16px);
+    transform: translateX(-50%);
+    height: 4px;
+    border-radius: 4px;
+    background-color: var(--absence-color);
+}
+
+.week-type {
+    font-weight: 600;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    font-size: 10px;
+}
+
+.empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 300px;
+    color: var(--text-muted);
+}
+
+.empty-icon {
+    width: 48px;
+    height: 48px;
+    margin-bottom: 1rem;
+    opacity: 0.5;
+}
+
+@media print {
+    @page {
+        size: A4 landscape;
+        margin: .4in;
+    }
+
+    .timetable {
+        visibility: visible;
+    }
+
+    .timetable>.days>.day>.name,
+    .timetable>.hours>.hour-info>.hour-id,
+    .timetable .item .sub-lesson-hour .subject {
+        color: #000;
+    }
+
+    .timetable>.hours>div,
+    .timetable>.days>.day>div {
+        min-width: 96px;
+    }
+
+    .timetable>.days>.day>div {
+        min-height: 96px;
+        height: 96px;
+    }
+
+    .timetable>.days>.day:first-child>.item,
+    .timetable>.days>.day>.item:nth-child(2),
+    .timetable>.days>.day:last-child>.item,
+    .timetable>.days>.day>.item:last-child {
+        border-color: #000;
+    }
+}

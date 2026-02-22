@@ -30,7 +30,17 @@
                         {{ Utils.getInitials(`${selectedStudent.full_name}`) }}
                     </span>
                 </div>
-                <h1 class="profile-name">{{ selectedStudent.full_name }}</h1>
+                <h1 class="profile-name">
+                    @if (selectedStudent.prefix_title) {
+                    <span>{{ selectedStudent.prefix_title }} </span>
+                    }
+                    {{ selectedStudent.first_name }} {{ selectedStudent.last_name }}
+                    @if (selectedStudent.suffix_title) {
+                    <span>, {{ selectedStudent.suffix_title }}</span>
+                    }
+                </h1>
+
+
                 <div class="student-birthday">
                     {{ Utils.formatDateShort(selectedStudent.birthday) }} ({{
                     Utils.getAge(Utils.makeMoment(selectedStudent.birthday)) }} let, {{ l.s('genders.' +
@@ -64,13 +74,13 @@
                         <span class="stat-label">Absence</span>
                     </div>
                 </div>
-                <div class="stat-card clickable" [class.danger]="selectedStudent.disciplinary_issues > 0"
+                <div class="stat-card clickable" [class.danger]="selectedStudent.education_measures_count > 0"
                     (click)="showDisciplineModal = true">
                     <div class="stat-icon">
                         <i-tabler name="alert-triangle"></i-tabler>
                     </div>
                     <div class="stat-info">
-                        <span class="stat-value">{{ selectedStudent.disciplinary_issues }}</span>
+                        <span class="stat-value">{{ selectedStudent.education_measures_count || 0 }}</span>
                         <span class="stat-label">Kázeň</span>
                     </div>
                 </div>
@@ -109,6 +119,10 @@
                 <button class="tab-btn" [class.active]="activeTab === 'academic'" (click)="setActiveTab('academic')">
                     <i-tabler name="school"></i-tabler>
                     <span>Studium</span>
+                </button>
+                <button class="tab-btn" [class.active]="activeTab === 'timetable'" (click)="setActiveTab('timetable')">
+                    <i-tabler name="calendar-time"></i-tabler>
+                    <span>Rozvrh</span>
                 </button>
                 <button class="tab-btn" [class.active]="activeTab === 'matrika'" (click)="setActiveTab('matrika')">
                     <i-tabler name="school"></i-tabler>
@@ -167,7 +181,12 @@
                         <div class="card-header">
                             <i-tabler name="info-circle"></i-tabler>
                             <h3>Základní informace</h3>
+                            <button class="card-action-btn" (click)="openEditPersonalModal()">
+                                <i-tabler name="edit"></i-tabler>
+                                <span>Upravit</span>
+                            </button>
                         </div>
+
                         <div class="info-list">
                             <div class="info-row">
                                 <span class="info-label">Obor studia</span>
@@ -214,22 +233,14 @@
                             </button>
                         </div>
                         <div class="grades-preview">
-                            <div class="grade-item">
-                                <span class="grade-subject">Matematika</span>
-                                <span class="grade-mark grade-1">1</span>
+                            @for (grade of selectedStudent.last_grades; track $index) {
+                            <div class="grade-item" [title]="grade.topic">
+                                <span class="grade-subject">{{ grade.subject_shortcut }}</span>
+                                <span class="grade-mark" [class]="'grade-' + grade.mark">{{ grade.mark }}</span>
                             </div>
-                            <div class="grade-item">
-                                <span class="grade-subject">Český jazyk</span>
-                                <span class="grade-mark grade-2">2</span>
-                            </div>
-                            <div class="grade-item">
-                                <span class="grade-subject">Anglický jazyk</span>
-                                <span class="grade-mark grade-1">1</span>
-                            </div>
-                            <div class="grade-item">
-                                <span class="grade-subject">Fyzika</span>
-                                <span class="grade-mark grade-3">3</span>
-                            </div>
+                            } @empty {
+                            <div class="no-data">Žádné známky</div>
+                            }
                         </div>
                     </div>
 
@@ -244,117 +255,86 @@
                             </button>
                         </div>
                         <div class="attendance-stats">
-                            <div class="attendance-item">
-                                <div class="attendance-bar">
-                                    <div class="bar-fill success" style="width: 92%"></div>
-                                </div>
-                                <div class="attendance-info">
-                                    <span class="attendance-label">Přítomnost</span>
-                                    <span class="attendance-value">92%</span>
-                                </div>
+                            <div class="attendance-multi-bar">
+                                <div class="bar-segment success" [style.width.%]="100 - selectedStudent.absence_rate"
+                                    title="Přítomen"></div>
+                                <div class="bar-segment warning" [style.width.%]="selectedStudent.absence_rate_excused"
+                                    title="Absence + Omluvená"></div>
+                                <div class="bar-segment danger" [style.width.%]="selectedStudent.absence_rate_unexcused"
+                                    title="Neomluvená"></div>
                             </div>
-                            <div class="attendance-item">
-                                <div class="attendance-bar">
-                                    <div class="bar-fill warning" style="width: 5%"></div>
+                            <div class="attendance-legend">
+                                <div class="legend-item">
+                                    <span class="dot success"></span>
+                                    <div class="legend-info">
+                                        <span class="label">Přítomnost</span>
+                                        <span class="value">{{ (100 - selectedStudent.absence_rate)?.toFixed(2)
+                                            }}%</span>
+                                    </div>
                                 </div>
-                                <div class="attendance-info">
-                                    <span class="attendance-label">Omluvená</span>
-                                    <span class="attendance-value">5%</span>
+                                <div class="legend-item">
+                                    <span class="dot warning"></span>
+                                    <div class="legend-info">
+                                        <span class="label">Absence + Omluvená</span>
+                                        <span class="value">{{ selectedStudent.absence_rate_excused }}%</span>
+                                    </div>
                                 </div>
-                            </div>
-                            <div class="attendance-item">
-                                <div class="attendance-bar">
-                                    <div class="bar-fill danger" style="width: 3%"></div>
-                                </div>
-                                <div class="attendance-info">
-                                    <span class="attendance-label">Neomluvená</span>
-                                    <span class="attendance-value">3%</span>
+                                <div class="legend-item">
+                                    <span class="dot danger"></span>
+                                    <div class="legend-info">
+                                        <span class="label">Neomluvená absence</span>
+                                        <span class="value">{{ selectedStudent.absence_rate_unexcused }}%</span>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
 
-                    <!-- Schedule Today -->
-                    <div class="info-card">
+                    <div class="info-card schedule-card">
                         <div class="card-header">
                             <i-tabler name="calendar-event"></i-tabler>
-                            <h3>Dnešní rozvrh</h3>
+                            <h3>Rozvrh</h3>
+                            <button class="card-link-btn" (click)="setActiveTab('timetable')">
+                                Celý týden
+                                <i-tabler name="arrow-right"></i-tabler>
+                            </button>
                         </div>
-                        <div class="schedule-today">
-                            @for(lesson of getSelectedDateLessons();track $index) {
-                            <div class="schedule-lesson">
-                                <div class="lesson-time">
-                                    <span class="time-from">{{ '' }}</span>
-                                    <span class="time-sep">-</span>
-                                    <span class="time-to">8:45</span>
-                                </div>
-                                <div class="lesson-info">
-                                    <div class="lesson-name">Matematika</div>
-                                    <div class="lesson-meta">
-                                        <span class="lesson-teacher">Mgr. Nováková</span>
-                                        <span class="lesson-room">
-                                            <i-tabler name="door"></i-tabler>
-                                            A101
-                                        </span>
+                        <div class="schedule-today dashboard-style">
+                            <div class="lessons-list">
+                                @for(lesson of getSelectedDateLessons(); track $index) {
+                                <div class="subject" [class.freetime]="lesson.free"
+                                    [class.current]="isCurrentLesson(lesson)">
+                                    <span class="subjectIndex">{{ lesson.hour }}</span>
+                                    <div class="subjectName">
+                                        <span>{{ getLessonSubjectName(lesson) }}</span>
+                                        <div class="tags"></div>
+                                    </div>
+                                    <div class="time">
+                                        {{ getLessonTime(lesson) }}
                                     </div>
                                 </div>
+                                } @empty {
+                                <div class="no-selection">
+                                    <div class="illustration">
+                                        <i-tabler name="school"></i-tabler>
+                                    </div>
+                                    <h3>{{ l.s("timetable.no_class") }}</h3>
+                                    <p>{{ l.s("timetable.no_class_desc") }}</p>
+                                </div>
+                                }
                             </div>
-                            }
-                            <!-- <div class="schedule-lesson">
-                                <div class="lesson-time">
-                                    <span class="time-from">8:55</span>
-                                    <span class="time-sep">-</span>
-                                    <span class="time-to">9:40</span>
-                                </div>
-                                <div class="lesson-info">
-                                    <div class="lesson-name">Český jazyk</div>
-                                    <div class="lesson-meta">
-                                        <span class="lesson-teacher">Mgr. Svoboda</span>
-                                        <span class="lesson-room">
-                                            <i-tabler name="door"></i-tabler>
-                                            B203
-                                        </span>
-                                    </div>
-                                </div>
+                            <div class="date-navigator">
+                                <button class="nav-btn" (click)="previousOverviewDay()">
+                                    <i-tabler name="chevron-left"></i-tabler>
+                                </button>
+                                <span class="current-date-info">
+                                    {{ l.s('days.' + overviewSelectedDate.day()) }}, {{ overviewSelectedDate.format("DD.
+                                    MM.") }}
+                                </span>
+                                <button class="nav-btn" (click)="nextOverviewDay()">
+                                    <i-tabler name="chevron-right"></i-tabler>
+                                </button>
                             </div>
-                            <div class="schedule-lesson current">
-                                <div class="lesson-time">
-                                    <span class="time-from">9:50</span>
-                                    <span class="time-sep">-</span>
-                                    <span class="time-to">10:35</span>
-                                </div>
-                                <div class="lesson-info">
-                                    <div class="lesson-name">Anglický jazyk</div>
-                                    <div class="lesson-meta">
-                                        <span class="lesson-teacher">Mgr. Brown</span>
-                                        <span class="lesson-room">
-                                            <i-tabler name="door"></i-tabler>
-                                            C102
-                                        </span>
-                                    </div>
-                                </div>
-                                <div class="current-indicator">
-                                    <i-tabler name="clock"></i-tabler>
-                                    Probíhá
-                                </div>
-                            </div>
-                            <div class="schedule-lesson">
-                                <div class="lesson-time">
-                                    <span class="time-from">10:55</span>
-                                    <span class="time-sep">-</span>
-                                    <span class="time-to">11:40</span>
-                                </div>
-                                <div class="lesson-info">
-                                    <div class="lesson-name">Fyzika</div>
-                                    <div class="lesson-meta">
-                                        <span class="lesson-teacher">Mgr. Veselý</span>
-                                        <span class="lesson-room">
-                                            <i-tabler name="door"></i-tabler>
-                                            LAB1
-                                        </span>
-                                    </div>
-                                </div>
-                            </div> -->
                         </div>
                     </div>
                 </div>
@@ -367,7 +347,12 @@
                         <div class="card-header">
                             <i-tabler name="id"></i-tabler>
                             <h3>Osobní informace</h3>
+                            <button class="card-action-btn" (click)="openEditPersonalModal()">
+                                <i-tabler name="edit"></i-tabler>
+                                <span>Upravit</span>
+                            </button>
                         </div>
+
                         <div class="data-grid">
                             <div class="data-item">
                                 <span class="data-label">Jméno a příjmení</span>
@@ -379,7 +364,7 @@
                             </div>
                             <div class="data-item">
                                 <span class="data-label">Rodné číslo</span>
-                                <span class="data-value sensitive">060315/1234</span>
+                                <span class="data-value sensitive">{{ selectedStudent.birthnum }}</span>
                             </div>
                             <div class="data-item">
                                 <span class="data-label">Pohlaví</span>
@@ -388,14 +373,16 @@
                             </div>
                             <div class="data-item">
                                 <span class="data-label">Místo narození</span>
-                                <span class="data-value">Praha</span>
+                                <span class="data-value">{{ selectedStudent.birth_place }}</span>
                             </div>
                             <div class="data-item">
                                 <span class="data-label">Státní občanství</span>
                                 <span class="data-value">
-                                    <span class="flag">🇨🇿</span> Česká republika
+                                    {{ Utils.getFlagFromCountry(selectedStudent.nationality_code2) }}
+                                    {{ selectedStudent.nationality }}
                                 </span>
                             </div>
+
                         </div>
                     </div>
 
@@ -466,9 +453,9 @@
                         <div class="parent-info">
                             <h4>{{ parent.firstName }} {{ parent.lastName }}</h4>
                             <span class="parent-role">
-                                {{ parent.relationship === 'mother' ? 'Matka' : parent.relationship === 'father' ?
-                                'Otec' : 'Poručník' }}
+                                {{ l.s('family.' + parent.relationship) }}
                             </span>
+
                         </div>
                         <div class="parent-contacts">
                             <a href="mailto:{{parent.email}}" class="parent-contact-item">
@@ -533,56 +520,6 @@
                 </div>
                 }
 
-                <!-- Medical Tab -->
-                @if (activeTab === 'medical') {
-                <div class="section-grid">
-                    <div class="info-card full">
-                        <div class="card-header">
-                            <i-tabler name="heart-rate-monitor"></i-tabler>
-                            <h3>Zdravotní záznamy</h3>
-                        </div>
-                        @if (selectedStudent?.allergies?.length || selectedStudent?.medicalConditions?.length) {
-                        <div class="medical-sections">
-                            @if (selectedStudent?.allergies?.length) {
-                            <div class="medical-section">
-                                <h4>
-                                    <i-tabler name="alert-octagon"></i-tabler>
-                                    Alergie
-                                </h4>
-                                <div class="tag-list">
-                                    @for (allergy of selectedStudent.allergies; track $index) {
-                                    <span class="tag danger">{{ allergy }}</span>
-                                    }
-                                </div>
-                            </div>
-                            }
-                            @if (selectedStudent?.medical_conditions?.length) {
-                            <div class="medical-section">
-                                <h4>
-                                    <i-tabler name="stethoscope"></i-tabler>
-                                    Zdravotní stavy a omezení
-                                </h4>
-                                <div class="tag-list">
-                                    @for (condition of selectedStudent?.medical_conditions; track $index) {
-                                    <span class="tag warning">{{ condition }}</span>
-                                    }
-                                </div>
-                            </div>
-                            }
-                        </div>
-                        } @else {
-                        <div class="no-selection">
-                            <div class="illustration">
-                                <i-tabler name="heart"></i-tabler>
-                            </div>
-                            <h3>Žádné zdravotní záznamy</h3>
-                            <p>Tento student nemá žádné zdravotní záznamy ani omezení</p>
-                        </div>
-                        }
-                    </div>
-                </div>
-                }
-
                 <!-- Notes Tab -->
                 @if (activeTab === 'notes') {
                 <div class="section-grid">
@@ -609,6 +546,233 @@
                         </div>
                         }
                     </div>
+                </div>
+                }
+
+                <!-- Medical Tab -->
+                @if (activeTab === 'medical') {
+                <div class="row" style="align-items: flex-start; gap: 1rem;">
+                    <!-- General Medical Records -->
+                    <div class="info-card flex-1">
+                        <div class="card-header">
+                            <i-tabler name="pill"></i-tabler>
+                            <h3>Zdravotní záznamy</h3>
+                            <button class="card-action-btn"
+                                (click)="openMedicalModal('add', null, { is_food_allergy: false, view: 'general' })">
+                                <i-tabler name="plus"></i-tabler>
+                                Přidat
+                            </button>
+                        </div>
+                        <div class="medical-records-list">
+                            @for (record of getMedicalRecords(); track record.record_id) {
+                            <div class="medical-record-item severity-{{record.severity}}">
+                                <div class="record-icon">
+                                    <i-tabler name="activity"></i-tabler>
+                                </div>
+                                <div class="record-content">
+                                    <div class="record-header">
+                                        <span class="record-type">{{ record.type }}</span>
+                                        <span class="record-severity">{{ getSeverityLabel(record.severity) }}</span>
+                                    </div>
+                                    <h4 class="record-title">{{ record.title }}</h4>
+                                    <p class="record-desc" *ngIf="record.description">{{ record.description }}</p>
+                                    <span class="record-date">{{ Utils.formatDateShort(record.created_at) }}</span>
+                                </div>
+                                <div class="record-actions">
+                                    <button class="action-btn" (click)="openMedicalModal('edit', record)">
+                                        <i-tabler name="edit"></i-tabler>
+                                    </button>
+                                    <button class="action-btn danger" (click)="deleteMedicalRecord(record.record_id)">
+                                        <i-tabler name="trash"></i-tabler>
+                                    </button>
+                                </div>
+                            </div>
+                            } @empty {
+                            <div class="empty-state-mini">
+                                <p>Žádné obecné záznamy</p>
+                            </div>
+                            }
+                        </div>
+                    </div>
+
+                    <!-- Food Allergies (Canteen) -->
+                    <div class="info-card flex-1">
+                        <div class="card-header">
+                            <i-tabler name="tools-kitchen-2"></i-tabler>
+                            <h3>Alergie</h3>
+                            <button class="card-action-btn"
+                                (click)="openMedicalModal('add', null, { is_food_allergy: true, type: 'Alergie', view: 'allergy' })">
+                                <i-tabler name="plus"></i-tabler>
+                                Přidat
+                            </button>
+                        </div>
+
+
+                        <div class="medical-records-list">
+                            @for (record of getFoodAllergies(); track record.record_id) {
+                            <div class="medical-record-item severity-{{record.severity}}">
+                                <div class="record-icon">
+                                    <i-tabler name="alert-circle"></i-tabler>
+                                </div>
+                                <div class="record-content">
+                                    <div class="record-header">
+                                        <span class="record-type">Alergie</span>
+                                        <span class="record-severity">{{ getSeverityLabel(record.severity) }}</span>
+                                    </div>
+                                    <h4 class="record-title">{{ record.title }}</h4>
+                                    @if (record.allergen_codes) {
+                                    <div class="allergen-badges">
+                                        @for (code of record.allergen_codes.split(','); track code) {
+                                        <span class="tag-badge">{{ code }}</span>
+                                        }
+                                    </div>
+                                    }
+                                    <p class="record-desc" *ngIf="record.description">{{ record.description }}</p>
+                                    <span class="record-date">{{ Utils.formatDateShort(record.created_at) }}</span>
+                                </div>
+                                <div class="record-actions">
+                                    <button class="action-btn" (click)="openMedicalModal('edit', record)">
+                                        <i-tabler name="edit"></i-tabler>
+                                    </button>
+                                    <button class="action-btn danger" (click)="deleteMedicalRecord(record.record_id)">
+                                        <i-tabler name="trash"></i-tabler>
+                                    </button>
+                                </div>
+                            </div>
+                            } @empty {
+                            <div class="empty-state-mini">
+                                <p>Žádné potravinové alergie</p>
+                            </div>
+                            }
+                        </div>
+                    </div>
+                </div>
+                }
+
+
+                <!-- Marks Tab -->
+                @if (activeTab === 'marks') {
+                <div class="marks-section">
+                    <div class="marks-header">
+                        <div class="marks-tabs">
+                            <button class="marks-tab" [class.active]="marksSelectedTab === 0"
+                                (click)="marksSelectedTab = 0">
+                                {{ l.s('marks.interm.by_subjects') }}
+                            </button>
+                            <button class="marks-tab" [class.active]="marksSelectedTab === 1"
+                                (click)="marksSelectedTab = 1">
+                                {{ l.s('marks.interm.chronologically') }}
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="marks-content">
+                        @if (marksSelectedTab === 0) {
+                        <div class="subjects-list">
+                            @for (subject of getMarksPerSubject(); track $index) {
+                            <div class="subject-row">
+                                <div class="subject-name">
+                                    {{ subject.subject }}
+                                </div>
+                                <div class="stats-box">
+                                    <div class="quarter">1</div>
+                                    <div class="average">
+                                        Ø {{ getAverageBySubject(subject.subject) }}
+                                    </div>
+                                </div>
+                                <div class="grades-row">
+                                    @for(mark of subject.marks; track $index) {
+                                    <div class="grade-item" [style.fontSize.px]="getFontSize(mark.weight)"
+                                        [title]="getMarkTooltip(mark)" (click)="selectMark(mark)">
+                                        <span class="mark">{{ formatMark(mark.mark) }}</span>
+                                        <span class="topic">{{ mark.topic }}</span>
+                                    </div>
+                                    }
+                                </div>
+                            </div>
+                            } @empty {
+                            <div class="empty-state">
+                                <i-tabler name="mood-empty"></i-tabler>
+                                <p>{{ l.s('marks.no_subjects') }}</p>
+                            </div>
+                            }
+                        </div>
+                        } @else {
+                        <div class="chrono-timeline">
+                            @for(mark of marks; track $index) {
+                            <div class="chrono-card" (click)="selectMark(mark)" [title]="getMarkTooltip(mark)">
+                                <div class="chrono-badge mark-color-{{ mark.mark }}">
+                                    {{ formatMark(mark.mark) }}
+                                </div>
+                                <div class="chrono-content">
+                                    <div class="chrono-topic">{{ mark.topic }}</div>
+                                    <div class="chrono-meta">
+                                        <span class="chrono-subject-chip">{{ mark.subject_name }}</span>
+                                        <span class="chrono-sep">·</span>
+                                        <span class="chrono-date">
+                                            <i-tabler name="calendar"></i-tabler>
+                                            {{ Utils.formatDateShort(mark.created) }}
+                                        </span>
+                                        @if (mark.teacher_full_name) {
+                                        <span class="chrono-sep">·</span>
+                                        <span class="chrono-teacher">
+                                            <i-tabler name="user"></i-tabler>
+                                            {{ mark.teacher_full_name }}
+                                        </span>
+                                        }
+                                    </div>
+                                </div>
+                                <div class="chrono-weight">
+                                    <div class="weight-dots">
+                                        @for (w of [].constructor(mark.weight || 0); track $index) {
+                                        <span class="weight-dot filled"></span>
+                                        }
+                                        @for (w of [].constructor(10 - (mark.weight || 0)); track $index) {
+                                        <span class="weight-dot"></span>
+                                        }
+                                    </div>
+                                    <span class="weight-label">{{ l.s('marks.weight') }} {{ mark.weight }}</span>
+                                </div>
+                            </div>
+                            } @empty {
+                            <div class="empty-state">
+                                <i-tabler name="mood-empty"></i-tabler>
+                                <p>{{ l.s('marks.no_subjects') }}</p>
+                            </div>
+                            }
+                        </div>
+                        }
+                    </div>
+                </div>
+                }
+
+                <!-- Timetable Tab -->
+                @if (activeTab === 'timetable') {
+                <div class="timetable-section">
+                    <div class="timetable-header">
+                        <div class="timetable-subheader">
+                            <div class="timetable-tabs">
+                                <button class="timetable-tab" [class.active]="timetableSelectedTab === 0"
+                                    (click)="setTimetableTab(0)">Aktuální</button>
+                                <button class="timetable-tab" [class.active]="timetableSelectedTab === 1"
+                                    (click)="setTimetableTab(1)">Stálý</button>
+                            </div>
+                        </div>
+                        <div class="timetable-controls" *ngIf="timetableSelectedTab === 0">
+                            <button class="control-btn" (click)="previousWeek()">
+                                <i-tabler name="chevron-left"></i-tabler>
+                            </button>
+                            <span class="week-display">{{ formatDateDisplay() }}</span>
+                            <button class="control-btn" (click)="nextWeek()">
+                                <i-tabler name="chevron-right"></i-tabler>
+                            </button>
+                        </div>
+                    </div>
+
+                    <schoolingo-timetable [isLoading]="isLoadingTimetable" [timetable]="fullTimetable"
+                        [timetableHours]="fullTimetableHours" [selectedWeek]="timetableSelectedWeek.getValue()"
+                        [selectedTab]="timetableSelectedTab" type="student">
+                    </schoolingo-timetable>
                 </div>
                 }
             </div>
@@ -721,16 +885,17 @@
             <div class="form-group">
                 <label>Vztah</label>
                 <select class="form-control" [(ngModel)]="newParent.role">
-                    <option value="father">Otec</option>
-                    <option value="mother">Matka</option>
-                    <option value="guardian">Zákonný zástupce</option>
-                    <option value="stepfather">Nevlastní otec</option>
-                    <option value="stepmother">Nevlastní matka</option>
-                    <option value="grandfather">Dědeček</option>
-                    <option value="grandmother">Babička</option>
-                    <option value="uncle">Strýc</option>
-                    <option value="aunt">Teta</option>
+                    <option value="father">{{ l.s('family.father') }}</option>
+                    <option value="mother">{{ l.s('family.mother') }}</option>
+                    <option value="guardian">{{ l.s('family.guardian') }}</option>
+                    <option value="stepfather">{{ l.s('family.stepfather') }}</option>
+                    <option value="stepmother">{{ l.s('family.stepmother') }}</option>
+                    <option value="grandfather">{{ l.s('family.grandfather') }}</option>
+                    <option value="grandmother">{{ l.s('family.grandmother') }}</option>
+                    <option value="uncle">{{ l.s('family.uncle') }}</option>
+                    <option value="aunt">{{ l.s('family.aunt') }}</option>
                 </select>
+
             </div>
         </div>
         <div class="modal-footer">

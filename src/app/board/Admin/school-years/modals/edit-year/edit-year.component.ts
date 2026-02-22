@@ -26,9 +26,9 @@ export class EditYearComponent implements OnInit {
   public calendarManager = inject(CalendarManager);
 
   public form: FormGroup = this.fb.group({
-    start: ['', Validators.required],
-    end: ['', Validators.required],
-    midterm: ['', Validators.required],
+    start: [moment(), Validators.required],
+    end: [moment().add(10, 'month'), Validators.required],
+    midterm: [moment().add(5, 'month'), Validators.required],
     current: [false]
   });
 
@@ -43,39 +43,24 @@ export class EditYearComponent implements OnInit {
       this.isEditing = true;
       this.editingId = this.data.year.syId;
       
-      const formatDate = (dateStr: string) => dateStr ? dateStr.split('T')[0] : '';
-      
       this.form.patchValue({
-        start: formatDate(this.data.year.start),
-        end: formatDate(this.data.year.end),
-        midterm: formatDate(this.data.year.midterm),
+        start: moment(this.data.year.start),
+        end: moment(this.data.year.end),
+        midterm: moment(this.data.year.midterm),
         current: this.data.year.current
       });
-
-      // Sync calendars with existing data
-      setTimeout(() => {
-        if (this.data.year.start) this.calendarManager.getCalendarData('schoolYear_start').selected_date[0].next(moment(this.data.year.start));
-        if (this.data.year.end) this.calendarManager.getCalendarData('schoolYear_end').selected_date[0].next(moment(this.data.year.end));
-        if (this.data.year.midterm) this.calendarManager.getCalendarData('schoolYear_midterm').selected_date[0].next(moment(this.data.year.midterm));
-      });
     }
-
-    // Subscribe to calendar changes
-    this.calendarManager.getCalendarData('schoolYear_start').selected_date[0].subscribe((date) => {
-        this.form.get('start')?.setValue(date.format('YYYY-MM-DD'));
-    });
-    this.calendarManager.getCalendarData('schoolYear_end').selected_date[0].subscribe((date) => {
-        this.form.get('end')?.setValue(date.format('YYYY-MM-DD'));
-    });
-    this.calendarManager.getCalendarData('schoolYear_midterm').selected_date[0].subscribe((date) => {
-        this.form.get('midterm')?.setValue(date.format('YYYY-MM-DD'));
-    });
   }
 
   save(): void {
     if (this.form.invalid) return;
 
-    const body = this.form.value;
+    const body = {
+        ...this.form.value,
+        start: this.form.value.start.format('YYYY-MM-DD'),
+        end: this.form.value.end.format('YYYY-MM-DD'),
+        midterm: this.form.value.midterm.format('YYYY-MM-DD')
+    };
     const request = this.isEditing && this.editingId
       ? this.http.put(`${Config.API_URL}/v1/school/years/${this.editingId}`, body, { withCredentials: true })
       : this.http.post(`${Config.API_URL}/v1/school/years`, body, { withCredentials: true });

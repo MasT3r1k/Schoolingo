@@ -1,7 +1,4 @@
 <div class="items">
-    @if (alert != null) {
-        <alert [alert]="alert"></alert>
-    }
 
     <div class="item mb">
         <label>
@@ -17,28 +14,43 @@
             {{ l.s('subject') }}
         </label>
         <div class="value">
-            <input type="text" name="name" [value]="marksManager.getSubjectName() || this.l.s('unknown')" readonly="true">
+            <input type="text" name="name" [value]="marksManager.getSubjectName() || this.l.s('unknown')"
+                readonly="true">
         </div>
     </div>
 
     <div class="item mb">
         <label class="label" [class.error-color]="errors['mark']">
-            {{ l.s('marks.mark') }}
+            {{ type === 'points' ? l.s('marks.points') : l.s('marks.mark') }}
             @if (errors['mark']) {
-                - {{ errors['mark'] }}
+            - {{ errors['mark'] }}
             }
         </label>
-        <div class="value">
-            <input type="text" name="name" [placeholder]="l.s('marks.mark_placeholder')" [(ngModel)]="mark">
+        <div style="display: flex; gap: 10px;">
+            <div class="value" style="flex: 1;">
+                <input type="text" name="name"
+                    [placeholder]="type === 'points' ? l.s('marks.points_placeholder') : l.s('marks.mark_placeholder')"
+                    [(ngModel)]="mark">
+            </div>
+            @if(type === 'points') {
+            <div class="btn btn--secondary btn--xs" style="margin: 0;" (click)="openMarkingScale()"
+                [title]="l.s('marks.marking_scale')">
+                <i-tabler name="table"></i-tabler>
+            </div>
+            }
         </div>
         <div class="note">
-            {{ l.s('marks.mark_placeholder') }}
+            {{ type === 'points' ? l.s('marks.points_placeholder') : l.s('marks.mark_placeholder') }}
         </div>
     </div>
 
     <div class="form-group">
         <div class="btn" [class.btn--primary]="isButtonActivated()" role="button" (click)="editMark()">
-            {{ l.s(`marks.${action == 'edit' ? 'edit_mark' : 'create_mark'}`) }}
+            @if (action == 'edit') {
+            {{ type === 'points' ? l.s('marks.edit_points') : l.s('marks.edit_mark') }}
+            } @else {
+            {{ type === 'points' ? l.s('marks.create_points') : l.s('marks.create_mark') }}
+            }
         </div>
     </div>
 </div>

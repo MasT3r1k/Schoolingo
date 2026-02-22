@@ -6,11 +6,13 @@ import { Locale } from '@Schoolingo/locale';
 import { ModalManager } from '@Schoolingo/modal';
 import { CalendarService } from '../../../../infrastructure/calendar/calendar.service';
 import { DropdownManager } from '@Schoolingo/dropdown';
+import { CalendarComponent } from '@Components/calendar';
+import moment from 'moment';
 
 @Component({
   selector: 'app-calendar-add-event',
   standalone: true,
-  imports: [CommonModule, FormsModule, IconsModule],
+  imports: [CommonModule, FormsModule, IconsModule, CalendarComponent],
   templateUrl: './add-calendar-event.component.html',
   styleUrl: './add-calendar-event.component.css'
 })
@@ -23,7 +25,7 @@ export class CalendarAddEventComponent implements OnInit {
   public event = {
     name: '',
     description: '',
-    date: new Date().toISOString().split('T')[0],
+    date: moment(),
     type: 'event',
     classId: null as number | null
   };
@@ -67,13 +69,13 @@ export class CalendarAddEventComponent implements OnInit {
   public submit(): void {
     if (!this.event.name || !this.event.date) return;
 
-    this.calendarService.createEvent(this.event).subscribe({
+    this.calendarService.createEvent({
+      ...this.event,
+      date: this.event.date.format('YYYY-MM-DD')
+    }).subscribe({
       next: (res) => {
         if (res.success) {
           this.modalManager.closeModal('calendar_add_event');
-          // The parent component should refresh. 
-          // Since we don't have a direct reference easily, we could use a subject in the service.
-          // For now, let's assume the user will manually refresh or we can add a notification.
         }
       }
     });

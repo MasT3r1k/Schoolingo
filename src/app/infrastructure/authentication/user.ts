@@ -55,6 +55,7 @@ export interface UserEmail {
     description: string;
     is_verified: boolean;
     is_created: boolean;
+    code_until: Date | null;
 }
 
 export interface UserPhone {
@@ -63,4 +64,5 @@ export interface UserPhone {
     description: string;
     is_verified: boolean;
     is_created: boolean;
+    code_until: Date | null;
 }

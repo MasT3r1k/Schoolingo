@@ -14,10 +14,11 @@ import { Locale } from '@Schoolingo/locale';
 import { SystemErrorComponent } from "@Components/system-error/system-error.component";
 import { AnalyticsService } from './infrastructure/analytics/analytics.service';
 import { MonitoringService } from './infrastructure/monitoring/monitoring.service';
+import { AlertComponent } from '@Components/Alert';
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet, ModalComponent, CalendarManager, SnowEffectComponent, SeasonalDecorationsComponent, SystemErrorComponent],
+  imports: [RouterOutlet, ModalComponent, CalendarManager, SnowEffectComponent, SeasonalDecorationsComponent, SystemErrorComponent, AlertComponent],
   templateUrl: './app.component.html',
   styleUrl: './app.component.css'
 })

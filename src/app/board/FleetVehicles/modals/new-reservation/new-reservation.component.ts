@@ -27,25 +27,15 @@ export class NewReservationComponent {
 
   public newReservation = {
     vehicleId: 0,
-    startDate: moment().format('YYYY-MM-DD'),
-    endDate: moment().format('YYYY-MM-DD'),
+    startDate: moment(),
+    endDate: moment(),
     purpose: '',
     destination: '',
     notes: ''
   };
 
   ngOnInit(): void {
-    setTimeout(() => {
-        this.calendarManager.getCalendarData('fleet_reservation_start').selected_date[0].next(moment(this.newReservation.startDate));
-        this.calendarManager.getCalendarData('fleet_reservation_end').selected_date[0].next(moment(this.newReservation.endDate));
-    });
-
-    this.calendarManager.getCalendarData('fleet_reservation_start').selected_date[0].subscribe((date) => {
-        this.newReservation.startDate = date.format('YYYY-MM-DD');
-    });
-    this.calendarManager.getCalendarData('fleet_reservation_end').selected_date[0].subscribe((date) => {
-        this.newReservation.endDate = date.format('YYYY-MM-DD');
-    });
+    // Calendar subscriptions are handled via (valueChange) in template
   }
 
   public closeNewReservationForm(): void {
@@ -59,7 +49,11 @@ export class NewReservationComponent {
 
     this.http.post(
       `${Config.API_URL}/v1/fleetvehicles/reservations`,
-      this.newReservation,
+      {
+        ...this.newReservation,
+        startDate: this.newReservation.startDate.format('YYYY-MM-DD'),
+        endDate: this.newReservation.endDate.format('YYYY-MM-DD')
+      },
       { withCredentials: true }
     ).subscribe({
       next: () => {

@@ -1,0 +1,105 @@
+@if (isLoading) {
+<div class="loading">
+    <div class="loader"></div>
+</div>
+} @else if (timetable.length > 0) {
+<div class="timetable">
+    <div class="hours">
+        <div class="week-type">
+            @if (selectedTab === 0 && selectedWeek) {
+            {{ l.s('weeks.' + (Utils.isOdd(selectedWeek.isoWeek()) ? 'odd' : 'even')) }}
+            }
+        </div>
+
+        @for (hour of timetableHours; track $index) {
+        <div class="hour-info">
+            <div class="hour-id">
+                {{ $index + 1 }}
+            </div>
+            <div class="hour-time">
+                {{ hour.start + ' - ' + hour.end }}
+            </div>
+        </div>
+        }
+    </div>
+
+    <div class="days">
+        @for (day of [].constructor((timetable[0] || timetable.length > 6) ? 7 : 6); track index;let index = $index) {
+        @if (((timetable[0] || timetable.length > 6)) || (!timetable[0] && timetable.length <= 6 && index> 0)) {
+            <div class="day">
+                <div class="name">
+                    {{ l.s('days.' + index) }}
+
+                    @if (selectedTab !== 1 && selectedWeek) {
+                    <div class="time">
+                        {{ Utils.getDayOfWeek(selectedWeek, index).format('D. M.') }}
+                    </div>
+                    }
+                </div>
+
+                @if (timetable[index] && timetable[index]?.length && timetable[index][1]?.[0]?.all_day) {
+                <div class="item all-day" [style.backgroundColor]="timetable[index][1][0].color">
+                    <div class="group">
+                        <span></span>
+                    </div>
+                    <div class="room">
+                        {{ timetable[index][1][0].room }}
+                    </div>
+                    <div class="subject">
+                        {{ timetable[index][1][0].subject_name }}
+                    </div>
+                </div>
+                } @else {
+                @for (hour of [].constructor(timetableHours.length); track index2;let index2 = $index) {
+                <div class="item lesson-hour">
+                    @if (timetable[index]?.[index2]) {
+                    @for (lesson of timetable[index][index2] ?? []; track $index) {
+                    <div [ngClass]="getLessonClasses(index, index2, lesson)" [style.backgroundColor]="lesson.color">
+                        <div class="group">
+                            <span>{{
+                                (lesson.group_name ? lesson.group_name : lesson.class_name) +
+                                (lesson.group_num ? ' ' + lesson.group_num : '')
+                                }}</span>
+                        </div>
+                        <div class="room">
+                            {{ lesson.room }}
+                        </div>
+                        <div class="subject">
+                            @if (selectedTab === 1 && lesson.type !== 0 && lesson.type !== undefined) {
+                            {{ l.s('weeks.' + (lesson.type === 1 ? 'odd' : 'even')).charAt(0) + ': ' }}
+                            }
+                            {{ lesson.subject_shortcut }}
+                        </div>
+                        <div class="teacher">
+                            @if (type === 'teacher' || type === 'supervision') {
+                            {{ lesson.class_name }}
+                            } @else {
+                            {{ lesson.last_name }}
+                            }
+                        </div>
+
+                        @if (lesson.working_mode !== undefined && selectedTab != 1) {
+                        <div class="absence" [style.--absence-color]="workingModeConfig[lesson.working_mode]?.color">
+                        </div>
+                        } @else if (lesson.absence != null && lesson.absence != -1 && selectedTab != 1) {
+                        <div [ngClass]="['absence', 'ab-' + absenceConfig[lesson.absence]?.locale]"></div>
+                        }
+                    </div>
+                    }
+                    }
+                </div>
+                }
+                }
+            </div>
+            }
+            }
+    </div>
+</div>
+} @else {
+<div class="no-selection">
+    <div class="illustration">
+        <i-tabler name="calendar-off"></i-tabler>
+    </div>
+    <p>{{ l.s('timetable.no_lessons') }}</p>
+</div>
+}

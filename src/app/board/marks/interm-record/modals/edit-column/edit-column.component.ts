@@ -46,6 +46,7 @@ export class EditColumnComponent implements OnInit {
     this.topic = this.marksManager.getTopic() || "";
     this.type = this.marksManager.getType() as typeof this.type;
     this.weight = this.marksManager.getWeight().toString();
+    this.maxPoints = (this.marksManager.getMaxPoints() || 10).toString();
     this.action = this.marksManager.getAction() as typeof this.action;
     this.isLoading = false;
   }
@@ -71,42 +72,37 @@ export class EditColumnComponent implements OnInit {
       this.errors['topic'] = this.l.s('form.minLength', { min: this.marksManager.getConfig().min_topic_length });
     }
 
-    switch (this.type) {
-      case "marks":
-        let weight = parseFloat(this.weight);
-        if (isNaN(weight) || this.weight == "" || this.weight == null || this.weight == undefined) {
-          this.errors['weight'] = this.l.s('form.required');
-        }
+    // Common validation for weight
+    let weight = parseFloat(this.weight);
+    if (isNaN(weight) || this.weight == "" || this.weight == null || this.weight == undefined) {
+      this.errors['weight'] = this.l.s('form.required');
+    } else {
+      if (weight < this.marksManager.getConfig().min_weight) {
+        this.errors['weight'] = this.l.s('form.minValue', { min: this.marksManager.getConfig().min_weight });
+      }
+      if (weight > this.marksManager.getConfig().max_weight) {
+        this.errors['weight'] = this.l.s('form.maxValue', { max: this.marksManager.getConfig().max_weight });
+      }
+      if (parseInt(this.weight).toString() != this.weight) {
+        this.errors['weight'] = this.l.s('form.invalid');
+      }
+    }
 
-        if (weight < this.marksManager.getConfig().min_weight) {
-          this.errors['weight'] = this.l.s('form.minValue', { min: this.marksManager.getConfig().min_weight });
-        }
-
-        if (weight > this.marksManager.getConfig().max_weight) {
-          this.errors['weight'] = this.l.s('form.maxValue', { max: this.marksManager.getConfig().max_weight });
-        }
-
-        if (parseInt(this.weight).toString() != this.weight) {
-          this.errors['weight'] = this.l.s('form.invalid');
-        }
-      break;
-    case "points":
+    if (this.type === "points") {
       let maxPoints = parseFloat(this.maxPoints);
       if (isNaN(maxPoints) || this.maxPoints == "" || this.maxPoints == null || this.maxPoints == undefined) {
         this.errors['points'] = this.l.s('form.required');
+      } else {
+        if (maxPoints > this.marksManager.getConfig().max_points) {
+          this.errors['points'] = this.l.s('form.maxValue', { max: this.marksManager.getConfig().max_points });
+        }
+        if (maxPoints < this.marksManager.getConfig().min_points) {
+          this.errors['points'] = this.l.s('form.minValue', { min: this.marksManager.getConfig().min_points });
+        }
+        if (parseInt(this.maxPoints).toString() != this.maxPoints) {
+          this.errors['points'] = this.l.s('form.invalid');
+        }
       }
-
-      if (maxPoints > this.marksManager.getConfig().max_points) {
-        this.errors['points'] = this.l.s('form.maxValue', { max: this.marksManager.getConfig().max_points });
-      }
-      if (maxPoints < this.marksManager.getConfig().min_points) {
-        this.errors['points'] = this.l.s('form.minValue', { min: this.marksManager.getConfig().min_points });
-      }
-
-      if (parseInt(this.maxPoints).toString() != this.maxPoints) {
-        this.errors['points'] = this.l.s('form.invalid');
-      }
-      break;
     }
 
     if (Object.keys(this.errors).length) {
@@ -120,6 +116,7 @@ export class EditColumnComponent implements OnInit {
         subject_id: this.marksManager.getSubjectId(),
         columnIndex: this.marksManager.getColumnIndex(),
         weight: parseInt(this.weight),
+        max_points: this.type === 'points' ? parseInt(this.maxPoints) : null,
         type: this.types.indexOf(this.type),
         topic: this.topic
       },

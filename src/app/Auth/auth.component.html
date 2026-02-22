@@ -135,11 +135,6 @@
         </div>
         }
 
-        <div class="card-alerts">
-            @for (alert of a.getAlerts(); track $index) {
-            <alert [alert]="alert"></alert>
-            }
-        </div>
         @if (isLoading) {
         <div class="loader"></div>
         } @else {
@@ -211,12 +206,12 @@
                 </div>
 
                 @if (isPasskeySupport && school.config.getValue()?.auth_passkeys) {
-                    <div class="form-group">
-                        <div class="btn btn--outline-secondary" (click)="loginPasskey()">
-                            <i-tabler name="fingerprint"></i-tabler>
-                            <span>{{ l.s('auth.login.login_with_passkey') }}</span>
-                        </div>
+                <div class="form-group">
+                    <div class="btn btn--outline-secondary" (click)="loginPasskey()">
+                        <i-tabler name="fingerprint"></i-tabler>
+                        <span>{{ l.s('auth.login.login_with_passkey') }}</span>
                     </div>
+                </div>
                 }
                 }
 
@@ -244,8 +239,7 @@
                     </div>
                 </form>
                 <div class="form-group">
-                    <div class="btn" [class.btn--primary]="loginForm.status == 'VALID'"
-                        (click)="login()">
+                    <div class="btn" [class.btn--primary]="loginForm.status == 'VALID'" (click)="login()">
                         {{ l.s('auth.2fa.verify_code') }}
                     </div>
                 </div>
@@ -441,16 +435,9 @@
                     <div class="skeleton"></div>
                     } @else {
                     <div class="qr-scanner-line"></div>
-                    <qrcode
-                    [allowEmptyString]="false"
-                    [width]="224"
-                    [elementType]="'canvas'"
-                    [errorCorrectionLevel]="'L'"
-                    [margin]="2"
-                    [imageSrc]="'./assets/logo/login_black_100.webp'"
-                    [imageHeight]="50"
-                    [imageWidth]="50"
-                    [qrdata]="qrcode.getValue()"></qrcode>
+                    <qrcode [allowEmptyString]="false" [width]="224" [elementType]="'canvas'"
+                        [errorCorrectionLevel]="'L'" [margin]="2" [imageSrc]="'./assets/logo/login_black_100.webp'"
+                        [imageHeight]="50" [imageWidth]="50" [qrdata]="qrcode.getValue()"></qrcode>
                     }
                 </div>
                 <div class="qr-text">

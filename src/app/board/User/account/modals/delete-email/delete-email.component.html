@@ -1,3 +1,5 @@
+@switch(page) {
+@case("main") {
 <div class="form-group">
     <label for="email">{{ l.s('user.add_email.email') }}</label>
     <input type="text" name="email" id="email" [(ngModel)]="email" [placeholder]="l.s('user.add_email.email')" readonly>
@@ -5,7 +7,8 @@
 
 <div class="form-group">
     <p>Přepište **{{ email }}** do inputu níže</p>
-    <input type="text" name="text_email" id="text_email" [(ngModel)]="text_email" [placeholder]="l.s('user.delete_email.placeholder')">
+    <input type="text" name="text_email" id="text_email" [(ngModel)]="text_email"
+        [placeholder]="l.s('user.delete_email.placeholder')">
 </div>
 
 <div class="form-group">
@@ -14,3 +17,28 @@
         {{ l.s('user.delete_email.delete_email') }}
     </div>
 </div>
+}
+
+@case ("2fa") {
+<div class="message message--info">
+    {{ l.s('settings.2fa.descriptions.verify_code') }}
+</div>
+
+<div class="form-group">
+    <label for="token">
+        {{ l.s('auth.2fa.authentication_code') }}
+    </label>
+    <input type="text" [placeholder]="l.s('auth.2fa.authentication_code')" id="token" autocomplete="off" maxlength="6"
+        [(ngModel)]="token">
+</div>
+<div class="form-group">
+    <div class="btn btn--danger" (click)="deleteEmail()">
+        {{ l.s('user.delete_email.delete_email') }}
+    </div>
+
+    <div class="btn btn--secondary" (click)="page = 'main';token = ''">
+        {{ l.s('buttons.back') }}
+    </div>
+</div>
+}
+}

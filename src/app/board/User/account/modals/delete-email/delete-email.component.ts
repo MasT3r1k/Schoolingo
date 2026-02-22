@@ -17,7 +17,7 @@ export class DeleteEmailComponent implements OnInit {
   public l = inject(Locale);
   private u = inject(Authentication);
   public dropdownManager = inject(DropdownManager);
-  private modalManager = inject(ModalManager);
+  public modalManager = inject(ModalManager);
   private http = inject(HttpClient);
   private auth = inject(Authentication);
 
@@ -25,6 +25,8 @@ export class DeleteEmailComponent implements OnInit {
 
   public email = '';
   public text_email = '';
+  public token = '';
+  public page: 'main' | '2fa' = 'main';
 
   ngOnInit(): void {
     const data = this.modalManager.getModalData('delete_email');
@@ -37,15 +39,23 @@ export class DeleteEmailComponent implements OnInit {
     }
 
     this.http.delete(`${Config.API_URL}/v1/user/email`, { 
-      body: { email: this.email },
+      body: { email: this.email, token: this.token },
       withCredentials: true 
     }).subscribe({
       next: (response: any) => {
         if (response.success) {
           this.u.loadState();
+          this.modalManager.closeModal('delete_email');
+        } else if (response.error && response.error.includes('required_2fa')) {
+          this.page = '2fa';
         }
       },
-      error: (error) => console.error('Error removing email', error)
+      error: (error) => {
+        if (error.status === 400 && error.error?.error?.includes('required_2fa')) {
+          this.page = '2fa';
+        }
+        console.error('Error removing email', error);
+      }
     });
   }
 

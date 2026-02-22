@@ -235,10 +235,17 @@
                             </span>
                         </td>
                         <td class="col-absence">
-                            <span class="absence-value"
-                                [class.warning]="Utils.formatAsNumber(student.absence_rate) > 10">
-                                {{ student.absence_rate }}%
-                            </span>
+                            <div class="absence-mini-stat"
+                                [title]="'Omluvená: ' + student.absence_rate_excused + '%, Neomluvená: ' + student.absence_rate_unexcused + '%'">
+                                <span class="absence-percent">{{ student.absence_rate }}%</span>
+                                <div class="mini-attendance-bar">
+                                    <div class="bar-segment success" [style.width.%]="100 - student.absence_rate"></div>
+                                    <div class="bar-segment warning" [style.width.%]="student.absence_rate_excused">
+                                    </div>
+                                    <div class="bar-segment danger" [style.width.%]="student.absence_rate_unexcused">
+                                    </div>
+                                </div>
+                            </div>
                         </td>
                         <td class="col-actions">
                             <button class="row-action" (click)="$event.stopPropagation()">
@@ -389,7 +396,8 @@
                 </div>
                 <div class="form-group">
                     <label>Datum narození</label>
-                    <app-calendar id="student_birthday" size="full"></app-calendar>
+                    <app-calendar id="student_birthday" [value]="newStudent.birthday"
+                        (valueChange)="newStudent.birthday = $event" size="full"></app-calendar>
                 </div>
             </div>
             }

@@ -5,7 +5,8 @@
             {{ l.s('sidebar.teach.classbook') }}
         </h2>
         <div class="flex-items" style="min-width: 150px;">
-            <app-calendar id="classbook_date" size="full"></app-calendar>
+            <app-calendar id="classbook_date" [value]="selected_date"
+                (valueChange)="selected_date = $event; updateLessons()" size="full"></app-calendar>
         </div>
     </div>
 
@@ -21,7 +22,7 @@
                 </div>
                 <div class="lesson-info">
                     <div class="lesson-subject">
-                        <span>{{ lesson.subjectName || '' }}</span>
+                        <span>{{ lesson.subject_name || '' }}</span>
                         <div class="lesson-icons">
                             @if (lesson.lockClassAfterLesson) {
                             <i-tabler name="key"></i-tabler>
@@ -31,8 +32,8 @@
                     <div class="lesson-meta">
                         <span class="lesson-time" style="flex: 0 0 100px;">{{ hours[$index].start }} - {{
                             hours[$index].end }}</span>
-                        <span style="flex: 0 0 72px;">{{ `${lesson.className || ''} ${lesson.groupName ?
-                            lesson.groupName : ''}` }}</span>
+                        <span style="flex: 0 0 72px;">{{ `${lesson.class_name || ''} ${lesson.group_name ?
+                            lesson.group_name : ''}` }}</span>
                         <span class="lesson-muted" style="flex: 1">{{ lesson.topic || '' }}</span>
                     </div>
                 </div>
@@ -71,11 +72,11 @@
         <div class="lesson-details">
             @if (classbook.classbook) {
             <div class="header" [class.skeleton]="is_lesson_loading">
-                <h2>{{ classbook.classbook ? classbook.classbook.subjectName : '' }}</h2>
+                <h2>{{ classbook.classbook ? classbook.classbook.subject_name : '' }}</h2>
                 <div class="lesson-meta">
                     <span class="lesson-time">{{ hours[selected_lesson.getValue()].start }} - {{
                         hours[selected_lesson.getValue()].end }}</span>
-                    <span>{{ classbook.classbook ? classbook.classbook.className : '' }}</span>
+                    <span>{{ classbook.classbook ? classbook.classbook.class_name : '' }}</span>
                     <span>{{ classbook.classbook ? Utils.formatDateShort(classbook.classbook.date) : '' }} ({{
                         l.s('days.' + Utils.makeMoment(classbook.classbook.date).day()) }})</span>
                 </div>

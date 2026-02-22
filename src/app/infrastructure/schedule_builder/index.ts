@@ -1,3 +1,4 @@
+import moment from "moment";
 import { BehaviorSubject } from "rxjs";
 
 export class ScheduleBuilder {
@@ -57,6 +58,8 @@ export class ScheduleBuilder {
     public getTimetableTotalHours(): number {
         return this.timetable.length * this.hours.length;
     }
+
+    public selectedDate: moment.Moment = moment();
 
     constructor() {
         // Initialize empty timetable (5 days, 8 hours)

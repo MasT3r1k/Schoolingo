@@ -46,14 +46,14 @@ export class MyClassComponent implements OnInit {
   // New Service Form
   newService = {
     studentId: null,
-    start: moment().startOf('isoWeek').format('YYYY-MM-DD'),
-    end: moment().endOf('isoWeek').format('YYYY-MM-DD')
+    start: moment().startOf('isoWeek'),
+    end: moment().endOf('isoWeek')
   };
 
   // Auto Service Form
   autoServiceRange = {
-      start: moment().add(1, 'week').startOf('isoWeek').format('YYYY-MM-DD'),
-      end: moment().add(1, 'week').endOf('isoWeek').format('YYYY-MM-DD'),
+      start: moment().add(1, 'week').startOf('isoWeek'),
+      end: moment().add(1, 'week').endOf('isoWeek'),
       count: 2,
       method: 'random' as 'random' | 'alphabetical',
       offset: 0
@@ -67,27 +67,7 @@ export class MyClassComponent implements OnInit {
   ngOnInit() {
     this.fetchData();
 
-    // Initialize calendars
-    setTimeout(() => {
-        this.calendarManager.getCalendarData('myClass_newService_start').selected_date[0].next(moment(this.newService.start));
-        this.calendarManager.getCalendarData('myClass_newService_end').selected_date[0].next(moment(this.newService.end));
-        this.calendarManager.getCalendarData('myClass_autoService_start').selected_date[0].next(moment(this.autoServiceRange.start));
-        this.calendarManager.getCalendarData('myClass_autoService_end').selected_date[0].next(moment(this.autoServiceRange.end));
-    });
-
-    // Subscribe to calendar changes
-    this.calendarManager.getCalendarData('myClass_newService_start').selected_date[0].subscribe((date) => {
-        this.newService.start = date.format('YYYY-MM-DD');
-    });
-    this.calendarManager.getCalendarData('myClass_newService_end').selected_date[0].subscribe((date) => {
-        this.newService.end = date.format('YYYY-MM-DD');
-    });
-    this.calendarManager.getCalendarData('myClass_autoService_start').selected_date[0].subscribe((date) => {
-        this.autoServiceRange.start = date.format('YYYY-MM-DD');
-    });
-    this.calendarManager.getCalendarData('myClass_autoService_end').selected_date[0].subscribe((date) => {
-        this.autoServiceRange.end = date.format('YYYY-MM-DD');
-    });
+    // Calendar subscriptions are handled via (valueChange) in template
   }
 
   fetchData() {
@@ -153,7 +133,11 @@ export class MyClassComponent implements OnInit {
   addService() {
     if (!this.newService.studentId || !this.newService.start || !this.newService.end) return;
 
-    this.http.post(`${Config.API_URL}/v1/teach/my-class/service`, this.newService, { withCredentials: true }).subscribe({
+    this.http.post(`${Config.API_URL}/v1/teach/my-class/service`, {
+        ...this.newService,
+        start: this.newService.start.format('YYYY-MM-DD'),
+        end: this.newService.end.format('YYYY-MM-DD')
+    }, { withCredentials: true }).subscribe({
       next: () => {
         this.fetchData(); 
         this.newService.studentId = null; 
@@ -167,12 +151,12 @@ export class MyClassComponent implements OnInit {
       if (!this.classInfo) return;
       
       const methodText = this.autoServiceRange.method === 'random' ? 'náhodně' : 'abecedně';
-      if (!confirm(`Opravdu chcete automaticky vybrat ${this.autoServiceRange.count} studentů (${methodText})? Termín: ${this.autoServiceRange.start} - ${this.autoServiceRange.end}`)) return;
+      if (!confirm(`Opravdu chcete automaticky vybrat ${this.autoServiceRange.count} studentů (${methodText})? Termín: ${this.autoServiceRange.start.format('DD.MM.YYYY')} - ${this.autoServiceRange.end.format('DD.MM.YYYY')}`)) return;
 
       this.http.post(`${Config.API_URL}/v1/teach/my-class/service/auto`, {
           classId: this.classInfo.classId,
-          start: this.autoServiceRange.start,
-          end: this.autoServiceRange.end,
+          start: this.autoServiceRange.start.format('YYYY-MM-DD'),
+          end: this.autoServiceRange.end.format('YYYY-MM-DD'),
           count: this.autoServiceRange.count,
           method: this.autoServiceRange.method,
           offset: this.autoServiceRange.offset

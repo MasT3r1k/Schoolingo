@@ -1,26 +1,27 @@
 @switch (appState) {
-  @case (true) {
-    <!-- Global Seasonal Effects - shows on all pages -->
-    @if (seasonalService.isActive() && seasonalService.getModeValue() === 'full') {
-      <!-- Snow Effect (Christmas only) -->
-      @if (seasonalService.getSeasonValue() === 'christmas') {
-        <app-snow-effect></app-snow-effect>
-      }
-      <!-- Seasonal Decorations (all seasons) -->
-      <app-seasonal-decorations></app-seasonal-decorations>
-    }
-    <router-outlet></router-outlet>
-    <schoolingo-modals></schoolingo-modals>
-    <calendar-dropdowns></calendar-dropdowns>
-    }
-    
-    @case(false) {
-      <app-system-error></app-system-error>
-    }
+@case (true) {
+<!-- Global Seasonal Effects - shows on all pages -->
+@if (seasonalService.isActive() && seasonalService.getModeValue() === 'full') {
+<!-- Snow Effect (Christmas only) -->
+@if (seasonalService.getSeasonValue() === 'christmas') {
+<app-snow-effect></app-snow-effect>
+}
+<!-- Seasonal Decorations (all seasons) -->
+<app-seasonal-decorations></app-seasonal-decorations>
+}
+<router-outlet></router-outlet>
+<schoolingo-modals></schoolingo-modals>
+<calendar-dropdowns></calendar-dropdowns>
+<alerts-container></alerts-container>
+}
 
-    @default {
-    <div class="center" style="height:100vh;width:100vw;">
-      <div class="loader bigger"></div>
-    </div>
-  }
+@case(false) {
+<app-system-error></app-system-error>
+}
+
+@default {
+<div class="center" style="height:100vh;width:100vw;">
+  <div class="loader bigger"></div>
+</div>
+}
 }

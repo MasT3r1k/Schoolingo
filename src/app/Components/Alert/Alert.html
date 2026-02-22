@@ -1,23 +1,26 @@
-<div class="alerts">
-@if (alert.visible) {
-    <div class="alert" [class.alert--success]="alert.type == 'success'" [class.alert--danger]="alert.type == 'error'" [class.alert--primary]="alert.type == 'info'">
+<div class="alerts global-alerts">
+    @for (alert of getAlerts(); track $index) {
+    @if (alert.visible) {
+    <div class="alert shadow-lg" [class.alert--success]="alert.type == 'success'"
+        [class.alert--danger]="alert.type == 'error'" [class.alert--primary]="alert.type == 'info'">
         <div class="text" [style.width]="!alert.actions.length ? '100%' : ''">
             {{ l.s(alert.text) }}
         </div>
         @if (alert.actions.length) {
-            <div class="actions">
-                @for (btn of alert.actions;track $index) {
-                    <div class="btn" (click)="btn.action()">
-                        {{ l.s(btn.text) }}
-                    </div>
-                }
+        <div class="actions">
+            @for (btn of alert.actions;track $index) {
+            <div class="btn" (click)="btn.action()">
+                {{ l.s(btn.text) }}
             </div>
+            }
+        </div>
         }
         @if (alert._closeable) {
-            <div class="close" (click)="alert.close()">
-                <i-tabler name="x"></i-tabler>
-            </div>
+        <div class="close" (click)="alert.close()">
+            <i-tabler name="x"></i-tabler>
+        </div>
         }
     </div>
-}
+    }
+    }
 </div>

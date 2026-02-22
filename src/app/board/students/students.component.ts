@@ -32,6 +32,8 @@ export interface Student {
   graduationDate?: string;
   averageGrade: string;
   absenceRate: string;
+  absence_rate_excused?: string;
+  absence_rate_unexcused?: string;
   disciplinaryIssues: number;
   
   // Parent info
@@ -118,7 +120,7 @@ export class StudentsComponent implements OnInit {
     email: '',
     classId: null as number | null,
     scopeId: null as number | null,
-    birthday: ''
+    birthday: moment()
   };
   
   // Detail Modals
@@ -187,10 +189,7 @@ export class StudentsComponent implements OnInit {
     this.loadFilters();
     this.loadStudents();
 
-    // Subscribe to calendar changes
-    this.calendarManager.getCalendarData('student_birthday').selected_date[0].subscribe((date) => {
-        this.newStudent.birthday = date.format('YYYY-MM-DD');
-    });
+    // Calendar subscriptions are handled via (valueChange) in template
   }
 
   // Load available filters (classes, scopes)

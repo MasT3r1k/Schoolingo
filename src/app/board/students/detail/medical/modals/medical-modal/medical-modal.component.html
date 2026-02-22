@@ -1,0 +1,60 @@
+<div class="modal-body">
+    @if (view === 'general') {
+    <div class="form-group">
+        <label>Typ záznamu</label>
+        <select class="form-control" [(ngModel)]="medicalForm.type">
+            <option value="Alergie">Alergie</option>
+            <option value="Chronické onemocnění">Chronické onemocnění</option>
+            <option value="Omezení">Omezení</option>
+            <option value="Dlouhodobá medikace">Dlouhodobá medikace</option>
+            <option value="Jiné">Jiné</option>
+        </select>
+    </div>
+    }
+
+    <div class="form-group">
+        <label>{{ view === 'general' ? 'Název / Název léku' : 'Alergie na / Název reakce' }}</label>
+        <input type="text" class="form-control" [(ngModel)]="medicalForm.title"
+            placeholder="{{ view === 'general' ? 'Např. Astma...' : 'Např. Ořechy, Laktóza...' }}">
+    </div>
+
+    <div class="form-group">
+        <label>Závažnost</label>
+        <div class="severity-selector">
+            <button class="sev-btn low" [class.active]="medicalForm.severity === 'low'"
+                (click)="medicalForm.severity = 'low'">Nízká</button>
+            <button class="sev-btn medium" [class.active]="medicalForm.severity === 'medium'"
+                (click)="medicalForm.severity = 'medium'">Střední</button>
+            <button class="sev-btn high" [class.active]="medicalForm.severity === 'high'"
+                (click)="medicalForm.severity = 'high'">Vysoká</button>
+        </div>
+    </div>
+
+    @if (view === 'allergy') {
+    <div class="form-group allergens-section">
+        <label>Specifické alergeny</label>
+        <div class="allergens-grid">
+            @for (allergen of allergens; track allergen.code) {
+            <div class="allergen-item" [class.active]="medicalForm.allergen_codes.includes(allergen.code)"
+                (click)="toggleAllergen(allergen.code)">
+                <span class="allergen-code">{{ allergen.code }}</span>
+                <span class="allergen-name">{{ allergen.name }}</span>
+            </div>
+            }
+        </div>
+    </div>
+    }
+
+    <div class="form-group">
+        <label>Popis / Instrukce</label>
+        <textarea class="form-control" [(ngModel)]="medicalForm.description"
+            placeholder="Další informace, co dělat v případě nouze..."></textarea>
+    </div>
+</div>
+
+<div class="modal-footer">
+    <button class="btn btn-secondary" (click)="closeModal()">Zrušit</button>
+    <button class="btn btn-primary" (click)="save()">
+        {{ data?.mode === 'add' ? 'Uložit záznam' : 'Aktualizovat' }}
+    </button>
+</div>

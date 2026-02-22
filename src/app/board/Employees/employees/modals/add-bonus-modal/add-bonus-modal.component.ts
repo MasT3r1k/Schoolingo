@@ -5,15 +5,17 @@ import { FormsModule } from '@angular/forms';
 import { Config } from '@Schoolingo/config';
 import { IconsModule } from '@Schoolingo/icons';
 import { ModalManager } from '@Schoolingo/modal';
+import { CalendarComponent } from '@Components/calendar';
+import moment from 'moment';
 
 @Component({
   selector: 'add-bonus-modal',
   standalone: true,
-  imports: [FormsModule, IconsModule],
+  imports: [FormsModule, IconsModule, CalendarComponent],
   templateUrl: './add-bonus-modal.component.html',
   styleUrls: ['./add-bonus-modal.component.css']
 })
-export class AddBonusModalComponent {
+export class AddBonusModalComponent implements OnInit {
   private http = inject(HttpClient);
   public modalManager = inject(ModalManager);
   public dropdownManager = inject(DropdownManager);
@@ -30,8 +32,15 @@ export class AddBonusModalComponent {
     type: 'performance',
     amount: 0,
     reason: '',
-    date: new Date().toISOString().split('T')[0]
+    date: moment()
   };
+
+  ngOnInit() {
+    const data = this.modalManager.getModalData('add_bonus');
+    if (data && data.personId) {
+      this.newBonus.personId = data.personId;
+    }
+  }
 
   submitNewBonus() {
     if (!this.newBonus.amount || this.newBonus.amount <= 0) {
@@ -46,7 +55,10 @@ export class AddBonusModalComponent {
 
     this.http.post(
       `${Config.API_URL}/v1/employees/bonuses`,
-      this.newBonus,
+      {
+        ...this.newBonus,
+        date: this.newBonus.date.format('YYYY-MM-DD')
+      },
       { withCredentials: true }
     ).subscribe({
       next: () => {
@@ -65,11 +77,11 @@ export class AddBonusModalComponent {
 
   resetForm() {
     this.newBonus = {
-      personId: 0,
+      personId: this.modalManager.getModalData('add_bonus')?.personId || 0,
       type: 'performance',
       amount: 0,
       reason: '',
-      date: new Date().toISOString().split('T')[0]
+      date: moment()
     };
   }
 

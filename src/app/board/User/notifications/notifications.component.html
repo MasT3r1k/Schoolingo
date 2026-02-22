@@ -62,7 +62,8 @@
             <div class="simple-notifications-grid">
                 @for (type of simpleTypes; track type.id) {
                 @let rule = findRuleByType(type.id);
-                <div class="simple-notification-card" [class.active]="rule?.enabled" (click)="toggleSimpleNotification(type.id)">
+                <div class="simple-notification-card" [class.active]="rule?.enabled"
+                    (click)="toggleSimpleNotification(type.id)">
                     <div class="notification-header">
                         <div class="notification-icon" [style.background]="type.color + '20'"
                             [style.color]="type.color">
@@ -105,12 +106,34 @@
             <div class="rules-list">
                 @for (rule of advancedRules; track rule.rule_id) {
                 @let typeConfig = getTypeConfig(rule.type)!;
-                <div class="rule-card" [class.disabled]="!rule.enabled">
+                <div class="rule-card" [class.disabled]="!rule.enabled"
+                    [class.editing]="editingRuleId === rule.rule_id">
                     <div class="rule-icon" [style.color]="typeConfig?.color">
                         <i-tabler [name]="typeConfig?.icon || 'bell'"></i-tabler>
                     </div>
                     <div class="rule-content">
                         <div class="rule-name">{{ typeConfig?.name || rule.type }}</div>
+
+                        @if (editingRuleId === rule.rule_id) {
+                        <div class="rule-edit-form">
+                            @for (field of typeConfig.conditionFields; track field.key) {
+                            <div class="form-group">
+                                <label>{{ field.label }}</label>
+                                <input [type]="field.type" [(ngModel)]="rule.conditions[field.key]" [min]="field.min"
+                                    [max]="field.max" class="form-control">
+                            </div>
+                            }
+                            <div class="form-actions">
+                                <button class="btn btn--small btn--primary" (click)="updateRule(rule)">
+                                    <i-tabler name="check"></i-tabler>
+                                    Uložit
+                                </button>
+                                <button class="btn btn--small btn--ghost" (click)="editingRuleId = null">
+                                    Zrušit
+                                </button>
+                            </div>
+                        </div>
+                        } @else {
                         @if (typeConfig.hasConditions && rule.conditions) {
                         <div class="rule-conditions">
                             @for (field of typeConfig.conditionFields; track field.key) {
@@ -120,8 +143,14 @@
                             }
                         </div>
                         }
+                        }
                     </div>
                     <div class="rule-actions">
+                        @if (typeConfig.hasConditions && editingRuleId !== rule.rule_id) {
+                        <button class="btn-icon" (click)="editingRuleId = rule.rule_id" title="Upravit parametry">
+                            <i-tabler name="settings-automation"></i-tabler>
+                        </button>
+                        }
                         <label class="toggle-switch" (click)="toggleRule(rule)">
                             <input type="checkbox" [(ngModel)]="rule.enabled">
                             <span class="slider"></span>

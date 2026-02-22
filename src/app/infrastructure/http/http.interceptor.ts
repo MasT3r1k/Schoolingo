@@ -36,15 +36,24 @@ export const httpInterceptor: HttpInterceptorFn = (req, next) => {
   return next(modifiedReq).pipe(
     tap({
       next: (event) => {
-        // Track token expiration on successful responses
+        // Track token expiration and handle application-level errors on successful responses
         if (event instanceof HttpResponse) {
           const body = event.body;
           
-          // If response contains expires field, update token expiration
-          if (body && typeof body === 'object' && 'expires' in body) {
-            const expires = (body as any).expires;
-            if (expires) {
-              tokenExpirationService.setTokenExpiration(expires);
+          if (body && typeof body === 'object') {
+            // Check for application-level no_permission error returned with HTTP 200
+            if ('error' in body && (body as any).error === 'no_permission') {
+              router.navigate(['/no-permission'], { replaceUrl: false });
+              monitoringService.logError('no_permission', body);
+              // We could throw an error here to stop the component, but navigation will happen anyway
+            }
+
+            // If response contains expires field, update token expiration
+            if ('expires' in body) {
+              const expires = (body as any).expires;
+              if (expires) {
+                tokenExpirationService.setTokenExpiration(expires);
+              }
             }
           }
         }
@@ -63,6 +72,13 @@ export const httpInterceptor: HttpInterceptorFn = (req, next) => {
           router.navigate(['/login'], { queryParams: { returnUrl: router.url } });
           monitoringService.logAuthError('no_user', error);
           sessionExpiredService.handleSessionExpired();
+          return;
+        }
+        
+        // Handle no_permission error
+        if (error.error?.error === 'no_permission') {
+          router.navigate(['/no-permission'], { replaceUrl: true });
+          monitoringService.logError('no_permission', error);
           return;
         }
         

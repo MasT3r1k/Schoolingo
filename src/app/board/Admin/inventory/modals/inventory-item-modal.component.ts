@@ -6,11 +6,13 @@ import { Locale } from '@Schoolingo/locale';
 import { IconsModule } from '@Schoolingo/icons';
 import { ModalManager } from '@Schoolingo/modal';
 import { Config } from '@Schoolingo/config';
+import { CalendarComponent } from '@Components/calendar';
+import moment from 'moment';
 
 @Component({
   selector: 'inventory-item-modal',
   standalone: true,
-  imports: [CommonModule, FormsModule, IconsModule],
+  imports: [CommonModule, FormsModule, IconsModule, CalendarComponent],
   template: `
     <div class="card__body">
         <div class="form-group">
@@ -49,7 +51,7 @@ import { Config } from '@Schoolingo/config';
         <div class="form-row">
             <div class="form-group">
                 <label class="form-label">{{ l.s('architecture.inventory_fields.acquisition_date') }}</label>
-                <input type="date" class="form-input" [(ngModel)]="itemForm.acquisition_date">
+                <app-calendar id="acquisition_date" [value]="itemForm.acquisition_date" (valueChange)="itemForm.acquisition_date = $event" size="full"></app-calendar>
             </div>
             <div class="form-group">
                 <label class="form-label">{{ l.s('architecture.inventory_fields.purchase_price') }}</label>
@@ -82,7 +84,7 @@ export class InventoryItemModalComponent implements OnInit {
   public l = inject(Locale);
   private http = inject(HttpClient);
   private modalManager = inject(ModalManager);
-
+ 
   public rooms: any[] = [];
   public itemForm: any = {
     room_id: null,
@@ -90,26 +92,33 @@ export class InventoryItemModalComponent implements OnInit {
     category: '',
     description: '',
     serial_number: '',
-    acquisition_date: new Date().toISOString().split('T')[0],
+    acquisition_date: moment(),
     purchase_price: 0,
     status: 'active'
   };
   private editingId: number | null = null;
-
+ 
   ngOnInit(): void {
     const data = this.modalManager.getModalData('inventory-item');
     if (data) {
       this.rooms = data.rooms || [];
       if (data.item) {
-        this.itemForm = { ...data.item };
+        this.itemForm = { 
+            ...data.item,
+            acquisition_date: moment(data.item.acquisition_date)
+        };
         this.editingId = data.item.inventory_id;
       }
     }
   }
-
+ 
   saveItem(): void {
     const url = `${Config.API_URL}/v1/school/inventory`;
-    const payload = { ...this.itemForm, inventory_id: this.editingId };
+    const payload = { 
+        ...this.itemForm, 
+        inventory_id: this.editingId,
+        acquisition_date: this.itemForm.acquisition_date.format('YYYY-MM-DD')
+    };
     
     this.http.post(url, payload, { withCredentials: true })
         .subscribe(() => {
@@ -118,7 +127,7 @@ export class InventoryItemModalComponent implements OnInit {
             this.modalManager.closeModal('inventory-item');
         });
   }
-
+ 
   closeModal(): void {
     this.modalManager.closeModal('inventory-item');
   }

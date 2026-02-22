@@ -1,434 +1,670 @@
 <div class="card">
     <div class="card-top"></div>
     <div class="card-header">
-        <h2>{{ l.s('sidebar.management') }}</h2>
+        <div class="header-left">
+            <div class="header-title-row">
+                <i-tabler name="dashboard"></i-tabler>
+                <h2>{{ l.s('sidebar.management') }}</h2>
+            </div>
+            <span class="meta muted">Komplexní přehled výkonnosti školy a klíčových ukazatelů</span>
+        </div>
         <schoolingo-tabs
             [options]="['dashboard.overview', 'dashboard.classes', 'subjects', 'dashboard.teachers', 'dashboard.risks']"
             [icons]="['dashboard', 'school', 'book', 'users', 'alert-triangle']"
             [value]="selectedView"></schoolingo-tabs>
     </div>
 
-    <div class="card-body">
+    <div class="dashboard-body">
         @switch (selectedView.getValue()) {
+
         @case(ViewSelector.overview) {
         <!-- OVERVIEW -->
-        <div class="overview-grid">
-            <!-- Stats Cards -->
-            <div class="stats-cards">
-                @if (classInfo) {
-                <div class="stat-card stat--info">
-                    <div class="stat-icon">
-                        <i-tabler name="school"></i-tabler>
-                    </div>
-                    <div class="stat-info">
-                        <div class="stat-value">
-                            {{ classInfo.className }}
-                            <span class="muted" style="font-size: 0.5em; vertical-align: middle;">
-                                {{ classInfo.studentCount }} žáků
-                            </span>
-                        </div>
-                        <div class="stat-label">
-                            Absence: {{ classInfo.absence.currentMonth }}m
-                            @if (classInfo.absence.trend !== 0) {
-                            <span [style.color]="classInfo.absence.trend > 0 ? 'var(--success)' : 'var(--danger)'">
-                                ({{ classInfo.absence.trend > 0 ? '+' : '' }}{{ classInfo.absence.trend }})
-                            </span>
-                            }
-                        </div>
-                    </div>
-                </div>
-                }
-                <div class="stat-card stat--primary">
-                    <div class="stat-icon">
+        <div class="overview-layout">
+
+            <!-- KPI Cards Row -->
+            <div class="kpi-grid">
+                <!-- Students -->
+                <div class="kpi-card kpi-card--blue">
+                    <div class="kpi-card__glow"></div>
+                    <div class="kpi-card__icon">
                         <i-tabler name="users"></i-tabler>
                     </div>
-                    <div class="stat-info">
-                        <div class="stat-value">
+                    <div class="kpi-card__body">
+                        <span class="kpi-card__label">Celkem studentů</span>
+                        <div class="kpi-card__value">
                             {{ Utils.formatNumber(schoolStats.total_students) }}
-                            <span class="muted">ze
+                            <span class="kpi-card__cap">
+                                /
                                 @if (schoolStats.limit_students == -1) {
-                                <span style="color: var(--primary-100);font-weight: 500;">NEOMEZENO</span>
+                                <span class="unlimited">∞</span>
                                 } @else {
                                 {{ schoolStats.limit_students }}
                                 }
                             </span>
                         </div>
-                        <div class="stat-label">Celkem studentů</div>
+                        <div class="kpi-card__sub">Aktivní žáci školy</div>
+                    </div>
+                    <div class="kpi-card__trend"
+                        [class]="schoolStats.total_students > schoolStats.total_students_last ? 'kpi-card__trend--up' : (schoolStats.total_students < schoolStats.total_students_last ? 'kpi-card__trend--down' : 'kpi-card__trend--neutral')">
+                        <i-tabler
+                            [name]="schoolStats.total_students > schoolStats.total_students_last ? 'trending-up' : (schoolStats.total_students < schoolStats.total_students_last ? 'trending-down' : 'minus')"></i-tabler>
                     </div>
                 </div>
 
-                <div class="stat-card stat--success">
-                    <div class="stat-icon">
+                <!-- Average Grade -->
+                <div class="kpi-card kpi-card--green">
+                    <div class="kpi-card__glow"></div>
+                    <div class="kpi-card__icon">
                         <i-tabler name="trophy"></i-tabler>
                     </div>
-                    <div class="stat-info">
-                        <div class="stat-value">{{ Utils.formatNumber(schoolStats.average_grade, 2) }}</div>
-                        <div class="stat-label">Průměrný prospěch</div>
+                    <div class="kpi-card__body">
+                        <span class="kpi-card__label">Průměrný prospěch</span>
+                        <div class="kpi-card__value">{{ Utils.formatNumber(schoolStats.average_grade, 2) }}</div>
+                        <div class="kpi-card__sub">Vážený průměr všech předmětů</div>
+                    </div>
+                    <div class="kpi-card__trend"
+                        [class]="schoolStats.average_grade < schoolStats.average_grade_last ? 'kpi-card__trend--up' : (schoolStats.average_grade > schoolStats.average_grade_last ? 'kpi-card__trend--down' : 'kpi-card__trend--neutral')"
+                        title="Vzhledem k minulému měsíci">
+                        <i-tabler
+                            [name]="schoolStats.average_grade < schoolStats.average_grade_last ? 'trending-down' : (schoolStats.average_grade > schoolStats.average_grade_last ? 'trending-up' : 'minus')"></i-tabler>
                     </div>
                 </div>
 
-                <div class="stat-card stat--warning">
-                    <div class="stat-icon">
+                <!-- Absence Rate -->
+                <div class="kpi-card kpi-card--orange">
+                    <div class="kpi-card__glow"></div>
+                    <div class="kpi-card__icon">
                         <i-tabler name="calendar-x"></i-tabler>
                     </div>
-                    <div class="stat-info">
-                        <div class="stat-value">{{ Utils.formatNumber(schoolStats.absence_rate, 2) }}%</div>
-                        <div class="stat-label">Míra absence</div>
+                    <div class="kpi-card__body">
+                        <span class="kpi-card__label">Míra absence</span>
+                        <div class="kpi-card__value">{{ Utils.formatNumber(schoolStats.absence_rate * 100, 1) }}%</div>
+                        <div class="kpi-card__sub">Procento zameškaných hodin</div>
+                    </div>
+                    <div class="kpi-card__trend"
+                        [class]="schoolStats.absence_rate < schoolStats.absence_rate_last ? 'kpi-card__trend--up' : (schoolStats.absence_rate > schoolStats.absence_rate_last ? 'kpi-card__trend--down' : 'kpi-card__trend--neutral')"
+                        title="Vzhledem k minulému měsíci">
+                        <i-tabler
+                            [name]="schoolStats.absence_rate < schoolStats.absence_rate_last ? 'trending-down' : (schoolStats.absence_rate > schoolStats.absence_rate_last ? 'trending-up' : 'minus')"></i-tabler>
                     </div>
                 </div>
 
-                <div class="stat-card stat--danger">
-                    <div class="stat-icon">
-                        <i-tabler name="alert-triangle"></i-tabler>
-                    </div>
-                    <div class="stat-info">
-                        <div class="stat-value">{{ Utils.formatNumber(schoolStats.at_risk_students) }}</div>
-                        <div class="stat-label">Rizikoví studenti</div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Absence Heatmap -->
-            <div class="section-card">
-                <div class="section-header">
-                    <h3>
-                        <i-tabler name="calendar-stats"></i-tabler>
-                        Heatmapa absence
-                    </h3>
-                    <p>Kdy studenti nejčastěji chybí</p>
-                </div>
-                <div class="heatmap">
-                    <div class="heatmap-grid">
-                        <div class="heatmap-header">
-                            <div class="corner"></div>
-                            @for (hour of [1,2,3,4,5,6,7,8,9,10]; track $index) {
-                            <div class="hour-label">{{ hour }}</div>
-                            }
-                        </div>
-                        @for (day of [1,2,3,4,5]; track $index) {
-                        <div class="heatmap-row">
-                            <div class="day-label">{{ l.s('days.' + day) }}</div>
-                            @for (hour of [1,2,3,4,5,6,7,8,9,10]; track $index) {
-                            <div class="heatmap-cell" [class]="getHeatmapIntensity(getHeatmapValue(day, hour))">
-                                {{ getHeatmapValue(day, hour) }}
-                            </div>
-                            }
-                        </div>
-                        }
-                    </div>
-                    <div class="heatmap-legend">
-                        <span>Málo</span>
-                        <div class="legend-gradient">
-                            <div class="legend-item low"></div>
-                            <div class="legend-item medium"></div>
-                            <div class="legend-item high"></div>
-                        </div>
-                        <span>Hodně</span>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Top Risk Students -->
-            <div class="section-card">
-                <div class="section-header">
-                    <h3>
+                <!-- At Risk -->
+                <div class="kpi-card kpi-card--red">
+                    <div class="kpi-card__glow"></div>
+                    <div class="kpi-card__icon">
                         <i-tabler name="alert-circle"></i-tabler>
-                        Top 5 rizikových studentů
-                    </h3>
-                    <p>Studenti vyžadující pozornost</p>
-                </div>
-                <div class="risk-list">
-                    @for (student of riskStudents; track $index) {
-                    <div class="risk-item" [class]="getRiskColor(student.risk_score)">
-                        @if (student.risk_score) {
-                        <div class="risk-badge">{{ Utils.formatNumber(student.risk_score) }}</div>
-                        }
-                        <div class="risk-info">
-                            <div class="risk-name">{{ student.full_name }}</div>
-                            <div class="risk-class"></div>
-                        </div>
-                        <div class="risk-factors">
-                            @if (student.absence_rate) {
-                            <span class="factor">
-                                <i-tabler name="calendar-x"></i-tabler>
-                                {{ Utils.formatNumber(student.absence_rate, 2) }}%
-                            </span>
-                            }
-                            @if (student.grade_average) {
-                            <span class="factor">
-                                <i-tabler name="report"></i-tabler>
-                                {{ Utils.formatNumber(student.grade_average, 2) }}
-                            </span>
-                            }
-                            @if (student.disciplinary_issues) {
-                            <span class="factor">
-                                <i-tabler name="alert-triangle"></i-tabler>
-                                {{ Utils.formatNumber(student.disciplinary_issues) }}
-                            </span>
-                            }
-                        </div>
                     </div>
-                    }
+                    <div class="kpi-card__body">
+                        <span class="kpi-card__label">Rizikoví studenti</span>
+                        <div class="kpi-card__value">{{ Utils.formatNumber(schoolStats.at_risk_students) }}</div>
+                        <div class="kpi-card__sub">Vyžadují zvýšenou pozornost</div>
+                    </div>
+                    <div class="kpi-card__trend"
+                        [class]="schoolStats.at_risk_students < schoolStats.at_risk_students_last ? 'kpi-card__trend--up' : (schoolStats.at_risk_students > schoolStats.at_risk_students_last ? 'kpi-card__trend--down' : 'kpi-card__trend--neutral')"
+                        title="Vzhledem k minulému měsíci">
+                        <i-tabler
+                            [name]="schoolStats.at_risk_students < schoolStats.at_risk_students_last ? 'trending-down' : (schoolStats.at_risk_students > schoolStats.at_risk_students_last ? 'trending-up' : 'minus')"></i-tabler>
+                    </div>
                 </div>
             </div>
+
+            <!-- Main 2-column layout -->
+            <div class="overview-row">
+
+                <!-- LEFT: Absence Heatmap -->
+                <div class="ov-section">
+                    <div class="ov-section__header">
+                        <div class="ov-section__title-row">
+                            <i-tabler name="calendar-stats"></i-tabler>
+                            <div>
+                                <h3>Heatmapa absence</h3>
+                                <span class="meta muted">Kdy studenti nejčastěji chybí</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="ov-section__body">
+                        <div class="heatmap-wrap">
+                            <div class="heatmap-grid">
+                                <div class="heatmap-header">
+                                    <div class="hm-corner"></div>
+                                    @for (hour of [1,2,3,4,5,6,7,8,9,10]; track $index) {
+                                    <div class="hm-hour-label">{{ hour }}.</div>
+                                    }
+                                </div>
+                                @for (day of [1,2,3,4,5]; track $index) {
+                                <div class="heatmap-row">
+                                    <div class="hm-day-label">{{ l.s('days.' + day) }}</div>
+                                    @for (hour of [1,2,3,4,5,6,7,8,9,10]; track $index) {
+                                    <div class="hm-cell" [class]="getHeatmapIntensity(getHeatmapValue(day, hour))"
+                                        [title]="l.s('days.' + day) + ', ' + hour + '. hod: ' + getHeatmapValue(day, hour) + ' absencí'">
+                                        <span>{{ getHeatmapValue(day, hour) || '' }}</span>
+                                    </div>
+                                    }
+                                </div>
+                                }
+                            </div>
+                            <div class="hm-legend">
+                                <span class="hm-legend__label">Málo</span>
+                                <div class="hm-legend__bar"></div>
+                                <span class="hm-legend__label">Hodně</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- RIGHT: Top Risk Students overview -->
+                <div class="ov-section">
+                    <div class="ov-section__header">
+                        <div class="ov-section__title-row">
+                            <i-tabler name="alert-circle"></i-tabler>
+                            <div>
+                                <h3>Rizikový studenti</h3>
+                                <span class="meta muted">Top 5 – vyžadují pozornost</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="ov-section__body ov-section__body--flush">
+                        @if (riskStudents.length === 0) {
+                        <div class="ov-empty">
+                            <i-tabler name="mood-happy"></i-tabler>
+                            <span>Žádní rizikoví studenti</span>
+                        </div>
+                        }
+                        @for (student of riskStudents; track $index) {
+                        <div class="risk-row" [class]="'risk-row--' + getRiskColor(student.risk_score)">
+                            <div class="risk-row__badge">{{ Utils.formatNumber(student.risk_score) }}</div>
+                            <div class="risk-row__info">
+                                <div class="risk-row__name">{{ student.full_name }}</div>
+                                <div class="risk-row__factors">
+                                    @if (student.absence_rate) {
+                                    <span class="risk-factor">
+                                        <i-tabler name="calendar-x"></i-tabler>
+                                        {{ Utils.formatNumber(+student.absence_rate * 100, 1) }}%
+                                    </span>
+                                    }
+                                    @if (student.grade_average) {
+                                    <span class="risk-factor">
+                                        <i-tabler name="report"></i-tabler>
+                                        Ø {{ Utils.formatNumber(student.grade_average, 2) }}
+                                    </span>
+                                    }
+                                    @if (student.disciplinary_issues) {
+                                    <span class="risk-factor">
+                                        <i-tabler name="alert-triangle"></i-tabler>
+                                        {{ student.disciplinary_issues }} kázní
+                                    </span>
+                                    }
+                                </div>
+                            </div>
+                            <div class="risk-row__score-bar">
+                                <div class="risk-row__score-fill" [style.width.%]="student.risk_score"
+                                    [class]="'risk-fill--' + getRiskColor(student.risk_score)"></div>
+                            </div>
+                        </div>
+                        }
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Class snapshot row -->
+            @if (classInfoNorm) {
+            <div class="class-snapshot">
+                <div class="cs-label">
+                    <i-tabler name="school"></i-tabler>
+                    Vaše třída
+                </div>
+                <div class="cs-name">{{ classInfoNorm.className }}</div>
+                <div class="cs-stat">
+                    <i-tabler name="users"></i-tabler>
+                    <span>{{ classInfoNorm.studentCount }} žáků</span>
+                </div>
+                <div class="cs-divider"></div>
+                <div class="cs-stat">
+                    <i-tabler name="calendar-x"></i-tabler>
+                    <span>Tento měsíc: <strong>{{ classInfoNorm.absence.currentMonth }} min</strong></span>
+                </div>
+                <div class="cs-stat"
+                    [style.color]="classInfoNorm.absence.trend > 0 ? 'var(--danger)' : classInfoNorm.absence.trend < 0 ? 'var(--success)' : 'var(--text-muted)'">
+                    @if (classInfoNorm.absence.trend > 0) {
+                    <i-tabler name="trending-up"></i-tabler>
+                    +{{ classInfoNorm.absence.trend }} min oproti min. měsíci
+                    } @else if (classInfoNorm.absence.trend < 0) { <i-tabler name="trending-down"></i-tabler>
+                        {{ classInfoNorm.absence.trend }} min oproti min. měsíci
+                        } @else {
+                        <i-tabler name="minus"></i-tabler>
+                        Beze změny
+                        }
+                </div>
+            </div>
+            }
+
         </div>
         }
+
         @case (ViewSelector.classes) {
         <!-- CLASSES VIEW -->
-        <div class="classes-view">
+        <div class="tab-body">
             @if (viewClassDetail && detailedClass) {
-            <div class="section-card">
-                <div class="section-header">
-                    <h3>
+            <div class="ov-section">
+                <div class="ov-section__header">
+                    <div class="ov-section__title-row">
                         <button class="btn-back" (click)="closeClassDetail()">
                             <i-tabler name="arrow-left"></i-tabler>
                         </button>
-                        <span>{{ detailedClass.class_details.class_name }}</span>
-                        <small class="muted" style="margin-left: 10px; font-weight: 400; font-size: 0.8em;">
-                            {{ detailedClass.class_details.teacher_name }}
-                        </small>
-                    </h3>
-                </div>
-
-                <!-- Groups Grid -->
-                <h4>Skupiny</h4>
-                <div class="classes-grid">
-                    @for (group of detailedClass.groups_stats; track $index) {
-                    <div class="class-card">
-                        <div class="class-header">
-                            <h4>
-                                {{ group.group_name || detailedClass.class_details.class_name }}
-                                @if (group.group_num) {
-                                <small class="muted">
-                                    sk. {{ group.group_num }}
-                                </small>
-                                } @else if (!group.group_name) {
-                                <small class="muted">
-                                    (Celá třída)
-                                </small>
-                                }
-                            </h4>
-                        </div>
-                        <div class="class-stats">
-                            <div class="class-stat">
-                                <i-tabler name="users"></i-tabler>
-                                <span>{{ group.student_count }} studentů</span>
-                            </div>
-                            <div class="class-stat highlight">
-                                <i-tabler name="trophy"></i-tabler>
-                                <span>Ø {{ Utils.formatNumber(group.average_grade, 2) }}</span>
-                            </div>
-                            <div class="class-stat" [class.warning]="group.absence_rate > 10">
-                                <i-tabler name="calendar-x"></i-tabler>
-                                <span>{{ Utils.formatNumber(group.absence_rate, 2) }}% absence</span>
-                            </div>
-                        </div>
-                        <div class="progress-bar">
-                            <div class="progress-fill" [style.width.%]="(5 - group.average_grade) * 25"
-                                [class.good]="group.average_grade < 2.5"
-                                [class.warning]="group.average_grade >= 2.5 && group.average_grade < 3.5"
-                                [class.danger]="group.average_grade >= 3.5"></div>
+                        <div>
+                            <h3>{{ detailedClass.class_details.class_name }}</h3>
+                            <span class="meta muted">{{ detailedClass.class_details.teacher_name }}</span>
                         </div>
                     </div>
-                    }
+                </div>
+                <div class="ov-section__body">
+                    <div class="classes-grid">
+                        @for (group of detailedClass.groups_stats; track $index) {
+                        <div class="class-card">
+                            <div class="class-card__header">
+                                <h4>
+                                    {{ group.group_name || detailedClass.class_details.class_name }}
+                                    @if (group.group_num) {
+                                    <small class="muted">sk. {{ group.group_num }}</small>
+                                    } @else if (!group.group_name) {
+                                    <small class="muted">(Celá třída)</small>
+                                    }
+                                </h4>
+                            </div>
+                            <div class="class-card__stats">
+                                <div class="class-stat">
+                                    <i-tabler name="users"></i-tabler>
+                                    <span>{{ group.student_count }} studentů</span>
+                                </div>
+                                <div class="class-stat class-stat--highlight">
+                                    <i-tabler name="trophy"></i-tabler>
+                                    <span>Ø {{ Utils.formatNumber(group.average_grade, 2) }}</span>
+                                </div>
+                                <div class="class-stat" [class.class-stat--warning]="group.absence_rate > 10">
+                                    <i-tabler name="calendar-x"></i-tabler>
+                                    <span>{{ Utils.formatNumber(group.absence_rate, 1) }}% absence</span>
+                                </div>
+                            </div>
+                            <div class="grade-bar">
+                                <div class="grade-bar__fill" [style.width.%]="(5 - group.average_grade) * 25"
+                                    [class.grade-bar__fill--good]="group.average_grade < 2.5"
+                                    [class.grade-bar__fill--warning]="group.average_grade >= 2.5 && group.average_grade < 3.5"
+                                    [class.grade-bar__fill--danger]="group.average_grade >= 3.5"></div>
+                            </div>
+                        </div>
+                        }
+                    </div>
                 </div>
             </div>
             } @else {
-            <div class="section-card">
-                <div class="section-header">
-                    <h3>
+            <div class="ov-section">
+                <div class="ov-section__header">
+                    <div class="ov-section__title-row">
                         <i-tabler name="school"></i-tabler>
-                        Statistiky tříd
-                    </h3>
-                    <div class="sort-options">
-                        <button class="btn-sort" (click)="sortClassesByGrade()">
+                        <div>
+                            <h3>Statistiky tříd</h3>
+                            <span class="meta muted">Klikněte na třídu pro detailní přehled skupin</span>
+                        </div>
+                    </div>
+                    <div class="sort-btns">
+                        <button class="btn btn--secondary btn--sm" (click)="sortClassesByGrade()">
                             <i-tabler name="sort-ascending"></i-tabler>
-                            Seřadit dle prospěchu
+                            Dle prospěchu
                         </button>
-                        <button class="btn-sort" (click)="sortClassesByAbsence()">
+                        <button class="btn btn--secondary btn--sm" (click)="sortClassesByAbsence()">
                             <i-tabler name="sort-descending"></i-tabler>
-                            Seřadit dle absence
+                            Dle absence
                         </button>
                     </div>
                 </div>
-                <div class="classes-grid">
-                    @for (classItem of classStats; track $index) {
-                    <div class="class-card" (click)="openClassDetail(classItem.class_id)" style="cursor: pointer;">
-                        <div class="class-header">
-                            <h4>
-                                {{ classItem.class_name }}
-                            </h4>
-                            <i-tabler [name]="getTrendIcon(classItem.trend)"
-                                [class]="'trend-' + classItem.trend"></i-tabler>
-                        </div>
-                        <div class="class-stats">
-                            <div class="class-stat">
-                                <i-tabler name="users"></i-tabler>
-                                <span>{{ classItem.student_count }} studentů</span>
+                <div class="ov-section__body">
+                    <div class="classes-grid">
+                        @for (classItem of classStats; track $index) {
+                        <div class="class-card class-card--clickable" (click)="openClassDetail(classItem.class_id)">
+                            <div class="class-card__header">
+                                <h4>{{ classItem.class_name }}</h4>
+                                <i-tabler [name]="getTrendIcon(classItem.trend)"
+                                    [class]="'trend-icon trend-' + classItem.trend"></i-tabler>
                             </div>
-                            <div class="class-stat highlight">
-                                <i-tabler name="trophy"></i-tabler>
-                                <span>Ø {{ Utils.formatNumber(classItem.average_grade, 2) }}</span>
+                            <div class="class-card__stats">
+                                <div class="class-stat">
+                                    <i-tabler name="users"></i-tabler>
+                                    <span>{{ classItem.student_count }} žáků</span>
+                                </div>
+                                <div class="class-stat class-stat--highlight">
+                                    <i-tabler name="trophy"></i-tabler>
+                                    <span>Ø {{ Utils.formatNumber(classItem.average_grade, 2) }}</span>
+                                </div>
+                                <div class="class-stat" [class.class-stat--warning]="classItem.absence_rate > 10">
+                                    <i-tabler name="calendar-x"></i-tabler>
+                                    <span>{{ Utils.formatNumber(classItem.absence_rate, 1) }}% absence</span>
+                                </div>
                             </div>
-                            <div class="class-stat" [class.warning]="classItem.absence_rate > 10">
-                                <i-tabler name="calendar-x"></i-tabler>
-                                <span>{{ Utils.formatNumber(classItem.absence_rate, 2) }}% absence</span>
+                            <div class="grade-bar">
+                                <div class="grade-bar__fill" [style.width.%]="(5 - classItem.average_grade) * 25"
+                                    [class.grade-bar__fill--good]="classItem.average_grade < 2.5"
+                                    [class.grade-bar__fill--warning]="classItem.average_grade >= 2.5 && classItem.average_grade < 3.5"
+                                    [class.grade-bar__fill--danger]="classItem.average_grade >= 3.5"></div>
                             </div>
                         </div>
-                        <div class="progress-bar">
-                            <div class="progress-fill" [style.width.%]="(5 - classItem.average_grade) * 25"
-                                [class.good]="classItem.average_grade < 2.5"
-                                [class.warning]="classItem.average_grade >= 2.5 && classItem.average_grade < 3.5"
-                                [class.danger]="classItem.average_grade >= 3.5"></div>
-                        </div>
+                        }
                     </div>
-                    }
                 </div>
             </div>
             }
         </div>
         }
+
         @case(ViewSelector.subjects) {
         <!-- SUBJECTS VIEW -->
-        <div class="subjects-view">
-            <div class="section-card">
-                <div class="section-header">
-                    <h3>
+        <div class="tab-body">
+            <div class="ov-section">
+                <div class="ov-section__header">
+                    <div class="ov-section__title-row">
                         <i-tabler name="book"></i-tabler>
-                        Statistiky předmětů
-                    </h3>
-                    <button class="btn-sort" (click)="sortSubjectsByDifficulty()">
+                        <div>
+                            <h3>Statistiky předmětů</h3>
+                            <span class="meta muted">Přehled průměrů a obtížnosti jednotlivých předmětů</span>
+                        </div>
+                    </div>
+                    <button class="btn btn--secondary btn--sm" (click)="sortSubjectsByDifficulty()">
                         <i-tabler name="sort-descending"></i-tabler>
-                        Seřadit dle obtížnosti
+                        Dle obtížnosti
                     </button>
                 </div>
-                <div class="subjects-table">
-                    <div class="table-header">
-                        <div class="col-name">Předmět</div>
-                        <div class="col-avg">Ø Známka</div>
-                        <div class="col-teachers">Učitelé</div>
-                        <div class="col-students">Studenti</div>
-                        <div class="col-difficulty">Obtížnost</div>
-                    </div>
-                    @for (subject of subjectStats; track $index) {
-                    <div class="table-row">
-                        <div class="col-name">
-                            <i-tabler name="book-2"></i-tabler>
-                            {{ subject.subject_name }}
-                        </div>
-                        <div class="col-avg">
-                            <span class="grade-badge" [class.good]="subject.average_grade < 2.5"
-                                [class.warning]="subject.average_grade >= 2.5 && subject.average_grade < 3.5"
-                                [class.danger]="subject.average_grade >= 3.5">
-                                {{ Utils.formatNumber(subject.average_grade, 2) }}
-                            </span>
-                        </div>
-                        <div class="col-teachers">{{ subject.teacher_count }}</div>
-                        <div class="col-students">{{ subject.student_count }}</div>
-                        <div class="col-difficulty">
-                            <div class="difficulty-bar">
-                                <div class="difficulty-fill" [style.width.%]="subject.difficulty_rating * 10"></div>
+                <div class="ov-section__body ov-section__body--flush">
+                    <div class="modern-table">
+                        <div class="modern-table__head">
+                            <div [class]="'mt-col mt-col--stretch ' + subjectSortClass('subject_name')"
+                                (click)="sortSubjects('subject_name')">
+                                Předmět
+                                <i-tabler name="chevron-up" class="sort-icon" size="14"></i-tabler>
                             </div>
-                            <span>{{ subject.difficulty_rating }}/10</span>
+                            <div [class]="'mt-col mt-col--center ' + subjectSortClass('average_grade')"
+                                (click)="sortSubjects('average_grade')">
+                                Ø Známka
+                                <i-tabler name="chevron-up" class="sort-icon" size="14"></i-tabler>
+                            </div>
+                            <div [class]="'mt-col mt-col--center ' + subjectSortClass('teacher_count')"
+                                (click)="sortSubjects('teacher_count')">
+                                Učitelé
+                                <i-tabler name="chevron-up" class="sort-icon" size="14"></i-tabler>
+                            </div>
+                            <div [class]="'mt-col mt-col--center ' + subjectSortClass('student_count')"
+                                (click)="sortSubjects('student_count')">
+                                Studenti
+                                <i-tabler name="chevron-up" class="sort-icon" size="14"></i-tabler>
+                            </div>
+                            <div [class]="'mt-col mt-col--wide ' + subjectSortClass('difficulty_rating')"
+                                (click)="sortSubjects('difficulty_rating')">
+                                Obtížnost
+                                <i-tabler name="chevron-up" class="sort-icon" size="14"></i-tabler>
+                            </div>
                         </div>
+                        @for (subject of subjectStats; track $index) {
+                        <div class="modern-table__row">
+                            <div class="mt-col mt-col--stretch">
+                                <div class="mt-entity">
+                                    <div class="mt-entity__icon mt-entity__icon--subject">
+                                        <i-tabler name="book-2"></i-tabler>
+                                    </div>
+                                    <span class="mt-entity__name">{{ subject.subject_name }}</span>
+                                </div>
+                            </div>
+                            <div class="mt-col mt-col--center">
+                                <span class="grade-pill" [class.grade-pill--good]="subject.average_grade < 2.5"
+                                    [class.grade-pill--warn]="subject.average_grade >= 2.5 && subject.average_grade < 3.5"
+                                    [class.grade-pill--bad]="subject.average_grade >= 3.5">
+                                    {{ Utils.formatNumber(subject.average_grade, 2) }}
+                                </span>
+                            </div>
+                            <div class="mt-col mt-col--center">
+                                <span class="mt-count">{{ subject.teacher_count }}</span>
+                            </div>
+                            <div class="mt-col mt-col--center">
+                                <span class="mt-count">{{ subject.student_count }}</span>
+                            </div>
+                            <div class="mt-col mt-col--wide">
+                                <div class="mt-progress">
+                                    <div class="mt-progress__bar" [style.width.%]="subject.difficulty_rating * 10"
+                                        [class.mt-progress__bar--low]="subject.difficulty_rating <= 4"
+                                        [class.mt-progress__bar--mid]="subject.difficulty_rating > 4 && subject.difficulty_rating <= 7"
+                                        [class.mt-progress__bar--high]="subject.difficulty_rating > 7">
+                                    </div>
+                                </div>
+                                <span class="mt-progress__label">{{ subject.difficulty_rating }}/10</span>
+                            </div>
+                        </div>
+                        }
                     </div>
-                    }
                 </div>
             </div>
         </div>
         }
+
         @case (ViewSelector.teachers) {
         <!-- TEACHERS VIEW -->
-        <div class="teachers-view">
-            <div class="section-card">
-                <div class="section-header">
-                    <h3>
+        <div class="tab-body">
+            <div class="ov-section">
+                <div class="ov-section__header">
+                    <div class="ov-section__title-row">
                         <i-tabler name="users"></i-tabler>
-                        Statistiky učitelů
-                    </h3>
-                    <p>Srovnání výkonu učitelů</p>
-                </div>
-                <div class="teachers-grid">
-                    @for (teacher of teacherStats; track $index) {
-                    <div class="teacher-card">
-                        <div class="teacher-header">
-                            <div class="teacher-avatar">
-                                <i-tabler name="user"></i-tabler>
-                            </div>
-                            <div class="teacher-info">
-                                <h4>{{ teacher.full_name }}</h4>
-                                <p>{{ teacher.subject }}</p>
-                            </div>
-                        </div>
-                        <div class="teacher-stats">
-                            <div class="teacher-stat">
-                                <div class="stat-label">Ø známka tříd</div>
-                                <div class="stat-value" [class.good]="teacher.class_average < 2.5"
-                                    [class.warning]="teacher.class_average >= 2.5 && teacher.class_average < 3.5"
-                                    [class.danger]="teacher.class_average >= 3.5">
-                                    {{ Utils.formatNumber(teacher.class_average, 2) }}
-                                </div>
-                            </div>
-                            <div class="teacher-stat">
-                                <div class="stat-label">Počet studentů</div>
-                                <div class="stat-value">{{ Utils.formatNumber(teacher.student_count) }}</div>
-                            </div>
-                            <div class="teacher-stat">
-                                <div class="stat-label">Absence v hodinách</div>
-                                <div class="stat-value" [class.warning]="teacher.absence_in_classes > 8">
-                                    {{ Utils.formatNumber(teacher.absence_in_classes, 2) }}%
-                                </div>
-                            </div>
+                        <div>
+                            <h3>Statistiky učitelů</h3>
+                            <span class="meta muted">Přehled výkonu a aktivit jednotlivých učitelů</span>
                         </div>
                     </div>
-                    }
+                </div>
+                <div class="ov-section__body ov-section__body--flush">
+                    <div class="modern-table">
+                        <div class="modern-table__head">
+                            <div [class]="'mt-col mt-col--stretch ' + teacherSortClass('full_name')"
+                                (click)="sortTeachers('full_name')">
+                                Učitel
+                                <i-tabler name="chevron-up" class="sort-icon" size="14"></i-tabler>
+                            </div>
+                            <div [class]="'mt-col mt-col--center ' + teacherSortClass('class_average')"
+                                (click)="sortTeachers('class_average')">
+                                Ø Tříd. průměr
+                                <i-tabler name="chevron-up" class="sort-icon" size="14"></i-tabler>
+                            </div>
+                            <div [class]="'mt-col mt-col--center ' + teacherSortClass('student_count')"
+                                (click)="sortTeachers('student_count')">
+                                Skupiny
+                                <i-tabler name="chevron-up" class="sort-icon" size="14"></i-tabler>
+                            </div>
+                            <div [class]="'mt-col mt-col--wide ' + teacherSortClass('absence_in_classes')"
+                                (click)="sortTeachers('absence_in_classes')">
+                                Absence v hodinách
+                                <i-tabler name="chevron-up" class="sort-icon" size="14"></i-tabler>
+                            </div>
+                        </div>
+                        @for (teacher of teacherStats; track $index) {
+                        <div class="modern-table__row">
+                            <div class="mt-col mt-col--stretch">
+                                <div class="mt-entity">
+                                    <div class="mt-entity__avatar">
+                                        {{ teacher.full_name.charAt(0) }}
+                                    </div>
+                                    <div>
+                                        <div class="mt-entity__name">{{ teacher.full_name }}</div>
+                                        <div class="mt-entity__sub">{{ teacher.subject }}</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="mt-col mt-col--center">
+                                <span class="grade-pill" [class.grade-pill--good]="teacher.class_average < 2.5"
+                                    [class.grade-pill--warn]="teacher.class_average >= 2.5 && teacher.class_average < 3.5"
+                                    [class.grade-pill--bad]="teacher.class_average >= 3.5">
+                                    {{ Utils.formatNumber(teacher.class_average, 2) }}
+                                </span>
+                            </div>
+                            <div class="mt-col mt-col--center">
+                                <span class="mt-count">{{ teacher.student_count }}</span>
+                            </div>
+                            <div class="mt-col mt-col--wide">
+                                <div class="mt-progress">
+                                    <div class="mt-progress__bar" [style.width.%]="teacher.absence_in_classes"
+                                        [class.mt-progress__bar--low]="teacher.absence_in_classes <= 5"
+                                        [class.mt-progress__bar--mid]="teacher.absence_in_classes > 5 && teacher.absence_in_classes <= 10"
+                                        [class.mt-progress__bar--high]="teacher.absence_in_classes > 10">
+                                    </div>
+                                </div>
+                                <span class="mt-progress__label"
+                                    [class.mt-progress__label--warn]="teacher.absence_in_classes > 8">
+                                    {{ Utils.formatNumber(teacher.absence_in_classes, 1) }}%
+                                </span>
+                            </div>
+                        </div>
+                        }
+                    </div>
                 </div>
             </div>
         </div>
         }
+
         @case(ViewSelector.risks) {
         <!-- RISKS VIEW -->
-        <div class="risks-view">
-            <div class="section-card">
-                <div class="section-header">
-                    <h3>
-                        <i-tabler name="alert-triangle"></i-tabler>
-                        Predikce rizikových studentů
-                    </h3>
-                    <p>AI analýza identifikuje studenty, kteří mohou potřebovat podporu</p>
+        <div class="tab-body">
+            <!-- Summary KPIs -->
+            <div class="stats-cards mb">
+                <div class="stat-card stat--danger">
+                    <div class="stat-icon">
+                        <i-tabler name="flame"></i-tabler>
+                    </div>
+                    <div class="stat-info">
+                        <span class="stat-value">{{ getCriticalRiskCount() }}</span>
+                        <span class="stat-label">Kritické riziko (80+)</span>
+                    </div>
                 </div>
-                <div class="risks-table">
-                    <div class="table-header">
-                        <div class="col-rank">Riziko</div>
-                        <div class="col-student">Student</div>
-                        <div class="col-absence">Absence</div>
-                        <div class="col-grades">Známky</div>
-                        <div class="col-discipline">Kázeň</div>
-                        <div class="col-factor">Hlavní faktor</div>
+                <div class="stat-card stat--warning">
+                    <div class="stat-icon">
+                        <i-tabler name="alert-triangle"></i-tabler>
                     </div>
-                    @for (student of riskStudents; track $index) {
-                    <div class="table-row" [class]="getRiskColor(student.risk_score)">
-                        <div class="col-rank">
-                            <div class="rank-badge">{{ Utils.formatNumber(student.risk_score) }}</div>
-                        </div>
-                        <div class="col-student">{{ student.full_name }}</div>
-                        <div class="col-absence">{{ Utils.formatNumber(student.absence_rate, 2) }}%</div>
-                        <div class="col-grades">{{ Utils.formatNumber(student.grade_average, 2) }}</div>
-                        <div class="col-discipline">{{ Utils.formatNumber(student.disciplinary_issues) }}</div>
-                        <div class="col-factor">
-                            <span class="factor-badge" [class]="student.risk_factor">
-                                @if (student.risk_factor === 'absence') { Absence }
-                                @if (student.risk_factor === 'grades') { Prospěch }
-                                @if (student.risk_factor === 'discipline') { Kázeň }
-                                @if (student.risk_factor === 'combined') { Kombinované }
-                            </span>
+                    <div class="stat-info">
+                        <span class="stat-value">{{ getHighRiskCount() }}</span>
+                        <span class="stat-label">Vysoké riziko (70+)</span>
+                    </div>
+                </div>
+                <div class="stat-card stat--primary">
+                    <div class="stat-icon">
+                        <i-tabler name="shield-check"></i-tabler>
+                    </div>
+                    <div class="stat-info">
+                        <span class="stat-value">{{ schoolStats.at_risk_students }}</span>
+                        <span class="stat-label">Celkem rizikových</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="ov-section">
+                <div class="ov-section__header">
+                    <div class="ov-section__title-row">
+                        <i-tabler name="alert-triangle"></i-tabler>
+                        <div>
+                            <h3>Predikce rizikových studentů</h3>
+                            <span class="meta muted">Analýza identifikuje studenty, kteří mohou potřebovat
+                                podporu</span>
                         </div>
                     </div>
-                    }
+                </div>
+                <div class="ov-section__body ov-section__body--flush">
+                    <div class="modern-table">
+                        <div class="modern-table__head">
+                            <div [class]="'mt-col ' + riskSortClass('risk_score')" style="width:70px"
+                                (click)="sortRisks('risk_score')">
+                                Skóre
+                                <i-tabler name="chevron-up" class="sort-icon" size="14"></i-tabler>
+                            </div>
+                            <div [class]="'mt-col mt-col--stretch ' + riskSortClass('full_name')"
+                                (click)="sortRisks('full_name')">
+                                Student
+                                <i-tabler name="chevron-up" class="sort-icon" size="14"></i-tabler>
+                            </div>
+                            <div [class]="'mt-col mt-col--center ' + riskSortClass('absence_rate')"
+                                (click)="sortRisks('absence_rate')">
+                                Absence
+                                <i-tabler name="chevron-up" class="sort-icon" size="14"></i-tabler>
+                            </div>
+                            <div [class]="'mt-col mt-col--center ' + riskSortClass('grade_average')"
+                                (click)="sortRisks('grade_average')">
+                                Průměr
+                                <i-tabler name="chevron-up" class="sort-icon" size="14"></i-tabler>
+                            </div>
+                            <div [class]="'mt-col mt-col--center ' + riskSortClass('disciplinary_issues')"
+                                (click)="sortRisks('disciplinary_issues')">
+                                Kázeň
+                                <i-tabler name="chevron-up" class="sort-icon" size="14"></i-tabler>
+                            </div>
+                            <div [class]="'mt-col ' + riskSortClass('risk_factor')" (click)="sortRisks('risk_factor')">
+                                Hlavní faktor
+                                <i-tabler name="chevron-up" class="sort-icon" size="14"></i-tabler>
+                            </div>
+                        </div>
+                        @for (student of riskStudents; track $index) {
+                        <div class="modern-table__row risk-row-modern"
+                            [class.risk-row-modern--critical]="getRiskColor(student.risk_score) === 'critical'"
+                            [class.risk-row-modern--high]="getRiskColor(student.risk_score) === 'high'"
+                            [class.risk-row-modern--medium]="getRiskColor(student.risk_score) === 'medium'"
+                            [class.risk-row-modern--low]="getRiskColor(student.risk_score) === 'low'">
+                            <div class="mt-col" style="width:70px">
+                                <div class="risk-score-badge"
+                                    [class]="'risk-score-badge--' + getRiskColor(student.risk_score)">
+                                    {{ Utils.formatNumber(student.risk_score) }}
+                                </div>
+                            </div>
+                            <div class="mt-col mt-col--stretch">
+                                <div class="mt-entity">
+                                    <div class="mt-entity__avatar mt-entity__avatar--risk"
+                                        [class]="'mt-entity__avatar--' + getRiskColor(student.risk_score)">
+                                        {{ student.full_name.charAt(0) }}
+                                    </div>
+                                    <span class="mt-entity__name">{{ student.full_name }}</span>
+                                </div>
+                            </div>
+                            <div class="mt-col mt-col--center">
+                                <span class="mt-stat-value"
+                                    [class.mt-stat-value--warn]="+student.absence_rate * 100 > 15">
+                                    {{ Utils.formatNumber(+student.absence_rate * 100, 1) }}%
+                                </span>
+                            </div>
+                            <div class="mt-col mt-col--center">
+                                <span class="grade-pill" [class.grade-pill--good]="student.grade_average < 2.5"
+                                    [class.grade-pill--warn]="student.grade_average >= 2.5 && student.grade_average < 3.5"
+                                    [class.grade-pill--bad]="student.grade_average >= 3.5">
+                                    {{ Utils.formatNumber(student.grade_average, 2) }}
+                                </span>
+                            </div>
+                            <div class="mt-col mt-col--center">
+                                <span class="mt-stat-value"
+                                    [class.mt-stat-value--warn]="student.disciplinary_issues > 2">
+                                    {{ student.disciplinary_issues }}
+                                </span>
+                            </div>
+                            <div class="mt-col">
+                                <span class="factor-badge" [class]="'factor-badge--' + student.risk_factor">
+                                    @if (student.risk_factor === 'absence') { Absence }
+                                    @if (student.risk_factor === 'grades') { Prospěch }
+                                    @if (student.risk_factor === 'discipline') { Kázeň }
+                                    @if (student.risk_factor === 'combined') { Kombinované }
+                                </span>
+                            </div>
+                        </div>
+                        }
+                        @if (riskStudents.length === 0) {
+                        <div class="ov-empty">
+                            <i-tabler name="mood-happy"></i-tabler>
+                            <span>Žádní rizikoví studenti – skvělá práce!</span>
+                        </div>
+                        }
+                    </div>
                 </div>
             </div>
         </div>
         }
+
         }
     </div>
 </div>

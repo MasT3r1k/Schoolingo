@@ -4,7 +4,8 @@
             <i-tabler name="calendar-event"></i-tabler>
             {{ l.s('admin.schoolYears.startDate') || 'Datum začátku' }}
         </label>
-        <app-calendar id="schoolYear_start" size="full"></app-calendar>
+        <app-calendar id="schoolYear_start" [value]="form.get('start')?.value"
+            (valueChange)="form.get('start')?.setValue($event)" size="full"></app-calendar>
     </div>
 
     <div class="form-group">
@@ -12,7 +13,8 @@
             <i-tabler name="calendar-check"></i-tabler>
             {{ l.s('admin.schoolYears.endDate') || 'Datum konce' }}
         </label>
-        <app-calendar id="schoolYear_end" size="full"></app-calendar>
+        <app-calendar id="schoolYear_end" [value]="form.get('end')?.value"
+            (valueChange)="form.get('end')?.setValue($event)" size="full"></app-calendar>
     </div>
 
     <div class="form-group" style="grid-column: 1 / -1; max-width: 50%;">
@@ -20,7 +22,8 @@
             <i-tabler name="calendar-stats"></i-tabler>
             {{ l.s('admin.schoolYears.midtermDate') || 'Datum pololetí' }}
         </label>
-        <app-calendar id="schoolYear_midterm" size="full"></app-calendar>
+        <app-calendar id="schoolYear_midterm" [value]="form.get('midterm')?.value"
+            (valueChange)="form.get('midterm')?.setValue($event)" size="full"></app-calendar>
     </div>
 </div>
 

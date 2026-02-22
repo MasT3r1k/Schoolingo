@@ -34,6 +34,7 @@ import { MonitoringService } from './infrastructure/monitoring/monitoring.servic
 import { SessionExpiredService } from './infrastructure/session/session-expired.service';
 import { AlertManager } from '@Schoolingo/alert';
 import { Cookies } from '@Schoolingo/cookies';
+import { Timetable } from './infrastructure/timetable/timetable';
 
 export function initAuth(auth: Authentication): () => void {
   return () => auth.loadState(); // např. HTTP požadavek + setAuthState()
@@ -79,6 +80,7 @@ export const appConfig: ApplicationConfig = {
     MonitoringService,
     SessionExpiredService,
     AlertManager,
-    Cookies
+    Cookies,
+    Timetable
   ]
 };

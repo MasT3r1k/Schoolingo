@@ -119,190 +119,6 @@
 /* =========================================
    KPI CARDS
    =========================================*/
-.kpi-grid {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 1rem;
-}
-
-.kpi-card {
-    position: relative;
-    display: flex;
-    align-items: flex-start;
-    gap: 1rem;
-    padding: 1.25rem 1.25rem 1.125rem;
-    border-radius: var(--radius-xl);
-    border: 1px solid var(--border);
-    background: var(--surface-2);
-    overflow: hidden;
-    transition: transform 0.22s ease, box-shadow 0.22s ease;
-    animation: m-fadeIn 0.4s ease both;
-}
-
-.kpi-card:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.14);
-}
-
-/* Gradient glow accent */
-.kpi-card__glow {
-    position: absolute;
-    top: 0;
-    right: 0;
-    width: 80px;
-    height: 80px;
-    border-radius: 50%;
-    opacity: 0.18;
-    transform: translate(20px, -20px);
-    pointer-events: none;
-    transition: opacity 0.3s;
-}
-
-.kpi-card:hover .kpi-card__glow {
-    opacity: 0.28;
-}
-
-.kpi-card--blue .kpi-card__glow {
-    background: #4AA3FF;
-}
-
-.kpi-card--green .kpi-card__glow {
-    background: #2ecc71;
-}
-
-.kpi-card--orange .kpi-card__glow {
-    background: #FF9F43;
-}
-
-.kpi-card--purple .kpi-card__glow {
-    background: #A29BFE;
-}
-
-/* Left accent stripe */
-.kpi-card::before {
-    content: '';
-    position: absolute;
-    left: 0;
-    top: 0;
-    bottom: 0;
-    width: 3px;
-    border-radius: 16px 0 0 16px;
-}
-
-.kpi-card--blue::before {
-    background: #4AA3FF;
-}
-
-.kpi-card--green::before {
-    background: #2ecc71;
-}
-
-.kpi-card--orange::before {
-    background: #FF9F43;
-}
-
-.kpi-card--purple::before {
-    background: #A29BFE;
-}
-
-.kpi-card__icon {
-    width: 48px;
-    height: 48px;
-    border-radius: var(--radius-md);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-shrink: 0;
-    transition: transform 0.3s ease;
-}
-
-.kpi-card:hover .kpi-card__icon {
-    transform: scale(1.1) rotate(6deg);
-}
-
-.kpi-card__icon i-tabler {
-    width: 1.5rem;
-}
-
-.kpi-card--blue .kpi-card__icon {
-    background: rgba(74, 163, 255, 0.15);
-    color: #4AA3FF;
-}
-
-.kpi-card--green .kpi-card__icon {
-    background: rgba(46, 204, 113, 0.15);
-    color: #2ecc71;
-}
-
-.kpi-card--orange .kpi-card__icon {
-    background: rgba(255, 159, 67, 0.15);
-    color: #FF9F43;
-}
-
-.kpi-card--purple .kpi-card__icon {
-    background: rgba(162, 155, 254, 0.15);
-    color: #A29BFE;
-}
-
-.kpi-card__body {
-    flex: 1;
-    min-width: 0;
-}
-
-.kpi-card__label {
-    font-size: 0.75rem;
-    font-weight: 600;
-    color: var(--text-muted);
-    text-transform: uppercase;
-    letter-spacing: 0.6px;
-}
-
-.kpi-card__value {
-    font-size: 1.875rem;
-    font-weight: 800;
-    color: var(--text);
-    line-height: 1.15;
-    margin: 0.15rem 0 0.15rem;
-    letter-spacing: -0.5px;
-}
-
-.kpi-card__sub {
-    font-size: 0.78rem;
-    color: var(--text-muted);
-}
-
-.kpi-card__trend {
-    align-self: flex-start;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 26px;
-    height: 26px;
-    border-radius: var(--radius-full);
-    flex-shrink: 0;
-    transform: translate(6px, -6px);
-}
-
-.kpi-card__trend i-tabler {
-    width: 18px;
-    height: 18px;
-}
-
-.kpi-card__trend--up {
-    background: rgba(46, 204, 113, 0.15);
-    color: #2ecc71;
-}
-
-.kpi-card__trend--down {
-    background: rgba(231, 76, 60, 0.15);
-    color: #e74c3c;
-}
-
-.kpi-card__trend--neutral {
-    background: rgba(var(--text-muted), 0.1);
-    color: var(--text-muted);
-}
-
 /* =========================================
    LAYOUT ROWS
    =========================================*/
@@ -978,6 +794,7 @@
 
 .tech-item__icon i-tabler {
     width: 1rem;
+    height: 1rem;
 }
 
 .tech-item__info {
@@ -1294,12 +1111,13 @@
 
 .uptime-bar-row {
     display: flex;
-    height: 36px;
-    border-radius: var(--radius);
+    height: 28px;
+    border-radius: 8px;
     overflow: hidden;
-    gap: 1px;
-    background: var(--border);
+    gap: 2px;
+    background: var(--surface-2);
     border: 1px solid var(--border);
+    padding: 2px;
 }
 
 .uptime-bar-seg {
@@ -1314,15 +1132,18 @@
 }
 
 .seg--online {
-    background: #2ecc71;
+    background: linear-gradient(180deg, #2ecc71, #27ae60);
+    border-radius: 2px;
 }
 
 .seg--offline {
-    background: #e74c3c;
+    background: linear-gradient(180deg, #e74c3c, #c0392b);
+    border-radius: 2px;
 }
 
 .seg--update {
-    background: #FFC107;
+    background: linear-gradient(180deg, #FFC107, #f39c12);
+    border-radius: 2px;
 }
 
 .uptime-no-data {
@@ -1371,35 +1192,39 @@
 }
 
 /* ---- Uptime log table ---- */
+/* ---- Uptime log table ---- */
 .uptime-log {
     border: 1px solid var(--border);
     border-radius: var(--radius-xl);
     overflow: hidden;
-    font-size: 0.78rem;
+    background: var(--surface);
+    box-shadow: var(--shadow-sm);
+    animation: m-fadeIn 0.5s ease;
 }
 
 .uptime-log__header {
     display: grid;
-    grid-template-columns: 120px 130px 130px 80px 80px 1fr;
+    grid-template-columns: 140px 140px 140px 100px 100px 1fr;
     gap: 0;
-    padding: 0.5rem 1rem;
-    background: var(--surface-2);
-    border-bottom: 1px solid var(--border);
-    font-size: 0.7rem;
-    font-weight: 600;
+    padding: 0.875rem 1.25rem;
+    background: var(--surface-glow, var(--surface-2));
+    border-bottom: 2px solid var(--border);
+    font-size: 0.72rem;
+    font-weight: 700;
     color: var(--text-muted);
     text-transform: uppercase;
-    letter-spacing: 0.04em;
+    letter-spacing: 0.06em;
 }
 
 .uptime-log__row {
     display: grid;
-    grid-template-columns: 120px 130px 130px 80px 80px 1fr;
+    grid-template-columns: 140px 140px 140px 100px 100px 1fr;
     gap: 0;
-    padding: 0.6rem 1rem;
-    border-bottom: 1px solid var(--border);
+    padding: 0.875rem 1.25rem;
+    border-bottom: 1px solid var(--border-subtle, var(--border));
     align-items: center;
-    transition: background 0.15s;
+    transition: all 0.2s ease;
+    background: transparent;
 }
 
 .uptime-log__row:last-child {
@@ -1408,21 +1233,26 @@
 
 .uptime-log__row:hover {
     background: var(--hover-bg);
+    transform: scale(1.002);
 }
 
 .uptime-log__row.row--offline {
-    opacity: 0.75;
+    background: rgba(231, 76, 60, 0.02);
 }
 
 .uptime-log__row.row--update {
-    background: rgba(255, 193, 7, 0.05);
+    background: rgba(255, 193, 7, 0.03);
 }
 
 .uptime-log__status {
-    display: flex;
+    display: inline-flex;
     align-items: center;
-    gap: 6px;
-    font-weight: 600;
+    gap: 8px;
+    font-weight: 700;
+    padding: 4px 10px;
+    border-radius: 6px;
+    font-size: 0.75rem;
+    width: fit-content;
 }
 
 .uptime-dot {
@@ -1430,42 +1260,77 @@
     height: 8px;
     border-radius: 50%;
     flex-shrink: 0;
+    box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.1);
 }
 
-.dot--online {
+.row--online .uptime-log__status {
+    color: #2ecc71;
+    background: rgba(46, 204, 113, 0.12);
+}
+
+.row--online .dot--online {
     background: #2ecc71;
+    box-shadow: 0 0 8px rgba(46, 204, 113, 0.4);
 }
 
-.dot--offline {
+.row--offline .uptime-log__status {
+    color: #e74c3c;
+    background: rgba(231, 76, 60, 0.12);
+}
+
+.row--offline .dot--offline {
     background: #e74c3c;
+    box-shadow: 0 0 8px rgba(231, 76, 60, 0.4);
 }
 
-.dot--update {
+.row--update .uptime-log__status {
+    color: #FFC107;
+    background: rgba(255, 193, 7, 0.12);
+}
+
+.row--update .dot--update {
     background: #FFC107;
+    box-shadow: 0 0 8px rgba(255, 193, 7, 0.4);
 }
 
 .uptime-log__time {
-    color: var(--text-muted);
-    font-size: 0.76rem;
+    color: var(--text);
+    font-size: 0.8125rem;
+    font-weight: 500;
 }
 
 .uptime-log__dur {
-    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-weight: 700;
+    color: var(--text);
+    font-size: 0.8125rem;
+}
+
+.uptime-log__status i-tabler {
+    opacity: 0.8;
 }
 
 .uptime-log__ver {
-    font-family: monospace;
+    font-family: var(--font-mono);
     font-size: 0.75rem;
     color: var(--primary);
+    background: var(--primary-gradient-soft);
+    padding: 2px 6px;
+    border-radius: 4px;
+    width: fit-content;
 }
 
 .uptime-log__note {
     color: var(--text-muted);
-    font-style: italic;
+    font-size: 0.8125rem;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+    padding-right: 1rem;
 }
+
 
 /* ---- Responsive ---- */
 @media (max-width: 768px) {
@@ -1475,13 +1340,193 @@
 
     .uptime-log__header,
     .uptime-log__row {
-        grid-template-columns: 100px 1fr 1fr 60px;
+        grid-template-columns: 110px 1fr 1fr 80px;
+        padding: 0.75rem 1rem;
     }
 
     .uptime-log__header span:nth-child(5),
     .uptime-log__header span:nth-child(6),
-    .uptime-log__row span:nth-child(5),
-    .uptime-log__row span:nth-child(6) {
+    .uptime-log__row .uptime-log__ver,
+    .uptime-log__row .uptime-log__note {
         display: none;
+    }
+}
+
+/* =========================================
+   CUSTOM DATE RANGE PANELS
+   =========================================*/
+.custom-period-panel {
+    padding: 0 1.5rem 0;
+    animation: m-fadeIn 0.2s ease;
+}
+
+.custom-uptime-panel {
+    padding: 0.75rem 1.25rem;
+    border-top: 1px solid var(--border);
+    background: var(--glass-0);
+    animation: m-fadeIn 0.2s ease;
+}
+
+.custom-period-panel__inner {
+    display: flex;
+    align-items: flex-end;
+    gap: 0.75rem;
+    padding: 0.875rem 1.125rem;
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    flex-wrap: wrap;
+}
+
+.custom-period-panel__group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.375rem;
+}
+
+.custom-period-panel__label {
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+    font-size: 0.72rem;
+    font-weight: 600;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    cursor: default;
+}
+
+.custom-period-panel__label i-tabler {
+    color: var(--primary);
+    flex-shrink: 0;
+}
+
+.custom-period-panel__input {
+    padding: 0.45rem 0.75rem;
+    background: var(--surface-3, var(--surface-2));
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    color: var(--text);
+    font-size: 0.85rem;
+    font-family: inherit;
+    cursor: pointer;
+    transition: border-color 0.18s, box-shadow 0.18s;
+    min-width: 145px;
+}
+
+.custom-period-panel__input:focus {
+    outline: none;
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(var(--primary-rgb), 0.15);
+}
+
+.custom-period-panel__input::-webkit-calendar-picker-indicator {
+    filter: invert(0.5);
+    cursor: pointer;
+}
+
+.custom-period-panel__sep {
+    font-size: 1rem;
+    color: var(--text-muted);
+    padding-bottom: 0.45rem;
+    flex-shrink: 0;
+    user-select: none;
+}
+
+.custom-period-panel__apply {
+    display: flex;
+    align-items: center;
+    gap: 0.375rem;
+    flex-shrink: 0;
+}
+
+.custom-period-panel__error {
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+    font-size: 0.78rem;
+    color: var(--danger, #e74c3c);
+    font-weight: 500;
+    padding-bottom: 0.1rem;
+    animation: m-fadeIn 0.2s ease;
+}
+
+.custom-period-panel__error i-tabler {
+    flex-shrink: 0;
+}
+
+@media (max-width: 768px) {
+    .custom-period-panel {
+        padding: 0 1rem 0;
+    }
+
+    .custom-period-panel__inner {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .custom-period-panel__sep {
+        display: none;
+    }
+
+    .custom-period-panel__input {
+        min-width: 0;
+        width: 100%;
+    }
+}
+
+/* =========================================
+   GENERIC MONITORING SECTIONS
+   =========================================*/
+.m-section {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+    margin-bottom: 2rem;
+}
+
+.m-section--full {
+    width: 100%;
+}
+
+.m-section__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.25rem 1.75rem;
+    border-bottom: 1px solid var(--border);
+    background: var(--surface-glow);
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+
+.m-section__title-row {
+    display: flex;
+    align-items: center;
+    gap: 0.875rem;
+}
+
+.m-section__title-row i-tabler {
+    color: var(--primary);
+    width: 1.5rem;
+    height: 1.5rem;
+}
+
+.m-section__title-row h3 {
+    font-size: 1.125rem;
+    font-weight: 700;
+    color: var(--text);
+    margin: 0;
+}
+
+.m-section__body {
+    padding: 1.75rem;
+}
+
+@media (max-width: 768px) {
+    .m-section__header {
+        flex-direction: column;
+        align-items: flex-start;
     }
 }

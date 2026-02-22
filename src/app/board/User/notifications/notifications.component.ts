@@ -117,8 +117,8 @@ export class NotificationsComponent implements OnInit {
       color: '#ff5757',
       hasConditions: true,
       conditionFields: [
-        { key: 'value', label: 'Počet hodin', type: 'number', default: 10, min: 1 },
-        { key: 'value', label: 'Absence v %', type: 'number', default: 30, min: 1, max: 100 },
+        { key: 'hours', label: 'Počet hodin', type: 'number', default: 10, min: 1 },
+        { key: 'percent', label: 'Absence v %', type: 'number', default: 30, min: 1, max: 100 },
       ]
     },
     { 
@@ -132,6 +132,8 @@ export class NotificationsComponent implements OnInit {
       ]
     }
   ];
+
+  public editingRuleId: number | null | undefined = null;
 
   ngOnInit(): void {
     this.loadRules();
@@ -202,6 +204,24 @@ export class NotificationsComponent implements OnInit {
     });
   }
 
+  public updateRule(rule: NotificationRule): void {
+    if (!rule.rule_id) return;
+
+    this.http.put(
+      `${Config.API_URL}/v1/notifications/rules/${rule.rule_id}`,
+      { 
+        enabled: rule.enabled,
+        conditions: rule.conditions
+      },
+      { withCredentials: true }
+    ).subscribe({
+      next: () => {
+        console.log('Rule updated');
+        this.editingRuleId = null;
+      }
+    });
+  }
+
   public addRule(type: string): void {
     const typeConfig = this.getTypeConfig(type);
     if (!typeConfig) return;
@@ -228,6 +248,10 @@ export class NotificationsComponent implements OnInit {
         if (data.rule_id) {
           newRule.rule_id = data.rule_id;
           this.rules.push(newRule);
+          
+          if (typeConfig.hasConditions) {
+              this.editingRuleId = newRule.rule_id;
+          }
         }
       }
     });

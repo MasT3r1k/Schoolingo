@@ -8,14 +8,20 @@ import { FuelType, LICENSE_PLATES, VehicleGearbox, VehicleType } from '../../../
 import { FleetVehicles } from '@Schoolingo/fleetvehicles';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import * as VehicleConfig from '../../../../infrastructure/fleetvehicles/config';
+import { CalendarComponent } from '@Components/calendar';
+import moment from 'moment';
 
 
 @Component({
-  imports: [TabsComponent, IconsModule, FormsModule, ReactiveFormsModule],
+  imports: [TabsComponent, IconsModule, FormsModule, ReactiveFormsModule, CalendarComponent],
   templateUrl: './new-vehicle.component.html',
   styleUrl: './new-vehicle.component.css'
 })
 export class NewVehicleComponent {
+  public st_date = moment();
+  public em_date = moment();
+  public in_date = moment();
+  public su_date = moment();
   public VehicleConfig = VehicleConfig
   public LICENSE_PLATES = LICENSE_PLATES
   public l = inject(Locale);

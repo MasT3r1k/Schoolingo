@@ -7,12 +7,16 @@ export interface Substitution {
   substitution_id: number;
   date: string;
   hour: number;
-  type: 'cancelled' | 'substitution' | 'room_change' | 'other';
+  type: 'cancelled' | 'cancelled_hour' | 'substitution' | 'room_change' | 'other';
   note?: string;
   className?: string;
   subjectName?: string;
   originalTeacher?: string;
   substituteTeacher?: string;
+  /** Room from original timetable */
+  oldRoomName?: string;
+  /** New room assigned in substitution (room_change type) */
+  newRoomName?: string;
 }
 
 @Injectable({
@@ -26,14 +30,22 @@ export class SubstitutionService {
   public currentDate = signal<string>(new Date().toISOString().split('T')[0]);
 
   /**
-   * Load substitutions for a specific date
+   * Load substitutions for a specific date or range
    */
-  loadSubstitutions(date?: string): Observable<Substitution[]> {
+  loadSubstitutions(date?: string, endDate?: string, type?: string): Observable<Substitution[]> {
     this.loading.set(true);
     const targetDate = date || this.currentDate();
     
+    let url = `${Config.API_URL}/v1/schedule/substitution?date=${targetDate}`;
+    if (endDate) {
+      url += `&endDate=${endDate}`;
+    }
+    if (type && type !== 'all') {
+      url += `&type=${type}`;
+    }
+
     return this.http.get<{ substitutions: Substitution[]; date: string }>(
-      `${Config.API_URL}/v1/schedule/substitution?date=${targetDate}`,
+      url,
       { withCredentials: true }
     ).pipe(
       map(response => {

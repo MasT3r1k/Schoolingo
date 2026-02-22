@@ -14,6 +14,8 @@ import moment from 'moment';
 import { BehaviorSubject, distinctUntilChanged } from 'rxjs';
 import { Theme } from '@Schoolingo/theme';
 import { DropdownManager } from '@Schoolingo/dropdown';
+import { SharedTimetableComponent } from '../../../Components/timetable/timetable.component';
+import { Timetable } from '../../../infrastructure/timetable/timetable';
 
 export interface SidebarItem {
   item: string;
@@ -31,6 +33,7 @@ export interface TimetableAPI {
   timetable: TimetableLessonAPI[];
   substitution:TimetableSubstitutionAPI[];
   absences: TimetableAbsence[];
+  working_modes?: { start_date: Date, end_date: Date, type: string }[];
 }
 
 export interface TimetableLessonAPI {
@@ -92,6 +95,8 @@ export interface TimetableLesson {
   group: { id: number, text: string, num: string };
   empty: boolean;
   isSubstitution?: boolean;
+  absence?: number;
+  working_mode?: number;
 }
 
 export interface TimetableHours {
@@ -102,7 +107,7 @@ export interface TimetableHours {
 }
 
 @Component({
-  imports: [TabsComponent, NgClass, IconsModule],
+  imports: [TabsComponent, NgClass, IconsModule, SharedTimetableComponent],
   templateUrl: './timetable.component.html',
   styleUrl: './timetable.component.css'
 })
@@ -114,8 +119,9 @@ export class TimetableComponent implements OnInit {
   public u = inject(Authentication);
   public Utils = Utils;
   public absenceConfig = absence;
-  public workingModeConfig = working_mode
+  public workingModeConfig = working_mode;
   private school = inject(School);
+  private timetableService = inject(Timetable);
 
   private declare refreshDataTimeout;
   public dropdownManager = inject(DropdownManager)
@@ -135,54 +141,21 @@ export class TimetableComponent implements OnInit {
   };
   public teacherOptions: string[] = [];
 
-  public timetable_types: any = {
-    teaching: {
-      name: 'Výuka',
-      color: '#3498db'
-    },
-    substitution: {
-      name: 'Suplování',
-      color: '#9b59b6'
-    },
-    cancelled_hour: {
-      name: 'Zrušená hodina',
-      color: '#e74c3c'
-    },
-    trip: {
-      name: 'Výlet',
-      color: '#2ecc71'
-    },
-    holiday: {
-      name: 'Prázdniny',
-      color: '#61B0FF'
-    },
-    tutoring: {
-      name: 'Doučování',
-      color: '#8e44ad'
-    },
-    advice: {
-      name: 'Porada',
-      color: '#1abc9c'
-    },
-    school_event: {
-      name: 'Školní akce',
-      color: '#f39c12'
-    },
-    class_meeting: {
-      name: 'Třídní schůzka',
-      color: '#d35400'
-    },
-    class_lesson: {
-      name: 'Třídní hodina',
-      color: '#4A90E2'
-    },
-    exam: {
-      name: 'Zkouška',
-      color: '#c0392b'
-    },
-    supervision: {
-      name: 'Dozor',
-      color: '#e67e22'
+
+
+  public getTimetableType(): 'teacher' | 'student' | 'class' | 'room' | 'supervision' {
+    if (!this.perms.checkPermission(['teacher'])) {
+      return 'student';
+    }
+    switch(this.selectedTimetable.getValue()) {
+      case this.teacherOptions.indexOf('dropdown.select_timetable.my_timetable'):
+        return 'teacher';
+      case this.teacherOptions.indexOf('dropdown.select_timetable.class_timetable'):
+        return 'class';
+      case this.teacherOptions.indexOf('dropdown.select_timetable.supervision'):
+        return 'supervision';
+      default:
+        return 'student';
     }
   }
 
@@ -203,21 +176,12 @@ export class TimetableComponent implements OnInit {
     this.selectedTab
     .pipe(distinctUntilChanged()) // Kontrola zda není hodnota stejná
     .subscribe((val: number) => {
-      switch(val) {
-        case 0:
-          this.timetableSelectedWeek.next(moment());
-          break;
-        case 1:
-          this.timetableSelectedWeek.next(moment().add(1, 'week'));
-          break;
-        case 2:
-          this.timetableSelectedWeek.next(null);
-          break;
-        case 3:
-          if (this.timetableSelectedWeek.getValue() == null) {
+      if (val === 0) {
+        if (!this.timetableSelectedWeek.getValue()) {
             this.timetableSelectedWeek.next(moment());
-          }
-          break;
+        }
+      } else {
+        this.timetableSelectedWeek.next(null);
       }
       this.refreshData();
     });
@@ -247,174 +211,34 @@ export class TimetableComponent implements OnInit {
   }
 
   public refreshData(): void {
-    this.isLoadingTimetable = true;
-    let timetableBuild: any[] = [];
-    clearTimeout(this.refreshDataTimeout)
+    if (this.isLoadingTimetable) { return; }
+    
+    let targetType: 'person' | 'class' | 'room' | 'supervision' = 'person';
+    let targetId: number | null = this.u.getId();
 
-    let timetableData = {
-      type: "person",
-      id: this.u.getId()
-    }
     switch(this.selectedTimetable.getValue()) {
-      case this.teacherOptions.indexOf('dropdown.select_timetable.my_timetable'):
-        timetableData = {
-          type: "person",
-          id: this.u.getId()
-        }
-        break;
       case this.teacherOptions.indexOf('dropdown.select_timetable.class_timetable'):
-        timetableData = {
-          type: "class",
-          id: this.selectedClass.getValue()
-        }
+        targetType = 'class';
+        targetId = this.selectedClass.getValue();
         break;
       case this.teacherOptions.indexOf('dropdown.select_timetable.supervision'):
-        timetableData = {
-          type: "supervision",
-          id: this.u.getId()
-        }
+        targetType = 'supervision';
+        targetId = this.u.getId();
         break;
     }
 
-    this.http.post<TimetableAPI>(
-      Config.API_URL + '/v1/timetable',
-      {...timetableData, time: (this.timetableSelectedWeek.getValue() ?? moment()).format("YYYY-MM-DD")},
-      { withCredentials: true })
-    .subscribe((data: TimetableAPI) => {
-      console.log(data)
-      let maxHours = 0;
+    const { timetable, timetableHours, isLoading } = this.timetableService.getTimetable(
+        targetType, 
+        targetId, 
+        this.timetableSelectedWeek.getValue(),
+        this.selectedTab.getValue()
+    );
 
-      if (data.timetable.length == 0 && data.substitution.length == 0) {
-        this.timetable = [];
-        this.timetableHours = [];
-        this.isLoadingTimetable = false
-        return;
-      }
-
-      Object.values(data.timetable).forEach((item: any) => {
-        
-
-        item.color = "";
-        item.all_day = false;
-        if (item.hour + 1 > maxHours) {
-          maxHours = item.hour + 1;
-        }
-
-        if (!timetableBuild[item.day]) {
-          timetableBuild[item.day] = [];
-        }
-
-        if (!timetableBuild[item.day][item.hour - 1]) {
-          timetableBuild[item.day][item.hour - 1] = [];
-        }
-
-        const currentDay = moment(Utils.getDayOfWeek(this.timetableSelectedWeek.getValue() ?? moment(), item.day));
-
-        if (data.absences) {
-          data.absences.forEach((absence: any) => {
-            if (currentDay.format('YYYY-MM-DD') == moment(absence.date).format('YYYY-MM-DD') && item.hour == absence.hour + 1) {
-              item.absence = absence.type;
-            }
-          });
-        }
-
-        let substitution = data.substitution.find((sub: any) => {
-            const isCorrectDay = currentDay.isBetween(sub.start_date, sub.end_date, 'day', '[]') || currentDay.format('YYYY-MM-DD') == moment(sub.start_date).format('YYYY-MM-DD') || currentDay.format('YYYY-MM-DD') == moment(sub.end_date).format('YYYY-MM-DD');
-
-            const isCorrectHour = item.hour >= sub.start_hour && item.hour <= sub.end_hour;
-
-            return isCorrectDay && isCorrectHour;
-        });
-
-        if (substitution && this.timetableSelectedWeek.getValue() != null) {
-          timetableBuild[item.day][item.hour - 1].push({
-            ...item,
-            type: substitution.type,
-            subjectName: substitution.subject_name || substitution.event_name,
-            subjectShortcut: substitution.subject_shortcut,
-            all_day: (substitution.start_hour == -1 || substitution.end_hour == -1) ? true : false,
-            color: this.timetable_types[substitution.type]?.color ??  "",
-            teacher: substitution.teacher_id,
-            lastName: substitution.last_name,
-            room: substitution.room,
-            oldTeacher: item.last_name,
-            oldSubject: item.subject_name || [],
-            className: substitution.class_name,
-            group: { id: substitution.group_id || 0, text: substitution.group_name || '', num: substitution.group_num || '' },
-            hour: item.hour - 1,
-            empty: false
-          });
-        } else if (item.type == 0 || this.selectedTab.getValue() == 2 || this.selectedTab.getValue() !== 2 && item.type > 0
-        && (this.Utils.isOdd(this.timetableSelectedWeek.getValue()?.isoWeek()!) && item.type === 1 ||
-            !this.Utils.isOdd(this.timetableSelectedWeek.getValue()?.isoWeek()!) && item.type === 2)
-        ) {
-          timetableBuild[item.day][item.hour - 1].push({
-            ...item,
-            hour: item.hour - 1,
-            subjectName: item.subjectName,
-            subjectShortcut: item.subjectShortcut,
-            empty: false
-          });
-        }
-      });
-
-      this.timetable = timetableBuild;
-
-
-      let schoolConfig = this.school.config.getValue();
-
-      let hours: TimetableHours[] = [];
-      let time = moment()
-      .set('hours', schoolConfig?.start_hour!)
-      .set('minutes', schoolConfig?.start_minute!);
-
-      for(let i = 1;i <= maxHours;i++) {
-          let startHour = time.clone();
-          time.add(schoolConfig?.lesson_hour, 'minutes');
-          hours.push(
-              {
-                  startMoment: startHour.clone(),
-                  start: startHour.format('HH:mm'),
-                  endMoment: time.clone(),
-                  end: time.format('HH:mm')
-              }
-          );
-          let customBreak = schoolConfig?.breaks.filter((_) => _.hour == i + 1)[0]?.minutes;
-          time.add(customBreak || schoolConfig?.break_time, 'minutes');
-      }
-
-      this.timetableHours = hours;
-      this.isLoadingTimetable = false;
-    }, (err) => {
-      this.isLoadingTimetable = true;
-      this.timetable = [];
-      clearTimeout(this.refreshDataTimeout);
-      this.refreshDataTimeout = setTimeout(() => {
-        this.refreshData();
-      }, 2500);
-      this.isLoadingTimetable = false;
-    });
+    isLoading.subscribe(loading => this.isLoadingTimetable = loading);
+    timetable.subscribe(data => this.timetable = data);
+    timetableHours.subscribe(data => this.timetableHours = data);
   }
 
-
-    public getLessonClasses(index: number, index2: number, lesson: TimetableLesson): string[] {
-    let classes = ['sub-lesson-hour', 'lesson-count-' + this.timetable?.[index]?.[index2]?.length];
-    if (lesson.empty) {
-      classes.push('empty');
-    }
-
-    // if (this.schoolingo.isClassbook(index - 1, index2)) {
-    //   classes.push('classbook');
-    // }
-
-    // let day = thissubstitution[Utils.getDayOfWeek(this.timetableSelectedWeek.getValue()!, index - 1).format('YYYY-MM-DD')];
-
-    if (lesson.oldSubject && lesson.oldTeacher) {
-      classes.push('substitution');
-    }
-
-    return classes;
-  }
 
   public exportPdf(): void {
     this.generatingPdf = true;
@@ -460,6 +284,24 @@ export class TimetableComponent implements OnInit {
         this.generatingPdf = false;
       }
     });
+  }
+
+  public previousWeek(): void {
+    const week = this.timetableSelectedWeek.getValue() || moment();
+    this.timetableSelectedWeek.next(week.clone().subtract(1, 'week'));
+    this.refreshData();
+  }
+
+  public nextWeek(): void {
+    const week = this.timetableSelectedWeek.getValue() || moment();
+    this.timetableSelectedWeek.next(week.clone().add(1, 'week'));
+    this.refreshData();
+  }
+
+  public formatDateDisplay(): string {
+    const week = this.timetableSelectedWeek.getValue();
+    if (!week) return '';
+    return week.clone().startOf('isoWeek').format('D. M.') + ' - ' + week.clone().endOf('isoWeek').format('D. M. YYYY');
   }
 
 }

@@ -1,5 +1,10 @@
 @switch(page) {
-    @case("main") {
+@case("main") {
+@if (error) {
+<div class="message message--danger" style="margin-bottom: 1rem;">
+    {{ error }}
+</div>
+}
 <div class="form-group">
     <label for="email">{{ l.s('user.add_email.email') }}</label>
     <input type="text" name="email" id="email" [(ngModel)]="email" [placeholder]="l.s('user.add_email.email')">
@@ -7,22 +12,24 @@
 
 <div class="form-group">
     <label for="type">{{ l.s('user.add_email.type') }}</label>
-    <div class="custom-select" (click)="$event.stopPropagation(); dropdownManager.selected_dropdown = dropdownManager.selected_dropdown == 'add_email_type' ? '' : 'add_email_type'">
+    <div class="custom-select"
+        (click)="$event.stopPropagation(); dropdownManager.selected_dropdown = dropdownManager.selected_dropdown == 'add_email_type' ? '' : 'add_email_type'">
         <div class="selected-value">
             {{ l.s('user.add_email.types.' + email_types[email_selected]) }}
             <i-tabler name="chevron-down"></i-tabler>
         </div>
-    @if (dropdownManager.selected_dropdown == 'add_email_type') {
+        @if (dropdownManager.selected_dropdown == 'add_email_type') {
         <div class="options-dropdown">
             <div class="list">
-            @for (type of email_types; track $index) {
-            <div class="option" (click)="$event.stopPropagation();dropdownManager.selected_dropdown = '';email_selected = $index">
-            {{ l.s('user.add_email.types.' + type) }}
-            </div>
-            }
+                @for (type of email_types; track $index) {
+                <div class="option"
+                    (click)="$event.stopPropagation();dropdownManager.selected_dropdown = '';email_selected = $index">
+                    {{ l.s('user.add_email.types.' + type) }}
+                </div>
+                }
             </div>
         </div>
-    }
+        }
     </div>
 </div>
 
@@ -32,9 +39,46 @@
         {{ l.s('user.add_email.save_email') }}
     </div>
 </div>
-    }
+}
 
-    @case ("2fa") {
+@case ("verify") {
+@if (error) {
+<div class="message message--danger" style="margin-bottom: 1rem;">
+    {{ error }}
+</div>
+}
+<div class="message message--info">
+    Zadejte 6místný kód, který jsme vám zaslali na e-mail <strong>{{ email }}</strong>.
+</div>
+
+<div class="form-group">
+    <label for="verificationCode">Ověřovací kód</label>
+    <input type="text" name="verificationCode" id="verificationCode" [(ngModel)]="verificationCode" placeholder="ABCDEF"
+        maxlength="6" style="text-align: center; font-size: 24px; letter-spacing: 4px; text-transform: uppercase;">
+</div>
+
+<div class="form-group">
+    <div class="btn btn--primary" (click)="verifyEmail()">
+        <i-tabler name="circle-check"></i-tabler>
+        Ověřit e-mail
+    </div>
+
+    <div class="btn btn--secondary" (click)="resendCode()">
+        <i-tabler name="refresh"></i-tabler>
+        Zaslat kód znovu
+    </div>
+
+    <div class="btn btn--ghost" (click)="modalManager.closeModal('add_email')">
+        Zavřít
+    </div>
+</div>
+}
+@case ("2fa") {
+@if (error) {
+<div class="message message--danger" style="margin-bottom: 1rem;">
+    {{ error }}
+</div>
+}
 <div class="message message--info">
     {{ l.s('settings.2fa.descriptions.verify_code') }}
 </div>
@@ -43,15 +87,16 @@
     <label for="token">
         {{ l.s('auth.2fa.authentication_code') }}
     </label>
-    <input type="text" [placeholder]="l.s('auth.2fa.authentication_code')" id="token" autocomplete="off" [minlength]="AuthConfig.token_length" [maxlength]="AuthConfig.token_length" [(ngModel)]="token">
+    <input type="text" [placeholder]="l.s('auth.2fa.authentication_code')" id="token" autocomplete="off"
+        [minlength]="AuthConfig.token_length" [maxlength]="AuthConfig.token_length" [(ngModel)]="token">
 </div>
 <div class="form-group">
     <div class="btn btn--primary" (click)="saveEmail()">
         @if (active_action == 'activating_2fa') {
-            <div class="loader"></div>
-            <span>{{ l.s('auth.2fa.verify_code_action') }}</span>
+        <div class="loader"></div>
+        <span>{{ l.s('auth.2fa.verify_code_action') }}</span>
         } @else {
-            {{ l.s('auth.2fa.verify_code') }}
+        {{ l.s('auth.2fa.verify_code') }}
         }
     </div>
 
@@ -59,5 +104,5 @@
         {{ l.s('buttons.back') }}
     </div>
 </div>
-    }
+}
 }

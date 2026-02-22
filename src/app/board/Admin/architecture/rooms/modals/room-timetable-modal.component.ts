@@ -7,11 +7,13 @@ import { IconsModule } from '@Schoolingo/icons';
 import { ModalManager } from '@Schoolingo/modal';
 import { Utils } from '@Schoolingo/utils';
 import { School } from '@Schoolingo/school';
+import { Timetable } from '../../../../../infrastructure/timetable/timetable';
+import { SharedTimetableComponent } from '../../../../../Components/timetable/timetable.component';
 import moment from 'moment';
 
 @Component({
   standalone: true,
-  imports: [CommonModule, IconsModule, NgClass],
+  imports: [CommonModule, IconsModule, NgClass, SharedTimetableComponent],
   template: `
     @if (generatingPdf) {
         <div style="position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0, 0, 0, 0.7); display: flex; align-items: center; justify-content: center; z-index: 99999; flex-direction: column;">
@@ -27,63 +29,14 @@ import moment from 'moment';
             </div>
         </div>
       </div>
-      @if (isLoading) {
-        <div class="loader-container">
-          <div class="loader"></div>
-        </div>
-      }
-
-      @if (!isLoading && timetable.length > 0) {
-        <div class="timetable">
-          <div class="hours">
-            <div class="week-type">
-                {{ l.s('weeks.' + (Utils.isOdd(selectedWeek.isoWeek()) ? 'odd' : 'even')) }}
-            </div>
-            @for (hour of timetableHours; track $index) {
-              <div class="hour-info">
-                <div class="hour-id">{{ $index + 1 }}</div>
-                <div class="hour-time">{{ hour.start }} - {{ hour.end }}</div>
-              </div>
-            }
-          </div>
-
-          <div class="days">
-            @for (dayIndex of [1, 2, 3, 4, 5]; track dayIndex) {
-              <div class="day">
-                <div class="name">
-                  {{ l.s('days.' + dayIndex) }}
-                  <div class="time">{{ Utils.getDayOfWeek(selectedWeek, dayIndex).format('D. M.') }}</div>
-                </div>
-
-                @for (hourIndex of [].constructor(timetableHours.length); track $index) {
-                  <div class="item lesson-hour">
-                    @if (timetable[dayIndex]?.[$index]) {
-                      @for (lesson of timetable[dayIndex][$index]; track $index) {
-                        <div class="sub-lesson-hour" [style.backgroundColor]="lesson.color">
-                          <div class="group">
-                             <span>{{ lesson.class_name }}{{ lesson.group_name ? ' (' + lesson.group_name + (lesson.group_num ? ' ' + lesson.group_num : '') + ')' : '' }}</span>
-                          </div>
-                          <div class="subject">
-                            {{ lesson.subject_shortcut }}
-                          </div>
-                          <div class="teacher">
-                             {{ lesson.last_name }}
-                          </div>
-                        </div>
-                      }
-                    }
-                  </div>
-                }
-              </div>
-            }
-          </div>
-        </div>
-      } @else if (!isLoading) {
-        <div class="empty-state">
-          <i-tabler name="calendar-off" class="empty-icon"></i-tabler>
-          <p>{{ l.s('timetable.no_lessons') }}</p>
-        </div>
-      }
+      <schoolingo-timetable
+          [isLoading]="isLoading"
+          [timetable]="timetable"
+          [timetableHours]="timetableHours"
+          [selectedWeek]="selectedWeek"
+          [selectedTab]="0"
+          type="room"
+      ></schoolingo-timetable>
     </div>
   `,
   styles: [`
@@ -91,126 +44,6 @@ import moment from 'moment';
       min-height: 300px;
       padding: 1rem;
       overflow-x: auto;
-    }
-    .loader-container {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 300px;
-    }
-    .timetable {
-        display: flex;
-        flex-direction: column;
-        min-width: 800px;
-    }
-    .hours {
-        display: flex;
-        flex-direction: row;
-        align-items: center;
-        margin-bottom: 8px;
-    }
-    .hours > div {
-        display: flex;
-        justify-content: end;
-        align-items: center;
-        flex-direction: column;
-        min-width: 100px;
-    }
-    .week-type {
-        min-width: 80px !important;
-        font-weight: 600;
-        color: var(--text-muted);
-        text-transform: uppercase;
-        font-size: 10px;
-    }
-    .hour-id {
-        font-size: 16px;
-        font-weight: 600;
-        color: var(--primary);
-    }
-    .hour-time {
-        font-size: 10px;
-        color: var(--text-muted);
-    }
-    .days {
-        display: flex;
-        flex-direction: column;
-    }
-    .day {
-        display: flex;
-        flex-direction: row;
-        border-bottom: 1px solid var(--border);
-    }
-    .day:nth-child(2n) {
-        background-color: var(--hover-bg);
-    }
-    .day > .name {
-        min-width: 80px;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        font-weight: 600;
-        color: var(--primary);
-        text-transform: capitalize;
-    }
-    .day > .name > .time {
-        font-size: 11px;
-        color: var(--text-muted);
-        font-weight: 400;
-    }
-    .day > div {
-        min-width: 100px;
-        min-height: 80px;
-    }
-    .lesson-hour {
-        display: flex;
-        flex-direction: column;
-        border-left: 1px solid var(--border);
-    }
-    .sub-lesson-hour {
-        flex: 1;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        position: relative;
-        padding: 0.5rem;
-    }
-    .group, .teacher {
-        font-size: 10px;
-        color: var(--text-muted);
-        max-width: 100%;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        white-space: nowrap;
-    }
-    .group {
-        position: absolute;
-        top: 2px;
-        left: 4px;
-        color: var(--primary);
-    }
-    .subject {
-        font-size: 16px;
-        font-weight: 600;
-    }
-    .teacher {
-        margin-top: 2px;
-    }
-    .empty-state {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      height: 300px;
-      color: var(--text-muted);
-    }
-    .empty-icon {
-      width: 48px;
-      height: 48px;
-      margin-bottom: 1rem;
-      opacity: 0.5;
     }
   `]
 })
@@ -220,6 +53,7 @@ export class RoomTimetableModalComponent implements OnInit {
   public school = inject(School);
   public Utils = Utils;
   private modalManager = inject(ModalManager);
+  private timetableService = inject(Timetable);
 
   public room: any;
   public isLoading = true;
@@ -237,61 +71,19 @@ export class RoomTimetableModalComponent implements OnInit {
   }
 
   loadTimetable(): void {
+    if (!this.room) return;
     this.isLoading = true;
-    this.http.post<any>(`${Config.API_URL}/v1/timetable`, {
-      type: 'room',
-      id: this.room.room_id,
-      time: this.selectedWeek.format('YYYY-MM-DD')
-    }, { withCredentials: true }).subscribe({
-      next: (data) => {
-        this.processTimetable(data);
-        this.isLoading = false;
-      },
-      error: () => {
-        this.isLoading = false;
-      }
-    });
-  }
 
-  processTimetable(data: any): void {
-    const timetableBuild: any[] = [];
-    let maxHours = 0;
+    const { timetable, timetableHours, isLoading } = this.timetableService.getTimetable(
+        'room',
+        this.room.room_id,
+        this.selectedWeek,
+        0
+    );
 
-    data.timetable.forEach((item: any) => {
-      if (item.hour + 1 > maxHours) maxHours = item.hour + 1;
-      if (!timetableBuild[item.day]) timetableBuild[item.day] = [];
-      if (!timetableBuild[item.day][item.hour - 1]) timetableBuild[item.day][item.hour - 1] = [];
-      
-      timetableBuild[item.day][item.hour - 1].push({
-        ...item,
-        color: item.type === 0 ? '' : 'hsla(353deg, 85%, 53%, .16)' // Example substitution color if not type 0
-      });
-    });
-
-    // Subtitutions
-    data.substitution.forEach((sub: any) => {
-        // Find correct day/hour and merge or add
-        // For simplicity, room view shows what's actually happening
-    });
-
-    this.timetable = timetableBuild;
-
-    // Build hours info
-    const schoolConfig = this.school.config.getValue();
-    const hours = [];
-    let time = moment().set('hours', schoolConfig?.start_hour!).set('minutes', schoolConfig?.start_minute!);
-
-    for(let i = 1; i <= Math.max(maxHours, 8); i++) {
-      let startHour = time.clone();
-      time.add(schoolConfig?.lesson_hour, 'minutes');
-      hours.push({
-        start: startHour.format('HH:mm'),
-        end: time.format('HH:mm')
-      });
-      let customBreak = schoolConfig?.breaks.filter((b: any) => b.hour == i + 1)[0]?.minutes;
-      time.add(customBreak || schoolConfig?.break_time, 'minutes');
-    }
-    this.timetableHours = hours;
+    isLoading.subscribe(loading => this.isLoading = loading);
+    timetable.subscribe(data => this.timetable = data);
+    timetableHours.subscribe(data => this.timetableHours = data);
   }
 
   public exportPdf(): void {

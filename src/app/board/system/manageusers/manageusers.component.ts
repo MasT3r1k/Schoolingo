@@ -8,6 +8,8 @@ import { Config } from '@Schoolingo/config';
 import { Utils } from '@Schoolingo/utils';
 import { DropdownManager } from '@Schoolingo/dropdown';
 import { Locale } from '@Schoolingo/locale';
+import { CalendarComponent } from '@Components/calendar';
+import moment from 'moment';
 
 // Interfaces
 export interface User {
@@ -76,7 +78,7 @@ interface UserAPIResponse {
 @Component({
   selector: 'app-manageusers',
   standalone: true,
-  imports: [CommonModule, IconsModule, FormsModule, UserFilesModalComponent, DatePipe],
+  imports: [CommonModule, IconsModule, FormsModule, UserFilesModalComponent, DatePipe, CalendarComponent],
   templateUrl: './manageusers.component.html',
   styleUrl: './manageusers.component.css'
 })
@@ -141,7 +143,7 @@ export class ManageusersComponent implements OnInit {
     first_name: '',
     last_name: '',
     role: '',
-    birthday: '',
+    birthday: moment(),
     gender: ''
   };
   editFormErrors: Record<string, string> = {};
@@ -324,7 +326,7 @@ export class ManageusersComponent implements OnInit {
       first_name: this.selectedUser.first_name,
       last_name: this.selectedUser.last_name,
       role: this.selectedUser.role,
-      birthday: this.selectedUser.birthday ? this.selectedUser.birthday.substring(0, 10) : '',
+      birthday: this.selectedUser.birthday ? moment(this.selectedUser.birthday) : moment(),
       gender: this.selectedUser.gender || ''
     };
   }
@@ -350,7 +352,10 @@ export class ManageusersComponent implements OnInit {
 
     this.http.patch<any>(
       `${Config.API_URL}/v1/system/users/${this.selectedUser.id}`,
-      this.editForm,
+      {
+        ...this.editForm,
+        birthday: this.editForm.birthday.format('YYYY-MM-DD')
+      },
       { withCredentials: true }
     ).subscribe({
       next: () => {

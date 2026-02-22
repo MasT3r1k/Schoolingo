@@ -264,11 +264,13 @@
                             @if (attendanceFilter().period === 'custom') {
                             <div class="filter-group">
                                 <label>Od</label>
-                                <input type="date" class="form-input" [ngModel]="attendanceFilter().startDate" (ngModelChange)="setAttendanceFilterStartDate($event)">
+                                <input type="date" class="form-input" [ngModel]="attendanceFilter().startDate"
+                                    (ngModelChange)="setAttendanceFilterStartDate($event)">
                             </div>
                             <div class="filter-group">
                                 <label>Do</label>
-                                <input type="date" class="form-input" [ngModel]="attendanceFilter().endDate" (ngModelChange)="setAttendanceFilterEndDate($event)">
+                                <input type="date" class="form-input" [ngModel]="attendanceFilter().endDate"
+                                    (ngModelChange)="setAttendanceFilterEndDate($event)">
                             </div>
                             }
                             <button class="btn btn--primary btn--sm" (click)="exportAttendanceCSV()">
@@ -387,10 +389,10 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    @for (request of vacationRequests(); track request.requestId) {
+                                    @for (request of vacationRequests(); track request.request_id) {
                                     <tr>
                                         <td>{{ getVacationTypeLabel(request.type) }}</td>
-                                        <td>{{ request.startDate | date:'dd.MM.yyyy' }} - {{ request.endDate |
+                                        <td>{{ request.start_date | date:'dd.MM.yyyy' }} - {{ request.end_date |
                                             date:'dd.MM.yyyy' }}
                                         </td>
                                         <td>{{ request.days }}</td>
@@ -404,11 +406,11 @@
                                         <td>
                                             <div class="action-buttons">
                                                 <button class="btn btn--xs btn--success"
-                                                    (click)="approveVacation(request.requestId)">
+                                                    (click)="approveVacation(request.request_id)">
                                                     Schválit
                                                 </button>
                                                 <button class="btn btn--xs btn--danger"
-                                                    (click)="rejectVacation(request.requestId)">
+                                                    (click)="rejectVacation(request.request_id)">
                                                     Zamítnout
                                                 </button>
                                             </div>
@@ -456,7 +458,8 @@
                                     <div class="salary-details">
                                         <div class="detail-item">
                                             <span class="label">Platnost od:</span>
-                                            <span class="value">{{ currentSalary()!.validFrom | date:'dd.MM.yyyy' }}</span>
+                                            <span class="value">{{ currentSalary()!.validFrom | date:'dd.MM.yyyy'
+                                                }}</span>
                                         </div>
                                     </div>
                                     } @else {
@@ -733,7 +736,8 @@
         </div>
 
         <!-- View Tabs -->
-        <schoolingo-tabs [options]="viewTabOptions" [icons]="viewTabIcons" [value]="selectedViewTabSubject"></schoolingo-tabs>
+        <schoolingo-tabs [options]="viewTabOptions" [icons]="viewTabIcons"
+            [value]="selectedViewTabSubject"></schoolingo-tabs>
 
         <!-- TAB 0: LIST -->
         @if (selectedViewTab.getValue() === 0) {
@@ -743,7 +747,8 @@
                     <i-tabler name="search"></i-tabler>
                     <input type="text" placeholder="Hledat zaměstnance..." [ngModel]="filters().search"
                         (ngModelChange)="updateFilter('search', $event); onFilterChange()">
-                    <button *ngIf="filters().search" class="clear-search" (click)="updateFilter('search', ''); onFilterChange()">
+                    <button *ngIf="filters().search" class="clear-search"
+                        (click)="updateFilter('search', ''); onFilterChange()">
                         <i-tabler name="x"></i-tabler>
                     </button>
                 </div>
@@ -858,7 +863,8 @@
         <div class="bottom">
             <div class="left">
                 <span class="pagination-info">
-                    Zobrazeno {{ (currentPage() - 1) * pageSize() + 1 }} - {{ (currentPage() * pageSize()) > totalItems() ?
+                    Zobrazeno {{ (currentPage() - 1) * pageSize() + 1 }} - {{ (currentPage() * pageSize()) >
+                    totalItems() ?
                     totalItems() : (currentPage() * pageSize()) }} z {{ totalItems() }} zaměstnanců
                 </span>
             </div>
@@ -885,7 +891,8 @@
         <!-- TAB 1: ATTENDANCE -->
         @if (selectedViewTab.getValue() === 1) {
         <div class="attendance-wrapper">
-            <div class="card-header" style="justify-content: space-between; align-items: center; display: flex; margin-bottom: 20px;">
+            <div class="card-header"
+                style="justify-content: space-between; align-items: center; display: flex; margin-bottom: 20px;">
                 <h3>Přehled docházky</h3>
                 <div class="filters-inline">
                     <div class="filter-group">
@@ -980,20 +987,24 @@
 
             @if (vacationRequests().length > 0) {
             <div class="vacation-list">
-                @for (request of vacationRequests(); track request.requestId) {
+                @for (request of vacationRequests(); track request.request_id) {
                 <div class="vacation-card" [class]="getVacationStatusClass(request.status)">
                     <div class="vacation-info">
                         <div class="vacation-type">
                             @switch (request.type) {
                             @case ('vacation') { <i-tabler name="beach"></i-tabler> }
-                            @case ('sick') { <i-tabler name="stethoscope"></i-tabler> }
-                            @case ('personal') { <i-tabler name="user"></i-tabler> }
-                            @default { <i-tabler name="calendar"></i-tabler> }
+                            @case ('inability_to_work') { <i-tabler name="stethoscope"></i-tabler> }
+                            @case ('personal_obstacle') { <i-tabler name="clock-pause"></i-tabler> }
+                            @case ('school_event') { <i-tabler name="users-group"></i-tabler> }
+                            @case ('business_trip') { <i-tabler name="briefcase"></i-tabler> }
+                            @case ('education') { <i-tabler name="school"></i-tabler> }
+                            @case ('other') { <i-tabler name="home-edit"></i-tabler> }
                             }
                             <span>{{ getVacationTypeLabel(request.type) }}</span>
                         </div>
                         <div class="vacation-dates">
-                            {{ request.startDate }} - {{ request.endDate }}
+                            {{ Utils.formatDateShort(request.start_date) }} - {{ Utils.formatDateShort(request.end_date)
+                            }}
                             <span class="vacation-days">({{ request.days }} dní)</span>
                         </div>
                         @if (request.reason) {

@@ -44,17 +44,18 @@ export interface Employee {
 }
 
 export interface VacationRequest {
-  requestId: number;
-  teacherId: number;
-  firstName: string;
-  lastName: string;
-  startDate: string;
-  endDate: string;
+  request_id: number;
+  teacher_id: number;
+  first_name: string;
+  last_name: string;
+  start_date: string;
+  end_date: string;
   days: number;
   type: string;
   status: string;
   reason?: string;
-  createdAt: string;
+  created_at: Date;
+  approved_at: Date | null;
 }
 
 export interface AttendanceRecord {
@@ -209,6 +210,10 @@ export class EmployeesComponent implements OnInit {
   ngOnInit() {
     this.loadEmployees();
     this.checkAttendanceStatus();
+    const personId = this.auth.getId();
+    if (personId) {
+      this.loadVacationData(personId);
+    }
 
     // Register add employee modal
     this.modalManager.addModal(
@@ -661,7 +666,13 @@ export class EmployeesComponent implements OnInit {
   }
 
   openVacationRequestModal() {
-    this.modalManager.openModal('request_vacation');
+    this.modalManager.openModal('request_vacation', {
+      balance: this.vacationBalance(),
+      onSave: () => {
+        this.loadVacationData(this.auth.getId());
+        this.loadVacationRequests();
+      }
+    });
   }
 
   getStatusClass(status: any): string {
@@ -704,11 +715,12 @@ export class EmployeesComponent implements OnInit {
   getVacationTypeLabel(type: string): string {
     switch (type) {
       case 'vacation': return 'Dovolená';
-      case 'sick': return 'Nemocenská';
-      case 'personal': return 'Osobní volno';
-      case 'unpaid': return 'Neplacené volno';
-      case 'study': return 'Studijní volno';
-      case 'parental': return 'Rodičovská';
+      case 'inability_to_work': return 'Pracovní neschopnost';
+      case 'personal_obstacle': return 'Osobní překážka';
+      case 'school_event': return 'Školní akce';
+      case 'business_trip': return 'Pracovní cesta';
+      case 'education': return 'Vzdělávání';
+      case 'other': return 'Jiné';
       default: return type;
     }
   }
@@ -790,6 +802,10 @@ export class EmployeesComponent implements OnInit {
   closeDetail() {
     this.selectedEmployee.next(null);
     this.selectedDetailTab.next(0);
+    const personId = this.auth.getId();
+    if (personId) {
+      this.loadVacationData(personId);
+    }
   }
 
   loadEmployeeDetailData(personId: number) {
@@ -899,8 +915,12 @@ export class EmployeesComponent implements OnInit {
       { withCredentials: true }
     ).subscribe({
       next: (response) => {
-        // Direct object response or wrapped
-        this.vacationBalance.set(response.balance || response);
+        const data = response.balance || response;
+        this.vacationBalance.set({
+          total: data.entitlement || data.total || 0,
+          used: data.used || 0,
+          remaining: data.remaining || 0
+        });
       },
       error: (error) => {
         console.error('Failed to load vacation balance:', error);

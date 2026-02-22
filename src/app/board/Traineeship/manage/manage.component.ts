@@ -6,10 +6,12 @@ import { Locale } from '@Schoolingo/locale';
 import { School } from '@Schoolingo/school';
 import { DiaryWeek, Traineeship, StudentTraineeshipStatus } from '@Schoolingo/traineeship';
 import { Utils } from '@Schoolingo/utils';
+import { CalendarComponent } from '@Components/calendar';
+import moment from 'moment';
 
 @Component({
   standalone: true,
-  imports: [FormsModule, AsyncPipe, IconsModule],
+  imports: [FormsModule, AsyncPipe, IconsModule, CalendarComponent],
   templateUrl: './manage.component.html',
   styleUrls: ['./manage.component.css']
 })
@@ -25,8 +27,8 @@ export class ManageComponent {
 
   public newTraineeship = {
     name: '',
-    start: '',
-    end: '',
+    start: moment() as any,
+    end: moment() as any,
     groups: [] as string[],
     ignoredDays: [6, 7] as number[]
   };
@@ -65,7 +67,7 @@ export class ManageComponent {
 
   public closeCreateModal(): void {
     this.isCreateModalOpen = false;
-    this.newTraineeship = { name: '', start: '', end: '', groups: [], ignoredDays: [6, 7] };
+    this.newTraineeship = { name: '', start: moment() as any, end: moment() as any, groups: [], ignoredDays: [6, 7] };
   }
 
   public toggleGroup(group: string): void {
@@ -91,8 +93,8 @@ export class ManageComponent {
       return;
     }
 
-    const start = this.Utils.makeMoment(this.newTraineeship.start);
-    const end = this.Utils.makeMoment(this.newTraineeship.end);
+    const start = this.newTraineeship.start;
+    const end = this.newTraineeship.end;
 
     const newWeek: DiaryWeek = {
       companyId: 0,

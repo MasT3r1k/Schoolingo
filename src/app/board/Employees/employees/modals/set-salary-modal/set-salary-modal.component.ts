@@ -5,11 +5,13 @@ import { FormsModule } from '@angular/forms';
 import { Config } from '@Schoolingo/config';
 import { IconsModule } from '@Schoolingo/icons';
 import { ModalManager } from '@Schoolingo/modal';
+import { CalendarComponent } from '@Components/calendar';
+import moment from 'moment';
 
 @Component({
   selector: 'set-salary-modal',
   standalone: true,
-  imports: [FormsModule, IconsModule],
+  imports: [FormsModule, IconsModule, CalendarComponent],
   templateUrl: './set-salary-modal.component.html',
   styleUrls: ['./set-salary-modal.component.css']
 })
@@ -25,8 +27,8 @@ export class SetSalaryModalComponent implements OnInit {
     salary: 0,
     currency: 'CZK',
     role: '',
-    validFrom: new Date().toISOString().split('T')[0],
-    validTo: null as string | null,
+    validFrom: moment(),
+    validTo: null as moment.Moment | null,
     deductions: 0
   };
 
@@ -62,7 +64,11 @@ export class SetSalaryModalComponent implements OnInit {
 
     this.http.post(
       `${Config.API_URL}/v1/employees/salaries`,
-      this.newSalary,
+      {
+        ...this.newSalary,
+        validFrom: this.newSalary.validFrom.format('YYYY-MM-DD'),
+        validTo: this.newSalary.validTo ? this.newSalary.validTo.format('YYYY-MM-DD') : null
+      },
       { withCredentials: true }
     ).subscribe({
       next: () => {
@@ -89,7 +95,7 @@ export class SetSalaryModalComponent implements OnInit {
       salary: 0,
       role: '',
       currency: 'CZK',
-      validFrom: new Date().toISOString().split('T')[0],
+      validFrom: moment(),
       validTo: null,
       deductions: 0
     };

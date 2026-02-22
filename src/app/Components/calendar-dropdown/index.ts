@@ -24,6 +24,7 @@ export type CalendarData = {
     width: number;
     selected_date: BehaviorSubject<moment.Moment>[];
     selected_hour: number;
+    viewDate: moment.Moment;
     dropdownBounds?: any;
 
     visible?: boolean;
@@ -38,15 +39,17 @@ export type CalendarData = {
 export class CalendarManager {
     public l = inject(Locale);
     date = new BehaviorSubject<moment.Moment>(moment());
-    selectedDate: moment.Moment = moment();
     selectedHour: string | null = null;
     
-    public addCalendar(name: string, calendar: CalendarData): void {
+    public addCalendar(name: string, calendar: any): void {
         console.log(name, calendar);
         if (!calendar.visible) {
             calendar.visible = false;
         }
-        calendars[name] = calendar;
+        if (!calendar.viewDate) {
+            calendar.viewDate = moment(calendar.selected_date[0].getValue());
+        }
+        calendars[name] = calendar as CalendarData;
     }
 
     public getCalendarData(name: string): CalendarData {
@@ -71,6 +74,12 @@ export class CalendarManager {
 
     public closeCalendar(name: string): void {
         calendars[name].visible = false;
+    }
+
+    public navigateCalendar(name: string, amount: number, unit: moment.unitOfTime.DurationConstructor): void {
+        if (calendars[name]) {
+            calendars[name].viewDate.add(amount, unit);
+        }
     }
 
     public selectDay(calendarName: string, day: moment.Moment): void {

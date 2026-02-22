@@ -4,17 +4,20 @@
         <label class="label" [class.error-color]="errors['topic']">
             {{ l.s('marks.title') }}
             @if (errors['topic']) {
-                - {{ errors['topic'] }}
+            - {{ errors['topic'] }}
             }
         </label>
         <div class="value">
-            <input type="text" [class.input-error]="errors['topic']" name="markTopic" [maxlength]="marksManager.getConfig().max_topic_length" [placeholder]="l.s('marks.title_placeholder')" [(ngModel)]="topic">
+            <input type="text" [class.input-error]="errors['topic']" name="markTopic"
+                [maxlength]="marksManager.getConfig().max_topic_length" [placeholder]="l.s('marks.title_placeholder')"
+                [(ngModel)]="topic">
         </div>
     </div>
 
     <div class="form-group">
         <label>{{ l.s("marks.type") }}</label>
-        <div class="custom-select" (click)="$event.stopPropagation(); action == 'edit' ? {} : dropdownManager.selected_dropdown = dropdownManager.selected_dropdown == 'interm-record_edit-column_type' ? '' : 'interm-record_edit-column_type'">
+        <div class="custom-select"
+            (click)="$event.stopPropagation(); action == 'edit' ? {} : dropdownManager.selected_dropdown = dropdownManager.selected_dropdown == 'interm-record_edit-column_type' ? '' : 'interm-record_edit-column_type'">
             <div class="selected-value">
                 {{ l.s('marks.types.' + type) }}
                 <i-tabler name="chevron-down"></i-tabler>
@@ -22,11 +25,12 @@
             @if (dropdownManager.selected_dropdown == 'interm-record_edit-column_type') {
             <div class="options-dropdown">
                 <div class="list">
-                @for (columnType of types; track $index) {
-                <div class="option" (click)="$event.stopPropagation();dropdownManager.selected_dropdown = '';type = columnType">
-                    {{ l.s('marks.types.' + columnType) }}
-                </div>
-                }
+                    @for (columnType of types; track $index) {
+                    <div class="option"
+                        (click)="$event.stopPropagation();dropdownManager.selected_dropdown = '';type = columnType">
+                        {{ l.s('marks.types.' + columnType) }}
+                    </div>
+                    }
                 </div>
             </div>
             }
@@ -34,75 +38,76 @@
         <div class="note">{{ l.s('marks.cant_edit_after_creation') }}</div>
     </div>
 
-    @switch (type) {
-        @case("marks") {
-            <div class="form-group item mb">
-                <label class="label" [class.error-color]="errors['weight']">
-                    {{ l.s('marks.weight') }}
-                    @if (errors['weight']) {
-                        - {{ errors['weight'] }}
-                    }
-                </label>
-                <div class="value">
-                    <input type="text" [class.input-error]="errors['weight']" name="weight" [(ngModel)]="weight" />
-                </div>
-            </div>
-        }
-        @case("points") {
-            <div class="form-group item mb">
-                <label class="label" [class.error-color]="errors['points']">
-                    {{ l.s('marks.max_points') }}
-                    @if (errors['points']) {
-                        - {{ errors['points'] }}
-                    }
-                </label>
-                <div class="value">
-                    <input type="text" [class.input-error]="errors['points']" name="maxPoints" [placeholder]="l.s('marks.max_points_placeholder')" [(ngModel)]="maxPoints">
-                </div>
-            </div>
+    <div class="form-group item mb">
+        <label class="label" [class.error-color]="errors['weight']">
+            {{ l.s('marks.weight') }}
+            @if (errors['weight']) {
+            - {{ errors['weight'] }}
+            }
+        </label>
+        <div class="value">
+            <input type="text" [class.input-error]="errors['weight']" name="weight" [(ngModel)]="weight" />
+        </div>
+    </div>
 
-            <div class="form-group item mb">
-                <label class="label">
-                    {{ l.s('marks.include_in_grade_even_if_no_points') }}
-                </label>
-                <div class="value">
-                    <div class="yesOrNo row">
-                        <div [ngClass]="{'blue-info': includeInGradeEvenIfNoPoints}" (click)="includeInGradeEvenIfNoPoints = true">
-                            {{ l.s('yes') }}
-                        </div>
-                        <div [ngClass]="{'blue-info': !includeInGradeEvenIfNoPoints}" (click)="includeInGradeEvenIfNoPoints = false">
-                            {{ l.s('no') }}
-                        </div>
-                    </div>
+    @if (type === "points") {
+    <div class="form-group item mb">
+        <label class="label" [class.error-color]="errors['points']">
+            {{ l.s('marks.max_points') }}
+            @if (errors['points']) {
+            - {{ errors['points'] }}
+            }
+        </label>
+        <div class="value">
+            <input type="text" [class.input-error]="errors['points']" name="maxPoints"
+                [placeholder]="l.s('marks.max_points_placeholder')" [(ngModel)]="maxPoints">
+        </div>
+    </div>
+
+    <div class="form-group item mb">
+        <label class="label">
+            {{ l.s('marks.include_in_grade_even_if_no_points') }}
+        </label>
+        <div class="value">
+            <div class="yesOrNo row">
+                <div [ngClass]="{'blue-info': includeInGradeEvenIfNoPoints}"
+                    (click)="includeInGradeEvenIfNoPoints = true">
+                    {{ l.s('yes') }}
+                </div>
+                <div [ngClass]="{'blue-info': !includeInGradeEvenIfNoPoints}"
+                    (click)="includeInGradeEvenIfNoPoints = false">
+                    {{ l.s('no') }}
                 </div>
             </div>
-        }
+        </div>
+    </div>
     }
 
     @if (type == "points" && !includeInGradeEvenIfNoPoints || type == "marks") {
-        <div class="form-group item mb">
-            <label class="label" [class.error-color]="errors['prefill']">
-                {{ l.s('marks.prefill') }}
-                @if (errors['prefill']) {
-                    - {{ errors['prefill'] }}
-                }
-            </label>
-            <div class="value">
-                <input type="text" [disabled]="action == 'edit'" [class.input-error]="errors['prefill']" name="prefillMark" [placeholder]="l.s('marks.prefill_placeholder')" [(ngModel)]="prefillMark">
-                <div class="note">{{ l.s('marks.cant_edit_after_creation') }}</div>
-            </div>
+    <div class="form-group item mb">
+        <label class="label" [class.error-color]="errors['prefill']">
+            {{ l.s('marks.prefill') }}
+            @if (errors['prefill']) {
+            - {{ errors['prefill'] }}
+            }
+        </label>
+        <div class="value">
+            <input type="text" [disabled]="action == 'edit'" [class.input-error]="errors['prefill']" name="prefillMark"
+                [placeholder]="l.s('marks.prefill_placeholder')" [(ngModel)]="prefillMark">
+            <div class="note">{{ l.s('marks.cant_edit_after_creation') }}</div>
         </div>
+    </div>
 
-        @if (prefillMark == "?" && action == 'create') {
-            <div class="item mb" style="position: relative;">
-                <label class="label">
-                    {{ l.s('marks.planned_mark') }}
-                </label>
-                <div class="value">
-                    <app-calendar id="interm-record" size="full"></app-calendar>
-                </div>
-            </div>
-        }
+    @if (prefillMark == "?" && action == 'create') {
+    <div class="item mb" style="position: relative;">
+        <label class="label">
+            {{ l.s('marks.planned_mark') }}
+        </label>
+        <div class="value">
+            <app-calendar id="interm-record" size="full"></app-calendar>
+        </div>
+    </div>
+    }
     }
 
     <div class="form-group">
@@ -113,7 +118,7 @@
     </div>
 </div>
 } @else {
-    <div class="center" style="height: 400px;">
-        <div class="loader bigger"></div>
-    </div>
+<div class="center" style="height: 400px;">
+    <div class="loader bigger"></div>
+</div>
 }

@@ -76,6 +76,8 @@ import { ArchitectureRoomsComponent } from './board/Admin/architecture/rooms/roo
 import { InventoryComponent } from './board/Admin/inventory/inventory.component';
 import { SetupComponent } from './setup/setup.component';
 
+import { NoPermissionComponent } from './board/error/no-permission/no-permission.component';
+
 export const routes: Routes = [
     {
         path: 'setup',
@@ -454,6 +456,10 @@ export const routes: Routes = [
                         component: ManagerComponent
                     }
                 ]
+            },
+            {
+                path: 'no-permission',
+                component: NoPermissionComponent
             }
         ]
     }

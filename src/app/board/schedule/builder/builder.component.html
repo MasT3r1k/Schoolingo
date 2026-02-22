@@ -43,12 +43,13 @@
                             <div class="subject-color-indicator" [style.backgroundColor]="subject.color"></div>
                         </div>
                         <div class="card-content">
-                            <div class="subject-name">{{ subject.subjectName }}</div>
+                            <div class="subject-name">{{ subject.subject_name }}</div>
                             <div class="subject-meta">
-                                <span class="limit">{{ countUsedSubjectLesson(subject.subjectId) }} / {{
+                                <span class="limit">{{ countUsedSubjectLesson(subject.subject_id) }} / {{
                                     subject.hours_per_week }}</span>
-                                @for(teacher of scheduleBuilder.getSubject(subject.subjectId)?.teachers; track $index) {
-                                <span class="teacher-name">{{ teacher.teacherName }}</span>
+                                @for(teacher of scheduleBuilder.getSubject(subject.subject_id)?.teachers; track $index)
+                                {
+                                <span class="teacher-name">{{ teacher.teacher_name }}</span>
                                 }
                             </div>
                         </div>
@@ -101,7 +102,9 @@
                         <div class="btn icon-only" (click)="selectWeek(-1)">
                             <i-tabler name="chevron-left"></i-tabler>
                         </div>
-                        <app-calendar id="scheduleBuilder_date" size="center"></app-calendar>
+                        <app-calendar id="scheduleBuilder_date" [value]="selected_date"
+                            (valueChange)="selected_date = $event; scheduleBuilder.selectedDate = $event; refreshLoad()"
+                            size="center"></app-calendar>
                         <div class="btn icon-only" (click)="selectWeek(1)">
                             <i-tabler name="chevron-right"></i-tabler>
                         </div>

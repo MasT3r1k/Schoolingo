@@ -15,25 +15,26 @@ import { EditMidtermComponent } from './modals/edit-midterm/edit-midterm.compone
 import { DropdownManager } from '@Schoolingo/dropdown';
 
 interface Group {
-  groupId: number;
+  group_id: number;
   className: string;
-  subjectId: number;
+  subject_id: number;
   shortSubject: string;
   subject: string;
   studentCount: number;
 }
 
 interface GradeColumn {
-  columnId: number;
+  column_id: number;
   topic: string;
   weight: number;
+  max_points: number | null;
   type: number;
   created: Date;
   isExist: boolean;
 }
 
 interface Student {
-  studentId: number;
+  student_id: number;
   name: string;
   quarters: {
     quarter: number;
@@ -67,6 +68,7 @@ export class IntermRecordComponent {
   public groups: Group[] = [];
   public gradeColumns: GradeColumn[] = []
   public students: Student[] = [];
+  public marking_scale: number[] = [];
 
   public openColumn(columnIndex: number): void {
     const column = this.gradeColumns[columnIndex];
@@ -75,10 +77,11 @@ export class IntermRecordComponent {
     this.marksManager.setAction(column.isExist ? "edit" : "create");
     this.marksManager.setTopic(column.topic);
     this.marksManager.setWeight(column.weight);
-    this.marksManager.setColumnId(column.columnId);
+    this.marksManager.setMaxPoints(column.max_points);
+    this.marksManager.setColumnId(column.column_id);
     this.marksManager.setColumnIndex(columnIndex);
-    this.marksManager.setGroupId(this.groups[this.selected_group].groupId);
-    this.marksManager.setSubjectId(this.groups[this.selected_group].subjectId);
+    this.marksManager.setGroupId(this.groups[this.selected_group].group_id);
+    this.marksManager.setSubjectId(this.groups[this.selected_group].subject_id);
     this.marksManager.setType(column.type)
 
     // === Update Modal Title ===
@@ -98,50 +101,92 @@ export class IntermRecordComponent {
     this.marksManager.setAction(mark ? "edit" : "create");
     this.marksManager.setTopic(column.topic);
     this.marksManager.setWeight(column.weight);
-    this.marksManager.setColumnId(column.columnId);
+    this.marksManager.setMaxPoints(column.max_points);
+    this.marksManager.setColumnId(column.column_id);
     this.marksManager.setColumnIndex(columnIndex);
-    this.marksManager.setGroupId(this.groups[this.selected_group].groupId);
-    this.marksManager.setSubjectId(this.groups[this.selected_group].subjectId);
+    this.marksManager.setGroupId(this.groups[this.selected_group].group_id);
+    this.marksManager.setSubjectId(this.groups[this.selected_group].subject_id);
     this.marksManager.setSubjectName(this.groups[this.selected_group].subject);
     this.marksManager.setType(column.type)
     this.marksManager.setStudent(this.students[studentIndex].name);
-    this.marksManager.setStudentId(this.students[studentIndex].studentId);
+    this.marksManager.setStudentId(this.students[studentIndex].student_id);
     this.marksManager.setStudentIndex(studentIndex);
     this.marksManager.setMark(this.students[studentIndex].marks[columnIndex]);
 
     // === Open Modal ===
+    this.modalManager.updateModal("edit_mark", "title", mark ? (column.type === 1 ? "marks.edit_points" : "marks.edit_mark") : (column.type === 1 ? "marks.create_points" : "marks.create_mark"));
     this.modalManager.openModal("edit_mark");
+  }
+
+  public getPointGrade(pointsRaw: string | number | null, maxPoints: number): number {
+    if (pointsRaw === null || pointsRaw === undefined) return 0;
+    const pointsStr = String(pointsRaw);
+    const points = parseFloat(pointsStr.replace(',', '.'));
+    if (isNaN(points)) return 0;
+    if (maxPoints <= 0) return 1;
+    const percentage = (points / maxPoints) * 100;
+    
+    if (this.marking_scale && this.marking_scale.length === 5) {
+      for (let i = 0; i < 4; i++) {
+        if (percentage >= this.marking_scale[i]) return i + 1;
+      }
+      return 5;
+    }
+    if (percentage >= 85) return 1;
+    if (percentage >= 70) return 2;
+    if (percentage >= 50) return 3;
+    if (percentage >= 30) return 4;
+    return 5;
   }
 
   public getStudentAverage(student_index: number): string {
     if (!this.students[student_index]) return "";
     const student = this.students[student_index];
 
-    let total = 0;
-    let totalDivide = 0;
+    let totalGrade = 0;
+    let totalWeight = 0;
 
     for (let i = 0; i < student.marks.length; i++) {
-      if (student.marks[i]) {
+      if (student.marks[i] !== null && student.marks[i] !== undefined && student.marks[i] !== "") {
+        const markStr = String(student.marks[i]);
         const weight = this.gradeColumns[i].weight;
-        total += (parseInt(student.marks[i]!) || 0) * weight;
-        totalDivide += weight;
+        
+        let markVal = 0;
+        if (this.gradeColumns[i].type === 1) {
+            markVal = this.getPointGrade(markStr, this.gradeColumns[i].max_points || 1);
+        } else {
+            markVal = parseInt(markStr) || 0;
+        }
+
+        if (markVal > 0) {
+            totalGrade += markVal * weight;
+            totalWeight += weight;
+        }
       }
     }
-    if (totalDivide === 0) return "";
 
-    const average = total / totalDivide;
+    if (totalWeight === 0) return "";
+    const average = totalGrade / totalWeight;
     return average < 1 ? "1.00" : average.toFixed(2);
   }
 
   public getColumnAverage(columnIndex: number): string {
     if (!this.students.length) return "";
     let total = 0;
-    const students = this.students.filter((student) => student.marks[columnIndex] != null)
+    const students = this.students.filter((student) => student.marks[columnIndex] != null && student.marks[columnIndex] !== "")
     if (!students.length) return "";
 
-    students.forEach((student) => {
-      total += parseInt(student.marks[columnIndex]! ?? 0);
-    })
+    const column = this.gradeColumns[columnIndex];
+    if (column.type === 1) {
+      students.forEach((student) => {
+        total += this.getPointGrade(student.marks[columnIndex], column.max_points || 1);
+      });
+    } else {
+      students.forEach((student) => {
+        const markStr = String(student.marks[columnIndex]);
+        total += parseInt(markStr) || 0;
+      })
+    }
 
     return (total / students.length).toFixed(2);
   }
@@ -151,21 +196,23 @@ export class IntermRecordComponent {
     if (group) {
       this.router.navigate([], {
         relativeTo: this.route,
-        queryParams: { subject_id: group.subjectId, group_id: group.groupId },
+        queryParams: { subject_id: group.subject_id, group_id: group.group_id },
         queryParamsHandling: 'merge',
       });
       this.http.post(
         `${Config.API_URL}/v1/marks/teacher/group`,
-        { group_id: group.groupId, subject_id: group.subjectId },
+        { group_id: group.group_id, subject_id: group.subject_id },
         { withCredentials: true }
       ).subscribe((data) => {
         if ('columns' in data && 'students' in data) {
+          this.marking_scale = (data as any)['marking_scale'] || [];
           this.gradeColumns = (data.columns as GradeColumn[]).map((column: GradeColumn) => ({ ...column, isExist: true }));
           for (let i = 0; i < this.add_more_columns; i++) {
             this.gradeColumns.push({
-              columnId: -1,
+              column_id: -1,
               topic: "",
               weight: 1,
+              max_points: null,
               type: 0,
               created: new Date(),
               isExist: false
@@ -241,8 +288,8 @@ export class IntermRecordComponent {
       if (subject_id != null && group_id != null) {
         this.selected_group = this.groups.findIndex(
           (group) =>
-            group.groupId === parseInt(group_id, 10) &&
-            group.subjectId === parseInt(subject_id, 10)
+            group.group_id === parseInt(group_id, 10) &&
+            group.subject_id === parseInt(subject_id, 10)
         );
       } else {
         this.selected_group = -1;
@@ -259,6 +306,7 @@ export class IntermRecordComponent {
         this.gradeColumns[data.columnIndex].topic = data.topic;
         this.gradeColumns[data.columnIndex].type = data.type;
         this.gradeColumns[data.columnIndex].weight = data.weight;
+        this.gradeColumns[data.columnIndex].max_points = data.max_points;
         this.marksManager.updateColumn$.next({});
         console.log(data)
       });
@@ -268,7 +316,31 @@ export class IntermRecordComponent {
       .pipe(distinctUntilChanged())
       .subscribe((data) => {
         if (!Object.keys(data).length) return;
-        this.students[data.studentIndex].marks[data.columnIndex] = data.mark;
+        
+        if (data.type === 'midterm') {
+          const studentIndex = this.marksManager.getSelectedStudentIndex();
+          if (!this.students[studentIndex].quarters) {
+            this.students[studentIndex].quarters = [];
+          }
+          
+          if (data.grade === null) {
+            this.students[studentIndex].quarters = this.students[studentIndex].quarters.filter(q => q.quarter !== data.quarter);
+          } else {
+            const quarterIndex = this.students[studentIndex].quarters.findIndex((q: any) => q.quarter === data.quarter);
+            if (quarterIndex > -1) {
+              this.students[studentIndex].quarters[quarterIndex].grade = data.grade;
+            } else {
+              this.students[studentIndex].quarters.push({
+                quarter: data.quarter,
+                grade: data.grade,
+                verbal_assessment: ''
+              });
+            }
+          }
+        } else {
+          this.students[data.studentIndex].marks[data.columnIndex] = data.mark;
+        }
+        
         this.marksManager.updateMark$.next({});
         console.log(data)
       });
@@ -289,8 +361,8 @@ export class IntermRecordComponent {
           if (subject_id != null && group_id != null) {
             this.selected_group = this.groups.findIndex(
               (group) =>
-                group.groupId === parseInt(group_id, 10) &&
-                group.subjectId === parseInt(subject_id, 10)
+                group.group_id === parseInt(group_id, 10) &&
+                group.subject_id === parseInt(subject_id, 10)
             );
             this.updateGroup();
           }
@@ -339,10 +411,11 @@ export class IntermRecordComponent {
 
     // Set data for modal
     this.marksManager.setStudent(student.name);
-    this.marksManager.setStudentId(student.studentId);
+    this.marksManager.setStudentId(student.student_id);
+    this.marksManager.setStudentIndex(studentIndex);
     this.marksManager.setMark(student.quarters?.find((quarter) => quarter.quarter === this.getCurrentQuarter())?.grade?.toString() || null);
-    this.marksManager.setGroupId(this.groups[this.selected_group].groupId);
-    this.marksManager.setSubjectId(this.groups[this.selected_group].subjectId);
+    this.marksManager.setGroupId(this.groups[this.selected_group].group_id);
+    this.marksManager.setSubjectId(this.groups[this.selected_group].subject_id);
     this.marksManager.setSubjectName(this.groups[this.selected_group].subject);
     this.marksManager.setStudentAverage(this.getStudentAverage(studentIndex));
 

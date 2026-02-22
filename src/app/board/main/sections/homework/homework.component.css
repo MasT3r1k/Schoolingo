@@ -8,29 +8,39 @@
 .section-list {
     display: flex;
     flex-direction: column;
-    gap: 6px;
-    padding: .75rem 1rem;
+    gap: 5px;
+    padding: .625rem .875rem;
     overflow-y: auto;
     height: 100%;
 }
 
+/* ==============================
+   Homework Item (dashboard widget)
+   ============================== */
 .section-item {
     display: flex;
-    gap: 12px;
-    padding: 10px 12px;
+    gap: 10px;
+    padding: 9px 11px;
     background: var(--surface-2);
     border-radius: var(--radius);
     border: 1px solid var(--border);
+    border-left: 3px solid var(--border);
     transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    cursor: pointer;
+    position: relative;
 }
 
 .section-item:hover {
     background: var(--hover-bg);
+    border-color: var(--primary);
+    border-left-color: var(--primary);
     transform: translateX(2px);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.07);
 }
 
 .section-item.skeleton {
-    height: 68px;
+    height: 64px;
+    border-left-color: var(--border);
     animation: pulse 1.5s infinite;
 }
 
@@ -42,41 +52,45 @@
     }
 
     50% {
-        opacity: 0.5;
+        opacity: 0.45;
     }
 }
 
-/* Urgency styles */
+/* Urgency styles - left border color */
 .section-item.overdue,
 .section-item.today {
-    border-left: 3px solid var(--danger);
+    border-left-color: var(--danger);
 }
 
 .section-item.urgent {
-    border-left: 3px solid var(--warning);
+    border-left-color: var(--warning);
 }
 
 .section-item.normal {
-    border-left: 3px solid var(--primary);
+    border-left-color: var(--primary);
 }
 
+/* ==============================
+   Checkbox
+   ============================== */
 .hw-checkbox {
-    width: 22px;
-    height: 22px;
+    width: 20px;
+    height: 20px;
+    min-width: 20px;
     border: 2px solid var(--border);
-    border-radius: 6px;
+    border-radius: 5px;
     display: flex;
     align-items: center;
     justify-content: center;
     flex-shrink: 0;
     cursor: pointer;
     transition: all 0.15s ease;
-    margin-top: 2px;
+    margin-top: 1px;
 }
 
 .hw-checkbox:hover {
     border-color: var(--primary);
-    background: rgba(var(--primary-rgb), 0.1);
+    background: rgba(var(--primary-rgb), 0.08);
 }
 
 .hw-checkbox.completed {
@@ -85,53 +99,70 @@
 }
 
 .hw-checkbox.completed i-tabler {
-    width: 14px;
-    height: 14px;
+    width: 12px;
+    height: 12px;
     color: white;
 }
 
+/* ==============================
+   Item Content
+   ============================== */
 .item-content {
     flex: 1;
     overflow: hidden;
     display: flex;
     flex-direction: column;
-    gap: 4px;
+    gap: 3px;
 }
 
 .item-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    gap: 8px;
+    gap: 6px;
 }
 
 .hw-subject {
-    font-size: 0.7rem;
-    padding: 2px 8px;
+    font-size: 0.675rem;
+    padding: 2px 7px;
+    border-radius: 999px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 100px;
 }
 
 .hw-deadline {
-    display: flex;
+    display: inline-flex;
     align-items: center;
-    gap: 4px;
-    font-size: 0.7rem;
-    padding: 2px 8px;
+    gap: 3px;
+    font-size: 0.675rem;
+    padding: 2px 7px;
+    border-radius: 999px;
+    white-space: nowrap;
+    font-weight: 500;
 }
 
 .hw-deadline i-tabler {
-    width: 12px;
-    height: 12px;
+    width: 11px;
+    height: 11px;
+    flex-shrink: 0;
 }
 
 .hw-deadline.overdue,
 .hw-deadline.today {
     background: rgba(239, 68, 68, 0.1);
     color: var(--danger);
+    font-weight: 600;
 }
 
 .hw-deadline.urgent {
     background: rgba(234, 179, 8, 0.1);
     color: var(--warning);
+    font-weight: 600;
 }
 
 .hw-deadline.normal {
@@ -139,43 +170,26 @@
     color: var(--primary);
 }
 
+/* ==============================
+   Title & Description
+   ============================== */
 .item-title {
-    font-size: 0.875rem;
+    font-size: 0.8125rem;
     color: var(--text);
     font-weight: 500;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+    line-height: 1.4;
 }
 
 .item-description {
-    font-size: 0.75rem;
+    font-size: 0.7125rem;
     color: var(--text-muted);
     margin: 0;
     display: -webkit-box;
     -webkit-line-clamp: 1;
     -webkit-box-orient: vertical;
     overflow: hidden;
-}
-
-/* Empty state */
-.empty-state {
-    height: 100%;
-}
-
-.empty-state__icon {
-    width: 48px;
-    height: 48px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: var(--surface-2);
-    border-radius: 12px;
-    margin-bottom: 1rem;
-}
-
-.empty-state__icon i-tabler {
-    width: 24px;
-    height: 24px;
-    color: var(--text-muted);
+    line-height: 1.4;
 }

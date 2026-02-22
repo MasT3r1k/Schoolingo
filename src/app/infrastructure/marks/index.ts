@@ -24,6 +24,7 @@ export class MarksManager {
     private mark: string | null = null;
     private topic = "";
     private weight = 1;
+    private maxPoints: number | null = null;
     private mark_types: string[] = ['marks', 'points'];
     private type: string | null = null;
     private studentAverage: string = '';
@@ -66,6 +67,9 @@ export class MarksManager {
 
     public setWeight(weight: number): void { this.weight = weight }
     public getWeight(): typeof this.weight { return this.weight }
+
+    public setMaxPoints(maxPoints: number | null): void { this.maxPoints = maxPoints }
+    public getMaxPoints(): typeof this.maxPoints { return this.maxPoints }
 
     public setType(type: string | number | null): void {
         if (typeof type == "number") {

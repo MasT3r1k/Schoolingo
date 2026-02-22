@@ -28,10 +28,11 @@ interface StudentIntermMarkAPI {
   created: Date;
   topic: string;
   weight: number;
+  max_points: number | null;
   type: number;
   column_index: number;
   subject_id: number;
-  subject_name: number;
+  subject_name: string;
   group_id: number;
 }
 
@@ -48,13 +49,14 @@ interface StudentIntermMarkStat {
 }
 
 interface PredictorGrade {
-  subjectName: string;
+  subject_name: string;
   mark: number;
   weight: number;
   topic: string;
   type: number;
   created: Date;
   id: number;
+  max_points: number | null;
   isPredicted?: boolean;
 }
 
@@ -98,6 +100,7 @@ export class IntermComponent implements OnInit {
   private auth = inject(Authentication);
   public marksManager = inject(MarksManager);
   public dropdownManager = inject(DropdownManager);
+  public marking_scale: number[] = [];
 
   ngOnInit(): void {
     this.http
@@ -115,6 +118,20 @@ export class IntermComponent implements OnInit {
         }
         if ('mark_stats' in data) {
           this.markStats = data.mark_stats;
+        }
+        
+        const subject_id = this.marks.length > 0 ? this.marks[0].subject_id : -1;
+        const group_id = this.marks.length > 0 ? this.marks[0].group_id : -1;
+
+        if (subject_id !== -1 && group_id !== -1) {
+          this.http.get<any>(
+            `${Config.API_URL}/v1/marks/teacher/marking_scale?subject_id=${subject_id}&group_id=${group_id}`,
+            { withCredentials: true }
+          ).subscribe(scaleData => {
+             if (scaleData && scaleData.grades) {
+               this.marking_scale = scaleData.grades;
+             }
+          });
         }
       });
 
@@ -147,11 +164,12 @@ export class IntermComponent implements OnInit {
     if (!this.selected_subject) return;
 
     const newGrade: PredictorGrade = {
-      subjectName: this.selected_subject,
+      subject_name: this.selected_subject,
       mark: parseFloat(this.selected_mark.toString()),
       weight: parseInt(this.selected_weight.toString()),
       topic: this.l.s('marks.predictor.title'),
       type: 0,
+      max_points: null,
       created: new Date(),
       isPredicted: true,
       id: this.getGradesBySubject(this.selected_subject, true).length + (this.predictorMap[this.selected_subject]?.length - 1 || 1)
@@ -182,7 +200,7 @@ export class IntermComponent implements OnInit {
     this.editingIndex = id;
     if (markIndex !== -1) {
       const mark = this.marksCopy[markIndex];
-      this.selected_subject = mark.subjectName;
+      this.selected_subject = mark.subject_name;
       this.selected_mark = mark.mark;
       this.selected_weight = mark.weight;
     } else {
@@ -190,7 +208,7 @@ export class IntermComponent implements OnInit {
       const markIndex2 = this.predictorMap[this.selected_subject].findIndex((mark: any) => mark.id == id);
       if (markIndex2 === -1) return;
       const mark = this.predictorMap[this.selected_subject][markIndex2];
-      this.selected_subject = mark.subjectName;
+      this.selected_subject = mark.subject_name;
       this.selected_mark = mark.mark;
       this.selected_weight = mark.weight;
     }
@@ -241,7 +259,7 @@ export class IntermComponent implements OnInit {
     }
     const subjectsSet = new Set<string>();
     this.marks.forEach((mark: any) => {
-      subjectsSet.add(mark.subjectName);
+      subjectsSet.add(mark.subject_name);
     });
     return Array.from(subjectsSet);
   }
@@ -274,16 +292,46 @@ export class IntermComponent implements OnInit {
     let totalDivide = 0;
 
     for (const grade of grades) {
-      if (grade.type === 0 && typeof grade.mark === "number") {
-        const weight = (typeof grade.weight === "number" ? grade.weight : 0) + 1;
-        total += grade.mark * weight;
-        totalDivide += weight;
+      if (typeof grade.mark === "number") {
+        const weight = (typeof grade.weight === "number" ? grade.weight : 0);
+        let markVal = 0;
+        if (grade.type === 1) { // Points
+            markVal = this.getPointGrade(grade.mark, grade.max_points || 1);
+        } else {
+            markVal = grade.mark;
+        }
+
+        if (markVal > 0) {
+            total += markVal * weight;
+            totalDivide += weight;
+        }
       }
     }
     if (totalDivide === 0) return this.l.s('marks.no_subjects');
 
     const average = total / totalDivide;
     return average < 1 ? "1.00" : average.toFixed(2);
+  }
+
+  public getPointGrade(pointsRaw: string | number | null, maxPoints: number): number {
+    if (pointsRaw === null || pointsRaw === undefined) return 0;
+    const pointsStr = String(pointsRaw);
+    const points = parseFloat(pointsStr.replace(',', '.'));
+    if (isNaN(points)) return 0;
+    if (maxPoints <= 0) return 1;
+    const percentage = (points / maxPoints) * 100;
+    
+    if (this.marking_scale && this.marking_scale.length === 5) {
+      for (let i = 0; i < 4; i++) {
+        if (percentage >= this.marking_scale[i]) return i + 1;
+      }
+      return 5;
+    }
+    if (percentage >= 85) return 1;
+    if (percentage >= 70) return 2;
+    if (percentage >= 50) return 3;
+    if (percentage >= 30) return 4;
+    return 5;
   }
 
   public formatMark(mark_id: number): string {
@@ -296,8 +344,11 @@ export class IntermComponent implements OnInit {
 
   public getMarkTooltip(mark: any): string {
     let tooltip = `${mark.topic} (${this.utils.formatDateShort(mark.created)})`;
-    if (this.markStats[mark.columnId]) {
-      const stats = this.markStats[mark.columnId];
+    if (mark.type === 1 && mark.max_points) {
+        tooltip += `\n${this.l.s('marks.points')}: ${mark.mark} / ${mark.max_points}`;
+    }
+    if (this.markStats[mark.column_id]) {
+      const stats = this.markStats[mark.column_id];
       tooltip += `\n${this.l.s('marks.class_average')}: ${stats.avg}`;
       tooltip += `\n${this.l.s('marks.class_rank')}: ${stats.rank}`;
     }

@@ -7,12 +7,14 @@ import { ModalManager } from '@Schoolingo/modal';
 import { Locale } from '@Schoolingo/locale';
 import { DropdownManager } from '@Schoolingo/dropdown';
 import { Utils } from '@Schoolingo/utils';
+import { CalendarComponent } from '@Components/calendar';
+import moment from 'moment';
 
 
 @Component({
   selector: 'add-employee-modal',
   standalone: true,
-  imports: [FormsModule, IconsModule],
+  imports: [FormsModule, IconsModule, CalendarComponent],
   templateUrl: './add-employee-modal.component.html',
   styleUrls: ['./add-employee-modal.component.css']
 })
@@ -80,7 +82,7 @@ export class AddEmployeeModalComponent implements OnInit {
     firstName: '',
     lastName: '',
     gender: 0,
-    birthday: '',
+    birthday: moment(),
     email: '',
     phone: '',
     phoneCode: 420,
@@ -165,7 +167,10 @@ export class AddEmployeeModalComponent implements OnInit {
 
     this.http.post(
       `${Config.API_URL}/v1/employees`,
-      this.newEmployee,
+      {
+        ...this.newEmployee,
+        birthday: this.newEmployee.birthday.format('YYYY-MM-DD')
+      },
       { withCredentials: true }
     ).subscribe({
       next: () => {
@@ -175,7 +180,7 @@ export class AddEmployeeModalComponent implements OnInit {
           firstName: '',
           lastName: '',
           gender: 0,
-          birthday: '',
+          birthday: moment(),
           email: '',
           phone: '',
           phoneCode: 420,

@@ -1,0 +1,44 @@
+@switch(page) {
+@case("main") {
+<div class="form-group">
+    <label for="phone">{{ l.s('user.add_phone.number') }}</label>
+    <input type="text" name="phone" id="phone" [value]="Utils.formatPhone(phone)"
+        [placeholder]="l.s('user.add_phone.number')" readonly>
+</div>
+
+<div class="form-group">
+    <p>Přepište **{{ phone }}** do inputu níže</p>
+    <input type="text" name="text_phone" id="text_phone" [(ngModel)]="text_phone" placeholder="Např. 123456789">
+</div>
+
+<div class="form-group">
+    <div class="btn" [class.btn--danger]="this.phone == this.text_phone" (click)="deletePhone()">
+        <i-tabler name="trash-x"></i-tabler>
+        {{ l.s('user.delete_phone.delete_phone') || 'Smazat číslo' }}
+    </div>
+</div>
+}
+
+@case ("2fa") {
+<div class="message message--info">
+    {{ l.s('settings.2fa.descriptions.verify_code') }}
+</div>
+
+<div class="form-group">
+    <label for="token">
+        {{ l.s('auth.2fa.authentication_code') }}
+    </label>
+    <input type="text" [placeholder]="l.s('auth.2fa.authentication_code')" id="token" autocomplete="off" maxlength="6"
+        [(ngModel)]="token">
+</div>
+<div class="form-group">
+    <div class="btn btn--danger" (click)="deletePhone()">
+        {{ l.s('user.delete_phone.delete_phone') || 'Smazat číslo' }}
+    </div>
+
+    <div class="btn btn--secondary" (click)="page = 'main';token = ''">
+        {{ l.s('buttons.back') }}
+    </div>
+</div>
+}
+}

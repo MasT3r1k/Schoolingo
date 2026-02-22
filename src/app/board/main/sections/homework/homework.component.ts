@@ -7,6 +7,7 @@ import { NgClass } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import moment from 'moment';
 import { Authentication } from '@Schoolingo/authentication';
+import { Permission } from '@Schoolingo/permission';
 
 @Component({
   selector: 'app-homework',
@@ -18,6 +19,7 @@ import { Authentication } from '@Schoolingo/authentication';
 export class HomeworkComponent implements OnInit {
   private http = inject(HttpClient);
   private u = inject(Authentication);
+  private perms = inject(Permission);
   public l = inject(Locale);
   public homework: any[] = [];
   public isLoading = true;
@@ -35,6 +37,7 @@ export class HomeworkComponent implements OnInit {
   }
 
   public loadHomework(): void {
+    if (!this.perms.checkPermission(['student'])) return;
     this.http.get(
       `${Config.API_URL}/v1/homework?student_id=${this.u.getId()}&limit=5`,
       { withCredentials: true }

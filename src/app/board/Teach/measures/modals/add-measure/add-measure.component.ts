@@ -86,15 +86,7 @@ export class AddMeasureComponent implements OnInit {
       }, (err) => {}, () => this.filters.loading = false);
     })
 
-    // Initialize calendar
-    setTimeout(() => {
-        this.calendarManager.getCalendarData('add_measure_date').selected_date[0].next(moment(this.newMeasure.date));
-    });
-
-    // Subscribe to calendar changes
-    this.calendarManager.getCalendarData('add_measure_date').selected_date[0].subscribe((date) => {
-        this.newMeasure.date = date.format('YYYY-MM-DD');
-    });
+    // Calendar subscription is handled via (valueChange) in template
   }
 
   public getTypeLabel(type: MeasureType | 'all'): string {
@@ -211,7 +203,7 @@ export class AddMeasureComponent implements OnInit {
       studentId: this.newMeasure.studentId,
       type: this.newMeasure.type,
       reason: this.newMeasure.reason,
-      date: this.newMeasure.date,
+      date: this.newMeasure.date.format('YYYY-MM-DD'),
       note: this.newMeasure.note
     }).subscribe({
       next: (response) => {
@@ -228,7 +220,7 @@ export class AddMeasureComponent implements OnInit {
     category: 'positive' as MeasureCategory,
     severity: 'low' as MeasureSeverity,
     reason: '',
-    date: new Date().toISOString().split('T')[0],
+    date: moment(),
     note: ''
   };
 }

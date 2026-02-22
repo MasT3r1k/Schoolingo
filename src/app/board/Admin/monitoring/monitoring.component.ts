@@ -1,6 +1,7 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { CommonModule, SlicePipe, DatePipe } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { Config } from '@Schoolingo/config'; 
 import { Locale } from '@Schoolingo/locale';
 import { IconsModule } from '@Schoolingo/icons';
@@ -11,7 +12,7 @@ import { BehaviorSubject, Subscription } from 'rxjs';
 @Component({
   selector: 'app-monitoring',
   standalone: true,
-  imports: [CommonModule, IconsModule, SlicePipe, DatePipe, TabsComponent],
+  imports: [CommonModule, IconsModule, SlicePipe, DatePipe, TabsComponent, FormsModule],
   templateUrl: './monitoring.component.html',
   styleUrls: ['./monitoring.component.css']
 })
@@ -31,6 +32,13 @@ export class MonitoringComponent implements OnInit {
   error: string | null = null;
   selectedPeriodTab = new BehaviorSubject<number>(0);
   period: string = 'day';
+  selectedUptimeTab = new BehaviorSubject<number>(1);
+
+  // Custom date range for period (Matomo stats)
+  showCustomPeriod = false;
+  customPeriodFrom: string = '';
+  customPeriodTo: string = '';
+  customPeriodError: string | null = null;
 
   // Derived
   yAxisTicks: string[] = [];
@@ -42,26 +50,112 @@ export class MonitoringComponent implements OnInit {
   uptimeDays: number = 7;
   uptimeLoading = false;
 
+  // Custom date range for uptime
+  showCustomUptime = false;
+  customUptimeFrom: string = '';
+  customUptimeTo: string = '';
+  customUptimeError: string | null = null;
+
   private maxPageVisits = 1;
   private maxUserActions = 1;
 
   ngOnInit() {
+    // Init custom date fields to today / last 30 days
+    const today = new Date();
+    const todayStr = this.toDateInputValue(today);
+    const monthAgo = new Date(today);
+    monthAgo.setDate(today.getDate() - 30);
+    this.customPeriodFrom = this.toDateInputValue(monthAgo);
+    this.customPeriodTo = todayStr;
+    this.customUptimeFrom = this.toDateInputValue(monthAgo);
+    this.customUptimeTo = todayStr;
+
     this.fetchStats();
     this.loadUptime(this.uptimeDays);
-    this.subscribers.push(this.selectedPeriodTab.subscribe((period) => {
-      const periodRanges = ['day', 'week', 'month'];
-      if (this.period == periodRanges[period]) return;
-      this.period = periodRanges[period];
+    this.subscribers.push(this.selectedPeriodTab.subscribe((tabIndex) => {
+      const periodRanges = ['day', 'week', 'month', 'custom'];
+      const newPeriod = periodRanges[tabIndex];
+      if (newPeriod === 'custom') {
+        this.showCustomPeriod = true;
+        return; // don't fetch until user confirms
+      }
+      this.showCustomPeriod = false;
+      this.customPeriodError = null;
+      if (this.period == newPeriod) return;
+      this.period = newPeriod;
       this.fetchStats();
-    }))
+    }));
+
+    this.subscribers.push(this.selectedUptimeTab.subscribe((tabIndex) => {
+      const dayValues = [1, 7, 30, -1]; // -1 for custom
+      const days = dayValues[tabIndex];
+      
+      if (days === -1) {
+        this.showCustomUptime = true;
+        return; // wait for manual apply
+      }
+
+      this.showCustomUptime = false;
+      this.customUptimeError = null;
+      if (this.uptimeDays === days) return;
+      this.loadUptime(days);
+    }));
   }
 
-  /** Načte uptime historii z backendu */
+  /** Apply custom period range */
+  applyCustomPeriod() {
+    if (!this.customPeriodFrom || !this.customPeriodTo) {
+      this.customPeriodError = 'Vyplňte oba datumy.';
+      return;
+    }
+    if (this.customPeriodFrom > this.customPeriodTo) {
+      this.customPeriodError = 'Datum "od" musí být před datem "do".';
+      return;
+    }
+    this.customPeriodError = null;
+    this.period = 'custom';
+    this.fetchStats();
+  }
+
+  /** Apply custom uptime range */
+  applyCustomUptime() {
+    if (!this.customUptimeFrom || !this.customUptimeTo) {
+      this.customUptimeError = 'Vyplňte oba datumy.';
+      return;
+    }
+    if (this.customUptimeFrom > this.customUptimeTo) {
+      this.customUptimeError = 'Datum "od" musí být před datem "do".';
+      return;
+    }
+    this.customUptimeError = null;
+    this.loadUptimeCustom(this.customUptimeFrom, this.customUptimeTo);
+  }
+
+  /** Helper: convert Date to YYYY-MM-DD */
+  private toDateInputValue(d: Date): string {
+    return d.toISOString().substring(0, 10);
+  }
+
+  /** Načte uptime historii z backendu (předdefinované dny) */
   loadUptime(days: number) {
     this.uptimeDays = days;
+    this.showCustomUptime = false;
+    this.customUptimeError = null;
     this.uptimeLoading = true;
     this.http.get<any>(`${Config.API_URL}/v1/admin/analytics/uptime`, {
         params: { days: String(days) }
+    }).subscribe({
+        next: (data) => { this.uptimeData = data; this.uptimeLoading = false; },
+        error: ()     => { this.uptimeData = null; this.uptimeLoading = false; }
+    });
+  }
+
+  /** Načte uptime pro vlastní rozsah dat */
+  loadUptimeCustom(from: string, to: string) {
+    this.uptimeDays = -1; // signál pro "custom"
+    this.uptimeLoading = true;
+    this.http.get<any>(`${Config.API_URL}/v1/admin/analytics/uptime`, {
+        params: { from, to }
     }).subscribe({
         next: (data) => { this.uptimeData = data; this.uptimeLoading = false; },
         error: ()     => { this.uptimeData = null; this.uptimeLoading = false; }
@@ -72,8 +166,14 @@ export class MonitoringComponent implements OnInit {
     this.loading = true;
     this.error = null;
 
+    const params: any = { period: this.period };
+    if (this.period === 'custom') {
+      params['from'] = this.customPeriodFrom;
+      params['to'] = this.customPeriodTo;
+    }
+
     this.http.get<any>(`${Config.API_URL}/v1/admin/analytics/stats`, {
-        params: { period: this.period }
+        params
     }).subscribe({
         next: (data) => {
             this.stats = data;

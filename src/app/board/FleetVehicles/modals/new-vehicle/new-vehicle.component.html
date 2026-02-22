@@ -1,210 +1,217 @@
 <schoolingo-tabs [icons]="option_icons" [options]="options" [value]="selected_tab"></schoolingo-tabs>
 
 @switch (selected_tab.getValue()) {
-    @case (0) {
-        <div class="form-group">
-            <label for="rz">Registrační značka vozidla</label>
-            <div class="license-plate">
-                <div class="country-label">
-                    <div class="europe-flag"></div>
-                    <span class="country-code">{{ LICENSE_PLATES[country].code }}</span>
+@case (0) {
+<div class="form-group">
+    <label for="rz">Registrační značka vozidla</label>
+    <div class="license-plate">
+        <div class="country-label">
+            <div class="europe-flag"></div>
+            <span class="country-code">{{ LICENSE_PLATES[country].code }}</span>
+        </div>
+        <input type="text" id="rz">
+    </div>
+</div>
+
+<div class="form-group">
+    <div class="row justify-content-space-between">
+        <label for="vin">VIN číslo vozidla</label>
+        <small class="muted">{{ vin.length }} / {{ VehicleConfig.VIN_MAX_LENGTH }}</small>
+    </div>
+
+    <input type="text" id="vin" style="text-transform: uppercase;" [(ngModel)]="vin"
+        [maxlength]="VehicleConfig.VIN_MAX_LENGTH" />
+    <small class="note">VIN nemůže obsahovat I, O, Q</small>
+</div>
+
+<div class="form-row">
+    <div class="form-group">
+        <label for="manufacturer">Značka vozidla</label>
+        <input type="text" id="manufacturer" placeholder="Škoda">
+    </div>
+
+    <div class="form-group">
+        <label for="model">Model vozidla</label>
+        <input type="text" id="model" placeholder="Octavia">
+    </div>
+</div>
+
+<div class="form-row">
+    <div class="form-group">
+        <label for="year">Rok výroby</label>
+        <input type="text" id="year" placeholder="2019">
+    </div>
+
+    <div class="form-group">
+        <label for="type">Typ vozidla</label>
+        <div class="custom-select" id="type"
+            (click)="$event.stopPropagation();dropdownManager.selected_dropdown = dropdownManager.selected_dropdown == 'fleetvehicles_type_vehicle' ? '' : 'fleetvehicles_type_vehicle'">
+            <div class="selected-value">
+                <div class="row" style="gap: .5rem">
+                    <i-tabler [name]="vehicles.getVehicleTypeIcon(type)"></i-tabler>
+                    {{ l.s(vehicles.getVehicleTypeLabel(type)) }}
                 </div>
-                <input type="text" id="rz">
+                <i-tabler name="chevron-down"></i-tabler>
             </div>
-        </div>
-
-        <div class="form-group">
-            <div class="row justify-content-space-between">
-                <label for="vin">VIN číslo vozidla</label>
-                <small class="muted">{{ vin.length }} / {{ VehicleConfig.VIN_MAX_LENGTH }}</small>
-            </div>
-
-            <input type="text" id="vin" style="text-transform: uppercase;" [(ngModel)]="vin" [maxlength]="VehicleConfig.VIN_MAX_LENGTH" />
-            <small class="note">VIN nemůže obsahovat I, O, Q</small>
-        </div>
-
-        <div class="form-row">
-            <div class="form-group">
-                <label for="manufacturer">Značka vozidla</label>
-                <input type="text" id="manufacturer" placeholder="Škoda">
-            </div>
-
-            <div class="form-group">
-                <label for="model">Model vozidla</label>
-                <input type="text" id="model" placeholder="Octavia">
-            </div>
-        </div>
-
-        <div class="form-row">
-            <div class="form-group">
-                <label for="year">Rok výroby</label>
-                <input type="text" id="year" placeholder="2019">
-            </div>
-
-            <div class="form-group">
-                <label for="type">Typ vozidla</label>
-                <div class="custom-select" id="type" (click)="$event.stopPropagation();dropdownManager.selected_dropdown = dropdownManager.selected_dropdown == 'fleetvehicles_type_vehicle' ? '' : 'fleetvehicles_type_vehicle'">
-                    <div class="selected-value">
-                        <div class="row" style="gap: .5rem">
-                            <i-tabler [name]="vehicles.getVehicleTypeIcon(type)"></i-tabler>
-                            {{ l.s(vehicles.getVehicleTypeLabel(type)) }}
-                        </div>
-                        <i-tabler name="chevron-down"></i-tabler>
-                    </div>
-                    @if (dropdownManager.selected_dropdown == 'fleetvehicles_type_vehicle') {
-                    <div class="options-dropdown">
-                        <div class="list">
-                        @for (vehicleType of types; track $index) {
-                        <div class="option row" style="gap: .5rem" (click)="$event.stopPropagation();dropdownManager.selected_dropdown = '';type = vehicleType">
-                            <i-tabler [name]="vehicles.getVehicleTypeIcon(vehicleType)"></i-tabler>
-                            {{ l.s(vehicles.getVehicleTypeLabel(vehicleType)) }}
-                        </div>
-                        }
-                        </div>
+            @if (dropdownManager.selected_dropdown == 'fleetvehicles_type_vehicle') {
+            <div class="options-dropdown">
+                <div class="list">
+                    @for (vehicleType of types; track $index) {
+                    <div class="option row" style="gap: .5rem"
+                        (click)="$event.stopPropagation();dropdownManager.selected_dropdown = '';type = vehicleType">
+                        <i-tabler [name]="vehicles.getVehicleTypeIcon(vehicleType)"></i-tabler>
+                        {{ l.s(vehicles.getVehicleTypeLabel(vehicleType)) }}
                     </div>
                     }
                 </div>
             </div>
+            }
         </div>
-    }
+    </div>
+</div>
+}
 
-    @case (1) {
-        <div class="form-group">
-            <label for="fuel">Palivo</label>
-            <div class="custom-select" id="fuel" (click)="$event.stopPropagation();dropdownManager.selected_dropdown = dropdownManager.selected_dropdown == 'fleetvehicles_fuel_vehicle' ? '' : 'fleetvehicles_fuel_vehicle'">
-                <div class="selected-value">
-                    {{ l.s(vehicles.getFuelLabel(fuel)) }}
-                    <i-tabler name="chevron-down"></i-tabler>
-                </div>
-                @if (dropdownManager.selected_dropdown == 'fleetvehicles_fuel_vehicle') {
-                <div class="options-dropdown">
-                    <div class="list">
-                    @for (vehicleFuel of fuels; track $index) {
-                    <div class="option" (click)="$event.stopPropagation();dropdownManager.selected_dropdown = '';fuel = vehicleFuel">
-                        {{ l.s(vehicles.getFuelLabel(vehicleFuel)) }}
-                    </div>
-                    }
-                    </div>
+@case (1) {
+<div class="form-group">
+    <label for="fuel">Palivo</label>
+    <div class="custom-select" id="fuel"
+        (click)="$event.stopPropagation();dropdownManager.selected_dropdown = dropdownManager.selected_dropdown == 'fleetvehicles_fuel_vehicle' ? '' : 'fleetvehicles_fuel_vehicle'">
+        <div class="selected-value">
+            {{ l.s(vehicles.getFuelLabel(fuel)) }}
+            <i-tabler name="chevron-down"></i-tabler>
+        </div>
+        @if (dropdownManager.selected_dropdown == 'fleetvehicles_fuel_vehicle') {
+        <div class="options-dropdown">
+            <div class="list">
+                @for (vehicleFuel of fuels; track $index) {
+                <div class="option"
+                    (click)="$event.stopPropagation();dropdownManager.selected_dropdown = '';fuel = vehicleFuel">
+                    {{ l.s(vehicles.getFuelLabel(vehicleFuel)) }}
                 </div>
                 }
             </div>
         </div>
+        }
+    </div>
+</div>
 
-        <div class="form-row">
-            <div class="form-group">
-                <label for="engine_capacity">Objem motoru (cm³)</label>
-                <input type="text" id="engine_capacity">
+<div class="form-row">
+    <div class="form-group">
+        <label for="engine_capacity">Objem motoru (cm³)</label>
+        <input type="text" id="engine_capacity">
+    </div>
+
+    <div class="form-group">
+        <label for="power">Výkon (kW)</label>
+        <input type="text" id="power">
+    </div>
+</div>
+
+<div class="form-row">
+    <div class="form-group">
+        <label for="tachometr">Stav tachometru (km)</label>
+        <input type="text" id="tachometr">
+    </div>
+
+    <div class="form-group">
+        <label for="gearbox">Převodovka</label>
+        <div class="custom-select" id="gearbox"
+            (click)="$event.stopPropagation();dropdownManager.selected_dropdown = dropdownManager.selected_dropdown == 'fleetvehicles_gearbox_vehicle' ? '' : 'fleetvehicles_gearbox_vehicle'">
+            <div class="selected-value">
+                {{ l.s(vehicles.getVehicleGearboxLabel(gearbox)) }}
+                <i-tabler name="chevron-down"></i-tabler>
             </div>
-
-            <div class="form-group">
-                <label for="power">Výkon (kW)</label>
-                <input type="text" id="power">
-            </div>
-        </div>
-
-        <div class="form-row">
-            <div class="form-group">
-                <label for="tachometr">Stav tachometru (km)</label>
-                <input type="text" id="tachometr">
-            </div>
-
-            <div class="form-group">
-                <label for="gearbox">Převodovka</label>
-                <div class="custom-select" id="gearbox" (click)="$event.stopPropagation();dropdownManager.selected_dropdown = dropdownManager.selected_dropdown == 'fleetvehicles_gearbox_vehicle' ? '' : 'fleetvehicles_gearbox_vehicle'">
-                    <div class="selected-value">
-                        {{ l.s(vehicles.getVehicleGearboxLabel(gearbox)) }}
-                        <i-tabler name="chevron-down"></i-tabler>
-                    </div>
-                    @if (dropdownManager.selected_dropdown == 'fleetvehicles_gearbox_vehicle') {
-                    <div class="options-dropdown">
-                        <div class="list">
-                        @for (vehicleGearbox of gearboxTypes; track $index) {
-                        <div class="option" (click)="$event.stopPropagation();dropdownManager.selected_dropdown = '';gearbox = vehicleGearbox">
-                            {{ l.s(vehicles.getVehicleGearboxLabel(vehicleGearbox)) }}
-                        </div>
-                        }
-                        </div>
+            @if (dropdownManager.selected_dropdown == 'fleetvehicles_gearbox_vehicle') {
+            <div class="options-dropdown">
+                <div class="list">
+                    @for (vehicleGearbox of gearboxTypes; track $index) {
+                    <div class="option"
+                        (click)="$event.stopPropagation();dropdownManager.selected_dropdown = '';gearbox = vehicleGearbox">
+                        {{ l.s(vehicles.getVehicleGearboxLabel(vehicleGearbox)) }}
                     </div>
                     }
                 </div>
             </div>
+            }
         </div>
+    </div>
+</div>
 
-        <div class="form-row">
-            <div class="form-group">
-                <label for="color">Barva</label>
-                <input type="text" id="color">
-            </div>
+<div class="form-row">
+    <div class="form-group">
+        <label for="color">Barva</label>
+        <input type="text" id="color">
+    </div>
 
-            <div class="form-group">
-                <label for="seats">Počet míst</label>
-                <input type="number" min="1" id="seats">
+    <div class="form-group">
+        <label for="seats">Počet míst</label>
+        <input type="number" min="1" id="seats">
 
-            </div>
+    </div>
+</div>
+
+<div class="form-group">
+    <label for="consumption">Průměrná spotřeba (L / 100km)</label>
+    <input type="number" min="0.1" id="consumption">
+</div>
+}
+
+@case (2) {
+<div class="form-row">
+    <div class="form-group">
+        <label for="insurance">Pojišťovna</label>
+        <input type="text" name="insurance" id="insurance" />
+    </div>
+
+    <div class="form-group">
+        <label for="insurance_num">Číslo pojistné smlouvy</label>
+        <input type="text" name="insurance_num" id="insurance_num" />
+    </div>
+</div>
+
+<div class="form-group">
+    <label for="stk_date">Platnost STK</label>
+    <app-calendar id="stk_date" [value]="st_date" (valueChange)="st_date = $event" size="full"></app-calendar>
+</div>
+
+<div class="form-group">
+    <label for="emissions_date">Platnost emise</label>
+    <app-calendar id="emissions_date" [value]="em_date" (valueChange)="em_date = $event" size="full"></app-calendar>
+</div>
+
+<div class="form-group">
+    <label for="insurance_date">Platnost pojištění</label>
+    <app-calendar id="insurance_date" [value]="in_date" (valueChange)="in_date = $event" size="full"></app-calendar>
+</div>
+}
+
+@case (3) {
+<div class="row-type-selector">
+    <div class="row-option" (click)="assignment = 'everyone'" [class.selected]="assignment == 'everyone'">
+        <div class="row-option__icon">
+            <i-tabler name="brand-windows"></i-tabler>
         </div>
-
-        <div class="form-group">
-            <label for="consumption">Průměrná spotřeba (L / 100km)</label>
-            <input type="number" min="0.1" id="consumption">
+        <div class="row-option__content">
+            <h4>Kdokoliv</h4>
+            <p>Vozidlo je dostupné pro všechny učitelé</p>
         </div>
-    }
-
-    @case (2) {
-        <div class="form-row">
-            <div class="form-group">
-                <label for="insurance">Pojišťovna</label>
-                <input type="text" name="insurance" id="insurance" />
-            </div>
-
-            <div class="form-group">
-                <label for="insurance_num">Číslo pojistné smlouvy</label>
-                <input type="text" name="insurance_num" id="insurance_num" />
-            </div>
+    </div>
+    <div class="row-option" (click)="assignment = 'specific'" [class.selected]="assignment == 'specific'">
+        <div class="row-option__icon">
+            <i-tabler name="server"></i-tabler>
         </div>
-
-        <div class="form-group">
-            <label for="stk_date">Platnost STK</label>
-            <input type="date" id="stk_date">
+        <div class="row-option__content">
+            <h4>Konkrétní řidiči</h4>
+            <p>Vozidlo má "svého pána" (nebo pár lidí), ostatní si ho nemohou půjčit.</p>
         </div>
-
-        <div class="form-group">
-            <label for="emissions_date">Platnost emise</label>
-            <input type="date" id="emissions_date">
-        </div>
-        
-        <div class="form-group">
-            <label for="insurance_date">Platnost pojištění</label>
-            <input type="date" id="insurance_date">
-        </div>
-    }
-
-    @case (3) {
-        <div class="row-type-selector">
-            <div class="row-option" (click)="assignment = 'everyone'" [class.selected]="assignment == 'everyone'">
-                <div class="row-option__icon">
-                    <i-tabler name="brand-windows"></i-tabler>
-                </div>
-                <div class="row-option__content">
-                    <h4>Kdokoliv</h4>
-                    <p>Vozidlo je dostupné pro všechny učitelé</p>
-                </div>
-            </div>
-            <div class="row-option" (click)="assignment = 'specific'" [class.selected]="assignment == 'specific'">
-                <div class="row-option__icon">
-                    <i-tabler name="server"></i-tabler>
-                </div>
-                <div class="row-option__content">
-                    <h4>Konkrétní řidiči</h4>
-                    <p>Vozidlo má "svého pána" (nebo pár lidí), ostatní si ho nemohou půjčit.</p>
-                </div>
-            </div>
-        </div>
-    }
+    </div>
+</div>
+}
 }
 
 <div class="form-group">
     <div class="btn btn--primary">
-        <i-tabler name="plus"></i-tabler>    
+        <i-tabler name="plus"></i-tabler>
         Uložit vozidlo
     </div>
 </div>

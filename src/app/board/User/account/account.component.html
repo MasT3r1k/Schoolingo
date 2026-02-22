@@ -77,6 +77,9 @@
                             <i-tabler name="clock"></i-tabler>
                             Čeká na ověření
                         </span>
+                        <a class="verify-link" (click)="verifyEmailModal(email)">
+                            Zadat ověřovací kód
+                        </a>
                         }
                     </div>
                 </div>
@@ -132,6 +135,22 @@
                 </div>
                 <div class="contact-content">
                     <span class="contact-value">{{ Utils.formatPhone(phone.number) }}</span>
+                    <div class="contact-badges">
+                        @if (phone.is_verified) {
+                        <span class="badge badge--success">
+                            <i-tabler name="circle-check"></i-tabler>
+                            Ověřený
+                        </span>
+                        } @else {
+                        <span class="badge badge--warning">
+                            <i-tabler name="clock"></i-tabler>
+                            Čeká na ověření
+                        </span>
+                        <a class="verify-link" (click)="verifyPhoneModal(phone)">
+                            Zadat ověřovací kód
+                        </a>
+                        }
+                    </div>
                 </div>
                 <div class="contact-actions">
                     <button class="btn btn--sm btn--ghost" (click)="editPhone(phone)" title="Upravit">

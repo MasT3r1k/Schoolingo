@@ -12,7 +12,7 @@
             <div class="list">
                 @for (type of types; track type) {
                 <div class="option" style="text-align: left;"
-                    (click)="$event.stopPropagation();dropdownManager.selected_dropdown = '';selected_type = type">
+                    (click)="$event.stopPropagation();dropdownManager.selected_dropdown = '';selectType(type)">
                     {{ l.s('schedule.edit_lesson.types.' + type) }}
                 </div>
                 }
@@ -25,13 +25,14 @@
 @switch(selected_type) {
 @case('cancel') {
 <div class="form-group">
-    <div class="btn btn--primary" (click)="deleteLesson()">{{ l.s('schedule.edit_lesson.types.cancel') }}</div>
+    <div class="btn btn--primary" (click)="save()">{{ l.s('schedule.edit_lesson.types.cancel') }}</div>
 </div>
 }
 
 @case('cancel_substitution') {
 <div class="form-group">
-    <div class="btn btn--primary" (click)="cancelSubstitution()">{{ l.s('schedule.edit_lesson.types.cancel_substitution') }}</div>
+    <div class="btn btn--primary" (click)="cancelSubstitution()">{{
+        l.s('schedule.edit_lesson.types.cancel_substitution') }}</div>
 </div>
 }
 
@@ -46,11 +47,19 @@
             <i-tabler name="chevron-down"></i-tabler>
         </div>
         @if (dropdownManager.selected_dropdown == 'schedule_builder_edit_lesson_subjectId') {
-        <div class="options-dropdown">
+        <div class="options-dropdown" (click)="$event.stopPropagation();">
+            <div class="search" style="padding: 8px;">
+                <div class="search-wrapper" style="position: relative; display: flex; align-items: center;">
+                    <i-tabler name="search"
+                        style="position: absolute; left: 8px; width: 16px; height: 16px;"></i-tabler>
+                    <input type="search" placeholder="Hledat předmět" [formControl]="searchSubject"
+                        style="width: 100%; padding: 8px 8px 8px 32px; border: 1px solid var(--border-color); border-radius: 4px; background: var(--bg-color); color: var(--text-color);">
+                </div>
+            </div>
             <div class="list">
-                @for (subject of scheduleBuilder.subjects; track subject.subject_id) {
+                @for (subject of getFilteredSubjects(); track subject.subject_id) {
                 <div class="option" style="text-align: left;"
-                    (click)="$event.stopPropagation();dropdownManager.selected_dropdown = '';selectedSubjectId = subject.subject_id">
+                    (click)="$event.stopPropagation();dropdownManager.selected_dropdown = '';selectedSubjectId = subject.subject_id; searchSubject.setValue('')">
                     {{ getSubjectName(subject.subject_id) }}
                 </div>
                 }
@@ -70,11 +79,19 @@
             <i-tabler name="chevron-down"></i-tabler>
         </div>
         @if (dropdownManager.selected_dropdown == 'schedule_builder_edit_lesson_teacherId') {
-        <div class="options-dropdown">
+        <div class="options-dropdown" (click)="$event.stopPropagation();">
+            <div class="search" style="padding: 8px;">
+                <div class="search-wrapper" style="position: relative; display: flex; align-items: center;">
+                    <i-tabler name="search"
+                        style="position: absolute; left: 8px; width: 16px; height: 16px;"></i-tabler>
+                    <input type="search" placeholder="Hledat učitele" [formControl]="searchTeacher"
+                        style="width: 100%; padding: 8px 8px 8px 32px; border: 1px solid var(--border-color); border-radius: 4px; background: var(--bg-color); color: var(--text-color);">
+                </div>
+            </div>
             <div class="list">
-                @for (teacher of scheduleBuilder.getTeachers(); track teacher.teacherId) {
+                @for (teacher of getFilteredTeachers(); track teacher.teacherId) {
                 <div class="option" style="text-align: left;"
-                    (click)="$event.stopPropagation();dropdownManager.selected_dropdown = '';selectedTeacherId = teacher.teacherId">
+                    (click)="$event.stopPropagation();dropdownManager.selected_dropdown = '';selectedTeacherId = teacher.teacherId; searchTeacher.setValue('')">
                     {{ teacher.teacherName }}
                 </div>
                 }
@@ -93,11 +110,19 @@
             <i-tabler name="chevron-down"></i-tabler>
         </div>
         @if (dropdownManager.selected_dropdown == 'schedule_builder_edit_lesson_room') {
-        <div class="options-dropdown">
+        <div class="options-dropdown" (click)="$event.stopPropagation();">
+            <div class="search" style="padding: 8px;">
+                <div class="search-wrapper" style="position: relative; display: flex; align-items: center;">
+                    <i-tabler name="search"
+                        style="position: absolute; left: 8px; width: 16px; height: 16px;"></i-tabler>
+                    <input type="search" placeholder="Hledat místnost" [formControl]="searchRoom"
+                        style="width: 100%; padding: 8px 8px 8px 32px; border: 1px solid var(--border-color); border-radius: 4px; background: var(--bg-color); color: var(--text-color);">
+                </div>
+            </div>
             <div class="list">
-                @for (room of rooms; track room.room_id) {
+                @for (room of getFilteredRooms(); track room.room_id) {
                 <div class="option" style="text-align: left;"
-                    (click)="$event.stopPropagation();dropdownManager.selected_dropdown = '';selectedRoomId = room.room_id">
+                    (click)="$event.stopPropagation();dropdownManager.selected_dropdown = '';selectedRoomId = room.room_id; searchRoom.setValue('')">
                     {{ room.name }}
                 </div>
                 }
@@ -125,12 +150,20 @@
             <i-tabler name="chevron-down"></i-tabler>
         </div>
         @if (dropdownManager.selected_dropdown == 'schedule_builder_edit_lesson_subjectId') {
-        <div class="options-dropdown">
+        <div class="options-dropdown" (click)="$event.stopPropagation();">
+            <div class="search" style="padding: 8px;">
+                <div class="search-wrapper" style="position: relative; display: flex; align-items: center;">
+                    <i-tabler name="search"
+                        style="position: absolute; left: 8px; width: 16px; height: 16px;"></i-tabler>
+                    <input type="search" placeholder="Hledat předmět" [formControl]="searchSubject"
+                        style="width: 100%; padding: 8px 8px 8px 32px; border: 1px solid var(--border-color); border-radius: 4px; background: var(--bg-color); color: var(--text-color);">
+                </div>
+            </div>
             <div class="list">
-                @for (subject of scheduleBuilder.subjects; track subject.subjectId) {
+                @for (subject of getFilteredSubjects(); track subject.subjectId) {
                 <div class="option" style="text-align: left;"
-                    (click)="$event.stopPropagation();dropdownManager.selected_dropdown = '';selectedSubjectId = subject.subjectId">
-                    {{ subject.subjectName }}
+                    (click)="$event.stopPropagation();dropdownManager.selected_dropdown = '';selectedSubjectId = subject.subjectId; searchSubject.setValue('')">
+                    {{ getSubjectName(subject.subject_id) }}
                 </div>
                 }
             </div>
@@ -148,11 +181,19 @@
             <i-tabler name="chevron-down"></i-tabler>
         </div>
         @if (dropdownManager.selected_dropdown == 'schedule_builder_edit_lesson_teacherId') {
-        <div class="options-dropdown">
+        <div class="options-dropdown" (click)="$event.stopPropagation();">
+            <div class="search" style="padding: 8px;">
+                <div class="search-wrapper" style="position: relative; display: flex; align-items: center;">
+                    <i-tabler name="search"
+                        style="position: absolute; left: 8px; width: 16px; height: 16px;"></i-tabler>
+                    <input type="search" placeholder="Hledat učitele" [formControl]="searchTeacher"
+                        style="width: 100%; padding: 8px 8px 8px 32px; border: 1px solid var(--border-color); border-radius: 4px; background: var(--bg-color); color: var(--text-color);">
+                </div>
+            </div>
             <div class="list">
-                @for (teacher of scheduleBuilder.getTeachers(); track teacher.teacherId) {
+                @for (teacher of getFilteredTeachers(); track teacher.teacherId) {
                 <div class="option" style="text-align: left;"
-                    (click)="$event.stopPropagation();dropdownManager.selected_dropdown = '';selectedTeacherId = teacher.teacherId">
+                    (click)="$event.stopPropagation();dropdownManager.selected_dropdown = '';selectedTeacherId = teacher.teacherId; searchTeacher.setValue('')">
                     {{ teacher.teacherName }}
                 </div>
                 }
@@ -171,11 +212,19 @@
             <i-tabler name="chevron-down"></i-tabler>
         </div>
         @if (dropdownManager.selected_dropdown == 'schedule_builder_edit_lesson_room') {
-        <div class="options-dropdown">
+        <div class="options-dropdown" (click)="$event.stopPropagation();">
+            <div class="search" style="padding: 8px;">
+                <div class="search-wrapper" style="position: relative; display: flex; align-items: center;">
+                    <i-tabler name="search"
+                        style="position: absolute; left: 8px; width: 16px; height: 16px;"></i-tabler>
+                    <input type="search" placeholder="Hledat místnost" [formControl]="searchRoom"
+                        style="width: 100%; padding: 8px 8px 8px 32px; border: 1px solid var(--border-color); border-radius: 4px; background: var(--bg-color); color: var(--text-color);">
+                </div>
+            </div>
             <div class="list">
-                @for (room of rooms; track room.room_id) {
+                @for (room of getFilteredRooms(); track room.room_id) {
                 <div class="option" style="text-align: left;"
-                    (click)="$event.stopPropagation();dropdownManager.selected_dropdown = '';selectedRoomId = room.room_id">
+                    (click)="$event.stopPropagation();dropdownManager.selected_dropdown = '';selectedRoomId = room.room_id; searchRoom.setValue('')">
                     {{ room.name }}
                 </div>
                 }
@@ -239,11 +288,19 @@
             <i-tabler name="chevron-down"></i-tabler>
         </div>
         @if (dropdownManager.selected_dropdown == 'schedule_builder_edit_lesson_subjectId') {
-        <div class="options-dropdown">
+        <div class="options-dropdown" (click)="$event.stopPropagation();">
+            <div class="search" style="padding: 8px;">
+                <div class="search-wrapper" style="position: relative; display: flex; align-items: center;">
+                    <i-tabler name="search"
+                        style="position: absolute; left: 8px; width: 16px; height: 16px;"></i-tabler>
+                    <input type="search" placeholder="Hledat předmět" [formControl]="searchSubject"
+                        style="width: 100%; padding: 8px 8px 8px 32px; border: 1px solid var(--border-color); border-radius: 4px; background: var(--bg-color); color: var(--text-color);">
+                </div>
+            </div>
             <div class="list">
-                @for (subject of scheduleBuilder.subjects; track subject.subject_id) {
+                @for (subject of getFilteredSubjects(); track subject.subject_id) {
                 <div class="option" style="text-align: left;"
-                    (click)="$event.stopPropagation();dropdownManager.selected_dropdown = '';selectedSubjectId = subject.subject_id">
+                    (click)="$event.stopPropagation();dropdownManager.selected_dropdown = '';selectedSubjectId = subject.subject_id; searchSubject.setValue('')">
                     {{ getSubjectName(subject.subject_id) }}
                 </div>
                 }
@@ -262,11 +319,19 @@
             <i-tabler name="chevron-down"></i-tabler>
         </div>
         @if (dropdownManager.selected_dropdown == 'schedule_builder_edit_lesson_teacherId') {
-        <div class="options-dropdown">
+        <div class="options-dropdown" (click)="$event.stopPropagation();">
+            <div class="search" style="padding: 8px;">
+                <div class="search-wrapper" style="position: relative; display: flex; align-items: center;">
+                    <i-tabler name="search"
+                        style="position: absolute; left: 8px; width: 16px; height: 16px;"></i-tabler>
+                    <input type="search" placeholder="Hledat učitele" [formControl]="searchTeacher"
+                        style="width: 100%; padding: 8px 8px 8px 32px; border: 1px solid var(--border-color); border-radius: 4px; background: var(--bg-color); color: var(--text-color);">
+                </div>
+            </div>
             <div class="list">
-                @for (teacher of scheduleBuilder.getTeachers(); track teacher.teacherId) {
+                @for (teacher of getFilteredTeachers(); track teacher.teacherId) {
                 <div class="option" style="text-align: left;"
-                    (click)="$event.stopPropagation();dropdownManager.selected_dropdown = '';selectedTeacherId = teacher.teacherId">
+                    (click)="$event.stopPropagation();dropdownManager.selected_dropdown = '';selectedTeacherId = teacher.teacherId; searchTeacher.setValue('')">
                     {{ teacher.teacherName }}
                 </div>
                 }
@@ -285,11 +350,19 @@
             <i-tabler name="chevron-down"></i-tabler>
         </div>
         @if (dropdownManager.selected_dropdown == 'schedule_builder_edit_lesson_room') {
-        <div class="options-dropdown">
+        <div class="options-dropdown" (click)="$event.stopPropagation();">
+            <div class="search" style="padding: 8px;">
+                <div class="search-wrapper" style="position: relative; display: flex; align-items: center;">
+                    <i-tabler name="search"
+                        style="position: absolute; left: 8px; width: 16px; height: 16px;"></i-tabler>
+                    <input type="search" placeholder="Hledat místnost" [formControl]="searchRoom"
+                        style="width: 100%; padding: 8px 8px 8px 32px; border: 1px solid var(--border-color); border-radius: 4px; background: var(--bg-color); color: var(--text-color);">
+                </div>
+            </div>
             <div class="list">
-                @for (room of rooms; track room.room_id) {
+                @for (room of getFilteredRooms(); track room.room_id) {
                 <div class="option" style="text-align: left;"
-                    (click)="$event.stopPropagation();dropdownManager.selected_dropdown = '';selectedRoomId = room.room_id">
+                    (click)="$event.stopPropagation();dropdownManager.selected_dropdown = '';selectedRoomId = room.room_id; searchRoom.setValue('')">
                     {{ room.name }}
                 </div>
                 }
@@ -338,8 +411,106 @@
 </div>
 
 <div class="form-group row modal-actions">
-    <div class="btn btn--danger" style="margin-left: auto;">{{ l.s('delete') }}</div>
+    <div class="btn btn--danger" style="margin-left: auto;" (click)="deleteLesson()">{{ l.s('delete') }}</div>
     <div class="btn btn--primary" (click)="save()">{{ l.s('buttons.save') }}</div>
+</div>
+}
+
+@case ('classroom_lesson') {
+<div class="form-group">
+    <label>{{ l.s('roles.teacher') }}</label>
+    <div class="custom-select"
+        (click)="$event.stopPropagation();dropdownManager.selected_dropdown = dropdownManager.selected_dropdown == 'schedule_builder_edit_lesson_teacherId' ? '' : 'schedule_builder_edit_lesson_teacherId'">
+        <div class="selected-value">
+            <span>{{ selectedTeacherId ? scheduleBuilder.teachers[selectedTeacherId].teacherName : '' }}</span>
+            <i-tabler name="chevron-down"></i-tabler>
+        </div>
+        @if (dropdownManager.selected_dropdown == 'schedule_builder_edit_lesson_teacherId') {
+        <div class="options-dropdown" (click)="$event.stopPropagation();">
+            <div class="search" style="padding: 8px;">
+                <div class="search-wrapper" style="position: relative; display: flex; align-items: center;">
+                    <i-tabler name="search"
+                        style="position: absolute; left: 8px; width: 16px; height: 16px;"></i-tabler>
+                    <input type="search" placeholder="Hledat učitele" [formControl]="searchTeacher"
+                        style="width: 100%; padding: 8px 8px 8px 32px; border: 1px solid var(--border-color); border-radius: 4px; background: var(--bg-color); color: var(--text-color);">
+                </div>
+            </div>
+            <div class="list">
+                @for (teacher of getFilteredTeachers(); track teacher.teacherId) {
+                <div class="option" style="text-align: left;"
+                    (click)="$event.stopPropagation();dropdownManager.selected_dropdown = '';selectedTeacherId = teacher.teacherId; searchTeacher.setValue('')">
+                    {{ teacher.teacherName }}
+                </div>
+                }
+            </div>
+        </div>
+        }
+    </div>
+</div>
+
+<div class="form-group">
+    <label>{{ l.s('schedule.builder.room') }}</label>
+    <div class="custom-select"
+        (click)="$event.stopPropagation();dropdownManager.selected_dropdown = dropdownManager.selected_dropdown == 'schedule_builder_edit_lesson_room' ? '' : 'schedule_builder_edit_lesson_room'">
+        <div class="selected-value">
+            <span>{{ selectedRoomId ? getRoomName(selectedRoomId!) : '' }}</span>
+            <i-tabler name="chevron-down"></i-tabler>
+        </div>
+        @if (dropdownManager.selected_dropdown == 'schedule_builder_edit_lesson_room') {
+        <div class="options-dropdown" (click)="$event.stopPropagation();">
+            <div class="search" style="padding: 8px;">
+                <div class="search-wrapper" style="position: relative; display: flex; align-items: center;">
+                    <i-tabler name="search"
+                        style="position: absolute; left: 8px; width: 16px; height: 16px;"></i-tabler>
+                    <input type="search" placeholder="Hledat místnost" [formControl]="searchRoom"
+                        style="width: 100%; padding: 8px 8px 8px 32px; border: 1px solid var(--border-color); border-radius: 4px; background: var(--bg-color); color: var(--text-color);">
+                </div>
+            </div>
+            <div class="list">
+                @for (room of getFilteredRooms(); track room.room_id) {
+                <div class="option" style="text-align: left;"
+                    (click)="$event.stopPropagation();dropdownManager.selected_dropdown = '';selectedRoomId = room.room_id; searchRoom.setValue('')">
+                    {{ room.name }}
+                </div>
+                }
+            </div>
+        </div>
+        }
+    </div>
+</div>
+
+<div class="form-group">
+    <label>{{ l.s('schedule.builder.group') }}</label>
+    <div class="custom-select"
+        (click)="$event.stopPropagation();dropdownManager.selected_dropdown = dropdownManager.selected_dropdown == 'schedule_builder_edit_lesson_group' ? '' : 'schedule_builder_edit_lesson_group'">
+        <div class="selected-value">
+            <span>{{ getGroupName(selectedGroupId) }}</span>
+            <i-tabler name="chevron-down"></i-tabler>
+        </div>
+        @if (dropdownManager.selected_dropdown == 'schedule_builder_edit_lesson_group') {
+        <div class="options-dropdown">
+            <div class="list">
+                @for (group of groups; track group.group_id) {
+                <div class="option" style="text-align: left;"
+                    (click)="$event.stopPropagation();dropdownManager.selected_dropdown = '';selectedGroupId = group.group_id">
+                    {{ getGroupName(group.group_id) }}
+                </div>
+                }
+            </div>
+        </div>
+        }
+    </div>
+</div>
+
+
+
+<div class="form-group row modal-actions">
+    @if (scheduleBuilder.activeLesson?.isSubstitution) {
+    <div class="btn btn--danger" style="margin-left: auto;" (click)="cancelSubstitution()">Odebrat třídní hodinu</div>
+    <div class="btn btn--primary" (click)="save()">{{ l.s('buttons.save') }}</div>
+    } @else {
+    <div class="btn btn--primary" (click)="save()">Zapsat třídní hodinu</div>
+    }
 </div>
 }
 }

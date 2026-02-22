@@ -33,45 +33,47 @@
       }
     </div>
     } @case(1) {
-    <div class="list-subjects-head">
-      <div class="table-subject-name">
-        {{ l.s("subject") }}
-      </div>
-      <div class="table-mark">
-        {{ l.s("marks.mark") }}
-      </div>
-      <div class="table-topic">
-        {{ l.s("marks.topic") }}
-      </div>
-      <div class="table-weight">
-        {{ l.s("marks.weight") }}
-      </div>
-      <div class="table-date">
-        {{ l.s("date") }}
-      </div>
-      <div class="table-description">
-        {{ l.s("marks.description") }}
-      </div>
+    @if (!marks.length) {
+    <div class="chrono-empty">
+      <i-tabler name="mood-empty"></i-tabler>
+      <p>{{ l.s('marks.no_subjects') }}</p>
     </div>
-    @for(mark of marks;track $index) {
-    <div class="grade-row">
-      <div class="table-subject-name bold">
-        {{ mark.subject_name }}
+    } @else {
+    <div class="chrono-timeline">
+      @for(mark of marks; track $index) {
+      <div class="chrono-card" (click)="selectMark(mark)" [title]="getMarkTooltip(mark)">
+        <div class="chrono-badge mark-color-{{ mark.mark }}">
+          {{ formatMark(mark.mark) }}
+        </div>
+        <div class="chrono-content">
+          <div class="chrono-topic">{{ mark.topic }}</div>
+          <div class="chrono-meta">
+            <span class="chrono-subject-chip">{{ mark.subject_name }}</span>
+            <span class="chrono-sep">·</span>
+            <span class="chrono-date"><i-tabler name="calendar"></i-tabler> {{ utils.formatDateShort(mark.created)
+              }}</span>
+            @if (mark.teacher_full_name) {
+            <span class="chrono-sep">·</span>
+            <span class="chrono-teacher"><i-tabler name="user"></i-tabler> {{ mark.teacher_full_name }}</span>
+            }
+          </div>
+        </div>
+        <div class="chrono-weight" [title]="l.s('marks.weight')">
+          <span class="weight-dots">
+            @for (w of [].constructor(mark.weight); track $index) {
+            <span class="weight-dot filled"></span>
+            }
+            @for (w of [].constructor(10 - mark.weight); track $index) {
+            <span class="weight-dot"></span>
+            }
+          </span>
+          <span class="weight-label">{{ l.s('marks.weight') }} {{ mark.weight }}</span>
+        </div>
       </div>
-      <div class="table-mark bold" [title]="getMarkTooltip(mark)" (click)="selectMark(mark)" style="cursor: pointer;">
-        {{ formatMark(mark.mark) }}
-      </div>
-      <div class="table-topic">
-        {{ mark.topic }}
-      </div>
-      <div class="table-weight">
-        {{ mark.weight }}
-      </div>
-      <div class="table-date">
-        {{ utils.formatDateShort(mark.created) }}
-      </div>
+      }
     </div>
-    } } @case(2) {
+    }
+    } @case(2) {
     @if (!getAllSubjects().length) {
     <div class="alerts">
       <div class="alert alert--danger">
@@ -181,14 +183,14 @@
           </div>
         </div>
       </div>
-      <div class="buttons">
+      <div class="buttons" style="display:flex;gap:8px;flex-wrap:wrap;">
         @if (editingIndex != null) {
         <div class="btn btn--primary" (click)="updateMark()">
           <i-tabler name="edit"></i-tabler>
           {{ l.s("marks.predictor.edit_mark") }}
         </div>
 
-        <div class="btn btn--primary only-text" (click)="this.editingIndex = null;alert=''">
+        <div class="btn btn--secondary" (click)="this.editingIndex = null;alert=''">
           {{ l.s('marks.predictor.stop_edit_mark') }}
         </div>
         } @else {
@@ -198,45 +200,49 @@
         </div>
         }
 
-        <div class="btn btn--secondary only-text" (click)="resetPredictor()">
+        <div class="btn btn--ghost" (click)="resetPredictor()">
+          <i-tabler name="refresh"></i-tabler>
           {{ l.s("marks.predictor.reset") }}
         </div>
       </div>
     </div>
 
-    <div class="list-subjects-head predictor-table mt">
+    <div class="list-subjects-head mt">
       <div class="table-2-topic">
         {{ l.s("marks.topic") }}
       </div>
-      <div class="table-2-mark center">
+      <div class="table-2-mark">
         {{ l.s("marks.mark") }}
       </div>
-      <div class="table-2-weight center">
+      <div class="table-2-weight">
         {{ l.s("marks.weight") }}
       </div>
-      <div class="table-2-actions center">
+      <div class="table-2-actions">
         {{ l.s("actions") }}
       </div>
     </div>
     @for(mark of getGradesBySubject(selected_subject, true);track $index) {
-    <div class="grade-row predictor-table" [class.selected]="mark.id === editingIndex">
+    <div class="grade-row" [class.selected]="mark.id === editingIndex">
       <div class="table-2-topic bold" [class.muted]="mark.isPredicted">
         {{ mark.topic }}
+        @if (mark.isPredicted) {
+        <span class="predicted-badge">{{ l.s('marks.predictor.predicted') }}</span>
+        }
       </div>
-      <div class="table-2-mark center">
-        <div class="grade-box">
-          {{ formatMark(mark.mark) }}
-        </div>
+      <div class="table-2-mark">
+        <div class="grade-box">{{ formatMark(mark.mark) }}</div>
       </div>
-      <div class="table-2-weight center">
+      <div class="table-2-weight">
         {{ mark.weight }}
       </div>
-      <div class="table-2-actions center">
-        <div class="buttons">
-          <div class="btn btn--ghost" style="color: var(--primary)" (click)="editMark(mark.id)">
+      <div class="table-2-actions">
+        <div style="display:flex;gap:6px;">
+          <div class="btn btn--xs btn--outline-secondary" (click)="editMark(mark.id)">
+            <i-tabler name="edit"></i-tabler>
             {{ l.s("marks.predictor.edit") }}
           </div>
-          <div class="btn btn--ghost" style="color: var(--danger)" (click)="removeMark(mark.id)">
+          <div class="btn btn--xs btn--outline-danger" (click)="removeMark(mark.id)">
+            <i-tabler name="trash"></i-tabler>
             {{ l.s("marks.predictor.remove") }}
           </div>
         </div>
@@ -278,10 +284,17 @@
         <span class="value">{{ selectedMark.teacher_full_name }}</span>
       </div>
       }
+      @if (selectedMark.type === 1 && selectedMark.max_points) {
+      <div class="detail-row">
+        <span class="label">{{ l.s('marks.points') }}</span>
+        <span class="value">{{ selectedMark.mark }} / {{ selectedMark.max_points }}</span>
+      </div>
+      }
       @if (markStats[selectedMark.column_id]) {
       <div class="detail-row">
         <span class="label">{{ l.s('marks.class_rank') }}</span>
-        <span class="value">{{ markStats[selectedMark.column_id].rank }} (∑ {{ markStats[selectedMark.column_id].count }},
+        <span class="value">{{ markStats[selectedMark.column_id].rank }} (∑ {{ markStats[selectedMark.column_id].count
+          }},
           Ø {{ markStats[selectedMark.column_id].avg }})</span>
       </div>
       }

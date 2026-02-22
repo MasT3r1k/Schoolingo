@@ -2,26 +2,20 @@
     <div class="card-header">
         <div class="left">
             <h2>{{ l.s('sidebar.teach.substitution') }}</h2>
-            <p class="meta muted">{{ formatDateDisplay() }} · {{ formattedDate() }}</p>
+            <p class="meta muted">{{ l.s('substitution.week_view') }}</p>
         </div>
         <div class="flex-items">
             <div class="date-controls">
-                <button class="btn btn--ghost btn--sm" (click)="previousDay()">
+                <div class="btn btn--ghost btn--sm icon-only" (click)="previousWeek()">
                     <i-tabler name="chevron-left"></i-tabler>
-                </button>
-                <button class="btn btn--ghost btn--sm" (click)="goToToday()">
-                    {{ l.s('substitution.today') }}
-                </button>
-                <button class="btn btn--ghost btn--sm" (click)="nextDay()">
+                </div>
+                <span class="current-date">
+                    {{ formatDateDisplay() }}
+                </span>
+                <div class="btn btn--ghost btn--sm icon-only" (click)="nextWeek()">
                     <i-tabler name="chevron-right"></i-tabler>
-                </button>
+                </div>
             </div>
-            @if (canManageSubstitutions()) {
-            <button class="btn btn--primary" (click)="openCreateModal()">
-                <i-tabler name="plus"></i-tabler>
-                <span>{{ l.s('substitution.create') }}</span>
-            </button>
-            }
         </div>
     </div>
 
@@ -69,10 +63,12 @@
         <!-- Filters -->
         <div class="filters-bar">
             <div class="form-group search">
-                <input type="text" [(ngModel)]="searchQuery" (input)="searchQuery.set($any($event.target).value)"
+                <input type="text" [ngModel]="searchQuery()" (ngModelChange)="searchQuery.set($event)"
                     [placeholder]="l.s('substitution.search')">
             </div>
-            <schoolingo-tabs [options]="['substitution.filters.all', 'substitution.types.cancelled', 'substitution.types.substitution', 'substitution.types.room_change']" [icons]="['list', 'x', 'user-check', 'door']" [value]="selectedTab"></schoolingo-tabs>
+            <schoolingo-tabs
+                [options]="['substitution.filters.all', 'substitution.types.cancelled', 'substitution.types.substitution', 'substitution.types.room_change']"
+                [icons]="['list', 'x', 'user-check', 'door']" [value]="selectedTab"></schoolingo-tabs>
         </div>
 
         <!-- Loading State -->
@@ -83,7 +79,7 @@
         </div>
         }
 
-        <!-- Substitutions List -->
+        <!-- Empty State -->
         @else if (getFilteredSubstitutions().length === 0) {
         <div class="no-selection">
             <div class="illustration">
@@ -92,70 +88,100 @@
             <h3>{{ l.s('substitution.no_substitutions') }}</h3>
             <p>{{ l.s('substitution.no_substitutions_desc') }}</p>
         </div>
-        } @else {
-        <div class="table-container">
-            <table class="table">
-                <thead>
-                    <tr>
-                        <th>{{ l.s('substitution.hour') }}</th>
-                        <th>{{ l.s('substitution.class') }}</th>
-                        <th>{{ l.s('substitution.subject') }}</th>
-                        <th>{{ l.s('substitution.type') }}</th>
-                        <th>{{ l.s('substitution.original_teacher') }}</th>
-                        <th>{{ l.s('substitution.substitute_teacher') }}</th>
-                        <th>{{ l.s('substitution.room') }}</th>
-                        @if (canManageSubstitutions()) {
-                        <th>{{ l.s('actions') }}</th>
-                        }
-                    </tr>
-                </thead>
-                <tbody>
-                    @for (sub of getFilteredSubstitutions(); track sub.substitution_id) {
-                    <tr>
-                        <td>
+        }
+
+        <!-- Day Groups -->
+        @else {
+        <div class="day-groups">
+            @for (day of getSubstitutionsByDay(); track day.date) {
+            <div class="day-group">
+                <!-- Day Header -->
+                <div class="day-header">
+                    <div class="day-icon">
+                        <i-tabler name="calendar-event" size="18"></i-tabler>
+                    </div>
+                    <div class="day-title-wrap">
+                        <div class="day-name">{{ l.s('days.' + Utils.makeMoment(day.date).day()) }}</div>
+                        <div class="day-date">{{ Utils.makeMoment(day.date).format('D. M. YYYY') }}</div>
+                    </div>
+                    <span class="day-count">{{ day.items.length }}</span>
+                </div>
+
+                <!-- Substitution rows -->
+                <div class="subs-list">
+                    @for (sub of day.items; track sub.substitution_id) {
+                    <div class="sub-card type-{{ sub.type }}">
+                        <!-- Hour -->
+                        <div class="hour-col">
                             <span class="hour-badge">{{ sub.hour }}</span>
-                        </td>
-                        <td>
-                            <strong>{{ sub.className }}</strong>
-                        </td>
-                        <td>{{ sub.subjectName }}</td>
-                        <td>
-                            <span class="badge" [ngClass]="getTypeClass(sub.type)">
-                                <i-tabler [name]="getTypeIcon(sub.type)" size="14"></i-tabler>
-                                {{ getTypeLabel(sub.type) }}
-                            </span>
-                        </td>
-                        <td>{{ sub.originalTeacher || '—' }}</td>
-                        <td>
-                            @if (sub.type === 'cancelled') {
-                            <span class="text--muted">—</span>
-                            } @else {
-                            {{ sub.substituteTeacher || sub.originalTeacher }}
-                            }
-                        </td>
-                        <td>
-                            @if (sub.type === 'room_change') {
-                            <span class="room-change">
-                                <i-tabler name="arrow-right" size="12"></i-tabler>
-                                {{ sub.note }}
-                            </span>
-                            } @else {
-                            —
-                            }
-                        </td>
-                        @if (canManageSubstitutions()) {
-                        <td>
-                            <div class="table-actions">
-                                <button class="btn btn--sm btn--ghost" (click)="openEditModal(sub)">
-                                    <i-tabler name="edit"></i-tabler>
-                                </button>
+                        </div>
+
+                        <!-- Main info -->
+                        <div class="sub-main">
+                            <div class="sub-top">
+                                <span class="sub-class">{{ sub.className }}</span>
+                                @if (sub.subjectName) {
+                                    <span class="sub-subject">· {{ sub.subjectName }}</span>
+                                }
+                                <span class="badge" [ngClass]="getTypeClass(sub.type)">
+                                    <i-tabler [name]="getTypeIcon(sub.type)" size="12"></i-tabler>
+                                    {{ getTypeLabel(sub.type) }}
+                                </span>
                             </div>
-                        </td>
-                        }
-                    </tr>
+
+                            <!-- Teachers -->
+                            <div class="sub-teachers">
+                                @if (sub.type === 'cancelled') {
+                                <span class="teacher-chip">
+                                    <i-tabler name="user" size="13"></i-tabler>
+                                    <span>{{ sub.originalTeacher || '—' }}</span>
+                                </span>
+                                <span class="teacher-cancelled">({{ l.s('substitution.types.cancelled') }})</span>
+                                } @else if (sub.type === 'substitution') {
+                                <span class="teacher-chip">
+                                    <i-tabler name="user" size="13"></i-tabler>
+                                    <span>{{ sub.originalTeacher || '—' }}</span>
+                                </span>
+                                @if (sub.substituteTeacher) {
+                                <span class="teacher-arrow">→</span>
+                                <span class="teacher-new">{{ sub.substituteTeacher }}</span>
+                                }
+                                } @else if (sub.type === 'room_change') {
+                                <span class="teacher-chip">
+                                    <i-tabler name="user" size="13"></i-tabler>
+                                    <span>{{ sub.originalTeacher || '—' }}</span>
+                                </span>
+                                } @else {
+                                <span class="teacher-chip">
+                                    <i-tabler name="user" size="13"></i-tabler>
+                                    <span>{{ sub.originalTeacher || '—' }}</span>
+                                </span>
+                                }
+
+                                @if (sub.type === 'room_change') {
+                                <!-- Room change: old room → new room -->
+                                <span class="room-change">
+                                    <i-tabler name="door" size="13"></i-tabler>
+                                    @if (sub.oldRoomName) {
+                                    <span class="text--muted">{{ sub.oldRoomName }}</span>
+                                    <span>→</span>
+                                    }
+                                    {{ sub.newRoomName || '—' }}
+                                </span>
+                                } @else if (sub.oldRoomName) {
+                                <!-- Other types: just show the original room -->
+                                <span class="room-chip">
+                                    <i-tabler name="door" size="13"></i-tabler>
+                                    {{ sub.oldRoomName }}
+                                </span>
+                                }
+                            </div>
+                        </div>
+                    </div>
                     }
-                </tbody>
-            </table>
+                </div>
+            </div>
+            }
         </div>
         }
     </div>

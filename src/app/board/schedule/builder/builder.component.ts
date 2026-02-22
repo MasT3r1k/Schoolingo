@@ -113,10 +113,6 @@ export class BuilderComponent implements OnInit {
   }
 
   ngAfterViewInit(): void {
-    this.calendarManager.getCalendarData('scheduleBuilder_date').selected_date[0].subscribe((new_date) => {
-      this.selected_date = new_date.clone();
-      this.refreshLoad();
-    })
   }
 
   public timetable_types: any = {
@@ -167,9 +163,9 @@ export class BuilderComponent implements OnInit {
   }
 
   public selectWeek(n: number): void {
-    const selectedWeek = this.calendarManager.getCalendarData('scheduleBuilder_date').selected_date[0].getValue().add(n, 'week');
-    this.calendarManager.getCalendarData('scheduleBuilder_date').selected_date[0].next(selectedWeek);
-    this.calendarManager.getCalendarData('scheduleBuilder_date').selected_date[1].next(selectedWeek);
+    this.scheduleBuilder.selectedDate = this.scheduleBuilder.selectedDate.clone().add(n, 'week');
+    this.selected_date = this.scheduleBuilder.selectedDate;
+    this.refreshLoad();
   }
 
   public clearTimetable(): void {
@@ -222,8 +218,8 @@ export class BuilderComponent implements OnInit {
   }
 
   public refreshLoad(): void {
-    if (!this.calendarManager.getCalendarData('scheduleBuilder_date').selected_date[0].getValue()) return;
-    const currentWeekStart = this.calendarManager.getCalendarData('scheduleBuilder_date').selected_date[0].getValue().clone().startOf('isoWeek');
+    if (!this.scheduleBuilder.selectedDate) return;
+    const currentWeekStart = this.scheduleBuilder.selectedDate.clone().startOf('isoWeek');
 
     this.scheduleBuilder.isTimetableLoading = true;
     this.http.get<any[]>(
@@ -241,7 +237,7 @@ export class BuilderComponent implements OnInit {
       {
         type: 'class',
         id: this.scheduleBuilder.selectedClass.getValue(),
-        time: this.calendarManager.getCalendarData('scheduleBuilder_date').selected_date[0].getValue().format("YYYY-MM-DD")
+        time: this.scheduleBuilder.selectedDate.format("YYYY-MM-DD")
       },
       { withCredentials: true })
     .subscribe((data: any) => {
@@ -306,11 +302,11 @@ export class BuilderComponent implements OnInit {
                     subjectName: sub.subject_name,
                     subjectShortcut: sub.subject_shortcut,
                     all_day: (sub.start_hour == -1 || sub.end_hour == -1),
-                    teacher: sub.teacher_id,
+                    teacher: sub.teacher,
                     lastName: sub.last_name,
                     room: sub.room,
-                    oldTeacher: item.teacher,
-                    oldSubject: item.subject_shortcut,
+                    oldTeacher: item?.teacher,
+                    oldSubject: item?.subject_shortcut,
                     className: sub.class_name,
                     group: { id: sub.group_id || -1, text: sub.group_name || '', num: sub.group_num || '' },
                     day: dayIndex,
