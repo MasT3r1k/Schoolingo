@@ -23,7 +23,17 @@ type ModalSetup = Omit<Modal, 'dropdown'|'isOpen'>;
 
 export class ModalManager {
     private modals: { [key: string]: Modal } = {};
-    public addModal(name: string, modal: ModalSetup): void { this.modals[name] = { ...modal, title_placeholders: modal.title_placeholders ?? {}, children: modal.children || [], dropdown: '', isOpen: false, index: modal.index ?? 500 } }
+    public addModal(name: string, modal: ModalSetup): void {
+        this.modals[name] = {
+            ...modal,
+            title_placeholders: modal.title_placeholders ?? {},
+            children: modal.children || [],
+            dropdown: '',
+            isOpen: false,
+            index: modal.index ?? 500
+        }
+    }
+
     public getModals(): (Modal & {id: string})[] {
         return Object.entries(this.modals).filter(([modal1, modal2]) => modal2?.isOpen == true).map(([modal1, modal2]) => ({...modal2, id: modal1}));
     }

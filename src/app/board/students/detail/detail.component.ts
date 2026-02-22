@@ -18,6 +18,8 @@ import { MarksManager } from '@Schoolingo/marks';
 import { ModalManager } from '@Schoolingo/modal';
 import { MedicalModalComponent } from './medical/modals/medical-modal/medical-modal.component';
 import { EditPersonalModalComponent } from './personal/modals/edit-personal/edit-personal.component';
+import { ParentsSettingsComponent } from './modals/parents-settings/parents-settings.component';
+import { AddParentComponent } from './modals/add-parent/add-parent.component';
 
 
 
@@ -102,6 +104,7 @@ export class DetailComponent implements OnInit {
 
   // Selected student for detail view
   selectedStudent: Student | any | null = null;
+  selectedParent: any | null = null;
   
   public hours: TimetableHours[] = [];
   public max_hours = 0;
@@ -150,6 +153,9 @@ export class DetailComponent implements OnInit {
     )
     .subscribe((student: any) => {
       this.selectedStudent = student;
+      if (student.parents.length) {
+        this.selectedParent = student.parents[0];
+      }
       if (student.medical_records) {
         this.medicalRecords = student.medical_records;
       }
@@ -180,6 +186,20 @@ export class DetailComponent implements OnInit {
       width: 600,
       items: [{ type: 'component', component: EditPersonalModalComponent }]
     });
+
+    this.modalManager.addModal('add_parent', {
+      title: 'Přidat existující zákonné zástupce',
+      closeable: true,
+      width: 800,
+      items: [{ type: 'component', component: AddParentComponent }]
+    })
+
+    this.modalManager.addModal('parents_settings', {
+      title: 'Správa zákonných zástupců',
+      closeable: true,
+      width: 600,
+      items: [{ type: 'component', component: ParentsSettingsComponent }]
+    })
   }
 
   public refreshStudentData() {
@@ -197,9 +217,13 @@ export class DetailComponent implements OnInit {
     });
   }
 
+  public openParentSettings(): void {
+    this.modalManager.openModal('parents_settings');
+  }
 
-
-
+  public openAddParentModal(): void {
+    this.modalManager.openModal('add_parent');
+  }
 
   public refreshTimetable() {
     if (!this.selectedStudent?.person_id) return;
