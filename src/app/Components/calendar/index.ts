@@ -1,5 +1,4 @@
-import { NgClass } from '@angular/common';
-import { Component, ElementRef, EventEmitter, inject, Input, OnInit, Output, Renderer2, RendererFactory2 } from '@angular/core';
+import { Component, ElementRef, EventEmitter, inject, Input, OnInit, Output, Renderer2 } from '@angular/core';
 import { CalendarManager } from '@Components/calendar-dropdown';
 import { IconsModule } from '@Schoolingo/icons';
 import { Locale } from '@Schoolingo/locale';
@@ -16,7 +15,7 @@ export type Calendar = {
   selector: 'app-calendar',
   templateUrl: './calendar.html',
   styleUrls: ['./calendar.css'],
-  imports: [IconsModule, NgClass]
+  imports: [IconsModule]
 })
 export class CalendarComponent implements OnInit {
     @Input() id: string = '';

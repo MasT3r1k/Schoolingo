@@ -9,7 +9,7 @@
             <button class="action-btn" title="Poslat zprávu">
                 <i-tabler name="mail"></i-tabler>
             </button>
-            <button class="action-btn" title="Upravit">
+            <button class="action-btn" [title]="l.s('buttons.edit')">
                 <i-tabler name="edit"></i-tabler>
             </button>
             <button class="action-btn" title="Tisk">
@@ -27,17 +27,11 @@
             <div class="profile-card">
                 <div class="profile-avatar">
                     <span class="avatar-initials">
-                        {{ Utils.getInitials(`${selectedStudent.full_name}`) }}
+                        {{ Utils.getInitials(selectedStudent.full_name) }}
                     </span>
                 </div>
                 <h1 class="profile-name">
-                    @if (selectedStudent.prefix_title) {
-                    <span>{{ selectedStudent.prefix_title }} </span>
-                    }
-                    {{ selectedStudent.first_name }} {{ selectedStudent.last_name }}
-                    @if (selectedStudent.suffix_title) {
-                    <span>, {{ selectedStudent.suffix_title }}</span>
-                    }
+                    {{ selectedStudent.full_name }}
                 </h1>
 
 
@@ -47,7 +41,7 @@
                     Utils.getGender(selectedStudent.gender)) }})
                 </div>
                 <div class="profile-class">
-                    Třída: {{ selectedStudent.class_name }}
+                    {{ l.s('students.class') }}: {{ selectedStudent.class_name }}
                 </div>
             </div>
 
@@ -60,7 +54,7 @@
                     </div>
                     <div class="stat-info">
                         <span class="stat-value">{{ selectedStudent.average_grade }}</span>
-                        <span class="stat-label">Průměr</span>
+                        <span class="stat-label">{{ l.s('students.average') }}</span>
                     </div>
                 </div>
                 <div class="stat-card clickable"
@@ -71,7 +65,7 @@
                     </div>
                     <div class="stat-info">
                         <span class="stat-value">{{ selectedStudent.absence_rate }}%</span>
-                        <span class="stat-label">Absence</span>
+                        <span class="stat-label">{{ l.s('students.absence') }}</span>
                     </div>
                 </div>
                 <div class="stat-card clickable" [class.danger]="selectedStudent.education_measures_count > 0"
@@ -104,71 +98,12 @@
         <main class="detail-main">
             <!-- Tabs Navigation -->
             <nav class="tabs-nav">
-                <div class="tab-btn" [class.active]="activeTab === 'overview'" (click)="setActiveTab('overview')">
-                    <i-tabler name="layout-dashboard"></i-tabler>
-                    <span>Přehled</span>
+                @for (tab of tabs;track $index) {
+                <div class="tab-btn" [class.active]="activeTab === tab" (click)="setActiveTab(tab)">
+                    <i-tabler [name]="getTabIcon(tab)"></i-tabler>
+                    <span>{{ l.s('students.tabs.' + tab) }}</span>
                 </div>
-                <div class="tab-btn" [class.active]="activeTab === 'personal'" (click)="setActiveTab('personal')">
-                    <i-tabler name="user"></i-tabler>
-                    <span>Osobní údaje</span>
-                </div>
-                <div class="tab-btn" [class.active]="activeTab === 'parents'" (click)="setActiveTab('parents')">
-                    <i-tabler name="users-group"></i-tabler>
-                    <span>Zákonní zástupci</span>
-                </div>
-                <div class="tab-btn" [class.active]="activeTab === 'academic'" (click)="setActiveTab('academic')">
-                    <i-tabler name="school"></i-tabler>
-                    <span>Studium</span>
-                </div>
-                <div class="tab-btn" [class.active]="activeTab === 'timetable'" (click)="setActiveTab('timetable')">
-                    <i-tabler name="calendar-time"></i-tabler>
-                    <span>Rozvrh</span>
-                </div>
-                <div class="tab-btn" [class.active]="activeTab === 'matrika'" (click)="setActiveTab('matrika')">
-                    <i-tabler name="school"></i-tabler>
-                    <span>Matrika</span>
-                </div>
-                <div class="tab-btn" [class.active]="activeTab === 'medical'" (click)="setActiveTab('medical')">
-                    <i-tabler name="heart-rate-monitor"></i-tabler>
-                    <span>Zdravotní</span>
-                </div>
-                <div class="tab-btn" [class.active]="activeTab === 'history'" (click)="setActiveTab('history')">
-                    <i-tabler name="history"></i-tabler>
-                    <span>Historie</span>
-                </div>
-                <div class="tab-btn" [class.active]="activeTab === 'notes'" (click)="setActiveTab('notes')">
-                    <i-tabler name="notes"></i-tabler>
-                    <span>Poznámky</span>
-                </div>
-                <div class="tab-btn" [class.active]="activeTab === 'marks'" (click)="setActiveTab('marks')">
-                    <i-tabler name="history"></i-tabler>
-                    <span>Známky</span>
-                </div>
-                <div class="tab-btn" [class.active]="activeTab === 'evaluation'"
-                    (click)="setActiveTab('evaluation')">
-                    <i-tabler name="history"></i-tabler>
-                    <span>Hodnocení</span>
-                </div>
-                <div class="tab-btn" [class.active]="activeTab === 'educational_measures'"
-                    (click)="setActiveTab('educational_measures')">
-                    <i-tabler name="history"></i-tabler>
-                    <span>Výchovná opatření</span>
-                </div>
-                <div class="tab-btn" [class.active]="activeTab === 'educational_measures'"
-                    (click)="setActiveTab('educational_measures')">
-                    <i-tabler name="history"></i-tabler>
-                    <span>Pololetní klasifikace</span>
-                </div>
-                <div class="tab-btn" [class.active]="activeTab === 'educational_measures'"
-                    (click)="setActiveTab('educational_measures')">
-                    <i-tabler name="history"></i-tabler>
-                    <span>Slovní hodnocení</span>
-                </div>
-                <div class="tab-btn" [class.active]="activeTab === 'educational_measures'"
-                    (click)="setActiveTab('educational_measures')">
-                    <i-tabler name="history"></i-tabler>
-                    <span>Souhrn hodnocení</span>
-                </div>
+                }
             </nav>
 
             <!-- Tab Content -->
@@ -183,7 +118,7 @@
                             <h3>Základní informace</h3>
                             <button class="card-action-btn" (click)="openEditPersonalModal()">
                                 <i-tabler name="edit"></i-tabler>
-                                <span>Upravit</span>
+                                <span>{{ l.s('buttons.edit') }}</span>
                             </button>
                         </div>
 
@@ -268,7 +203,7 @@
                                     <span class="dot success"></span>
                                     <div class="legend-info">
                                         <span class="label">Přítomnost</span>
-                                        <span class="value">{{ (100 - selectedStudent.absence_rate)?.toFixed(2)
+                                        <span class="value">{{ (100 - selectedStudent.absence_rate).toFixed(2)
                                             }}%</span>
                                     </div>
                                 </div>
@@ -348,7 +283,7 @@
                             <h3>Osobní informace</h3>
                             <button class="card-action-btn" (click)="openEditPersonalModal()">
                                 <i-tabler name="edit"></i-tabler>
-                                <span>Upravit</span>
+                                <span>{{ l.s('buttons.edit') }}</span>
                             </button>
                         </div>
 
@@ -412,7 +347,7 @@
                             <h3>Trvalé bydliště</h3>
                             <button class="card-action-btn" (click)="openEditAddress()">
                                 <i-tabler name="edit"></i-tabler>
-                                Upravit
+                                {{ l.s('buttons.edit') }}
                             </button>
                         </div>
                         <div class="data-grid">

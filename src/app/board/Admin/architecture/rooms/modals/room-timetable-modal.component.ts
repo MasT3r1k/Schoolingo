@@ -1,5 +1,5 @@
 import { Component, inject, OnInit } from '@angular/core';
-import { CommonModule, NgClass } from '@angular/common';
+import { CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { Config } from '@Schoolingo/config';
 import { Locale } from '@Schoolingo/locale';
@@ -13,7 +13,7 @@ import moment from 'moment';
 
 @Component({
   standalone: true,
-  imports: [CommonModule, IconsModule, NgClass, SharedTimetableComponent],
+  imports: [CommonModule, IconsModule, SharedTimetableComponent],
   template: `
     @if (generatingPdf) {
         <div style="position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0, 0, 0, 0.7); display: flex; align-items: center; justify-content: center; z-index: 99999; flex-direction: column;">

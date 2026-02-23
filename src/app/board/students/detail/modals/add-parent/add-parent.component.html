@@ -1,13 +1,25 @@
 <div class="modal-body">
     <div class="search-wrapper full-width">
         <i-tabler name="search"></i-tabler>
-        <input type="search" name="search" id="parent" placeholder="Hledat osobu">
+        <input type="search" name="search" id="parent" [formControl]="search" placeholder="Hledat osobu">
     </div>
     <div class="modal-table-header">
         <div>Jméno</div>
         <div>Zákonný zástupce pro...</div>
     </div>
     <div id="parentList">
+        @for(parent of parents;track $index) {
+        <div class="parent-select-row">
+            <label><input type="checkbox">{{ parent.target_full_name }}</label>
+            <div>
+                <div class="child-tag">
+                    <span class="initials">{{ Utils.getInitials(parent.source_full_name) }}</span>
+                    <span>{{ parent.source_full_name }}</span>
+                    <span class="child-class">(4.A)</span>
+                </div>
+            </div>
+        </div>
+        }
         <div class="parent-select-row">
             <label><input type="checkbox"> Adámková Markéta</label>
             <div><div class="child-tag"><span class="initials">AK</span> Adámková Kristýna <span class="child-class">(4.A)</span></div></div>

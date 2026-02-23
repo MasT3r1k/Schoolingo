@@ -5,8 +5,6 @@ import { AuthConfig } from '../../../../infrastructure/authentication/config';
 import { Config } from '@Schoolingo/config';
 import { HttpClient } from '@angular/common/http';
 import { BoardAlertManager } from '../../../../infrastructure/alert/board.alert.manager';
-import { NgClass } from '@angular/common';
-import { AlertComponent } from '@Components/Alert';
 import { IconsModule } from '@Schoolingo/icons';
 import { Authentication } from '@Schoolingo/authentication';
 import { ModalManager } from '@Schoolingo/modal';
@@ -15,7 +13,7 @@ import { Settings } from '@Schoolingo/settings';
 
 @Component({
   standalone: true,
-  imports: [ReactiveFormsModule, AlertComponent, IconsModule],
+  imports: [ReactiveFormsModule, IconsModule],
   selector: 'settings-change-password',
   templateUrl: './change-password.component.html',
   styleUrl: './change-password.component.css'

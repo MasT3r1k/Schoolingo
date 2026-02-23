@@ -10,7 +10,7 @@ import { ModalManager } from '@Schoolingo/modal';
 
 @Component({
   standalone: true,
-  imports: [FormsModule, ReactiveFormsModule, AlertComponent],
+  imports: [FormsModule, ReactiveFormsModule],
   templateUrl: './edit-midterm.component.html',
   styleUrl: './edit-midterm.component.css'
 })

@@ -7,7 +7,7 @@
             <div class="header-actions">
                 <button class="btn btn--sm btn--primary" (click)="openAddStudentModal()">
                     <i-tabler name="user-plus"></i-tabler>
-                    Přidat studenta
+                    {{ l.s('students.add_student') }}
                 </button>
             </div>
         </div>
@@ -16,7 +16,7 @@
         <div class="filters-row-container">
             <div class="search-wrapper full-width">
                 <i-tabler name="search"></i-tabler>
-                <input type="search" placeholder="Hledat studenta..." [(ngModel)]="filters.search"
+                <input type="search" [placeholder]="l.s('students.search_student')" [(ngModel)]="filters.search"
                     (ngModelChange)="onFilterChange()">
             </div>
 
@@ -25,14 +25,14 @@
                     [class.active]="dropdownManager.selected_dropdown === 'students_filter'"
                     (click)="$event.stopPropagation(); dropdownManager.selected_dropdown = (dropdownManager.selected_dropdown === 'students_filter' ? '' : 'students_filter')">
                     <i-tabler name="filter-2"></i-tabler>
-                    <span>Filtrování</span>
+                    <span>{{ l.s('students.filter') }}</span>
                 </button>
 
                 <div class="dropdown-menu filters-dropdown"
                     [hidden]="dropdownManager.selected_dropdown !== 'students_filter'"
                     (click)="$event.stopPropagation()">
 
-                    <h3>Filtrování studentů</h3>
+                    <h3>{{ l.s('students.student_filter') }}</h3>
 
                     <div class="filters-grid">
                         <!-- Status Filter -->
@@ -63,7 +63,7 @@
 
                         <!-- Class Filter -->
                         <div class="filter-group">
-                            <label>Třída</label>
+                            <label>{{ l.s('students.class') }}</label>
                             <div class="custom-select" id="filter-class" style="width: 100%"
                                 (click)="$event.stopPropagation(); dropdownManager.selected_dropdown = dropdownManager.selected_dropdown == 'filter_class' ? '' : 'filter_class'">
                                 <div class="selected-value">
@@ -77,7 +77,7 @@
                                     <div class="list">
                                         <div class="option row" style="gap: .5rem"
                                             (click)="$event.stopPropagation(); dropdownManager.selected_dropdown = ''; filters.classId = null; onFilterChange()">
-                                            Všechny třídy
+                                            {{ l.s('students.all_classes') }}
                                         </div>
                                         @for (cls of availableClasses; track cls.id) {
                                         <div class="option row" style="gap: .5rem"
@@ -93,7 +93,7 @@
 
                         <!-- Field of Study Filter -->
                         <div class="filter-group">
-                            <label>Obor</label>
+                            <label>{{ l.s('students.field_of_study') }}</label>
                             <div class="custom-select" id="filter-scope" style="width: 100%"
                                 (click)="$event.stopPropagation(); dropdownManager.selected_dropdown = dropdownManager.selected_dropdown == 'filter_scope' ? '' : 'filter_scope'">
                                 <div class="selected-value">
@@ -107,7 +107,7 @@
                                     <div class="list">
                                         <div class="option row" style="gap: .5rem"
                                             (click)="$event.stopPropagation(); dropdownManager.selected_dropdown = ''; filters.scopeId = null; onFilterChange()">
-                                            Všechny obory
+                                            {{ l.s('students.all_fields') }}
                                         </div>
                                         @for (scope of availableScopes; track scope.id) {
                                         <div class="option row" style="gap: .5rem"
@@ -123,7 +123,7 @@
 
                         <!-- Grade Average Range -->
                         <div class="filter-group">
-                            <label>Průměr známek</label>
+                            <label>{{ l.s('students.average_grade') }}</label>
                             <div class="range-inputs">
                                 <input type="number" placeholder="Od" step="0.1" min="1" max="5"
                                     [(ngModel)]="filters.avgGradeDates.from" (change)="onFilterChange()"
@@ -137,7 +137,7 @@
 
                         <!-- Absence Range -->
                         <div class="filter-group">
-                            <label>Absence (%)</label>
+                            <label>{{ l.s('students.absence') }}</label>
                             <div class="range-inputs">
                                 <input type="number" placeholder="Od" min="0" max="100"
                                     [(ngModel)]="filters.absenceRates.from" (change)="onFilterChange()"
@@ -160,7 +160,7 @@
 
                     <div class="dropdown-footer">
                         <button class="btn btn--ghost btn--sm" (click)="clearFilters()">
-                            Vymazat filtry
+                            {{ l.s('students.clear_filter') }}
                         </button>
                         <button class="btn btn--primary btn--sm" (click)="dropdownManager.selected_dropdown = ''">
                             Hotovo
@@ -197,13 +197,13 @@
             <table class="students-table">
                 <thead>
                     <tr>
-                        <th class="col-student">Student</th>
-                        <th class="col-class">Třída</th>
-                        <th class="col-field">Obor</th>
-                        <th class="col-field">Datum narození</th>
-                        <th class="col-field">Věk</th>
-                        <th class="col-average">Průměr</th>
-                        <th class="col-absence">Absence</th>
+                        <th class="col-student">{{ l.s('students.student') }}</th>
+                        <th class="col-class">{{ l.s('students.class') }}</th>
+                        <th class="col-field">{{ l.s('students.field_of_study') }}</th>
+                        <th class="col-field">{{ l.s('person.birthday') }}</th>
+                        <th class="col-field">{{ l.s('person.age') }}</th>
+                        <th class="col-average">{{ l.s('students.average') }}</th>
+                        <th class="col-absence">{{ l.s('students.absence') }}</th>
                         <th class="col-actions"></th>
                     </tr>
                 </thead>

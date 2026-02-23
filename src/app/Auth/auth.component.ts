@@ -1,13 +1,12 @@
 import { Component, inject, OnInit } from '@angular/core';
 import { FormBuilder, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Config } from '../infrastructure/config';
-import { NgClass, NgStyle } from '@angular/common';
+import { NgClass } from '@angular/common';
 import { QRCodeComponent } from 'angularx-qrcode';
 import { Locale } from '@Schoolingo/locale';
 import { School } from '@Schoolingo/school';
 import { Theme } from '@Schoolingo/theme';
 import { AuthAlertManager } from '../infrastructure/alert/auth.alert.manager';
-import { AlertComponent } from '@Components/Alert';
 import { BehaviorSubject, interval } from 'rxjs';
 import { AuthConfig } from '../infrastructure/authentication/config';
 import { HttpClient } from '@angular/common/http';
@@ -37,7 +36,6 @@ export function isoBase64URLBuffer(buffer: Uint8Array): string {
   imports: [
     NgClass,
     QRCodeComponent,
-    AlertComponent,
     ReactiveFormsModule,
     FormsModule,
     IconsModule,

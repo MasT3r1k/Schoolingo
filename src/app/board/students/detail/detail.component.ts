@@ -80,9 +80,6 @@ interface MedicalRecord {
   created_at: Date;
 }
 
-
-
-
 @Component({
   standalone: true,
   imports: [CommonModule, IconsModule, FormsModule, SharedTimetableComponent],
@@ -136,7 +133,13 @@ export class DetailComponent implements OnInit {
   public medicalRecords: MedicalRecord[] = [];
 
   // Detail View Tabs
+  public tabs: (typeof this.activeTab)[] = ['overview','personal','parents','academic','matrika','medical','history','marks','notes','evaluation','educational_measures','timetable'];
   activeTab: 'overview' | 'personal' | 'parents' | 'academic' | 'matrika' | 'medical' | 'history' | 'marks' | 'notes' | 'evaluation' | 'educational_measures' | 'timetable' = 'overview';
+
+  public getTabIcon(tab: typeof this.activeTab): string {
+    const icons = ['layout-dashboard','user','users-group','school','calendar-time','school','heart-rate-monitor','history','notes','history','history','history'];
+    return icons[this.tabs.indexOf(tab)] ?? icons[0];
+  }
 
   // Detail Modals
   showGradesModal = false;
@@ -180,7 +183,7 @@ export class DetailComponent implements OnInit {
     });
 
     this.modalManager.addModal('edit_personal', {
-      title: 'Upravit osobní údaje',
+      title: 'students.edit_personal',
       closeable: true,
       forceScrollbar: true,
       width: 600,
@@ -188,14 +191,14 @@ export class DetailComponent implements OnInit {
     });
 
     this.modalManager.addModal('add_parent', {
-      title: 'Přidat existující zákonné zástupce',
+      title: 'students.add_parent',
       closeable: true,
       width: 800,
       items: [{ type: 'component', component: AddParentComponent }]
     })
 
     this.modalManager.addModal('parents_settings', {
-      title: 'Správa zákonných zástupců',
+      title: 'students.manage_parent',
       closeable: true,
       width: 600,
       items: [{ type: 'component', component: ParentsSettingsComponent }]

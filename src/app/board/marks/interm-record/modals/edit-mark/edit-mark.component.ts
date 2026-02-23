@@ -1,7 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Component, inject, OnInit } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { AlertComponent } from '@Components/Alert';
 import { Alert } from '@Schoolingo/alert';
 import { Config } from '@Schoolingo/config';
 import { Locale } from '@Schoolingo/locale';
@@ -12,7 +11,7 @@ import { IconsModule } from '@Schoolingo/icons';
 
 @Component({
   standalone: true,
-  imports: [FormsModule, ReactiveFormsModule, AlertComponent, IconsModule],
+  imports: [FormsModule, ReactiveFormsModule, IconsModule],
   templateUrl: './edit-mark.component.html',
   styleUrl: './edit-mark.component.css'
 })
