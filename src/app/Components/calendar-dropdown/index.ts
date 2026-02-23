@@ -1,15 +1,13 @@
-import { NgClass } from '@angular/common';
-import { Component, inject } from '@angular/core';
+import { AsyncPipe, NgClass, NgFor, NgIf } from '@angular/common';
+import { Component, inject, Injectable } from '@angular/core';
 import { IconsModule } from '@Schoolingo/icons';
 import { Locale } from '@Schoolingo/locale';
 import moment from 'moment';
-import { BehaviorSubject } from 'rxjs';
-
-let calendars: {[key: string]: CalendarData} = {};
+import { BehaviorSubject, Observable } from 'rxjs';
 
 export type Calendar = {
     date: moment.Moment;
-    gray: Boolean;
+    gray: boolean;
 }
 
 export type CalendarData = {
@@ -19,227 +17,206 @@ export type CalendarData = {
         x: number;
         y: number;
         position: 'top' | 'bottom';
+        dropdownBounds?: any;
     };
-    options: { [key: 'multiple_days' | 'multiple_hours' | string]: boolean };
+    options: { [key: string]: boolean };
     width: number;
     selected_date: BehaviorSubject<moment.Moment>[];
     selected_hour: number;
     viewDate: moment.Moment;
-    dropdownBounds?: any;
-
-    visible?: boolean;
+    visible: boolean;
 }
 
-@Component({
-  selector: 'calendar-dropdowns',
-  templateUrl: './calendar.html',
-  styleUrls: ['./calendar.css'],
-  imports: [IconsModule]
-})
+@Injectable({ providedIn: 'root' })
 export class CalendarManager {
-    public l = inject(Locale);
-    date = new BehaviorSubject<moment.Moment>(moment());
-    selectedHour: string | null = null;
-    
+    private calendars: {[key: string]: CalendarData} = {};
+    private calendarsSubject = new BehaviorSubject<CalendarData[]>([]);
+
     public addCalendar(name: string, calendar: any): void {
-        console.log(name, calendar);
         if (!calendar.visible) {
             calendar.visible = false;
         }
         if (!calendar.viewDate) {
             calendar.viewDate = moment(calendar.selected_date[0].getValue());
         }
-        calendars[name] = calendar as CalendarData;
+        this.calendars[name] = calendar as CalendarData;
+        this.updateCalendarsSubject();
     }
 
     public getCalendarData(name: string): CalendarData {
-        return calendars[name];
+        return this.calendars[name];
     }
 
     public getCalendars(): CalendarData[] {
-        return Object.entries(calendars).map(([name, calendar]) => ({...calendar, id: name}));
+        return Object.values(this.calendars);
     }
 
-    public getVisibleCalendars(): CalendarData[] {
-        return Object.entries(calendars).filter((calendar) => calendar[1].visible === true).map(([name, calendar]) => ({...calendar, id: name}));
+    public getCalendarsObservable(): Observable<CalendarData[]> {
+        return this.calendarsSubject.asObservable();
+    }
+
+    private updateCalendarsSubject(): void {
+        this.calendarsSubject.next(Object.values(this.calendars));
     }
 
     public isVisibleCalendar(name: string): boolean {
-        return calendars[name].visible || false;
+        return this.calendars[name]?.visible || false;
     }
 
     public showCalendar(name: string): void {
-        calendars[name].visible = true;
+        if (this.calendars[name]) {
+            this.calendars[name].visible = true;
+            this.updateCalendarsSubject();
+        }
     }
 
     public closeCalendar(name: string): void {
-        calendars[name].visible = false;
-    }
-
-    public navigateCalendar(name: string, amount: number, unit: moment.unitOfTime.DurationConstructor): void {
-        if (calendars[name]) {
-            calendars[name].viewDate.add(amount, unit);
-        }
-    }
-
-    public selectDay(calendarName: string, day: moment.Moment): void {
-        const calendar = calendars[calendarName];
-        if (!calendar) return;
-
-        // Pokud není multi-day výběr povolen → jeden den = start i end stejný
-        if (!calendar.options['multiple_days']) {
-            calendar.selected_date[0].next(day.clone());
-            calendar.selected_date[1].next(day.clone());
-            this.closeCalendar(calendar.id)
-            return;
-        }
-
-        // Je povolený multiple_days
-        // 1) Nemám nic vybráno → nastavím start
-        if (calendar.options['multiple_days'] && (!calendar.selected_date || calendar.selected_date.length === 0)) {
-            calendar.selected_date[0].next(day.clone());
-            return;
-        }
-
-        // 2) Mám jen start → nastavím end
-        if (calendar.options['multiple_days'] && calendar.selected_date.length === 1) {
-            const start = calendar.selected_date[0];
-            const end = day.clone();
-
-            // Pokud se klikne na stejný, bereme jako single-day
-            if (start.getValue().isSame(end, 'day')) {
-                calendar.selected_date[0].next(start.getValue());
-                calendar.selected_date[1].next(start.getValue());
-                return;
-            }
-
-            // Když se klikne na dřívější den → prohodit
-            if (end.isBefore(start.getValue())) {
-                calendar.selected_date[0].next(end);
-                calendar.selected_date[1].next(start.getValue());
-            } else {
-                calendar.selected_date[0].next(start.getValue());
-                calendar.selected_date[1].next(end);
-            }
-            return;
-        }
-
-        // 3) Existuje start i end → restart výběru od nového dne
-        if (calendar.selected_date.length === 2) {
-            calendar.selected_date[0].next(day.clone());
-            return;
+        if (this.calendars[name]) {
+            this.calendars[name].visible = false;
+            this.updateCalendarsSubject();
         }
     }
 
     public closeAllCalendars(): void {
-        Object.values(calendars).forEach((calendar) => calendar.visible = false);
+        Object.values(this.calendars).forEach((calendar) => calendar.visible = false);
+        this.updateCalendarsSubject();
+    }
+
+    public navigateCalendar(name: string, amount: number, unit: moment.unitOfTime.DurationConstructor): void {
+        if (this.calendars[name]) {
+            this.calendars[name].viewDate = this.calendars[name].viewDate.clone().add(amount, unit);
+            this.updateCalendarsSubject();
+        }
+    }
+
+    public selectDay(calendarName: string, day: moment.Moment): void {
+        const calendar = this.calendars[calendarName];
+        if (!calendar) return;
+
+        if (!calendar.options['multiple_days']) {
+            calendar.selected_date[0].next(day.clone());
+            calendar.selected_date[1].next(day.clone());
+            this.closeCalendar(calendarName);
+            return;
+        }
+
+        const startSubject = calendar.selected_date[0];
+        const endSubject = calendar.selected_date[1];
+        const start = startSubject.getValue();
+        const end = endSubject.getValue();
+
+        // Selection logic for range
+        if (start.isSame(end, 'day')) {
+            // Only one day was selected, now selecting the second one
+            if (day.isBefore(start, 'day')) {
+                startSubject.next(day.clone());
+                endSubject.next(start.clone());
+            } else if (day.isSame(start, 'day')) {
+                // Clicking same day again - keeps it single day
+            } else {
+                endSubject.next(day.clone());
+            }
+        } else {
+            // Range was already selected, start a new one
+            startSubject.next(day.clone());
+            endSubject.next(day.clone());
+        }
+        this.updateCalendarsSubject();
     }
 
     public updateCalendar(name: string, key: string, value: any): void {
-        if (!calendars[name]) return;
+        if (!this.calendars[name]) return;
         switch(key) {
             case "position":
-                calendars[name].position.x = value.x;
-                calendars[name].position.y = value.y;
-                calendars[name].position.position = value.position;
-                calendars[name].width = value.width;
-                calendars[name].dropdownBounds = value.dropdownBounds;
+                this.calendars[name].position.x = value.x;
+                this.calendars[name].position.y = value.y;
+                this.calendars[name].position.position = value.position;
+                this.calendars[name].width = value.width;
+                this.calendars[name].position.dropdownBounds = value.dropdownBounds;
                 break;
             case "size":
-                calendars[name].size = value.size;
+                this.calendars[name].size = value.size;
                 break;
         }
+        this.updateCalendarsSubject();
     }
 
     public isSameDay(calendar: CalendarData, day: moment.Moment): boolean {
         return (
-            calendar.selected_date &&
-            calendar.selected_date.length === 2 &&
-            (calendar.selected_date[0].getValue().isSame(day, 'day') ||
-            calendar.selected_date[1].getValue().isSame(day, 'day'))
+            calendar.selected_date[0].getValue().isSame(day, 'day') ||
+            calendar.selected_date[1].getValue().isSame(day, 'day')
         );
     }
 
     public isBetweenDay(calendar: CalendarData, day: moment.Moment): boolean {
-        const [start, end] = calendar.selected_date || [];
-        if (!start || !end) return false;
-        return day.isBetween(start.getValue(), end.getValue(), 'day', '()');
+        const start = calendar.selected_date[0].getValue();
+        const end = calendar.selected_date[1].getValue();
+        return day.isAfter(start, 'day') && day.isBefore(end, 'day');
     }
 
-  hours: string[] = [
-    '08:00',
-    '09:00',
-    '10:00',
-    '11:00',
-    '12:00',
-    '13:00',
-    '14:00',
-    '15:00',
-    '16:00'
-  ];
-
-    // Calendar
     public getCalendar(date: moment.Moment): Calendar[] {
         let calendar: Calendar[] = [];
         let startMonth = date.clone().startOf('month');
+        
+        // Align to Monday
+        let firstDayOfWeek = startMonth.isoWeekday(); // 1 = Monday, 7 = Sunday
+        let prevDays = firstDayOfWeek - 1;
 
-        // Before month
-        for(let i = startMonth.day() ? startMonth.day() - 1 : 6;i > 0;i--) {
-            let day = startMonth.clone().subtract(i, 'day');
+        for(let i = prevDays; i > 0; i--) {
             calendar.push({
-                date: day,
+                date: startMonth.clone().subtract(i, 'day'),
                 gray: true
-            })
+            });
         }
 
-        // Month
-        for(let i = 0;i < startMonth.daysInMonth();i++) {
-            let day = startMonth.clone().add(i, 'day');
+        for(let i = 0; i < startMonth.daysInMonth(); i++) {
             calendar.push({
-                date: day,
+                date: startMonth.clone().add(i, 'day'),
                 gray: false
-            })
+            });
         }
 
-        // After month
         let endMonth = startMonth.clone().endOf('month');
-        if (endMonth.isoWeekday() < 7) {
-            for(let i = 1;i < (endMonth ? 8 - endMonth.day() : 6);i++) {
-                let day = endMonth.clone().add(i, 'day');
-                calendar.push({
-                    date: day,
-                    gray: true
-                })
-            }
-        } 
+        let lastDayOfWeek = endMonth.isoWeekday();
+        let nextDays = 7 - lastDayOfWeek;
+
+        for(let i = 1; i <= nextDays; i++) {
+            calendar.push({
+                date: endMonth.clone().add(i, 'day'),
+                gray: true
+            });
+        }
 
         return calendar;
     }
+}
+
+@Component({
+  selector: 'calendar-dropdowns',
+  templateUrl: './calendar.html',
+  styleUrls: ['./calendar.css'],
+  imports: [IconsModule, NgIf, NgFor, NgClass, AsyncPipe],
+  standalone: true
+})
+export class CalendarDropdownsComponent {
+    public calendarManager = inject(CalendarManager);
+    public l = inject(Locale);
+
+    public isVisible = (c: CalendarData) => c.visible;
+
 
     public getLeft(calendar: CalendarData): string {
-        switch(calendar.size) {
-            case 'center':
-                return `${calendar.position.x}px`
-            case 'full':
-                return `${calendar.position.x}px`;
-        }
+        return `${calendar.position.x}px`;
     }
 
     public getWidth(calendar: CalendarData): string {
-        switch(calendar.size) {
-            case 'center':
-                return ''
-            case 'full':
-                return `${calendar.width}px`;
-        }
+        return calendar.size === 'full' ? `${calendar.width}px` : '';
     }
 
     public getTransform(calendar: CalendarData): string {
-        switch(calendar.position.position) {
-            case 'top':
-                return 'translateY(calc(-100% - 4px))';
-            case 'bottom':
-                return 'translateY(calc(-100% + 4px))'
-        }
+        return calendar.position.position === 'top' 
+            ? 'translateY(calc(-100% - 8px))' 
+            : 'translateY(8px)';
     }
 }
+

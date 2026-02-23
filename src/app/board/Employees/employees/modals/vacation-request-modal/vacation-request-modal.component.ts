@@ -30,6 +30,25 @@ export class VacationRequestModalComponent {
   public reason = '';
   public loading = false;
   public balance: any = null;
+  public submit_error: string | null = null;
+  public get is_valid(): boolean {
+    if (!this.start_date || !this.end_date) return false;
+    if (this.end_date.isBefore(this.start_date, 'day')) return false;
+    if (this.selected_type === 'vacation' && this.balance && this.projectedBalance < 0) return false;
+    return true;
+  }
+
+  public get total_days(): number {
+    if (!this.start_date || !this.end_date) return 0;
+    // Don't call is_valid here to avoid recursion
+    const diff = this.end_date.diff(this.start_date, 'days') + 1;
+    return diff > 0 ? diff : 0;
+  }
+
+  public get projectedBalance(): number {
+    if (!this.balance || this.selected_type !== 'vacation') return 0;
+    return (this.balance.remaining || 0) - this.total_days;
+  }
 
   ngOnInit() {
     this.loadBalance();
@@ -50,8 +69,9 @@ export class VacationRequestModalComponent {
   }
 
   submit() {
-    if (!this.start_date || !this.end_date) return;
+    if (!this.is_valid) return;
     this.loading = true;
+    this.submit_error = null;
     this.http.post<{success: boolean, message: string}>(Config.API_URL + '/v1/employees/vacations/request', {
       startDate: this.start_date.format('YYYY-MM-DD'),
       endDate: this.end_date.format('YYYY-MM-DD'),
@@ -60,6 +80,10 @@ export class VacationRequestModalComponent {
     }, { withCredentials: true }).subscribe({
       next: (res) => {
         this.loading = false;
+        if (!res.success) {
+            this.submit_error = res.message;
+            return;
+        }
         const data = this.modalManager.getModalData('request_vacation');
         if (data && data.onSave) {
           data.onSave();
@@ -68,6 +92,7 @@ export class VacationRequestModalComponent {
       },
       error: (err) => {
         this.loading = false;
+        this.submit_error = err.error?.message || 'unknown_error';
         console.error('Failed to submit vacation request', err);
       }
     });
@@ -75,5 +100,11 @@ export class VacationRequestModalComponent {
 
   close() {
     this.modalManager.closeModal('request_vacation');
+  }
+
+  requestMoreDays() {
+    // Placeholder logic or modal opening for requesting more days
+    console.log('Requesting more days...');
+    // This could open another modal or navigate to a specialized request page
   }
 }

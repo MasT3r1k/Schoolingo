@@ -99,7 +99,7 @@ export class AddEmployeeModalComponent implements OnInit {
 
   loadDegrees() {
     this.http.get<{ data: any[] }>(
-      `${Config.API_URL}/v1/employees/degrees`,
+      `${Config.API_URL}/v1/school/degrees`,
       { withCredentials: true }
     ).subscribe({
       next: (response) => {

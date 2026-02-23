@@ -32,12 +32,15 @@ export class AddParentComponent implements OnInit {
   }
 
   public updateParent(): void {
+    const student_id = this.modalManager.getModalData('add_parent').student_id || null;
+
     this.http.post(
       `${Config.API_URL}/v1/parents/search`,
       {
         limit: 10,
         offset: 0,
-        search: this.search.value
+        search: this.search.value,
+        student_id
       }
     )
     .subscribe((api: any) => {

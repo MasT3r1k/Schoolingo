@@ -1,16 +1,19 @@
-<div class="calendar-wrap" id="calWrap" [style.pointerEvents]="getVisibleCalendars().length ? 'all' : 'none'">
-  @for(calendar of getCalendars();track $index) {
-  <div style="position: relative; width: 100%; height: 100%"
-    [style.visibility]="calendar.visible ? 'visible' : 'hidden'" (click)="closeCalendar(calendar.id)">
+<div class="calendar-wrap" id="calWrap"
+  [style.pointerEvents]="(calendarManager.getCalendarsObservable() | async)?.some(isVisible) ? 'all' : 'none'">
+  @for(calendar of (calendarManager.getCalendarsObservable() | async);track calendar.id) {
+  <div style="position: absolute; width: 100%; height: 100%; top: 0; left: 0;"
+    [style.visibility]="calendar.visible ? 'visible' : 'hidden'" [style.opacity]="calendar.visible ? '1' : '0'"
+    (click)="calendarManager.closeCalendar(calendar.id)">
     <div class="calendar-panel" id="calPanel" [attr.calendar_id]="calendar.id!" [style.width]="getWidth(calendar)"
       [style.left]="getLeft(calendar)" [style.top.px]="calendar.position.y" [style.transform]="getTransform(calendar)"
       (click)="$event.stopPropagation()">
+
       <div class="cal-header">
         <div class="nav">
-          <div class="header-btn center" (click)="navigateCalendar(calendar.id, -1, 'year')">
+          <div class="header-btn center" (click)="calendarManager.navigateCalendar(calendar.id, -1, 'year')">
             <i-tabler style="margin: 0" name="chevrons-left"></i-tabler>
           </div>
-          <div class="header-btn center" (click)="navigateCalendar(calendar.id, -1, 'month')">
+          <div class="header-btn center" (click)="calendarManager.navigateCalendar(calendar.id, -1, 'month')">
             <i-tabler style="margin: 0" name="chevron-left"></i-tabler>
           </div>
         </div>
@@ -19,10 +22,10 @@
           }) }}
         </div>
         <div class="nav">
-          <div class="header-btn center" (click)="navigateCalendar(calendar.id, 1, 'month')">
+          <div class="header-btn center" (click)="calendarManager.navigateCalendar(calendar.id, 1, 'month')">
             <i-tabler style="margin: 0" name="chevron-right"></i-tabler>
           </div>
-          <div class="header-btn center" (click)="navigateCalendar(calendar.id, 1, 'year')">
+          <div class="header-btn center" (click)="calendarManager.navigateCalendar(calendar.id, 1, 'year')">
             <i-tabler style="margin: 0" name="chevrons-right"></i-tabler>
           </div>
         </div>
@@ -36,9 +39,10 @@
         }
       </div>
       <div class="calendar-grid" id="grid">
-        @for(day of getCalendar(calendar.viewDate);track $index) {
-        <div class="day" [class.inactive]="day.gray" [class.selected]="isSameDay(calendar, day.date)"
-          [class.inrange]="isBetweenDay(calendar, day.date)" (click)="selectDay(calendar.id, day.date)">
+        @for(day of calendarManager.getCalendar(calendar.viewDate);track $index) {
+        <div class="day" [class.inactive]="day.gray" [class.selected]="calendarManager.isSameDay(calendar, day.date)"
+          [class.inrange]="calendarManager.isBetweenDay(calendar, day.date)"
+          (click)="calendarManager.selectDay(calendar.id, day.date)">
           {{ day.date.format('D') }}
         </div>
         }

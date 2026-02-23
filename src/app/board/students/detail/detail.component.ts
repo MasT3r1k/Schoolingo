@@ -225,7 +225,7 @@ export class DetailComponent implements OnInit {
   }
 
   public openAddParentModal(): void {
-    this.modalManager.openModal('add_parent');
+    this.modalManager.openModal('add_parent', { student_id: this.selectedStudent.person_id });
   }
 
   public refreshTimetable() {

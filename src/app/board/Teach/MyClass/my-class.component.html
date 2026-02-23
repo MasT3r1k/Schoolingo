@@ -103,11 +103,10 @@
                                     <div class="student-cell" style="display: flex; align-items: center; gap: 10px;">
                                         <div class="student-avatar-sm"
                                             style="width: 32px; height: 32px; background: var(--surface-2); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 600; font-size: 12px;">
-                                            {{ student.firstName[0] }}{{ student.lastName[0] }}
+                                            {{ Utils.getInitials(student.full_name) }}
                                         </div>
                                         <div class="student-name-cell" style="display: flex; flex-direction: column;">
-                                            <span class="name" style="font-weight: 500;">{{ student.firstName }} {{
-                                                student.lastName }}</span>
+                                            <span class="name" style="font-weight: 500;">{{ student.full_name }}</span>
                                         </div>
                                     </div>
                                 </td>
@@ -118,15 +117,15 @@
                                     </div>
                                 </td>
                                 <td class="col-avg">
-                                    <span class="badge" [ngClass]="getGradeClass(student.averageGrade)"
+                                    <span class="badge" [ngClass]="getGradeClass(student.average_grade)"
                                         style="padding: 4px 8px; border-radius: 4px; font-size: 13px; font-weight: 600;">
-                                        {{ student.averageGrade || '—' }}
+                                        {{ student.average_grade || '—' }}
                                     </span>
                                 </td>
                                 <td class="col-abs">
                                     <span style="font-weight: 500;"
-                                        [style.color]="(student.absenceRate > 20) ? 'var(--red)' : ''">
-                                        {{ student.absenceRate || 0 }}%
+                                        [style.color]="(student.absence_rate > 20) ? 'var(--red)' : ''">
+                                        {{ student.absence_rate || 0 }}%
                                     </span>
                                 </td>
                                 <td class="col-actions" style="text-align: right;">
@@ -149,20 +148,20 @@
                         <div style="font-size: 13px; color: var(--text-muted); margin-bottom: 6px; font-weight: 500;">
                             Omluvená absence</div>
                         <div style="font-size: 24px; font-weight: 700; color: var(--green);">{{
-                            absenceStats.totalExcused }}</div>
+                            absenceStats.total_excused }}</div>
                     </div>
                     <div style="width: 1px; height: 50px; background: var(--border);"></div>
                     <div style="text-align: center;">
                         <div style="font-size: 13px; color: var(--text-muted); margin-bottom: 6px; font-weight: 500;">
                             Neomluvená absence</div>
                         <div style="font-size: 24px; font-weight: 700; color: var(--red);">{{
-                            absenceStats.totalUnexcused }}</div>
+                            absenceStats.total_unexcused }}</div>
                     </div>
                     <div style="width: 1px; height: 50px; background: var(--border);"></div>
                     <div style="text-align: center;">
                         <div style="font-size: 13px; color: var(--text-muted); margin-bottom: 6px; font-weight: 500;">
                             Průměrná absence</div>
-                        <div style="font-size: 24px; font-weight: 700;">{{ absenceStats.classAverage }}%</div>
+                        <div style="font-size: 24px; font-weight: 700;">{{ absenceStats.class_average }}%</div>
                     </div>
                 </div>
                 <div *ngIf="absences.length === 0" class="empty-state"
@@ -188,13 +187,13 @@
                                 <div class="student-cell" style="display: flex; align-items: center; gap: 10px;">
                                     <div class="student-avatar-sm"
                                         style="width: 32px; height: 32px; background: var(--surface-2); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 600; font-size: 12px;">
-                                        {{ absence.firstName[0] }}{{ absence.lastName[0] }}
+                                        {{ Utils.getInitials(absence.full_name) }}
                                     </div>
-                                    <span>{{ absence.firstName }} {{ absence.lastName }}</span>
+                                    <span>{{ absence.full_name }}</span>
                                 </div>
                             </td>
                             <td>{{ Utils.formatDateShort(absence.date) }}</td>
-                            <td>{{ absence.dayHour }}</td>
+                            <td>{{ absence.day_hour }}</td>
                             <td>
                                 <div class="excuse-form" style="display: flex; gap: 10px;">
                                     <input type="text" [(ngModel)]="excuseReason" placeholder="Důvod omluvy"
@@ -235,15 +234,15 @@
                                             style="display: flex; align-items: center; gap: 10px;">
                                             <div class="student-avatar-sm"
                                                 style="width: 32px; height: 32px; background: var(--surface-2); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 600; font-size: 12px;">
-                                                {{ service.firstName[0] }}{{ service.lastName[0] }}
+                                                {{ Utils.getInitials(service.full_name) }}
                                             </div>
-                                            <span>{{ service.firstName }} {{ service.lastName }}</span>
+                                            <span>{{ service.full_name }}</span>
                                         </div>
                                     </td>
                                     <td>{{ Utils.formatDateShort(service.start) }}</td>
                                     <td>{{ Utils.formatDateShort(service.end) }}</td>
                                     <td>
-                                        <button (click)="removeService(service.csId)" class="btn btn--icon danger"
+                                        <button (click)="removeService(service.cs_id)" class="btn btn--icon danger"
                                             title="Odebrat">
                                             <i-tabler name="x"></i-tabler>
                                         </button>
@@ -277,15 +276,15 @@
                                             style="display: flex; align-items: center; gap: 10px;">
                                             <div class="student-avatar-sm"
                                                 style="width: 32px; height: 32px; background: var(--surface-2); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 600; font-size: 12px;">
-                                                {{ service.firstName[0] }}{{ service.lastName[0] }}
+                                                {{ Utils.getInitials(service.full_name) }}
                                             </div>
-                                            <span>{{ service.firstName }} {{ service.lastName }}</span>
+                                            <span>{{ service.full_name }}</span>
                                         </div>
                                     </td>
                                     <td>{{ Utils.formatDateShort(service.start) }}</td>
                                     <td>{{ Utils.formatDateShort(service.end) }}</td>
                                     <td>
-                                        <button (click)="removeService(service.csId)" class="btn btn--icon danger"
+                                        <button (click)="removeService(service.cs_id)" class="btn btn--icon danger"
                                             title="Odebrat">
                                             <i-tabler name="x"></i-tabler>
                                         </button>
@@ -317,9 +316,9 @@
                                             style="display: flex; align-items: center; gap: 10px;">
                                             <div class="student-avatar-sm"
                                                 style="width: 24px; height: 24px; background: var(--surface-2); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 600; font-size: 10px;">
-                                                {{ h.firstName[0] }}{{ h.lastName[0] }}
+                                                {{ Utils.getInitials(h.full_name) }}
                                             </div>
-                                            <span>{{ h.firstName }} {{ h.lastName }}</span>
+                                            <span>{{ h.full_name }}</span>
                                         </div>
                                     </td>
                                     <td>{{ Utils.formatDateShort(h.start) }}</td>
@@ -343,8 +342,8 @@
                                         <select [(ngModel)]="newService.studentId" name="studentId" class="form-input"
                                             style="width: 100%; padding: 8px 12px; border-radius: 6px; border: 1px solid var(--border); background: var(--surface);">
                                             <option [ngValue]="null">Vyberte žáka...</option>
-                                            <option *ngFor="let s of students" [value]="s.personId">
-                                                {{ s.lastName }} {{ s.firstName }}
+                                            <option *ngFor="let s of students" [value]="s.person_id">
+                                                {{ s.full_name }}
                                             </option>
                                         </select>
                                     </div>

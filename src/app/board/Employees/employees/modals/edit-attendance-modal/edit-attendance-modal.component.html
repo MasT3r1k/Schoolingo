@@ -3,7 +3,10 @@
     <div *ngIf="success" class="alert alert--success">Změny byly uloženy!</div>
     <div class="form-group">
         <label>Datum</label>
-        <div class="readonly-value">{{ attendance.date | date:'dd.MM.yyyy' }}</div>
+        <div *ngIf="attendance.attendance_id && attendance.attendance_id !== 0" class="readonly-value">{{
+            attendance.date | date:'dd.MM.yyyy' }}</div>
+        <input *ngIf="!attendance.attendance_id || attendance.attendance_id === 0" type="date" class="form-input"
+            [(ngModel)]="attendance.date">
     </div>
 
     <div class="form-row">
@@ -34,7 +37,8 @@
             (click)="$event.stopPropagation(); dropdownManager.selected_dropdown = dropdownManager.selected_dropdown == 'attendance_type' ? '' : 'attendance_type'">
             <div class="selected-value">
                 <div class="row" style="gap: .5rem">
-                    {{ attendance.type === 'regular' ? 'Běžná' : (selectedType() ? selectedType().name : attendance.type) }}
+                    {{ attendance.type === 'regular' ? 'Běžná' : (selectedType() ? selectedType().name :
+                    attendance.type) }}
                 </div>
                 <i-tabler name="chevron-down"></i-tabler>
             </div>

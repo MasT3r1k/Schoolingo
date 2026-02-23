@@ -20,6 +20,8 @@ import { AddBonusModalComponent } from './modals/add-bonus-modal/add-bonus-modal
 import { SetSalaryModalComponent } from './modals/set-salary-modal/set-salary-modal.component';
 import { EditAttendanceModalComponent } from './modals/edit-attendance-modal/edit-attendance-modal.component';
 import { EditEmployeeModalComponent } from './modals/edit-employee-modal/edit-employee-modal.component';
+import { RejectVacationModalComponent } from './modals/reject-vacation-modal/reject-vacation-modal.component';
+import { AdjustVacationModalComponent } from './modals/adjust-vacation-modal/adjust-vacation-modal.component';
 import { EMPLOYEE_CONFIG } from '../../../infrastructure/employees/const';
 import moment from 'moment';
 
@@ -83,7 +85,10 @@ export interface EmployeeFilters {
 @Component({
   selector: 'app-employees',
   standalone: true,
-  imports: [CommonModule, IconsModule, FormsModule, TabsComponent],
+  imports: [CommonModule, IconsModule, FormsModule, TabsComponent, 
+    AddEmployeeModalComponent, EditEmployeeModalComponent, EditAttendanceModalComponent, 
+    VacationRequestModalComponent, RejectVacationModalComponent, AdjustVacationModalComponent,
+    SetSalaryModalComponent, AddBonusModalComponent],
   templateUrl: './employees.component.html',
   styleUrl: './employees.component.css'
 })
@@ -110,12 +115,12 @@ export class EmployeesComponent implements OnInit {
   selectedViewTabSubject = new BehaviorSubject<number>(0);
   // Main view tabs
   selectedViewTab = new BehaviorSubject<number>(0);
-  viewTabOptions = ['employees.list', 'employees.attendance', 'employees.vacations', 'employees.salaries', 'employees.bonuses'];
+  viewTabOptions = ['employees.list', 'employees.attendance', 'employees.vacations.title', 'employees.salaries', 'employees.bonuses'];
   viewTabIcons = ['users', 'clock', 'beach', 'cash', 'gift'];
   
   // Detail tabs
   selectedDetailTab = new BehaviorSubject<number>(0);
-  detailTabOptions = ['employees.overview', 'employees.attendance', 'employees.vacations', 'employees.salary', 'employees.bonuses'];
+  detailTabOptions = ['employees.overview', 'employees.attendance', 'employees.vacations.title', 'employees.salary', 'employees.bonuses'];
   detailTabIcons = ['layout-dashboard', 'clock', 'beach', 'cash', 'gift'];
 
   // Filters - Signals
@@ -221,6 +226,7 @@ export class EmployeesComponent implements OnInit {
       {
         title: 'employees.add_employee.title',
         closeable: true,
+        forceScrollbar: true,
         width: 600,
         items: [{
           type: 'component',
@@ -251,6 +257,19 @@ export class EmployeesComponent implements OnInit {
         items: [{
           type: 'component',
           component: VacationRequestModalComponent
+        }]
+      }
+    );
+
+    this.modalManager.addModal(
+      'reject_vacation',
+      {
+        title: 'employees.reject_vacation.title',
+        closeable: true,
+        width: 500,
+        items: [{
+          type: 'component',
+          component: RejectVacationModalComponent
         }]
       }
     );
@@ -290,6 +309,19 @@ export class EmployeesComponent implements OnInit {
         items: [{
           type: 'component',
           component: EditAttendanceModalComponent
+        }]
+      }
+    );
+
+    this.modalManager.addModal(
+      'adjust_vacation',
+      {
+        title: 'Upravit nárok na dovolenou',
+        closeable: true,
+        width: 450,
+        items: [{
+          type: 'component',
+          component: AdjustVacationModalComponent
         }]
       }
     );
@@ -881,6 +913,26 @@ export class EmployeesComponent implements OnInit {
     });
   }
 
+  addAttendanceRecord() {
+    const employee = this.selectedEmployee.getValue();
+    if (!employee) return;
+    
+    this.modalManager.openModal('edit_attendance', {
+      record: { 
+        teacher_id: employee.person_id,
+        date: new Date().toISOString().split('T')[0],
+        check_in: '08:00',
+        check_out: '16:00',
+        break_minutes: 30,
+        type: 'office',
+        approved: true
+      },
+      onSave: () => {
+        this.loadAttendanceForDetail(employee.person_id);
+      }
+    });
+  }
+
   exportAttendanceCSV() {
     const headers = ['Datum', 'Příchod', 'Odchod', 'Pauza (min)', 'Odpracováno (h)', 'Typ'];
     const records = this.attendanceRecords();
@@ -936,6 +988,7 @@ export class EmployeesComponent implements OnInit {
     // Use modal instead of prompt for security
     this.modalManager.openModal('adjust_vacation', {
       employee: employee,
+      entitlement: this.vacationBalance().total,
       onConfirm: (amount: number) => {
         this.http.post(
           `${Config.API_URL}/v1/employees/vacations/balance/adjust`,

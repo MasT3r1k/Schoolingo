@@ -8,45 +8,20 @@
         <div>Zákonný zástupce pro...</div>
     </div>
     <div id="parentList">
-        @for(parent of parents;track $index) {
+        @for(parent of parents;track parent.parent_id) {
         <div class="parent-select-row">
-            <label><input type="checkbox">{{ parent.target_full_name }}</label>
+            <label><input type="checkbox">{{ parent.parent_full_name }}</label>
             <div>
+                @for (child of parent.children;track child.child_id) {
                 <div class="child-tag">
-                    <span class="initials">{{ Utils.getInitials(parent.source_full_name) }}</span>
-                    <span>{{ parent.source_full_name }}</span>
-                    <span class="child-class">(4.A)</span>
+                    <span class="initials">{{ Utils.getInitials(child.child_full_name) }}</span>
+                    <span>{{ child.child_full_name }}</span>
+                    <span class="child-class">({{ child.child_classname }})</span>
                 </div>
+                }
             </div>
         </div>
         }
-        <div class="parent-select-row">
-            <label><input type="checkbox"> Adámková Markéta</label>
-            <div><div class="child-tag"><span class="initials">AK</span> Adámková Kristýna <span class="child-class">(4.A)</span></div></div>
-        </div>
-        <div class="parent-select-row">
-            <label><input type="checkbox"> Adámková Natali</label>
-            <div><div class="child-tag"><span class="initials">AD</span> Adámek Dominik <span class="child-class">(4.B)</span></div></div>
-        </div>
-        <div class="parent-select-row">
-            <label><input type="checkbox"> Andrýsek Jakub Ing.</label>
-            <div><div class="child-tag"><span class="initials">AV</span> Andrýsek Vojtěch <span class="child-class">(4.B)</span></div></div>
-        </div>
-        <div class="parent-select-row">
-            <label><input type="checkbox"> Andrýsková Emma Bc.</label>
-            <div><div class="child-tag"><span class="initials">AV</span> Andrýsek Vojtěch <span class="child-class">(4.B)</span></div></div>
-        </div>
-        <div class="parent-select-row">
-            <label><input type="checkbox"> Bača Jakub</label>
-            <div><div class="child-tag"><span class="initials">BN</span> Bačová Nela <span class="child-class">(6.A)</span></div></div>
-        </div>
-        <div class="parent-select-row">
-            <label><input type="checkbox"> Bajer Tobiáš</label>
-            <div>
-                <div class="child-tag"><span class="initials">NS</span> Novotná Sofie <span class="child-class">(6.A)</span></div>
-                <div class="child-tag" style="margin-left: 5px;"><span class="initials">BE</span> Bajerová Ema <span class="child-class">(6.A)</span></div>
-            </div>
-        </div>
     </div>
 </div>
 

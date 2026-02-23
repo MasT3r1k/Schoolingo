@@ -5,7 +5,7 @@ import { Config } from '@Schoolingo/config';
 import { Authentication } from './infrastructure/authentication';
 import { polyfillCountryFlagEmojis } from "country-flag-emoji-polyfill";
 import { ModalComponent } from '@Components/modal';
-import { CalendarManager } from '@Components/calendar-dropdown';
+import { CalendarDropdownsComponent } from '@Components/calendar-dropdown';
 import { SeasonalService } from '@Schoolingo/seasonal';
 import { SnowEffectComponent } from '@Components/seasonal/snow-effect/snow-effect.component';
 import { SeasonalDecorationsComponent } from '@Components/seasonal/decorations/decorations.component';
@@ -18,7 +18,7 @@ import { AlertComponent } from '@Components/Alert';
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet, ModalComponent, CalendarManager, SnowEffectComponent, SeasonalDecorationsComponent, SystemErrorComponent, AlertComponent],
+  imports: [RouterOutlet, ModalComponent, CalendarDropdownsComponent, SnowEffectComponent, SeasonalDecorationsComponent, SystemErrorComponent, AlertComponent],
   templateUrl: './app.component.html',
   styleUrl: './app.component.css'
 })

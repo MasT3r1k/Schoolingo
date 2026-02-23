@@ -273,6 +273,12 @@
                                     (ngModelChange)="setAttendanceFilterEndDate($event)">
                             </div>
                             }
+                            @if (canManage) {
+                            <button class="btn btn--success btn--sm" (click)="addAttendanceRecord()">
+                                <i-tabler name="plus"></i-tabler>
+                                Přidat záznam
+                            </button>
+                            }
                             <button class="btn btn--primary btn--sm" (click)="exportAttendanceCSV()">
                                 <i-tabler name="download"></i-tabler>
                                 Export CSV
@@ -341,7 +347,16 @@
                     <div class="vacations-tab">
                         <!-- Balance Card -->
                         <div class="vacation-balance-card">
-                            <h3>Stav dovolené {{ currentYear }}</h3>
+                            <div class="card-header-flex">
+                                <h3>Stav dovolené {{ currentYear }}</h3>
+                                @if (canManage) {
+                                <button class="btn-adjust" title="Upravit celkový nárok"
+                                    (click)="changeVacationEntitlement()">
+                                    <i-tabler name="settings"></i-tabler>
+                                    Upravit nárok
+                                </button>
+                                }
+                            </div>
                             <div class="stats-cards">
                                 <div class="stat-card stat--primary">
                                     <div class="stat-icon">
@@ -407,11 +422,13 @@
                                             <div class="action-buttons">
                                                 <button class="btn btn--xs btn--success"
                                                     (click)="approveVacation(request.request_id)">
-                                                    Schválit
+                                                    <i-tabler name="check"></i-tabler>
+                                                    {{ l.s('employees.vacations.approve') || 'Schválit' }}
                                                 </button>
                                                 <button class="btn btn--xs btn--danger"
                                                     (click)="rejectVacation(request.request_id)">
-                                                    Zamítnout
+                                                    <i-tabler name="x"></i-tabler>
+                                                    {{ l.s('employees.vacations.reject') || 'Zamítnout' }}
                                                 </button>
                                             </div>
                                         </td>

@@ -3,15 +3,21 @@
         (click)="calendarManager.isVisibleCalendar(id) ? calendarManager.closeCalendar(id) : updateCalendarPosition();calendarManager.showCalendar(id); $event.stopPropagation()"
         style="display: flex; align-items: center; justify-content: space-between; cursor: pointer;">
         <div class="value" id="calValue">
-            @if (this.calendarManager.getCalendarData(id)) {
-            {{ this.calendarManager.getCalendarData(id).selected_date[0].getValue().format('DD. MM. YYYY') }}
+            @if (calendarManager.getCalendarData(id)) {
+            @let start = calendarManager.getCalendarData(id).selected_date[0].getValue();
+            @let end = calendarManager.getCalendarData(id).selected_date[1].getValue();
+
+            @if (!options.multiple_days || start.isSame(end, 'day')) {
+            {{ start.format('DD. MM. YYYY') }}
+            } @else {
+            {{ start.format('D. M.') }} — {{ end.format('DD. MM. YYYY') }}
+            }
             } @else {
             {{ l.s('calendar.placeholder') }}
             }
         </div>
-        <div class="chev" style="display: flex; align-items: center; color: var(--text-muted);">
-            <i-tabler [name]="calendarManager.isVisibleCalendar(id) ? 'chevron-up' : 'chevron-down'"
-                style="width: 18px; height: 18px;"></i-tabler>
+        <div class="chev" style="display: flex; align-items: center; ">
+            <i-tabler [name]="calendarManager.isVisibleCalendar(id) ? 'chevron-up' : 'chevron-down'"></i-tabler>
         </div>
     </div>
 </div>

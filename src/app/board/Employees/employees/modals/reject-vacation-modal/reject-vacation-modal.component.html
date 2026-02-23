@@ -1,0 +1,24 @@
+<div class="modal-body">
+    <div class="modal-form">
+        <div class="form-group">
+            <label>{{ l.s('employees.reject_vacation.reason_label') }}</label>
+            <textarea [(ngModel)]="reason" class="form-input" rows="4"
+                placeholder="{{ l.s('employees.reject_vacation.reason_placeholder') }}"></textarea>
+            <p class="form-hint">{{ l.s('employees.reject_vacation.reason_hint') }}</p>
+        </div>
+    </div>
+</div>
+
+<div class="modal-actions">
+    <button class="btn btn--outline" (click)="close()">
+        {{ l.s('buttons.cancel') }}
+    </button>
+    <button class="btn btn--danger" [disabled]="loading || !reason.trim()" (click)="confirm()">
+        @if (loading) {
+        <i-tabler name="loader-2" class="animate-spin"></i-tabler>
+        } @else {
+        <i-tabler name="x"></i-tabler>
+        }
+        {{ l.s('employees.reject_vacation.confirm') }}
+    </button>
+</div>

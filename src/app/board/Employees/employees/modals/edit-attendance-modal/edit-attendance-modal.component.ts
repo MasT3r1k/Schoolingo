@@ -82,9 +82,16 @@ export class EditAttendanceModalComponent {
       this.attendance.workedMinutes = worked;
     }
 
-    this.http.put(`${Config.API_URL}/v1/employees/attendance/${this.attendance.attendance_id}`, this.attendance, {
-      withCredentials: true
-    }).pipe(
+    const isNew = !this.attendance.attendance_id || this.attendance.attendance_id === 0;
+    const url = isNew 
+      ? `${Config.API_URL}/v1/employees/attendance`
+      : `${Config.API_URL}/v1/employees/attendance/${this.attendance.attendance_id}`;
+    
+    const request = isNew
+      ? this.http.post(url, this.attendance, { withCredentials: true })
+      : this.http.put(url, this.attendance, { withCredentials: true });
+
+    request.pipe(
       catchError(err => {
         console.error(err);
         this.error = 'Nepodařilo se uložit změny.';
