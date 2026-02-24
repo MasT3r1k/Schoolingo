@@ -4,13 +4,13 @@
         <input type="search" name="search" id="parent" [formControl]="search" placeholder="Hledat osobu">
     </div>
     <div class="modal-table-header">
-        <div>Jméno</div>
-        <div>Zákonný zástupce pro...</div>
+        <div>{{ l.s('person.full_name') }}</div>
+        <div>{{ l.s('students.add_parent.parent_for') }}</div>
     </div>
     <div id="parentList">
         @for(parent of parents;track parent.parent_id) {
         <div class="parent-select-row">
-            <label><input type="checkbox">{{ parent.parent_full_name }}</label>
+            <label><input type="checkbox" [(ngModel)]="parentForm[parent.parent_id]">{{ parent.parent_full_name }}</label>
             <div>
                 @for (child of parent.children;track child.child_id) {
                 <div class="child-tag">
@@ -28,16 +28,16 @@
 <div class="modal-footer">
     <button class="btn" (click)="closeModal()">
         <i-tabler name="x"></i-tabler>
-        <span>Zavřít</span>
+        <span>{{ l.s('close') }}</span>
     </button>
     <div style="display: flex; gap: 10px;">
         <button class="btn btn--outline-secondary">
             <i-tabler name="plus"></i-tabler>
-            <span>Vytvořit nového</span>
+            <span>{{ l.s('students.add_parent.create_new_one') }}</span>
         </button>
-        <button class="btn btn--primary" (click)="$event">
+        <button class="btn btn--primary" (click)="addParent()">
             <i-tabler name="check"></i-tabler>
-            <span>Přidat</span>
+            <span>{{ l.s('students.add_parent.add_parent') }}</span>
         </button>
     </div>
 </div>

@@ -176,7 +176,7 @@ export class DetailComponent implements OnInit {
     this.refreshTimetable();
 
     this.modalManager.addModal('medical_record', {
-      title: 'students.medical.modal_title',
+      title: 'students.medical.title',
       closeable: true,
       width: 500,
       items: [{ type: 'component', component: MedicalModalComponent }]
@@ -191,7 +191,7 @@ export class DetailComponent implements OnInit {
     });
 
     this.modalManager.addModal('add_parent', {
-      title: 'students.add_parent',
+      title: 'students.add_parent.title',
       closeable: true,
       width: 800,
       items: [{ type: 'component', component: AddParentComponent }]

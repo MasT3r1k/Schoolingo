@@ -3,6 +3,7 @@ import { Component, inject, OnInit } from '@angular/core';
 import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { Config } from '@Schoolingo/config';
 import { IconsModule } from '@Schoolingo/icons';
+import { Locale } from '@Schoolingo/locale';
 import { ModalManager } from '@Schoolingo/modal';
 import { Utils } from '@Schoolingo/utils';
 import { debounceTime, distinctUntilChanged } from 'rxjs';
@@ -16,8 +17,10 @@ export class AddParentComponent implements OnInit {
   private modalManager = inject(ModalManager);
   private http = inject(HttpClient);
   public Utils = Utils;
-
+  
+  public l = inject(Locale);
   public parents: any[] = [];
+  public parentForm = [];
   public search = new FormControl('');
 
   ngOnInit(): void {
@@ -45,6 +48,30 @@ export class AddParentComponent implements OnInit {
     )
     .subscribe((api: any) => {
       this.parents = api.data;
+    });
+  }
+
+  public addParent(): void {
+    const student_id = this.modalManager.getModalData('add_parent').student_id || null;
+    const parent_ids = this.parentForm
+    .map((_, index) => ({
+      parent_id: index,
+      role: 'father'
+    }))
+    .filter((parent) => parent != null);
+    console.log(parent_ids)
+
+    this.http.post(
+      `${Config.API_URL}/v1/parents/add`,
+      {
+        student_id,
+        parent_ids
+      }
+    )
+    .subscribe((api: any) => {
+      if (api.success == true) {
+        this.closeModal()
+      }
     });
   }
 

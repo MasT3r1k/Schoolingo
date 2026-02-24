@@ -338,6 +338,16 @@
                                 <span class="data-label">Třídní učitel</span>
                                 <span class="data-value">{{ selectedStudent.teacher_name }}</span>
                             </div>
+                            <div class="data-item">
+                                <span class="data-label">Datum nástupu</span>
+                                <span class="data-value">{{ Utils.formatDateShort(selectedStudent.start_study) }}</span>
+                            </div>
+                            @if (selectedStudent.graduation_date) {
+                            <div class="data-item">
+                                <span class="data-label">Datum ukončení</span>
+                                <span class="data-value">{{ selectedStudent.graduation_date }}</span>
+                            </div>
+                            }
                         </div>
                     </div>
 
@@ -423,42 +433,6 @@
                         <p>Žádní zákonní zástupci</p>
                     </div>
                 }
-                }
-
-                <!-- Academic Tab -->
-                @if (activeTab === 'academic') {
-                <div class="section-grid">
-                    <div class="info-card full">
-                        <div class="card-header">
-                            <i-tabler name="school"></i-tabler>
-                            <h3>Informace o studiu</h3>
-                        </div>
-                        <div class="data-grid">
-                            <div class="data-item">
-                                <span class="data-label">Obor</span>
-                                <span class="data-value">{{ selectedStudent.field_of_study }}</span>
-                            </div>
-                            <div class="data-item">
-                                <span class="data-label">Třída</span>
-                                <span class="data-value highlight">{{ selectedStudent.class_name }}</span>
-                            </div>
-                            <div class="data-item">
-                                <span class="data-label">Ročník</span>
-                                <span class="data-value">{{ selectedStudent.year }}. ročník</span>
-                            </div>
-                            <div class="data-item">
-                                <span class="data-label">Datum nástupu</span>
-                                <span class="data-value">{{ Utils.formatDateShort(selectedStudent.start_study) }}</span>
-                            </div>
-                            @if (selectedStudent.graduation_date) {
-                            <div class="data-item">
-                                <span class="data-label">Datum ukončení</span>
-                                <span class="data-value">{{ selectedStudent.graduation_date }}</span>
-                            </div>
-                            }
-                        </div>
-                    </div>
-                </div>
                 }
 
                 <!-- Notes Tab -->
