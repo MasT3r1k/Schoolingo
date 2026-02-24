@@ -10,6 +10,8 @@ import { HttpClient } from '@angular/common/http';
 import { Config } from '@Schoolingo/config';
 import { ViewNoteComponent } from './modals/view-note/view-note.component';
 import { NoticeboardService } from './noticeboard.service';
+import { School } from '@Schoolingo/school';
+
 
 interface Announcement {
   message_id: number;
@@ -40,6 +42,7 @@ export class NoticeboardComponent implements OnInit {
   public perms = inject(Permission);
   private noticeboardService = inject(NoticeboardService);
   public l = inject(Locale);
+  public school = inject(School);
   public announcements: Announcement[] = [];
   public modalManager = inject(ModalManager);
   Utils = Utils;

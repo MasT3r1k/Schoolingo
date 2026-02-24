@@ -11,6 +11,7 @@ import { CommonModule } from '@angular/common';
 import { ChangelogModalComponent } from './modals/changelog/changelog.component';
 import { LicenseModalComponent } from './modals/license/license.component';
 import { Country } from 'country-state-city';
+import { enumSidebar, Sidebar } from './config';
 
 interface ElysiaVersion {
   current: string;
@@ -57,6 +58,20 @@ interface ScopeAPI {
   years: number;
   number_of_classes: number;
   students_per_class: number;
+}
+
+interface RoleAPI {
+  role_id: number | null;
+  role_name: string;
+  role_key: string;
+  description: string | null;
+  permissions: number[];
+}
+
+interface PermissionAPI {
+  permission_id: number;
+  permission_name: string;
+  description: string | null;
 }
 
 interface LdapConfig {
@@ -125,6 +140,17 @@ type ElysiaSystemAPI = {
     gdpr_mobile: string;
     gdpr_databox: string;
     gdpr_web: string;
+    msg_max_length: number;
+    msg_attachments_max_count: number;
+    msg_attachments_max_size: number;
+    msg_type_private_active: boolean;
+    msg_type_official_active: boolean;
+    msg_type_noticeboard_active: boolean;
+    noticeboard_max_length: number;
+    employee_vacation_days_default: number;
+    employee_vacation_requests_enabled: boolean;
+    employee_attendance_enabled: boolean;
+    employee_salaries_enabled: boolean;
   };
 
   ldap_config: LdapConfig | null;
@@ -155,19 +181,15 @@ type ElysiaSystemAPI = {
   lesson_hour: string;
   lesson_length: string;
   break_time: string;
+  roles: RoleAPI[];
+  all_permissions: PermissionAPI[];
+  communication_permissions: {
+    permission_id: number;
+    role_source: string;
+    role_target: string;
+  }[];
 }
 
-enum enumSidebar {
-  SYSTEM,
-  LOGIN,
-  LDAP,
-  MAIN,
-  EMAIL,
-  FILES,
-  SCOPES,
-  SUBJECTS,
-  GDPR_SETTINGS
-}
 
 @Component({
   imports: [IconsModule, FormsModule, ReactiveFormsModule, CommonModule],
@@ -177,6 +199,7 @@ enum enumSidebar {
 export class SettingsComponent implements OnInit {
   public Config = Config
   public enumSidebar = enumSidebar;
+  public Sidebar = Sidebar;
   private http = inject(HttpClient);
   public l = inject(Locale);
   public dropdownManager = inject(DropdownManager);
@@ -186,6 +209,10 @@ export class SettingsComponent implements OnInit {
   public interval_backups = ['daily', 'weekly', 'monthly']
   public options: any = {
     auto_updates: false
+  }
+
+  public returnZero() {
+    return 0;
   }
 
   public input_errors: { [key: string]: string } = {};
@@ -206,11 +233,16 @@ export class SettingsComponent implements OnInit {
     )
     .subscribe({
       next: (data) => {
+      const currentRoles = this.system?.roles || [];
+      const currentAllPermissions = this.system?.all_permissions || [];
+
       this.system = {
         ...data,
         lesson_hour: `${Utils.addZeros(data.settings.start_hour, 2)}:${Utils.addZeros(data.settings.start_minute, 2)}`,
         lesson_length: this.format_time_by_minutes(data.settings.lesson_hour),
-        break_time: this.format_time_by_minutes(data.settings.break_time)
+        break_time: this.format_time_by_minutes(data.settings.break_time),
+        roles: data.roles || currentRoles,
+        all_permissions: data.all_permissions || currentAllPermissions
       };
 
       if (!this.system.email_config) {
@@ -253,6 +285,13 @@ export class SettingsComponent implements OnInit {
         this.selected_interval_backup = data.settings.backup_interval;
       }
       this.options.auto_updates = data.settings.auto_update;
+
+      // Initialize employee settings
+      this.system.settings.employee_vacation_days_default = data.settings.employee_vacation_days_default ?? 25;
+      this.system.settings.employee_vacation_requests_enabled = data.settings.employee_vacation_requests_enabled ? true : false;
+      this.system.settings.employee_attendance_enabled = data.settings.employee_attendance_enabled ? true : false;
+      this.system.settings.employee_salaries_enabled = data.settings.employee_salaries_enabled ? true : false;
+
       this.system_loading_error = false;
     },
     error: () => {
@@ -395,6 +434,146 @@ public school_types = SchoolTypes;
   // === Scopes ===
   public selected_scope: ScopeAPI | undefined = undefined;
   public subject_hours: {[key: number]: number[]} = {};
+
+  // === Roles ===
+  public selected_role: RoleAPI | undefined = undefined;
+  public role_save_loading = false;
+
+  public load_roles(): void {
+    this.http.get<{ roles: RoleAPI[], all_permissions: PermissionAPI[] }>(
+      `${Config.API_URL}/v1/system/roles`,
+      { withCredentials: true }
+    ).subscribe((data) => {
+      if (!this.system) {
+        this.system = { roles: data.roles, all_permissions: data.all_permissions } as any;
+      } else {
+        this.system.roles = data.roles;
+        this.system.all_permissions = data.all_permissions;
+      }
+    });
+  }
+
+  public select_role(role: RoleAPI | undefined): void {
+    if (role) {
+      this.selected_role = JSON.parse(JSON.stringify(role));
+    } else {
+      this.selected_role = undefined;
+    }
+  }
+
+  public new_role(): void {
+    const role = this.system.roles.find((r) => r.role_id == null);
+    if (role) {
+      this.selected_role = role;
+      return;
+    }
+
+    const newRole: RoleAPI = {
+      role_id: null,
+      role_name: "Nová role",
+      role_key: "new_role",
+      description: "",
+      permissions: []
+    };
+
+    this.system.roles.unshift(newRole);
+    this.selected_role = this.system.roles[0];
+  }
+
+  public toggle_permission(permissionId: number): void {
+    if (!this.selected_role) return;
+    const index = this.selected_role.permissions.indexOf(permissionId);
+    if (index === -1) {
+      this.selected_role.permissions.push(permissionId);
+    } else {
+      this.selected_role.permissions.splice(index, 1);
+    }
+  }
+
+  public has_permission(permissionId: number): boolean {
+    return this.selected_role?.permissions.includes(permissionId) || false;
+  }
+
+  public save_role(): void {
+    if (!this.selected_role) return;
+    this.role_save_loading = true;
+    this.http.post<{ success: boolean; roleId: number }>(
+      `${Config.API_URL}/v1/system/update_role`,
+      {
+        roleId: this.selected_role.role_id,
+        name: this.selected_role.role_name,
+        key: this.selected_role.role_key,
+        description: this.selected_role.description,
+        permissionIds: this.selected_role.permissions
+      },
+      { withCredentials: true }
+    ).subscribe((res) => {
+      this.role_save_loading = false;
+      if (res.success) {
+        if (this.selected_role) {
+          this.selected_role.role_id = res.roleId;
+          // Update in the list
+          const index = this.system.roles.findIndex(r => r.role_id === null || r.role_id === res.roleId);
+          if (index !== -1) {
+            this.system.roles[index] = JSON.parse(JSON.stringify(this.selected_role));
+          }
+        }
+      }
+    }, () => {
+      this.role_save_loading = false;
+    });
+  }
+
+  public delete_role(roleId: number | null): void {
+    if (roleId === null) {
+      this.system.roles = this.system.roles.filter(r => r.role_id !== null);
+      this.selected_role = undefined;
+      return;
+    }
+
+    if (!confirm('Opravdu chcete smazat tuto roli?')) return;
+
+    this.http.delete(`${Config.API_URL}/v1/system/role`, {
+      body: { roleId },
+      withCredentials: true
+    }).subscribe(() => {
+      this.system.roles = this.system.roles.filter(r => r.role_id !== roleId);
+      this.selected_role = undefined;
+    });
+  }
+
+  // === Communication Permissions ===
+  public has_comm_permission(source: string, target: string): boolean {
+    return this.system.communication_permissions.some(p => p.role_source === source && p.role_target === target);
+  }
+
+  public toggle_comm_permission(source: string, target: string): void {
+    const index = this.system.communication_permissions.findIndex(p => p.role_source === source && p.role_target === target);
+    if (index === -1) {
+      this.system.communication_permissions.push({ permission_id: 0, role_source: source, role_target: target });
+    } else {
+      this.system.communication_permissions.splice(index, 1);
+    }
+  }
+
+  public save_comm_permissions(): void {
+    // Group by source and save
+    const sources = [...new Set(this.system.roles.map(r => r.role_key))];
+    
+    // We can do it sequentially or all at once if the API supports it.
+    // The existing API /messages/permissions takes role_source and role_targets.
+    
+    sources.forEach(source => {
+      const targets = this.system.communication_permissions
+        .filter(p => p.role_source === source)
+        .map(p => p.role_target);
+      
+      this.http.post(`${Config.API_URL}/v1/messages/permissions`, {
+        role_source: source,
+        role_targets: targets
+      }, { withCredentials: true }).subscribe();
+    });
+  }
 
   public select_scope(scope: ScopeAPI | undefined): void {
     this.selected_scope = JSON.parse(JSON.stringify(scope));
@@ -659,6 +838,7 @@ public school_types = SchoolTypes;
 
   ngOnInit(): void {
     this.loadSystemSettings();
+    this.load_roles();
 
     this.http.get<ElysiaVersion>(
       `${Config.API_URL}/v1/version`
@@ -771,7 +951,18 @@ public school_types = SchoolTypes;
         gdpr_email: this.system.settings.gdpr_email,
         gdpr_mobile: this.system.settings.gdpr_mobile,
         gdpr_databox: this.system.settings.gdpr_databox,
-        gdpr_web: this.system.settings.gdpr_web
+        gdpr_web: this.system.settings.gdpr_web,
+        msg_max_length: Number(this.system.settings.msg_max_length),
+        msg_attachments_max_count: Number(this.system.settings.msg_attachments_max_count),
+        msg_attachments_max_size: Number(this.system.settings.msg_attachments_max_size),
+        msg_type_private_active: this.system.settings.msg_type_private_active ? true : false,
+        msg_type_official_active: this.system.settings.msg_type_official_active ? true : false,
+        msg_type_noticeboard_active: this.system.settings.msg_type_noticeboard_active ? true : false,
+        noticeboard_max_length: Number(this.system.settings.noticeboard_max_length),
+        employee_vacation_days_default: Number(this.system.settings.employee_vacation_days_default),
+        employee_vacation_requests_enabled: this.system.settings.employee_vacation_requests_enabled ? true : false,
+        employee_attendance_enabled: this.system.settings.employee_attendance_enabled ? true : false,
+        employee_salaries_enabled: this.system.settings.employee_salaries_enabled ? true : false
       },
       { withCredentials: true }
     )

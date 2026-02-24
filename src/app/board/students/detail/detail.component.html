@@ -568,21 +568,7 @@
                 <!-- Marks Tab -->
                 @if (activeTab === 'marks') {
                 <div class="marks-section">
-                    <div class="marks-header">
-                        <div class="marks-tabs">
-                            <button class="marks-tab" [class.active]="marksSelectedTab === 0"
-                                (click)="marksSelectedTab = 0">
-                                {{ l.s('marks.interm.by_subjects') }}
-                            </button>
-                            <button class="marks-tab" [class.active]="marksSelectedTab === 1"
-                                (click)="marksSelectedTab = 1">
-                                {{ l.s('marks.interm.chronologically') }}
-                            </button>
-                        </div>
-                    </div>
-
                     <div class="marks-content">
-                        @if (marksSelectedTab === 0) {
                         <div class="subjects-list">
                             @for (subject of getMarksPerSubject(); track $index) {
                             <div class="subject-row">
@@ -612,51 +598,6 @@
                             </div>
                             }
                         </div>
-                        } @else {
-                        <div class="chrono-timeline">
-                            @for(mark of marks; track $index) {
-                            <div class="chrono-card" (click)="selectMark(mark)" [title]="getMarkTooltip(mark)">
-                                <div class="chrono-badge mark-color-{{ mark.mark }}">
-                                    {{ formatMark(mark.mark) }}
-                                </div>
-                                <div class="chrono-content">
-                                    <div class="chrono-topic">{{ mark.topic }}</div>
-                                    <div class="chrono-meta">
-                                        <span class="chrono-subject-chip">{{ mark.subject_name }}</span>
-                                        <span class="chrono-sep">·</span>
-                                        <span class="chrono-date">
-                                            <i-tabler name="calendar"></i-tabler>
-                                            {{ Utils.formatDateShort(mark.created) }}
-                                        </span>
-                                        @if (mark.teacher_full_name) {
-                                        <span class="chrono-sep">·</span>
-                                        <span class="chrono-teacher">
-                                            <i-tabler name="user"></i-tabler>
-                                            {{ mark.teacher_full_name }}
-                                        </span>
-                                        }
-                                    </div>
-                                </div>
-                                <div class="chrono-weight">
-                                    <div class="weight-dots">
-                                        @for (w of [].constructor(mark.weight || 0); track $index) {
-                                        <span class="weight-dot filled"></span>
-                                        }
-                                        @for (w of [].constructor(10 - (mark.weight || 0)); track $index) {
-                                        <span class="weight-dot"></span>
-                                        }
-                                    </div>
-                                    <span class="weight-label">{{ l.s('marks.weight') }} {{ mark.weight }}</span>
-                                </div>
-                            </div>
-                            } @empty {
-                            <div class="empty-state">
-                                <i-tabler name="mood-empty"></i-tabler>
-                                <p>{{ l.s('marks.no_subjects') }}</p>
-                            </div>
-                            }
-                        </div>
-                        }
                     </div>
                 </div>
                 }

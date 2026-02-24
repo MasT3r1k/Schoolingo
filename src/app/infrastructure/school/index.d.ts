@@ -33,4 +33,5 @@ export interface SchoolConfig {
   gdpr_mobile: string;
   gdpr_databox: string;
   gdpr_web: string;
+  msg_type_noticeboard_active: boolean;
 }

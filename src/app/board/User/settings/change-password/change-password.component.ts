@@ -37,15 +37,15 @@ export class ChangePasswordComponent implements OnInit {
     password: ['',
       [
         Validators.required,
-        Validators.minLength(AuthConfig.password_min),
-        Validators.maxLength(AuthConfig.password_max)
+        Validators.minLength(this.settings.getSecurity()?.config.min_length || AuthConfig.password_min),
+        Validators.maxLength(this.settings.getSecurity()?.config.max_length ||AuthConfig.password_max)
       ]
     ],
     password2: ['',
       [
         Validators.required,
-        Validators.minLength(AuthConfig.password_min),
-        Validators.maxLength(AuthConfig.password_max),
+        Validators.minLength(this.settings.getSecurity()?.config.min_length || AuthConfig.password_min),
+        Validators.maxLength(this.settings.getSecurity()?.config.max_length ||AuthConfig.password_max)
       ]
     ],
     token: ['']
@@ -113,6 +113,10 @@ export class ChangePasswordComponent implements OnInit {
       },
       (err) => this.a.alert("error", "settings.passwords.429").closeable(true)
     );
+  }
+
+  public getSecurityConfig(): any {
+    return this.settings.getSecurity()?.config;
   }
 
   ngOnInit(): void {
@@ -185,6 +189,7 @@ export class ChangePasswordComponent implements OnInit {
   public passwordRequirements = {
     length: false,
     uppercase: false,
+    lowercase: false,
     number: false,
     special: false
   };
@@ -193,17 +198,19 @@ export class ChangePasswordComponent implements OnInit {
     let score = 0;
     if (!password) {
       this.passwordStrength = 0;
-      this.passwordRequirements = { length: false, uppercase: false, number: false, special: false };
+      this.passwordRequirements = { length: false, uppercase: false, lowercase: false, number: false, special: false };
       return;
     }
 
     this.passwordRequirements.length = password.length > 8;
     this.passwordRequirements.uppercase = /[A-Z]/.test(password);
+    this.passwordRequirements.lowercase = /[a-z]/.test(password);
     this.passwordRequirements.number = /[0-9]/.test(password);
     this.passwordRequirements.special = /[^A-Za-z0-9]/.test(password);
 
     if (this.passwordRequirements.length) score++;
     if (this.passwordRequirements.uppercase) score++;
+    if (this.passwordRequirements.lowercase) score++;
     if (this.passwordRequirements.number) score++;
     if (this.passwordRequirements.special) score++;
 

@@ -133,11 +133,11 @@ export class DetailComponent implements OnInit {
   public medicalRecords: MedicalRecord[] = [];
 
   // Detail View Tabs
-  public tabs: (typeof this.activeTab)[] = ['overview','personal','parents','academic','matrika','medical','history','marks','notes','evaluation','educational_measures','timetable'];
+  public tabs: (typeof this.activeTab)[] = ['overview','personal','parents','matrika','medical','history','marks','notes','evaluation','educational_measures','timetable'];
   activeTab: 'overview' | 'personal' | 'parents' | 'academic' | 'matrika' | 'medical' | 'history' | 'marks' | 'notes' | 'evaluation' | 'educational_measures' | 'timetable' = 'overview';
 
   public getTabIcon(tab: typeof this.activeTab): string {
-    const icons = ['layout-dashboard','user','users-group','school','calendar-time','school','heart-rate-monitor','history','notes','history','history','history'];
+    const icons = ['layout-dashboard','user','users-group','calendar-time','school','heart-rate-monitor','history','notes','history','history','history'];
     return icons[this.tabs.indexOf(tab)] ?? icons[0];
   }
 

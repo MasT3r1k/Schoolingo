@@ -45,7 +45,7 @@ export class Classbook {
 
         this.http.post(
             `${Config.API_URL}/v1/classbook/absence`,
-            { student_id, classbook_id: this.classbook.classbookId, type: absence, reason: this.reason, minutes: this.minutes, note: this.note },
+            { student_id, classbook_id: this.classbook.classbook_id, type: absence, reason: this.reason, minutes: this.minutes, note: this.note },
             { withCredentials: true }
         )
         .subscribe((data) => {

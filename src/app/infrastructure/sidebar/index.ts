@@ -16,12 +16,14 @@ export interface SidebarItem {
     children?: SidebarItem[];
     badge?: any;
     modules?: modules[];
+    setting?: string;
 }
 
 export interface SidebarGroup {
     label: string;
     permission?: permType[];
     modules?: modules[];
+    setting?: string;
     items: SidebarItem[];
 }
 
@@ -53,6 +55,7 @@ export class Sidebar {
     }
 
     public sidebarToggled = false;
+    public settings: any = null;
     public data: SidebarGroup[] = [];
     public toggledDropdowns: number[] = [];
     public toggleDropdown(id: number): void {
@@ -84,13 +87,13 @@ export class Sidebar {
               icon: item.icon,
               badge: item.badge
             };
-            if ((item.permission && !this.perm.checkPermission(item.permission)) || (item.modules && !this.modules.checkModule(item.modules))) return;
+            if ((item.permission && !this.perm.checkPermission(item.permission)) || (item.modules && !this.modules.checkModule(item.modules)) || (item.setting && this.settings && this.settings[item.setting] == false)) return;
             
 
             if (item.children && item.children.length) {
               newItem.children = [];
               item.children.forEach((child: SidebarItem, index: number) => {
-                if ((child.permission && !this.perm.checkPermission(child.permission)) || (child.modules && !this.modules.checkModule(child.modules))) {
+                if ((child.permission && !this.perm.checkPermission(child.permission)) || (child.modules && !this.modules.checkModule(child.modules)) || (child.setting && this.settings && this.settings[child.setting] == false)) {
                   return;
                 }
 
@@ -99,6 +102,7 @@ export class Sidebar {
                     url: child.url,
                     icon: child.icon,
                     badge: child.badge,
+                    setting: child.setting,
                     children: child.children
                 })
               });

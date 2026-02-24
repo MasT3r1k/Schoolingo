@@ -200,6 +200,7 @@ export const config: SidebarGroup[] = [
                     item: 'sidebar.messages.noticeboard',
                     url: 'messages/noticeboard',
                     icon: 'clipboard-list',
+                    setting: 'msg_type_noticeboard_active'
                 }]
             },
             {

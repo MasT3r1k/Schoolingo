@@ -1432,3 +1432,258 @@ p.title {
     justify-content: flex-end;
     gap: 8px;
 }
+
+/* === Roles Management === */
+.roles-container {
+    display: flex;
+    gap: 24px;
+    height: calc(100vh - 250px);
+    margin-top: 24px;
+}
+
+.roles-sidebar {
+    width: 250px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    background: var(--surface-2);
+    border-radius: var(--radius);
+    border: 1px solid var(--border);
+    padding: 16px;
+}
+
+.sidebar-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.sidebar-header h3 {
+    margin: 0;
+    font-size: 14px;
+    text-transform: uppercase;
+    color: var(--text-muted);
+}
+
+.roles-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    overflow-y: auto;
+}
+
+.role-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.role-item:hover {
+    border-color: var(--primary);
+    background: var(--surface-2);
+}
+
+.role-item.active {
+    border-color: var(--primary);
+    background: rgba(var(--primary-rgb), 0.1);
+}
+
+.role-item .role-name {
+    font-weight: 600;
+    font-size: 14px;
+    color: var(--text);
+}
+
+.role-item .role-key {
+    font-size: 12px;
+    color: var(--text-muted);
+}
+
+.btn-delete {
+    background: transparent;
+    border: none;
+    color: var(--text-muted);
+    cursor: pointer;
+    padding: 4px;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+}
+
+.btn-delete:hover {
+    color: var(--danger);
+    background: rgba(var(--danger-rgb), 0.1);
+}
+
+.role-content {
+    flex: 1;
+    overflow-y: auto;
+    padding-right: 8px;
+}
+
+.permissions-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 12px;
+    margin-top: 16px;
+}
+
+.permission-card {
+    display: flex;
+    gap: 16px;
+    padding: 16px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.permission-card:hover {
+    border-color: var(--primary);
+}
+
+.permission-card.selected {
+    border-color: var(--primary);
+    background: rgba(var(--primary-rgb), 0.05);
+}
+
+.permission-check {
+    display: flex;
+    align-items: center;
+}
+
+.checkbox {
+    width: 20px;
+    height: 20px;
+    border: 2px solid var(--border);
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: transparent;
+    transition: all 0.2s;
+}
+
+.checkbox.checked {
+    background: var(--primary);
+    border-color: var(--primary);
+    color: white;
+}
+
+.checkbox i-tabler {
+    width: 14px;
+    height: 14px;
+}
+
+.permission-info {
+    flex: 1;
+}
+
+.permission-name {
+    font-weight: 600;
+    font-size: 14px;
+    color: var(--text);
+    margin-bottom: 2px;
+}
+
+.permission-desc {
+    font-size: 12px;
+    color: var(--text-muted);
+    line-height: 1.4;
+}
+
+.empty-state-container {
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+textarea {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    padding: 12px;
+    border-radius: var(--radius);
+    color: var(--text);
+    font-size: 14px;
+    outline: none;
+    resize: vertical;
+    min-height: 80px;
+    transition: border-color 0.2s;
+}
+
+textarea:focus {
+    border-color: var(--primary);
+}
+
+/* === Communication Permissions Table === */
+.comm-perms-table-wrapper {
+    overflow-x: auto;
+    margin-top: 1rem;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    background: var(--surface);
+}
+
+.comm-perms-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+}
+
+.comm-perms-table th,
+.comm-perms-table td {
+    padding: 12px;
+    border: 1px solid var(--border);
+    text-align: center;
+}
+
+.comm-perms-table th {
+    background: var(--surface-2);
+    font-weight: 600;
+    color: var(--text);
+}
+
+.comm-perms-table .source-role-name {
+    text-align: left;
+    font-weight: 600;
+    background: var(--surface-2);
+    width: 150px;
+}
+
+.comm-perms-table .perm-cell {
+    width: 60px;
+}
+
+.comm-perms-table .checkbox {
+    margin: 0 auto;
+    width: 20px;
+    height: 20px;
+    border: 2px solid var(--border);
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.comm-perms-table .checkbox.checked {
+    background: var(--primary);
+    border-color: var(--primary);
+    color: white;
+}
+
+.comm-perms-table .checkbox i-tabler {
+    width: 14px;
+    height: 14px;
+}

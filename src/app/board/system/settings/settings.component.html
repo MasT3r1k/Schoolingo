@@ -1,70 +1,19 @@
 <div class="container">
     <div class="sidebar">
         <ul>
-            <li class="section-label">{{ l.s('system.section_main') }}</li>
-
-            <li [class.active]="sidebar==enumSidebar.SYSTEM" (click)="sidebar = enumSidebar.SYSTEM">
+            @for (section of Sidebar | keyvalue: returnZero; track section.key) {
+            @if ($index > 0) {
+            <hr> }
+            <li class="section-label">{{ l.s(section.key) }}</li>
+            @for (item of section.value; track item.id) {
+            <li [class.active]="sidebar==item.id" (click)="sidebar = item.id">
                 <div class="item">
-                    <div class="icon"><i-tabler name="settings"></i-tabler></div>
-                    <div class="item-label">{{ l.s('system.system_settings') }}</div>
+                    <div class="icon"><i-tabler [name]="item.icon"></i-tabler></div>
+                    <div class="item-label">{{ l.s(item.item) }}</div>
                 </div>
             </li>
-
-            <li [class.active]="sidebar==enumSidebar.LOGIN" (click)="sidebar = enumSidebar.LOGIN">
-                <div class="item">
-                    <div class="icon"><i-tabler name="key"></i-tabler></div>
-                    <div class="item-label">{{ l.s('system.login_settings') }}</div>
-                </div>
-            </li>
-
-            <li [class.active]="sidebar==enumSidebar.LDAP" (click)="sidebar = enumSidebar.LDAP">
-                <div class="item">
-                    <div class="icon"><i-tabler name="server"></i-tabler></div>
-                    <div class="item-label">{{ l.s('system.ldap_settings') }}</div>
-                </div>
-            </li>
-
-            <li [class.active]="sidebar==enumSidebar.MAIN" (click)="sidebar = enumSidebar.MAIN">
-                <div class="item">
-                    <div class="icon"><i-tabler name="school"></i-tabler></div>
-                    <div class="item-label">{{ l.s('system.school_settings') }}</div>
-                </div>
-            </li>
-
-            <li [class.active]="sidebar==enumSidebar.EMAIL" (click)="sidebar = enumSidebar.EMAIL">
-                <div class="item">
-                    <div class="icon"><i-tabler name="mail"></i-tabler></div>
-                    <div class="item-label">{{ l.s('system.email_settings') }}</div>
-                </div>
-            </li>
-
-            <li [class.active]="sidebar==enumSidebar.FILES" (click)="sidebar = enumSidebar.FILES">
-                <div class="item">
-                    <div class="icon"><i-tabler name="files"></i-tabler></div>
-                    <div class="item-label">{{ l.s('system.files_settings') }}</div>
-                </div>
-            </li>
-
-            <li [class.active]="sidebar==enumSidebar.SCOPES" (click)="sidebar = enumSidebar.SCOPES">
-                <div class="item">
-                    <div class="icon"><i-tabler name="list"></i-tabler></div>
-                    <div class="item-label">{{ l.s('system.list_scopes') }}</div>
-                </div>
-            </li>
-
-            <li [class.active]="sidebar==enumSidebar.SUBJECTS" (click)="sidebar = enumSidebar.SUBJECTS">
-                <div class="item">
-                    <div class="icon"><i-tabler name="book"></i-tabler></div>
-                    <div class="item-label">{{ l.s('system.list_subjects') }}</div>
-                </div>
-            </li>
-
-            <li [class.active]="sidebar==enumSidebar.GDPR_SETTINGS" (click)="sidebar = enumSidebar.GDPR_SETTINGS">
-                <div class="item">
-                    <div class="icon"><i-tabler name="shield-check"></i-tabler></div>
-                    <div class="item-label">{{ l.s('system.gdpr_settings') }}</div>
-                </div>
-            </li>
+            }
+            }
         </ul>
     </div>
 
@@ -149,6 +98,287 @@
                     <label>Web</label>
                     <input type="text" [(ngModel)]="system.settings.gdpr_web" (change)="update_school()">
                 </div>
+            </div>
+        </div>
+    </div>
+    }
+
+    @case(enumSidebar.MODULE_MESSAGES) {
+    <div class="container-content">
+        <div class="settings-header">
+            <h1>{{ l.s('system.messages_settings') }}</h1>
+            <p class="settings-subtitle">Konfigurace modulu zpráv, nástěnky a jejich omezení.</p>
+        </div>
+
+        <!-- Hlavní nastavení zpráv -->
+        <div class="form-section">
+            <h3 class="section-title">{{ l.s('system.messages_main_settings') }}</h3>
+            <div class="form-grid">
+                <div class="form-group">
+                    <label>{{ l.s('system.msg_max_length') }}</label>
+                    <input type="number" [(ngModel)]="system.settings.msg_max_length" placeholder="např. 3000">
+                    <small class="note">Maximální počet znaků v jedné zprávě.</small>
+                </div>
+                <div class="form-group">
+                    <label>{{ l.s('system.noticeboard_max_length') }}</label>
+                    <input type="number" [(ngModel)]="system.settings.noticeboard_max_length" placeholder="např. 5000">
+                    <small class="note">Maximální počet znaků pro příspěvek na nástěnce.</small>
+                </div>
+            </div>
+
+            <div class="setting-row">
+                <div class="setting-info">
+                    <div class="setting-title">{{ l.s('system.msg_type_private_active') }}</div>
+                    <div class="setting-desc">Povolit posílání soukromých zpráv mezi uživateli.</div>
+                </div>
+                <div class="setting-control">
+                    <div class="switch" [class.on]="system.settings.msg_type_private_active"
+                        (click)="system.settings.msg_type_private_active = !system.settings.msg_type_private_active">
+                        <div class="knob"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="setting-row">
+                <div class="setting-info">
+                    <div class="setting-title">{{ l.s('system.msg_type_official_active') }}</div>
+                    <div class="setting-desc">Povolit posílání oficiálních / ředitelských zpráv.</div>
+                </div>
+                <div class="setting-control">
+                    <div class="switch" [class.on]="system.settings.msg_type_official_active"
+                        (click)="system.settings.msg_type_official_active = !system.settings.msg_type_official_active">
+                        <div class="knob"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="setting-row">
+                <div class="setting-info">
+                    <div class="setting-title">{{ l.s('system.msg_type_noticeboard_active') }}</div>
+                    <div class="setting-desc">Povolit modul nástěnky pro hromadná oznámení.</div>
+                </div>
+                <div class="setting-control">
+                    <div class="switch" [class.on]="system.settings.msg_type_noticeboard_active"
+                        (click)="system.settings.msg_type_noticeboard_active = !system.settings.msg_type_noticeboard_active">
+                        <div class="knob"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Přílohy -->
+        <div class="form-section">
+            <h3 class="section-title">{{ l.s('system.attachments_settings') }}</h3>
+            <div class="form-grid">
+                <div class="form-group">
+                    <label>{{ l.s('system.msg_attachments_max_count') }}</label>
+                    <input type="number" [(ngModel)]="system.settings.msg_attachments_max_count" placeholder="např. 10">
+                </div>
+                <div class="form-group">
+                    <label>{{ l.s('system.msg_attachments_max_size') }}</label>
+                    <input type="number" [(ngModel)]="system.settings.msg_attachments_max_size" placeholder="např. 20">
+                </div>
+            </div>
+        </div>
+
+        <!-- Komunikační oprávnění -->
+        <div class="form-section">
+            <h3 class="section-title">{{ l.s('system.comm_permissions') }}</h3>
+            <p class="section-desc">Nastavte, které role mohou posílat zprávy jiným rolím.</p>
+
+            <div class="comm-perms-table-wrapper">
+                <table class="comm-perms-table">
+                    <thead>
+                        <tr>
+                            <th>Z role \ Do role</th>
+                            @for (targetRole of system.roles; track targetRole.role_key) {
+                            <th>{{ targetRole.role_name }}</th>
+                            }
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @for (sourceRole of system.roles; track sourceRole.role_key) {
+                        <tr>
+                            <td class="source-role-name">{{ sourceRole.role_name }}</td>
+                            @for (targetRole of system.roles; track targetRole.role_key) {
+                            <td class="perm-cell">
+                                <div class="checkbox"
+                                    [class.checked]="has_comm_permission(sourceRole.role_key, targetRole.role_key)"
+                                    (click)="toggle_comm_permission(sourceRole.role_key, targetRole.role_key)">
+                                    @if (has_comm_permission(sourceRole.role_key, targetRole.role_key)) {
+                                    <i-tabler name="check"></i-tabler>
+                                    }
+                                </div>
+                            </td>
+                            }
+                        </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="form-actions" style="margin-top: 1.5rem;">
+                <button class="btn btn--primary" (click)="save_comm_permissions()">
+                    <i-tabler name="device-floppy"></i-tabler>
+                    {{ l.s('system.save_comm_permissions') }}
+                </button>
+            </div>
+        </div>
+
+        <div class="form-actions">
+            <button class="btn btn--primary" (click)="update_school()">
+                <i-tabler name="device-floppy"></i-tabler>
+                {{ l.s('system.save_messages_settings') }}
+            </button>
+        </div>
+    </div>
+    }
+
+    @case(enumSidebar.MODULE_EMPLOYEES) {
+    <div class="container-content">
+        <div class="settings-header">
+            <h1>{{ l.s('system.employees_settings') }}</h1>
+            <p class="settings-subtitle">Správa nastavení pro zaměstnance a učitele.</p>
+        </div>
+
+        <div class="form-section">
+            <h3 class="section-title">{{ l.s('system.employee_vacation_settings') }}</h3>
+            <div class="form-grid">
+                <div class="form-group">
+                    <label>{{ l.s('system.employee_vacation_days_default') }}</label>
+                    <input type="number" [(ngModel)]="system.settings.employee_vacation_days_default"
+                        placeholder="např. 25">
+                    <small class="note">Počet dní, který bude automaticky nastaven novým zaměstnancům.</small>
+                </div>
+            </div>
+        </div>
+
+        <div class="form-section">
+            <h3 class="section-title">{{ l.s('system.module_features') }}</h3>
+            <div class="form-grid">
+                <div class="form-group checkbox">
+                    <input type="checkbox" [(ngModel)]="system.settings.employee_vacation_requests_enabled"
+                        id="vac_req">
+                    <label for="vac_req">{{ l.s('system.employee_vacation_requests_enabled') }}</label>
+                </div>
+                <div class="form-group checkbox">
+                    <input type="checkbox" [(ngModel)]="system.settings.employee_attendance_enabled" id="emp_att">
+                    <label for="emp_att">{{ l.s('system.employee_attendance_enabled') }}</label>
+                </div>
+                <div class="form-group checkbox">
+                    <input type="checkbox" [(ngModel)]="system.settings.employee_salaries_enabled" id="emp_sal">
+                    <label for="emp_sal">{{ l.s('system.employee_salaries_enabled') }}</label>
+                </div>
+            </div>
+        </div>
+
+        <div class="form-actions">
+            <button class="btn btn--primary" (click)="update_school()">
+                <i-tabler name="device-floppy"></i-tabler>
+                {{ l.s('system.save_employees_settings') }}
+            </button>
+        </div>
+    </div>
+    }
+
+    @case(enumSidebar.MODULE_ROLES) {
+    <div class="container-content">
+        <div class="settings-header">
+            <h1>{{ l.s('system.roles_settings') }}</h1>
+            <p class="settings-subtitle">Konfigurace uživatelských rolí a jejich oprávnění.</p>
+        </div>
+
+        <div class="roles-container">
+            <!-- Roles List -->
+            <div class="roles-sidebar">
+                <div class="sidebar-header">
+                    <h3>Role</h3>
+                    <button class="btn btn--primary btn--xs" (click)="new_role()">
+                        <i-tabler name="plus"></i-tabler>
+                        Nová role
+                    </button>
+                </div>
+                <div class="roles-list">
+                    @for (role of system.roles; track role.role_id) {
+                    <div class="role-item"
+                        [class.active]="selected_role?.role_id === role.role_id || (role.role_id === null && selected_role?.role_id === null)"
+                        (click)="select_role(role)">
+                        <div class="role-info">
+                            <div class="role-name">{{ role.role_name }}</div>
+                            <div class="role-key">{{ role.role_key }}</div>
+                        </div>
+                        @if (role.role_id !== null) {
+                        <button class="btn-delete" (click)="$event.stopPropagation(); delete_role(role.role_id)">
+                            <i-tabler name="trash"></i-tabler>
+                        </button>
+                        }
+                    </div>
+                    }
+                </div>
+            </div>
+
+            <!-- Role Details & Permissions -->
+            <div class="role-content">
+                @if (selected_role) {
+                <div class="form-section">
+                    <h3 class="section-title">Informace o roli</h3>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label>Název role</label>
+                            <input type="text" [(ngModel)]="selected_role.role_name" placeholder="např. Administrátor">
+                        </div>
+                        <div class="form-group">
+                            <label>Klíč role (systémový)</label>
+                            <input type="text" [(ngModel)]="selected_role.role_key" placeholder="např. admin">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Popis</label>
+                        <textarea [(ngModel)]="selected_role.description"
+                            placeholder="Stručný popis práv a účelu role"></textarea>
+                    </div>
+                </div>
+
+                <div class="form-section">
+                    <h3 class="section-title">Oprávnění</h3>
+                    <p class="section-desc">Vyberte, co všechno může uživatel s touto rolí v systému dělat.</p>
+
+                    <div class="permissions-grid">
+                        @for (perm of system.all_permissions; track perm.permission_id) {
+                        <div class="permission-card" [class.selected]="has_permission(perm.permission_id)"
+                            (click)="toggle_permission(perm.permission_id)">
+                            <div class="permission-check">
+                                <div class="checkbox" [class.checked]="has_permission(perm.permission_id)">
+                                    <i-tabler name="check"></i-tabler>
+                                </div>
+                            </div>
+                            <div class="permission-info">
+                                <div class="permission-name">{{ perm.permission_name }}</div>
+                                <div class="permission-desc">{{ perm.description }}</div>
+                            </div>
+                        </div>
+                        }
+                    </div>
+                </div>
+
+                <div class="form-actions">
+                    <button class="btn btn--primary" (click)="save_role()" [disabled]="role_save_loading">
+                        <i-tabler [name]="role_save_loading ? 'loader' : 'device-floppy'"
+                            [class.animate-spin]="role_save_loading"></i-tabler>
+                        Uložit roli a oprávnění
+                    </button>
+                    @if (selected_role.role_id === null) {
+                    <button class="btn btn--secondary" (click)="delete_role(null)">Zrušit</button>
+                    }
+                </div>
+                } @else {
+                <div class="empty-state-container">
+                    <div class="empty-state">
+                        <i-tabler name="license"></i-tabler>
+                        <p>Vyberte roli ze seznamu nebo vytvořte novou pro správu jejích oprávnění.</p>
+                    </div>
+                </div>
+                }
             </div>
         </div>
     </div>

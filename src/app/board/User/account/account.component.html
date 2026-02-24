@@ -179,7 +179,54 @@
         </div>
     </div>
 
+    <!-- Enterprise Rights Section -->
+    <div class="section rights-section">
+        <div class="section-header">
+            <div class="header-content">
+                <i-tabler name="key"></i-tabler>
+                <div>
+                    <h3>Přístupová práva</h3>
+                    <span class="meta muted">Seznam vašich rolí a oprávnění v systému</span>
+                </div>
+            </div>
+        </div>
+        <div class="section-content">
+            <div class="rights-grid">
+                <!-- Roles -->
+                <div class="rights-card">
+                    <div class="rights-card__header">
+                        <i-tabler name="users-group"></i-tabler>
+                        <h4>Přiřazené role</h4>
+                    </div>
+                    <div class="tag-container">
+                        @for (role of u.getUser().roles; track role) {
+                        <span class="tag tag--primary">{{ role }}</span>
+                        } @empty {
+                        <span class="meta muted">Žádné specifické enterprise role</span>
+                        }
+                    </div>
+                </div>
+
+                <!-- Permissions -->
+                <div class="rights-card">
+                    <div class="rights-card__header">
+                        <i-tabler name="shield-lock"></i-tabler>
+                        <h4>Efektivní oprávnění</h4>
+                    </div>
+                    <div class="tag-container">
+                        @for (perm of u.getUser().permissions; track perm) {
+                        <span class="tag tag--neutral">{{ perm }}</span>
+                        } @empty {
+                        <span class="meta muted">Základní uživatelská oprávnění</span>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Security Section -->
+
     <div class="section security-section">
         <div class="section-header">
             <div class="header-content">

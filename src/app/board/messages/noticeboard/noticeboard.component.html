@@ -1,3 +1,4 @@
+@if (school.config.value?.msg_type_noticeboard_active) {
 <div class="noticeboard-container card">
     <div class="card-header">
         <div class="left">
@@ -45,3 +46,18 @@
         }
     </div>
 </div>
+} @else {
+<div class="noticeboard-container card"
+    style="display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 4rem 2rem; text-align: center; gap: 1.5rem;">
+    <div
+        style="width: 80px; height: 80px; border-radius: 50%; background: var(--bg-danger-light); color: var(--danger); display: flex; align-items: center; justify-content: center;">
+        <i-tabler name="clipboard-off" style="width: 40px; height: 40px;"></i-tabler>
+    </div>
+    <div>
+        <h2 style="margin-bottom: 0.5rem; color: var(--text-primary);">{{ l.s('messages.noticeboard_not_active_title')
+            }}</h2>
+        <p style="color: var(--text-secondary); max-width: 400px; margin: 0 auto;">{{
+            l.s('messages.noticeboard_not_active_desc') }}</p>
+    </div>
+</div>
+}

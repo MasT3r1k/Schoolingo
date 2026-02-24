@@ -27,6 +27,7 @@ export class School {
             (school: SchoolConfig) => {
                 this.config.next(school);
                 this.modules.setModules(parseInt(school.modules));
+                this.sidebar.settings = school;
                 this.sidebar.build();
             },
             (err) => {

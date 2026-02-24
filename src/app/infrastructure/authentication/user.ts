@@ -8,6 +8,9 @@ export interface User {
     person_id: number;
     gender: number;
     role: 'student' | 'teacher' | 'parent';
+    roles: string[];
+    permissions: string[];
+
     manager: number;
     birthday: moment.Moment;
     avatar: {
