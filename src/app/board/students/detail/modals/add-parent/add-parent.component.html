@@ -1,7 +1,7 @@
 <div class="modal-body">
     <div class="search-wrapper full-width">
         <i-tabler name="search"></i-tabler>
-        <input type="search" name="search" id="parent" [formControl]="search" placeholder="Hledat osobu">
+        <input type="search" name="search" id="parent" [formControl]="search" [placeholder]="l.s('students.add_parent.search')">
     </div>
     <div class="modal-table-header">
         <div>{{ l.s('person.full_name') }}</div>
@@ -12,12 +12,19 @@
         <div class="parent-select-row">
             <label><input type="checkbox" [(ngModel)]="parentForm[parent.parent_id]">{{ parent.parent_full_name }}</label>
             <div style="display:flex;gap:4px">
-                @for (child of parent.children;track child.child_id) {
+                @for (child of parent.children.slice(0,3);track child.child_id) {
+                    @if ($index < 2) {
                 <div class="child-tag">
                     <span class="initials">{{ Utils.getInitials(child.child_full_name) }}</span>
                     <span>{{ child.child_full_name }}</span>
                     <span class="child-class">({{ child.child_classname }})</span>
                 </div>
+                    }
+                    @if ($index == 2) {
+                <div class="child-tag">
+                    <span class="muted">{{ parent.children.length - 2 }} další</span>
+                </div>
+                    }
                 }
             </div>
         </div>

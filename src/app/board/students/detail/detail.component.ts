@@ -221,7 +221,7 @@ export class DetailComponent implements OnInit {
   }
 
   public openParentSettings(): void {
-    this.modalManager.openModal('parents_settings');
+    this.modalManager.openModal('parents_settings', { student_id: this.selectedStudent.person_id, parents: this.selectedStudent.parents });
   }
 
   public openAddParentModal(): void {
@@ -593,17 +593,6 @@ export class DetailComponent implements OnInit {
     phone: '',
     role: 'father'
   };
-
-  searchParents() {
-    if (this.searchParentQuery.length < 3) return;
-    
-    this.http.get<any[]>(`${Config.API_URL}/v1/student/parent/search`, {
-      params: { q: this.searchParentQuery },
-      withCredentials: true
-    }).subscribe(parents => {
-      this.foundParents = parents;
-    });
-  }
 
   selectParent(id: number) {
     this.selectedParentId = id;

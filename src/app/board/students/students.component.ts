@@ -49,6 +49,7 @@ export interface ParentInfo {
   id: number;
   firstName: string;
   lastName: string;
+  fullName: string;
   relationship: 'mother' | 'father' | 'guardian';
   email: string;
   phone: string;
