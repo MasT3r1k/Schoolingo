@@ -66,6 +66,7 @@ export class AuthComponent implements OnInit {
   public isForgotPasswordLoading = false;
 
   public qrcode = new BehaviorSubject('');
+  public declare qrcodeErrorHandle: any;
   public showInstallModal = false;
 
   public school = inject(School);
@@ -412,7 +413,7 @@ export class AuthComponent implements OnInit {
     })
 
     if (this.school.config.getValue()?.fastlogin) {
-      setTimeout(() => {
+      this.qrcodeErrorHandle = setTimeout(() => {
         if (this.qrcode.getValue() == '' && !this.isLoading) {
           let alert = this.a.alert('error', 'auth.errors.longLoadingQR');
           alert.closeable(true);
@@ -428,6 +429,7 @@ export class AuthComponent implements OnInit {
 
   public ngOnDestroy(): void {
     this.ws.close();
+    clearTimeout(this.qrcodeErrorHandle);
   }
 
   public async loginPasskey(): Promise<void> {
