@@ -66,7 +66,8 @@ export class AddParentComponent implements OnInit {
       {
         student_id,
         parent_ids
-      }
+      },
+      { withCredentials: true }
     )
     .subscribe((api: any) => {
       if (api.success == true) {

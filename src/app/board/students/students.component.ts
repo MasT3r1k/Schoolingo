@@ -36,14 +36,40 @@ export interface Student {
   absence_rate_excused?: string;
   absence_rate_unexcused?: string;
   disciplinaryIssues: number;
-  
+
   // Parent info
   parents: ParentInfo[];
-  
+
   // Additional details
   notes?: string;
   allergies?: string[];
   medicalConditions?: string[];
+  matrika?: StudentMatrika;
+  matrika_records?: StudentMatrikaRecord[];
+}
+
+export interface StudentMatrikaRecord {
+  id: number;
+  student_id: number;
+  type: string;
+  description: string | null;
+  valid_from: string | null;
+  valid_to: string | null;
+}
+
+export interface StudentMatrika {
+  student_id: number;
+  highest_education_id: number | null;
+  previous_school_izo: string | null;
+  study_type_code: string | null;
+  financing_code: string | null;
+  start_reason_code: string | null;
+  end_reason_code: string | null;
+  individual_plan_code: string | null;
+  special_needs_code: string | null;
+  language_code: string | null;
+  health_status_code: string | null;
+  updated_at?: Date;
 }
 
 export interface ParentInfo {
@@ -115,7 +141,7 @@ export class StudentsComponent implements OnInit {
   // Add Student Modal
   showAddStudentModal = false;
   addStudentTab: 'manual' | 'ldap' | 'excel' = 'manual';
-  
+
   newStudent = {
     firstName: '',
     lastName: '',
@@ -124,13 +150,13 @@ export class StudentsComponent implements OnInit {
     scopeId: null as number | null,
     birthday: moment()
   };
-  
+
   // Detail Modals
   showGradesModal = false;
   showAbsenceModal = false;
   showDisciplineModal = false;
   showAddDisciplineForm = false;
-  
+
   // Filters
   filters: StudentFilters = {
     search: '',
@@ -142,7 +168,7 @@ export class StudentsComponent implements OnInit {
     absenceRates: { from: null, to: null },
     missingInfo: false
   };
-  
+
   // Filter options
   availableClasses: { id: number; name: string }[] = [];
   availableScopes: { id: number; name: string }[] = [];
@@ -150,14 +176,14 @@ export class StudentsComponent implements OnInit {
 
   public getFilterLabel(type: 'status' | 'class' | 'scope', value: any): string {
     if (value === null || value === 'all') {
-      switch(type) {
+      switch (type) {
         case 'status': return 'Všichni';
         case 'class': return 'Všechny třídy';
         case 'scope': return 'Všechny obory';
       }
     }
-    
-    switch(type) {
+
+    switch (type) {
       case 'status':
         const statusMap: Record<string, string> = { 'active': 'Aktivní', 'former': 'Bývalí', 'suspended': 'Pozastavení' };
         return statusMap[value] || value;
@@ -169,21 +195,21 @@ export class StudentsComponent implements OnInit {
     return value;
   }
 
-  public getFilterOptions(type: 'status'): {value: string, label: string}[] {
+  public getFilterOptions(type: 'status'): { value: string, label: string }[] {
     return [
-      {value: 'all', label: 'Všichni'},
-      {value: 'active', label: 'Aktivní'},
-      {value: 'former', label: 'Bývalí'},
-      {value: 'suspended', label: 'Pozastavení'}
+      { value: 'all', label: 'Všichni' },
+      { value: 'active', label: 'Aktivní' },
+      { value: 'former', label: 'Bývalí' },
+      { value: 'suspended', label: 'Pozastavení' }
     ];
   }
-  
+
   // Pagination
   currentPage = 1;
   pageSize = 20;
   totalItems = 0;
   totalPages = 0;
-  
+
   // Students data from API
   students: Student[] = [];
 
@@ -225,22 +251,22 @@ export class StudentsComponent implements OnInit {
       // API expects string parameters or specific types. 
       // Handling empty values:
     };
-    
+
     if (this.filters.classId) params.classId = this.filters.classId;
     if (this.filters.scopeId) params.scopeId = this.filters.scopeId;
     if (this.filters.year) params.year = this.filters.year;
-    
+
     if (this.filters.avgGradeDates.from) params.avgGradeMin = this.filters.avgGradeDates.from;
     if (this.filters.avgGradeDates.to) params.avgGradeMax = this.filters.avgGradeDates.to;
-    
+
     if (this.filters.absenceRates.from) params.absenceMin = this.filters.absenceRates.from;
     if (this.filters.absenceRates.to) params.absenceMax = this.filters.absenceRates.to;
-    
+
     if (this.filters.missingInfo) params.missingInfo = 'true';
 
     this.http.get<StudentAPIResponse | any>(
       `${Config.API_URL}/v1/students`,
-      { 
+      {
         withCredentials: true,
         params: params
       }
@@ -248,11 +274,11 @@ export class StudentsComponent implements OnInit {
       next: (response) => {
         // Transform API response
         this.students = response.data;
-        
+
         // Update pagination
         this.totalItems = response.meta.total;
         this.totalPages = Math.ceil(this.totalItems / this.pageSize);
-        
+
         this.isLoading = false;
       },
       error: (error) => {
@@ -269,7 +295,7 @@ export class StudentsComponent implements OnInit {
   onFilterChange() {
     this.loadStudents(1); // Reset to first page
   }
-  
+
   // Clear all filters
   clearFilters() {
     this.filters = {
@@ -314,22 +340,22 @@ export class StudentsComponent implements OnInit {
 
   // Datalist-style pagination helpers
   getPageList(): number[] {
-      let pages = [-4, -3, -2, -1, 0, 1, 2, 3, 4];
-      let list: number[] = [];
-      pages.forEach((page: number) => {
-          list.push(page + this.currentPage);
-      })
+    let pages = [-4, -3, -2, -1, 0, 1, 2, 3, 4];
+    let list: number[] = [];
+    pages.forEach((page: number) => {
+      list.push(page + this.currentPage);
+    })
 
-      let startSlice = 0;
-      if (this.currentPage == 4 || this.currentPage == this.totalPages - 1) {
-          startSlice = 1;
-      }
-      
-      else if (this.currentPage > 3 && this.currentPage <= this.totalPages - 2) {
-          startSlice = 2;
-      }
+    let startSlice = 0;
+    if (this.currentPage == 4 || this.currentPage == this.totalPages - 1) {
+      startSlice = 1;
+    }
 
-      return list.filter((page) => page > 0 && page <= this.totalPages).slice(startSlice).slice(0,5);
+    else if (this.currentPage > 3 && this.currentPage <= this.totalPages - 2) {
+      startSlice = 2;
+    }
+
+    return list.filter((page) => page > 0 && page <= this.totalPages).slice(startSlice).slice(0, 5);
   }
 
   // Direct access for template since we rely on server filtering now
@@ -350,10 +376,10 @@ export class StudentsComponent implements OnInit {
   setAddStudentTab(tab: typeof this.addStudentTab) {
     this.addStudentTab = tab;
   }
-  
+
   // Clear all filters - removed duplicate logic, handled above
   /* clearFilters() { ... } */
-  
+
   // Get status badge class
   getStatusClass(status: string): string {
     switch (status) {
@@ -363,7 +389,7 @@ export class StudentsComponent implements OnInit {
       default: return '';
     }
   }
-  
+
   // Get status text
   getStatusText(status: string): string {
     switch (status) {
@@ -373,7 +399,7 @@ export class StudentsComponent implements OnInit {
       default: return status;
     }
   }
-  
+
   // Get grade color class
   getGradeClass(grade: string): string {
     if (parseFloat(grade) <= 2.0) return 'grade-excellent';

@@ -1,4 +1,4 @@
-import { Component, Input, OnInit, inject, ViewChild, ElementRef, AfterViewInit, HostListener } from '@angular/core';
+import { Component, OnInit, inject, ViewChild, ElementRef, AfterViewInit, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { IconsModule } from '@Schoolingo/icons';
 import { FormsModule } from '@angular/forms';
@@ -16,12 +16,12 @@ import { SharedTimetableComponent } from '../../../Components/timetable/timetabl
 import { BehaviorSubject, distinctUntilChanged } from 'rxjs';
 import { MarksManager } from '@Schoolingo/marks';
 import { ModalManager } from '@Schoolingo/modal';
-import { MedicalModalComponent } from './medical/modals/medical-modal/medical-modal.component';
-import { EditPersonalModalComponent } from './personal/modals/edit-personal/edit-personal.component';
+import { MedicalModalComponent } from './modals/medical-modal/medical-modal.component';
+import { EditPersonalModalComponent } from './modals/edit-personal/edit-personal.component';
 import { ParentsSettingsComponent } from './modals/parents-settings/parents-settings.component';
 import { AddParentComponent } from './modals/add-parent/add-parent.component';
 import { CreateParentComponent } from './modals/create-parent/create-parent.component';
-
+import { RemoveParentComponent } from './modals/remove-parent/remove-parent.component';
 
 // Interfaces
 interface TimetableAPI {
@@ -88,6 +88,14 @@ interface MedicalRecord {
   created_at: Date;
 }
 
+interface StudentHistory {
+  teacher_id: number;
+  full_name: string;
+  type: string;
+  data: string;
+  created_at: Date;
+}
+
 @Component({
   standalone: true,
   imports: [CommonModule, IconsModule, FormsModule, SharedTimetableComponent],
@@ -135,7 +143,7 @@ export class DetailComponent implements OnInit, AfterViewInit {
   // Selected student for detail view
   selectedStudent: Student | any | null = null;
   selectedParent: any | null = null;
-  
+
   public hours: TimetableHours[] = [];
   public max_hours = 0;
 
@@ -168,12 +176,26 @@ export class DetailComponent implements OnInit, AfterViewInit {
   public medicalRecords: MedicalRecord[] = [];
 
   // Detail View Tabs
-  public tabs: (typeof this.activeTab)[] = ['overview','personal','parents','matrika','medical','history','marks','notes','evaluation','educational_measures','timetable'];
+  public tabs: (typeof this.activeTab)[] = ['overview', 'personal', 'parents', 'matrika', 'medical', 'history', 'marks', 'notes', 'evaluation', 'educational_measures', 'timetable'];
   activeTab: 'overview' | 'personal' | 'parents' | 'academic' | 'matrika' | 'medical' | 'history' | 'marks' | 'notes' | 'evaluation' | 'educational_measures' | 'timetable' = 'overview';
+  activeMatrikaSubTab: 'specific_data' | 'notes' | 'recommendations' | 'basic' = 'specific_data';
+  activeHistorySubTab: 'details' | 'changes' | 'term_status' = 'details';
 
   public getTabIcon(tab: typeof this.activeTab): string {
-    const icons = ['layout-dashboard','user','users-group','calendar-time','school','heart-rate-monitor','history','notes','history','history','history'];
-    return icons[this.tabs.indexOf(tab)] ?? icons[0];
+    const iconsMap: Record<string, string> = {
+      overview: 'layout-dashboard',
+      personal: 'user',
+      parents: 'users-group',
+      matrika: 'clipboard-list',
+      medical: 'heart-rate-monitor',
+      history: 'history',
+      marks: 'award',
+      notes: 'notes',
+      evaluation: 'checklist',
+      educational_measures: 'alert-triangle',
+      timetable: 'calendar-time'
+    };
+    return iconsMap[tab] ?? 'help';
   }
 
   // Detail Modals
@@ -181,7 +203,7 @@ export class DetailComponent implements OnInit, AfterViewInit {
   showAbsenceModal = false;
   showDisciplineModal = false;
   showAddDisciplineForm = false;
-  
+
 
   ngOnInit() {
     const id = this.route.snapshot.paramMap.get('id');
@@ -189,23 +211,23 @@ export class DetailComponent implements OnInit, AfterViewInit {
       `${Config.API_URL}/v1/student/${id}`,
       { withCredentials: true }
     )
-    .subscribe((student: any) => {
-      this.selectedStudent = student;
-      if (student.parents.length) {
-        this.selectedParent = student.parents[0];
-      }
-      if (student.medical_records) {
-        this.medicalRecords = student.medical_records;
-      }
-      this.loadMarks();
-      this.refreshTimetable();
-    });
+      .subscribe((student: any) => {
+        this.selectedStudent = student;
+        if (student.parents.length) {
+          this.selectedParent = student.parents[0];
+        }
+        if (student.medical_records) {
+          this.medicalRecords = student.medical_records;
+        }
+        this.loadMarks();
+        this.refreshTimetable();
+      });
 
     this.timetableSelectedWeek
-    .pipe(distinctUntilChanged())
-    .subscribe(() => {
-      this.refreshTimetable();
-    });
+      .pipe(distinctUntilChanged())
+      .subscribe(() => {
+        this.refreshTimetable();
+      });
 
     // Force load hours if empty
     this.refreshTimetable();
@@ -233,12 +255,20 @@ export class DetailComponent implements OnInit, AfterViewInit {
     });
 
     this.modalManager.addModal('create_parent', {
-      title: 'Vytvořit nového zákonného zástupce',
+      title: 'students.create_parent.title',
       closeable: true,
       width: 600,
       items: [{ type: 'component', component: CreateParentComponent }]
     });
 
+    this.modalManager.addModal('remove_parent', {
+      title: 'students.remove_parent.title',
+      closeable: true,
+      index: 502,
+      items: [
+        { type: 'component', component: RemoveParentComponent }
+      ]
+    });
 
     this.modalManager.addModal('parents_settings', {
       title: 'students.manage_parent',
@@ -254,13 +284,13 @@ export class DetailComponent implements OnInit, AfterViewInit {
       `${Config.API_URL}/v1/student/${id}`,
       { withCredentials: true }
     )
-    .subscribe((student: any) => {
-      this.selectedStudent = student;
-      if (student.medical_records) {
-        this.medicalRecords = student.medical_records;
-      }
-      this.loadMarks();
-    });
+      .subscribe((student: any) => {
+        this.selectedStudent = student;
+        if (student.medical_records) {
+          this.medicalRecords = student.medical_records;
+        }
+        this.loadMarks();
+      });
   }
 
   public openParentSettings(): void {
@@ -268,7 +298,7 @@ export class DetailComponent implements OnInit, AfterViewInit {
   }
 
   public openAddParentModal(): void {
-    this.modalManager.openModal('add_parent', { 
+    this.modalManager.openModal('add_parent', {
       student_id: this.selectedStudent.person_id,
       callback: () => this.refreshStudentData()
     });
@@ -276,7 +306,7 @@ export class DetailComponent implements OnInit, AfterViewInit {
 
   public refreshTimetable() {
     if (!this.selectedStudent?.person_id) return;
-    
+
     const { timetable, timetableHours, isLoading } = this.timetableService.getTimetable(
       'person',
       this.selectedStudent.person_id,
@@ -314,7 +344,7 @@ export class DetailComponent implements OnInit, AfterViewInit {
     return week.clone().startOf('isoWeek').format('D. M.') + ' - ' + week.clone().endOf('isoWeek').format('D. M. YYYY');
   }
 
-  
+
   // Close detail view
   closeDetail() {
     this.router.navigate(['/', 'students'])
@@ -326,6 +356,62 @@ export class DetailComponent implements OnInit, AfterViewInit {
     if (tab === 'timetable') {
       this.timetableSelectedTab = 0;
       this.timetableSelectedWeek.next(moment());
+    }
+    if (tab == 'history') {
+      this.refreshHistory();
+    }
+  }
+
+  public refreshHistory(): void {
+    this.http.get<StudentHistory[]>(`${Config.API_URL}/v1/student/${this.selectedStudent.person_id}/history`, { withCredentials: true })
+      .subscribe((data) => {
+        this.selectedStudent.history = data;
+      });
+  }
+
+  public formatHistoryEvent(item: StudentHistory): { title: string, description: string, icon: string } {
+    let data: any = {};
+    try {
+      data = typeof item.data === 'string' ? JSON.parse(item.data) : item.data;
+    } catch (e) { }
+
+    switch (item.type) {
+      case 'added_parent':
+        return {
+          title: 'Přidán zákonný zástupce',
+          description: `Byl přidán nový zákonný zástupce <strong>${data.parent_full_name}</strong> s rolí <strong>${this.l.s('family.' + data.type)}</strong>.`,
+          icon: 'user-plus'
+        };
+      case 'removed_parent':
+        return {
+          title: 'Odebrán zákonný zástupce',
+          description: `Byl odebrán zákonný zástupce.`,
+          icon: 'user-minus'
+        };
+      case 'updated_parent':
+        return {
+          title: 'Úprava zákonného zástupce',
+          description: `Byly upraveny údaje u zákonného zástupce.`,
+          icon: 'user-edit'
+        };
+      case 'updated_student':
+        return {
+          title: 'Úprava údajů studenta',
+          description: `Byly aktualizovány osobní nebo studijní údaje studenta.`,
+          icon: 'user-cog'
+        };
+      case 'moved_to_class':
+        return {
+          title: 'Přesun do jiné třídy',
+          description: `Student byl přesunut do třídy <strong>${data.class_name || 'neznámá'}</strong>.`,
+          icon: 'arrows-exchange'
+        };
+      default:
+        return {
+          title: 'Neznámá akce',
+          description: `Provedena akce typu ${item.type}.`,
+          icon: 'help'
+        };
     }
   }
 
@@ -351,7 +437,7 @@ export class DetailComponent implements OnInit, AfterViewInit {
     if (lesson.end == true) return this.fullTimetableHours[lesson.hour - 2].end;
     return `${this.fullTimetableHours[lesson.hour - 1].start} - ${this.fullTimetableHours[lesson.hour - 1].end}`;
   }
-  
+
   public getSelectedDateLessons(): TimetableAPI[] {
     const day = this.overviewSelectedDate.isoWeekday();
     const isOdd = Utils.isOdd(this.overviewSelectedDate.isoWeek());
@@ -362,9 +448,9 @@ export class DetailComponent implements OnInit, AfterViewInit {
 
     // Přidat substituce
     const substitutions = this.selectedStudent.substitution.filter((sub: any) => {
-        const start = moment(sub.start_date);
-        const end = moment(sub.end_date);
-        return this.overviewSelectedDate.isBetween(start, end, 'day', '[]');
+      const start = moment(sub.start_date);
+      const end = moment(sub.end_date);
+      return this.overviewSelectedDate.isBetween(start, end, 'day', '[]');
     });
 
     if (!lessons.length && !substitutions.length) return [];
@@ -374,7 +460,7 @@ export class DetailComponent implements OnInit, AfterViewInit {
     const maxHour = Math.max(...existingHours);
 
     const fullList: TimetableAPI[] = [];
-    
+
 
     for (let h = 1; h <= maxHour; h++) {
       let found: any = substitutions.find((s: any) => h >= s.start_hour && h <= s.end_hour);
@@ -384,11 +470,11 @@ export class DetailComponent implements OnInit, AfterViewInit {
 
       if (found) {
         fullList.push({
-            ...found,
-            day,
-            hour: found.hour || found.start_hour,
-            free: false,
-            end: false
+          ...found,
+          day,
+          hour: found.hour || found.start_hour,
+          free: false,
+          end: false
         });
       } else {
         // volná hodina
@@ -408,20 +494,20 @@ export class DetailComponent implements OnInit, AfterViewInit {
       }
     }
 
-      // Konec vyučování
-      fullList.push({
-        day,
-        hour: fullList.length ? (fullList[fullList.length - 1].hour || 0) + 1 : 1,
-        type: 0,
-        free: true,
-        end: true,
-        subjectId: -1,
-        subjectName: "",
-        subjectShortcut: "",
-        teacher: "",
-        lastName: "",
-        room: ""
-      });
+    // Konec vyučování
+    fullList.push({
+      day,
+      hour: fullList.length ? (fullList[fullList.length - 1].hour || 0) + 1 : 1,
+      type: 0,
+      free: true,
+      end: true,
+      subjectId: -1,
+      subjectName: "",
+      subjectShortcut: "",
+      teacher: "",
+      lastName: "",
+      room: ""
+    });
 
     return fullList;
   }
@@ -455,7 +541,7 @@ export class DetailComponent implements OnInit, AfterViewInit {
         { withCredentials: true }
       )
       .subscribe((data) => {
-          if ('marks' in data) {
+        if ('marks' in data) {
           this.marks = data.marks;
         }
         if ('subject_stats' in data) {
@@ -497,15 +583,15 @@ export class DetailComponent implements OnInit, AfterViewInit {
         const weight = (typeof grade.weight === "number" ? grade.weight : 0) + 1;
         let markVal = 0;
         if (grade.type === 1) { // Points
-            const scale = this.marking_scales[`${grade.subject_id}_${grade.group_id}`] || this.marking_scale;
-            markVal = this.getPointGrade(grade.mark, grade.max_points || 1, scale);
+          const scale = this.marking_scales[`${grade.subject_id}_${grade.group_id}`] || this.marking_scale;
+          markVal = this.getPointGrade(grade.mark, grade.max_points || 1, scale);
         } else {
-            markVal = grade.mark;
+          markVal = grade.mark;
         }
 
         if (markVal > 0) {
-            total += markVal * weight;
-            totalDivide += weight;
+          total += markVal * weight;
+          totalDivide += weight;
         }
       }
     }
@@ -521,7 +607,7 @@ export class DetailComponent implements OnInit, AfterViewInit {
     if (isNaN(points)) return 0;
     if (maxPoints <= 0) return 1;
     const percentage = (points / maxPoints) * 100;
-    
+
     const scale = overrideScale || this.marking_scale;
     if (scale && scale.length >= 4) {
       for (let i = 0; i < 4; i++) {
@@ -539,7 +625,7 @@ export class DetailComponent implements OnInit, AfterViewInit {
   public formatMark(mark: any): string {
     if (!mark) return "";
     let mark_id: number;
-    
+
     if (typeof mark === 'object') {
       if (mark.type === 1) { // Points
         const scale = this.marking_scales[`${mark.subject_id}_${mark.group_id}`] || this.marking_scale;
@@ -560,7 +646,7 @@ export class DetailComponent implements OnInit, AfterViewInit {
   public getMarkTooltip(mark: any): string {
     let tooltip = `${mark.topic} (${Utils.formatDateShort(mark.created)})`;
     if (mark.type === 1 && mark.max_points) {
-        tooltip += `\n${this.l.s('marks.points')}: ${mark.mark} / ${mark.max_points}`;
+      tooltip += `\n${this.l.s('marks.points')}: ${mark.mark} / ${mark.max_points}`;
     }
     if (this.markStats[mark.column_id]) {
       const stats = this.markStats[mark.column_id];
@@ -590,58 +676,90 @@ export class DetailComponent implements OnInit, AfterViewInit {
 
   // Medical methods
   public openMedicalModal(mode: 'add' | 'edit', record: MedicalRecord | null = null, initialData: any = {}) {
-      this.modalManager.openModal('medical_record', {
-          mode,
-          record,
-          initialData,
-          studentId: this.selectedStudent.person_id,
-          callback: () => this.refreshMedicalRecords()
-      });
+    this.modalManager.openModal('medical_record', {
+      mode,
+      record,
+      initialData,
+      studentId: this.selectedStudent.person_id,
+      callback: () => this.refreshMedicalRecords()
+    });
   }
 
   public openEditPersonalModal() {
-      this.modalManager.openModal('edit_personal', {
-          student: this.selectedStudent,
-          callback: () => this.refreshStudentData()
-      });
+    this.modalManager.openModal('edit_personal', {
+      student: this.selectedStudent,
+      callback: () => this.refreshStudentData()
+    });
   }
 
 
 
   public deleteMedicalRecord(recordId: number) {
-      if (!this.selectedStudent?.person_id) return;
-      if (!confirm('Opravdu chcete smazat tento zdravotní záznam?')) return;
+    if (!this.selectedStudent?.person_id) return;
+    if (!confirm('Opravdu chcete smazat tento zdravotní záznam?')) return;
 
-      this.http.delete(`${Config.API_URL}/v1/student/${this.selectedStudent.person_id}/medical/${recordId}`, { withCredentials: true })
-          .subscribe(() => {
-              this.refreshMedicalRecords();
-          });
+    this.http.delete(`${Config.API_URL}/v1/student/${this.selectedStudent.person_id}/medical/${recordId}`, { withCredentials: true })
+      .subscribe(() => {
+        this.refreshMedicalRecords();
+      });
   }
 
   public refreshMedicalRecords() {
-      if (!this.selectedStudent?.person_id) return;
-      this.http.get<MedicalRecord[]>(`${Config.API_URL}/v1/student/${this.selectedStudent.person_id}/medical`, { withCredentials: true })
-          .subscribe(records => {
-              this.medicalRecords = records;
-          });
+    if (!this.selectedStudent?.person_id) return;
+    this.http.get<MedicalRecord[]>(`${Config.API_URL}/v1/student/${this.selectedStudent.person_id}/medical`, { withCredentials: true })
+      .subscribe(records => {
+        this.medicalRecords = records;
+      });
+  }
+
+  public saveMatrika() {
+    if (!this.selectedStudent?.person_id) return;
+    this.http.patch(`${Config.API_URL}/v1/student/${this.selectedStudent.person_id}/matrika`, this.selectedStudent.matrika, { withCredentials: true })
+      .subscribe({
+        next: () => {
+          this.refreshStudentData();
+        },
+        error: (err) => {
+          console.error('Failed to update matrika', err);
+          alert('Nepodařilo se uložit údaje matriky.');
+        }
+      });
+  }
+
+  public addMatrikaRecord(type: string, description: string, from: string, to: string) {
+    if (!this.selectedStudent?.person_id) return;
+    this.http.post(`${Config.API_URL}/v1/student/${this.selectedStudent.person_id}/matrika/record`, {
+      type, description, valid_from: from, valid_to: to
+    }, { withCredentials: true })
+      .subscribe(() => {
+        this.refreshStudentData();
+      });
+  }
+
+  public deleteMatrikaRecord(id: number) {
+    if (!this.selectedStudent?.person_id) return;
+    this.http.delete(`${Config.API_URL}/v1/student/${this.selectedStudent.person_id}/matrika/record/${id}`, { withCredentials: true })
+      .subscribe(() => {
+        this.refreshStudentData();
+      });
   }
 
 
   public getSeverityLabel(severity: string): string {
-      switch (severity) {
-          case 'low': return 'Nízká';
-          case 'medium': return 'Střední';
-          case 'high': return 'Vysoká';
-          default: return severity;
-      }
+    switch (severity) {
+      case 'low': return 'Nízká';
+      case 'medium': return 'Střední';
+      case 'high': return 'Vysoká';
+      default: return severity;
+    }
   }
 
   public getMedicalRecords(): MedicalRecord[] {
-      return this.medicalRecords.filter(r => !r.is_food_allergy);
+    return this.medicalRecords.filter(r => !r.is_food_allergy);
   }
 
   public getFoodAllergies(): MedicalRecord[] {
-      return this.medicalRecords.filter(r => !!r.is_food_allergy);
+    return this.medicalRecords.filter(r => !!r.is_food_allergy);
   }
 
 
@@ -654,7 +772,7 @@ export class DetailComponent implements OnInit, AfterViewInit {
       default: return '';
     }
   }
-  
+
   // Get status text
   getStatusText(status: string): string {
     switch (status) {
@@ -664,7 +782,7 @@ export class DetailComponent implements OnInit, AfterViewInit {
       default: return status;
     }
   }
-  
+
   // Get grade color class
   getGradeClass(grade: string): string {
     if (parseFloat(grade) <= 2.0) return 'grade-excellent';
@@ -679,7 +797,7 @@ export class DetailComponent implements OnInit, AfterViewInit {
   searchParentQuery = '';
   foundParents: any[] = [];
   selectedParentId: number | null = null;
-  
+
   newParent = {
     firstName: '',
     lastName: '',
@@ -701,14 +819,14 @@ export class DetailComponent implements OnInit, AfterViewInit {
     };
 
     if (this.addParentMode === 'existing') {
-        if (!this.selectedParentId) return;
-        payload.personId = this.selectedParentId;
+      if (!this.selectedParentId) return;
+      payload.personId = this.selectedParentId;
     } else {
-        if (!this.newParent.firstName || !this.newParent.lastName) return;
-        payload.firstName = this.newParent.firstName;
-        payload.lastName = this.newParent.lastName;
-        payload.email = this.newParent.email;
-        payload.phone = this.newParent.phone;
+      if (!this.newParent.firstName || !this.newParent.lastName) return;
+      payload.firstName = this.newParent.firstName;
+      payload.lastName = this.newParent.lastName;
+      payload.email = this.newParent.email;
+      payload.phone = this.newParent.phone;
     }
 
     this.http.post(`${Config.API_URL}/v1/student/${this.selectedStudent.personId}/parent`, payload, {

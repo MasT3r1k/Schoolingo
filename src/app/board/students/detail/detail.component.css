@@ -1628,6 +1628,17 @@ a.parent-contact-item:hover {
     box-shadow: 0 0 0 3px rgba(74, 163, 255, 0.15);
 }
 
+.matrika-form {
+    padding: 1.5rem;
+    background: var(--surface-2);
+    border-radius: var(--radius);
+}
+
+.matrika-form .form-grid {
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 1.5rem;
+}
+
 /* Import Panel */
 .import-panel {
     display: flex;
@@ -1813,6 +1824,212 @@ a.parent-contact-item:hover {
     .modal-backdrop {
         padding: 0;
     }
+}
+
+/* ================================
+   MATRIKA STYLES
+   ================================ */
+.matrika-form {
+    padding: 24px;
+}
+
+.header-tabs {
+    display: flex;
+    gap: 24px;
+    padding: 0 16px;
+}
+
+.header-tab {
+    padding: 16px 8px;
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--text-muted);
+    cursor: pointer;
+    position: relative;
+    transition: all 0.2s;
+}
+
+.header-tab:hover {
+    color: var(--primary);
+}
+
+.header-tab.active {
+    color: var(--primary);
+}
+
+.header-tab.active::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: var(--primary);
+    border-radius: 3px 3px 0 0;
+}
+
+.no-border {
+    border-bottom: 1px solid var(--border) !important;
+    padding-bottom: 0 !important;
+}
+
+.matrika-tab-content {
+    min-height: 400px;
+}
+
+.record-table-wrapper {
+    padding: 0 0 20px 0;
+}
+
+.record-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+}
+
+.record-table th {
+    text-align: left;
+    padding: 12px 24px;
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--text-muted);
+    border-bottom: 1px solid var(--border);
+    background: var(--surface-2);
+}
+
+.record-table td {
+    padding: 16px 24px;
+    font-size: 13.5px;
+    color: var(--text);
+    border-bottom: 1px solid var(--border);
+    vertical-align: middle;
+}
+
+.record-table tbody tr:hover td {
+    background: rgba(var(--primary-rgb), 0.015);
+}
+
+.type-cell {
+    font-weight: 600;
+    color: var(--text-main);
+    width: 200px;
+}
+
+.validity-cell {
+    color: var(--text-muted);
+    width: 180px;
+}
+
+.actions-cell {
+    width: 60px;
+    text-align: right;
+}
+
+.delete-btn {
+    background: none;
+    border: none;
+    color: var(--danger);
+    cursor: pointer;
+    padding: 8px;
+    border-radius: 8px;
+    transition: all 0.2s;
+    opacity: 0.5;
+}
+
+.delete-btn:hover {
+    opacity: 1;
+    background: rgba(239, 68, 68, 0.1);
+}
+
+.add-record-row td {
+    background: var(--surface-2);
+}
+
+.add-record-row input {
+    width: 100%;
+    padding: 8px 12px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    font-size: 13px;
+    color: var(--text);
+    outline: none;
+}
+
+.add-record-row input:focus {
+    border-color: var(--primary);
+}
+
+.validity-inputs {
+    display: flex;
+    gap: 8px;
+}
+
+.add-btn {
+    background: var(--primary);
+    color: white;
+    border: none;
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.add-btn i-tabler {
+    width: 16px;
+    height: 16px;
+}
+
+.empty-state {
+    text-align: center;
+    padding: 60px !important;
+    color: var(--text-muted);
+    font-style: italic;
+}
+
+.notes-area {
+    padding: 24px;
+}
+
+.notes-area label {
+    display: block;
+    margin-bottom: 12px;
+    font-weight: 500;
+}
+
+.note-actions {
+    margin-top: 16px;
+    display: flex;
+    justify-content: flex-end;
+}
+
+/* History specific */
+.history-content-padding {
+    padding: 24px;
+}
+.mb-4 {
+    margin-bottom: 24px;
+}
+
+.empty-state-large {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 60px 0;
+    color: var(--text-muted);
+}
+
+.empty-state-large i-tabler {
+    width: 48px;
+    height: 48px;
+    margin-bottom: 16px;
+    opacity: 0.3;
 }
 
 /* ================================
@@ -3322,4 +3539,171 @@ a.parent-contact-item:hover {
 
 .flex-1 {
     flex: 1;
+}
+
+/* ================================
+   HISTORY TAB (TIMELINE)
+   ================================ */
+.history-timeline {
+    padding: 1.5rem;
+    position: relative;
+    max-width: 900px;
+    margin: 0 auto;
+}
+
+.history-timeline::before {
+    content: '';
+    position: absolute;
+    left: 2.25rem;
+    top: 2rem;
+    bottom: 2rem;
+    width: 2px;
+    background: var(--border);
+}
+
+.history-item {
+    display: flex;
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+    position: relative;
+    z-index: 1;
+}
+
+.history-item:last-child {
+    margin-bottom: 0;
+}
+
+.history-dot {
+    width: 1.5rem;
+    height: 1.5rem;
+    border-radius: 50%;
+    background: var(--surface);
+    border: 2px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    margin-top: 0.25rem;
+    box-shadow: 0 0 0 4px var(--surface);
+    transition: all 0.2s ease;
+}
+
+.history-item:hover .history-dot {
+    border-color: var(--primary);
+    transform: scale(1.1);
+}
+
+.history-dot i-tabler {
+    width: 0.875rem;
+    height: 0.875rem;
+    color: var(--text-muted);
+}
+
+.history-item.type-added_parent .history-dot {
+    border-color: var(--success);
+}
+
+.history-item.type-added_parent .history-dot i-tabler {
+    color: var(--success);
+}
+
+.history-item.type-removed_parent .history-dot {
+    border-color: var(--danger);
+}
+
+.history-item.type-removed_parent .history-dot i-tabler {
+    color: var(--danger);
+}
+
+.history-item.type-updated_student .history-dot {
+    border-color: var(--primary);
+}
+
+.history-item.type-updated_student .history-dot i-tabler {
+    color: var(--primary);
+}
+
+.history-item.type-moved_to_class .history-dot {
+    border-color: var(--warning);
+}
+
+.history-item.type-moved_to_class .history-dot i-tabler {
+    color: var(--warning);
+}
+
+.history-content {
+    flex: 1;
+}
+
+.history-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1.25rem;
+    transition: all 0.2s ease;
+}
+
+.history-card:hover {
+    border-color: var(--border-hover);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+.history-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 0.75rem;
+    gap: 1rem;
+}
+
+.history-title-group h4 {
+    margin: 0;
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--text);
+}
+
+.history-time {
+    font-size: 0.8125rem;
+    color: var(--text-muted);
+    white-space: nowrap;
+}
+
+.history-body {
+    font-size: 0.9375rem;
+    color: var(--text-muted);
+    line-height: 1.5;
+}
+
+.history-body strong {
+    color: var(--text);
+}
+
+.history-footer {
+    margin-top: 1rem;
+    padding-top: 0.75rem;
+    border-top: 1px solid var(--border-subtle);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.8125rem;
+    color: var(--text-muted);
+}
+
+.history-footer .teacher-name {
+    font-weight: 500;
+    color: var(--text);
+}
+
+.no-history {
+    padding: 4rem 2rem;
+    text-align: center;
+    color: var(--text-muted);
+}
+
+.no-history i-tabler {
+    width: 3rem;
+    height: 3rem;
+    opacity: 0.2;
+    margin-bottom: 1rem;
 }

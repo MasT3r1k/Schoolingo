@@ -1,7 +1,7 @@
 <div class="modal-body" (click)="dropdownManager.selected_dropdown = ''">
 
     <div class="section-title">Základní údaje</div>
-    <div class="form-grid">
+    <div class="form-row">
         <div class="form-group">
             <label>Jméno</label>
             <input type="text" class="form-control" [(ngModel)]="form.firstName" placeholder="Zadejte jméno">
@@ -12,7 +12,7 @@
         </div>
     </div>
 
-    <div class="form-grid">
+    <div class="form-row">
         <div class="form-group">
             <label>Tituly před jménem</label>
             <div class="custom-select"
@@ -65,7 +65,7 @@
         </div>
     </div>
 
-    <div class="form-grid">
+    <div class="form-row">
         <div class="form-group">
             <label>Pohlaví</label>
             <div class="custom-select"
@@ -101,18 +101,11 @@
                 @if (dropdownManager.selected_dropdown == 'create-parent_role') {
                 <div class="options-dropdown">
                     <div class="list">
-                        <div class="option"
-                            (click)="$event.stopPropagation(); dropdownManager.selected_dropdown = ''; form.role = 'father'">
-                            {{ l.s('family.father') }}
+                        @for(role of roles;track role) {
+                        <div class="option" (click)="$event.stopPropagation(); dropdownManager.selected_dropdown = ''; form.role = role">
+                            {{ l.s('family.' + role) }}
                         </div>
-                        <div class="option"
-                            (click)="$event.stopPropagation(); dropdownManager.selected_dropdown = ''; form.role = 'mother'">
-                            {{ l.s('family.mother') }}
-                        </div>
-                        <div class="option"
-                            (click)="$event.stopPropagation(); dropdownManager.selected_dropdown = ''; form.role = 'other'">
-                            {{ l.s('family.other') }}/Jiný
-                        </div>
+                        }
                     </div>
                 </div>
                 }
@@ -120,18 +113,15 @@
         </div>
     </div>
 
-    <div class="form-grid">
+    <div class="form-row">
         <div class="form-group">
             <label>Email</label>
             <input type="email" class="form-control" [(ngModel)]="form.email" placeholder="example@email.com">
         </div>
-        <div class="form-group">
-            <!-- Empty space or something else -->
-        </div>
     </div>
 
     <div class="section-title">Kontaktní údaje</div>
-    <div class="form-grid">
+    <div class="form-row">
         <div class="form-group">
             <label>Mobilní telefon</label>
             <div class="input-with-icon">
@@ -157,7 +147,7 @@
     </div>
 
     <div class="section-title">Adresa trvalého bydliště</div>
-    <div class="form-grid">
+    <div class="form-row">
         <div class="form-group flex-2">
             <label>Ulice</label>
             <input type="text" class="form-control" [(ngModel)]="form.address.street" placeholder="Zadejte ulici">
@@ -167,7 +157,7 @@
             <input type="text" class="form-control" [(ngModel)]="form.address.houseNumber" placeholder="123/4">
         </div>
     </div>
-    <div class="form-grid">
+    <div class="form-row">
         <div class="form-group flex-2">
             <label>Město</label>
             <input type="text" class="form-control" [(ngModel)]="form.address.city" placeholder="Zadejte město">

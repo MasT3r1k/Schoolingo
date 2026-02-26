@@ -50,6 +50,7 @@ export interface VacationRequest {
   teacher_id: number;
   first_name: string;
   last_name: string;
+  full_name: string;
   start_date: string;
   end_date: string;
   days: number;

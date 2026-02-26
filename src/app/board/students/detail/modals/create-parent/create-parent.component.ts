@@ -22,11 +22,12 @@ export class CreateParentComponent implements OnInit {
   public l = inject(Locale);
   public Utils = Utils;
   public dropdownManager = inject(DropdownManager);
+  public roles = ['father', 'mother', 'other'];
 
   public form = {
     firstName: '',
     lastName: '',
-    role: 'father',
+    role: this.roles[0],
     gender: 0,
 
     prefixTitle: '',
@@ -48,10 +49,10 @@ export class CreateParentComponent implements OnInit {
 
   ngOnInit(): void {
     // Load degrees for titles
-    this.http.get(`${Config.API_URL}/v1/admin/setup/lists/list/degrees`, { withCredentials: true })
+    this.http.get(`${Config.API_URL}/v1/school/degrees`, { withCredentials: true })
       .subscribe((api: any) => {
-        this.prefixDegrees = api.data.filter((d: any) => d.is_before === 1);
-        this.suffixDegrees = api.data.filter((d: any) => d.is_before === 0);
+        this.prefixDegrees = api.filter((d: any) => d.is_before === 1);
+        this.suffixDegrees = api.filter((d: any) => d.is_before === 0);
       });
   }
 

@@ -19,15 +19,6 @@ export class ParentsSettingsComponent implements OnInit {
   ngOnInit(): void {
     const data = this.modalManager.getModalData('parents_settings');
     this.parents = data.parents;
-
-    this.modalManager.addModal('remove_parent', {
-      title: 'students.remove_parent.title',
-      closeable: true,
-      index: 502,
-      items: [
-        { type: 'component', component: RemoveParentComponent }
-      ]
-    });
     console.log(this.parents);
   }
 
