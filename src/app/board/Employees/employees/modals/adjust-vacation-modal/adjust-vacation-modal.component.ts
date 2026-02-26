@@ -10,80 +10,27 @@ import { Locale } from '@Schoolingo/locale';
   standalone: true,
   imports: [CommonModule, FormsModule, IconsModule],
   template: `
-    <div class="modal-content">
-      <div class="modal-header">
-        <h3>Upravit nárok na dovolenou</h3>
-        <button class="close-btn" (click)="close()">
-          <i-tabler name="x"></i-tabler>
-        </button>
-      </div>
-      <div class="modal-body">
+    <div class="modal-body">
+      <div class="message message--info">
         <p>Zadejte celkový počet dní dovolené pro zaměstnance <strong>{{ data.employee.full_name }}</strong> v aktuálním roce.</p>
-        
-        <div class="form-group">
-          <label>Počet dní (celkem)</label>
-          <input type="number" class="form-input" [(ngModel)]="amount" min="0" max="100">
-        </div>
-
-        <div class="info-alert mt">
-          <i-tabler name="info-circle"></i-tabler>
-          <span>Tato hodnota přepíše základní nárok pro aktuální rok.</span>
-        </div>
       </div>
-      <div class="modal-footer">
+      
+      <div class="form-group">
+        <label>Počet dní (celkem)</label>
+        <input type="number" class="form-input" [(ngModel)]="amount" min="0" max="100">
+      </div>
+
+      <div class="info-alert mt">
+        <i-tabler name="info-circle"></i-tabler>
+        <span>Tato hodnota přepíše základní nárok pro aktuální rok.</span>
+      </div>
+      <div class="modal-actions">
         <button class="btn btn--ghost" (click)="close()">Zrušit</button>
         <button class="btn btn--primary" (click)="confirm()">Uložit změny</button>
       </div>
     </div>
   `,
   styles: [`
-    .modal-content {
-      padding: 1.5rem;
-      width: 400px;
-    }
-    .modal-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 1.5rem;
-    }
-    .modal-header h3 {
-      font-size: 1.25rem;
-      font-weight: 600;
-      color: var(--text-primary);
-    }
-    .close-btn {
-      background: none;
-      border: none;
-      color: var(--text-secondary);
-      cursor: pointer;
-      padding: 0.25rem;
-      border-radius: 0.375rem;
-      transition: all 0.2s;
-    }
-    .close-btn:hover {
-      background: var(--bg-hover);
-      color: var(--text-primary);
-    }
-    .form-group {
-      margin-bottom: 1.25rem;
-    }
-    .form-group label {
-      display: block;
-      font-size: 0.875rem;
-      font-weight: 500;
-      color: var(--text-secondary);
-      margin-bottom: 0.5rem;
-    }
-    .form-input {
-      width: 100%;
-      padding: 0.625rem;
-      border: 1px solid var(--border-color);
-      border-radius: 0.5rem;
-      background: var(--bg-card);
-      color: var(--text-primary);
-      font-size: 0.9375rem;
-    }
     .info-alert {
       display: flex;
       gap: 0.75rem;
@@ -94,13 +41,6 @@ import { Locale } from '@Schoolingo/locale';
       color: var(--text-secondary);
       align-items: center;
     }
-    .modal-footer {
-      display: flex;
-      justify-content: flex-end;
-      gap: 0.75rem;
-      margin-top: 2rem;
-    }
-    .mt { margin-top: 1rem; }
   `]
 })
 export class AdjustVacationModalComponent implements OnInit {

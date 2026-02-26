@@ -752,15 +752,72 @@
 }
 
 /* Tabs Navigation */
-.tabs-nav {
+.tabs-wrapper {
+    position: relative;
     border-bottom: 1px solid var(--border);
     margin-bottom: 20px;
+}
+
+.tabs-nav {
     display: flex;
     gap: 24px;
     overflow-x: auto;
+    scrollbar-width: none;
+    padding-bottom: 12px;
+    padding-left: 36px;
+    padding-right: 36px;
+    margin-bottom: -1px;
+    mask-image: linear-gradient(to right, transparent, black 30px, black calc(100% - 30px), transparent);
+}
+
+.tabs-nav::-webkit-scrollbar {
+    display: none;
+}
+
+.tab-scroll-btn {
+    position: absolute;
+    top: calc(50% - 6px);
+    transform: translateY(-50%);
+    z-index: 10;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    color: var(--text-muted);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    transition: all 0.2s;
+}
+
+.tab-scroll-btn:hover {
+    color: var(--primary);
+    border-color: var(--primary);
+    background: var(--surface-2);
+}
+
+.tab-scroll-btn.left {
+    left: 4px;
+}
+
+.tab-scroll-btn.right {
+    right: 4px;
+}
+
+/* Student pagination in header */
+.student-pagination {
+    display: flex;
+    gap: 0.25rem;
+    margin-right: 0.75rem;
+    padding-right: 0.75rem;
+    border-right: 1px solid var(--border);
 }
 
 .tab-btn {
+    padding-inline: 4px;
     padding-bottom: 12px;
     cursor: pointer;
     font-size: 14px;
@@ -775,7 +832,6 @@
 }
 
 .tab-btn:hover {
-    background: var(--surface-2);
     color: var(--text);
 }
 
@@ -2399,10 +2455,10 @@ a.parent-contact-item:hover {
 }
 
 .parent-tab-list .parent-tab {
-  font-size: 13px;
-  font-weight: 600;
-  color: var(--text-muted);
-  cursor: pointer;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-muted);
+    cursor: pointer;
 }
 
 .parent-tab-list .parent-tab.active {
@@ -2419,6 +2475,7 @@ a.parent-contact-item:hover {
     padding: 20px;
     margin-bottom: 16px;
 }
+
 .parent-top {
     display: flex;
     justify-content: space-between;
@@ -2453,7 +2510,7 @@ a.parent-contact-item:hover {
     padding-top: 16px;
 }
 
-.permissions > div {
+.permissions>div {
     color: var(--success-text);
     display: flex;
     align-items: center;
@@ -2462,6 +2519,7 @@ a.parent-contact-item:hover {
 .permissions i-tabler {
     margin-right: 6px;
 }
+
 /* Parent Modal Styles */
 .modal-overlay {
     position: fixed;

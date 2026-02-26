@@ -16,6 +16,7 @@ interface StudentIntermAPI {
   marks: StudentIntermMarkAPI[];
   subject_stats: Record<number, StudentIntermSubjectStat>;
   mark_stats: Record<number, StudentIntermMarkStat>;
+  marking_scales: Record<string, number[]>;
 }
 
 interface StudentIntermMarkAPI {
@@ -100,7 +101,8 @@ export class IntermComponent implements OnInit {
   private auth = inject(Authentication);
   public marksManager = inject(MarksManager);
   public dropdownManager = inject(DropdownManager);
-  public marking_scale: number[] = [];
+  public marking_scales: Record<string, number[]> = {};
+  public marking_scale: number[] = [85, 70, 50, 30, 0]; // Default fallback
 
   ngOnInit(): void {
     this.http
@@ -119,19 +121,8 @@ export class IntermComponent implements OnInit {
         if ('mark_stats' in data) {
           this.markStats = data.mark_stats;
         }
-        
-        const subject_id = this.marks.length > 0 ? this.marks[0].subject_id : -1;
-        const group_id = this.marks.length > 0 ? this.marks[0].group_id : -1;
-
-        if (subject_id !== -1 && group_id !== -1) {
-          this.http.get<any>(
-            `${Config.API_URL}/v1/marks/teacher/marking_scale?subject_id=${subject_id}&group_id=${group_id}`,
-            { withCredentials: true }
-          ).subscribe(scaleData => {
-             if (scaleData && scaleData.grades) {
-               this.marking_scale = scaleData.grades;
-             }
-          });
+        if ('marking_scales' in data) {
+          this.marking_scales = data.marking_scales;
         }
       });
 
@@ -296,7 +287,8 @@ export class IntermComponent implements OnInit {
         const weight = (typeof grade.weight === "number" ? grade.weight : 0);
         let markVal = 0;
         if (grade.type === 1) { // Points
-            markVal = this.getPointGrade(grade.mark, grade.max_points || 1);
+            const scale = this.marking_scales[`${grade.subject_id}_${grade.group_id}`] || this.marking_scale;
+            markVal = this.getPointGrade(grade.mark, grade.max_points || 1, scale);
         } else {
             markVal = grade.mark;
         }
@@ -313,7 +305,7 @@ export class IntermComponent implements OnInit {
     return average < 1 ? "1.00" : average.toFixed(2);
   }
 
-  public getPointGrade(pointsRaw: string | number | null, maxPoints: number): number {
+  public getPointGrade(pointsRaw: string | number | null, maxPoints: number, overrideScale?: number[]): number {
     if (pointsRaw === null || pointsRaw === undefined) return 0;
     const pointsStr = String(pointsRaw);
     const points = parseFloat(pointsStr.replace(',', '.'));
@@ -321,9 +313,10 @@ export class IntermComponent implements OnInit {
     if (maxPoints <= 0) return 1;
     const percentage = (points / maxPoints) * 100;
     
-    if (this.marking_scale && this.marking_scale.length === 5) {
+    const scale = overrideScale || this.marking_scale;
+    if (scale && scale.length >= 4) {
       for (let i = 0; i < 4; i++) {
-        if (percentage >= this.marking_scale[i]) return i + 1;
+        if (percentage >= scale[i]) return i + 1;
       }
       return 5;
     }
@@ -334,9 +327,22 @@ export class IntermComponent implements OnInit {
     return 5;
   }
 
-  public formatMark(mark_id: number): string {
+  public formatMark(mark: any): string {
+    if (!mark) return "";
+    let mark_id: number;
+    
+    if (typeof mark === 'object') {
+      if (mark.type === 1) { // Points
+        const scale = this.marking_scales[`${mark.subject_id}_${mark.group_id}`] || this.marking_scale;
+        return this.getPointGrade(mark.mark, mark.max_points || 1, scale).toString();
+      }
+      mark_id = mark.mark;
+    } else {
+      mark_id = mark;
+    }
+
     const config = this.marksManager.getConfig();
-    let idIndex = config.mark_ids.findIndex((mark) => mark == mark_id);
+    let idIndex = config.mark_ids.findIndex((m) => m == mark_id);
     let displayMark = config.mark_display[idIndex];
     if (displayMark) return displayMark;
     return mark_id.toString();

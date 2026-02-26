@@ -97,14 +97,22 @@
         <!-- Main Content -->
         <main class="detail-main">
             <!-- Tabs Navigation -->
-            <nav class="tabs-nav">
-                @for (tab of tabs;track $index) {
-                <div class="tab-btn" [class.active]="activeTab === tab" (click)="setActiveTab(tab)">
-                    <i-tabler [name]="getTabIcon(tab)"></i-tabler>
-                    <span>{{ l.s('students.tabs.' + tab) }}</span>
-                </div>
-                }
-            </nav>
+            <div class="tabs-wrapper">
+                <button class="tab-scroll-btn left" *ngIf="showLeftScroll" (click)="scrollTabs(-1)">
+                    <i-tabler name="chevron-left"></i-tabler>
+                </button>
+                <nav class="tabs-nav" #tabsNav (scroll)="checkScroll()">
+                    @for (tab of tabs;track $index) {
+                    <div class="tab-btn" [class.active]="activeTab === tab" (click)="setActiveTab(tab)">
+                        <i-tabler [name]="getTabIcon(tab)"></i-tabler>
+                        <span>{{ l.s('students.tabs.' + tab) }}</span>
+                    </div>
+                    }
+                </nav>
+                <button class="tab-scroll-btn right" *ngIf="showRightScroll" (click)="scrollTabs(1)">
+                    <i-tabler name="chevron-right"></i-tabler>
+                </button>
+            </div>
 
             <!-- Tab Content -->
             <div class="tab-content">
@@ -263,7 +271,8 @@
                                     <i-tabler name="chevron-left"></i-tabler>
                                 </button>
                                 <span class="current-date-info">
-                                    {{ l.s('days.' + overviewSelectedDate.day()) }}, {{ overviewSelectedDate.format("DD. MM.") }}
+                                    {{ l.s('days.' + overviewSelectedDate.day()) }}, {{ overviewSelectedDate.format("DD.
+                                    MM.") }}
                                 </span>
                                 <button class="nav-btn" (click)="nextOverviewDay()">
                                     <i-tabler name="chevron-right"></i-tabler>
@@ -384,7 +393,8 @@
                 <div class="parent-tabs">
                     <div class="parent-tab-list">
                         @for (parent of selectedStudent.parents; track parent.id) {
-                            <div class="parent-tab" [class.active]="selectedParent?.id == parent.id" (click)="selectedParent = parent">{{ parent.fullName }}</div>
+                        <div class="parent-tab" [class.active]="selectedParent?.id == parent.id"
+                            (click)="selectedParent = parent">{{ parent.fullName }}</div>
                         }
                     </div>
                     <div class="header-actions">
@@ -406,16 +416,19 @@
                             </div>
                             <div>
                                 <strong style="font-size: 15px;">{{ selectedParent.fullName }}</strong><br>
-                                <span style="font-size: 13px; color: var(--text-muted);">{{ l.s('students.parent') }} - {{ l.s('family.' + selectedParent.relationship) }}</span>
+                                <span style="font-size: 13px; color: var(--text-muted);">{{ l.s('students.parent') }} -
+                                    {{ l.s('family.' + selectedParent.relationship) }}</span>
                             </div>
                         </div>
                         <div class="parent-contact">
                             <div>
-                                <span style="color: var(--text-muted);">{{ l.s('students.phone') }}</span> <strong>{{ Utils.formatPhone(selectedParent.phone) || 'Nenastaveno' }}</strong>
+                                <span style="color: var(--text-muted);">{{ l.s('students.phone') }}</span> <strong>{{
+                                    Utils.formatPhone(selectedParent.phone) || 'Nenastaveno' }}</strong>
                             </div>
                             <div>
-                                <span style="color: var(--text-muted);">{{ l.s('students.email') }}</span> 
-                                <b><a [href]="selectedParent.email ? 'mailto:' + selectedParent.email : undefined">{{ selectedParent.email || 'Nenastaveno' }}</a></b>
+                                <span style="color: var(--text-muted);">{{ l.s('students.email') }}</span>
+                                <b><a [href]="selectedParent.email ? 'mailto:' + selectedParent.email : undefined">{{
+                                        selectedParent.email || 'Nenastaveno' }}</a></b>
                             </div>
                         </div>
                     </div>
@@ -424,14 +437,14 @@
                         <div><i-tabler name="check"></i-tabler> Je zák. zástupcem de jure</div>
                         <div><i-tabler name="check"></i-tabler> Smí dostávat informace o žákovi</div>
                     </div>
-                </div>       
+                </div>
                 } @else {
-                    <div class="no-selection">
-                        <div class="illustration">
-                            <i-tabler name="user-x"></i-tabler>
-                        </div>
-                        <p>Žádní zákonní zástupci</p>
+                <div class="no-selection">
+                    <div class="illustration">
+                        <i-tabler name="user-x"></i-tabler>
                     </div>
+                    <p>Žádní zákonní zástupci</p>
+                </div>
                 }
                 }
 
@@ -585,7 +598,7 @@
                                     @for(mark of subject.marks; track $index) {
                                     <div class="grade-item" [style.fontSize.px]="getFontSize(mark.weight)"
                                         [title]="getMarkTooltip(mark)" (click)="selectMark(mark)">
-                                        <span class="mark">{{ formatMark(mark.mark) }}</span>
+                                        <span class="mark">{{ formatMark(mark) }}</span>
                                         <span class="topic">{{ mark.topic }}</span>
                                     </div>
                                     }

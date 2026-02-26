@@ -45,7 +45,7 @@ export interface SchoolClass {
 }
 
 export interface Child {
-    child_id: number;
+    childId: number;
     first_name: string;
     last_name: string;
     gender: number;

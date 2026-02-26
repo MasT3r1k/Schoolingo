@@ -15,6 +15,7 @@ import moment from 'moment';
 // Interfaces
 export interface Student {
   id: number;
+  person_id: number;
   firstName: string;
   lastName: string;
   fullName: string;

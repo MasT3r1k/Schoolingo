@@ -1,0 +1,192 @@
+<div class="modal-body" (click)="dropdownManager.selected_dropdown = ''">
+
+    <div class="section-title">Základní údaje</div>
+    <div class="form-grid">
+        <div class="form-group">
+            <label>Jméno</label>
+            <input type="text" class="form-control" [(ngModel)]="form.firstName" placeholder="Zadejte jméno">
+        </div>
+        <div class="form-group">
+            <label>Příjmení</label>
+            <input type="text" class="form-control" [(ngModel)]="form.lastName" placeholder="Zadejte příjmení">
+        </div>
+    </div>
+
+    <div class="form-grid">
+        <div class="form-group">
+            <label>Tituly před jménem</label>
+            <div class="custom-select"
+                (click)="$event.stopPropagation(); dropdownManager.selected_dropdown = dropdownManager.selected_dropdown == 'create-parent_prefix' ? '' : 'create-parent_prefix'">
+                <div class="selected-value">
+                    {{ getSelectedPrefixTitles() }}
+                    <i-tabler name="chevron-down"></i-tabler>
+                </div>
+                @if (dropdownManager.selected_dropdown == 'create-parent_prefix') {
+                <div class="options-dropdown">
+                    <div class="list">
+                        @for (degree of prefixDegrees; track degree.degree_id) {
+                        <div class="option" [class.selected]="isPrefixTitleSelected(degree.shortcut)"
+                            (click)="$event.stopPropagation(); togglePrefixTitle(degree.shortcut)">
+                            <span>{{ degree.shortcut }}</span>
+                            @if (isPrefixTitleSelected(degree.shortcut)) {
+                            <i-tabler name="check"></i-tabler>
+                            }
+                        </div>
+                        }
+                    </div>
+                </div>
+                }
+            </div>
+        </div>
+        <div class="form-group">
+            <label>Tituly za jménem</label>
+            <div class="custom-select"
+                (click)="$event.stopPropagation(); dropdownManager.selected_dropdown = dropdownManager.selected_dropdown == 'create-parent_suffix' ? '' : 'create-parent_suffix'">
+                <div class="selected-value">
+                    {{ getSelectedSuffixTitles() }}
+                    <i-tabler name="chevron-down"></i-tabler>
+                </div>
+                @if (dropdownManager.selected_dropdown == 'create-parent_suffix') {
+                <div class="options-dropdown">
+                    <div class="list">
+                        @for (degree of suffixDegrees; track degree.degree_id) {
+                        <div class="option" [class.selected]="isSuffixTitleSelected(degree.shortcut)"
+                            (click)="$event.stopPropagation(); toggleSuffixTitle(degree.shortcut)">
+                            <span>{{ degree.shortcut }}</span>
+                            @if (isSuffixTitleSelected(degree.shortcut)) {
+                            <i-tabler name="check"></i-tabler>
+                            }
+                        </div>
+                        }
+                    </div>
+                </div>
+                }
+            </div>
+        </div>
+    </div>
+
+    <div class="form-grid">
+        <div class="form-group">
+            <label>Pohlaví</label>
+            <div class="custom-select"
+                (click)="$event.stopPropagation(); dropdownManager.selected_dropdown = dropdownManager.selected_dropdown == 'create-parent_gender' ? '' : 'create-parent_gender'">
+                <div class="selected-value">
+                    {{ l.s('genders.' + Utils.getGender(form.gender)) }}
+                    <i-tabler name="chevron-down"></i-tabler>
+                </div>
+                @if (dropdownManager.selected_dropdown == 'create-parent_gender') {
+                <div class="options-dropdown">
+                    <div class="list">
+                        <div class="option"
+                            (click)="$event.stopPropagation(); dropdownManager.selected_dropdown = ''; form.gender = 0">
+                            {{ l.s('genders.male') }}
+                        </div>
+                        <div class="option"
+                            (click)="$event.stopPropagation(); dropdownManager.selected_dropdown = ''; form.gender = 1">
+                            {{ l.s('genders.female') }}
+                        </div>
+                    </div>
+                </div>
+                }
+            </div>
+        </div>
+        <div class="form-group">
+            <label>Vztah / Role</label>
+            <div class="custom-select"
+                (click)="$event.stopPropagation(); dropdownManager.selected_dropdown = dropdownManager.selected_dropdown == 'create-parent_role' ? '' : 'create-parent_role'">
+                <div class="selected-value">
+                    {{ l.s('family.' + form.role) }}
+                    <i-tabler name="chevron-down"></i-tabler>
+                </div>
+                @if (dropdownManager.selected_dropdown == 'create-parent_role') {
+                <div class="options-dropdown">
+                    <div class="list">
+                        <div class="option"
+                            (click)="$event.stopPropagation(); dropdownManager.selected_dropdown = ''; form.role = 'father'">
+                            {{ l.s('family.father') }}
+                        </div>
+                        <div class="option"
+                            (click)="$event.stopPropagation(); dropdownManager.selected_dropdown = ''; form.role = 'mother'">
+                            {{ l.s('family.mother') }}
+                        </div>
+                        <div class="option"
+                            (click)="$event.stopPropagation(); dropdownManager.selected_dropdown = ''; form.role = 'other'">
+                            {{ l.s('family.other') }}/Jiný
+                        </div>
+                    </div>
+                </div>
+                }
+            </div>
+        </div>
+    </div>
+
+    <div class="form-grid">
+        <div class="form-group">
+            <label>Email</label>
+            <input type="email" class="form-control" [(ngModel)]="form.email" placeholder="example@email.com">
+        </div>
+        <div class="form-group">
+            <!-- Empty space or something else -->
+        </div>
+    </div>
+
+    <div class="section-title">Kontaktní údaje</div>
+    <div class="form-grid">
+        <div class="form-group">
+            <label>Mobilní telefon</label>
+            <div class="input-with-icon">
+                <i-tabler name="phone"></i-tabler>
+                <input type="tel" class="form-control" [(ngModel)]="form.mobile" placeholder="+420 123 456 789">
+            </div>
+        </div>
+        <div class="form-group">
+            <label>Telefon (pevná linka)</label>
+            <div class="input-with-icon">
+                <i-tabler name="device-landline-phone"></i-tabler>
+                <input type="tel" class="form-control" [(ngModel)]="form.phone" placeholder="+420 123 456 789">
+            </div>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label>Datová schránka</label>
+        <div class="input-with-icon">
+            <i-tabler name="mailbox"></i-tabler>
+            <input type="text" class="form-control" [(ngModel)]="form.dataBox" placeholder="ID datové schránky">
+        </div>
+    </div>
+
+    <div class="section-title">Adresa trvalého bydliště</div>
+    <div class="form-grid">
+        <div class="form-group flex-2">
+            <label>Ulice</label>
+            <input type="text" class="form-control" [(ngModel)]="form.address.street" placeholder="Zadejte ulici">
+        </div>
+        <div class="form-group">
+            <label>Č. p.</label>
+            <input type="text" class="form-control" [(ngModel)]="form.address.houseNumber" placeholder="123/4">
+        </div>
+    </div>
+    <div class="form-grid">
+        <div class="form-group flex-2">
+            <label>Město</label>
+            <input type="text" class="form-control" [(ngModel)]="form.address.city" placeholder="Zadejte město">
+        </div>
+        <div class="form-group">
+            <label>PSČ</label>
+            <input type="text" class="form-control" [(ngModel)]="form.address.postcode" placeholder="123 45">
+        </div>
+    </div>
+
+</div>
+
+<div class="modal-actions">
+    <button class="btn btn--secondary" (click)="closeModal()">
+        <i-tabler name="x"></i-tabler>
+        <span>Zrušit</span>
+    </button>
+    <button class="btn btn--primary" (click)="save()">
+        <i-tabler name="device-floppy"></i-tabler>
+        <span>Vytvořit zástupce</span>
+    </button>
+</div>

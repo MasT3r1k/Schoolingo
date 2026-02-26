@@ -1,4 +1,4 @@
-import { Component, Input, OnInit, inject } from '@angular/core';
+import { Component, Input, OnInit, inject, ViewChild, ElementRef, AfterViewInit, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { IconsModule } from '@Schoolingo/icons';
 import { FormsModule } from '@angular/forms';
@@ -20,7 +20,7 @@ import { MedicalModalComponent } from './medical/modals/medical-modal/medical-mo
 import { EditPersonalModalComponent } from './personal/modals/edit-personal/edit-personal.component';
 import { ParentsSettingsComponent } from './modals/parents-settings/parents-settings.component';
 import { AddParentComponent } from './modals/add-parent/add-parent.component';
-
+import { CreateParentComponent } from './modals/create-parent/create-parent.component';
 
 
 // Interfaces
@@ -36,6 +36,14 @@ interface TimetableAPI {
   subjectShortcut: string;
   lastName: string;
   teacher: string;
+}
+
+interface StudentIntermAPI {
+  status: boolean;
+  marks: StudentIntermMarkAPI[];
+  subject_stats: Record<number, StudentIntermSubjectStat>;
+  mark_stats: Record<number, StudentIntermMarkStat>;
+  marking_scales: Record<string, number[]>;
 }
 
 interface StudentIntermMarkAPI {
@@ -86,7 +94,7 @@ interface MedicalRecord {
   templateUrl: './detail.component.html',
   styleUrl: './detail.component.css'
 })
-export class DetailComponent implements OnInit {
+export class DetailComponent implements OnInit, AfterViewInit {
   private http = inject(HttpClient);
   private router = inject(Router);
   private route = inject(ActivatedRoute);
@@ -94,6 +102,31 @@ export class DetailComponent implements OnInit {
   public Utils = Utils;
   public dropdownManager = inject(DropdownManager);
   public l = inject(Locale);
+
+  @ViewChild('tabsNav') tabsNav?: ElementRef;
+  public showLeftScroll = false;
+  public showRightScroll = false;
+
+  ngAfterViewInit(): void {
+    setTimeout(() => this.checkScroll(), 100);
+  }
+
+  @HostListener('window:resize')
+  public onResize() {
+    this.checkScroll();
+  }
+
+  public checkScroll() {
+    const el = this.tabsNav?.nativeElement;
+    if (!el) return;
+    this.showLeftScroll = el.scrollLeft > 5;
+    this.showRightScroll = el.scrollLeft < el.scrollWidth - el.clientWidth - 5;
+  }
+
+  public scrollTabs(dir: number) {
+    const el = this.tabsNav?.nativeElement;
+    if (el) el.scrollBy({ left: dir * 150, behavior: 'smooth' });
+  }
 
   // Loading state
   isLoading = false;
@@ -122,6 +155,8 @@ export class DetailComponent implements OnInit {
   public marks: StudentIntermMarkAPI[] = [];
   public subjectStats: Record<number, StudentIntermSubjectStat> = {};
   public markStats: Record<number, StudentIntermMarkStat> = {};
+  public marking_scales: Record<string, number[]> = {};
+  public marking_scale: number[] = [85, 70, 50, 30, 0]; // Default fallback
   public selectedMark: any | null = null;
   public marksSelectedTab = 0; // 0 = by subject, 1 = chronological
   public marksOptions = [
@@ -195,7 +230,15 @@ export class DetailComponent implements OnInit {
       closeable: true,
       width: 800,
       items: [{ type: 'component', component: AddParentComponent }]
-    })
+    });
+
+    this.modalManager.addModal('create_parent', {
+      title: 'Vytvořit nového zákonného zástupce',
+      closeable: true,
+      width: 600,
+      items: [{ type: 'component', component: CreateParentComponent }]
+    });
+
 
     this.modalManager.addModal('parents_settings', {
       title: 'students.manage_parent',
@@ -225,7 +268,10 @@ export class DetailComponent implements OnInit {
   }
 
   public openAddParentModal(): void {
-    this.modalManager.openModal('add_parent', { student_id: this.selectedStudent.person_id });
+    this.modalManager.openModal('add_parent', { 
+      student_id: this.selectedStudent.person_id,
+      callback: () => this.refreshStudentData()
+    });
   }
 
   public refreshTimetable() {
@@ -403,7 +449,7 @@ export class DetailComponent implements OnInit {
   public loadMarks(): void {
     if (!this.selectedStudent?.person_id) return;
     this.http
-      .post<any>(
+      .post<StudentIntermAPI>(
         `${Config.API_URL}/v1/marks/student`,
         { student_id: this.selectedStudent.person_id },
         { withCredentials: true }
@@ -417,6 +463,9 @@ export class DetailComponent implements OnInit {
         }
         if ('mark_stats' in data) {
           this.markStats = data.mark_stats;
+        }
+        if ('marking_scales' in data) {
+          this.marking_scales = data.marking_scales;
         }
       });
   }
@@ -446,8 +495,18 @@ export class DetailComponent implements OnInit {
     for (const grade of grades) {
       if (typeof grade.mark === "number") {
         const weight = (typeof grade.weight === "number" ? grade.weight : 0) + 1;
-        total += grade.mark * weight;
-        totalDivide += weight;
+        let markVal = 0;
+        if (grade.type === 1) { // Points
+            const scale = this.marking_scales[`${grade.subject_id}_${grade.group_id}`] || this.marking_scale;
+            markVal = this.getPointGrade(grade.mark, grade.max_points || 1, scale);
+        } else {
+            markVal = grade.mark;
+        }
+
+        if (markVal > 0) {
+            total += markVal * weight;
+            totalDivide += weight;
+        }
       }
     }
     if (totalDivide === 0) return this.l.s('marks.no_subjects');
@@ -455,9 +514,44 @@ export class DetailComponent implements OnInit {
     return average < 1 ? "1.00" : average.toFixed(2);
   }
 
-  public formatMark(mark_id: number): string {
+  public getPointGrade(pointsRaw: string | number | null, maxPoints: number, overrideScale?: number[]): number {
+    if (pointsRaw === null || pointsRaw === undefined) return 0;
+    const pointsStr = String(pointsRaw);
+    const points = parseFloat(pointsStr.replace(',', '.'));
+    if (isNaN(points)) return 0;
+    if (maxPoints <= 0) return 1;
+    const percentage = (points / maxPoints) * 100;
+    
+    const scale = overrideScale || this.marking_scale;
+    if (scale && scale.length >= 4) {
+      for (let i = 0; i < 4; i++) {
+        if (percentage >= scale[i]) return i + 1;
+      }
+      return 5;
+    }
+    if (percentage >= 85) return 1;
+    if (percentage >= 70) return 2;
+    if (percentage >= 50) return 3;
+    if (percentage >= 30) return 4;
+    return 5;
+  }
+
+  public formatMark(mark: any): string {
+    if (!mark) return "";
+    let mark_id: number;
+    
+    if (typeof mark === 'object') {
+      if (mark.type === 1) { // Points
+        const scale = this.marking_scales[`${mark.subject_id}_${mark.group_id}`] || this.marking_scale;
+        return this.getPointGrade(mark.mark, mark.max_points || 1, scale).toString();
+      }
+      mark_id = mark.mark;
+    } else {
+      mark_id = mark;
+    }
+
     const config = this.marksManager.getConfig();
-    let idIndex = config.mark_ids.findIndex((mark) => mark == mark_id);
+    let idIndex = config.mark_ids.findIndex((m) => m == mark_id);
     let displayMark = config.mark_display[idIndex];
     if (displayMark) return displayMark;
     return mark_id.toString();

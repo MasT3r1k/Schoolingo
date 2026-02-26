@@ -136,7 +136,7 @@ export class Authentication {
         }
 
         if (user.role == "parent") {
-            return this.user.children[this.selectedChild.getValue()].child_id;
+            return this.user.children[this.selectedChild.getValue()].childId;
         }
         return this.user.person_id;
     }

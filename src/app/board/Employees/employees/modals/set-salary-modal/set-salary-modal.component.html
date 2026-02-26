@@ -1,7 +1,5 @@
 <form class="salary-form">
     <div class="form-section">
-        <h3 class="section-title">Nastavení platu</h3>
-
         <div class="form-group">
             <label>Zaměstnanec <span class="required">*</span></label>
             <div class="custom-select" id="salary-employee"
@@ -9,9 +7,9 @@
                 <div class="selected-value">
                     <div class="row" style="gap: .5rem">
                         @if (newSalary.teacherId) {
-                        @for (emp of employees; track emp.personId) {
-                        @if (emp.personId == newSalary.teacherId) {
-                        {{ emp.firstName }} {{ emp.lastName }}
+                        @for (emp of employees; track emp.person_id) {
+                        @if (emp.person_id == newSalary.teacherId) {
+                        {{ emp.full_name }}
                         }
                         }
                         } @else {
@@ -25,8 +23,8 @@
                     <div class="list">
                         @for (emp of employees; track emp.personId) {
                         <div class="option row" style="gap: .5rem"
-                            (click)="$event.stopPropagation(); dropdownManager.selected_dropdown = ''; newSalary.teacherId = emp.personId">
-                            {{ emp.firstName }} {{ emp.lastName }}
+                            (click)="$event.stopPropagation(); dropdownManager.selected_dropdown = ''; newSalary.teacherId = emp.person_id">
+                            {{ emp.full_name }}
                         </div>
                         }
                     </div>

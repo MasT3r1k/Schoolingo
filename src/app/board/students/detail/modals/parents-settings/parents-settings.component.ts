@@ -3,6 +3,7 @@ import { ModalManager } from '@Schoolingo/modal';
 import { ParentInfo } from '../../../students.component';
 import { IconsModule } from '@Schoolingo/icons';
 import { RemoveParentComponent } from '../remove-parent/remove-parent.component';
+import { Locale } from '@Schoolingo/locale';
 
 @Component({
   imports: [IconsModule],
@@ -11,7 +12,10 @@ import { RemoveParentComponent } from '../remove-parent/remove-parent.component'
 })
 export class ParentsSettingsComponent implements OnInit {
   private modalManager = inject(ModalManager);
+  public l = inject(Locale);
+
   public parents: ParentInfo[] = [];
+
   ngOnInit(): void {
     const data = this.modalManager.getModalData('parents_settings');
     this.parents = data.parents;
