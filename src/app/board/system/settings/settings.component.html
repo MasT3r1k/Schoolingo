@@ -225,6 +225,61 @@
             </div>
         </div>
 
+        <!-- Hodnocení žáka -->
+        <div class="form-section">
+            <div class="section-header"
+                style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                <h3 class="section-title" style="margin: 0;">{{ l.s('system.evaluation_settings') }}</h3>
+                <button class="btn btn--primary btn--xs" (click)="new_evaluation_template()">
+                    <i-tabler name="plus"></i-tabler>
+                    {{ l.s('system.add_student') }}
+                </button>
+            </div>
+            <p class="section-desc">{{ l.s('system.evaluation_types_management') }}</p>
+
+            <div class="evaluation-templates-list">
+                @for (template of system.evaluation_templates; track $index) {
+                <div class="evaluation-template-row"
+                    style="margin-bottom: 1rem; padding-bottom: 1rem; border-bottom: 1px solid var(--border);">
+                    <div class="form-grid" style="grid-template-columns: 1fr 2fr 1fr 1fr auto;">
+                        <div class="form-group">
+                            <label>{{ l.s('system.evaluation_type') }}</label>
+                            <select [(ngModel)]="template.type" (change)="save_evaluation_template(template)">
+                                @for (type of evaluation_types; track type) {
+                                <option [value]="type">{{ l.s('system.evaluation_type_' + type) }}</option>
+                                }
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>{{ l.s('system.evaluation_text') }}</label>
+                            <input type="text" [(ngModel)]="template.text" (change)="save_evaluation_template(template)"
+                                [placeholder]="l.s('system.evaluation_text')">
+                        </div>
+                        <div class="form-group">
+                            <label>{{ l.s('system.evaluation_value') }}</label>
+                            <select [(ngModel)]="template.value" (change)="save_evaluation_template(template)">
+                                <option value="praise">{{ l.s('system.evaluation_praise') }}</option>
+                                <option value="note">{{ l.s('system.evaluation_note') }}</option>
+                            </select>
+                        </div>
+                        <div class="form-group" style="display: flex; flex-direction: column; align-items: center;">
+                            <label>{{ l.s('system.evaluation_for_everyone') }}</label>
+                            <div class="switch" [class.on]="template.is_public"
+                                (click)="template.is_public = !template.is_public; save_evaluation_template(template)">
+                                <div class="knob"></div>
+                            </div>
+                        </div>
+                        <div class="form-group actions" style="display: flex; align-items: flex-end;">
+                            <button class="btn btn--danger btn--icon" (click)="delete_evaluation_template(template)">
+                                <i-tabler name="trash"></i-tabler>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                }
+            </div>
+        </div>
+
         <div class="form-actions">
             <button class="btn btn--primary" (click)="update_school()">
                 <i-tabler name="device-floppy"></i-tabler>

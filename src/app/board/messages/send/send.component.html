@@ -4,50 +4,156 @@
     <div class="card">
       <div class="card-header">
         <div>
-        <h2>{{ l.s("sidebar.messages.send") }}</h2>
-        <p class="meta muted">{{ l.s("messages.send_description") }}</p>
+          <h2>{{ l.s("sidebar.messages.send") }}</h2>
+          <p class="meta muted">{{ l.s("messages.send_description") }}</p>
         </div>
       </div>
 
       <div class="card-body">
-        <!-- Message Type Selection -->
         @if (messageManager.types && messageManager.types.length) {
-        <div class="form-group">
-          <label>{{ l.s("messages.type") }}</label>
-          <div class="custom-select"
-            (click)="$event.stopPropagation(); dropdownManager.selected_dropdown = dropdownManager.selected_dropdown == 'messagetype' ? '' : 'messagetype'">
-            <div class="selected-value">
-              <span>{{ l.s('messages.types.' + messageManager.types[messageManager.messageType.getValue()].label)
-                }}</span>
-              <i-tabler name="chevron-down"></i-tabler>
-            </div>
-            @if (dropdownManager.selected_dropdown == 'messagetype') {
-            <div class="options-dropdown">
-              <div class="list">
-              @for (type of getMessageTypes(); track $index) {
-              <div class="option"
-                (click)="$event.stopPropagation();dropdownManager.selected_dropdown = ''; messageManager.messageType.next(messageManager.types.indexOf(type))">
-                {{ l.s("messages.types." + type.label) }}
+        <div class="form-row">
+          <!-- Message Type Selection -->
+          <div class="form-group flex-1">
+            <label>{{ l.s("messages.type") }}</label>
+            <div class="custom-select"
+              (click)="$event.stopPropagation(); dropdownManager.selected_dropdown = dropdownManager.selected_dropdown == 'messagetype' ? '' : 'messagetype'">
+              <div class="selected-value">
+                <span>{{ l.s('messages.types.' + messageManager.types[messageManager.messageType.getValue()].label)
+                  }}</span>
+                <i-tabler name="chevron-down"></i-tabler>
+              </div>
+              @if (dropdownManager.selected_dropdown == 'messagetype') {
+              <div class="options-dropdown">
+                <div class="list">
+                  @for (type of getMessageTypes(); track $index) {
+                  <div class="option"
+                    (click)="$event.stopPropagation();dropdownManager.selected_dropdown = ''; messageManager.messageType.next(messageManager.types.indexOf(type))">
+                    {{ l.s("messages.types." + type.label) }}
+                  </div>
+                  }
+                </div>
               </div>
               }
-              </div>
             </div>
-            }
           </div>
+
+          <!-- Rate Type Selection -->
+          @if (checkMessageType([messageTypes.RATESTUDENT])) {
+          <div class="form-group flex-1">
+            <label>{{ l.s("messages.rating_type") }}</label>
+            <div class="custom-select"
+              (click)="$event.stopPropagation(); dropdownManager.selected_dropdown = dropdownManager.selected_dropdown == 'messagerating' ? '' : 'messagerating'">
+              <div class="selected-value">
+                <span>{{ l.s(messageManager.ratingTypes[messageManager.selectedRatingType.getValue()].label) }}</span>
+                <i-tabler name="chevron-down"></i-tabler>
+              </div>
+              @if (dropdownManager.selected_dropdown == 'messagerating') {
+              <div class="options-dropdown">
+                <div class="list">
+                  @for (rate of messageManager.ratingTypes; track $index) {
+                  <div class="option"
+                    (click)="$event.stopPropagation();dropdownManager.selected_dropdown = ''; messageManager.selectedRatingType.next($index)">
+                    {{ l.s(rate.label) }}
+                  </div>
+                  }
+                </div>
+              </div>
+              }
+            </div>
+          </div>
+          }
         </div>
 
-        <div class="form-group">
-          <label>{{ 'Komu' }}</label>
-          <div class="custom-select"
-            (click)="$event.stopPropagation();openSelectReceiver()">
-            <div class="selected-value">
-              <span>{{ l.s('messages.no_selected_receivers') }}</span>
+        <div class="form-group pb-2">
+          <label>Komu</label>
+
+          <!-- Search in Komu -->
+          <div class="search-wrapper mb-2">
+            <input type="text" class="search-input" [placeholder]="l.s('messages.search_placeholder')"
+              [(ngModel)]="searchText">
+          </div>
+
+          <div class="form-row">
+            <!-- Category Dropdown -->
+            <div class="form-group mb-0 flex-1">
+              <div class="custom-select"
+                (click)="$event.stopPropagation(); dropdownManager.selected_dropdown = dropdownManager.selected_dropdown == 'message_receiver_select_category' ? '' : 'message_receiver_select_category'">
+                <div class="selected-value">
+                  <span>{{ selectedCategory?.label ?? 'Vyberte skupinu' }}</span>
+                  <i-tabler name="chevron-down"></i-tabler>
+                </div>
+                @if (dropdownManager.selected_dropdown == 'message_receiver_select_category') {
+                <div class="options-dropdown">
+                  <div class="list">
+                    @for (group of getFilteredGroups(); track group.group) {
+                    <div class="option" [class.active]="selectedCategory?.group === group.group"
+                      (click)="selectCategory(group)">
+                      {{ group.label }}
+                    </div>
+                    }
+                  </div>
+                </div>
+                }
+              </div>
+            </div>
+
+            <!-- Item Dropdown (Recipients) -->
+            <div class="form-group mb-0 flex-1">
+              <div class="custom-select"
+                (click)="$event.stopPropagation(); dropdownManager.selected_dropdown = dropdownManager.selected_dropdown == 'message_receiver_select_item' ? '' : 'message_receiver_select_item'">
+                <div class="selected-value">
+                  <span>{{ 'Vyberte příjemce' }} ({{ selectedCategory?.users?.length ?? 0 }})</span>
+                  <i-tabler name="chevron-down"></i-tabler>
+                </div>
+                @if (dropdownManager.selected_dropdown == 'message_receiver_select_item') {
+                <div class="options-dropdown">
+                  <div class="list">
+                    <!-- Add All Option -->
+                    @if (getUsersInCategory().length > 0) {
+                    <div class="option" (click)="$event.stopPropagation(); addAllInCategory()">
+                      <strong>Přidat vše z této kategorie</strong>
+                    </div>
+                    }
+                    @for (user of getUsersInCategory(); track user.person_id) {
+                    <div class="option" [class.selected]="isSelected(user)"
+                      (click)="$event.stopPropagation(); toggleRecipient(user)">
+                      <div class="recipient-option-content">
+                        <span>{{ user.full_name }} ({{ l.s('roles.' + user.role) }})</span>
+                        @if (isSelected(user)) {
+                        <i-tabler name="check" class="check-icon"></i-tabler>
+                        }
+                      </div>
+                    </div>
+                    }
+                    @if (getUsersInCategory().length === 0) {
+                    <div class="option disabled">Žádní příjemci</div>
+                    }
+                  </div>
+                </div>
+                }
+              </div>
             </div>
           </div>
+
+          <!-- Selected Recipients Display -->
+          @if (selectedReceivers.length > 0) {
+          <div class="selected-pills mt-2">
+            @for (user of selectedReceivers; track user.person_id) {
+            <div class="pill">
+              <span>{{ user.full_name }}</span>
+              <i-tabler name="x" (click)="toggleRecipient(user)"></i-tabler>
+            </div>
+            }
+            <div class="pill pill--danger" (click)="removeAllSelected()">
+              <span>{{ l.s('messages.buttons.clear_all') }}</span>
+            </div>
+          </div>
+          }
         </div>
 
         <div class="row message-options">
-          <div class="option-item" (click)="messageManager.options.requireConfirmation = !messageManager.options.requireConfirmation">
+          <div class="option-item"
+            (click)="messageManager.options.requireConfirmation = !messageManager.options.requireConfirmation">
             <div class="option-content">
               <i-tabler name="circle-check"></i-tabler>
               <span>{{ l.s("messages.tags.require_confirmation") }}</span>
@@ -69,7 +175,8 @@
             </div>
           </div>
 
-          <div class="option-item" (click)="messageManager.options.copyToParents = !messageManager.options.copyToParents">
+          <div class="option-item"
+            (click)="messageManager.options.copyToParents = !messageManager.options.copyToParents">
             <div class="option-content">
               <i-tabler name="users-group"></i-tabler>
               <span>{{ l.s("messages.copy_parents") }}</span>
@@ -87,7 +194,7 @@
           <label [class.error-text]="alerts['topic']">
             {{ l.s("messages.topic") }}
             @if (alerts['topic']) {
-              <span>- {{ l.s(alerts["topic"].text) }}</span>
+            <span>- {{ l.s(alerts["topic"].text) }}</span>
             }
           </label>
           <input type="text" [(ngModel)]="messageManager.topic" [placeholder]="l.s('messages.topic')"
@@ -102,7 +209,8 @@
             @if (alerts['message']) { <span>- {{ l.s(alerts["message"].text) }}</span> }
           </label>
           <div class="chat-message-group">
-            <textarea style="min-height: 225px;max-height: 225px;" [(ngModel)]="messageManager.message" [placeholder]="l.s('messages.message_placeholder')" [class.input-error]="alerts['message']"></textarea>
+            <textarea style="min-height: 225px;max-height: 225px;" [(ngModel)]="messageManager.message"
+              [placeholder]="l.s('messages.message_placeholder')" [class.input-error]="alerts['message']"></textarea>
             <div class="chat-message-footer">
               <div>
                 <div class="chat-option btn btn--sm btn--ghost" (click)="openFiles()">
@@ -122,11 +230,11 @@
 
         <!-- Privacy Note -->
         <div class="message message--info">
-            <div class="row">
-                <i-tabler name="info-circle"></i-tabler>
-                <strong>Zprávy poslané přes Schoolingo nejsou soukromé</strong>
-            </div>
-            <p class="info-text">{{ l.s("messages.privacy", { app: AppConfig.APP_NAME }) }}</p>
+          <div class="row">
+            <i-tabler name="info-circle"></i-tabler>
+            <strong>Zprávy poslané přes Schoolingo nejsou soukromé</strong>
+          </div>
+          <p class="info-text">{{ l.s("messages.privacy", { app: AppConfig.APP_NAME }) }}</p>
         </div>
 
         } @else {

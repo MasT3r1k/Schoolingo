@@ -1,3 +1,55 @@
+@if (isLoading || !selectedStudent) {
+<div class="card detail-view">
+    <div class="detail-header">
+        <button class="btn-back" (click)="closeDetail()">
+            <i-tabler name="arrow-left"></i-tabler>
+            <span>Zpět na seznam</span>
+        </button>
+        <div class="detail-actions">
+            <div class="skeleton" style="width: 40px; height: 40px;"></div>
+            <div class="skeleton" style="width: 40px; height: 40px;"></div>
+            <div class="skeleton" style="width: 40px; height: 40px;"></div>
+            <div class="skeleton" style="width: 40px; height: 40px;"></div>
+        </div>
+    </div>
+
+    <div class="detail-layout">
+        <aside class="profile-sidebar">
+            <div class="profile-card">
+                <div class="skeleton skeleton-avatar"></div>
+                <div class="skeleton skeleton-title" style="margin-top: 1.5rem; width: 150px; height: 24px;"></div>
+                <div class="skeleton skeleton-text" style="width: 120px; margin-top: 0.5rem;"></div>
+                <div class="skeleton skeleton-text" style="width: 100px;"></div>
+            </div>
+
+            <div class="quick-stats">
+                <div class="skeleton skeleton-stat"></div>
+                <div class="skeleton skeleton-stat"></div>
+                <div class="skeleton skeleton-stat"></div>
+            </div>
+
+            <div class="quick-contact">
+                <div class="skeleton skeleton-text short" style="margin-bottom: 1rem;"></div>
+                <div class="skeleton skeleton-text"></div>
+                <div class="skeleton skeleton-text"></div>
+            </div>
+        </aside>
+
+        <main class="detail-main">
+            <div class="tabs-wrapper">
+                <div class="skeleton" style="height: 44px; width: 100%;"></div>
+            </div>
+
+            <div class="overview-grid">
+                <div class="skeleton skeleton-card" style="height: 300px;"></div>
+                <div class="skeleton skeleton-card" style="height: 300px;"></div>
+                <div class="skeleton skeleton-card" style="height: 300px;"></div>
+                <div class="skeleton skeleton-card" style="height: 300px;"></div>
+            </div>
+        </main>
+    </div>
+</div>
+} @else {
 <div class="card detail-view">
     <!-- Detail Header -->
     <div class="detail-header">
@@ -69,7 +121,7 @@
                     </div>
                 </div>
                 <div class="stat-card clickable" [class.danger]="selectedStudent.education_measures_count > 0"
-                    (click)="showDisciplineModal = true">
+                    (click)="setActiveTab('educational_measures')">
                     <div class="stat-icon">
                         <i-tabler name="alert-triangle"></i-tabler>
                     </div>
@@ -113,7 +165,6 @@
                     <i-tabler name="chevron-right"></i-tabler>
                 </button>
             </div>
-
             <!-- Tab Content -->
             <div class="tab-content">
                 <!-- Overview Tab -->
@@ -175,11 +226,19 @@
                                 <i-tabler name="arrow-right"></i-tabler>
                             </button>
                         </div>
-                        <div class="grades-preview">
+                        <div class="chrono-timeline">
                             @for (grade of selectedStudent.last_grades; track $index) {
-                            <div class="grade-item" [title]="grade.topic">
-                                <span class="grade-subject">{{ grade.subject_shortcut }}</span>
-                                <span class="grade-mark" [class]="'grade-' + grade.mark">{{ grade.mark }}</span>
+                            <div class="chrono-card overview-style" (click)="selectMark(grade)">
+                                <div class="chrono-badge" [class]="'mark-color-' + getBaseMark(grade)">
+                                    {{ formatMark(grade) }}
+                                </div>
+                                <div class="chrono-content">
+                                    <div class="chrono-topic">{{ grade.topic }}</div>
+                                    <div class="chrono-meta">
+                                        <span class="chrono-subject-chip">{{ grade.subject_shortcut }}</span>
+                                        <span class="chrono-date">{{ Utils.formatDateShort(grade.created) }}</span>
+                                    </div>
+                                </div>
                             </div>
                             } @empty {
                             <div class="no-data">Žádné známky</div>
@@ -394,7 +453,8 @@
                     <div class="parent-tab-list">
                         @for (parent of selectedStudent.parents; track parent.id) {
                         <div class="parent-tab" [class.active]="selectedParent?.id == parent.id"
-                            (click)="selectedParent = parent">{{ parent.fullName }}</div>
+                            (click)="selectedParent = parent">
+                            {{ parent.fullName }}</div>
                         }
                     </div>
                     <div class="header-actions">
@@ -454,25 +514,60 @@
                     <div class="info-card full">
                         <div class="card-header">
                             <i-tabler name="notes"></i-tabler>
-                            <h3>Poznámky</h3>
-                            <button class="card-action-btn">
+                            <h3>Poznámky k studentovi</h3>
+                            <button class="card-action-btn" (click)="openAddNote()">
                                 <i-tabler name="plus"></i-tabler>
                                 Přidat
                             </button>
                         </div>
-                        @if (selectedStudent?.notes) {
-                        <div class="notes-content">
-                            <p>{{ selectedStudent?.notes ?? '' }}</p>
-                        </div>
-                        } @else {
-                        <div class="no-selection">
-                            <div class="illustration">
-                                <i-tabler name="note-off"></i-tabler>
+
+                        <div class="notes-list">
+                            @if (isLoadingNotes) {
+                            <div class="loading-state">
+                                <div class="skeleton-row skeleton"></div>
+                                <div class="skeleton-row skeleton"></div>
                             </div>
-                            <h3>Žádné poznámky</h3>
-                            <p>U tohoto studenta není evidována žádná poznámka</p>
+                            } @else {
+                            @for (note of studentNotes; track note.note_id) {
+                            <div class="note-item" [class.private]="!note.is_public">
+                                <div class="note-header">
+                                    <div class="note-author">
+                                        <i-tabler name="user"></i-tabler>
+                                        <strong>{{ note.teacher_name }}</strong>
+                                        @if (!note.is_public) {
+                                        <span class="private-badge">
+                                            <i-tabler name="lock"></i-tabler>
+                                            Interní
+                                        </span>
+                                        }
+                                    </div>
+                                    <div class="note-date">
+                                        {{ Utils.formatDate(note.created_at) }}
+                                    </div>
+                                </div>
+                                <div class="note-body">
+                                    {{ note.content }}
+                                </div>
+                                <div class="note-actions">
+                                    <button class="action-btn" (click)="openEditNote(note)">
+                                        <i-tabler name="edit"></i-tabler>
+                                    </button>
+                                    <button class="action-btn danger" (click)="deleteNote(note.note_id)">
+                                        <i-tabler name="trash"></i-tabler>
+                                    </button>
+                                </div>
+                            </div>
+                            } @empty {
+                            <div class="no-selection">
+                                <div class="illustration">
+                                    <i-tabler name="note-off"></i-tabler>
+                                </div>
+                                <h3>Žádné poznámky</h3>
+                                <p>U tohoto studenta není evidována žádná poznámka.</p>
+                            </div>
+                            }
+                            }
                         </div>
-                        }
                     </div>
                 </div>
                 }
@@ -735,7 +830,19 @@
                 <!-- Marks Tab -->
                 @if (activeTab === 'marks') {
                 <div class="marks-section">
+                    <div class="marks-header-controls">
+                        <div class="marks-tabs">
+                            @for (opt of marksOptions; track $index) {
+                            <button class="marks-tab" [class.active]="marksSelectedTab === $index"
+                                (click)="marksSelectedTab = $index">
+                                {{ l.s(opt) }}
+                            </button>
+                            }
+                        </div>
+                    </div>
+
                     <div class="marks-content">
+                        @if (marksSelectedTab === 0) {
                         <div class="subjects-list">
                             @for (subject of getMarksPerSubject(); track $index) {
                             <div class="subject-row">
@@ -750,8 +857,9 @@
                                 </div>
                                 <div class="grades-row">
                                     @for(mark of subject.marks; track $index) {
-                                    <div class="grade-item" [style.fontSize.px]="getFontSize(mark.weight)"
-                                        [title]="getMarkTooltip(mark)" (click)="selectMark(mark)">
+                                    <div class="grade-item" [class]="'mark-color-' + getBaseMark(mark)"
+                                        [style.fontSize.px]="getFontSize(mark.weight)" [title]="getMarkTooltip(mark)"
+                                        (click)="selectMark(mark)">
                                         <span class="mark">{{ formatMark(mark) }}</span>
                                         <span class="topic">{{ mark.topic }}</span>
                                     </div>
@@ -763,6 +871,100 @@
                                 <i-tabler name="mood-empty"></i-tabler>
                                 <p>{{ l.s('marks.no_subjects') }}</p>
                             </div>
+                            }
+                        </div>
+                        } @else {
+                        <div class="chrono-timeline">
+                            @for (mark of marks; track mark.column_id) {
+                            <div class="chrono-card" (click)="selectMark(mark)">
+                                <div class="chrono-badge" [class]="'mark-color-' + getBaseMark(mark)">
+                                    {{ formatMark(mark) }}
+                                </div>
+                                <div class="chrono-content">
+                                    <div class="chrono-topic">{{ mark.topic }}</div>
+                                    <div class="chrono-meta">
+                                        <span class="chrono-subject-chip">{{ mark.subject_name }}</span>
+                                        <span class="chrono-date">
+                                            <i-tabler name="calendar-event"></i-tabler>
+                                            {{ Utils.formatDateShort(mark.created) }}
+                                        </span>
+                                        <span class="chrono-teacher" *ngIf="mark.teacher_full_name">
+                                            <i-tabler name="user"></i-tabler>
+                                            {{ mark.teacher_full_name }}
+                                        </span>
+                                    </div>
+                                </div>
+                                <div class="chrono-weight">
+                                    <div class="weight-dots">
+                                        @for (i of [1,2,3,4,5,6,7,8,9,10]; track i) {
+                                        <div class="weight-dot" [class.filled]="i <= mark.weight"></div>
+                                        }
+                                    </div>
+                                    <span class="weight-label">Váha: {{ mark.weight }}</span>
+                                </div>
+                            </div>
+                            } @empty {
+                            <div class="empty-state">
+                                <i-tabler name="mood-empty"></i-tabler>
+                                <p>Žádné známky k zobrazení</p>
+                            </div>
+                            }
+                        </div>
+                        }
+                    </div>
+                </div>
+                }
+
+                <!-- Educational Measures Tab -->
+                @if (activeTab === 'educational_measures') {
+                <div class="measures-section">
+                    <div class="info-card full">
+                        <div class="card-header">
+                            <i-tabler name="alert-triangle"></i-tabler>
+                            <h3>Výchovná opatření</h3>
+                            <div class="header-actions">
+                                <span class="badge badge--success">
+                                    <i-tabler name="star"></i-tabler>
+                                    {{ praiseCount }} pochval
+                                </span>
+                            </div>
+                        </div>
+
+                        <div class="measures-list-detail">
+                            @if (isLoadingMeasures) {
+                            <div class="loading-state">
+                                @for (i of [1,2,3]; track $index) {
+                                <div class="skeleton-row skeleton"></div>
+                                }
+                            </div>
+                            } @else {
+                            @for (measure of educationalMeasures; track measure.id) {
+                            <div class="measure-item" [class.positive]="measure.type === 'praise'"
+                                [class.negative]="measure.type !== 'praise'">
+                                <div class="measure-icon">
+                                    <i-tabler [name]="getTypeIcon(measure.type)"></i-tabler>
+                                </div>
+                                <div class="measure-content">
+                                    <div class="measure-main-info">
+                                        <span class="measure-type-tag">{{ getTypeLabel(measure.type) }}</span>
+                                        <span class="measure-date">{{ Utils.formatDate(measure.issued_at) }}</span>
+                                    </div>
+                                    <h4 class="measure-reason">{{ measure.reason }}</h4>
+                                    <p class="measure-desc" *ngIf="measure.description">{{ measure.description }}</p>
+                                    <div class="measure-meta" *ngIf="measure.issued_by_name">
+                                        <span>Udělil(a): <strong>{{ measure.issued_by_name }}</strong></span>
+                                    </div>
+                                </div>
+                            </div>
+                            } @empty {
+                            <div class="no-data-v2">
+                                <div class="illustration">
+                                    <i-tabler name="gavel"></i-tabler>
+                                </div>
+                                <h3>Žádná výchovná opatření</h3>
+                                <p>Student zatím nemá uložena žádná výchovná opatření ani pochvaly.</p>
+                            </div>
+                            }
                             }
                         </div>
                     </div>
@@ -910,4 +1112,99 @@
         </div>
     </div>
 </div>
+}
+
+<!-- Note Modal -->
+@if (showNoteModal && editingNote) {
+<div class="modal-overlay">
+    <div class="modal">
+        <div class="modal-header">
+            <h3>{{ editingNote.note_id ? 'Upravit poznámku' : 'Přidat poznámku' }}</h3>
+            <button class="close-btn" (click)="showNoteModal = false">
+                <i-tabler name="x"></i-tabler>
+            </button>
+        </div>
+        <div class="modal-body">
+            <div class="form-group">
+                <label>Obsah poznámky</label>
+                <textarea class="form-control" rows="6" [(ngModel)]="editingNote.content"
+                    placeholder="Zde napište poznámku..."></textarea>
+            </div>
+            <div class="form-group checkbox-group">
+                <label class="checkbox-container">
+                    <input type="checkbox" [(ngModel)]="editingNote.is_public">
+                    <span class="checkmark"></span>
+                    Viditelné pro zákonné zástupce
+                </label>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-secondary" (click)="showNoteModal = false">Zrušit</button>
+            <button class="btn btn-primary" (click)="saveNote()"
+                [disabled]="!editingNote.content?.trim()">Uložit</button>
+        </div>
+    </div>
+</div>
+}
+
+<!-- Mark Details Overlay -->
+@if (selectedMark) {
+<div class="mark-overlay" (click)="closeMarkDetails()">
+    <div class="mark-modal" (click)="$event.stopPropagation()">
+        <div class="mark-modal-header">
+            <h3>{{ l.s('marks.detail_title') }}</h3>
+            <button class="close-btn" (click)="closeMarkDetails()">
+                <i-tabler name="x"></i-tabler>
+            </button>
+        </div>
+        <div class="mark-modal-body">
+            <div class="mark-detail-row">
+                <span class="label">{{ l.s('marks.subject') }}</span>
+                <span class="value">{{ selectedMark.subject_name }}</span>
+            </div>
+            <div class="mark-detail-row">
+                <span class="label">{{ l.s('marks.topic') }}</span>
+                <span class="value">{{ selectedMark.topic }}</span>
+            </div>
+            <div class="mark-detail-row">
+                <span class="label">{{ l.s('marks.mark') }}</span>
+                <span class="value mark-value" [class]="'mark-color-' + getBaseMark(selectedMark)">{{
+                    formatMark(selectedMark) }}</span>
+            </div>
+            <div class="mark-detail-row">
+                <span class="label">{{ l.s('marks.weight') }}</span>
+                <span class="value">{{ selectedMark.weight }}</span>
+            </div>
+            @if (selectedMark.type === 1) {
+            <div class="mark-detail-row">
+                <span class="label">{{ l.s('marks.points') }}</span>
+                <span class="value">{{ selectedMark.mark }} / {{ selectedMark.max_points }}</span>
+            </div>
+            }
+            <div class="mark-detail-row">
+                <span class="label">{{ l.s('date') }}</span>
+                <span class="value">{{ Utils.formatDateShort(selectedMark.created) }}</span>
+            </div>
+            @if (selectedMark.teacher_full_name || (selectedMark.teacher_first_name && selectedMark.teacher_last_name))
+            {
+            <div class="mark-detail-row">
+                <span class="label">{{ l.s('roles.teacher') }}</span>
+                <span class="value">{{ selectedMark.teacher_full_name || (selectedMark.teacher_first_name + ' ' +
+                    selectedMark.teacher_last_name) }}</span>
+            </div>
+            }
+            @if (selectedMark.column_id && markStats[selectedMark.column_id]) {
+            <div class="mark-detail-row">
+                <span class="label">{{ l.s('marks.class_average') }}</span>
+                <span class="value">{{ markStats[selectedMark.column_id].avg }}</span>
+            </div>
+            <div class="mark-detail-row">
+                <span class="label">{{ l.s('marks.class_rank') }}</span>
+                <span class="value">{{ markStats[selectedMark.column_id].rank }}</span>
+            </div>
+            }
+        </div>
+    </div>
+</div>
+}
 }

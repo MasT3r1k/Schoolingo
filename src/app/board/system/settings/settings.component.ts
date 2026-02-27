@@ -100,6 +100,14 @@ interface EmailConfig {
   enabled: boolean;
 }
 
+export interface EvaluationTemplateAPI {
+  template_id: number | null;
+  type: 'activity' | 'homework' | 'disruptive' | 'supplies' | 'mobile';
+  text: string;
+  value: 'praise' | 'note';
+  is_public: boolean;
+}
+
 type ElysiaSystemAPI = {
   settings: {
     name: string;
@@ -188,6 +196,7 @@ type ElysiaSystemAPI = {
     role_source: string;
     role_target: string;
   }[];
+  evaluation_templates: EvaluationTemplateAPI[];
 }
 
 
@@ -210,6 +219,8 @@ export class SettingsComponent implements OnInit {
   public options: any = {
     auto_updates: false
   }
+
+  public evaluation_types = ['activity', 'homework', 'disruptive', 'supplies', 'mobile'];
 
   public returnZero() {
     return 0;
@@ -1077,5 +1088,51 @@ public school_types = SchoolTypes;
       // In a real scenario, this would check if the admin has valid tokens or credentials setup
       // For now, we simulate a check or trigger a connect flow if adding system-wide accounts
       alert('Test připojení pro ' + provider + ' proběhl úspěšně. (Admin credentials check)');
+  }
+
+  // === Evaluation Templates ===
+  public new_evaluation_template(): void {
+    const newTemplate: EvaluationTemplateAPI = {
+      template_id: null,
+      type: 'activity',
+      text: '',
+      value: 'praise',
+      is_public: true
+    };
+    this.system.evaluation_templates.push(newTemplate);
+  }
+
+  public save_evaluation_template(template: EvaluationTemplateAPI): void {
+    this.http.post<{ success: boolean; templateId: number }>(
+      `${Config.API_URL}/v1/system/evaluation_templates`,
+      {
+        templateId: template.template_id,
+        type: template.type,
+        text: template.text,
+        value: template.value,
+        isPublic: template.is_public
+      },
+      { withCredentials: true }
+    ).subscribe((res) => {
+      if (res.success) {
+        template.template_id = res.templateId;
+      }
+    });
+  }
+
+  public delete_evaluation_template(template: EvaluationTemplateAPI): void {
+    if (template.template_id === null) {
+      this.system.evaluation_templates = this.system.evaluation_templates.filter(t => t !== template);
+      return;
+    }
+
+    if (!confirm('Opravdu chcete smazat tuto šablonu?')) return;
+
+    this.http.delete(`${Config.API_URL}/v1/system/evaluation_templates`, {
+      body: { templateId: template.template_id },
+      withCredentials: true
+    }).subscribe(() => {
+      this.system.evaluation_templates = this.system.evaluation_templates.filter(t => t.template_id !== template.template_id);
+    });
   }
 }

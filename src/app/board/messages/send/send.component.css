@@ -592,8 +592,8 @@
     background-color: var(--surface-2);
 }
 
-.chat-message-footer, 
-.chat-message-footer > div {
+.chat-message-footer,
+.chat-message-footer>div {
     display: flex;
     flex-direction: row;
     align-items: center;
@@ -773,5 +773,264 @@
     .file-card:hover,
     .option-item:hover {
         box-shadow: 0 2px 12px rgba(0, 0, 0, 0.3);
+    }
+}
+
+/* Receiver Selection Area Integration */
+.receiver-selection-area {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    gap: 1.5rem;
+    padding: 1.25rem;
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    margin-bottom: 1.5rem;
+    margin-top: 1rem;
+    align-items: flex-start;
+}
+
+.selection-panel,
+.selected-panel {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    min-height: 0;
+}
+
+.form-row {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+}
+
+.flex-1 {
+    flex: 1;
+}
+
+.pb-2 {
+    padding-bottom: 0.5rem;
+}
+
+.mt-2 {
+    margin-top: 0.5rem;
+}
+
+/* Selected Pills */
+.selected-pills {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    padding: 0.75rem;
+    background: var(--surface);
+    border-radius: var(--radius);
+    border: 1px solid var(--border);
+    max-height: 150px;
+    overflow-y: auto;
+}
+
+.pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.375rem 0.75rem;
+    background: var(--primary-gradient);
+    color: white;
+    border-radius: 16px;
+    font-size: 0.8125rem;
+    font-weight: 500;
+    cursor: default;
+}
+
+.pill i-tabler {
+    width: 0.875rem;
+    height: 0.875rem;
+    cursor: pointer;
+    transition: transform 0.2s ease;
+}
+
+.pill i-tabler:hover {
+    transform: scale(1.2);
+}
+
+.pill--danger {
+    background: linear-gradient(135deg, #ff5757, #ff3333);
+    cursor: pointer;
+}
+
+/* Search Box */
+.search-wrapper {
+    position: relative;
+    width: 100%;
+}
+
+.search-input {
+    width: 100%;
+    padding: 0.625rem 0.75rem;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    font-size: 0.875rem;
+    color: var(--text);
+    transition: all 0.2s ease;
+}
+
+.search-input:focus {
+    border-color: var(--primary);
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(74, 163, 255, 0.1);
+}
+
+.recipient-option-content {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    gap: 0.5rem;
+}
+
+.check-icon {
+    width: 1rem;
+    height: 1rem;
+    color: var(--primary);
+}
+
+/* Recipient Item */
+.recipient-item {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.625rem;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    border: 1px solid transparent;
+}
+
+.recipient-item:hover {
+    background: var(--surface-2);
+}
+
+.recipient-avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: var(--primary-gradient);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: white;
+}
+
+.recipient-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.recipient-name {
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--text);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.recipient-role {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+}
+
+/* Transfer Controls */
+.transfer-controls {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 0.75rem;
+    padding-top: 2rem;
+}
+
+.transfer-btn {
+    width: 40px;
+    height: 40px;
+    border-radius: var(--radius);
+    border: 1px solid var(--border);
+    background: var(--surface);
+    color: var(--text-muted);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.transfer-btn:hover:not(:disabled) {
+    background: var(--primary);
+    color: white;
+    border-color: var(--primary);
+    transform: scale(1.05);
+}
+
+.transfer-btn:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+
+/* Selected Panel */
+.recipients-container {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    flex: 1;
+    min-height: 200px;
+    max-height: 400px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+}
+
+.recipients-list {
+    padding: 0.5rem;
+}
+
+.remove-btn {
+    margin-left: auto;
+    color: var(--text-muted);
+    transition: all 0.2s ease;
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 4px;
+}
+
+.recipient-item:hover .remove-btn {
+    background: rgba(255, 87, 87, 0.1);
+    color: #ff5757;
+}
+
+/* Helper Utilities */
+.mb-4 {
+    margin-bottom: 1rem;
+}
+
+.empty-state-mini {
+    padding: 2rem;
+    text-align: center;
+    color: var(--text-muted);
+    font-size: 0.8125rem;
+}
+
+@media (max-width: 992px) {
+    .receiver-selection-area {
+        grid-template-columns: 1fr;
+    }
+
+    .transfer-controls {
+        flex-direction: row;
+        padding: 0.5rem 0;
     }
 }

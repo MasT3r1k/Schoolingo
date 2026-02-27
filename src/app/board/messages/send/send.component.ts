@@ -8,6 +8,13 @@ import {
   MessageType,
   messageTypes,
 } from '@Schoolingo/messages';
+
+interface RecipientGroup {
+  group: string;
+  label: string;
+  users: messageReceiver[];
+  expanded?: boolean;
+}
 import { Permission } from '@Schoolingo/permission';
 import { BehaviorSubject, Subscription } from 'rxjs';
 import { Alert } from '../../../infrastructure/alert/alert';
@@ -62,9 +69,10 @@ export class SendComponent implements OnInit {
   public config: any = {};
 
   // === Receivers ===
+  public availableGroups: RecipientGroup[] = [];
   public selectedReceivers: messageReceiver[] = [];
-  public showSelectedReceivers = false;
-  public receiverFilter = '';
+  public selectedCategory: RecipientGroup | null = null;
+  public searchText = '';
   public receivers: messageReceiver[] = [];
 
   // === Receiver handling ===
@@ -132,8 +140,75 @@ export class SendComponent implements OnInit {
     return this.receivers.find((r) => r.person_id === id);
   }
 
-  public openSelectReceiver(): void {
-    this.modalManager.openModal('sendMessage_select-receiver');
+  public loadRecipients() {
+    this.http.post<RecipientGroup[]>(`${Config.API_URL}/v1/messages/recipients`, { 
+        message_type: this.messageManager.messageType.getValue() 
+    }, { withCredentials: true }).subscribe({
+      next: (groups) => {
+        this.availableGroups = groups;
+        if (this.availableGroups.length > 0) {
+            this.selectedCategory = this.availableGroups[0];
+        }
+      },
+      error: (e) => console.error(e)
+    });
+  }
+
+  public selectCategory(group: RecipientGroup) {
+      this.selectedCategory = group;
+      this.dropdownManager.selected_dropdown = '';
+  }
+
+  public toggleRecipient(receiver: messageReceiver) {
+    const index = this.selectedReceivers.findIndex(r => r.person_id === receiver.person_id);
+    if (index > -1) {
+      this.selectedReceivers.splice(index, 1);
+    } else {
+      this.selectedReceivers.push(receiver);
+    }
+  }
+
+  public isSelected(receiver: messageReceiver): boolean {
+    return this.selectedReceivers.some(r => r.person_id === receiver.person_id);
+  }
+
+  public getFilteredGroups() {
+      if (!this.searchText) return this.availableGroups;
+      const lowerSearch = this.searchText.toLowerCase();
+      return this.availableGroups.filter(g => 
+          g.label.toLowerCase().includes(lowerSearch) ||
+          g.users.some((u: messageReceiver) => 
+              u.full_name.toLowerCase().includes(lowerSearch) || 
+              (u.role && u.role.toLowerCase().includes(lowerSearch))
+          )
+      );
+  }
+
+  public getUsersInCategory() {
+      if (!this.selectedCategory) return [];
+      if (!this.searchText) return this.selectedCategory.users;
+      const lowerSearch = this.searchText.toLowerCase();
+      return this.selectedCategory.users.filter((u: messageReceiver) => 
+          u.full_name.toLowerCase().includes(lowerSearch) || 
+          (u.role && u.role.toLowerCase().includes(lowerSearch))
+      );
+  }
+
+  public addAllInCategory() {
+      if (!this.selectedCategory) return;
+      this.getUsersInCategory().forEach((u: messageReceiver) => {
+          if (!this.isSelected(u)) {
+              this.selectedReceivers.push(u);
+          }
+      });
+  }
+
+  public removeAllSelected() {
+      this.selectedReceivers = [];
+  }
+
+  public getTotalFilteredUsers(): number {
+      return this.getFilteredGroups().reduce((acc, g) => acc + g.users.length, 0);
   }
 
   public getCountOfReceiverType(type: string): number {
@@ -142,8 +217,10 @@ export class SendComponent implements OnInit {
 
   // === Lifecycle ===
   ngOnInit(): void {
+    this.loadRecipients();
     this.subscribers.push(
       this.messageManager.messageType.subscribe(() => {
+        this.loadRecipients();
         setTimeout(() => this.selectedOptionTab.next(0), 300);
       })
     );
@@ -176,17 +253,6 @@ export class SendComponent implements OnInit {
       }
     )
 
-    this.modalManager.addModal(
-      'sendMessage_select-receiver',
-      {
-        title: 'messages.select_receiver',
-        closeable: true,
-        width: 1100,
-        items: [
-          { type: 'component', component: SelectReceiverComponent }
-        ]
-      }
-    )
   }
 
   // === Sending message ===
@@ -222,11 +288,16 @@ export class SendComponent implements OnInit {
 
     if (Object.keys(this.alerts).length > 0) return;
 
-    const payload = {
+    const payload: any = {
       content: message,
       receivers: this.selectedReceivers.map((r) => r.person_id),
       files: this.messageManager.files,
+      message_type: type
     };
+
+    if (type === messageTypes.RATESTUDENT) {
+      payload.message_rating_type = this.messageManager.selectedRatingType.getValue();
+    }
 
     this.http
       .post<{ status: boolean; messageId?: number; error?: string }>(

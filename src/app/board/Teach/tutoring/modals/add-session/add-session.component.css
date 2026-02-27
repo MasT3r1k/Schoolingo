@@ -1,12 +1,7 @@
 .create-form {
-    padding: 1.5rem;
-    background: var(--surface-2);
-    border-radius: var(--radius);
-}
-
-.create-form.p-0 {
-    padding: 0 !important;
-    background: transparent !important;
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
 }
 
 .form-row {
@@ -14,11 +9,40 @@
     gap: 1rem;
 }
 
-.form-row .form-group {
+.form-group {
     flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
 }
 
-@media (max-width: 768px) {
+.form-group label {
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--text-muted);
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+    padding: 0.75rem;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    background: var(--surface-2);
+    color: var(--text);
+    font-size: 0.9375rem;
+    transition: all 0.2s ease;
+}
+
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+    outline: none;
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(var(--primary-rgb), 0.1);
+}
+
+@media (max-width: 600px) {
     .form-row {
         flex-direction: column;
     }

@@ -1,28 +1,58 @@
 <div class="create-form p-0">
+    <div class="form-group">
+        <label>Název lekce *</label>
+        <input type="text" [(ngModel)]="newSession.title" placeholder="např. Příprava na maturitu z matematiky">
+    </div>
+
     <div class="form-row">
         <div class="form-group">
-            <label>Název lekce *</label>
-            <input type="text" [(ngModel)]="newSession.title" placeholder="např. Příprava na maturitu z matematiky">
+            <label>Předmět</label>
+            <select [(ngModel)]="newSession.subjectId">
+                <option [ngValue]="undefined">Všechny předměty</option>
+                @for (subject of subjects(); track subject.subject_id) {
+                <option [value]="subject.subject_id">{{ subject.label }}</option>
+                }
+            </select>
         </div>
+        <div class="form-group">
+            <label>Určeno pro třídu</label>
+            <select [(ngModel)]="newSession.classId">
+                <option [ngValue]="undefined">Všechny třídy</option>
+                @for (cls of classes(); track cls.class_id) {
+                <option [value]="cls.class_id">{{ cls.class_name }}</option>
+                }
+            </select>
+        </div>
+    </div>
+
+    <div class="form-row">
         <div class="form-group">
             <label>Datum a čas *</label>
             <input type="datetime-local" [(ngModel)]="newSession.date">
         </div>
-    </div>
-    <div class="form-row">
         <div class="form-group">
             <label>Místnost</label>
-            <input type="text" [(ngModel)]="newSession.room" placeholder="např. U12">
-        </div>
-        <div class="form-group">
-            <label>Max. počet studentů</label>
-            <input type="number" [(ngModel)]="newSession.maxStudents" min="1" max="30">
+            <select [(ngModel)]="newSession.roomId" (change)="onRoomChange()">
+                <option [ngValue]="undefined">Bez místnosti</option>
+                @for (room of rooms(); track room.room_id) {
+                <option [value]="room.room_id">{{ room.name }} (kapacita {{ room.capacity }})</option>
+                }
+            </select>
         </div>
     </div>
+
+    <div class="form-row">
+        <div class="form-group">
+            <label>Max. počet studentů</label>
+            <input type="number" [(ngModel)]="newSession.maxStudents" min="1" max="100">
+        </div>
+    </div>
+
     <div class="form-group">
         <label>Popis</label>
         <textarea [(ngModel)]="newSession.description" rows="3" placeholder="Detaily o lekci..."></textarea>
     </div>
+
     <div class="buttons end mt-4">
         <button class="btn btn--secondary" (click)="closeModal()">Zrušit</button>
         <button class="btn btn--primary" (click)="createSession()" [disabled]="!newSession.title || !newSession.date">

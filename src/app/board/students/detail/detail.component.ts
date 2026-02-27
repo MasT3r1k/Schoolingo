@@ -15,6 +15,7 @@ import { Timetable } from '../../../infrastructure/timetable/timetable';
 import { SharedTimetableComponent } from '../../../Components/timetable/timetable.component';
 import { BehaviorSubject, distinctUntilChanged } from 'rxjs';
 import { MarksManager } from '@Schoolingo/marks';
+import { EducationMeasuresService, EducationMeasure } from '../../../infrastructure/measures/education-measures.service';
 import { ModalManager } from '@Schoolingo/modal';
 import { MedicalModalComponent } from './modals/medical-modal/medical-modal.component';
 import { EditPersonalModalComponent } from './modals/edit-personal/edit-personal.component';
@@ -96,6 +97,17 @@ interface StudentHistory {
   created_at: Date;
 }
 
+interface StudentNote {
+  note_id: number;
+  student_id: number;
+  teacher_id: number;
+  teacher_name: string;
+  content: string;
+  is_public: boolean;
+  created_at: Date;
+  updated_at: Date;
+}
+
 @Component({
   standalone: true,
   imports: [CommonModule, IconsModule, FormsModule, SharedTimetableComponent],
@@ -110,6 +122,7 @@ export class DetailComponent implements OnInit, AfterViewInit {
   public Utils = Utils;
   public dropdownManager = inject(DropdownManager);
   public l = inject(Locale);
+  public measuresService = inject(EducationMeasuresService);
 
   @ViewChild('tabsNav') tabsNav?: ElementRef;
   public showLeftScroll = false;
@@ -175,6 +188,20 @@ export class DetailComponent implements OnInit, AfterViewInit {
   // Medical Records
   public medicalRecords: MedicalRecord[] = [];
 
+  // Educational Measures
+  public educationalMeasures: EducationMeasure[] = [];
+  public isLoadingMeasures = false;
+
+  // Student Notes
+  public studentNotes: StudentNote[] = [];
+  public isLoadingNotes = false;
+  public showNoteModal = false;
+  public editingNote: Partial<StudentNote> | null = null;
+
+  get praiseCount(): number {
+    return this.educationalMeasures.filter(m => m.type === 'praise').length;
+  }
+
   // Detail View Tabs
   public tabs: (typeof this.activeTab)[] = ['overview', 'personal', 'parents', 'matrika', 'medical', 'history', 'marks', 'notes', 'evaluation', 'educational_measures', 'timetable'];
   activeTab: 'overview' | 'personal' | 'parents' | 'academic' | 'matrika' | 'medical' | 'history' | 'marks' | 'notes' | 'evaluation' | 'educational_measures' | 'timetable' = 'overview';
@@ -207,20 +234,31 @@ export class DetailComponent implements OnInit, AfterViewInit {
 
   ngOnInit() {
     const id = this.route.snapshot.paramMap.get('id');
+    this.isLoading = true;
     this.http.get(
       `${Config.API_URL}/v1/student/${id}`,
       { withCredentials: true }
     )
-      .subscribe((student: any) => {
-        this.selectedStudent = student;
-        if (student.parents.length) {
-          this.selectedParent = student.parents[0];
+      .subscribe({
+        next: (student: any) => {
+          this.selectedStudent = student;
+          if (student.parents.length) {
+            this.selectedParent = student.parents[0];
+          }
+          if (student.medical_records) {
+            this.medicalRecords = student.medical_records;
+          }
+          if (student.student_notes) {
+            this.studentNotes = student.student_notes;
+          }
+          this.loadMarks();
+          this.refreshTimetable();
+          this.isLoading = false;
+        },
+        error: () => {
+          this.isLoading = false;
+          this.loadError = 'Failed to load student data.';
         }
-        if (student.medical_records) {
-          this.medicalRecords = student.medical_records;
-        }
-        this.loadMarks();
-        this.refreshTimetable();
       });
 
     this.timetableSelectedWeek
@@ -280,16 +318,26 @@ export class DetailComponent implements OnInit, AfterViewInit {
 
   public refreshStudentData() {
     const id = this.route.snapshot.paramMap.get('id');
+    this.isLoading = true;
     this.http.get(
       `${Config.API_URL}/v1/student/${id}`,
       { withCredentials: true }
     )
-      .subscribe((student: any) => {
-        this.selectedStudent = student;
-        if (student.medical_records) {
-          this.medicalRecords = student.medical_records;
+      .subscribe({
+        next: (student: any) => {
+          this.selectedStudent = student;
+          if (student.medical_records) {
+            this.medicalRecords = student.medical_records;
+          }
+          if (student.student_notes) {
+            this.studentNotes = student.student_notes;
+          }
+          this.loadMarks();
+          this.isLoading = false;
+        },
+        error: () => {
+          this.isLoading = false;
         }
-        this.loadMarks();
       });
   }
 
@@ -360,6 +408,26 @@ export class DetailComponent implements OnInit, AfterViewInit {
     if (tab == 'history') {
       this.refreshHistory();
     }
+    if (tab == 'educational_measures') {
+      this.refreshMeasures();
+    }
+    if (tab == 'notes') {
+      this.refreshNotes();
+    }
+  }
+
+  public refreshMeasures(): void {
+    if (!this.selectedStudent?.person_id) return;
+    this.isLoadingMeasures = true;
+    this.measuresService.loadMeasures(this.selectedStudent.person_id).subscribe({
+      next: (data) => {
+        this.educationalMeasures = data;
+        this.isLoadingMeasures = false;
+      },
+      error: () => {
+        this.isLoadingMeasures = false;
+      }
+    });
   }
 
   public refreshHistory(): void {
@@ -643,6 +711,29 @@ export class DetailComponent implements OnInit, AfterViewInit {
     return mark_id.toString();
   }
 
+  /**
+   * Returns base mark 1-5 for color classes
+   * @param mark 
+   */
+  public getBaseMark(mark: any): number {
+    if (!mark) return 0;
+    let mark_id: number;
+
+    if (typeof mark === 'object') {
+      if (mark.type === 1) {
+        const scale = this.marking_scales[`${mark.subject_id}_${mark.group_id}`] || this.marking_scale;
+        return this.getPointGrade(mark.mark, mark.max_points || 1, scale);
+      }
+      mark_id = mark.mark;
+    } else {
+      mark_id = mark;
+    }
+
+    if (mark_id > 100) mark_id = Math.floor(mark_id / 100);
+    if (mark_id > 5) return 0;
+    return mark_id;
+  }
+
   public getMarkTooltip(mark: any): string {
     let tooltip = `${mark.topic} (${Utils.formatDateShort(mark.created)})`;
     if (mark.type === 1 && mark.max_points) {
@@ -754,6 +845,64 @@ export class DetailComponent implements OnInit, AfterViewInit {
     }
   }
 
+  // NOTE METHODS
+  public refreshNotes(): void {
+    if (!this.selectedStudent?.person_id) return;
+    this.isLoadingNotes = true;
+    this.http.get<StudentNote[]>(`${Config.API_URL}/v1/student/${this.selectedStudent.person_id}/notes`, { withCredentials: true })
+      .subscribe({
+        next: (notes) => {
+          this.studentNotes = notes;
+          this.isLoadingNotes = false;
+        },
+        error: () => {
+          this.isLoadingNotes = false;
+        }
+      });
+  }
+
+  public openAddNote(): void {
+    this.editingNote = {
+      content: '',
+      is_public: false
+    };
+    this.showNoteModal = true;
+  }
+
+  public openEditNote(note: StudentNote): void {
+    this.editingNote = { ...note };
+    this.showNoteModal = true;
+  }
+
+  public saveNote(): void {
+    if (!this.editingNote || !this.editingNote.content?.trim()) return;
+
+    const id = this.selectedStudent.person_id;
+    if (this.editingNote.note_id) {
+      // Update
+      this.http.patch(`${Config.API_URL}/v1/student/${id}/notes/${this.editingNote.note_id}`, this.editingNote, { withCredentials: true })
+        .subscribe(() => {
+          this.showNoteModal = false;
+          this.refreshNotes();
+        });
+    } else {
+      // Create
+      this.http.post(`${Config.API_URL}/v1/student/${id}/notes`, this.editingNote, { withCredentials: true })
+        .subscribe(() => {
+          this.showNoteModal = false;
+          this.refreshNotes();
+        });
+    }
+  }
+
+  public deleteNote(noteId: number): void {
+    if (!confirm('Opravdu chcete smazat tuto poznámku?')) return;
+    this.http.delete(`${Config.API_URL}/v1/student/${this.selectedStudent.person_id}/notes/${noteId}`, { withCredentials: true })
+      .subscribe(() => {
+        this.refreshNotes();
+      });
+  }
+
   public getMedicalRecords(): MedicalRecord[] {
     return this.medicalRecords.filter(r => !r.is_food_allergy);
   }
@@ -781,6 +930,28 @@ export class DetailComponent implements OnInit, AfterViewInit {
       case 'suspended': return 'Pozastaven';
       default: return status;
     }
+  }
+
+  public getTypeLabel(type: string): string {
+    const labels: Record<string, string> = {
+      'praise': 'Pochvala',
+      'reprimand': 'Důtka',
+      'warning': 'Napomenutí',
+      'reduced_behavior': 'Snížená známka z chování',
+      'other': 'Jiné'
+    };
+    return labels[type] || type;
+  }
+
+  public getTypeIcon(type: string): string {
+    const icons: Record<string, string> = {
+      'praise': 'star',
+      'reprimand': 'alert-triangle',
+      'warning': 'alert-circle',
+      'reduced_behavior': 'mood-sad',
+      'other': 'file-text'
+    };
+    return icons[type] || 'file-text';
   }
 
   // Get grade color class

@@ -56,6 +56,11 @@ export type messageReceiver = {
   type?: 'parent';
 };
 
+export interface RatingType {
+  label: string;
+  type: 'positive' | 'negative';
+}
+
 export class MessageManager {
   private config!: MessageConfig;
   public setConfig(config: typeof this.config): void {
@@ -103,6 +108,14 @@ export class MessageManager {
     },
   ];
 
+  public ratingTypes: RatingType[] = [
+    { label: 'messages.ratings.activity', type: 'positive' },
+    { label: 'messages.ratings.homework', type: 'positive' },
+    { label: 'messages.ratings.disturbing', type: 'negative' },
+    { label: 'messages.ratings.supplies', type: 'negative' },
+    { label: 'messages.ratings.mobile', type: 'negative' },
+  ];
+
   public tags: MessageTag[] = [
     {
       label: 'messages/tags/requireConfirmation',
@@ -130,7 +143,7 @@ export class MessageManager {
   public selectedHomework = new BehaviorSubject(null);
 
   // Rate student
-  public messageRating: 'positive' | 'negative' = 'positive';
+  public selectedRatingType = new BehaviorSubject<number>(0);
 
   // Receivers
   public receivers: number[] = [];

@@ -3,7 +3,7 @@
     <div class="card-header">
         <h2>{{ l.s('sidebar.teach.tutoring')}}</h2>
         <div class="flex-items">
-            @if (perm.checkPermission(['teacher'])) {
+            @if (perm.checkPermission(['teacher', 'admin_staff'])) {
             <button class="btn btn--primary btn--sm" (click)="openCreateForm()">
                 <i-tabler name="plus"></i-tabler>
                 Nová lekce
@@ -27,9 +27,14 @@
             @for (session of sessions(); track session.sessionId) {
             <div class="session-card" [class.past]="!isUpcoming(session.date)">
                 <div class="session-header">
-                    @if (session.subject) {
-                    <span class="badge badge--primary">{{ session.subject }}</span>
-                    }
+                    <div class="flex-items gap-2">
+                        @if (session.subject) {
+                        <span class="badge badge--primary">{{ session.subject }}</span>
+                        }
+                        @if (session.classLabel) {
+                        <span class="badge badge--warning">{{ session.classLabel }}</span>
+                        }
+                    </div>
                     <span class="badge" [class.badge--success]="isUpcoming(session.date)"
                         [class.badge--neutral]="!isUpcoming(session.date)">
                         {{ isUpcoming(session.date) ? 'Nadcházející' : 'Proběhlo' }}
@@ -47,23 +52,41 @@
                         {{ session.teacher }}
                     </span>
                     }
-                    @if (session.room) {
+                    @if (session.roomName) {
                     <span class="meta-item">
                         <i-tabler name="door"></i-tabler>
-                        {{ session.room }}
+                        {{ session.roomName }}
                     </span>
                     }
+                    <span class="meta-item">
+                        <i-tabler name="users"></i-tabler>
+                        {{ session.signedUpCount }} / {{ session.maxStudents }}
+                    </span>
                 </div>
                 @if (session.description) {
                 <p class="note">{{ session.description }}</p>
                 }
-                @if (perm.checkPermission(['teacher']) && isUpcoming(session.date)) {
-                <div class="buttons end mt-2">
-                    <button class="btn btn--danger btn--sm" (click)="cancelSession(session)">
-                        <i-tabler name="x"></i-tabler> Zrušit
+
+                <div class="buttons end mt-4">
+                    @if (perm.checkPermission(['student']) && isUpcoming(session.date)) {
+                    @if (session.isSignedUp) {
+                    <button class="btn btn--danger btn--sm" (click)="signOut(session)">
+                        <i-tabler name="logout"></i-tabler> Odhlásit se
                     </button>
+                    } @else {
+                    <button class="btn btn--primary btn--sm" (click)="signUp(session)"
+                        [disabled]="session.signedUpCount >= (session.maxStudents || 100)">
+                        <i-tabler name="login"></i-tabler> Přihlásit se
+                    </button>
+                    }
+                    }
+
+                    @if (perm.checkPermission(['teacher', 'admin_staff']) && isUpcoming(session.date)) {
+                    <button class="btn btn--danger btn--sm" (click)="cancelSession(session)">
+                        <i-tabler name="trash"></i-tabler> Zrušit
+                    </button>
+                    }
                 </div>
-                }
             </div>
             } @empty {
             <div class="no-selection">

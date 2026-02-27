@@ -6,6 +6,7 @@ import { TutoringService, TutoringSession } from '../../../infrastructure/tutori
 import moment from 'moment';
 import { ModalManager } from '@Schoolingo/modal';
 import { AddSessionComponent } from './modals/add-session/add-session.component';
+import { BoardAlertManager } from '../../../infrastructure/alert/board.alert.manager';
 
 @Component({
   selector: 'app-tutoring',
@@ -19,6 +20,7 @@ export class TutoringComponent implements OnInit {
   public perm = inject(Permission);
   public tutoringService = inject(TutoringService);
   private modalManager = inject(ModalManager);
+  private alert = inject(BoardAlertManager);
 
   public sessions = this.tutoringService.sessions;
   public loading = this.tutoringService.loading;
@@ -38,6 +40,34 @@ export class TutoringComponent implements OnInit {
     )
   }
 
+  public signUp(session: TutoringSession): void {
+    this.tutoringService.signUp(session.sessionId).subscribe({
+      next: (response) => {
+        if (response.success) {
+          this.alert.alert('success', 'Úspěšně přihlášeno k lekci.');
+          this.tutoringService.loadSessions().subscribe();
+        } else if (response.error) {
+           this.alert.alert('error', response.error);
+        }
+      },
+      error: (err) => {
+        this.alert.alert('error', err.error?.error || 'Nepodařilo se přihlásit k lekci.');
+      }
+    });
+  }
+
+  public signOut(session: TutoringSession): void {
+    if (!confirm('Opravdu se chcete odhlásit z této lekce?')) return;
+    this.tutoringService.signOut(session.sessionId).subscribe({
+      next: (response) => {
+        if (response.success) {
+          this.alert.alert('success', 'Úspěšně odhlášeno z lekce.');
+          this.tutoringService.loadSessions().subscribe();
+        }
+      }
+    });
+  }
+
   public cancelSession(session: TutoringSession): void {
     if (!confirm('Opravdu chcete zrušit tuto lekci?')) return;
 
@@ -45,6 +75,7 @@ export class TutoringComponent implements OnInit {
       next: (response) => {
         if (response.success) {
           this.tutoringService.loadSessions().subscribe();
+          this.alert.alert('success', 'Lekce byla zrušena.');
         }
       }
     });

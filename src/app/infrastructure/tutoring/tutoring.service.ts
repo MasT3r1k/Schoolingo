@@ -10,8 +10,13 @@ export interface TutoringSession {
   teacher?: string;
   date: Date;
   description?: string;
-  room?: string;
+  roomId?: number;
+  roomName?: string;
   maxStudents?: number;
+  signedUpCount: number;
+  isSignedUp: boolean;
+  classLabel?: string;
+  classId?: number;
 }
 
 @Injectable({
@@ -40,7 +45,14 @@ export class TutoringService {
           subject: s.subject,
           teacher: s.teacher,
           date: new Date(s.date),
-          description: s.description
+          description: s.description,
+          roomId: s.roomId,
+          roomName: s.roomName,
+          maxStudents: s.maxStudents,
+          signedUpCount: s.signedUpCount,
+          isSignedUp: s.isSignedUp > 0,
+          classLabel: s.classLabel,
+          classId: s.classId
         }));
         this.sessions.set(sessions);
         this.loading.set(false);
@@ -57,12 +69,13 @@ export class TutoringService {
    * Create tutoring session (teacher only)
    */
   createSession(data: {
-    subjectId: number;
+    subjectId?: number;
+    classId?: number;
     title: string;
     description?: string;
     date: string;
     maxStudents?: number;
-    room?: string;
+    roomId?: number;
   }): Observable<{ sessionId: number; success: boolean }> {
     return this.http.post<{ sessionId: number; success: boolean }>(
       `${Config.API_URL}/v1/schedule/tutoring`,
@@ -77,6 +90,57 @@ export class TutoringService {
   cancelSession(id: number): Observable<{ success: boolean }> {
     return this.http.delete<{ success: boolean }>(
       `${Config.API_URL}/v1/schedule/tutoring/${id}`,
+      { withCredentials: true }
+    );
+  }
+
+  /**
+   * Get all subjects
+   */
+  getSubjects(): Observable<any[]> {
+    return this.http.get<any[]>(
+      `${Config.API_URL}/v1/school/subjects`,
+      { withCredentials: true }
+    );
+  }
+
+  /**
+   * Get all classes
+   */
+  getClasses(): Observable<any[]> {
+    return this.http.get<any[]>(
+      `${Config.API_URL}/v1/school/classes`,
+      { withCredentials: true }
+    );
+  }
+
+  /**
+   * Get all rooms
+   */
+  getRooms(): Observable<any[]> {
+    return this.http.get<any[]>(
+      `${Config.API_URL}/v1/school/rooms`,
+      { withCredentials: true }
+    );
+  }
+
+  /**
+   * Sign up for tutoring session
+   */
+  signUp(id: number): Observable<{ success: boolean; error?: string }> {
+    return this.http.post<{ success: boolean; error?: string }>(
+      `${Config.API_URL}/v1/schedule/tutoring/${id}/signup`,
+      {},
+      { withCredentials: true }
+    );
+  }
+
+  /**
+   * Sign out from tutoring session
+   */
+  signOut(id: number): Observable<{ success: boolean }> {
+    return this.http.delete<{ success: boolean }>(
+      `${Config.API_URL}/v1/schedule/tutoring/${id}/signup`,
       { withCredentials: true }
     );
   }

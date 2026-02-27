@@ -1,12 +1,9 @@
 <div class="receiver-modal-body">
-    <!-- Left Panel - Available Recipients -->
+    <!-- Left Panel - Categories and Users -->
     <div class="panel">
         <div class="panel-header">
             <h3 class="panel-title">{{ 'Dostupní příjemci' }}</h3>
-            <!-- Sum of all users in filtered groups -->
-            <span class="panel-count" id="availableCount">
-                {{ getTotalFilteredUsers() }}
-            </span>
+            <span class="panel-count">{{ getTotalFilteredUsers() }}</span>
         </div>
 
         <!-- Search -->
@@ -16,77 +13,90 @@
                 <circle cx="11" cy="11" r="8" />
                 <path d="m21 21-4.35-4.35" />
             </svg>
-            <input type="text" class="search-input" placeholder="Hledat příjemce..." [(ngModel)]="searchText">
+            <input type="text" class="search-input" placeholder="Hledat..." [(ngModel)]="searchText">
         </div>
 
-        <!-- Recipients List -->
-        <div class="recipients-container">
-            <div class="recipients-list" id="availableList">
-
-                @for (group of getFilteredGroups(); track group.group) {
-                <div class="group-item">
-                    <div class="group-header" (click)="toggleGroup(group)">
-                        <svg class="group-expand-icon"
-                            [style.transform]="group.expanded ? 'rotate(0deg)' : 'rotate(-90deg)'" width="16"
-                            height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <polyline points="9 18 15 12 9 6" />
-                        </svg>
-                        <div class="group-info">
-                            <div class="group-name">{{ group.label }}</div>
-                            <div class="group-count">{{ group.users.length }} členů</div>
-                        </div>
-                        <div class="group-actions" (click)="$event.stopPropagation()">
-                            <button class="btn-xs" (click)="selectAllInGroup(group)">Vše</button>
-                        </div>
-                    </div>
-
-                    @if (group.expanded) {
-                    <div class="group-children">
-                        @for (user of group.users; track user.person_id) {
-                        <div class="recipient-item" [class.selected]="isSelected(user)" (click)="toggleRecipient(user)">
-                            <div class="recipient-avatar">
-                                {{ user.first_name[0] }}{{ user.last_name[0] }}
-                            </div>
-                            <div class="recipient-info">
-                                <div class="recipient-name">{{ user.full_name }}</div>
-                                <div class="recipient-role">{{ user.role }} {{ user.class ? '- ' + user.class : '' }}
-                                </div>
-                            </div>
-                            <div class="recipient-checkbox">
-                                @if (isSelected(user)) {
-                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white"
-                                    stroke-width="3">
-                                    <polyline points="20 6 9 17 4 12" />
-                                </svg>
-                                }
-                            </div>
+        <div class="form-group">
+            <div class="custom-select"
+                (click)="$event.stopPropagation(); dropdownManager.selected_dropdown = dropdownManager.selected_dropdown == 'message_receiver_select_category' ? '' : 'message_receiver_select_category'">
+                <div class="selected-value">
+                    {{ selectedCategory?.label ?? 'Není vybrána skupina' }}
+                    <i-tabler name="chevron-down"></i-tabler>
+                </div>
+                @if (dropdownManager.selected_dropdown == 'message_receiver_select_category') {
+                <div class="options-dropdown">
+                    <div class="list">
+                        @for (group of getFilteredGroups(); track $index) {
+                        <div class="option" (click)="selectCategory(group)">
+                            {{ group.label }}
                         </div>
                         }
                     </div>
-                    }
                 </div>
                 }
-
-                @if (getFilteredGroups().length === 0) {
-                <div class="empty-state">
-                    <div class="empty-text">Žádní příjemci nenalezeni</div>
-                </div>
-                }
-
             </div>
         </div>
+
+        <div class="selection-grid">
+            <!-- Items Section (Recipients in Category) -->
+            <div class="items-section">
+                <div class="column-label">Položky</div>
+                <div class="list-container">
+                    @for (user of getUsersInCategory(); track user.person_id) {
+                    <div class="recipient-item" [class.selected]="isSelected(user)" (click)="toggleRecipient(user)">
+                        <div class="recipient-avatar">
+                            {{ user.first_name[0] }}{{ user.last_name[0] }}
+                        </div>
+                        <div class="recipient-info">
+                            <div class="recipient-name">{{ user.full_name }}</div>
+                            <div class="recipient-role">{{ l.s('roles.' + user.role) }}</div>
+                        </div>
+                        <div class="recipient-checkbox">
+                            @if (isSelected(user)) {
+                            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="4">
+                                <polyline points="20 6 9 17 4 12" />
+                            </svg>
+                            }
+                        </div>
+                    </div>
+                    }
+                    @if (getUsersInCategory().length === 0) {
+                    <div class="empty-state-mini">
+                        Žádné položky
+                    </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Middle Panel - Actions -->
+    <div class="transfer-controls">
+        <button class="transfer-btn" (click)="addAllInCategory()" [title]="'Přidat vše z kategorie'"
+            [disabled]="!selectedCategory">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="13 17 18 12 13 7" />
+                <polyline points="6 17 11 12 6 7" />
+            </svg>
+        </button>
+        <button class="transfer-btn" (click)="removeAllSelected()" [title]="'Odebrat vše'"
+            [disabled]="selectedReceivers.length === 0">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="11 17 6 12 11 7" />
+                <polyline points="18 17 13 12 18 7" />
+            </svg>
+        </button>
     </div>
 
     <!-- Right Panel - Selected Recipients -->
     <div class="panel">
         <div class="panel-header">
             <h3 class="panel-title">Vybraní příjemci</h3>
-            <span class="panel-count" id="selectedCount">{{ selectedReceivers.length }}</span>
+            <span class="panel-count">{{ selectedReceivers.length }}</span>
         </div>
 
-        <!-- Selected Recipients List -->
-        <div class="recipients-container" style="flex: 1;">
-            <div class="recipients-list" id="selectedList">
+        <div class="recipients-container">
+            <div class="recipients-list">
                 @if (selectedReceivers.length === 0) {
                 <div class="empty-state">
                     <div class="empty-icon">📭</div>
@@ -101,10 +111,10 @@
                     </div>
                     <div class="recipient-info">
                         <div class="recipient-name">{{ user.full_name }}</div>
-                        <div class="recipient-role">{{ user.role }}</div>
+                        <div class="recipient-role">{{ l.s('roles.' + user.role) }}</div>
                     </div>
-                    <div class="recipient-action">
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                    <div class="remove-btn">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                             stroke-width="2">
                             <line x1="18" y1="6" x2="6" y2="18"></line>
                             <line x1="6" y1="6" x2="18" y2="18"></line>
