@@ -16,6 +16,7 @@ interface NotificationRule {
 
 @Component({
   standalone: true,
+  selector: 'settings-notifications',
   imports: [CommonModule, FormsModule, IconsModule],
   templateUrl: './notifications.component.html',
   styleUrl: './notifications.component.css'
@@ -39,7 +40,8 @@ export class NotificationsComponent implements OnInit {
       color: '#ffc107',
       description: 'Upozornění při přidání nové známky',
       hasConditions: false,
-      conditionFields: []
+      conditionFields: [],
+      roles: ['student', 'parent']
     },
     { 
       id: 'homework_new', 
@@ -48,7 +50,8 @@ export class NotificationsComponent implements OnInit {
       color: '#7cd67c',
       description: 'Upozornění při zadání nového úkolu',
       hasConditions: false,
-      conditionFields: []
+      conditionFields: [],
+      roles: ['student', 'parent']
     },
     { 
       id: 'message_new', 
@@ -57,7 +60,8 @@ export class NotificationsComponent implements OnInit {
       color: '#4aa3ff',
       description: 'Upozornění při přijetí nové zprávy',
       hasConditions: false,
-      conditionFields: []
+      conditionFields: [],
+      roles: ['all']
     },
     { 
       id: 'absence_new', 
@@ -66,7 +70,8 @@ export class NotificationsComponent implements OnInit {
       color: '#ff9800',
       description: 'Upozornění při zapsání absence',
       hasConditions: false,
-      conditionFields: []
+      conditionFields: [],
+      roles: ['student', 'parent']
     },
     { 
       id: 'substitution_new', 
@@ -75,7 +80,8 @@ export class NotificationsComponent implements OnInit {
       color: '#9c27b0',
       description: 'Upozornění při změně rozvrhu',
       hasConditions: false,
-      conditionFields: []
+      conditionFields: [],
+      roles: ['all']
     },
     { 
       id: 'reward_new', 
@@ -84,7 +90,28 @@ export class NotificationsComponent implements OnInit {
       color: '#f5d142',
       description: 'Upozornění při obdržení nové odměny',
       hasConditions: false,
-      conditionFields: []
+      conditionFields: [],
+      roles: ['student', 'parent']
+    },
+    { 
+      id: 'leave_reaction', 
+      name: 'Reakce na dovolenou',
+      icon: 'circle-check',
+      color: '#2196f3',
+      description: 'Upozornění na schválení či zamítnutí dovolené',
+      hasConditions: false,
+      conditionFields: [],
+      roles: ['teacher']
+    },
+    { 
+      id: 'leave_request', 
+      name: 'Nová žádost o dovolenou',
+      icon: 'file-plus',
+      color: '#ff5722',
+      description: 'Upozornění na novou žádost o dovolenou od zaměstnance',
+      hasConditions: false,
+      conditionFields: [],
+      roles: ['manager:all', 'management', 'personnel']
     }
   ];
 
@@ -98,7 +125,8 @@ export class NotificationsComponent implements OnInit {
       hasConditions: true,
       conditionFields: [
         { key: 'value', label: 'Hodnota', type: 'number', default: 3, min: 1, max: 5 }
-      ]
+      ],
+      roles: ['student', 'parent']
     },
     { 
       id: 'advanced_grade_average_below', 
@@ -108,7 +136,8 @@ export class NotificationsComponent implements OnInit {
       hasConditions: true,
       conditionFields: [
         { key: 'value', label: 'Hodnota', type: 'number', default: 2, min: 1, max: 5 }
-      ]
+      ],
+      roles: ['student', 'parent']
     },
     { 
       id: 'advanced_absence_count_above', 
@@ -119,7 +148,8 @@ export class NotificationsComponent implements OnInit {
       conditionFields: [
         { key: 'hours', label: 'Počet hodin', type: 'number', default: 10, min: 1 },
         { key: 'percent', label: 'Absence v %', type: 'number', default: 30, min: 1, max: 100 },
-      ]
+      ],
+      roles: ['student', 'parent']
     },
     { 
       id: 'advanced_homework_deadline_soon', 
@@ -129,7 +159,19 @@ export class NotificationsComponent implements OnInit {
       hasConditions: true,
       conditionFields: [
         { key: 'days', label: 'Dny před termínem', type: 'number', default: 1, min: 1, max: 7 }
-      ]
+      ],
+      roles: ['student', 'parent']
+    },
+    { 
+      id: 'advanced_leave_balance_low', 
+      name: 'Nízký zůstatek dovolené',
+      icon: 'battery-low',
+      color: '#f44336',
+      hasConditions: true,
+      conditionFields: [
+        { key: 'days', label: 'Zůstatek klesne pod (dny)', type: 'number', default: 5, min: 0 }
+      ],
+      roles: ['teacher', 'manager:all', 'management', 'personnel']
     }
   ];
 
@@ -282,8 +324,17 @@ export class NotificationsComponent implements OnInit {
     return this.rules.find(r => r.type === typeId);
   }
 
+  public getSimpleTypes(): any[] {
+    return this.simpleTypes.filter(t => t.roles.includes('all') || this.perms.checkPermission(t.roles as any));
+  }
+
+  public getVisibleAdvancedTypes(): any[] {
+    return this.advancedTypes.filter(t => t.roles.includes('all') || this.perms.checkPermission(t.roles as any));
+  }
+
   public getAdvancedRules(): NotificationRule[] {
-    return this.rules.filter(r => !this.isSimpleType(r.type));
+    const visibleTypes = this.getVisibleAdvancedTypes().map(t => t.id);
+    return this.rules.filter(r => !this.isSimpleType(r.type) && visibleTypes.includes(r.type));
   }
 
   public hasRuleOfType(typeId: string): boolean {

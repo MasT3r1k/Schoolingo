@@ -198,6 +198,9 @@ export class DetailComponent implements OnInit, AfterViewInit {
   public showNoteModal = false;
   public editingNote: Partial<StudentNote> | null = null;
 
+  public matrikaSaveType: 'change' | 'correction' = 'change';
+  public addressSaveType: 'change' | 'correction' = 'change';
+
   get praiseCount(): number {
     return this.educationalMeasures.filter(m => m.type === 'praise').length;
   }
@@ -467,6 +470,12 @@ export class DetailComponent implements OnInit, AfterViewInit {
           title: 'Úprava údajů studenta',
           description: `Byly aktualizovány osobní nebo studijní údaje studenta.`,
           icon: 'user-cog'
+        };
+      case 'updated_matrika':
+        return {
+          title: 'Úprava matriky studenta',
+          description: `Byly aktualizovány údaje v matrice studenta.`,
+          icon: 'clipboard-list'
         };
       case 'moved_to_class':
         return {
@@ -805,7 +814,10 @@ export class DetailComponent implements OnInit, AfterViewInit {
 
   public saveMatrika() {
     if (!this.selectedStudent?.person_id) return;
-    this.http.patch(`${Config.API_URL}/v1/student/${this.selectedStudent.person_id}/matrika`, this.selectedStudent.matrika, { withCredentials: true })
+    this.http.patch(`${Config.API_URL}/v1/student/${this.selectedStudent.person_id}/matrika`, {
+      ...this.selectedStudent.matrika,
+      saveType: this.matrikaSaveType
+    }, { withCredentials: true })
       .subscribe({
         next: () => {
           this.refreshStudentData();
@@ -1054,7 +1066,10 @@ export class DetailComponent implements OnInit, AfterViewInit {
   saveAddress() {
     if (!this.selectedStudent) return;
 
-    this.http.patch(`${Config.API_URL}/v1/student/${this.selectedStudent.personId}/address`, this.editingAddress, {
+    this.http.patch(`${Config.API_URL}/v1/student/${this.selectedStudent.personId}/address`, {
+      ...this.editingAddress,
+      saveType: this.addressSaveType
+    }, {
       withCredentials: true
     }).subscribe({
       next: () => {

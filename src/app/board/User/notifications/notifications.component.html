@@ -60,7 +60,7 @@
             <div class="loading">Načítání...</div>
             } @else {
             <div class="simple-notifications-grid">
-                @for (type of simpleTypes; track type.id) {
+                @for (type of getSimpleTypes(); track type.id) {
                 @let rule = findRuleByType(type.id);
                 <div class="simple-notification-card" [class.active]="rule?.enabled"
                     (click)="toggleSimpleNotification(type.id)">
@@ -175,7 +175,7 @@
             <div class="add-rule-section">
                 <h4>Přidat pokročilé pravidlo</h4>
                 <div class="available-types">
-                    @for (type of advancedTypes; track type.id) {
+                    @for (type of getVisibleAdvancedTypes(); track type.id) {
                     <button class="type-card advanced" (click)="addRule(type.id)">
                         <div class="type-icon" [style.background]="type.color + '20'" [style.color]="type.color">
                             <i-tabler [name]="type.icon"></i-tabler>

@@ -98,7 +98,8 @@ export class EditPersonalModalComponent implements OnInit {
     birthNum: '',
     birthday: '',
     birthPlace: '',
-    nationalityId: 1
+    nationalityId: 1,
+    saveType: 'change' as 'change' | 'correction'
   };
 
   public classes: any[] = [];
@@ -123,7 +124,8 @@ export class EditPersonalModalComponent implements OnInit {
         birthNum: s.birthnum || '',
         birthday: s.birthday ? moment(s.birthday).format('YYYY-MM-DD') : '',
         birthPlace: s.birth_place || '',
-        nationalityId: s.nationality_id || 1
+        nationalityId: s.nationality_id || 1,
+        saveType: 'change'
       };
     }
 
