@@ -320,8 +320,7 @@
                                     <i-tabler name="chevron-left"></i-tabler>
                                 </button>
                                 <span class="current-date-info">
-                                    {{ l.s('days.' + overviewSelectedDate.day()) }}, {{ overviewSelectedDate.format("DD.
-                                    MM.") }}
+                                    {{ l.s('days.' + overviewSelectedDate.day()) }}, {{ overviewSelectedDate.format("DD. MM.") }}
                                 </span>
                                 <button class="nav-btn" (click)="nextOverviewDay()">
                                     <i-tabler name="chevron-right"></i-tabler>
@@ -1154,7 +1153,7 @@
                                                     @for (detail of meta.details; track detail.label) {
                                                     <div class="tl-chip">
                                                         <span class="tl-chip-label">{{ detail.label }}</span>
-                                                        <span class="tl-chip-value">{{ detail.value }}</span>
+                                                        <span class="tl-chip-value" [innerHTML]="detail.value"></span>
                                                     </div>
                                                     }
                                                 </div>
@@ -1208,15 +1207,15 @@
                                 @if (meta.details.length > 0) {
                                 <div class="change-fields-table">
                                     <div class="change-fields-header">
-                                        <span>Pole</span>
-                                        <span>Nová hodnota</span>
+                                        <span>{{ l.s('students.save_history.item') }}</span>
+                                        <span>{{ l.s('students.save_history.new_value') }}</span>
                                     </div>
                                     @for (detail of meta.details; track detail.label) {
                                     <div class="change-field-row">
                                         <span class="change-field-label">{{ detail.label }}</span>
                                         <span class="change-field-new">
                                             <i-tabler name="arrow-right"></i-tabler>
-                                            {{ detail.value }}
+                                            <span [innerHTML]="detail.value"></span>
                                         </span>
                                     </div>
                                     }

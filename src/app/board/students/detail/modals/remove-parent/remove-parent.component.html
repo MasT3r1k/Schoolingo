@@ -5,7 +5,7 @@
         </div>
         <div class="row-option__content">
             <h4>{{ l.s('students.remove_parent.remove_parent_only_student_title') }}</h4>
-            <p>{{ l.s('students.remove_parent.remove_parent_only_student_desc') }}</p>
+            <p>{{ l.s('students.remove_parent.remove_parent_only_student_desc', { name: student.full_name }) }}</p>
         </div>
     </div>
     <div class="row-option" (click)="selected_option = 1"
@@ -21,7 +21,7 @@
         <div class="row-option__dot">
         </div>
         <div class="row-option__content">
-            <h4>{{ l.s('students.remove_parent.remove_complete_parent_title') }}</h4>
+            <h4 style="color: var(--danger);">{{ l.s('students.remove_parent.remove_complete_parent_title') }}</h4>
             <p>{{ l.s('students.remove_parent.remove_complete_parent_desc') }}</p>
         </div>
     </div>
@@ -29,5 +29,8 @@
 
 <div class="modal-actions">
     <div class="btn" (click)="closeModal()">{{ l.s('buttons.cancel') }}</div>
-    <div class="btn" [class.btn--primary]="[0,1].includes(selected_option)" [class.btn--danger]="[2].includes(selected_option)">{{ l.s('buttons.remove') }}</div>
+    <div class="btn" [class.btn--primary]="[0,1].includes(selected_option)" [class.btn--danger]="[2].includes(selected_option)">
+        <i-tabler [name]="getActionIcon()"></i-tabler>
+        {{ getActionText() }}
+    </div>
 </div>

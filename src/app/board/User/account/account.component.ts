@@ -43,6 +43,7 @@ export class AccountComponent implements OnInit {
     this.modalManager.addModal(
       'add_email',
       {
+        icon: 'mail-plus',
         title: 'user.add_email.title',
         closeable: true, 
         items: [
@@ -57,6 +58,7 @@ export class AccountComponent implements OnInit {
     this.modalManager.addModal(
       'delete_email',
       {
+        icon: 'mail-x',
         title: 'user.delete_email.title',
         closeable: true,
         items: [
@@ -71,6 +73,7 @@ export class AccountComponent implements OnInit {
     this.modalManager.addModal(
       'add_phone',
       {
+        icon: 'phone-plus',
         title: 'user.add_phone.title',
         closeable: true,
         items: [
@@ -85,6 +88,7 @@ export class AccountComponent implements OnInit {
     this.modalManager.addModal(
       'delete_phone',
       {
+        icon: 'phone-x',
         title: 'user.delete_phone.title',
         closeable: true,
         items: [

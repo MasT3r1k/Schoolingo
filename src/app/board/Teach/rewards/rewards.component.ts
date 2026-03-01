@@ -9,6 +9,7 @@ import { Locale } from '@Schoolingo/locale';
 import { ModalManager } from '@Schoolingo/modal';
 import { FormsModule } from '@angular/forms';
 import { TabsComponent } from '@Components/Tabs';
+import { AddRewardModalComponent } from './modals/add-reward-modal/add-reward-modal.component';
 
 interface Reward {
   id: number;
@@ -50,17 +51,6 @@ export class RewardsComponent implements OnInit {
   // Filter
   filterStatus: 'all' | 'pending' | 'collected' = 'all';
   
-  // Add reward form
-  showAddForm = false;
-  newReward = {
-    title: '',
-    description: '',
-    amount: null as number | null,
-    type: 'other' as 'financial' | 'certificate' | 'prize' | 'other',
-    studentId: null as number | null
-  };
-  saving = false;
-  
   ngOnInit() {
     this.isTeacher = this.auth.getRole() === 'teacher' || this.auth.getRole() === 'admin' || this.auth.getUser()?.manager == -1;
     this.loadRewards();
@@ -68,6 +58,21 @@ export class RewardsComponent implements OnInit {
     if (this.isTeacher) {
       this.loadStudents();
     }
+
+    this.modalManager.addModal(
+      'add_reward',
+      {
+        icon: 'gift',
+        title: 'Přidat odměnu',
+        description: 'Udělejte někomu radost za jeho úspěchy.',
+        closeable: true,
+        width: 600,
+        items: [{
+          type: 'component',
+          component: AddRewardModalComponent
+        }]
+      }
+    );
   }
   
   loadRewards() {
@@ -162,55 +167,10 @@ export class RewardsComponent implements OnInit {
   }
   
   openAddReward() {
-    this.showAddForm = true;
-    this.resetForm();
+    this.modalManager.openModal('add_reward');
   }
   
-  closeAddForm() {
-    this.showAddForm = false;
-    this.resetForm();
-  }
-  
-  resetForm() {
-    this.newReward = {
-      title: '',
-      description: '',
-      amount: null,
-      type: 'other',
-      studentId: null
-    };
-  }
-  
-  saveReward() {
-    if (!this.newReward.title || !this.newReward.studentId) {
-      return;
-    }
-    
-    this.saving = true;
-    
-    this.http.post<{ reward_id: number; success: boolean }>(
-      `${Config.API_URL}/v1/rewards`,
-      {
-        title: this.newReward.title,
-        description: this.newReward.description,
-        amount: this.newReward.amount,
-        type: this.newReward.type,
-        studentId: this.newReward.studentId
-      },
-      { withCredentials: true }
-    ).subscribe({
-      next: (response) => {
-        this.saving = false;
-        this.showAddForm = false;
-        this.loadRewards(); // Reload to get full data
-      },
-      error: (err) => {
-        console.error('Failed to create reward:', err);
-        this.saving = false;
-      }
-    });
-  }
-  
+
   deleteReward(reward: Reward) {
     if (!confirm(this.l.s('rewards.confirm_delete'))) {
       return;

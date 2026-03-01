@@ -1,0 +1,62 @@
+<div class="modal-body">
+    <!-- Selection Options -->
+    <div class="row-type-selector">
+        <div class="row-option" [class.selected]="saveType == 'change'" (click)="saveType = 'change'">
+            <div class="row-option__dot"></div>
+            <div class="row-option__content">
+                <h4>{{ l.s('students.save_history.with_history_title') }}</h4>
+                <p>{{ l.s('students.save_history.with_history_desc') }}</p>
+            </div>
+            <div style="margin-left: 1rem;">
+                <input type="date" class="form-control" [(ngModel)]="historyDate" style="width: auto;">
+            </div>
+        </div>
+
+        <div class="row-option" [class.selected]="saveType == 'correction'" (click)="saveType = 'correction'">
+            <div class="row-option__dot"></div>
+            <div class="row-option__content">
+                <h4>{{ l.s('students.save_history.without_history_title') }}</h4>
+                <p>{{ l.s('students.save_history.without_history_desc') }}</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Changed Items Table -->
+    <div class="changes-table"
+        style="background: var(--background-secondary); border-radius: 12px; overflow: hidden; margin-top: 2rem;">
+        <table style="width: 100%; border-collapse: collapse; text-align: left;">
+            <thead>
+                <tr style="border-bottom: 1px solid var(--border-color);">
+                    <th style="padding: 1rem; color: var(--text-muted); font-size: 0.85rem; text-transform: uppercase;">{{ l.s('students.save_history.item') }}</th>
+                    <th style="padding: 1rem; color: var(--text-muted); font-size: 0.85rem; text-transform: uppercase;">{{ l.s('students.save_history.original_value') }}</th>
+                    <th [style.textAlign]="'center'" style="padding: 1rem; width: 40px;"></th>
+                    <th style="padding: 1rem; color: var(--text-muted); font-size: 0.85rem; text-transform: uppercase;">{{ l.s('students.save_history.new_value') }}</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngFor="let change of data?.changes"
+                    style="border-bottom: 1px solid rgba(var(--border-color-rgb), 0.5);">
+                    <td style="padding: 1rem; font-weight: 500; font-size: 0.95rem;">{{ change.label }}</td>
+                    <td style="padding: 1rem; color: var(--text-muted);">{{ change.oldValue || '—' }}</td>
+                    <td style="padding: 1rem; text-align: center;">
+                        <i-tabler name="arrow-narrow-right" style="color: var(--text-muted); opacity: 0.5;"></i-tabler>
+                    </td>
+                    <td style="padding: 1rem; font-weight: 500; color: var(--primary-color);">{{ change.newValue || '—'
+                        }}</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+</div>
+
+<div class="modal-actions">
+    <button class="btn btn--secondary" (click)="cancel()">
+        <i-tabler name="x" style="width: 1.25rem; height: 1.25rem;"></i-tabler>
+        {{ l.s('buttons.cancel') }}
+    </button>
+    <button class="btn btn--primary" (click)="save()">
+        <i-tabler name="check" style="width: 1.25rem; height: 1.25rem;"></i-tabler>
+        {{ saveType === 'change' ? 'Uložit s historií změn k ' + (historyDate | date:'d. M. yyyy') : 'Uložit jako opravu' }}
+    </button>
+</div>

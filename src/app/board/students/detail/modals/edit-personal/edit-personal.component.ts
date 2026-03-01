@@ -164,8 +164,82 @@ export class EditPersonalModalComponent implements OnInit {
 
 
   public save(): void {
+    const changes: any[] = [];
+    const s = this.data.student;
+
+    // Check changes and build diff
+    const fields: { key: string, label: string, oldVal: any, newVal: any }[] = [
+      { key: 'firstName', label: 'Jméno', oldVal: s.first_name, newVal: this.form.firstName },
+      { key: 'lastName', label: 'Příjmení', oldVal: s.last_name, newVal: this.form.lastName },
+      { key: 'prefixTitle', label: 'Tituly před jménem', oldVal: s.prefix_title, newVal: this.form.prefixTitle },
+      { key: 'suffixTitle', label: 'Tituly za jménem', oldVal: s.suffix_title, newVal: this.form.suffixTitle },
+      { key: 'classId', label: 'Třída', oldVal: s.class_id, newVal: this.form.classId },
+      { key: 'insuranceId', label: 'Pojišťovna', oldVal: s.insurance_id, newVal: this.form.insuranceId },
+      { key: 'gender', label: 'Pohlaví', oldVal: s.gender, newVal: this.form.gender },
+      { key: 'birthNum', label: 'Rodné číslo', oldVal: s.birthnum, newVal: this.form.birthNum },
+      { key: 'birthday', label: 'Datum narození', oldVal: s.birthday ? moment(s.birthday).format('YYYY-MM-DD') : '', newVal: this.form.birthday },
+      { key: 'birthPlace', label: 'Místo narození', oldVal: s.birth_place, newVal: this.form.birthPlace },
+      { key: 'nationalityId', label: 'Státní občanství', oldVal: s.nationality_id, newVal: this.form.nationalityId },
+    ];
+
+    fields.forEach(f => {
+      // Basic Comparison (handle null vs empty string)
+      const oldVal = f.oldVal === null || f.oldVal === undefined ? '' : f.oldVal;
+      const newVal = f.newVal === null || f.newVal === undefined ? '' : f.newVal;
+
+      if (oldVal.toString() !== newVal.toString()) {
+        let displayOld = oldVal;
+        let displayNew = newVal;
+
+        // Visual mapping for specific fields
+        if (f.key === 'classId') {
+          displayOld = this.classes.find(c => c.class_id === oldVal)?.class_name || 'Nezadáno';
+          displayNew = this.classes.find(c => c.class_id === newVal)?.class_name || 'Nezadáno';
+        } else if (f.key === 'insuranceId') {
+          displayOld = this.getInsuranceLabel(oldVal);
+          displayNew = this.getInsuranceLabel(newVal);
+        } else if (f.key === 'gender') {
+          displayOld = this.l.s('genders.' + Utils.getGender(oldVal as number));
+          displayNew = this.l.s('genders.' + Utils.getGender(newVal as number));
+        } else if (f.key === 'birthday') {
+            displayOld = oldVal ? moment(oldVal).format('D. M. YYYY') : 'Nezadáno';
+            displayNew = newVal ? moment(newVal).format('D. M. YYYY') : 'Nezadáno';
+        } else if (f.key === 'nationalityId') {
+          displayOld = this.countries.find(c => c.country_id === oldVal)?.nationality || 'Nezadáno';
+          displayNew = this.countries.find(c => c.country_id === newVal)?.nationality || 'Nezadáno';
+        }
+
+        changes.push({
+          label: f.label,
+          oldValue: displayOld,
+          newValue: displayNew
+        });
+      }
+    });
+
+    if (changes.length === 0) {
+      this.closeModal();
+      return;
+    }
+
+    this.modalManager.openModal('save_history', {
+      changes,
+      callback: (saveType: 'change' | 'correction', historyDate: string) => {
+        this.finalizeSave(saveType, historyDate, changes);
+      }
+    });
+  }
+
+  private finalizeSave(saveType: 'change' | 'correction', historyDate: string, changes: any[]): void {
     const personId = this.data.student.person_id;
-    this.http.patch(`${Config.API_URL}/v1/student/${personId}/personal`, this.form, { withCredentials: true })
+    const body = {
+        ...this.form,
+        saveType,
+        historyDate, // Including history date in body if backend supports it
+        changes
+    };
+
+    this.http.patch(`${Config.API_URL}/v1/student/${personId}/personal`, body, { withCredentials: true })
       .subscribe({
         next: () => {
           this.modalManager.closeModal('edit_personal');

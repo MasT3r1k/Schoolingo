@@ -143,6 +143,14 @@ export class GdprComponent implements OnInit {
     { id: 'profiling', icon: 'user-scan', color: '#ec4899' }
   ];
 
+  public get parentConsents(): GdprConsent[] {
+    return this.consents.filter(c => !c.person_name);
+  }
+
+  public get childConsents(): GdprConsent[] {
+    return this.consents.filter(c => !!c.person_name);
+  }
+
   ngOnInit(): void {
     if (this.auth.getRole() && ['management', 'admin_staff', 'manager'].includes(this.auth.getRole()!)) {
         this.tabsOptions.push('gdpr.tabs.admin');

@@ -23,6 +23,7 @@ import { ParentsSettingsComponent } from './modals/parents-settings/parents-sett
 import { AddParentComponent } from './modals/add-parent/add-parent.component';
 import { CreateParentComponent } from './modals/create-parent/create-parent.component';
 import { RemoveParentComponent } from './modals/remove-parent/remove-parent.component';
+import { SaveHistoryModalComponent } from './modals/save-history-modal/save-history-modal.component';
 
 // Interfaces
 interface TimetableAPI {
@@ -200,6 +201,8 @@ export class DetailComponent implements OnInit, AfterViewInit {
 
   public matrikaSaveType: 'change' | 'correction' = 'change';
   public addressSaveType: 'change' | 'correction' = 'change';
+  private originalMatrika: any = null;
+  private originalAddress: any = null;
 
   get praiseCount(): number {
     return this.educationalMeasures.filter(m => m.type === 'praise').length;
@@ -254,6 +257,15 @@ export class DetailComponent implements OnInit, AfterViewInit {
           if (student.student_notes) {
             this.studentNotes = student.student_notes;
           }
+          if (student.matrika) {
+            this.originalMatrika = { ...student.matrika };
+          }
+          this.originalAddress = {
+            street: student.street,
+            houseNumber: student.house_number,
+            city: student.city_name,
+            postcode: student.postcode
+          };
           this.loadMarks();
           this.refreshTimetable();
           this.isLoading = false;
@@ -282,10 +294,21 @@ export class DetailComponent implements OnInit, AfterViewInit {
 
     this.modalManager.addModal('edit_personal', {
       title: 'students.edit_personal',
+      description: 'students.edit_personal_description',
+      icon: 'user-edit',
       closeable: true,
       forceScrollbar: true,
       width: 600,
       items: [{ type: 'component', component: EditPersonalModalComponent }]
+    });
+
+    this.modalManager.addModal('save_history', {
+      title: 'students.save_history.title',
+      description: 'students.save_history.description',
+      icon: 'history',
+      closeable: true,
+      width: 700,
+      items: [{ type: 'component', component: SaveHistoryModalComponent }]
     });
 
     this.modalManager.addModal('add_parent', {
@@ -305,6 +328,7 @@ export class DetailComponent implements OnInit, AfterViewInit {
     });
 
     this.modalManager.addModal('remove_parent', {
+      icon: 'user-minus',
       title: 'students.remove_parent.title',
       closeable: true,
       index: 502,
@@ -314,8 +338,8 @@ export class DetailComponent implements OnInit, AfterViewInit {
     });
 
     this.modalManager.addModal('parents_settings', {
-      title: 'students.manage_parent',
-      description: 'students.manage_parent_description',
+      title: 'students.manage_parent.title',
+      description: 'students.manage_parent.description',
       icon: 'users-group',
       closeable: true,
       width: 600,
@@ -339,6 +363,15 @@ export class DetailComponent implements OnInit, AfterViewInit {
           if (student.student_notes) {
             this.studentNotes = student.student_notes;
           }
+          if (student.matrika) {
+            this.originalMatrika = { ...student.matrika };
+          }
+          this.originalAddress = {
+            street: student.street,
+            houseNumber: student.house_number,
+            city: student.city_name,
+            postcode: student.postcode
+          };
           this.loadMarks();
           this.isLoading = false;
         },
@@ -349,7 +382,7 @@ export class DetailComponent implements OnInit, AfterViewInit {
   }
 
   public openParentSettings(): void {
-    this.modalManager.openModal('parents_settings', { student_id: this.selectedStudent.person_id, parents: this.selectedStudent.parents });
+    this.modalManager.openModal('parents_settings', { student_id: this.selectedStudent.person_id, student: this.selectedStudent, parents: this.selectedStudent.parents });
   }
 
   public openAddParentModal(): void {
@@ -482,12 +515,21 @@ export class DetailComponent implements OnInit, AfterViewInit {
         };
       case 'updated_student': {
         const details: { label: string, value: string }[] = [];
-        if (data.firstName || data.lastName) details.push({ label: 'Jméno', value: `${data.firstName || ''} ${data.lastName || ''}`.trim() });
-        if (data.birthday) details.push({ label: 'Datum narození', value: data.birthday });
-        if (data.birthPlace) details.push({ label: 'Místo narození', value: data.birthPlace });
-        if (data.birthNum) details.push({ label: 'Rodné číslo', value: data.birthNum });
-        if (data.street) details.push({ label: 'Ulice', value: `${data.street} ${data.houseNumber || ''}`.trim() });
-        if (data.city) details.push({ label: 'Město', value: `${data.city}${data.postcode ? ', ' + data.postcode : ''}` });
+        if (data.changes && Array.isArray(data.changes)) {
+          data.changes.forEach((c: any) => {
+            details.push({ 
+              label: c.label, 
+              value: `<s>${c.oldValue || 'Nezadáno'}</s> &nbsp;&rarr;&nbsp; ${c.newValue || 'Nezadáno'}` 
+            });
+          });
+        } else {
+          if (data.firstName || data.lastName) details.push({ label: 'Jméno', value: `${data.firstName || ''} ${data.lastName || ''}`.trim() });
+          if (data.birthday) details.push({ label: 'Datum narození', value: data.birthday });
+          if (data.birthPlace) details.push({ label: 'Místo narození', value: data.birthPlace });
+          if (data.birthNum) details.push({ label: 'Rodné číslo', value: data.birthNum });
+          if (data.street) details.push({ label: 'Ulice', value: `${data.street} ${data.houseNumber || ''}`.trim() });
+          if (data.city) details.push({ label: 'Město', value: `${data.city}${data.postcode ? ', ' + data.postcode : ''}` });
+        }
         return {
           title: data.street ? 'Úprava adresy studenta' : 'Úprava údajů studenta',
           description: data.street
@@ -511,9 +553,20 @@ export class DetailComponent implements OnInit, AfterViewInit {
           language_code: 'Jazyk',
           health_status_code: 'Zdravotní stav',
         };
-        const details = Object.entries(matrikaLabels)
-          .filter(([key]) => data[key] !== undefined && data[key] !== null && data[key] !== '')
-          .map(([key, label]) => ({ label, value: String(data[key]) }));
+        const details: { label: string, value: string }[] = [];
+        if (data.changes && Array.isArray(data.changes)) {
+          data.changes.forEach((c: any) => {
+            details.push({ 
+              label: c.label, 
+              value: `<s>${c.oldValue || 'Nezadáno'}</s> &nbsp;&rarr;&nbsp; ${c.newValue || 'Nezadáno'}` 
+            });
+          });
+        } else {
+          Object.entries(matrikaLabels)
+            .filter(([key]) => data[key] !== undefined && data[key] !== null && data[key] !== '')
+            .map(([key, label]) => ({ label, value: String(data[key]) }))
+            .forEach(d => details.push(d));
+        }
         return {
           title: 'Úprava matriky studenta',
           description: `Byly aktualizovány údaje v matrice studenta.`,
@@ -875,9 +928,40 @@ export class DetailComponent implements OnInit, AfterViewInit {
 
   public saveMatrika() {
     if (!this.selectedStudent?.person_id) return;
-    this.http.patch(`${Config.API_URL}/v1/student/${this.selectedStudent.person_id}/matrika`, {
+    const changes: any[] = [];
+    const matrikaLabels: Record<string, string> = {
+      highest_education_id: 'Nejvyšší vzdělání',
+      previous_school_izo: 'IZO předchozí školy',
+      study_type_code: 'Typ studia',
+      financing_code: 'Financování',
+      start_reason_code: 'Důvod nástupu',
+      end_reason_code: 'Důvod ukončení',
+      individual_plan_code: 'Individuální plán',
+      special_needs_code: 'Spec. potřeby',
+      language_code: 'Jazyk',
+      health_status_code: 'Zdravotní stav',
+    };
+
+    if (this.originalMatrika) {
+      Object.entries(matrikaLabels).forEach(([key, label]) => {
+        const oldVal = this.originalMatrika[key] ?? '';
+        const newVal = this.selectedStudent.matrika[key] ?? '';
+        if (oldVal.toString() !== newVal.toString()) {
+          changes.push({ label, oldValue: oldVal || 'Nezadáno', newValue: newVal || 'Nezadáno' });
+        }
+      });
+    }
+
+    if (changes.length === 0 && this.matrikaSaveType === 'change') {
+       alert('Žádné změny k uložení.');
+       return;
+    }
+
+    const personId = this.selectedStudent.person_id;
+    this.http.patch(`${Config.API_URL}/v1/student/${personId}/matrika`, {
       ...this.selectedStudent.matrika,
-      saveType: this.matrikaSaveType
+      saveType: this.matrikaSaveType,
+      changes
     }, { withCredentials: true })
       .subscribe({
         next: () => {
@@ -1127,15 +1211,36 @@ export class DetailComponent implements OnInit, AfterViewInit {
   saveAddress() {
     if (!this.selectedStudent) return;
 
-    this.http.patch(`${Config.API_URL}/v1/student/${this.selectedStudent.personId}/address`, {
+    const changes = [];
+    if ((this.originalAddress?.street ?? '') !== (this.editingAddress.street ?? '')) {
+      changes.push({ label: 'Ulice', oldValue: this.originalAddress?.street || 'Nezadáno', newValue: this.editingAddress.street || 'Nezadáno' });
+    }
+    if ((this.originalAddress?.houseNumber ?? '') !== (this.editingAddress.houseNumber ?? '')) {
+      changes.push({ label: 'Číslo popisné', oldValue: this.originalAddress?.houseNumber || 'Nezadáno', newValue: this.editingAddress.houseNumber || 'Nezadáno' });
+    }
+    if ((this.originalAddress?.city ?? '') !== (this.editingAddress.city ?? '')) {
+      changes.push({ label: 'Město', oldValue: this.originalAddress?.city || 'Nezadáno', newValue: this.editingAddress.city || 'Nezadáno' });
+    }
+    if ((this.originalAddress?.postcode ?? '') !== (this.editingAddress.postcode ?? '')) {
+      changes.push({ label: 'PSČ', oldValue: this.originalAddress?.postcode || 'Nezadáno', newValue: this.editingAddress.postcode || 'Nezadáno' });
+    }
+
+    if (changes.length === 0 && this.addressSaveType === 'change') {
+      alert('Žádné změny k uložení.');
+      return;
+    }
+
+    const personId = this.selectedStudent.person_id;
+    this.http.patch(`${Config.API_URL}/v1/student/${personId}/address`, {
       ...this.editingAddress,
-      saveType: this.addressSaveType
+      saveType: this.addressSaveType,
+      changes
     }, {
       withCredentials: true
     }).subscribe({
       next: () => {
         this.showEditAddressModal = false;
-        this.ngOnInit();
+        this.refreshStudentData();
       },
       error: (err) => {
         console.error('Failed to update address', err);
