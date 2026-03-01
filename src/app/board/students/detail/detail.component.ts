@@ -290,6 +290,8 @@ export class DetailComponent implements OnInit, AfterViewInit {
 
     this.modalManager.addModal('add_parent', {
       title: 'students.add_parent.title',
+      description: 'students.add_parent.description',
+      icon: 'user-plus',
       closeable: true,
       width: 800,
       items: [{ type: 'component', component: AddParentComponent }]
@@ -313,6 +315,8 @@ export class DetailComponent implements OnInit, AfterViewInit {
 
     this.modalManager.addModal('parents_settings', {
       title: 'students.manage_parent',
+      description: 'students.manage_parent_description',
+      icon: 'users-group',
       closeable: true,
       width: 600,
       items: [{ type: 'component', component: ParentsSettingsComponent }]

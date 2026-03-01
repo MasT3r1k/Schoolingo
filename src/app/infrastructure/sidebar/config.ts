@@ -176,6 +176,43 @@ export const config: SidebarGroup[] = [
                 permission: ['student', 'teacher', 'parent']
             },
             {
+                item: 'gdpr.sidebar',
+                icon: 'shield-lock',
+                permission: ['all'],
+                children: [
+                    {
+                        item: 'gdpr.tabs.overview',
+                        url: 'user/gdpr/overview',
+                        icon: 'layout-dashboard',
+                        permission: ['all']
+                    },
+                    {
+                        item: 'gdpr.tabs.consents',
+                        url: 'user/gdpr/consents',
+                        icon: 'shield-check',
+                        permission: ['all']
+                    },
+                    {
+                        item: 'gdpr.tabs.training',
+                        url: 'user/gdpr/training',
+                        icon: 'school',
+                        permission: ['all']
+                    },
+                    {
+                        item: 'gdpr.tabs.officer',
+                        url: 'user/gdpr/officer',
+                        icon: 'user-shield',
+                        permission: ['all']
+                    },
+                    {
+                        item: 'gdpr.tabs.admin',
+                        url: 'user/gdpr/admin',
+                        icon: 'settings',
+                        permission: ['management', 'admin_staff', 'manager']
+                    }
+                ]
+            },
+            {
                 item: 'sidebar.messages.main',
                 icon: 'message',
                 children: [
@@ -390,10 +427,6 @@ export const config: SidebarGroup[] = [
                     item: 'sidebar.user.notifications',
                     url: 'user/notifications',
                     icon: 'bell',
-                }, {
-                    item: 'sidebar.user.gdpr',
-                    url: 'user/gdpr',
-                    icon: 'shield-check',
                 }, {
                     item: 'sidebar.user.cookies',
                     url: 'user/cookies',

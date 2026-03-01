@@ -373,7 +373,10 @@ export const routes: Routes = [
                     },
                     {
                         path: 'gdpr',
-                        component: GdprComponent
+                        children: [
+                            { path: '', component: GdprComponent },
+                            { path: ':tab', component: GdprComponent }
+                        ]
                     },
                     {
                         path: 'notifications',
