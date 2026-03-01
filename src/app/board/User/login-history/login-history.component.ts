@@ -8,9 +8,10 @@ import { Utils } from '@Schoolingo/utils';
 import moment from 'moment';
 import { IconsModule } from '@Schoolingo/icons';
 import { ActivatedRoute, RouterLink } from '@angular/router';
+import { FormsModule } from '@angular/forms';
 
 @Component({
-  imports: [IconsModule, RouterLink],
+  imports: [IconsModule, RouterLink, FormsModule],
   templateUrl: './login-history.component.html',
   styleUrl: './login-history.component.css'
 })
@@ -60,6 +61,9 @@ export class LoginHistoryComponent implements OnInit {
   }
 
   public history = new BehaviorSubject<any[]>([]);
+  public dateFrom: string = '';
+  public dateTo: string = '';
+  public selectedPeriod: string = '30days';
 
   ngOnInit(): void {
     this.LoadDevices(this.page.getValue());
@@ -74,9 +78,69 @@ export class LoginHistoryComponent implements OnInit {
     });
   }
 
+  public onFilterChange(): void {
+    this.selectedPeriod = 'custom';
+    this.page.next(1);
+    this.LoadDevices(1);
+  }
+
+  public setPeriod(period: string): void {
+    this.selectedPeriod = period;
+    const now = moment();
+    
+    switch(period) {
+        case 'day':
+            this.dateFrom = now.format('YYYY-MM-DD');
+            this.dateTo = now.format('YYYY-MM-DD');
+            break;
+        case 'week':
+            this.dateFrom = now.clone().startOf('isoWeek').format('YYYY-MM-DD');
+            this.dateTo = now.clone().endOf('isoWeek').format('YYYY-MM-DD');
+            break;
+        case 'month':
+            this.dateFrom = now.clone().startOf('month').format('YYYY-MM-DD');
+            this.dateTo = now.clone().endOf('month').format('YYYY-MM-DD');
+            break;
+        case 'semester':
+            const month = now.month(); // 0 is January
+            const year = now.year();
+            if (month >= 8 || month === 0) { // Sept - Jan (0)
+                this.dateFrom = (month === 0 ? year - 1 : year) + '-09-01';
+                this.dateTo = (month === 0 ? year : year + 1) + '-01-31';
+            } else { // Feb - Aug
+                this.dateFrom = year + '-02-01';
+                this.dateTo = year + '-08-31';
+            }
+            break;
+        case 'year':
+            const currentYear = now.year();
+            const currentMonth = now.month();
+            // School year starts on Sept 1st
+            if (currentMonth >= 8) {
+                this.dateFrom = currentYear + '-09-01';
+                this.dateTo = (currentYear + 1) + '-08-31';
+            } else {
+                this.dateFrom = (currentYear - 1) + '-09-01';
+                this.dateTo = currentYear + '-08-31';
+            }
+            break;
+        case '30days':
+            this.dateFrom = '';
+            this.dateTo = '';
+            break;
+    }
+
+    this.page.next(1);
+    this.LoadDevices(1);
+  }
+
   public LoadDevices(page: number): void {
+    let url = Config.API_URL + '/v1/login_history?limit=10&offset=' + (page - 1) * 10;
+    if (this.dateFrom) url += '&dateFrom=' + this.dateFrom;
+    if (this.dateTo) url += '&dateTo=' + this.dateTo;
+
     this.http.get<{data: any[], count: number, validLogins: number,failedLogins:number}>(
-      Config.API_URL + '/v1/login_history?limit=10&offset=' + (page - 1) * 10,
+      url,
       { withCredentials: true })
       .subscribe(async(dataRaw) => {
       if (!dataRaw.data) return;

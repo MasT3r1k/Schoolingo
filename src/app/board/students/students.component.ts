@@ -10,6 +10,8 @@ import { Locale } from '@Schoolingo/locale';
 import { RouterLink } from '@angular/router';
 import { CalendarComponent } from '@Components/calendar';
 import { CalendarManager } from '@Components/calendar-dropdown';
+import { ModalManager } from '@Schoolingo/modal';
+import { AddStudentModalComponent } from './modals/add-student-modal/add-student-modal.component';
 import moment from 'moment';
 
 // Interfaces
@@ -123,7 +125,7 @@ interface StudentAPIResponse {
 @Component({
   selector: 'app-students',
   standalone: true,
-  imports: [CommonModule, IconsModule, FormsModule, RouterLink, CalendarComponent],
+  imports: [CommonModule, IconsModule, FormsModule, RouterLink],
   templateUrl: './students.component.html',
   styleUrl: './students.component.css'
 })
@@ -133,23 +135,11 @@ export class StudentsComponent implements OnInit {
   public dropdownManager = inject(DropdownManager);
   public l = inject(Locale);
   public calendarManager = inject(CalendarManager);
+  public modalManager = inject(ModalManager);
 
   // Loading state
   isLoading = false;
   loadError: string | null = null;
-
-  // Add Student Modal
-  showAddStudentModal = false;
-  addStudentTab: 'manual' | 'ldap' | 'excel' = 'manual';
-
-  newStudent = {
-    firstName: '',
-    lastName: '',
-    email: '',
-    classId: null as number | null,
-    scopeId: null as number | null,
-    birthday: moment()
-  };
 
   // Detail Modals
   showGradesModal = false;
@@ -217,7 +207,21 @@ export class StudentsComponent implements OnInit {
     this.loadFilters();
     this.loadStudents();
 
-    // Calendar subscriptions are handled via (valueChange) in template
+    // Registrace modalu přes modalManager
+    this.modalManager.addModal(
+      'add_student',
+      {
+        icon: 'user-plus',
+        title: 'Přidat nového studenta',
+        description: 'Jeden žák navíc už vás přece nerozhází.',
+        closeable: true,
+        width: 600,
+        items: [{
+          type: 'component',
+          component: AddStudentModalComponent
+        }]
+      }
+    );
   }
 
   // Load available filters (classes, scopes)
@@ -330,14 +334,6 @@ export class StudentsComponent implements OnInit {
     }
   }
 
-  public selectedClass() {
-    return (this.newStudent.classId ? (this.availableClasses.find(c => c.id === this.newStudent.classId)?.name || 'Vyberte třídu') : 'Vyberte třídu')
-  }
-
-  public selectedScope() {
-    return (this.newStudent.scopeId ? (this.availableScopes.find(s => s.id === this.newStudent.scopeId)?.name || 'Vyberte obor') : 'Vyberte obor')
-  }
-
   // Datalist-style pagination helpers
   getPageList(): number[] {
     let pages = [-4, -3, -2, -1, 0, 1, 2, 3, 4];
@@ -363,18 +359,9 @@ export class StudentsComponent implements OnInit {
     return this.students;
   }
 
-  // Add Student Modal
+  // Add Student Modal handler
   openAddStudentModal() {
-    this.showAddStudentModal = true;
-    this.addStudentTab = 'manual';
-  }
-
-  closeAddStudentModal() {
-    this.showAddStudentModal = false;
-  }
-
-  setAddStudentTab(tab: typeof this.addStudentTab) {
-    this.addStudentTab = tab;
+    this.modalManager.openModal('add_student');
   }
 
   // Clear all filters - removed duplicate logic, handled above

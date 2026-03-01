@@ -64,6 +64,7 @@ export class AuthComponent implements OnInit {
   public isLoggingIn = false;
   public isLoginSuccess = false;
   public isForgotPasswordLoading = false;
+  public logoutReason: string | null = null;
 
   public qrcode = new BehaviorSubject('');
   public declare qrcodeErrorHandle: any;
@@ -371,12 +372,9 @@ export class AuthComponent implements OnInit {
       // Check for session expiration alert ONLY when school config is loaded
       // and clear it immediately to prevent showing on refresh
       const logoutReason = this.sessionExpiredService.getLogoutReason();
-      if (logoutReason === 'session_expired') {
+      if (logoutReason === 'session_expired' || logoutReason === 'user_logout') {
         this.sessionExpiredService.clearLogoutReason();
-        this.a.alert('success', 'auth.session_expired_alert');
-      } else if (logoutReason === 'user_logout') {
-        this.sessionExpiredService.clearLogoutReason();
-        this.a.alert('success', 'auth.logout_success_alert');
+        this.logoutReason = logoutReason;
       }
     });
 
@@ -390,7 +388,6 @@ export class AuthComponent implements OnInit {
       }
     });
 
-    // Error while too long loading
     this.ws.close();
     this.ws.connect();
     this.ws.connected$.subscribe(connected => {
@@ -412,6 +409,7 @@ export class AuthComponent implements OnInit {
       this.ws.send({ type: 'qrcode_request' });
     })
 
+    // Error when qrcode taking too long to load
     if (this.school.config.getValue()?.fastlogin) {
       this.qrcodeErrorHandle = setTimeout(() => {
         if (this.qrcode.getValue() == '' && !this.isLoading) {

@@ -1,62 +1,113 @@
 <div class="create-form p-0">
     <div class="form-group">
-        <label>Název lekce *</label>
-        <input type="text" [(ngModel)]="newSession.title" placeholder="např. Příprava na maturitu z matematiky">
+        <label>{{ l.s('tutoring.modals.add.form.title') }}</label>
+        <input type="text" [(ngModel)]="newSession.title"
+            [placeholder]="l.s('tutoring.modals.add.form.title_placeholder')">
     </div>
 
     <div class="form-row">
         <div class="form-group">
-            <label>Předmět</label>
-            <select [(ngModel)]="newSession.subjectId">
-                <option [ngValue]="undefined">Všechny předměty</option>
-                @for (subject of subjects(); track subject.subject_id) {
-                <option [value]="subject.subject_id">{{ subject.label }}</option>
+            <label>{{ l.s('tutoring.modals.add.form.subject') }}</label>
+            <div class="custom-select"
+                (click)="$event.stopPropagation(); dropdownManager.selected_dropdown = dropdownManager.selected_dropdown == 'tutoring_add_subject' ? '' : 'tutoring_add_subject'">
+                <div class="selected-value">
+                    {{ getSelectedSubjectLabel() }}
+                    <i-tabler name="chevron-down"></i-tabler>
+                </div>
+                @if (dropdownManager.selected_dropdown == 'tutoring_add_subject') {
+                <div class="options-dropdown">
+                    <div class="list">
+                        <div class="option"
+                            (click)="$event.stopPropagation(); dropdownManager.selected_dropdown = ''; newSession.subjectId = undefined">
+                            {{ l.s('tutoring.modals.add.form.all_subjects') }}
+                        </div>
+                        @for (subject of subjects(); track subject.subject_id) {
+                        <div class="option"
+                            (click)="$event.stopPropagation(); dropdownManager.selected_dropdown = ''; newSession.subjectId = subject.subject_id">
+                            {{ subject.label }}
+                        </div>
+                        }
+                    </div>
+                </div>
                 }
-            </select>
+            </div>
         </div>
         <div class="form-group">
-            <label>Určeno pro třídu</label>
-            <select [(ngModel)]="newSession.classId">
-                <option [ngValue]="undefined">Všechny třídy</option>
-                @for (cls of classes(); track cls.class_id) {
-                <option [value]="cls.class_id">{{ cls.class_name }}</option>
+            <label>{{ l.s('tutoring.modals.add.form.intended_for_class') }}</label>
+            <div class="custom-select"
+                (click)="$event.stopPropagation(); dropdownManager.selected_dropdown = dropdownManager.selected_dropdown == 'tutoring_add_class' ? '' : 'tutoring_add_class'">
+                <div class="selected-value">
+                    {{ getSelectedClassLabel() }}
+                    <i-tabler name="chevron-down"></i-tabler>
+                </div>
+                @if (dropdownManager.selected_dropdown == 'tutoring_add_class') {
+                <div class="options-dropdown">
+                    <div class="list">
+                        <div class="option"
+                            (click)="$event.stopPropagation(); dropdownManager.selected_dropdown = ''; newSession.classId = undefined">
+                            {{ l.s('tutoring.modals.add.form.all_classes') }}
+                        </div>
+                        @for (cls of classes(); track cls.id) {
+                        <div class="option"
+                            (click)="$event.stopPropagation(); dropdownManager.selected_dropdown = ''; newSession.classId = cls.id">
+                            {{ cls.name }}
+                        </div>
+                        }
+                    </div>
+                </div>
                 }
-            </select>
+            </div>
         </div>
     </div>
 
     <div class="form-row">
         <div class="form-group">
-            <label>Datum a čas *</label>
+            <label>{{ l.s('tutoring.modals.add.form.date_time') }}</label>
             <input type="datetime-local" [(ngModel)]="newSession.date">
         </div>
         <div class="form-group">
-            <label>Místnost</label>
-            <select [(ngModel)]="newSession.roomId" (change)="onRoomChange()">
-                <option [ngValue]="undefined">Bez místnosti</option>
-                @for (room of rooms(); track room.room_id) {
-                <option [value]="room.room_id">{{ room.name }} (kapacita {{ room.capacity }})</option>
+            <label>{{ l.s('tutoring.modals.add.form.room') }}</label>
+            <div class="custom-select"
+                (click)="$event.stopPropagation(); dropdownManager.selected_dropdown = dropdownManager.selected_dropdown == 'tutoring_add_room' ? '' : 'tutoring_add_room'">
+                <div class="selected-value">
+                    {{ getSelectedRoomLabel() }}
+                    <i-tabler name="chevron-down"></i-tabler>
+                </div>
+                @if (dropdownManager.selected_dropdown == 'tutoring_add_room') {
+                <div class="options-dropdown">
+                    <div class="list">
+                        <div class="option"
+                            (click)="$event.stopPropagation(); dropdownManager.selected_dropdown = ''; newSession.roomId = undefined; onRoomChange()">
+                            {{ l.s('tutoring.modals.add.form.no_room') }}
+                        </div>
+                        @for (room of rooms(); track room.room_id) {
+                        <div class="option"
+                            (click)="$event.stopPropagation(); dropdownManager.selected_dropdown = ''; newSession.roomId = room.room_id; onRoomChange()">
+                            {{ room.name }} ({{ l.s('tutoring.modals.add.form.capacity') }} {{ room.capacity }})
+                        </div>
+                        }
+                    </div>
+                </div>
                 }
-            </select>
-        </div>
-    </div>
-
-    <div class="form-row">
-        <div class="form-group">
-            <label>Max. počet studentů</label>
-            <input type="number" [(ngModel)]="newSession.maxStudents" min="1" max="100">
+            </div>
         </div>
     </div>
 
     <div class="form-group">
-        <label>Popis</label>
-        <textarea [(ngModel)]="newSession.description" rows="3" placeholder="Detaily o lekci..."></textarea>
+        <label>{{ l.s('tutoring.modals.add.form.max_students') }}</label>
+        <input type="number" [(ngModel)]="newSession.maxStudents" min="1" max="100">
     </div>
 
-    <div class="buttons end mt-4">
-        <button class="btn btn--secondary" (click)="closeModal()">Zrušit</button>
+    <div class="form-group">
+        <label>{{ l.s('tutoring.modals.add.form.description') }}</label>
+        <textarea [(ngModel)]="newSession.description" rows="3"
+            [placeholder]="l.s('tutoring.modals.add.form.description_placeholder')"></textarea>
+    </div>
+
+    <div class="modal-actions">
+        <button class="btn btn--secondary" (click)="closeModal()">{{ l.s('buttons.cancel') }}</button>
         <button class="btn btn--primary" (click)="createSession()" [disabled]="!newSession.title || !newSession.date">
-            <i-tabler name="check"></i-tabler> Vytvořit lekci
+            <i-tabler name="check"></i-tabler> {{ l.s('tutoring.modals.add.form.create_button') }}
         </button>
     </div>
 </div>

@@ -34,6 +34,7 @@ import { SettingsComponent as SystemSettings } from './board/system/settings/set
 import { DocumentsComponent } from './board/documents/documents.component';
 import { MidtermComponent } from './board/marks/midterm/midterm.component';
 import { StudentsComponent } from './board/students/students.component';
+import { ClassesComponent } from './board/classes/classes.component';
 import { DashboardComponent } from './board/Admin/dashboard/dashboard.component';
 import { PollsComponent } from './board/polls/polls.component';
 import { FleetVehiclesComponent } from './board/FleetVehicles/vehicles/vehicles.component';
@@ -46,6 +47,7 @@ import { SubjectsComponent } from './board/Teach/subjects/subjects.component';
 import { RewardsComponent } from './board/Teach/rewards/rewards.component';
 import { MeasuresComponent } from './board/Teach/measures/measures.component';
 import { SentComponent } from './board/messages/sent/sent.component';
+import { DraftsComponent } from './board/messages/drafts/drafts.component';
 import { ArchiveComponent } from './board/Admin/archive/archive.component';
 import { BackupComponent } from './board/Admin/backup/backup.component';
 import { CatalogComponent } from './board/library/pages/catalog/catalog.component';
@@ -118,6 +120,10 @@ export const routes: Routes = [
                         component: DetailComponent
                     }
                 ]
+            },
+            {
+                path: 'classes',
+                component: ClassesComponent
             },
             {
                 path: 'employees',
@@ -320,6 +326,10 @@ export const routes: Routes = [
                     {
                         path: 'sent',
                         component: SentComponent
+                    },
+                    {
+                        path: 'drafts',
+                        component: DraftsComponent
                     },
                     {
                         path: 'noticeboard',

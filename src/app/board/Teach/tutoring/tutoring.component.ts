@@ -31,7 +31,9 @@ export class TutoringComponent implements OnInit {
     this.modalManager.addModal(
       'add_tutoring_session',
       {
-        title: 'Nová lekce doučování',
+        title: 'tutoring.modals.add.title',
+        description: 'tutoring.modals.add.description',
+        icon: 'school',
         closeable: true,
         items: [
           { type: 'component', component: AddSessionComponent }

@@ -195,7 +195,7 @@ export class CalendarManager {
   selector: 'calendar-dropdowns',
   templateUrl: './calendar.html',
   styleUrls: ['./calendar.css'],
-  imports: [IconsModule, NgIf, NgFor, NgClass, AsyncPipe],
+  imports: [IconsModule, AsyncPipe],
   standalone: true
 })
 export class CalendarDropdownsComponent {

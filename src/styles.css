@@ -44,12 +44,12 @@ a {
     transition: color var(--transition-fast);
 }
 
-a:not([href]='') {
+a:not([href=""]) {
     color: var(--primary);
     text-decoration: underline;
 }
 
-a:not([href]=''):hover {
+a:not([href=""]):hover {
     color: var(--primary-hover);
 }
 
@@ -108,7 +108,7 @@ a:not([href]=''):hover {
     --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.12), 0 4px 8px rgba(0, 0, 0, 0.06);
     --shadow-xl: 0 16px 48px rgba(0, 0, 0, 0.16), 0 8px 16px rgba(0, 0, 0, 0.08);
     --shadow-2xl: 0 24px 64px rgba(0, 0, 0, 0.20), 0 12px 24px rgba(0, 0, 0, 0.10);
-    --shadow-glow: 0 0 20px rgba(88, 101, 242, 0.3);
+    --shadow-glow: 0 0 20px rgba(156, 137, 253, 0.3);
     --shadow-inner: inset 0 2px 4px rgba(0, 0, 0, 0.06);
 
     /* --- Transitions (Sajid's smooth interactions) --- */
@@ -383,18 +383,18 @@ a:not([href]=''):hover {
     --card-gradient: linear-gradient(145deg, rgba(255, 255, 255, 0.5) 0%, transparent 50%);
 
     /* --- Interactive States (stronger for visibility) --- */
-    --focus-ring: 0 0 0 3px rgba(88, 101, 242, 0.35);
+    --focus-ring: 0 0 0 3px rgba(var(--primary-rgb), 0.35);
     --hover-bg: rgba(0, 0, 0, 0.06);
     --active-bg: rgba(0, 0, 0, 0.08);
-    --selected-bg: rgba(88, 101, 242, 0.12);
+    --selected-bg: rgba(var(--primary-rgb), 0.12);
 
     /* --- Sidebar --- */
     --sidebar-arrow: #cbd5e1;
 
     /* --- Messages & Alerts --- */
-    --message-info-bg: rgba(88, 101, 242, 0.08);
-    --message-info-border: rgba(88, 101, 242, 0.2);
-    --message-info-color: #4752d9;
+    --message-info-bg: rgba(37, 99, 235, 0.08);
+    --message-info-border: rgba(37, 99, 235, 0.2);
+    --message-info-color: #1d4ed8;
 
     --message-error-bg: rgba(220, 38, 38, 0.08);
     --message-error-border: rgba(220, 38, 38, 0.2);
@@ -497,18 +497,18 @@ a:not([href]=''):hover {
     --card-gradient: linear-gradient(145deg, rgba(255, 255, 255, 0.015) 0%, transparent 50%);
 
     /* --- Interactive States --- */
-    --focus-ring: 0 0 0 3px rgba(129, 140, 248, 0.35);
+    --focus-ring: 0 0 0 3px rgba(var(--primary-rgb), 0.35);
     --hover-bg: rgba(255, 255, 255, 0.04);
     --active-bg: rgba(255, 255, 255, 0.07);
-    --selected-bg: rgba(129, 140, 248, 0.12);
+    --selected-bg: rgba(var(--primary-rgb), 0.12);
 
     /* --- Sidebar --- */
     --sidebar-arrow: #2d2d2d;
 
     /* --- Messages & Alerts (softer backgrounds for OLED) --- */
-    --message-info-bg: rgba(129, 140, 248, 0.1);
-    --message-info-border: rgba(129, 140, 248, 0.25);
-    --message-info-color: #a5b4fc;
+    --message-info-bg: rgba(96, 165, 250, 0.1);
+    --message-info-border: rgba(96, 165, 250, 0.25);
+    --message-info-color: #93c5fd;
 
     --message-error-bg: rgba(248, 113, 113, 0.1);
     --message-error-border: rgba(248, 113, 113, 0.25);
@@ -517,6 +517,7 @@ a:not([href]=''):hover {
     --message-success-bg: rgba(74, 222, 128, 0.1);
     --message-success-border: rgba(74, 222, 128, 0.25);
     --message-success-color: #86efac;
+
     --message-warning-bg: rgba(251, 191, 36, 0.1);
     --message-warning-border: rgba(251, 191, 36, 0.25);
     --message-warning-color: #fcd34d;
@@ -2244,6 +2245,20 @@ input:not([type='checkbox']):disabled {
     background: var(--surface-2);
     overflow: hidden;
     transition: transform 0.22s ease, box-shadow 0.22s ease;
+    animation: kpi-fadein 0.4s ease both;
+    animation-delay: var(--kpi-delay, 0ms);
+}
+
+@keyframes kpi-fadein {
+    from {
+        opacity: 0;
+        transform: translateY(12px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 .kpi-card:hover {
@@ -2384,6 +2399,31 @@ input:not([type='checkbox']):disabled {
     font-size: 0.75rem;
     color: var(--text-muted);
     margin-top: 4px;
+}
+
+/* Trend as inline text under value */
+.kpi-card__sub--trend {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 0.73rem;
+    font-weight: 500;
+    margin-top: 6px;
+    color: var(--text-muted);
+}
+
+.kpi-card__sub--trend .kpi-sub-icon {
+    width: 12px;
+    height: 12px;
+    flex-shrink: 0;
+}
+
+.kpi-trend-positive {
+    color: #2ecc71;
+}
+
+.kpi-trend-negative {
+    color: var(--danger);
 }
 
 /* Trend badge */

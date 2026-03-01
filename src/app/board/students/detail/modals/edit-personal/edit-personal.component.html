@@ -123,7 +123,7 @@
         <div class="custom-select"
             (click)="$event.stopPropagation(); dropdownManager.selected_dropdown = dropdownManager.selected_dropdown == 'edit-personal_insurance' ? '' : 'edit-personal_insurance'">
             <div class="selected-value">
-                {{ getSelectedInsuranceLabel() }}
+                {{ getInsuranceLabel(form.insuranceId) }}
                 <i-tabler name="chevron-down"></i-tabler>
             </div>
             @if (dropdownManager.selected_dropdown == 'edit-personal_insurance') {
@@ -136,7 +136,7 @@
                     @for (ins of insurances; track ins.insurance_id) {
                     <div class="option"
                         (click)="$event.stopPropagation(); dropdownManager.selected_dropdown = ''; form.insuranceId = ins.insurance_id">
-                        {{ ins.shortcut }} - {{ ins.insurance }}
+                        {{ getInsuranceLabel(ins.insurance_id) }}
                     </div>
                     }
                 </div>

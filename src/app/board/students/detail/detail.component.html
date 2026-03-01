@@ -55,17 +55,21 @@
     <div class="detail-header">
         <button class="btn-back" (click)="closeDetail()">
             <i-tabler name="arrow-left"></i-tabler>
-            <span>Zpět na seznam</span>
+            <span>Přepnout na seznam žáků</span>
         </button>
+        <h1 class="detail-title">Karta žáka</h1>
         <div class="detail-actions">
             <button class="action-btn" title="Poslat zprávu">
                 <i-tabler name="mail"></i-tabler>
             </button>
-            <button class="action-btn" [title]="l.s('buttons.edit')">
-                <i-tabler name="edit"></i-tabler>
-            </button>
             <button class="action-btn" title="Tisk">
                 <i-tabler name="printer"></i-tabler>
+            </button>
+            <button class="action-btn" title="Sdílet">
+                <i-tabler name="share"></i-tabler>
+            </button>
+            <button class="action-btn" title="Nastavení">
+                <i-tabler name="settings"></i-tabler>
             </button>
             <button class="action-btn more" title="Více akcí">
                 <i-tabler name="dots-vertical"></i-tabler>
@@ -106,7 +110,7 @@
                     </div>
                     <div class="stat-info">
                         <span class="stat-value">{{ selectedStudent.average_grade }}</span>
-                        <span class="stat-label">{{ l.s('students.average') }}</span>
+                        <span class="stat-label">Průměr</span>
                     </div>
                 </div>
                 <div class="stat-card clickable"
@@ -117,7 +121,7 @@
                     </div>
                     <div class="stat-info">
                         <span class="stat-value">{{ selectedStudent.absence_rate }}%</span>
-                        <span class="stat-label">{{ l.s('students.absence') }}</span>
+                        <span class="stat-label">Absence celkem</span>
                     </div>
                 </div>
                 <div class="stat-card clickable" [class.danger]="selectedStudent.education_measures_count > 0"
@@ -127,7 +131,7 @@
                     </div>
                     <div class="stat-info">
                         <span class="stat-value">{{ selectedStudent.education_measures_count || 0 }}</span>
-                        <span class="stat-label">Kázeň</span>
+                        <span class="stat-label">Kázeňská opatření</span>
                     </div>
                 </div>
             </div>
@@ -256,15 +260,30 @@
                                 <i-tabler name="arrow-right"></i-tabler>
                             </button>
                         </div>
-                        <div class="attendance-stats">
-                            <div class="attendance-multi-bar">
-                                <div class="bar-segment success" [style.width.%]="100 - selectedStudent.absence_rate"
-                                    title="Přítomen"></div>
-                                <div class="bar-segment warning" [style.width.%]="selectedStudent.absence_rate_excused"
-                                    title="Absence + Omluvená"></div>
-                                <div class="bar-segment danger" [style.width.%]="selectedStudent.absence_rate_unexcused"
-                                    title="Neomluvená"></div>
+                        <div class="attendance-donut-layout">
+                            <!-- SVG Donut Chart -->
+                            <div class="donut-chart-wrap">
+                                <svg viewBox="0 0 120 120" class="donut-svg">
+                                    <!-- Background track -->
+                                    <circle cx="60" cy="60" r="50" fill="none" stroke="var(--border)"
+                                        stroke-width="14" />
+                                    <!-- Unexcused absence (danger) -->
+                                    <circle cx="60" cy="60" r="50" fill="none" stroke="var(--danger)" stroke-width="14"
+                                        [attr.stroke-dasharray]="(selectedStudent.absence_rate_unexcused / 100) * 314.16 + ' 314.16'"
+                                        stroke-dashoffset="0" transform="rotate(-90 60 60)" />
+                                    <!-- Excused absence (warning) -->
+                                    <circle cx="60" cy="60" r="50" fill="none" stroke="var(--warning)" stroke-width="14"
+                                        [attr.stroke-dasharray]="(selectedStudent.absence_rate_excused / 100) * 314.16 + ' 314.16'"
+                                        [attr.stroke-dashoffset]="-1 * (selectedStudent.absence_rate_unexcused / 100) * 314.16"
+                                        transform="rotate(-90 60 60)" />
+                                    <!-- Presence (success) -->
+                                    <circle cx="60" cy="60" r="50" fill="none" stroke="var(--success)" stroke-width="14"
+                                        [attr.stroke-dasharray]="((100 - selectedStudent.absence_rate) / 100) * 314.16 + ' 314.16'"
+                                        [attr.stroke-dashoffset]="-1 * ((selectedStudent.absence_rate_excused + selectedStudent.absence_rate_unexcused) / 100) * 314.16"
+                                        transform="rotate(-90 60 60)" />
+                                </svg>
                             </div>
+                            <!-- Legend -->
                             <div class="attendance-legend">
                                 <div class="legend-item">
                                     <span class="dot success"></span>
@@ -295,10 +314,21 @@
                     <div class="info-card schedule-card">
                         <div class="card-header">
                             <i-tabler name="calendar-event"></i-tabler>
-                            <h3>Rozvrh</h3>
-                            <button class="card-link-btn" (click)="setActiveTab('timetable')">
-                                Celý týden
-                                <i-tabler name="arrow-right"></i-tabler>
+                            <h3>Dnešní rozvrh</h3>
+                            <div class="schedule-header-nav">
+                                <button class="nav-btn" (click)="previousOverviewDay()">
+                                    <i-tabler name="chevron-left"></i-tabler>
+                                </button>
+                                <span class="current-date-info">
+                                    {{ l.s('days.' + overviewSelectedDate.day()) }}, {{ overviewSelectedDate.format("DD.
+                                    MM.") }}
+                                </span>
+                                <button class="nav-btn" (click)="nextOverviewDay()">
+                                    <i-tabler name="chevron-right"></i-tabler>
+                                </button>
+                            </div>
+                            <button class="action-btn-sm" title="Plný rozvrh" (click)="setActiveTab('timetable')">
+                                <i-tabler name="calendar"></i-tabler>
                             </button>
                         </div>
                         <div class="schedule-today dashboard-style">
@@ -324,18 +354,6 @@
                                     <p>{{ l.s("timetable.no_class_desc") }}</p>
                                 </div>
                                 }
-                            </div>
-                            <div class="date-navigator">
-                                <button class="nav-btn" (click)="previousOverviewDay()">
-                                    <i-tabler name="chevron-left"></i-tabler>
-                                </button>
-                                <span class="current-date-info">
-                                    {{ l.s('days.' + overviewSelectedDate.day()) }}, {{ overviewSelectedDate.format("DD.
-                                    MM.") }}
-                                </span>
-                                <button class="nav-btn" (click)="nextOverviewDay()">
-                                    <i-tabler name="chevron-right"></i-tabler>
-                                </button>
                             </div>
                         </div>
                     </div>
@@ -574,180 +592,225 @@
 
                 <!-- Matrika Tab -->
                 @if (activeTab === 'matrika') {
-                <div class="section-grid">
-                    <div class="info-card full">
-                        <div class="card-header no-border">
-                            <div class="header-tabs">
-                                <div class="header-tab" [class.active]="activeMatrikaSubTab === 'specific_data'"
-                                    (click)="activeMatrikaSubTab = 'specific_data'">
-                                    Specifické údaje
-                                </div>
-                                <div class="header-tab" [class.active]="activeMatrikaSubTab === 'notes'"
-                                    (click)="activeMatrikaSubTab = 'notes'">
-                                    Specifické potřeby
-                                </div>
-                                <div class="header-tab" [class.active]="activeMatrikaSubTab === 'basic'"
-                                    (click)="activeMatrikaSubTab = 'basic'">
-                                    Základní údaje
-                                </div>
+                <div class="matrika-wrapper">
+                    <!-- Sub-tab navigation -->
+                    <div class="matrika-sub-nav">
+                        <button class="matrika-sub-tab" [class.active]="activeMatrikaSubTab === 'specific_data'"
+                            (click)="activeMatrikaSubTab = 'specific_data'">
+                            <i-tabler name="list-details"></i-tabler>
+                            <span>Specifické údaje</span>
+                        </button>
+                        <button class="matrika-sub-tab" [class.active]="activeMatrikaSubTab === 'notes'"
+                            (click)="activeMatrikaSubTab = 'notes'">
+                            <i-tabler name="heart-handshake"></i-tabler>
+                            <span>Specifické potřeby</span>
+                        </button>
+                        <button class="matrika-sub-tab" [class.active]="activeMatrikaSubTab === 'basic'"
+                            (click)="activeMatrikaSubTab = 'basic'">
+                            <i-tabler name="file-description"></i-tabler>
+                            <span>Základní údaje</span>
+                        </button>
+                    </div>
+
+                    <!-- Specific Data Table -->
+                    <div class="matrika-panel" *ngIf="activeMatrikaSubTab === 'specific_data'">
+                        <div class="matrika-panel-header">
+                            <div class="matrika-panel-title">
+                                <i-tabler name="list-details"></i-tabler>
+                                <span>Specifické záznamy studenta</span>
                             </div>
-                            <div class="header-actions" *ngIf="activeMatrikaSubTab === 'basic'">
-                                <button class="card-action-btn" (click)="saveMatrika()">
-                                    <i-tabler name="device-floppy"></i-tabler>
-                                    <span>{{ l.s('buttons.save') }}</span>
+                        </div>
+
+                        <!-- Records list -->
+                        <div class="spec-records-list">
+                            @for (record of selectedStudent.matrika_records; track record.id) {
+                            <div class="spec-record-item">
+                                <div class="spec-record-type">
+                                    <span class="type-badge">{{ record.type }}</span>
+                                </div>
+                                <div class="spec-record-desc">{{ record.description }}</div>
+                                <div class="spec-record-validity">
+                                    <i-tabler name="calendar-range"></i-tabler>
+                                    <span>{{ record.valid_from }}<span *ngIf="record.valid_to"> — {{ record.valid_to
+                                            }}</span></span>
+                                </div>
+                                <button class="spec-record-delete" (click)="deleteMatrikaRecord(record.id)"
+                                    title="Smazat">
+                                    <i-tabler name="trash"></i-tabler>
                                 </button>
                             </div>
-                        </div>
-
-                        <!-- Specific Data Table -->
-                        <div class="matrika-tab-content" *ngIf="activeMatrikaSubTab === 'specific_data'">
-                            <div class="record-table-wrapper">
-                                <table class="record-table">
-                                    <thead>
-                                        <tr>
-                                            <th>Typ záznamu</th>
-                                            <th>Dodatečné informace</th>
-                                            <th>Platnost</th>
-                                            <th>Akce</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr *ngFor="let record of selectedStudent.matrika_records">
-                                            <td class="type-cell">{{ record.type }}</td>
-                                            <td>{{ record.description }}</td>
-                                            <td class="validity-cell">
-                                                {{ record.valid_from }}
-                                                <span *ngIf="record.valid_to"> - {{ record.valid_to }}</span>
-                                            </td>
-                                            <td class="actions-cell">
-                                                <button class="delete-btn" (click)="deleteMatrikaRecord(record.id)">
-                                                    <i-tabler name="trash"></i-tabler>
-                                                </button>
-                                            </td>
-                                        </tr>
-                                        <tr class="add-record-row">
-                                            <td><input #newType type="text" placeholder="Typ (např. obor ŠVP)"></td>
-                                            <td><input #newDesc type="text" placeholder="Informace"></td>
-                                            <td>
-                                                <div class="validity-inputs">
-                                                    <input #newFrom type="text" placeholder="Od">
-                                                    <input #newTo type="text" placeholder="Do">
-                                                </div>
-                                            </td>
-                                            <td>
-                                                <button class="add-btn"
-                                                    (click)="addMatrikaRecord(newType.value, newDesc.value, newFrom.value, newTo.value); newType.value=''; newDesc.value=''; newFrom.value=''; newTo.value=''">
-                                                    <i-tabler name="plus"></i-tabler>
-                                                </button>
-                                            </td>
-                                        </tr>
-                                        <tr
-                                            *ngIf="!selectedStudent.matrika_records?.length && activeMatrikaSubTab === 'specific_data'">
-                                            <td colspan="4" class="empty-state">Žádné specifické údaje nebyly nalezeny.
-                                            </td>
-                                        </tr>
-                                    </tbody>
-                                </table>
+                            } @empty {
+                            <div class="matrika-empty">
+                                <i-tabler name="database-off"></i-tabler>
+                                <p>Žádné specifické záznamy</p>
+                                <span>Pro tohoto studenta dosud nebyly zadány žádné specifické údaje.</span>
                             </div>
+                            }
                         </div>
 
-                        <!-- Notes / Specific Needs -->
-                        <div class="matrika-tab-content" *ngIf="activeMatrikaSubTab === 'notes'">
-                            <div class="notes-area">
-                                <label>Specifické potřeby a poznámky k žákovi</label>
-                                <textarea class="form-control" rows="10"
-                                    placeholder="Zadejte poznámky k individuálním potřebám..."></textarea>
-                                <div class="note-actions">
-                                    <button class="btn btn-primary">Uložit poznámky</button>
+                        <!-- Add new record row -->
+                        <div class="add-record-form">
+                            <div class="add-record-form-title">
+                                <i-tabler name="circle-plus"></i-tabler>
+                                <span>Přidat nový záznam</span>
+                            </div>
+                            <div class="add-record-fields">
+                                <div class="add-record-field">
+                                    <label>Typ záznamu</label>
+                                    <input #newType type="text" class="matrika-input" placeholder="Např. obor ŠVP">
+                                </div>
+                                <div class="add-record-field grow">
+                                    <label>Popis / Informace</label>
+                                    <input #newDesc type="text" class="matrika-input"
+                                        placeholder="Dodatečné informace ke záznamu">
+                                </div>
+                                <div class="add-record-field">
+                                    <label>Platnost od</label>
+                                    <input #newFrom type="text" class="matrika-input" placeholder="DD.MM.RRRR">
+                                </div>
+                                <div class="add-record-field">
+                                    <label>Platnost do</label>
+                                    <input #newTo type="text" class="matrika-input" placeholder="DD.MM.RRRR">
+                                </div>
+                                <div class="add-record-field shrink">
+                                    <label>&nbsp;</label>
+                                    <button class="add-record-btn"
+                                        (click)="addMatrikaRecord(newType.value, newDesc.value, newFrom.value, newTo.value); newType.value=''; newDesc.value=''; newFrom.value=''; newTo.value=''">
+                                        <i-tabler name="plus"></i-tabler>
+                                        Přidat
+                                    </button>
                                 </div>
                             </div>
                         </div>
+                    </div>
 
-                        <!-- Basic Data Form (Previous implementation) -->
-                        <div class="matrika-tab-content" *ngIf="activeMatrikaSubTab === 'basic'">
-                            <div class="matrika-form" *ngIf="selectedStudent.matrika">
-                                <div class="form-grid">
-                                    <div class="form-group">
-                                        <label>{{ l.s('students.matrika_fields.highest_education') }}</label>
-                                        <input type="text" class="form-control"
-                                            [(ngModel)]="selectedStudent.matrika.highest_education_id"
-                                            placeholder="Např. 10">
-                                    </div>
-                                    <div class="form-group">
-                                        <label>{{ l.s('students.matrika_fields.previous_school_izo') }}</label>
-                                        <input type="text" class="form-control"
-                                            [(ngModel)]="selectedStudent.matrika.previous_school_izo"
-                                            placeholder="Např. 600123456">
-                                    </div>
-                                    <div class="form-group">
-                                        <label>{{ l.s('students.matrika_fields.study_type') }}</label>
-                                        <input type="text" class="form-control"
-                                            [(ngModel)]="selectedStudent.matrika.study_type_code" placeholder="Např. D">
-                                    </div>
-                                    <div class="form-group">
-                                        <label>{{ l.s('students.matrika_fields.financing') }}</label>
-                                        <input type="text" class="form-control"
-                                            [(ngModel)]="selectedStudent.matrika.financing_code" placeholder="Např. 1">
-                                    </div>
-                                    <div class="form-group">
-                                        <label>{{ l.s('students.matrika_fields.start_reason') }}</label>
-                                        <input type="text" class="form-control"
-                                            [(ngModel)]="selectedStudent.matrika.start_reason_code">
-                                    </div>
-                                    <div class="form-group">
-                                        <label>{{ l.s('students.matrika_fields.end_reason') }}</label>
-                                        <input type="text" class="form-control"
-                                            [(ngModel)]="selectedStudent.matrika.end_reason_code">
-                                    </div>
-                                    <div class="form-group">
-                                        <label>{{ l.s('students.matrika_fields.individual_plan') }}</label>
-                                        <input type="text" class="form-control"
-                                            [(ngModel)]="selectedStudent.matrika.individual_plan_code">
-                                    </div>
-                                    <div class="form-group">
-                                        <label>{{ l.s('students.matrika_fields.special_needs') }}</label>
-                                        <input type="text" class="form-control"
-                                            [(ngModel)]="selectedStudent.matrika.special_needs_code">
-                                    </div>
-                                    <div class="form-group">
-                                        <label>{{ l.s('students.matrika_fields.language') }}</label>
-                                        <input type="text" class="form-control"
-                                            [(ngModel)]="selectedStudent.matrika.language_code" placeholder="CS">
-                                    </div>
-                                    <div class="form-group">
-                                        <label>{{ l.s('students.matrika_fields.health_status') }}</label>
-                                        <input type="text" class="form-control"
-                                            [(ngModel)]="selectedStudent.matrika.health_status_code">
-                                    </div>
+                    <!-- Notes / Specific Needs -->
+                    <div class="matrika-panel" *ngIf="activeMatrikaSubTab === 'notes'">
+                        <div class="matrika-panel-header">
+                            <div class="matrika-panel-title">
+                                <i-tabler name="heart-handshake"></i-tabler>
+                                <span>Specifické vzdělávací potřeby</span>
+                            </div>
+                            <button class="card-action-btn">
+                                <i-tabler name="device-floppy"></i-tabler>
+                                <span>Uložit</span>
+                            </button>
+                        </div>
+                        <div class="needs-area">
+                            <div class="needs-hint">
+                                <i-tabler name="info-circle"></i-tabler>
+                                <span>Zde uveďte individuální vzdělávací potřeby, zdravotní omezení nebo speciální
+                                    požadavky studenta.</span>
+                            </div>
+                            <textarea class="matrika-textarea" rows="10"
+                                placeholder="Zadejte poznámky k individuálním vzdělávacím potřebám studenta..."></textarea>
+                        </div>
+                    </div>
+
+                    <!-- Basic Data Form -->
+                    <div class="matrika-panel" *ngIf="activeMatrikaSubTab === 'basic'">
+                        <div class="matrika-panel-header">
+                            <div class="matrika-panel-title">
+                                <i-tabler name="file-description"></i-tabler>
+                                <span>Základní matriční údaje</span>
+                            </div>
+                            <button class="card-action-btn" (click)="saveMatrika()">
+                                <i-tabler name="device-floppy"></i-tabler>
+                                <span>{{ l.s('buttons.save') }}</span>
+                            </button>
+                        </div>
+                        <div class="matrika-form" *ngIf="selectedStudent.matrika">
+                            <div class="matrika-form-grid">
+                                <div class="matrika-field">
+                                    <label class="matrika-label">{{ l.s('students.matrika_fields.highest_education')
+                                        }}</label>
+                                    <input type="text" class="matrika-input"
+                                        [(ngModel)]="selectedStudent.matrika.highest_education_id"
+                                        placeholder="Např. 10">
                                 </div>
-                                <div class="form-group"
-                                    style="margin-top: 2rem; border-top: 1px solid var(--border-color); padding-top: 1.5rem; width: 100%;">
-                                    <label style="font-weight: 600; margin-bottom: 1rem; display: block;">Důvod
-                                        uložení</label>
-                                    <div style="display: flex; gap: 2rem;">
-                                        <label
-                                            style="display: flex; align-items: center; gap: 0.75rem; cursor: pointer;">
-                                            <input type="radio" name="matrikaSaveType" [(ngModel)]="matrikaSaveType"
-                                                value="change"
-                                                style="width: 1.25rem; height: 1.25rem; accent-color: var(--primary-color);">
-                                            <div>
-                                                <div style="font-weight: 500;">Změna</div>
-                                                <div style="font-size: 0.85rem; color: var(--text-muted);">Zapíše
-                                                    informaci do historie studenta</div>
-                                            </div>
-                                        </label>
-                                        <label
-                                            style="display: flex; align-items: center; gap: 0.75rem; cursor: pointer;">
-                                            <input type="radio" name="matrikaSaveType" [(ngModel)]="matrikaSaveType"
-                                                value="correction"
-                                                style="width: 1.25rem; height: 1.25rem; accent-color: var(--primary-color);">
-                                            <div>
-                                                <div style="font-weight: 500;">Oprava</div>
-                                                <div style="font-size: 0.85rem; color: var(--text-muted);">Oprava
-                                                    chybného údaje (nezapisuje se do historie)</div>
-                                            </div>
-                                        </label>
-                                    </div>
+                                <div class="matrika-field">
+                                    <label class="matrika-label">{{ l.s('students.matrika_fields.previous_school_izo')
+                                        }}</label>
+                                    <input type="text" class="matrika-input"
+                                        [(ngModel)]="selectedStudent.matrika.previous_school_izo"
+                                        placeholder="Např. 600123456">
+                                </div>
+                                <div class="matrika-field">
+                                    <label class="matrika-label">{{ l.s('students.matrika_fields.study_type') }}</label>
+                                    <input type="text" class="matrika-input"
+                                        [(ngModel)]="selectedStudent.matrika.study_type_code" placeholder="Např. D">
+                                </div>
+                                <div class="matrika-field">
+                                    <label class="matrika-label">{{ l.s('students.matrika_fields.financing') }}</label>
+                                    <input type="text" class="matrika-input"
+                                        [(ngModel)]="selectedStudent.matrika.financing_code" placeholder="Např. 1">
+                                </div>
+                                <div class="matrika-field">
+                                    <label class="matrika-label">{{ l.s('students.matrika_fields.start_reason')
+                                        }}</label>
+                                    <input type="text" class="matrika-input"
+                                        [(ngModel)]="selectedStudent.matrika.start_reason_code">
+                                </div>
+                                <div class="matrika-field">
+                                    <label class="matrika-label">{{ l.s('students.matrika_fields.end_reason') }}</label>
+                                    <input type="text" class="matrika-input"
+                                        [(ngModel)]="selectedStudent.matrika.end_reason_code">
+                                </div>
+                                <div class="matrika-field">
+                                    <label class="matrika-label">{{ l.s('students.matrika_fields.individual_plan')
+                                        }}</label>
+                                    <input type="text" class="matrika-input"
+                                        [(ngModel)]="selectedStudent.matrika.individual_plan_code">
+                                </div>
+                                <div class="matrika-field">
+                                    <label class="matrika-label">{{ l.s('students.matrika_fields.special_needs')
+                                        }}</label>
+                                    <input type="text" class="matrika-input"
+                                        [(ngModel)]="selectedStudent.matrika.special_needs_code">
+                                </div>
+                                <div class="matrika-field">
+                                    <label class="matrika-label">{{ l.s('students.matrika_fields.language') }}</label>
+                                    <input type="text" class="matrika-input"
+                                        [(ngModel)]="selectedStudent.matrika.language_code" placeholder="CS">
+                                </div>
+                                <div class="matrika-field">
+                                    <label class="matrika-label">{{ l.s('students.matrika_fields.health_status')
+                                        }}</label>
+                                    <input type="text" class="matrika-input"
+                                        [(ngModel)]="selectedStudent.matrika.health_status_code">
+                                </div>
+                            </div>
+
+                            <!-- Save reason -->
+                            <div class="save-reason-section">
+                                <div class="save-reason-title">
+                                    <i-tabler name="git-branch"></i-tabler>
+                                    <span>Důvod uložení</span>
+                                </div>
+                                <div class="save-reason-options">
+                                    <label class="save-reason-option" [class.selected]="matrikaSaveType === 'change'">
+                                        <input type="radio" name="matrikaSaveType" [(ngModel)]="matrikaSaveType"
+                                            value="change">
+                                        <div class="save-reason-icon change">
+                                            <i-tabler name="history"></i-tabler>
+                                        </div>
+                                        <div class="save-reason-text">
+                                            <strong>Změna</strong>
+                                            <span>Zapíše informaci do historie studenta</span>
+                                        </div>
+                                    </label>
+                                    <label class="save-reason-option"
+                                        [class.selected]="matrikaSaveType === 'correction'">
+                                        <input type="radio" name="matrikaSaveType" [(ngModel)]="matrikaSaveType"
+                                            value="correction">
+                                        <div class="save-reason-icon correction">
+                                            <i-tabler name="pencil"></i-tabler>
+                                        </div>
+                                        <div class="save-reason-text">
+                                            <strong>Oprava</strong>
+                                            <span>Oprava chybného údaje (nezapisuje se do historie)</span>
+                                        </div>
+                                    </label>
                                 </div>
                             </div>
                         </div>
@@ -1032,72 +1095,163 @@
 
                 <!-- History Tab -->
                 @if (activeTab === 'history') {
-                <div class="info-card full">
+                <div class="info-card full history-card-wrap">
                     <div class="card-header no-border">
                         <div class="header-tabs">
                             <div class="header-tab" [class.active]="activeHistorySubTab === 'details'"
                                 (click)="activeHistorySubTab = 'details'">
+                                <i-tabler name="list-details"></i-tabler>
                                 Podrobné údaje
                             </div>
                             <div class="header-tab" [class.active]="activeHistorySubTab === 'changes'"
                                 (click)="activeHistorySubTab = 'changes'">
-                                Historie sledovaných změn
+                                <i-tabler name="git-compare"></i-tabler>
+                                Sledování změn
                             </div>
                             <div class="header-tab" [class.active]="activeHistorySubTab === 'term_status'"
                                 (click)="activeHistorySubTab = 'term_status'">
+                                <i-tabler name="school"></i-tabler>
                                 Stav na konci pololetí
                             </div>
                         </div>
                     </div>
 
-                    <div class="history-content-padding">
-
-                        <!-- Details Sub-tab -->
-                        @if (activeHistorySubTab === 'details') {
+                    <!-- Details Sub-tab – Timeline -->
+                    @if (activeHistorySubTab === 'details') {
+                    <div class="history-timeline-wrap">
+                        @if (selectedStudent.history?.length) {
                         <div class="history-timeline">
                             @for (item of selectedStudent.history; track item.created_at) {
                             @let meta = formatHistoryEvent(item);
-                            <div class="history-item" [class]="'type-' + item.type">
-                                <div class="history-dot">
-                                    <i-tabler [name]="meta.icon"></i-tabler>
+                            <div class="tl-item">
+                                <!-- Icon column -->
+                                <div class="tl-aside">
+                                    <div [class]="'tl-dot tl-dot--' + meta.color">
+                                        <i-tabler [name]="meta.icon"></i-tabler>
+                                    </div>
+                                    <div class="tl-connector"></div>
                                 </div>
-                                <div class="history-content">
-                                    <div class="history-card">
-                                        <div class="history-header">
-                                            <div class="history-title-group">
-                                                <h4>{{ meta.title }}</h4>
+                                <!-- Card -->
+                                <div class="tl-body">
+                                    <div class="tl-card">
+                                        <div class="tl-card-accent" [class]="'tl-card-accent--' + meta.color"></div>
+                                        <div class="tl-card-main">
+                                            <div class="tl-header">
+                                                <div class="tl-title">{{ meta.title }}</div>
+                                                <div class="tl-time">
+                                                    <i-tabler name="clock"></i-tabler>
+                                                    {{ Utils.formatDate(item.created_at) }}
+                                                </div>
                                             </div>
-                                            <div class="history-time">
-                                                {{ Utils.formatDate(item.created_at) }}
+                                            <div class="tl-content">
+                                                <div class="tl-author">
+                                                    <i-tabler name="user-edit"></i-tabler>
+                                                    {{ item.full_name }}
+                                                </div>
+                                                <p class="tl-desc" [innerHTML]="meta.description"></p>
+                                                @if (meta.details.length > 0) {
+                                                <div class="tl-chips">
+                                                    @for (detail of meta.details; track detail.label) {
+                                                    <div class="tl-chip">
+                                                        <span class="tl-chip-label">{{ detail.label }}</span>
+                                                        <span class="tl-chip-value">{{ detail.value }}</span>
+                                                    </div>
+                                                    }
+                                                </div>
+                                                }
                                             </div>
-                                        </div>
-                                        <div class="history-body" [innerHTML]="meta.description"></div>
-                                        <div class="history-footer">
-                                            <span>Provedl uživatel <span class="teacher-name">{{ item.full_name
-                                                    }}</span></span>
                                         </div>
                                     </div>
                                 </div>
                             </div>
-                            } @empty {
-                            <div class="no-history">
-                                <i-tabler name="history"></i-tabler>
-                                <p>Žádná historie záznamů</p>
-                            </div>
                             }
                         </div>
-                        }
-
-                        <!-- Other sub-tabs (Placeholders for now as they are just info) -->
-                        @if (activeHistorySubTab === 'changes' || activeHistorySubTab === 'term_status') {
-                        <div class="empty-state-large">
-                            <i-tabler name="device-desktop-analytics"></i-tabler>
-                            <p>Nejsou dostupné žádné data.</p>
+                        } @else {
+                        <div class="history-empty">
+                            <div class="history-empty-icon">
+                                <i-tabler name="history"></i-tabler>
+                            </div>
+                            <h3>Žádná historie</h3>
+                            <p>Pro tohoto studenta zatím nejsou žádné záznamy v historii.</p>
                         </div>
                         }
                     </div>
+                    }
+
+                    <!-- Changes Sub-tab – Structured diff table -->
+                    @if (activeHistorySubTab === 'changes') {
+                    <div class="history-changes-wrap">
+                        @if (getChangesHistory().length > 0) {
+                        <div class="changes-list">
+                            @for (item of getChangesHistory(); track item.created_at) {
+                            @let meta = formatHistoryEvent(item);
+                            <div class="change-entry">
+                                <div class="change-entry-header">
+                                    <div class="change-entry-left">
+                                        <div [class]="'change-icon change-icon--' + meta.color">
+                                            <i-tabler [name]="meta.icon"></i-tabler>
+                                        </div>
+                                        <div>
+                                            <div class="change-title">{{ meta.title }}</div>
+                                            <div class="change-author">
+                                                <i-tabler name="user"></i-tabler>
+                                                {{ item.full_name }}
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="change-datetime">
+                                        <i-tabler name="calendar-event"></i-tabler>
+                                        {{ Utils.formatDate(item.created_at) }}
+                                    </div>
+                                </div>
+
+                                @if (meta.details.length > 0) {
+                                <div class="change-fields-table">
+                                    <div class="change-fields-header">
+                                        <span>Pole</span>
+                                        <span>Nová hodnota</span>
+                                    </div>
+                                    @for (detail of meta.details; track detail.label) {
+                                    <div class="change-field-row">
+                                        <span class="change-field-label">{{ detail.label }}</span>
+                                        <span class="change-field-new">
+                                            <i-tabler name="arrow-right"></i-tabler>
+                                            {{ detail.value }}
+                                        </span>
+                                    </div>
+                                    }
+                                </div>
+                                } @else {
+                                <p class="change-no-details">Detailní data pro tuto změnu nejsou k dispozici.</p>
+                                }
+                            </div>
+                            }
+                        </div>
+                        } @else {
+                        <div class="history-empty">
+                            <div class="history-empty-icon">
+                                <i-tabler name="git-compare"></i-tabler>
+                            </div>
+                            <h3>Žádné sledované změny</h3>
+                            <p>Dosud nebyly zaznamenány žádné změny osobních nebo studijních údajů.</p>
+                        </div>
+                        }
+                    </div>
+                    }
+
+                    <!-- Term status sub-tab -->
+                    @if (activeHistorySubTab === 'term_status') {
+                    <div class="history-empty">
+                        <div class="history-empty-icon">
+                            <i-tabler name="school"></i-tabler>
+                        </div>
+                        <h3>Stav na konci pololetí</h3>
+                        <p>Tato sekce bude dostupná po uzavření pololetí.</p>
+                    </div>
+                    }
                 </div>
                 }
+
             </div>
         </main>
     </div>

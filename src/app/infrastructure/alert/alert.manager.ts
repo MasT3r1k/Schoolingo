@@ -11,25 +11,32 @@ export class BaseAlertManager {
         this.alerts = this.alerts.filter(a => a != alert);
     }
 
-    public alert(type: SweetAlertIcon, text: string, actions: AlertButton[] = []): Alert {
+    public alert(type: SweetAlertIcon, text: string, actions: AlertButton[] = [], timer?: number): Alert {
         const existing = this.alerts.find((alert) => alert.type == type && alert.text == text);
         if (existing) {
             existing.visible = true;
-            this.setAlertTimeout(existing);
+            if (timer) {
+                this.setAlertTimeout(existing, timer);
+            }
             return existing;
         }
 
         const alert = new Alert(type, text, actions);
         this.alerts.push(alert);
-        this.setAlertTimeout(alert);
+        if (timer) {
+            this.setAlertTimeout(alert, timer);
+        }
         return alert;
     }
 
-    private setAlertTimeout(alert: Alert): void {
-        setTimeout(() => {
+    private setAlertTimeout(alert: Alert, timer: number): void {
+        if (alert.timerHandle) {
+            clearTimeout(alert.timerHandle);
+        }
+        alert.timerHandle = setTimeout(() => {
             alert.close();
             this.removeAlert(alert);
-        }, 5000);
+        }, timer);
     }
 
     public getAlerts(): typeof this.alerts {

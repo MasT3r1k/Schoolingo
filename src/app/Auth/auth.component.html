@@ -138,6 +138,16 @@
         @if (isLoading) {
         <div class="loader"></div>
         } @else {
+        @if (logoutReason) {
+        <div class="alert alert--success mb-4 animate-fadeIn">
+            <i-tabler name="circle-check" class="alert__icon"></i-tabler>
+            <div class="alert__content">
+                {{ l.s(logoutReason === 'session_expired' ? 'auth.session_expired_alert' :
+                'auth.logout_success_alert') }}
+            </div>
+            <i-tabler (click)="logoutReason = null" name="x" class="alert__icon clickable"></i-tabler>
+        </div>
+        }
         <div class="card-top">
             <h2 class="title">
                 {{ l.s("auth.login.title") }}

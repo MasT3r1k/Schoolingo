@@ -1,0 +1,208 @@
+<div class="classes-page card">
+    <div class="list-view">
+        <div class="card-header">
+            <h2>Seznam tříd</h2>
+            <div class="header-actions">
+                <button class="btn btn--sm btn--primary" (click)="openAddClassModal()">
+                    <i-tabler name="chalkboard"></i-tabler>
+                    {{ 'Přidat třídu' }}
+                </button>
+            </div>
+        </div>
+
+        <div class="filters-row-container">
+            <div class="search-wrapper full-width">
+                <i-tabler name="search"></i-tabler>
+                <input type="search" placeholder="Hledat třídu..." [(ngModel)]="searchStr">
+            </div>
+
+            <div class="filter-dropdown-wrapper">
+                <button class="btn btn--secondary"
+                    [class.active]="dropdownManager.selected_dropdown === 'classes_filter' || dropdownManager.selected_dropdown === 'filter_field' || dropdownManager.selected_dropdown === 'filter_year' || dropdownManager.selected_dropdown === 'filter_teacher'"
+                    (click)="$event.stopPropagation(); dropdownManager.selected_dropdown = (dropdownManager.selected_dropdown === 'classes_filter' || dropdownManager.selected_dropdown === 'filter_field' || dropdownManager.selected_dropdown === 'filter_year' || dropdownManager.selected_dropdown === 'filter_teacher' ? '' : 'classes_filter')">
+                    <i-tabler name="filter-2"></i-tabler>
+                    <span>Filtrovat</span>
+                </button>
+
+                <div class="dropdown-menu filters-dropdown"
+                    [hidden]="dropdownManager.selected_dropdown !== 'classes_filter' && dropdownManager.selected_dropdown !== 'filter_field' && dropdownManager.selected_dropdown !== 'filter_year' && dropdownManager.selected_dropdown !== 'filter_teacher'"
+                    (click)="$event.stopPropagation()">
+
+                    <h3>Filtrovat třídy</h3>
+
+                    <!-- Obor studia -->
+                    <div class="form-group">
+                        <label>Obor studia</label>
+                        <div class="custom-select" id="filter-field" style="width: 100%"
+                            (click)="$event.stopPropagation(); dropdownManager.selected_dropdown = (dropdownManager.selected_dropdown === 'filter_field' ? 'classes_filter' : 'filter_field')">
+                            <div class="selected-value">
+                                <div class="row" style="gap: .5rem">
+                                    {{ filters.fieldOfStudy || 'Všechny obory' }}
+                                </div>
+                                <i-tabler name="chevron-down"></i-tabler>
+                            </div>
+                            @if (dropdownManager.selected_dropdown === 'filter_field') {
+                            <div class="options-dropdown">
+                                <div class="list">
+                                    <div class="option row" style="gap: .5rem"
+                                        (click)="$event.stopPropagation(); dropdownManager.selected_dropdown = 'classes_filter'; filters.fieldOfStudy = null;">
+                                        Všechny obory
+                                    </div>
+                                    @for (field of availableFieldsOfStudy; track field) {
+                                    <div class="option row" style="gap: .5rem"
+                                        (click)="$event.stopPropagation(); dropdownManager.selected_dropdown = 'classes_filter'; filters.fieldOfStudy = field;">
+                                        {{ field }}
+                                    </div>
+                                    }
+                                </div>
+                            </div>
+                            }
+                        </div>
+                    </div>
+
+                    <!-- Ročník -->
+                    <div class="form-group">
+                        <label>Ročník</label>
+                        <div class="custom-select" id="filter-year" style="width: 100%"
+                            (click)="$event.stopPropagation(); dropdownManager.selected_dropdown = (dropdownManager.selected_dropdown === 'filter_year' ? 'classes_filter' : 'filter_year')">
+                            <div class="selected-value">
+                                <div class="row" style="gap: .5rem">
+                                    {{ filters.year ? filters.year + '. ročník' : 'Všechny ročníky' }}
+                                </div>
+                                <i-tabler name="chevron-down"></i-tabler>
+                            </div>
+                            @if (dropdownManager.selected_dropdown === 'filter_year') {
+                            <div class="options-dropdown">
+                                <div class="list">
+                                    <div class="option row" style="gap: .5rem"
+                                        (click)="$event.stopPropagation(); dropdownManager.selected_dropdown = 'classes_filter'; filters.year = null;">
+                                        Všechny ročníky
+                                    </div>
+                                    @for (year of availableYears; track year) {
+                                    <div class="option row" style="gap: .5rem"
+                                        (click)="$event.stopPropagation(); dropdownManager.selected_dropdown = 'classes_filter'; filters.year = year;">
+                                        {{ year }}. ročník
+                                    </div>
+                                    }
+                                </div>
+                            </div>
+                            }
+                        </div>
+                    </div>
+
+                    <!-- Třídní učitel -->
+                    <div class="form-group">
+                        <label>Třídní učitel</label>
+                        <div class="custom-select" id="filter-teacher" style="width: 100%"
+                            (click)="$event.stopPropagation(); dropdownManager.selected_dropdown = (dropdownManager.selected_dropdown === 'filter_teacher' ? 'classes_filter' : 'filter_teacher')">
+                            <div class="selected-value">
+                                <div class="row" style="gap: .5rem">
+                                    {{ filters.headTeacher || 'Všichni učitelé' }}
+                                </div>
+                                <i-tabler name="chevron-down"></i-tabler>
+                            </div>
+                            @if (dropdownManager.selected_dropdown === 'filter_teacher') {
+                            <div class="options-dropdown">
+                                <div class="list">
+                                    <div class="option row" style="gap: .5rem"
+                                        (click)="$event.stopPropagation(); dropdownManager.selected_dropdown = 'classes_filter'; filters.headTeacher = null;">
+                                        Všichni učitelé
+                                    </div>
+                                    @for (teacher of availableHeadTeachers; track teacher) {
+                                    <div class="option row" style="gap: .5rem"
+                                        (click)="$event.stopPropagation(); dropdownManager.selected_dropdown = 'classes_filter'; filters.headTeacher = teacher;">
+                                        {{ teacher }}
+                                    </div>
+                                    }
+                                </div>
+                            </div>
+                            }
+                        </div>
+                    </div>
+
+                    <div class="dropdown-footer">
+                        <button class="btn btn--ghost btn--sm" (click)="clearFilters()">
+                            Vymazat filtry
+                        </button>
+                        <button class="btn btn--primary btn--sm" (click)="dropdownManager.selected_dropdown = ''">
+                            Hotovo
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        @if (isLoading) {
+        <div class="loading-state">
+            <div class="loading-spinner"></div>
+            <p>Načítání tříd...</p>
+        </div>
+        }
+
+        @else if (loadError) {
+        <div class="error-state">
+            <i-tabler name="alert-circle"></i-tabler>
+            <h3>Chyba načítání</h3>
+            <p>{{ loadError }}</p>
+            <button class="btn btn--primary" (click)="loadClasses()">
+                <i-tabler name="refresh"></i-tabler>
+                Zkusit znovu
+            </button>
+        </div>
+        }
+
+        @else if (filteredClasses.length > 0) {
+        <div class="classes-table-wrapper">
+            <table class="classes-table">
+                <thead>
+                    <tr>
+                        <th class="col-name">Název třídy</th>
+                        <th class="col-rocnik">Ročník</th>
+                        <th class="col-obor">Obor studia</th>
+                        <th class="col-headteacher">Třídní učitel</th>
+                        <th class="col-room">Kmenová učebna</th>
+                        <th class="col-students">Počet žáků</th>
+                        <th class="col-actions"></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @for (cls of filteredClasses; track cls.id) {
+                    <tr>
+                        <td class="col-name">
+                            <div class="class-cell">
+                                <span class="name">{{ cls.name }}</span>
+                            </div>
+                        </td>
+                        <td class="col-rocnik">{{ cls.year }}. ročník</td>
+                        <td class="col-obor">{{ cls.fieldOfStudy }}</td>
+                        <td class="col-headteacher">{{ cls.headTeacher || 'Nepřiřazeno' }}</td>
+                        <td class="col-room">{{ cls.classroom || 'Žádná' }}</td>
+                        <td class="col-students">
+                            <span class="students-count-badge">{{ cls.studentsCount || 0 }}</span>
+                        </td>
+                        <td class="col-actions">
+                            <button class="row-action" (click)="deleteClass(cls)">
+                                <i-tabler name="trash"></i-tabler>
+                            </button>
+                        </td>
+                    </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+        }
+
+        @if (!isLoading && filteredClasses.length === 0) {
+        <div class="empty-state">
+            <div class="empty-icon">
+                <i-tabler name="chalkboard-off"></i-tabler>
+            </div>
+            <h3>Žádné třídy nenalezeny</h3>
+            <p>Zkuste upravit hledaný výraz nebo vytvořte novou třídu</p>
+            <button class="btn btn--primary btn--sm" (click)="openAddClassModal()">
+                Vytvořit třídu
+            </button>
+        </div>
+        }
+    </div>
+</div>

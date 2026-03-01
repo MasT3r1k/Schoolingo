@@ -11,6 +11,7 @@ import { Locale } from '@Schoolingo/locale';
 import { Permission } from '@Schoolingo/permission';
 import { Authentication } from '@Schoolingo/authentication';
 import { TabsComponent } from '@Components/Tabs';
+import { CalendarComponent } from '@Components/calendar';
 import { ModalManager } from '@Schoolingo/modal';
 import { BoardAlertManager } from '../../../infrastructure/alert/board.alert.manager';
 import { BehaviorSubject, Subscription } from 'rxjs';
@@ -86,10 +87,7 @@ export interface EmployeeFilters {
 @Component({
   selector: 'app-employees',
   standalone: true,
-  imports: [CommonModule, IconsModule, FormsModule, TabsComponent, 
-    AddEmployeeModalComponent, EditEmployeeModalComponent, EditAttendanceModalComponent, 
-    VacationRequestModalComponent, RejectVacationModalComponent, AdjustVacationModalComponent,
-    SetSalaryModalComponent, AddBonusModalComponent],
+  imports: [CommonModule, IconsModule, FormsModule, TabsComponent, CalendarComponent],
   templateUrl: './employees.component.html',
   styleUrl: './employees.component.css'
 })
@@ -182,6 +180,11 @@ export class EmployeesComponent implements OnInit {
   vacationBalance = signal<{ total: number; used: number; remaining: number }>({ total: 0, used: 0, remaining: 0 });
   currentYear = new Date().getFullYear();
 
+  attendanceMoment = computed(() => {
+    const startDate = this.attendanceFilter().startDate;
+    return startDate ? moment(startDate) : moment();
+  });
+
   public getFilterLabel(type: 'attendancePeriod' | 'bonusStatus' | 'bonusType', value: any): string {
     const options = this.getFilterOptions(type);
     return options.find(o => o.value === value)?.label || value;
@@ -226,6 +229,8 @@ export class EmployeesComponent implements OnInit {
       'add_employee',
       {
         title: 'employees.add_employee.title',
+        description: 'employees.add_employee.description',
+        icon: 'user-plus',
         closeable: true,
         forceScrollbar: true,
         width: 600,
@@ -252,7 +257,9 @@ export class EmployeesComponent implements OnInit {
     this.modalManager.addModal(
       'request_vacation',
       {
+        icon: 'beach',        
         title: 'employees.request_vacation.title',
+        description: 'employees.request_vacation.description',
         closeable: true,
         width: 600,
         items: [{
@@ -304,7 +311,9 @@ export class EmployeesComponent implements OnInit {
     this.modalManager.addModal(
       'edit_attendance',
       {
+        icon: 'clock-edit',
         title: 'employees.edit_attendance.title',
+        description: 'employees.edit_attendance.description',
         closeable: true,
         width: 500,
         items: [{
@@ -463,11 +472,11 @@ export class EmployeesComponent implements OnInit {
         this.isCheckedIn.set(true);
         this.checkInTime.set(response.time);
         this.checkAttendanceStatus();
-        this.alertManager.alert('success', 'employees.attendance.checkin_success').closeable(true);
+        this.alertManager.alert('success', 'employees.attendance_status.checkin_success').closeable(true);
       },
       error: (error) => {
         console.error('Check-in failed:', error);
-        this.alertManager.alert('error', 'employees.attendance.checkin_failed').closeable(true);
+        this.alertManager.alert('error', 'employees.attendance_status.checkin_failed').closeable(true);
       }
     });
   }
@@ -484,11 +493,11 @@ export class EmployeesComponent implements OnInit {
         this.checkInTime.set(null);
         this.currentAttendanceRecord.set(null);
         this.checkAttendanceStatus();
-        this.alertManager.alert('success', 'employees.attendance.checkout_success').closeable(true);
+        this.alertManager.alert('success', 'employees.attendance_status.checkout_success').closeable(true);
       },
       error: (error) => {
         console.error('Check-out failed:', error);
-        this.alertManager.alert('error', 'employees.attendance.checkout_failed').closeable(true);
+        this.alertManager.alert('error', 'employees.attendance_status.checkout_failed').closeable(true);
       }
     });
   }
@@ -539,6 +548,16 @@ export class EmployeesComponent implements OnInit {
   setAttendanceFilterStartDateAndReload(startDate: string) {
     this.attendanceFilter.set({ ...this.attendanceFilter(), startDate });
     this.loadAllAttendance();
+  }
+
+  changeAttendanceDate(delta: number) {
+    const current = moment(this.attendanceFilter().startDate || undefined);
+    const next = current.add(delta, 'days');
+    this.setAttendanceFilterStartDateAndReload(next.format('YYYY-MM-DD'));
+  }
+
+  goToToday() {
+    this.setAttendanceFilterStartDateAndReload(moment().format('YYYY-MM-DD'));
   }
 
   // Bonus filter helpers (template cannot use spread syntax)

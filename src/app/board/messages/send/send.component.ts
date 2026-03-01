@@ -61,9 +61,6 @@ export class SendComponent implements OnInit {
   // === Tabs ===
   public selectedOptionTab = new BehaviorSubject<number>(0);
 
-  // === UI ===
-  public isHiddenRightCard = false;
-
   // === Options ===
   public excuseAllDay = false;
   public config: any = {};
@@ -142,12 +139,14 @@ export class SendComponent implements OnInit {
 
   public loadRecipients() {
     this.http.post<RecipientGroup[]>(`${Config.API_URL}/v1/messages/recipients`, { 
-        message_type: this.messageManager.messageType.getValue() 
+      message_type: this.messageManager.messageType.getValue() 
     }, { withCredentials: true }).subscribe({
       next: (groups) => {
         this.availableGroups = groups;
         if (this.availableGroups.length > 0) {
-            this.selectedCategory = this.availableGroups[0];
+          this.selectedCategory = this.availableGroups[0];
+        } else {
+          this.selectedCategory = null;
         }
       },
       error: (e) => console.error(e)
@@ -256,6 +255,34 @@ export class SendComponent implements OnInit {
   }
 
   // === Sending message ===
+  public saveDraft(): void {
+    const payload: any = {
+      type: this.messageManager.messageType.getValue(),
+      topic: this.messageManager.topic,
+      message: this.messageManager.message,
+      receivers: this.selectedReceivers.map((r) => r.person_id),
+      require_confirm: this.messageManager.options.requireConfirmation
+    };
+    if (this.messageManager.draft_id) payload.draft_id = this.messageManager.draft_id;
+
+    this.http
+      .post<{ success: boolean; draft_id?: number; error?: string }>(
+        `${Config.API_URL}/v1/messages/draft`,
+        payload,
+        { withCredentials: true }
+      )
+      .subscribe({
+        next: (res) => {
+          if (res?.success) {
+            this.messageManager.draft_id = res.draft_id ?? this.messageManager.draft_id;
+            this.alerts['main'] = new Alert('success', 'messages.draft_saved');
+            setTimeout(() => { if (this.alerts['main']?.type === 'success') delete this.alerts['main']; }, 3000);
+            console.log('Draft saved', this.messageManager.draft_id);
+          }
+        }
+      });
+  }
+
   public sendMessage(): void {
     this.alerts = {};
 
@@ -308,10 +335,16 @@ export class SendComponent implements OnInit {
       .subscribe({
         next: (res) => {
           if (res?.status) {
+            // Delete draft if exists
+            if (this.messageManager.draft_id) {
+              this.http.delete(`${Config.API_URL}/v1/messages/draft/${this.messageManager.draft_id}`, { withCredentials: true }).subscribe();
+            }
+
             this.messageManager.message = '';
             this.messageManager.topic = '';
             this.messageManager.files = [];
             this.selectedReceivers = [];
+            this.messageManager.draft_id = null;
             this.alerts['main'] = new Alert('success', 'messages/sent');
           } else {
             this.alerts['main'] = new Alert(

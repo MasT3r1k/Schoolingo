@@ -1,24 +1,41 @@
-<div class="alerts global-alerts">
+<div class="global-alerts">
     @for (alert of getAlerts(); track $index) {
     @if (alert.visible) {
-    <div class="alert shadow-lg" [class.alert--success]="alert.type == 'success'"
-        [class.alert--danger]="alert.type == 'error'" [class.alert--primary]="alert.type == 'info'">
-        <div class="text" [style.width]="!alert.actions.length ? '100%' : ''">
-            {{ l.s(alert.text) }}
+    <div class="toast-alert" [class.toast-alert--success]="alert.type == 'success'"
+        [class.toast-alert--danger]="alert.type == 'error'" [class.toast-alert--info]="alert.type == 'info'"
+        [class.toast-alert--warning]="alert.type == 'warning'">
+
+        <div class="toast-alert__accent"></div>
+
+        <div class="toast-alert__icon-wrap">
+            @if (alert.type == 'success') {
+            <i-tabler name="circle-check"></i-tabler>
+            } @else if (alert.type == 'error') {
+            <i-tabler name="circle-x"></i-tabler>
+            } @else if (alert.type == 'warning') {
+            <i-tabler name="alert-triangle"></i-tabler>
+            } @else {
+            <i-tabler name="info-circle"></i-tabler>
+            }
         </div>
-        @if (alert.actions.length) {
-        <div class="actions">
-            @for (btn of alert.actions;track $index) {
-            <div class="btn" (click)="btn.action()">
-                {{ l.s(btn.text) }}
+
+        <div class="toast-alert__body">
+            <p class="toast-alert__text">{{ l.s(alert.text) }}</p>
+            @if (alert.actions.length) {
+            <div class="toast-alert__actions">
+                @for (btn of alert.actions; track $index) {
+                <button class="toast-alert__btn" (click)="btn.action()">
+                    {{ l.s(btn.text) }}
+                </button>
+                }
             </div>
             }
         </div>
-        }
+
         @if (alert._closeable) {
-        <div class="close" (click)="alert.close()">
+        <button class="toast-alert__close" (click)="alert.close()" title="Zavřít">
             <i-tabler name="x"></i-tabler>
-        </div>
+        </button>
         }
     </div>
     }

@@ -19,6 +19,12 @@ export const config: SidebarGroup[] = [
                 permission: ['teacher']
             },
             {
+                item: "Třídy", // or sidebar.classes
+                url: 'classes',
+                icon: 'chalkboard',
+                permission: ['teacher']
+            },
+            {
                 item: "sidebar.employees",
                 url: 'employees',
                 icon: 'user-screen',
@@ -190,6 +196,10 @@ export const config: SidebarGroup[] = [
                     item: 'sidebar.messages.sent',
                     url: 'messages/sent',
                     icon: 'mail-forward',
+                }, {
+                    item: 'sidebar.messages.drafts',
+                    url: 'messages/drafts',
+                    icon: 'file-pencil',
                 },
                 // {
                 //     item: 'sidebar.messages.groups',

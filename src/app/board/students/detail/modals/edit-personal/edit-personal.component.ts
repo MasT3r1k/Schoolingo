@@ -30,9 +30,9 @@ export class EditPersonalModalComponent implements OnInit {
     return cls ? cls.class_name : 'Vyberte třídu...';
   }
 
-  public getSelectedInsuranceLabel(): string {
-    const ins = this.insurances.find(i => i.insurance_id === this.form.insuranceId);
-    return ins ? (ins.shortcut + ' - ' + ins.insurance) : 'Nezadáno';
+  public getInsuranceLabel(insturance_id: number | null): string {
+    const ins = this.insurances.find(i => i.insurance_id === insturance_id);
+    return ins ? (ins.shortcut + ' - ' + ins.insurance_id) : 'Nezadáno';
   }
 
   public getSelectedNationalityLabel(): string {

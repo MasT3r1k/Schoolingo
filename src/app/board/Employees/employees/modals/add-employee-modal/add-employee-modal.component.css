@@ -1,154 +1,185 @@
+/* ========================================
+   ADD EMPLOYEE MODAL
+   ======================================== */
+
 .employee-form {
     display: flex;
     flex-direction: column;
-    gap: 24px;
+    gap: 0;
 }
 
+/* ── Modal Hero Header ── */
+.modal-hero {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1.25rem 1.5rem;
+    background: linear-gradient(135deg, var(--primary) 0%, #6366f1 100%);
+    border-radius: calc(var(--radius) - 2px) calc(var(--radius) - 2px) 0 0;
+    margin: calc(-1 * var(--space-6)) calc(-1 * var(--space-6)) 0;
+    position: relative;
+    overflow: hidden;
+}
+
+.modal-hero::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.04'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+}
+
+.hero-icon {
+    width: 3rem;
+    height: 3rem;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    backdrop-filter: blur(4px);
+    border: 1px solid rgba(255, 255, 255, 0.25);
+}
+
+.hero-icon i-tabler {
+    width: 1.5rem;
+    height: 1.5rem;
+    color: white;
+}
+
+.hero-text {
+    display: flex;
+    flex-direction: column;
+    gap: 0.125rem;
+}
+
+.hero-text h2 {
+    margin: 0;
+    font-size: 1.125rem;
+    font-weight: 700;
+    color: white;
+}
+
+.hero-text p {
+    margin: 0;
+    font-size: 0.8125rem;
+    color: rgba(255, 255, 255, 0.75);
+}
+
+/* ── Form Body ── */
+.form-body {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    padding-top: 1.25rem;
+}
+
+/* ── Section ── */
 .form-section {
     display: flex;
     flex-direction: column;
-    gap: 16px;
-    background: var(--surface);
-    padding: 20px;
-    border-radius: 12px;
-    border: 1px solid var(--border-color);
+    gap: 1rem;
+    padding: 1.25rem 0;
+    border-bottom: 1px solid var(--border);
 }
 
-.section-title {
-    font-size: 15px;
-    font-weight: 600;
-    color: var(--text-primary);
-    margin: 0 0 4px 0;
+.form-section:last-of-type {
+    border-bottom: none;
+    padding-bottom: 0.5rem;
+}
+
+.section-label {
     display: flex;
     align-items: center;
-    gap: 10px;
-    padding-bottom: 12px;
-    border-bottom: 1px solid var(--border-color);
+    gap: 0.5rem;
+    font-size: 0.6875rem;
+    font-weight: 700;
+    color: var(--text-muted);
     text-transform: uppercase;
-    letter-spacing: 0.5px;
+    letter-spacing: 0.08em;
+    margin-bottom: 0.25rem;
 }
 
-.section-title i-tabler {
+.section-label i-tabler {
+    width: 0.875rem;
+    height: 0.875rem;
     color: var(--primary);
-    width: 20px;
-    height: 20px;
 }
 
+/* ── Form Grid ── */
 .form-row {
-    display: flex;
-    gap: 16px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.75rem;
 }
 
-.form-group {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
-    min-width: 0;
+.form-row.cols-3 {
+    grid-template-columns: 1fr 1fr 1fr;
 }
 
-.form-group label {
-    font-size: 13px;
-    font-weight: 500;
-    color: var(--text-secondary);
+.form-row.phone-row {
+    grid-template-columns: 110px 1fr;
 }
 
-.form-group label .required {
-    color: var(--danger);
-}
+/* ── Inputs ── */
 
-/* Input with Icon */
-.input-with-icon {
+.input-icon-wrap {
     position: relative;
     display: flex;
     align-items: center;
 }
 
-.input-with-icon i-tabler {
+.input-icon-wrap>i-tabler {
     position: absolute;
-    left: 12px;
-    color: var(--text-tertiary);
-    width: 18px;
-    height: 18px;
+    left: 0.5rem;
+    width: 20px;
+    height: 20px;
+    color: var(--text-muted);
     pointer-events: none;
+    flex-shrink: 0;
+    z-index: 4;
+    transform: translateY(-50%);
+    top: 50%;
 }
 
-.input-with-icon .form-input {
-    padding-left: 40px;
-    width: 100%;
-}
-
-/* Modal Actions */
-.modal-actions {
-    margin-top: 8px;
-}
-
-/* Legacy Degree Styles (preserved via request if needed) */
-.degrees-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-    gap: 12px;
-    margin-bottom: 12px;
-}
-
-.degree-checkbox {
+/* ── Phone Code Prefix ── */
+.phone-prefix {
     display: flex;
     align-items: center;
-    gap: 10px;
-    padding: 10px 12px;
-    border: 1px solid var(--border-color);
-    border-radius: 8px;
-    cursor: pointer;
-    transition: all 0.2s;
-    background: var(--bg-secondary);
-}
-
-.degree-checkbox:hover {
-    border-color: var(--primary);
-    background: var(--bg-primary);
-}
-
-.degree-checkbox input[type="checkbox"] {
-    cursor: pointer;
-}
-
-.degree-label {
-    flex: 1;
-    font-size: 14px;
-    color: var(--text-primary);
-}
-
-.degree-label strong {
-    color: var(--primary);
-}
-
-.badge-before,
-.badge-after {
-    display: inline-block;
-    padding: 2px 6px;
-    font-size: 11px;
+    gap: 0.375rem;
+    padding: 0 0.875rem;
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    font-size: 0.8125rem;
     font-weight: 600;
-    border-radius: 4px;
-    margin-left: 6px;
+    color: var(--text-muted);
+    height: 100%;
+    white-space: nowrap;
 }
 
-.badge-before {
-    background: var(--primary-alpha);
-    color: var(--primary);
+.phone-prefix span {
+    font-size: 0.75rem;
 }
 
-.badge-after {
-    background: var(--secondary-alpha);
-    color: var(--secondary);
+/* ── Gender indicator colors ── */
+.gender-icon-male {
+    color: #90D5FF;
 }
 
-.add-degree-btn {
-    margin-top: 8px;
+.gender-icon-female {
+    color: #FFC0CB;
 }
+/* ── Responsive ── */
+@media (max-width: 560px) {
 
-@media (max-width: 600px) {
-    .form-row {
-        flex-direction: column;
-        gap: 16px;
+    .form-row,
+    .form-row.cols-3,
+    .form-row.phone-row {
+        grid-template-columns: 1fr;
+    }
+
+    .modal-hero {
+        padding: 1rem;
     }
 }

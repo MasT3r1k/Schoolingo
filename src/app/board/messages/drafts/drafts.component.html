@@ -1,0 +1,92 @@
+<div class="received-container">
+    <!-- Draft List (Sidebar) -->
+    <div class="message-list-panel">
+        <div class="panel-header">
+            <h2>{{ l.s("sidebar.messages.drafts") }}</h2>
+            <div class="search-box">
+                <i-tabler name="search"></i-tabler>
+                <input type="text" [(ngModel)]="searchText" [placeholder]="l.s('messages.search_messages')">
+            </div>
+        </div>
+
+        <div class="messages-list">
+            @for (draft of filteredDrafts; track draft.draft_id) {
+            <div class="message-item" [class.active]="selectedDraft?.draft_id === draft.draft_id"
+                (click)="selectDraft(draft)">
+
+                <div class="avatar">
+                    <i-tabler name="file-pencil"></i-tabler>
+                </div>
+
+                <div class="message-preview-info">
+                    <div class="top-row">
+                        <span class="sender-name">
+                            {{ l.s("messages.draft") }}
+                        </span>
+                        <span class="date">
+                            {{ Utils.formatDateShort(draft.updated_at) }}
+                        </span>
+                    </div>
+                    <div class="subject">{{ draft.topic || l.s("messages.no_subject") }}</div>
+                    <div class="preview-text" [innerHTML]="draft.message"></div>
+                </div>
+
+                <div class="message-actions-overlay">
+                    <button class="delete-btn" (click)="deleteDraft(draft, $event)">
+                        <i-tabler name="trash"></i-tabler>
+                    </button>
+                </div>
+            </div>
+            } @empty {
+            <div class="empty-state">
+                <i-tabler name="notes"></i-tabler>
+                <p>{{ l.s("messages.no_drafts") }}</p>
+            </div>
+            }
+        </div>
+    </div>
+
+    <!-- Draft Content (Main) -->
+    <div class="message-content-panel">
+        <div class="message-detail card">
+            @if (selectedDraft) {
+            <div class="message-header">
+                <div class="sender-info">
+                    <div class="avatar large">
+                        <i-tabler name="file-pencil"></i-tabler>
+                    </div>
+                    <div class="meta">
+                        <div class="name">{{ l.s("messages.draft") }}</div>
+                        <div class="role">{{ l.s("messages.draft_hint") }}</div>
+                    </div>
+                </div>
+                <div class="message-actions">
+                    <div class="date">
+                        {{ Utils.formatDate(selectedDraft.updated_at) }}
+                    </div>
+                    <button class="btn btn-primary ml-2" (click)="continueDraft(selectedDraft)">
+                        <i-tabler name="player-play"></i-tabler>
+                        {{ l.s("messages.continue_writing") }}
+                    </button>
+                </div>
+            </div>
+
+            <div class="message-subject">
+                {{ selectedDraft.topic || l.s("messages.no_subject") }}
+            </div>
+
+            <div class="message-body" [innerHTML]="selectedDraft.message">
+            </div>
+            } @else {
+            <div class="no-selection">
+                <div class="illustration">
+                    <i-tabler name="notes"></i-tabler>
+                </div>
+                <h3>{{ l.s("messages.select_draft") }}</h3>
+                <p>{{ l.s("messages.select_draft_desc") }}</p>
+            </div>
+            }
+        </div>
+
+    </div>
+</div>

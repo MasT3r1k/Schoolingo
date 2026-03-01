@@ -138,6 +138,7 @@ export class MessageManager {
   public messageType = new BehaviorSubject<messageTypes>(messageTypes.MESSAGE);
   public message = '';
   public topic = '';
+  public draft_id: number | null = null;
 
   // Homeworks
   public selectedHomework = new BehaviorSubject(null);

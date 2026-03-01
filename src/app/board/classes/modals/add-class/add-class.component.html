@@ -1,0 +1,136 @@
+<div class="modal-content-scroll">
+    <!-- Tabs Header -->
+    <div class="tabs-header">
+        <button class="tab-btn" [class.active]="addClassTab === 'manual'" (click)="setAddClassTab('manual')">
+            <i-tabler name="pencil"></i-tabler>
+            {{ l.s('students.manual_entry') || 'Zadat manuálně' }}
+        </button>
+        <button class="tab-btn" [class.active]="addClassTab === 'import'" (click)="setAddClassTab('import')">
+            <i-tabler name="download"></i-tabler>
+            Import z Bakalářů
+        </button>
+    </div>
+
+    <!-- Content Area -->
+    <div class="tab-content" [class.active]="addClassTab === 'manual'">
+        <div class="form-grid">
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Název třídy</label>
+                    <input type="text" placeholder="Např. 1.A" [(ngModel)]="newClass.name">
+                </div>
+                <div class="form-group">
+                    <label>Ročník</label>
+                    <input type="number" min="1" max="9" placeholder="Např. 1" [(ngModel)]="newClass.year">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>Obor studia</label>
+                <!-- Custom Select pattern -->
+                <div class="custom-select" id="newclass-scope"
+                    (click)="$event.stopPropagation(); dropdownManager.selected_dropdown = dropdownManager.selected_dropdown == 'newclass_scope' ? '' : 'newclass_scope'">
+                    <div class="selected-value">
+                        <div class="row" style="gap: .5rem">
+                            <i-tabler name="books"
+                                style="color: var(--text-muted);width: 1.125rem;height: 1.125rem;"></i-tabler>
+                            {{ selectedScope() }}
+                        </div>
+                        <i-tabler name="chevron-down"></i-tabler>
+                    </div>
+                    @if (dropdownManager.selected_dropdown == 'newclass_scope') {
+                    <div class="options-dropdown">
+                        <div class="list">
+                            @for (s of availableScopes; track s.id) {
+                            <div class="option row" style="gap: .5rem"
+                                (click)="$event.stopPropagation(); dropdownManager.selected_dropdown = ''; newClass.scopeId = s.id;">
+                                {{ s.name }}
+                            </div>
+                            }
+                        </div>
+                    </div>
+                    }
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>Třídní učitel</label>
+                <div class="custom-select" id="newclass-teacher"
+                    (click)="$event.stopPropagation(); dropdownManager.selected_dropdown = dropdownManager.selected_dropdown == 'newclass_teacher' ? '' : 'newclass_teacher'">
+                    <div class="selected-value">
+                        <div class="row" style="gap: .5rem">
+                            <i-tabler name="user"
+                                style="color: var(--text-muted);width: 1.125rem;height: 1.125rem;"></i-tabler>
+                            {{ selectedTeacher() }}
+                        </div>
+                        <i-tabler name="chevron-down"></i-tabler>
+                    </div>
+                    @if (dropdownManager.selected_dropdown == 'newclass_teacher') {
+                    <div class="options-dropdown">
+                        <div class="list">
+                            <div class="option row" style="gap: .5rem"
+                                (click)="$event.stopPropagation(); dropdownManager.selected_dropdown = ''; newClass.headTeacherId = null;">
+                                Žádný
+                            </div>
+                            @for (t of availableTeachers; track t.id) {
+                            <div class="option row" style="gap: .5rem"
+                                (click)="$event.stopPropagation(); dropdownManager.selected_dropdown = ''; newClass.headTeacherId = t.id;">
+                                {{ t.firstName }} {{ t.lastName }}
+                            </div>
+                            }
+                        </div>
+                    </div>
+                    }
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>Kmenová učebna</label>
+                <div class="custom-select" id="newclass-room"
+                    (click)="$event.stopPropagation(); dropdownManager.selected_dropdown = dropdownManager.selected_dropdown == 'newclass_room' ? '' : 'newclass_room'">
+                    <div class="selected-value">
+                        <div class="row" style="gap: .5rem">
+                            <i-tabler name="door-enter"
+                                style="color: var(--text-muted);width: 1.125rem;height: 1.125rem;"></i-tabler>
+                            {{ selectedRoom() }}
+                        </div>
+                        <i-tabler name="chevron-down"></i-tabler>
+                    </div>
+                    @if (dropdownManager.selected_dropdown == 'newclass_room') {
+                    <div class="options-dropdown">
+                        <div class="list">
+                            <div class="option row" style="gap: .5rem"
+                                (click)="$event.stopPropagation(); dropdownManager.selected_dropdown = ''; newClass.classroomId = null;">
+                                Žádná
+                            </div>
+                            @for (r of availableRooms; track r.id) {
+                            <div class="option row" style="gap: .5rem"
+                                (click)="$event.stopPropagation(); dropdownManager.selected_dropdown = ''; newClass.classroomId = r.id;">
+                                {{ r.name }}
+                            </div>
+                            }
+                        </div>
+                    </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Import Tab logic would be here... -->
+    <div class="tab-content" [class.active]="addClassTab === 'import'">
+        <div class="import-placeholder">
+            <i-tabler name="box"></i-tabler>
+            <p>Import tříd momentálně není k dispozici.</p>
+        </div>
+    </div>
+
+</div>
+
+<div class="modal-actions">
+    <button class="btn btn--secondary" (click)="close()">{{ l.s('buttons.cancel') }}</button>
+    <button class="btn btn--primary" (click)="submit()">
+        <i-tabler name="plus"></i-tabler>
+        Vytvořit třídu
+    </button>
+</div>

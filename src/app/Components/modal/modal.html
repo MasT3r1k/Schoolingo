@@ -1,9 +1,20 @@
 @for (modal of modalManager.getModals(); track $index) {
 <div class="modals" (click)="context_menu.hideContextMenu()" [style.--z-modal]="modal.index">
-    <div class="modal" [id]="modal.id" [style.--width.px]="modal.width" [style.--z-modal]="modal.index" [style.overflow]="getOverflowStyle(modal.forceScrollbar || false)">
+    <div class="modal" [id]="modal.id" [style.--width.px]="modal.width" [style.--z-modal]="modal.index"
+        [style.overflow]="getOverflowStyle(modal.forceScrollbar || false)">
         @if (modal.title != '') {
         <div class="modal-header">
-            <h2>{{ l.s(modal.title, modal.title_placeholders) }}</h2>
+            @if (modal.icon) {
+            <div class="modal-header__icon">
+                <i-tabler [name]="modal.icon"></i-tabler>
+            </div>
+            }
+            <div class="content">
+                <h2>{{ l.s(modal.title, modal.title_placeholders) }}</h2>
+                @if (modal.description) {
+                    <div class="muted">{{ l.s(modal.description) }}</div>
+                }
+            </div>
         </div>
         }
 
@@ -12,14 +23,14 @@
             <i-tabler name="x"></i-tabler>
         </div>
         }
-        
+
         <div>
             @for (item of modal.items; track $index) {
-                @switch(item.type) {
-                    @case("component") {
-                        <ng-component [ngComponentOutlet]="item.component"></ng-component>
-                    }
-                }
+            @switch(item.type) {
+            @case("component") {
+            <ng-component [ngComponentOutlet]="item.component"></ng-component>
+            }
+            }
             }
         </div>
     </div>

@@ -8,6 +8,8 @@ interface ModalItem {
 interface Modal {
     title: string;
     title_placeholders?: Record<string, string>;
+    description?: string;
+    icon?: string;
     width?: number;
     forceScrollbar?: boolean;
     closeable: boolean;

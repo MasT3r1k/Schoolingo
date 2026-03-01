@@ -1,0 +1,276 @@
+.list-view {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 1rem;
+}
+
+.card-header h2 {
+    margin: 0;
+    font-size: 1.25rem;
+    font-weight: 600;
+}
+
+.header-actions {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.filters-row-container {
+    display: flex;
+    gap: 1.5rem;
+    position: relative;
+    z-index: 10;
+}
+
+.search-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    max-width: 400px;
+    width: 100%;
+    padding: 0 0.75rem;
+    transition: all 0.2s ease;
+}
+
+.search-wrapper:focus-within {
+    border-color: var(--primary);
+    background: var(--surface);
+    box-shadow: 0 0 0 3px rgba(74, 163, 255, 0.15);
+}
+
+.search-wrapper i-tabler {
+    width: 1.25rem;
+    height: 1.25rem;
+    color: var(--text-muted);
+    flex-shrink: 0;
+}
+
+.search-wrapper input {
+    flex: 1;
+    background: transparent;
+    border: none;
+    outline: none;
+    padding: 0.75rem 0.75rem;
+    font-size: 0.9375rem;
+    width: 100%;
+    color: var(--text);
+}
+
+.search-wrapper input::placeholder {
+    color: var(--text-muted);
+}
+
+.search-wrapper.full-width {
+    flex: 1;
+    max-width: none;
+}
+
+.filters-row-container {
+    display: flex;
+    gap: 1.5rem;
+    margin-bottom: 20px;
+    position: relative;
+    z-index: 10;
+}
+
+.search-wrapper.full-width {
+    flex: 1;
+    width: auto;
+}
+
+.filter-dropdown-wrapper {
+    position: relative;
+}
+
+.filters-dropdown {
+    position: absolute;
+    top: calc(100% + 0.5rem);
+    right: 0;
+    width: 400px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+    padding: 1.5rem;
+    z-index: 100;
+    animation: slideDown 0.2s ease-out;
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.filters-dropdown h3 {
+    margin: 0 0 1.25rem 0;
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--text);
+    padding-bottom: 0.75rem;
+    border-bottom: 1px solid var(--border);
+}
+
+.dropdown-footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.75rem;
+    margin-top: 1.5rem;
+    padding-top: 1rem;
+    border-top: 1px solid var(--border);
+}
+
+/* loading */
+.loading-state,
+.error-state,
+.empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 3rem 1rem;
+    text-align: center;
+    gap: 1rem;
+    background: var(--surface-2);
+    border-radius: var(--radius);
+}
+
+.loading-spinner {
+    width: 2.5rem;
+    height: 2.5rem;
+    border: 3px solid var(--border);
+    border-top-color: var(--primary);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* Classes Table */
+.classes-table-wrapper {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+}
+
+.classes-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.classes-table thead {
+    background: var(--surface-2);
+    border-bottom: 1px solid var(--border);
+}
+
+.classes-table th {
+    padding: 0.875rem 1rem;
+    text-align: left;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.classes-table tbody tr {
+    border-bottom: 1px solid var(--border);
+    transition: background 0.15s ease;
+}
+
+.classes-table tbody tr:last-child {
+    border-bottom: none;
+}
+
+.classes-table tbody tr:hover {
+    background: var(--hover-bg);
+}
+
+.classes-table td {
+    padding: 1rem;
+    font-size: 0.9375rem;
+    color: var(--text);
+}
+
+.class-cell {
+    display: flex;
+    flex-direction: column;
+}
+
+.class-cell .name {
+    font-weight: 600;
+    color: var(--text);
+}
+
+/* Row Action */
+.row-action {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 2rem;
+    height: 2rem;
+    background: transparent;
+    border: none;
+    border-radius: var(--radius);
+    color: var(--text-muted);
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.row-action:hover {
+    background: var(--danger-light, rgba(239, 68, 68, 0.1));
+    color: var(--danger, #ef4444);
+}
+
+/* Column Widths */
+.col-name {
+    width: 15%;
+}
+
+.col-rocnik {
+    width: 10%;
+}
+
+.col-obor {
+    width: 25%;
+}
+
+.col-headteacher {
+    width: 20%;
+}
+
+.col-room {
+    width: 15%;
+}
+
+.col-students {
+    width: 10%;
+    text-align: center;
+}
+
+.col-actions {
+    width: 5%;
+    text-align: center;
+}

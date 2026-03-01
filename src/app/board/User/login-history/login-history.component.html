@@ -24,7 +24,8 @@
                 </div>
                 <div class="stat-info">
                     <span class="stat-value">{{ getSuccessfulLogins() }}</span>
-                    <span class="stat-label">Úspěšných za 30 dní</span>
+                    <span class="stat-label">{{ (dateFrom || dateTo) ? 'Úspěšných za období' : 'Úspěšných za 30 dní'
+                        }}</span>
                 </div>
             </div>
             <div class="stat-card stat--danger">
@@ -33,10 +34,52 @@
                 </div>
                 <div class="stat-info">
                     <span class="stat-value">{{ getFailedLogins() }}</span>
-                    <span class="stat-label">Neúspěšných za 30 dní</span>
+                    <span class="stat-label">{{ (dateFrom || dateTo) ? 'Neúspěšných za období' : 'Neúspěšných za 30 dní'
+                        }}</span>
                 </div>
             </div>
         </div>
+    </div>
+    <!-- Filter Section -->
+    <div class="section filter-section">
+        <div class="period-selector">
+            <button class="period-btn" [class.active]="selectedPeriod === 'day'" (click)="setPeriod('day')">Den</button>
+            <button class="period-btn" [class.active]="selectedPeriod === 'week'"
+                (click)="setPeriod('week')">Týden</button>
+            <button class="period-btn" [class.active]="selectedPeriod === 'month'"
+                (click)="setPeriod('month')">Měsíc</button>
+            <button class="period-btn" [class.active]="selectedPeriod === 'semester'"
+                (click)="setPeriod('semester')">Pololetí</button>
+            <button class="period-btn" [class.active]="selectedPeriod === 'year'"
+                (click)="setPeriod('year')">Rok</button>
+            <button class="period-btn" [class.active]="selectedPeriod === '30days'"
+                (click)="setPeriod('30days')">Posledních 30 dní</button>
+            <button class="period-btn" [class.active]="selectedPeriod === 'custom'"
+                (click)="selectedPeriod = 'custom'">Vlastní</button>
+        </div>
+
+        @if (selectedPeriod === 'custom') {
+        <div class="filter-controls-custom">
+            <div class="filter-group">
+                <label for="dateFrom">Od</label>
+                <div class="input-with-icon">
+                    <i-tabler name="calendar"></i-tabler>
+                    <input type="date" id="dateFrom" [(ngModel)]="dateFrom" (change)="onFilterChange()">
+                </div>
+            </div>
+            <div class="filter-group">
+                <label for="dateTo">Do</label>
+                <div class="input-with-icon">
+                    <i-tabler name="calendar"></i-tabler>
+                    <input type="date" id="dateTo" [(ngModel)]="dateTo" (change)="onFilterChange()">
+                </div>
+            </div>
+            <button class="btn btn--outline" (click)="setPeriod('30days')">
+                <i-tabler name="x"></i-tabler>
+                Resetovat
+            </button>
+        </div>
+        }
     </div>
 
     <!-- Login History List -->

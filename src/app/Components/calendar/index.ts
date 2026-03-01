@@ -1,4 +1,4 @@
-import { Component, ElementRef, EventEmitter, inject, Input, OnDestroy, OnInit, Output, Renderer2 } from '@angular/core';
+import { Component, ElementRef, EventEmitter, inject, Input, OnDestroy, OnInit, Output, Renderer2, OnChanges, SimpleChanges } from '@angular/core';
 import { CalendarManager } from '@Components/calendar-dropdown';
 import { IconsModule } from '@Schoolingo/icons';
 import { Locale } from '@Schoolingo/locale';
@@ -13,7 +13,7 @@ import { BehaviorSubject, Subscription } from 'rxjs';
   imports: [IconsModule],
   standalone: true
 })
-export class CalendarComponent implements OnInit, OnDestroy {
+export class CalendarComponent implements OnInit, OnDestroy, OnChanges {
     @Input() id: string = '';
     @Input() size: 'full' | 'center' = 'center';
     @Input() options: { multiple_days?: boolean, multiple_hours?: boolean } = {
@@ -34,6 +34,24 @@ export class CalendarComponent implements OnInit, OnDestroy {
 
     public calendarManager = inject(CalendarManager);
     public l = inject(Locale);
+
+    ngOnChanges(changes: SimpleChanges): void {
+        const calData = this.calendarManager.getCalendarData(this.id);
+        if (!calData) return;
+
+        if (changes['value'] && this.value) {
+            const current = calData.selected_date[0].getValue();
+            if (!current.isSame(this.value, 'day')) {
+                calData.selected_date[0].next(this.value.clone());
+            }
+        }
+        if (changes['valueEnd'] && this.valueEnd) {
+            const current = calData.selected_date[1].getValue();
+            if (!current.isSame(this.valueEnd, 'day')) {
+                calData.selected_date[1].next(this.valueEnd.clone());
+            }
+        }
+    }
 
     ngOnInit(): void {
         if (!this.id) {
@@ -63,10 +81,16 @@ export class CalendarComponent implements OnInit, OnDestroy {
         const calData = this.calendarManager.getCalendarData(this.id);
         if (calData) {
             this.subs.add(calData.selected_date[0].subscribe((val) => {
-                this.valueChange.emit(val);
+                const current = this.value;
+                if (!current || !current.isSame(val, 'day')) {
+                    this.valueChange.emit(val);
+                }
             }));
             this.subs.add(calData.selected_date[1].subscribe((val) => {
-                this.valueEndChange.emit(val);
+                const current = this.valueEnd;
+                if (!current || !current.isSame(val, 'day')) {
+                    this.valueEndChange.emit(val);
+                }
             }));
         }
 

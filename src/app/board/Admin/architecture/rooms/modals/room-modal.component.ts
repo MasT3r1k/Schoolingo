@@ -5,6 +5,7 @@ import { HttpClient } from '@angular/common/http';
 import { Locale } from '@Schoolingo/locale';
 import { IconsModule } from '@Schoolingo/icons';
 import { ModalManager } from '@Schoolingo/modal';
+import { DropdownManager } from '@Schoolingo/dropdown';
 import { Config } from '@Schoolingo/config';
 
 @Component({
@@ -12,15 +13,31 @@ import { Config } from '@Schoolingo/config';
   standalone: true,
   imports: [CommonModule, FormsModule, IconsModule],
   template: `
-    <div class="card__body">
+    <div class="modal-body">
         <div class="form-row">
             <div class="form-group" style="grid-column: span 2">
                 <label class="form-label">{{ l.s('architecture.building_floor') }}</label>
-                <select class="form-select" [(ngModel)]="roomForm.floor_id" [disabled]="isEditing">
-                    @for (f of floors; track f.bf_id) {
-                        <option [value]="f.bf_id">{{ f.building_name }} - {{ f.level }}. patro</option>
+                <div class="custom-select" id="room_floor" [class.disabled]="isEditing"
+                    (click)="!isEditing && ($event.stopPropagation()); dropdownManager.selected_dropdown = !isEditing && dropdownManager.selected_dropdown == 'room_floor' ? '' : (!isEditing ? 'room_floor' : dropdownManager.selected_dropdown)">
+                    <div class="selected-value">
+                        <div class="row" style="gap: .5rem">
+                            {{ getSelectedFloorLabel() }}
+                        </div>
+                        <i-tabler name="chevron-down"></i-tabler>
+                    </div>
+                    @if (dropdownManager.selected_dropdown == 'room_floor') {
+                    <div class="options-dropdown">
+                        <div class="list">
+                            @for (f of floors; track f.bf_id) {
+                            <div class="option row" style="gap: .5rem"
+                                (click)="$event.stopPropagation(); dropdownManager.selected_dropdown = ''; roomForm.floor_id = f.bf_id">
+                                {{ f.building_name }} - {{ f.level }}. patro
+                            </div>
+                            }
+                        </div>
+                    </div>
                     }
-                </select>
+                </div>
             </div>
         </div>
         <div class="form-group">
@@ -30,43 +47,78 @@ import { Config } from '@Schoolingo/config';
         <div class="form-row">
             <div class="form-group">
                 <label class="form-label">{{ l.s('architecture.room_type') }}</label>
-                <select class="form-select" [(ngModel)]="roomForm.type">
-                    @for (type of ['classroom', 'cabinet', 'office', 'hallway', 'canteen', 'other']; track type) {
-                        <option [value]="type">{{ l.s('architecture.types.' + type) }}</option>
-                    }
-                </select>
+                <div class="custom-select" id="room_type"
+                    (click)="$event.stopPropagation(); dropdownManager.selected_dropdown = dropdownManager.selected_dropdown == 'room_type' ? '' : 'room_type'">
+                    <div class="selected-value">
+                        <div class="row" style="gap: .5rem">
+                            {{ getSelectedTypeLabel() }}
+                        </div>
+                        <i-tabler name="chevron-down"></i-tabler>
+                    </div>
+                    @if (dropdownManager.selected_dropdown == 'room_type') {
+                    <div class="options-dropdown">
+                        <div class="list">
+                            @for (type of ['classroom', 'cabinet', 'office', 'hallway', 'canteen', 'other']; track type) {
+                            <div class="option row" style="gap: .5rem"
+                                (click)="$event.stopPropagation(); dropdownManager.selected_dropdown = ''; roomForm.type = type">
+                                {{ l.s('architecture.types.' + type) }}
+                            </div>
+                            }
+                        </div>
+                     </div>
+                     }
+                </div>
             </div>
             <div class="form-group">
                 <label class="form-label">{{ l.s('architecture.capacity') }}</label>
-                <input type="number" class="form-input" [(ngModel)]="roomForm.capacity" [placeholder]="l.s('capacity')">
+                <input type="number" class="form-input" [(ngModel)]="roomForm.capacity" [placeholder]="l.s('capacity') || 'Kapacita'">
             </div>
         </div>
         <div class="form-group">
             <label class="form-label">{{ l.s('architecture.room_manager') }}</label>
-            <select class="form-select" [(ngModel)]="roomForm.manager">
-                <option [value]="null">{{ l.s('architecture.no_manager') }}</option>
-                @for (emp of employees; track emp.person_id) {
-                  <option [value]="emp.person_id">{{ emp.full_name }}</option>
-                }
-            </select>
+            <div class="custom-select" id="room_manager"
+                (click)="$event.stopPropagation(); dropdownManager.selected_dropdown = dropdownManager.selected_dropdown == 'room_manager' ? '' : 'room_manager'">
+                <div class="selected-value">
+                    <div class="row" style="gap: .5rem">
+                        {{ getSelectedManagerLabel() }}
+                    </div>
+                    <i-tabler name="chevron-down"></i-tabler>
+                </div>
+                @if (dropdownManager.selected_dropdown == 'room_manager') {
+                <div class="options-dropdown">
+                    <div class="list">
+                        <div class="option row" style="gap: .5rem"
+                            (click)="$event.stopPropagation(); dropdownManager.selected_dropdown = ''; roomForm.manager = null">
+                            {{ l.s('architecture.no_manager') }}
+                        </div>
+                        @for (emp of employees; track emp.person_id) {
+                        <div class="option row" style="gap: .5rem"
+                            (click)="$event.stopPropagation(); dropdownManager.selected_dropdown = ''; roomForm.manager = emp.person_id">
+                            {{ emp.full_name }}
+                        </div>
+                        }
+                    </div>
+                 </div>
+                 }
+            </div>
         </div>
         <div class="form-group">
-            <label class="form-label">{{ l.s('architecture.room_description_label') }}</label>
-            <textarea class="form-input" [(ngModel)]="roomForm.description" [placeholder]="l.s('architecture.placeholders.room_description')"></textarea>
+            <label class="form-label">{{ l.s('architecture.room_description_label') || 'Popis místnosti' }}</label>
+            <textarea class="form-input" [(ngModel)]="roomForm.description" [placeholder]="l.s('architecture.placeholders.room_description') || '...'"></textarea>
         </div>
     </div>
-    <div class="card__footer">
+    <div class="modal-actions">
         <button class="btn btn--secondary" (click)="closeModal()">{{ l.s('cancel') }}</button>
         <button class="btn btn--primary" (click)="saveRoom()">{{ l.s('buttons.save') }}</button>
     </div>
   `,
   styles: [`
-    .card__body { padding: 1.5rem; display: flex; flex-direction: column; gap: 1.25rem; }
-    .card__footer { padding: 1.5rem; border-top: 1px solid var(--border); display: flex; justify-content: flex-end; gap: 0.75rem; }
+    .modal-body { padding: 1.5rem; display: flex; flex-direction: column; gap: 1.25rem; }
     .form-group { display: flex; flex-direction: column; gap: 0.5rem; }
     .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
     .form-label { font-size: 0.875rem; font-weight: 500; color: var(--text); }
     .form-input, .form-select { padding: 0.75rem 1rem; background: var(--surface-2); border: 1px solid var(--border); border-radius: var(--radius); font-size: 0.9375rem; color: var(--text); }
+    .disabled { opacity: 0.6; pointer-events: none; cursor:not-allowed; }
     @media (max-width: 768px) {
         .form-row { grid-template-columns: 1fr; }
     }
@@ -75,7 +127,8 @@ import { Config } from '@Schoolingo/config';
 export class RoomModalComponent implements OnInit {
   public l = inject(Locale);
   private http = inject(HttpClient);
-  private modalManager = inject(ModalManager);
+  public modalManager = inject(ModalManager);
+  public dropdownManager = inject(DropdownManager);
 
   public floors: any[] = [];
   public employees: any[] = [];
@@ -103,6 +156,21 @@ export class RoomModalComponent implements OnInit {
         this.roomForm.floor_id = this.floors[0]?.bf_id || 0;
       }
     }
+  }
+
+  public getSelectedFloorLabel(): string {
+    const f = this.floors.find(fl => fl.bf_id === this.roomForm.floor_id);
+    return f ? `${f.building_name} - ${f.level}. patro` : (this.l.s('architecture.building_floor') || 'Vyberte patro');
+  }
+
+  public getSelectedTypeLabel(): string {
+    return this.l.s('architecture.types.' + this.roomForm.type) || this.roomForm.type;
+  }
+
+  public getSelectedManagerLabel(): string {
+    if (!this.roomForm.manager) return this.l.s('architecture.no_manager') || 'Bez správce';
+    const emp = this.employees.find(e => e.person_id === this.roomForm.manager);
+    return emp ? emp.full_name : (this.l.s('architecture.no_manager') || 'Bez správce');
   }
 
   saveRoom(): void {

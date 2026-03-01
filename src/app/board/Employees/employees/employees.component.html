@@ -908,20 +908,40 @@
         <!-- TAB 1: ATTENDANCE -->
         @if (selectedViewTab.getValue() === 1) {
         <div class="attendance-wrapper">
-            <div class="card-header"
-                style="justify-content: space-between; align-items: center; display: flex; margin-bottom: 20px;">
-                <h3>Přehled docházky</h3>
-                <div class="filters-inline">
-                    <div class="filter-group">
-                        <label>Datum</label>
-                        <input type="date" class="form-input" [ngModel]="attendanceFilter().startDate"
-                            (ngModelChange)="setAttendanceFilterStartDateAndReload($event)">
+
+            <!-- Top Bar -->
+            <div class="attendance-topbar">
+                <div class="attendance-topbar-left">
+                    <div class="attendance-title-block">
+                        <i-tabler name="clock"></i-tabler>
+                        <h3>Přehled docházky</h3>
                     </div>
+                    <span class="attendance-count-badge">
+                        {{ allAttendanceRecords().length }} záznamů
+                    </span>
+                </div>
+                <div class="attendance-topbar-right">
+                    <div class="date-navigator-group">
+                        <button class="btn-nav-pill left" title="Předchozí den" (click)="changeAttendanceDate(-1)">
+                            <i-tabler name="chevron-left"></i-tabler>
+                        </button>
+                        <app-calendar [value]="attendanceMoment()"
+                            (valueChange)="setAttendanceFilterStartDateAndReload($event.format('YYYY-MM-DD'))"
+                            style="min-width: 148px;">
+                        </app-calendar>
+                        <button class="btn-nav-pill right" title="Následující den" (click)="changeAttendanceDate(1)">
+                            <i-tabler name="chevron-right"></i-tabler>
+                        </button>
+                    </div>
+                    <button class="btn-today" (click)="goToToday()">
+                        Dnes
+                    </button>
                 </div>
             </div>
 
+            <!-- Table -->
             <div class="table-container">
-                <table class="data-table">
+                <table class="data-table attendance-table">
                     <thead>
                         <tr>
                             <th>Zaměstnanec</th>
@@ -929,16 +949,17 @@
                             <th>Odchod</th>
                             <th>Odpracováno</th>
                             <th>Status</th>
-                            <th>Akce</th>
+                            <th></th>
                         </tr>
                     </thead>
                     <tbody>
                         @if (allAttendanceRecords().length > 0) {
                         @for (record of allAttendanceRecords(); track record.attendance_id) {
-                        <tr>
+                        <tr class="att-row" [class.att-row--active]="getAttendanceStatus(record) === 'active'">
                             <td class="col-name">
                                 <div class="name-cell">
-                                    <div class="avatar-circle">
+                                    <div class="avatar-circle"
+                                        [class.avatar-circle--active]="getAttendanceStatus(record) === 'active'">
                                         {{ Utils.getInitials(record.full_name) }}
                                     </div>
                                     <div class="details">
@@ -946,30 +967,46 @@
                                     </div>
                                 </div>
                             </td>
-                            <td>{{ record.check_in || '-' }}</td>
-                            <td>{{ record.check_out || '-' }}</td>
+                            <td>
+                                <span class="time-value">
+                                    <i-tabler name="login-2"></i-tabler>
+                                    {{ record.check_in ? record.check_in.substring(0, 5) : '-' }}
+                                </span>
+                            </td>
+                            <td>
+                                <span class="time-value time-value--out" [class.time-value--live]="!record.check_out">
+                                    <i-tabler [name]="record.check_out ? 'logout-2' : 'clock-hour-4'"></i-tabler>
+                                    {{ record.check_out ? record.check_out.substring(0, 5) : 'Aktivní' }}
+                                </span>
+                            </td>
                             <td>
                                 @if (record.worked_minutes) {
-                                {{ (record.worked_minutes / 60).toFixed(1) }}h
+                                <span class="hours-badge">{{ (record.worked_minutes / 60).toFixed(1) }}h</span>
                                 } @else {
-                                -
+                                <span class="hours-badge hours-badge--empty">—</span>
                                 }
                             </td>
                             <td>
                                 @switch (getAttendanceStatus(record)) {
                                 @case ('active') {
-                                <span class="status-badge status-active">Přítomen</span>
+                                <span class="att-status att-status--active">
+                                    <span class="att-status-dot"></span>
+                                    Přítomen
+                                </span>
                                 }
                                 @case ('inactive') {
-                                <span class="status-badge status-inactive">Nepřítomen</span>
+                                <span class="att-status att-status--inactive">
+                                    <span class="att-status-dot"></span>
+                                    Nepřítomen
+                                </span>
                                 }
                                 @default {
-                                <span class="status-badge">Neznámo</span>
+                                <span class="att-status att-status--unknown">Neznámo</span>
                                 }
                                 }
                             </td>
-                            <td>
-                                <button class="btn-icon" (click)="editAttendanceRecord(record)">
+                            <td class="col-actions">
+                                <button class="btn-icon" (click)="editAttendanceRecord(record)" title="Upravit">
                                     <i-tabler name="edit"></i-tabler>
                                 </button>
                             </td>
@@ -978,9 +1015,12 @@
                         } @else {
                         <tr>
                             <td colspan="6" class="no-data">
-                                <div class="empty-state">
-                                    <i-tabler name="calendar-off"></i-tabler>
-                                    <p>Žádné záznamy pro tento den</p>
+                                <div class="attendance-empty">
+                                    <div class="attendance-empty-icon">
+                                        <i-tabler name="calendar-off"></i-tabler>
+                                    </div>
+                                    <h4>Žádné záznamy pro tento den</h4>
+                                    <p>{{ attendanceMoment().format('dddd, D. MMMM YYYY') }}</p>
                                 </div>
                             </td>
                         </tr>
@@ -990,6 +1030,7 @@
             </div>
         </div>
         }
+
 
         <!-- TAB 2: VACATION REQUESTS -->
         @if (selectedViewTab.getValue() === 2) {

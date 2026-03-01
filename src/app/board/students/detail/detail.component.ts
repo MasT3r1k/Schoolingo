@@ -440,7 +440,7 @@ export class DetailComponent implements OnInit, AfterViewInit {
       });
   }
 
-  public formatHistoryEvent(item: StudentHistory): { title: string, description: string, icon: string } {
+  public formatHistoryEvent(item: StudentHistory): { title: string, description: string, icon: string, color: string, details: { label: string, value: string }[] } {
     let data: any = {};
     try {
       data = typeof item.data === 'string' ? JSON.parse(item.data) : item.data;
@@ -450,47 +450,104 @@ export class DetailComponent implements OnInit, AfterViewInit {
       case 'added_parent':
         return {
           title: 'Přidán zákonný zástupce',
-          description: `Byl přidán nový zákonný zástupce <strong>${data.parent_full_name}</strong> s rolí <strong>${this.l.s('family.' + data.type)}</strong>.`,
-          icon: 'user-plus'
+          description: `Byl přidán nový zákonný zástupce <strong>${data.parent_full_name || 'neznámý'}</strong> s rolí <strong>${this.l.s('family.' + (data.type || data.role || ''))}</strong>.`,
+          icon: 'user-plus',
+          color: 'success',
+          details: [
+            { label: 'Zákonný zástupce', value: data.parent_full_name || '—' },
+            { label: 'Role', value: this.l.s('family.' + (data.type || data.role || '')) || '—' },
+          ]
         };
       case 'removed_parent':
         return {
           title: 'Odebrán zákonný zástupce',
-          description: `Byl odebrán zákonný zástupce.`,
-          icon: 'user-minus'
+          description: `Byl odebrán zákonný zástupce${data.parent_full_name ? ' <strong>' + data.parent_full_name + '</strong>' : ''}.`,
+          icon: 'user-minus',
+          color: 'danger',
+          details: [
+            { label: 'Zákonný zástupce', value: data.parent_full_name || '—' },
+          ]
         };
       case 'updated_parent':
         return {
           title: 'Úprava zákonného zástupce',
           description: `Byly upraveny údaje u zákonného zástupce.`,
-          icon: 'user-edit'
+          icon: 'user-edit',
+          color: 'warning',
+          details: []
         };
-      case 'updated_student':
+      case 'updated_student': {
+        const details: { label: string, value: string }[] = [];
+        if (data.firstName || data.lastName) details.push({ label: 'Jméno', value: `${data.firstName || ''} ${data.lastName || ''}`.trim() });
+        if (data.birthday) details.push({ label: 'Datum narození', value: data.birthday });
+        if (data.birthPlace) details.push({ label: 'Místo narození', value: data.birthPlace });
+        if (data.birthNum) details.push({ label: 'Rodné číslo', value: data.birthNum });
+        if (data.street) details.push({ label: 'Ulice', value: `${data.street} ${data.houseNumber || ''}`.trim() });
+        if (data.city) details.push({ label: 'Město', value: `${data.city}${data.postcode ? ', ' + data.postcode : ''}` });
         return {
-          title: 'Úprava údajů studenta',
-          description: `Byly aktualizovány osobní nebo studijní údaje studenta.`,
-          icon: 'user-cog'
+          title: data.street ? 'Úprava adresy studenta' : 'Úprava údajů studenta',
+          description: data.street
+            ? `Byla aktualizována adresa studenta: <strong>${data.street} ${data.houseNumber || ''}, ${data.city || ''}</strong>.`
+            : `Byly aktualizovány osobní nebo studijní údaje studenta.`,
+          icon: data.street ? 'home' : 'user-cog',
+          color: 'primary',
+          details
         };
-      case 'updated_matrika':
+      }
+      case 'updated_matrika': {
+        const matrikaLabels: Record<string, string> = {
+          highest_education_id: 'Nejvyšší vzdělání',
+          previous_school_izo: 'IZO předchozí školy',
+          study_type_code: 'Typ studia',
+          financing_code: 'Financování',
+          start_reason_code: 'Důvod nástupu',
+          end_reason_code: 'Důvod ukončení',
+          individual_plan_code: 'Individuální plán',
+          special_needs_code: 'Spec. potřeby',
+          language_code: 'Jazyk',
+          health_status_code: 'Zdravotní stav',
+        };
+        const details = Object.entries(matrikaLabels)
+          .filter(([key]) => data[key] !== undefined && data[key] !== null && data[key] !== '')
+          .map(([key, label]) => ({ label, value: String(data[key]) }));
         return {
           title: 'Úprava matriky studenta',
           description: `Byly aktualizovány údaje v matrice studenta.`,
-          icon: 'clipboard-list'
+          icon: 'clipboard-list',
+          color: 'info',
+          details
         };
+      }
       case 'moved_to_class':
         return {
           title: 'Přesun do jiné třídy',
           description: `Student byl přesunut do třídy <strong>${data.class_name || 'neznámá'}</strong>.`,
-          icon: 'arrows-exchange'
+          icon: 'arrows-exchange',
+          color: 'warning',
+          details: [
+            { label: 'Nová třída', value: data.class_name || '—' },
+          ]
         };
       default:
         return {
           title: 'Neznámá akce',
           description: `Provedena akce typu ${item.type}.`,
-          icon: 'help'
+          icon: 'help',
+          color: 'muted',
+          details: []
         };
     }
   }
+
+  /** Vrátí záznamy vhodné pro záložku "sledování změn" (updated_student, updated_matrika) */
+  public getChangesHistory(): StudentHistory[] {
+    if (!this.selectedStudent?.history) return [];
+    return this.selectedStudent.history.filter((h: StudentHistory) =>
+      h.type === 'updated_student' || h.type === 'updated_matrika'
+    );
+  }
+
+
 
 
   public getTodayTimetable(): any[] {

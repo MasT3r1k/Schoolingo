@@ -167,7 +167,9 @@ export class ArchitectureRoomsComponent implements OnInit {
 
   ngOnInit(): void {
     this.modalManager.addModal('room-modal', {
+      icon: 'door',
       title: 'architecture.rooms',
+      description: 'Úprava parametrů existující místnosti',
       closeable: true,
       width: 600,
       items: [{ type: 'component', component: RoomModalComponent }]

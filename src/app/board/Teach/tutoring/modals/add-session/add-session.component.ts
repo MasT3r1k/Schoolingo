@@ -2,6 +2,8 @@ import { Component, inject, OnInit, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { IconsModule } from '@Schoolingo/icons';
 import { ModalManager } from '@Schoolingo/modal';
+import { Locale } from '@Schoolingo/locale';
+import { DropdownManager } from '@Schoolingo/dropdown';
 import { TutoringService } from '../../../../../infrastructure/tutoring/tutoring.service';
 import { BoardAlertManager } from '../../../../../infrastructure/alert/board.alert.manager';
 
@@ -14,6 +16,8 @@ import { BoardAlertManager } from '../../../../../infrastructure/alert/board.ale
 })
 export class AddSessionComponent implements OnInit {
   private modalManager = inject(ModalManager);
+  public l = inject(Locale);
+  public dropdownManager = inject(DropdownManager);
   private tutoringService = inject(TutoringService);
   private alert = inject(BoardAlertManager);
 
@@ -42,6 +46,19 @@ export class AddSessionComponent implements OnInit {
     if (selectedRoom) {
       this.newSession.maxStudents = selectedRoom.capacity;
     }
+  }
+
+  public getSelectedSubjectLabel(): string {
+    return this.subjects().find(s => s.subject_id == this.newSession.subjectId)?.label || this.l.s('tutoring.modals.add.form.all_subjects');
+  }
+
+  public getSelectedClassLabel(): string {
+    return this.classes().find(c => c.id == this.newSession.classId)?.name || this.l.s('tutoring.modals.add.form.all_classes');
+  }
+
+  public getSelectedRoomLabel(): string {
+    const room = this.rooms().find(r => r.room_id == this.newSession.roomId);
+    return room ? `${room.name} (${this.l.s('tutoring.modals.add.form.capacity')} ${room.capacity})` : this.l.s('tutoring.modals.add.form.no_room');
   }
 
   public closeModal(): void {
