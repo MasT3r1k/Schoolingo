@@ -131,7 +131,7 @@ export class DetailComponent implements OnInit, AfterViewInit {
   public showRightScroll = false;
 
   ngAfterViewInit(): void {
-    setTimeout(() => this.checkScroll(), 100);
+    setTimeout(() => this.checkScroll(), 250);
   }
 
   @HostListener('window:resize')
@@ -168,7 +168,7 @@ export class DetailComponent implements OnInit, AfterViewInit {
   public fullTimetable: any[] = [];
   public fullTimetableHours: TimetableHours[] = [];
   public timetableSelectedWeek = new BehaviorSubject<moment.Moment | null>(moment());
-  public timetableSelectedTab = 0; // 0 = actual, 1 = permanent
+  public timetableSelectedTab = new BehaviorSubject<number>(0); // 0 = actual, 1 = permanent
 
   // Overview Schedule
   public overviewSelectedDate = moment();
@@ -270,6 +270,7 @@ export class DetailComponent implements OnInit, AfterViewInit {
           this.loadMarks();
           this.refreshTimetable();
           this.isLoading = false;
+          setTimeout(() => this.checkScroll(), 100);
         },
         error: () => {
           this.isLoading = false;
@@ -400,7 +401,7 @@ export class DetailComponent implements OnInit, AfterViewInit {
       'person',
       this.selectedStudent.person_id,
       this.timetableSelectedWeek.getValue(),
-      this.timetableSelectedTab
+      this.timetableSelectedTab.getValue()
     );
 
     isLoading.subscribe(loading => this.isLoadingTimetable = loading);
@@ -409,7 +410,7 @@ export class DetailComponent implements OnInit, AfterViewInit {
   }
 
   public setTimetableTab(tab: number) {
-    this.timetableSelectedTab = tab;
+    this.timetableSelectedTab.next(tab);
     if (tab === 1) {
       this.timetableSelectedWeek.next(null);
     } else {
@@ -443,7 +444,7 @@ export class DetailComponent implements OnInit, AfterViewInit {
   setActiveTab(tab: typeof this.activeTab) {
     this.activeTab = tab;
     if (tab === 'timetable') {
-      this.timetableSelectedTab = 0;
+      this.timetableSelectedTab.next(0);
       this.timetableSelectedWeek.next(moment());
     }
     if (tab == 'history') {
