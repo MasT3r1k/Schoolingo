@@ -263,24 +263,20 @@
                         <div class="attendance-donut-layout">
                             <!-- SVG Donut Chart -->
                             <div class="donut-chart-wrap">
-                                <svg viewBox="0 0 120 120" class="donut-svg">
-                                    <!-- Background track -->
-                                    <circle cx="60" cy="60" r="50" fill="none" stroke="var(--border)"
-                                        stroke-width="14" />
-                                    <!-- Unexcused absence (danger) -->
-                                    <circle cx="60" cy="60" r="50" fill="none" stroke="var(--danger)" stroke-width="14"
-                                        [attr.stroke-dasharray]="(selectedStudent.absence_rate_unexcused / 100) * 314.16 + ' 314.16'"
-                                        stroke-dashoffset="0" transform="rotate(-90 60 60)" />
-                                    <!-- Excused absence (warning) -->
-                                    <circle cx="60" cy="60" r="50" fill="none" stroke="var(--warning)" stroke-width="14"
-                                        [attr.stroke-dasharray]="(selectedStudent.absence_rate_excused / 100) * 314.16 + ' 314.16'"
-                                        [attr.stroke-dashoffset]="-1 * (selectedStudent.absence_rate_unexcused / 100) * 314.16"
-                                        transform="rotate(-90 60 60)" />
-                                    <!-- Presence (success) -->
+                                <svg viewBox="0 0 120 120" class="donut-svg" style="transform: rotate(-90deg); transform-origin: center;">
+                                    <circle cx="60" cy="60" r="50" fill="none" stroke="var(--border)" stroke-width="14" />
+
                                     <circle cx="60" cy="60" r="50" fill="none" stroke="var(--success)" stroke-width="14"
                                         [attr.stroke-dasharray]="((100 - selectedStudent.absence_rate) / 100) * 314.16 + ' 314.16'"
-                                        [attr.stroke-dashoffset]="-1 * ((selectedStudent.absence_rate_excused + selectedStudent.absence_rate_unexcused) / 100) * 314.16"
-                                        transform="rotate(-90 60 60)" />
+                                        stroke-dashoffset="0" />
+
+                                    <circle cx="60" cy="60" r="50" fill="none" stroke="var(--warning)" stroke-width="14"
+                                        [attr.stroke-dasharray]="(selectedStudent.absence_rate_excused / 100) * 314.16 + ' 314.16'"
+                                        [attr.stroke-dashoffset]="-1 * ((100 - selectedStudent.absence_rate) / 100) * 314.16" />
+
+                                    <circle cx="60" cy="60" r="50" fill="none" stroke="var(--danger)" stroke-width="14"
+                                        [attr.stroke-dasharray]="(selectedStudent.absence_rate_unexcused / 100) * 314.16 + ' 314.16'"
+                                        [attr.stroke-dashoffset]="-1 * ((100 - selectedStudent.absence_rate_unexcused) / 100) * 314.16" />
                                 </svg>
                             </div>
                             <!-- Legend -->
@@ -1340,9 +1336,9 @@
                 </label>
             </div>
         </div>
-        <div class="modal-footer">
-            <button class="btn btn-secondary" (click)="showNoteModal = false">Zrušit</button>
-            <button class="btn btn-primary" (click)="saveNote()"
+        <div class="modal-actions">
+            <button class="btn btn--secondary" (click)="showNoteModal = false">Zrušit</button>
+            <button class="btn btn--primary" (click)="saveNote()"
                 [disabled]="!editingNote.content?.trim()">Uložit</button>
         </div>
     </div>

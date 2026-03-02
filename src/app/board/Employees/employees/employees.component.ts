@@ -3,7 +3,6 @@ import { CommonModule } from '@angular/common';
 import { IconsModule } from '@Schoolingo/icons';
 import { FormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
-import { toSignal } from '@angular/core/rxjs-interop';
 import { Config } from '@Schoolingo/config';
 import { Utils } from '@Schoolingo/utils';
 import { DropdownManager } from '@Schoolingo/dropdown';
@@ -101,6 +100,7 @@ export class EmployeesComponent implements OnInit {
   private subscriptions: Subscription[] = [];
   public modalManager = inject(ModalManager);
   private alertManager = inject(BoardAlertManager) as BoardAlertManager;
+  public canViewAllEmployees: boolean = false;
   EMPLOYEE_CONFIG = EMPLOYEE_CONFIG
 
   // Loading state - Signals
@@ -404,11 +404,12 @@ export class EmployeesComponent implements OnInit {
     if (filters.role !== 'all') params.role = filters.role;
     if (filters.department) params.department = filters.department;
 
-    this.http.get<{ data: Employee[], meta: { total: number } }>(
+    this.http.get<{ canViewAll: boolean;data: Employee[], meta: { total: number } }>(
       `${Config.API_URL}/v1/employees`,
       { withCredentials: true, params }
     ).subscribe({
       next: (response) => {
+        this.canViewAllEmployees = response.canViewAll;
         this.employees.set(response.data);
         this.totalItems.set(response.meta.total);
         this.isLoading.set(false);

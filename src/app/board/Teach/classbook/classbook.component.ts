@@ -135,6 +135,7 @@ export class ClassbookComponent implements OnInit {
     this.modalManager.addModal(
       'add_note',
       {
+        icon: 'text-plus',
         title: 'classbook.add_note.title',
         closeable: true,
         items: [
@@ -149,6 +150,7 @@ export class ClassbookComponent implements OnInit {
     this.modalManager.addModal(
       'add_absence',
       {
+        icon: 'user-minus',
         title: 'classbook.add_absence.title',
         closeable: true,
         items: [

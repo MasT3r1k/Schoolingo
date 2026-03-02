@@ -12,11 +12,12 @@ import { Utils } from '@Schoolingo/utils';
 import { CalendarComponent } from '@Components/calendar';
 import { CalendarManager } from '@Components/calendar-dropdown';
 import moment from 'moment';
+import { RouterLink } from '@angular/router';
 
 @Component({
   selector: 'app-my-class',
   standalone: true,
-  imports: [CommonModule, FormsModule, TabsComponent, IconsModule, CalendarComponent],
+  imports: [CommonModule, FormsModule, TabsComponent, IconsModule, CalendarComponent, RouterLink],
   templateUrl: './my-class.component.html',
   styleUrls: ['./my-class.component.css']
 })

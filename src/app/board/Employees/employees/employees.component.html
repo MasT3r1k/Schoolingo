@@ -705,7 +705,7 @@
         </div>
     </div>
     } @else {
-    @if (!perm.checkPermission(['manager:employees_manage'])) {
+    @if (!canViewAllEmployees) {
     <div class="alert alert--danger mb">
         Nemáte dostatečná oprávnění na vidění ostatních zaměstnanců, zobrazujeme pouze Vás.
     </div>
@@ -715,38 +715,38 @@
     <div class="list-view">
         <!-- Header -->
         <div class="card-header">
-            <h2>Zaměstnanci</h2>
+            <h2>{{ l.s('sidebar.employees') }}</h2>
             <div class="header-actions">
                 <!-- Attendance Quick Actions -->
                 <div class="attendance-quick">
                     @if (!isCheckedIn()) {
                     <button class="btn btn--success btn--sm" (click)="performCheckIn()">
                         <i-tabler name="login"></i-tabler>
-                        Příchod
+                        {{ l.s('employees.attendance_status.checkin') }}
                     </button>
                     } @else {
                     <div class="checked-in-info" style="display: flex; align-items: center; gap: 0.75rem;">
                         <span class="check-time">
                             <i-tabler name="clock"></i-tabler>
-                            Od {{ checkInTime() }}
+                            {{ l.s('calendar.from') }} {{ checkInTime() }}
                         </span>
                         <button class="btn btn--warning btn--sm" (click)="performCheckOut(30)">
                             <i-tabler name="logout"></i-tabler>
-                            {{ currentAttendanceRecord()?.check_out ? 'Dřívější odchod' : 'Odchod' }}
+                            {{ currentAttendanceRecord()?.check_out ? l.s('employees.attendance_status.early_checkout') : l.s('employees.attendance_status.checkout') }}
                         </button>
                     </div>
                     }
                 </div>
 
-                <button class="btn btn--ghost btn--sm" (click)="openVacationRequestModal()">
+                <button class="btn btn--sm" [class.btn--ghost]="canManage" [class.btn--primary]="!canManage" (click)="openVacationRequestModal()">
                     <i-tabler name="beach"></i-tabler>
-                    Žádost o dovolenou
+                    {{ l.s('employees.request_vacation.title') }}
                 </button>
 
                 @if (canManage) {
                 <button class="btn btn--sm btn--primary" (click)="openAddEmployeeModal()">
                     <i-tabler name="plus"></i-tabler>
-                    Nový zaměstnanec
+                    {{ l.s('employees.add_employee.title') }}
                 </button>
                 }
             </div>
