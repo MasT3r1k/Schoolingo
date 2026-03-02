@@ -24,6 +24,7 @@ import { AddParentComponent } from './modals/add-parent/add-parent.component';
 import { CreateParentComponent } from './modals/create-parent/create-parent.component';
 import { RemoveParentComponent } from './modals/remove-parent/remove-parent.component';
 import { SaveHistoryModalComponent } from './modals/save-history-modal/save-history-modal.component';
+import { TabsComponent } from '@Components/Tabs';
 
 // Interfaces
 interface TimetableAPI {
@@ -111,7 +112,7 @@ interface StudentNote {
 
 @Component({
   standalone: true,
-  imports: [CommonModule, IconsModule, FormsModule, SharedTimetableComponent],
+  imports: [CommonModule, IconsModule, FormsModule, SharedTimetableComponent, TabsComponent],
   templateUrl: './detail.component.html',
   styleUrl: './detail.component.css'
 })

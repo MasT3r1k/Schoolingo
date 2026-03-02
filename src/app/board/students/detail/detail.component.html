@@ -1067,14 +1067,9 @@
                 <div class="timetable-section">
                     <div class="timetable-header">
                         <div class="timetable-subheader">
-                            <div class="timetable-tabs">
-                                <button class="timetable-tab" [class.active]="timetableSelectedTab === 0"
-                                    (click)="setTimetableTab(0)">Aktuální</button>
-                                <button class="timetable-tab" [class.active]="timetableSelectedTab === 1"
-                                    (click)="setTimetableTab(1)">Stálý</button>
-                            </div>
+                            <schoolingo-tabs [options]="['timetable.actual', 'timetable.permanent']" [value]="timetableSelectedTab"></schoolingo-tabs>
                         </div>
-                        <div class="timetable-controls" *ngIf="timetableSelectedTab === 0">
+                        <div class="timetable-controls" *ngIf="timetableSelectedTab.getValue() === 0">
                             <button class="control-btn" (click)="previousWeek()">
                                 <i-tabler name="chevron-left"></i-tabler>
                             </button>
@@ -1087,7 +1082,7 @@
 
                     <schoolingo-timetable [isLoading]="isLoadingTimetable" [timetable]="fullTimetable"
                         [timetableHours]="fullTimetableHours" [selectedWeek]="timetableSelectedWeek.getValue()"
-                        [selectedTab]="timetableSelectedTab" type="student">
+                        [selectedTab]="timetableSelectedTab.getValue()" type="student">
                     </schoolingo-timetable>
                 </div>
                 }
