@@ -263,8 +263,10 @@
                         <div class="attendance-donut-layout">
                             <!-- SVG Donut Chart -->
                             <div class="donut-chart-wrap">
-                                <svg viewBox="0 0 120 120" class="donut-svg" style="transform: rotate(-90deg); transform-origin: center;">
-                                    <circle cx="60" cy="60" r="50" fill="none" stroke="var(--border)" stroke-width="14" />
+                                <svg viewBox="0 0 120 120" class="donut-svg"
+                                    style="transform: rotate(-90deg); transform-origin: center;">
+                                    <circle cx="60" cy="60" r="50" fill="none" stroke="var(--border)"
+                                        stroke-width="14" />
 
                                     <circle cx="60" cy="60" r="50" fill="none" stroke="var(--success)" stroke-width="14"
                                         [attr.stroke-dasharray]="((100 - selectedStudent.absence_rate) / 100) * 314.16 + ' 314.16'"
@@ -316,7 +318,8 @@
                                     <i-tabler name="chevron-left"></i-tabler>
                                 </button>
                                 <span class="current-date-info">
-                                    {{ l.s('days.' + overviewSelectedDate.day()) }}, {{ overviewSelectedDate.format("DD. MM.") }}
+                                    {{ l.s('days.' + overviewSelectedDate.day()) }}, {{ overviewSelectedDate.format("DD.
+                                    MM.") }}
                                 </span>
                                 <button class="nav-btn" (click)="nextOverviewDay()">
                                     <i-tabler name="chevron-right"></i-tabler>
@@ -1063,7 +1066,8 @@
                 <div class="timetable-section">
                     <div class="timetable-header">
                         <div class="timetable-subheader">
-                            <schoolingo-tabs [options]="['timetable.actual', 'timetable.permanent']" [value]="timetableSelectedTab"></schoolingo-tabs>
+                            <schoolingo-tabs [options]="['timetable.actual', 'timetable.permanent']"
+                                [value]="timetableSelectedTab"></schoolingo-tabs>
                         </div>
                         <div class="timetable-controls" *ngIf="timetableSelectedTab.getValue() === 0">
                             <button class="control-btn" (click)="previousWeek()">
@@ -1345,64 +1349,5 @@
 </div>
 }
 
-<!-- Mark Details Overlay -->
-@if (selectedMark) {
-<div class="mark-overlay" (click)="closeMarkDetails()">
-    <div class="mark-modal" (click)="$event.stopPropagation()">
-        <div class="mark-modal-header">
-            <h3>{{ l.s('marks.detail_title') }}</h3>
-            <button class="close-btn" (click)="closeMarkDetails()">
-                <i-tabler name="x"></i-tabler>
-            </button>
-        </div>
-        <div class="mark-modal-body">
-            <div class="mark-detail-row">
-                <span class="label">{{ l.s('marks.subject') }}</span>
-                <span class="value">{{ selectedMark.subject_name }}</span>
-            </div>
-            <div class="mark-detail-row">
-                <span class="label">{{ l.s('marks.topic') }}</span>
-                <span class="value">{{ selectedMark.topic }}</span>
-            </div>
-            <div class="mark-detail-row">
-                <span class="label">{{ l.s('marks.mark') }}</span>
-                <span class="value mark-value" [class]="'mark-color-' + getBaseMark(selectedMark)">{{
-                    formatMark(selectedMark) }}</span>
-            </div>
-            <div class="mark-detail-row">
-                <span class="label">{{ l.s('marks.weight') }}</span>
-                <span class="value">{{ selectedMark.weight }}</span>
-            </div>
-            @if (selectedMark.type === 1) {
-            <div class="mark-detail-row">
-                <span class="label">{{ l.s('marks.points') }}</span>
-                <span class="value">{{ selectedMark.mark }} / {{ selectedMark.max_points }}</span>
-            </div>
-            }
-            <div class="mark-detail-row">
-                <span class="label">{{ l.s('date') }}</span>
-                <span class="value">{{ Utils.formatDateShort(selectedMark.created) }}</span>
-            </div>
-            @if (selectedMark.teacher_full_name || (selectedMark.teacher_first_name && selectedMark.teacher_last_name))
-            {
-            <div class="mark-detail-row">
-                <span class="label">{{ l.s('roles.teacher') }}</span>
-                <span class="value">{{ selectedMark.teacher_full_name || (selectedMark.teacher_first_name + ' ' +
-                    selectedMark.teacher_last_name) }}</span>
-            </div>
-            }
-            @if (selectedMark.column_id && markStats[selectedMark.column_id]) {
-            <div class="mark-detail-row">
-                <span class="label">{{ l.s('marks.class_average') }}</span>
-                <span class="value">{{ markStats[selectedMark.column_id].avg }}</span>
-            </div>
-            <div class="mark-detail-row">
-                <span class="label">{{ l.s('marks.class_rank') }}</span>
-                <span class="value">{{ markStats[selectedMark.column_id].rank }}</span>
-            </div>
-            }
-        </div>
-    </div>
-</div>
-}
+
 }

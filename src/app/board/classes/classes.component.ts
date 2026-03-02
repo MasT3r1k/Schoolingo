@@ -10,6 +10,7 @@ import { Locale } from '@Schoolingo/locale';
 import { RouterLink } from '@angular/router';
 import { ModalManager } from '@Schoolingo/modal';
 import { AddClassComponent } from './modals/add-class/add-class.component';
+import { RemoveClassComponent } from './modals/remove-class/remove-class.component';
 
 export interface ClassItem {
   id: number;
@@ -24,7 +25,7 @@ export interface ClassItem {
 @Component({
   selector: 'app-classes',
   standalone: true,
-  imports: [CommonModule, IconsModule, FormsModule],
+  imports: [CommonModule, IconsModule, FormsModule, RouterLink],
   templateUrl: './classes.component.html',
   styleUrl: './classes.component.css'
 })
@@ -83,6 +84,21 @@ export class ClassesComponent implements OnInit {
         }]
       }
     );
+
+    this.modalManager.addModal(
+      'remove_class',
+      {
+        icon: 'trash',
+        title: 'Odstranění třídy',
+        description: 'Vyberte způsob, jakým chcete třídu odstranit ze systému.',
+        closeable: true,
+        width: 600,
+        items: [{
+          type: 'component',
+          component: RemoveClassComponent
+        }]
+      }
+    );
   }
 
   loadClasses() {
@@ -128,16 +144,6 @@ export class ClassesComponent implements OnInit {
   }
 
   deleteClass(cls: ClassItem) {
-    if(confirm('Opravdu chcete smazat třídu ' + cls.name + '?')) {
-      this.http.delete(`${Config.API_URL}/v1/school/classes/${cls.id}`, { withCredentials: true })
-      .subscribe({
-        next: () => {
-          this.loadClasses();
-        },
-        error: () => {
-          alert('Chyba při mazání třídy.');
-        }
-      })
-    }
+    this.modalManager.openModal('remove_class', { class: cls });
   }
 }

@@ -62,7 +62,7 @@ import { ManagefilesComponent } from './board/system/managefiles/managefiles.com
 import { ManagemessagesComponent } from './board/system/managemessages/managemessages.component';
 import { PollAssignComponent } from './board/polls/poll-assign/poll-assign.component';
 import { PollEditComponent } from './board/polls/poll-edit/poll-edit.component';
-import { DetailComponent } from './board/students/detail/detail.component';
+import { DetailComponent as StudentsDetailComponent } from './board/students/detail/detail.component';
 import { TemplateSubjectComponent } from './board/schedule/template-subject/template-subject.component';
 import { TemplateTimetableComponent } from './board/schedule/template-timetable/template-timetable.component';
 import { SupervisionBuilderComponent } from './board/schedule/supervision-builder/supervision-builder.component';
@@ -79,6 +79,7 @@ import { InventoryComponent } from './board/Admin/inventory/inventory.component'
 import { SetupComponent } from './setup/setup.component';
 
 import { NoPermissionComponent } from './board/error/no-permission/no-permission.component';
+import { DetailComponent as ClassesDetailComponent } from './board/classes/detail/detail.component';
 
 export const routes: Routes = [
     {
@@ -117,13 +118,22 @@ export const routes: Routes = [
                     },
                     {
                         path: ':id',
-                        component: DetailComponent
+                        component: StudentsDetailComponent
                     }
                 ]
             },
             {
                 path: 'classes',
-                component: ClassesComponent
+                children: [
+                    {
+                        path: '',
+                        component: ClassesComponent
+                    },
+                    {
+                        path: ':id',
+                        component: ClassesDetailComponent
+                    }
+                ]
             },
             {
                 path: 'employees',

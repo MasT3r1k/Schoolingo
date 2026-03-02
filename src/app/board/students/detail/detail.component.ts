@@ -25,6 +25,7 @@ import { CreateParentComponent } from './modals/create-parent/create-parent.comp
 import { RemoveParentComponent } from './modals/remove-parent/remove-parent.component';
 import { SaveHistoryModalComponent } from './modals/save-history-modal/save-history-modal.component';
 import { TabsComponent } from '@Components/Tabs';
+import { MarkDetailModalComponent } from '../../../Components/mark-detail-modal/mark-detail-modal.component';
 
 // Interfaces
 interface TimetableAPI {
@@ -346,7 +347,14 @@ export class DetailComponent implements OnInit, AfterViewInit {
       closeable: true,
       width: 600,
       items: [{ type: 'component', component: ParentsSettingsComponent }]
-    })
+    });
+    
+    this.modalManager.addModal('mark_detail', {
+      title: 'marks.detail_title',
+      closeable: true,
+      width: 450,
+      items: [{ type: 'component', component: MarkDetailModalComponent }]
+    });
   }
 
   public refreshStudentData() {
@@ -874,10 +882,17 @@ export class DetailComponent implements OnInit, AfterViewInit {
 
   public selectMark(mark: any): void {
     this.selectedMark = mark;
+    this.modalManager.openModal('mark_detail', {
+      selectedMark: mark,
+      markStats: this.markStats,
+      marking_scales: this.marking_scales,
+      marking_scale: this.marking_scale
+    });
   }
 
   public closeMarkDetails(): void {
     this.selectedMark = null;
+    this.modalManager.closeModal('mark_detail');
   }
 
   public getFontSize(weight: number): number {

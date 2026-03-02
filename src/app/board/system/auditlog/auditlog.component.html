@@ -94,6 +94,14 @@
                     }
                 </div>
             </div>
+
+            @if (filters.timeRange === 'custom') {
+            <div class="filter-group-inline" style="display: flex; gap: 0.5rem; align-items: center;">
+                <input type="date" class="input-date" [(ngModel)]="filters.dateFrom" (ngModelChange)="onFilterChange()">
+                <span style="color: var(--text-muted); padding: 0 0.25rem;">-</span>
+                <input type="date" class="input-date" [(ngModel)]="filters.dateTo" (ngModelChange)="onFilterChange()">
+            </div>
+            }
         </div>
 
         <!-- Loading State -->

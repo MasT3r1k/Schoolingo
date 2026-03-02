@@ -1,17 +1,18 @@
-<div class="gdpr-page">
-    <div class="gdpr-header">
-        <div class="gdpr-header-content">
-            <div class="header-icon">
+<div class="gdpr-page animate-fade-in">
+    <!-- Standard Module Header -->
+    <div class="page-header">
+        <div class="header-left">
+            <div class="module-icon">
                 <i-tabler name="shield-lock"></i-tabler>
             </div>
-            <div class="header-info">
-                <h1>{{ l.s('gdpr.title') }}</h1>
-                <p>{{ l.s('gdpr.subtitle') }}</p>
+            <div class="header-titles">
+                <h1 class="page-title">{{ l.s('gdpr.title') }}</h1>
+                <p class="page-subtitle">{{ l.s('gdpr.subtitle') }}</p>
             </div>
-            <div class="header-actions">
-                <schoolingo-tabs [options]="tabsOptions" [icons]="tabsIcons" [value]="selectedView"
-                    [option_width]="'fit'"></schoolingo-tabs>
-            </div>
+        </div>
+        <div class="header-actions">
+            <schoolingo-tabs [options]="tabsOptions" [icons]="tabsIcons" [value]="selectedView"
+                [option_width]="'fit'"></schoolingo-tabs>
         </div>
     </div>
 
@@ -20,112 +21,122 @@
         <!-- OVERVIEW VIEW -->
         @if (selectedView.getValue() === ViewSelector.overview) {
         <div class="overview-grid">
-            <div class="overview-notifications card">
+            <!-- Notifications Card -->
+            <div class="card overview-card">
                 <div class="card-header">
-                    <div class="header-content">
-                        <i-tabler name="bell" class="icon"></i-tabler>
+                    <div class="header-title">
+                        <i-tabler name="bell-ringing" class="icon primary"></i-tabler>
                         <h3>{{ l.s('gdpr.overview.notifications') }}</h3>
                     </div>
+                    <span class="badge badge--danger" *ngIf="notifications.length > 0">{{ notifications.length }}</span>
                 </div>
                 <div class="card-body">
-                    @if (getNewConsentsCount() > 0) {
-                    <div class="notification-item warning">
-                        <i-tabler name="alert-triangle"></i-tabler>
-                        <span>{{ l.s('gdpr.overview.new_consents', { count: getNewConsentsCount() }) }}</span>
-                        <button class="btn btn-sm btn-outline" (click)="selectedView.next(ViewSelector.consents)">{{
-                            l.s('gdpr.tabs.consents') }}</button>
+                    <div class="notification-list">
+                        @for (notif of notifications; track notif.id) {
+                        <div class="chrono-card small" [class.unread]="!notif.read">
+                            <div class="chrono-icon" [class]="notif.type">
+                                <i-tabler [name]="getNotificationIcon(notif.type)"></i-tabler>
+                            </div>
+                            <div class="chrono-content">
+                                <div class="chrono-title">{{ notif.title }}</div>
+                                <div class="chrono-meta">
+                                    <span class="date">{{ Utils.formatDateShort(notif.date) }}</span>
+                                    <span class="sep" *ngIf="notif.tag">·</span>
+                                    <span class="tag" *ngIf="notif.tag">{{ notif.tag }}</span>
+                                </div>
+                            </div>
+                            <div class="chrono-action">
+                                <i-tabler name="chevron-right"></i-tabler>
+                            </div>
+                        </div>
+                        } @empty {
+                        <div class="empty-state sm">
+                            <i-tabler name="bell-off"></i-tabler>
+                            <p>{{ l.s('gdpr.overview.no_notifications') }}</p>
+                        </div>
+                        }
                     </div>
-                    }
-                    @if (getPendingTrainingCount() > 0) {
-                    <div class="notification-item info">
-                        <i-tabler name="info-circle"></i-tabler>
-                        <span>{{ l.s('gdpr.overview.pending_training', { count: getPendingTrainingCount() }) }}</span>
-                        <button class="btn btn-sm btn-outline" (click)="selectedView.next(ViewSelector.training)">{{
-                            l.s('gdpr.tabs.training') }}</button>
-                    </div>
-                    }
-                    @if (getNewConsentsCount() === 0 && getPendingTrainingCount() === 0) {
-                    <div class="empty-state">
-                        <i-tabler name="circle-check"></i-tabler>
-                        <p>{{ l.s('gdpr.overview.no_notifications') }}</p>
-                    </div>
-                    }
                 </div>
             </div>
 
-            <div class="overview-summary card">
+            <!-- Summary Card -->
+            <div class="card overview-card">
                 <div class="card-header">
-                    <div class="header-content">
-                        <i-tabler name="chart-pie" class="icon"></i-tabler>
+                    <div class="header-title">
+                        <i-tabler name="chart-pie" class="icon success"></i-tabler>
                         <h3>{{ l.s('gdpr.overview.summary') }}</h3>
                     </div>
                 </div>
-                <div class="card-body summary-stats">
-                    <div class="stat-item green">
-                        <span class="stat-value">{{ getGrantedConsentsCount() }}</span>
-                        <span class="stat-label">{{ l.s('gdpr.overview.consents_granted') }}</span>
+                <div class="card-body">
+                    <div class="stat-grid">
+                        <div class="stat-card-mini clickable" (click)="selectedView.next(ViewSelector.consents)">
+                            <div class="stat-val success">{{ stats.granted }}</div>
+                            <div class="stat-lab">{{ l.s('gdpr.stats.granted') }}</div>
+                        </div>
+                        <div class="stat-card-mini clickable" (click)="selectedView.next(ViewSelector.consents)">
+                            <div class="stat-val danger">{{ stats.denied }}</div>
+                            <div class="stat-lab">{{ l.s('gdpr.stats.denied') }}</div>
+                        </div>
+                        <div class="stat-card-mini highlighted" (click)="selectedView.next(ViewSelector.consents)">
+                            <div class="stat-val warning">{{ stats.pending }}</div>
+                            <div class="stat-lab">{{ l.s('gdpr.stats.pending') }}</div>
+                        </div>
                     </div>
-                    <div class="stat-item red">
-                        <span class="stat-value">{{ getDeniedConsentsCount() }}</span>
-                        <span class="stat-label">{{ l.s('gdpr.overview.consents_denied') }}</span>
-                    </div>
-                    <div class="stat-item blue">
-                        <span class="stat-value">{{ trainingList.length - getPendingTrainingCount() }}</span>
-                        <span class="stat-label">{{ l.s('gdpr.overview.training_completed') }}</span>
+
+                    <div class="summary-footer">
+                        <button class="btn btn--secondary btn--sm btn--block"
+                            (click)="selectedView.next(ViewSelector.consents)">
+                            {{ l.s('gdpr.overview.view_all_consents') }}
+                            <i-tabler name="arrow-right"></i-tabler>
+                        </button>
                     </div>
                 </div>
             </div>
 
-            @if (school.config | async; as config) {
-            <div class="overview-contact card">
+            <!-- Officer/Contact Card -->
+            <div class="card overview-card full-width">
                 <div class="card-header">
-                    <div class="header-content">
-                        <i-tabler name="user-shield" class="icon"></i-tabler>
-                        <h3>{{ l.s('gdpr.officer.contact_info') }}</h3>
+                    <div class="header-title">
+                        <i-tabler name="user-shield" class="icon info"></i-tabler>
+                        <h3>{{ l.s('gdpr.overview.officer') }}</h3>
                     </div>
+                    <button class="btn btn--ghost btn--xs" (click)="selectedView.next(ViewSelector.officer)">
+                        {{ l.s('buttons.detail') }}
+                    </button>
                 </div>
-                <div class="card-body">
-                    <div class="contact-info">
-                        <div class="info-row">
-                            <i-tabler name="user"></i-tabler>
-                            <span>{{ config.gdpr_first_name }} {{ config.gdpr_last_name }}</span>
+                <div class="card-body officer-content">
+                    <div class="officer-profile">
+                        <div class="avatar-shield">
+                            <i-tabler name="shield-check"></i-tabler>
                         </div>
-                        <div class="info-row" *ngIf="config.gdpr_email">
+                        <div class="officer-info">
+                            <h4>Mgr. Bc. Jan Novák</h4>
+                            <p>Pověřenec pro ochranu osobních údajů</p>
+                        </div>
+                    </div>
+                    <div class="officer-contacts">
+                        <a href="mailto:novak&#64;skola.cz" class="contact-pill">
                             <i-tabler name="mail"></i-tabler>
-                            <a [href]="'mailto:' + config.gdpr_email">{{ config.gdpr_email }}</a>
-                        </div>
-                        <div class="info-row" *ngIf="config.gdpr_phone">
+                            novak&#64;skola.cz
+                        </a>
+                        <a href="tel:+420777555333" class="contact-pill">
                             <i-tabler name="phone"></i-tabler>
-                            <span>{{ config.gdpr_phone }}</span>
-                        </div>
+                            +420 777 555 333
+                        </a>
                     </div>
                 </div>
             </div>
-            }
         </div>
         }
 
         <!-- CONSENTS VIEW -->
         @if (selectedView.getValue() === ViewSelector.consents) {
-        <div class="consents-container">
-            <div class="card">
-                <div class="card-header">
-                    <div class="header-title-group">
-                        <i-tabler name="shield-check" class="icon"></i-tabler>
-                        <h2>{{ l.s('gdpr.consents.title') }}</h2>
-                    </div>
-                    <div class="header-actions">
-                        <button class="btn btn--sm btn--secondary" (click)="grantAllOptional()">
-                            <i-tabler name="check"></i-tabler>
-                            {{ l.s('gdpr.consents.actions.bulk_agree') }}
-                        </button>
-                        <button class="btn btn--sm btn--outline-danger" (click)="revokeAllOptional()">
-                            <i-tabler name="x"></i-tabler>
-                            {{ l.s('gdpr.consents.actions.bulk_revoke') }}
-                        </button>
-                    </div>
-                </div>
+        <div class="consents-view">
+            <div class="view-header">
+                <h2>{{ l.s('gdpr.consents.title') }}</h2>
+            </div>
 
+            <div class="consents-card card">
                 <div class="card-body">
                     <div class="consents-grouped-list">
                         @if (parentConsents.length > 0) {
@@ -147,8 +158,7 @@
                                         <tr [class.highlighted]="consent.granted === null"
                                             (click)="!consent.required && updateConsent(consent, !consent.granted)">
                                             <td class="col-stav">
-                                                <div class="status-icon-container"
-                                                    [class.granted]="consent.granted === true"
+                                                <div class="status-icon" [class.granted]="consent.granted === true"
                                                     [class.denied]="consent.granted === false"
                                                     [class.pending-required]="consent.granted === null && consent.required"
                                                     [class.pending-optional]="consent.granted === null && !consent.required">
@@ -157,26 +167,25 @@
                                                     } @else if (consent.granted === false) {
                                                     <i-tabler name="x"></i-tabler>
                                                     } @else if (consent.required) {
-                                                    <i-tabler name="exclamation-mark"></i-tabler>
+                                                    <div class="icon-text">!</div>
                                                     } @else {
-                                                    <i-tabler name="question-mark"></i-tabler>
+                                                    <div class="icon-text">?</div>
                                                     }
                                                 </div>
                                             </td>
                                             <td class="col-souhlas">
-                                                <strong>{{ l.s('gdpr.consents.status.' + consent.type) }}</strong>
+                                                <span class="consent-text">{{ l.s('gdpr.consents.status.' +
+                                                    consent.type) }}</span>
                                             </td>
                                             <td class="col-udaje">
-                                                <div class="text-truncate" [title]="consent.purpose || ''">
-                                                    {{ consent.purpose || '-' }}</div>
+                                                <div class="data-text">{{ consent.purpose || '-' }}</div>
                                             </td>
                                             <td class="col-ucel">
-                                                <div class="text-multi-line">{{ consent.description }}</div>
+                                                <div class="purpose-text">{{ consent.description }}</div>
                                             </td>
                                             <td class="col-do">
-                                                <strong>{{ consent.expires_at ? (consent.expires_at | date:'dd.MM.yyyy')
-                                                    :
-                                                    'konce studia' }}</strong>
+                                                <span class="expiry-text">{{ consent.expires_at ? (consent.expires_at |
+                                                    date:'dd.MM.yyyy') : 'konce studia' }}</span>
                                             </td>
                                         </tr>
                                         }
@@ -205,8 +214,7 @@
                                         <tr [class.highlighted]="consent.granted === null"
                                             (click)="!consent.required && updateConsent(consent, !consent.granted)">
                                             <td class="col-stav">
-                                                <div class="status-icon-container"
-                                                    [class.granted]="consent.granted === true"
+                                                <div class="status-icon" [class.granted]="consent.granted === true"
                                                     [class.denied]="consent.granted === false"
                                                     [class.pending-required]="consent.granted === null && consent.required"
                                                     [class.pending-optional]="consent.granted === null && !consent.required">
@@ -215,26 +223,25 @@
                                                     } @else if (consent.granted === false) {
                                                     <i-tabler name="x"></i-tabler>
                                                     } @else if (consent.required) {
-                                                    <i-tabler name="exclamation-mark"></i-tabler>
+                                                    <div class="icon-text">!</div>
                                                     } @else {
-                                                    <i-tabler name="question-mark"></i-tabler>
+                                                    <div class="icon-text">?</div>
                                                     }
                                                 </div>
                                             </td>
                                             <td class="col-souhlas">
-                                                <strong>{{ l.s('gdpr.consents.status.' + consent.type) }}</strong>
+                                                <span class="consent-text">{{ l.s('gdpr.consents.status.' +
+                                                    consent.type) }}</span>
                                             </td>
                                             <td class="col-udaje">
-                                                <div class="text-truncate" [title]="consent.purpose || ''">
-                                                    {{ consent.purpose || '-' }}</div>
+                                                <div class="data-text">{{ consent.purpose || '-' }}</div>
                                             </td>
                                             <td class="col-ucel">
-                                                <div class="text-multi-line">{{ consent.description }}</div>
+                                                <div class="purpose-text">{{ consent.description }}</div>
                                             </td>
                                             <td class="col-do">
-                                                <strong>{{ consent.expires_at ? (consent.expires_at | date:'dd.MM.yyyy')
-                                                    :
-                                                    'konce studia' }}</strong>
+                                                <span class="expiry-text">{{ consent.expires_at ? (consent.expires_at |
+                                                    date:'dd.MM.yyyy') : 'konce studia' }}</span>
                                             </td>
                                         </tr>
                                         }

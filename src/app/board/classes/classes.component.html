@@ -167,7 +167,7 @@
                 </thead>
                 <tbody>
                     @for (cls of filteredClasses; track cls.id) {
-                    <tr>
+                    <tr [routerLink]="['/classes', cls.id]" style="cursor: pointer;" class="clickable-row">
                         <td class="col-name">
                             <div class="class-cell">
                                 <span class="name">{{ cls.name }}</span>
@@ -181,7 +181,7 @@
                             <span class="students-count-badge">{{ cls.studentsCount || 0 }}</span>
                         </td>
                         <td class="col-actions">
-                            <button class="row-action" (click)="deleteClass(cls)">
+                            <button class="row-action" (click)="$event.stopPropagation(); deleteClass(cls)">
                                 <i-tabler name="trash"></i-tabler>
                             </button>
                         </td>

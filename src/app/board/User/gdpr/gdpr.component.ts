@@ -134,7 +134,6 @@ export class GdprComponent implements OnInit {
     success: false
   };
 
-  // GDPR consent types (client-side defaults/config)
   public consentTypesConfig = [
     { id: 'essential', icon: 'lock', color: '#6366f1' },
     { id: 'analytics', icon: 'chart-bar', color: '#8b5cf6' },
@@ -142,6 +141,41 @@ export class GdprComponent implements OnInit {
     { id: 'third_party', icon: 'users', color: '#f59e0b' },
     { id: 'profiling', icon: 'user-scan', color: '#ec4899' }
   ];
+
+  public get stats() {
+    return {
+      granted: this.getGrantedConsentsCount(),
+      denied: this.getDeniedConsentsCount(),
+      pending: this.getNewConsentsCount()
+    };
+  }
+
+  public get notifications() {
+    const list = [];
+    const newConsents = this.getNewConsentsCount();
+    if (newConsents > 0) {
+      list.push({
+        id: 'new_consents',
+        type: 'warning',
+        title: this.l.s('gdpr.overview.new_consents', { count: newConsents }),
+        date: new Date(),
+        tag: this.l.s('gdpr.tabs.consents'),
+        read: false
+      });
+    }
+    const pendingTraining = this.getPendingTrainingCount();
+    if (pendingTraining > 0) {
+      list.push({
+        id: 'pending_training',
+        type: 'info',
+        title: this.l.s('gdpr.overview.pending_training', { count: pendingTraining }),
+        date: new Date(),
+        tag: this.l.s('gdpr.tabs.training'),
+        read: false
+      });
+    }
+    return list;
+  }
 
   public get parentConsents(): GdprConsent[] {
     return this.consents.filter(c => !c.person_name);
@@ -372,5 +406,15 @@ export class GdprComponent implements OnInit {
 
   public getDeniedConsentsCount(): number {
     return this.consents.filter(c => c.granted === false).length;
+  }
+
+  public getNotificationIcon(type: string): string {
+    switch (type) {
+      case 'warning': return 'alert-triangle';
+      case 'danger': return 'alert-circle';
+      case 'success': return 'circle-check';
+      case 'info':
+      default: return 'info-circle';
+    }
   }
 }

@@ -100,7 +100,7 @@ export class EmployeesComponent implements OnInit {
   private subscriptions: Subscription[] = [];
   public modalManager = inject(ModalManager);
   private alertManager = inject(BoardAlertManager) as BoardAlertManager;
-  public canViewAllEmployees: boolean = false;
+  public canViewAllEmployees: boolean = true;
   EMPLOYEE_CONFIG = EMPLOYEE_CONFIG
 
   // Loading state - Signals

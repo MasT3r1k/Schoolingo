@@ -165,7 +165,7 @@ export class NotificationsComponent implements OnInit {
     { 
       id: 'advanced_leave_balance_low', 
       name: 'Nízký zůstatek dovolené',
-      icon: 'battery-low',
+      icon: 'battery-1',
       color: '#f44336',
       hasConditions: true,
       conditionFields: [

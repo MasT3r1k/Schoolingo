@@ -9,7 +9,9 @@ import { IconsModule } from '@Schoolingo/icons';
 import { Locale } from '@Schoolingo/locale';
 import { MarksManager } from '@Schoolingo/marks';
 import { Utils } from '@Schoolingo/utils';
+import { ModalManager } from '@Schoolingo/modal';
 import { BehaviorSubject } from 'rxjs';
+import { MarkDetailModalComponent } from '../../../Components/mark-detail-modal/mark-detail-modal.component';
 
 interface StudentIntermAPI {
   status: boolean;
@@ -101,10 +103,19 @@ export class IntermComponent implements OnInit {
   private auth = inject(Authentication);
   public marksManager = inject(MarksManager);
   public dropdownManager = inject(DropdownManager);
+  public modalManager = inject(ModalManager);
   public marking_scales: Record<string, number[]> = {};
   public marking_scale: number[] = [85, 70, 50, 30, 0]; // Default fallback
 
   ngOnInit(): void {
+    this.modalManager.addModal('mark_detail', {
+      icon: 'number-1',
+      title: 'marks.detail_title',
+      closeable: true,
+      width: 450,
+      items: [{ type: 'component', component: MarkDetailModalComponent }]
+    });
+
     this.http
       .post<StudentIntermAPI>(
         `${Config.API_URL}/v1/marks/student`,
@@ -364,12 +375,18 @@ export class IntermComponent implements OnInit {
   public selectMark(mark: any): void {
     if (this.selectedTab.getValue() === 2) return;
     if (mark.isPredicted) return;
-    console.log(mark)
     this.selectedMark = mark;
+    this.modalManager.openModal('mark_detail', {
+      selectedMark: mark,
+      markStats: this.markStats,
+      marking_scales: this.marking_scales,
+      marking_scale: this.marking_scale
+    });
   }
 
   public closeMarkDetails(): void {
     this.selectedMark = null;
+    this.modalManager.closeModal('mark_detail');
   }
 
   /** Dynamická velikost písma podle váhy */

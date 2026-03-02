@@ -156,10 +156,11 @@ export class AuditlogComponent implements OnInit {
     if (this.filters.action !== 'all') params.action = this.filters.action;
     if (this.filters.userRole !== 'all') params.user_role = this.filters.userRole;
     if (this.filters.timeRange !== 'custom') {
-      params.timeRange = this.filters.timeRange;
+      params.time_range = this.filters.timeRange;
     } else {
-      if (this.filters.dateFrom) params.dateFrom = this.filters.dateFrom;
-      if (this.filters.dateTo) params.dateTo = this.filters.dateTo;
+      params.time_range = 'custom';
+      if (this.filters.dateFrom) params.date_from = this.filters.dateFrom;
+      if (this.filters.dateTo) params.date_to = this.filters.dateTo;
     }
 
     this.http.get<AuditLogAPIResponse>(
