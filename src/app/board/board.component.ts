@@ -131,6 +131,27 @@ export class BoardComponent implements OnInit, OnDestroy {
   l = inject(Locale);
   u = inject(Authentication);
 
+  public appClickHandler(): void {
+    this.dropdownManager.selected_dropdown = '';
+    this.context_menu.hideContextMenu();
+    if (moment(this.u.getUser().expires).diff(moment(), 'minutes') < 5) {
+      this.http.post<{ success: boolean; expires: string }>(
+        Config.API_URL + '/v1/sessionexpand',
+        {},
+        { withCredentials: true }
+      ).subscribe({
+        next: (response) => {
+          console.log('[TokenWarning] Session extended successfully');
+          this.tokenExpirationService.setTokenExpiration(response.expires);
+          this.modalManager.closeModal('token-warning');
+        },
+        error: (error) => {
+          console.error('[TokenWarning] Failed to extend session:', error);
+        }
+      });
+    }
+  }
+
   public notifications_types = notification_types;
   public notifications: Notification[] = [];
 

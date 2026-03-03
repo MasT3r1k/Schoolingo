@@ -68,8 +68,6 @@ export class TokenWarningModalComponent implements OnInit, OnDestroy {
       error: (error) => {
         console.error('[TokenWarning] Failed to extend session:', error);
         this.isRefreshing = false;
-        // If refresh fails, user is probably already logged out
-        // The interceptor will handle redirect
       }
     });
   }

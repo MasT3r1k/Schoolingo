@@ -1,7 +1,7 @@
 import { NgClass } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { Component, inject, OnInit } from '@angular/core';
-import { absence } from '@Schoolingo/absence';
+import { absence, AbsenceType } from '@Schoolingo/absence';
 import { Config } from '@Schoolingo/config';
 import { IconsModule } from '@Schoolingo/icons';
 import { Locale } from '@Schoolingo/locale';
@@ -172,7 +172,7 @@ export class ClassbookComponent implements OnInit {
           ...data.classbook,
           lessonNumber: data.lessonNumber,
           lessonTotal: data.lessonTotal,
-          classService: data.classService
+          classService: Object.values(data.classService)
         };
 
         this.classbook.students = data.students.map((student: any) => ({
@@ -200,6 +200,31 @@ export class ClassbookComponent implements OnInit {
         this.classbook.notes = data;
       })
     });
+  }
+
+  public copyAbsenceFromPreviousHour(): void {
+    let previous_selected_absence_type = this.classbook.selectedAbsence;
+    Object.values(this.classbook.students).forEach((student) => {
+      const previousAbsence = student.absence[this.selected_lesson.getValue() - 1];
+      console.log(student, previousAbsence)
+      let absenceType = previousAbsence;
+      if ([AbsenceType.EXCUSED, AbsenceType.UNEXCUSED].includes(previousAbsence)) {
+        absenceType = AbsenceType.ABSENCE;
+      } else if ([AbsenceType.LATE].includes(previousAbsence)) {
+        absenceType = undefined;
+      } else if ([AbsenceType.EARLY].includes(previousAbsence)) {
+        absenceType = AbsenceType.ABSENCE;
+      }
+      if (!absenceType) return;
+
+      this.classbook.selectedAbsence = absenceType;
+      this.classbook.selectedStudent = student.student_id;
+      this.classbook.selectedHour = this.selected_lesson.getValue();
+      this.classbook.applyAbsence();
+    })
+
+    this.classbook.selectedAbsence = previous_selected_absence_type;
+    console.log(this.classbook.students);
   }
 
   // === Apply Absence ===

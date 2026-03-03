@@ -1,4 +1,4 @@
-<div class="wrapper" (click)="dropdownManager.selected_dropdown = '';context_menu.hideContextMenu()">
+<div class="wrapper" (click)="appClickHandler()">
     <!-- Snow Effect - only visible in full seasonal mode during Christmas -->
     @if (seasonalService.getModeValue() === 'full' && seasonalService.getSeasonValue() === 'christmas') {
     <app-snow-effect></app-snow-effect>
@@ -20,12 +20,9 @@
                         <i-tabler name="menu-2"></i-tabler>
                     </div>
                 </div>
-                <!-- <div class="item-btn" [routerLink]="['', 'teach', 'classbook']" [routerLinkActive]="'active'">
+                <div class="item-btn" [routerLink]="['', 'teach', 'classbook']" [routerLinkActive]="'active'">
                     <div class="icon">
                         <i-tabler name="chalkboard"></i-tabler>
-                    </div>
-                    <div class="name">
-                        {{ l.s('sidebar/teach/classbook') }}
                     </div>
                 </div>
 
@@ -33,10 +30,7 @@
                     <div class="icon">
                         <i-tabler name="time-duration-5"></i-tabler>
                     </div>
-                    <div class="name">
-                        {{ l.s('sidebar/marks/intermRecord') }}
-                    </div>
-                </div> -->
+                </div>
             </div>
         </div>
         <div class="right">
@@ -242,7 +236,7 @@
         </div>
     </div>
     <div class="content">
-        <div [ngClass]="{sidebar: true, active: sidebar.sidebarToggled}">
+        <div class="sidebar" [class.active]="sidebar.sidebarToggled">
             @for (section of sidebar.data; track $index) {
             <ul>
                 @for (item of section.items; track $index) {

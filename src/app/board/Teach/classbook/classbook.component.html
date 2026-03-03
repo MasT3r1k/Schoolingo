@@ -74,14 +74,13 @@
             <div class="header" [class.skeleton]="is_lesson_loading">
                 <h2>{{ classbook.classbook ? classbook.classbook.subject_name : '' }}</h2>
                 <div class="lesson-meta">
-                    <span class="lesson-time">{{ hours[selected_lesson.getValue()].start }} - {{
-                        hours[selected_lesson.getValue()].end }}</span>
+                    <span class="lesson-time">{{ hours[selected_lesson.getValue()].start }} - {{ hours[selected_lesson.getValue()].end }}</span>
                     <span>{{ classbook.classbook ? classbook.classbook.class_name : '' }}</span>
                     <span>{{ classbook.classbook ? Utils.formatDateShort(classbook.classbook.date) : '' }} ({{
                         l.s('days.' + Utils.makeMoment(classbook.classbook.date).day()) }})</span>
                 </div>
                 <div class="lesson-meta lesson-muted">
-                    {{ l.s('classbook.class_service') }}: {{ classbook.classbook.classService }}
+                    {{ l.s('classbook.class_service') }}: {{ classbook.classbook.classService ?? 'Žádná pořádková služba' }}
                 </div>
             </div>
             <div class="lesson-body">
@@ -230,7 +229,7 @@
 
                 <div class="absence-selector">
                     @if (selected_lesson.getValue()) {
-                    <div class="clickable" style="display: flex;align-items: center;color: var(--primary-100)">
+                    <div class="clickable" style="display: flex;align-items: center;color: var(--primary-100)" (click)="copyAbsenceFromPreviousHour()">
                         <i-tabler style="margin-right: .5rem;" name="copy"></i-tabler>
                         {{ l.s('classbook.copy_from_previous_lesson') }}
                     </div>
