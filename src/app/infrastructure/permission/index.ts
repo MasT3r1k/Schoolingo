@@ -24,7 +24,7 @@ export class Permission {
 
     constructor(){}
 
-    public checkPermission(required: permType[] = []): boolean {
+    public checkPermission(required: permType[] = [], class_name: string = ''): boolean {
         let user = this.user.getUser()!;
         let count = 0;
 
@@ -63,8 +63,17 @@ export class Permission {
                             permCount++;
                         }
                     }
-                } else if (permission == "classteacher" && this.user.getUser().classes.length && this.user.getUser().role == "teacher") {
+                } else if (permission == "classteacher" && this.user.getUser().role == "teacher" && this.user.getUser().classes.length) {
                     permCount++;
+                } else if (permission.startsWith("classteacher:") && this.user.getUser().role == "teacher" && this.user.getUser().classes.length) {
+                    let className = permission.slice(13);
+                    if (className == '') {
+                        className = class_name;
+                    }
+                    const hasClass = this.user.getUser().classes.find((cl) => cl.class_name == className);
+                    if (hasClass) {
+                        permCount++;
+                    }
                 } else if (permission == "all") {
                     permCount++;
                 } else if (permission == user.role) {

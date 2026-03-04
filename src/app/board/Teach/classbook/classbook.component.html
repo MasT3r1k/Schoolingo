@@ -16,14 +16,20 @@
             @if (timetable.length > 0) {
             @for (lesson of timetable; track $index) {
             <div class="lesson-card" [class.active]="selected_lesson.getValue() == $index"
-                (click)="selected_lesson.next($index)">
+                (click)="!lesson.isEmpty && selected_lesson.next($index)" [style.opacity]="lesson.isEmpty ? '0.5' : '1'"
+                [style.cursor]="lesson.isEmpty ? 'default' : 'pointer'">
                 <div class="lesson-index">
                     {{ $index + 1 }}
                 </div>
                 <div class="lesson-info">
                     <div class="lesson-subject">
-                        <span>{{ lesson.subject_name || '' }}</span>
+                        <span>{{ lesson.isEmpty ? l.s('timetable.free_time') : (lesson.subject_name || '') }}</span>
                         <div class="lesson-icons">
+                            @if (lesson.isSubstitution) {
+                            <div class="badge"
+                                style="background: var(--danger-100); color: var(--danger-500); font-size: 10px; padding: 2px 6px; border-radius: 4px; font-weight: bold;">
+                                SUPL</div>
+                            }
                             @if (lesson.lockClassAfterLesson) {
                             <i-tabler name="key"></i-tabler>
                             }
@@ -32,9 +38,11 @@
                     <div class="lesson-meta">
                         <span class="lesson-time" style="flex: 0 0 125px;">{{ hours[$index].start }} - {{
                             hours[$index].end }}</span>
+                        @if (!lesson.isEmpty) {
                         <span style="flex: 0 0 72px;">{{ `${lesson.class_name || ''} ${lesson.group_name ?
                             lesson.group_name : ''}` }}</span>
                         <span class="lesson-muted" style="flex: 1">{{ lesson.topic || '' }}</span>
+                        }
                     </div>
                 </div>
             </div>
@@ -92,8 +100,9 @@
                             l.s('days.' + Utils.makeMoment(classbook.classbook.date).day()) }})</span>
                     </div>
                     <div class="meta-item">
-                        <i-tabler name="broom"></i-tabler>
-                        <span>{{ l.s('classbook.class_service') }}: {{ classbook.classbook.classService ?? 'Žádná pořádková služba' }}</span>
+                        <i-tabler name="spray"></i-tabler>
+                        <span>{{ l.s('classbook.class_service') }}: {{ classbook.classbook.classService ?? 'Žádná
+                            pořádková služba' }}</span>
                     </div>
                 </div>
             </div>
@@ -258,14 +267,15 @@
                     </div>
                     }
 
-                    @for (absence of absenceConfig; track $index) {
+                    @for (absence of getAbsenceConfig(); track $index) {
+                    @if (absence) {
                     <div [ngClass]="['absence-type', 'ab-' + absence.locale]"
                         [class.active]="selected_absence == $index" (click)="selected_absence = $index">
                         @if (absence.icon) {
                         <i-tabler [name]="absence.icon"></i-tabler>
                         }
                     </div>
-
+                    }
                     }
 
                     <div class="absence-type empty" [class.danger]="this.selected_absence == -1"

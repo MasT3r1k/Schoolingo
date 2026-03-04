@@ -1,7 +1,7 @@
 import { NgClass } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { Component, inject, OnInit } from '@angular/core';
-import { absence, AbsenceType } from '@Schoolingo/absence';
+import { absence, AbsenceConfig, AbsenceType } from '@Schoolingo/absence';
 import { Config } from '@Schoolingo/config';
 import { IconsModule } from '@Schoolingo/icons';
 import { Locale } from '@Schoolingo/locale';
@@ -19,6 +19,7 @@ import moment from 'moment';
 import { TimetableHours } from '../timetable/timetable.component';
 import { School } from '@Schoolingo/school';
 import { Utils } from '@Schoolingo/utils';
+import { Permission } from '@Schoolingo/permission';
 
 interface ClassbookLesson {
   subject_name: string;
@@ -39,6 +40,7 @@ interface ClassbookLesson {
 export class ClassbookComponent implements OnInit {
   private http = inject(HttpClient);
   private modalManager = inject(ModalManager);
+  private perms = inject(Permission);
   private school = inject(School);
   private u = inject(Authentication);
   public l = inject(Locale);
@@ -47,7 +49,7 @@ export class ClassbookComponent implements OnInit {
   public calendarManager = inject(CalendarManager);
   Utils = Utils;
 
-  public max_hours = 8;
+  public max_hours = -1;
 
   // === Absence stats ===
   public get_total_students(): number {
@@ -80,6 +82,7 @@ export class ClassbookComponent implements OnInit {
   public hours: TimetableHours[] = [];
 
   public updateLessons(): void {
+    this.is_loading = true;
     this.http.post(
       `${Config.API_URL}/v1/timetable`,
       {
@@ -89,29 +92,102 @@ export class ClassbookComponent implements OnInit {
       },
       { withCredentials: true }
     )
-    .subscribe((data: any) => {
-      this.timetable = (data.timetable as any[]).filter((tt) => tt.day == this.selected_date.isoWeekday());
+      .subscribe((data: any) => {
+        const timetableData: any[] = [];
 
-      let schoolConfig = this.school.config.getValue();
-      let time = moment()
-      .set('hours', schoolConfig?.start_hour!)
-      .set('minutes', schoolConfig?.start_minute!);
+        if ('timetable' in data) {
+          data.timetable.forEach((lesson: any) => {
+            timetableData.push({ ...lesson, isEmpty: false });
+          });
+        }
 
-      for(let i = 1;i <= this.max_hours;i++) {
-        let startHour = time.clone();
-        time.add(schoolConfig?.lesson_hour, 'minutes');
-        this.hours.push(
-          {
-            startMoment: startHour.clone(),
-            start: startHour.format('HH:mm'),
-            endMoment: time.clone(),
-            end: time.format('HH:mm')
-          }
+        if ('substitution' in data) {
+          data.substitution.forEach((sub: any) => {
+            const subDate = moment(sub.start_date);
+            const subLesson: any = {
+              day: subDate.isoWeekday(),
+              hour: sub.start_hour,
+              type: 0,
+              room: sub.room,
+              isEmpty: false,
+              subject_id: sub.subject_id,
+              subject_name: sub.subject_name || sub.event_name || 'Suplování',
+              subjectShortcut: sub.subject_shortcut || 'SUPL',
+              class_name: sub.class_name,
+              group_name: sub.group_name,
+              group_id: sub.group_id,
+              lastName: sub.last_name,
+              teacher: sub.teacher,
+              isSubstitution: true
+            };
+
+            for (let h = sub.start_hour; h <= sub.end_hour; h++) {
+              const existingIdx = timetableData.findIndex((l: any) => l.day === subLesson.day && l.hour === h);
+              if (existingIdx !== -1) {
+                timetableData[existingIdx] = { ...timetableData[existingIdx], ...subLesson, hour: h };
+              } else {
+                timetableData.push({ ...subLesson, hour: h });
+              }
+            }
+          });
+        }
+
+        const day = this.selected_date.isoWeekday();
+        const dailyLessons = timetableData.filter(
+          (lesson: any) => lesson.day === day && (lesson.type == 0 || (lesson.type == 1 && this.selected_date.isoWeek() % 2) || (lesson.type == 2 && this.selected_date.isoWeek() % 2 == 0))
         );
-        let customBreak = schoolConfig?.breaks.filter((_) => _.hour == i + 1)[0]?.minutes;
-        time.add(customBreak || schoolConfig?.break_time, 'minutes');
+
+        this.max_hours = dailyLessons.length > 0 ? Math.max(...dailyLessons.map((tt: any) => tt.hour)) : 0;
+
+        this.timetable = [];
+        for (let h = 1; h <= this.max_hours; h++) {
+          const foundLesson = dailyLessons.find(tt => tt.hour === h);
+          if (foundLesson) {
+            this.timetable.push(foundLesson);
+          } else {
+            this.timetable.push({ hour: h, isEmpty: true });
+          }
+        }
+
+        let schoolConfig = this.school.config.getValue();
+        let time = moment()
+          .set('hours', schoolConfig?.start_hour!)
+          .set('minutes', schoolConfig?.start_minute!);
+
+        this.hours = [];
+        for (let i = 1; i <= this.max_hours; i++) {
+          let startHour = time.clone();
+          time.add(schoolConfig?.lesson_hour, 'minutes');
+          this.hours.push(
+            {
+              startMoment: startHour.clone(),
+              start: startHour.format('HH:mm'),
+              endMoment: time.clone(),
+              end: time.format('HH:mm')
+            }
+          );
+          let customBreak = schoolConfig?.breaks.filter((_) => _.hour == i + 1)[0]?.minutes;
+          time.add(customBreak || schoolConfig?.break_time, 'minutes');
+        }
+
+        this.is_loading = false;
+        const firstValidLesson = this.timetable.find(l => !l.isEmpty);
+        if (firstValidLesson) {
+          this.selected_lesson.next(firstValidLesson.hour - 1);
+        } else {
+          this.classbook.classbook = null as any;
+        }
+      })
+  }
+
+  public getAbsenceConfig(): AbsenceConfig[] {
+    let absence: AbsenceConfig[] = [];
+    this.absenceConfig.forEach((config, index) => {
+      if (this.perms.checkPermission(config.perms, this.classbook.classbook.class_name)) {
+        absence[index] = config;
       }
     })
+    return absence;
   }
 
   ngOnInit(): void {
@@ -163,43 +239,57 @@ export class ClassbookComponent implements OnInit {
       }
     )
 
-    this.selected_lesson.subscribe(() => {
+    this.selected_lesson.subscribe((value) => {
+      if (value == undefined || !this.timetable[value]) return;
+      if (this.timetable[value].isEmpty) {
+        this.classbook.classbook = null as any;
+        return;
+      }
+
+      this.is_lesson_loading = true;
       this.http.get(
-        `${Config.API_URL}/v1/classbook/lesson?groupId=${this.timetable[this.selected_lesson.getValue()].group_id}&date=${this.selected_date.format('YYYY-MM-DD')}&hour=${this.selected_lesson.getValue()}`,
+        `${Config.API_URL}/v1/classbook/lesson?groupId=${this.timetable[value].group_id}&date=${this.selected_date.format('YYYY-MM-DD')}&hour=${value}`,
         { withCredentials: true }
       )
-      .subscribe((data: any) => {
-        this.classbook.classbook = {
-          ...data.classbook,
-          lessonNumber: data.lessonNumber,
-          lessonTotal: data.lessonTotal,
-          classService: Object.values(data.classService)
-        };
+        .subscribe({
+          next: (data: any) => {
+            this.classbook.classbook = {
+              ...data.classbook,
+              lessonNumber: data.lessonNumber,
+              lessonTotal: data.lessonTotal,
+              classService: Object.values(data.classService)
+            };
 
-        this.classbook.students = data.students.map((student: any) => ({
-          ...student,
-          absence: Array.isArray(student.absence)
-            ? student.absence.map((a: any) => (a?.type ?? undefined))
-            : [],
-          absence_data: student.absence
-        }));
-      });
+            this.classbook.students = data.students.map((student: any) => ({
+              ...student,
+              absence: Array.isArray(student.absence)
+                ? student.absence.map((a: any) => (a?.type ?? undefined))
+                : [],
+              absence_data: student.absence
+            }));
+            this.is_lesson_loading = false;
+          },
+          error: (err) => {
+            this.is_lesson_loading = false;
+            this.classbook.classbook = null as any;
+          }
+        });
 
       this.http.get<any[]>(
-        `${Config.API_URL}/v1/classbook/homework?groupId=${this.timetable[this.selected_lesson.getValue()].group_id}&subjectId=${this.timetable[this.selected_lesson.getValue()].subject_id}`,
+        `${Config.API_URL}/v1/classbook/homework?groupId=${this.timetable[value].group_id}&subjectId=${this.timetable[value].subject_id}`,
         { withCredentials: true }
       )
-      .subscribe((data: any[]) => {
-        this.classbook.homeworks = data;
-      })
+        .subscribe((data: any[]) => {
+          this.classbook.homeworks = data;
+        })
 
       this.http.get<any[]>(
-        `${Config.API_URL}/v1/classbook/notes?groupId=${this.timetable[this.selected_lesson.getValue()].group_id}&subjectId=${this.timetable[this.selected_lesson.getValue()].subject_id}`,
+        `${Config.API_URL}/v1/classbook/notes?groupId=${this.timetable[value].group_id}&subjectId=${this.timetable[value].subject_id}`,
         { withCredentials: true }
       )
-      .subscribe((data: any[]) => {
-        this.classbook.notes = data;
-      })
+        .subscribe((data: any[]) => {
+          this.classbook.notes = data;
+        })
     });
   }
 
@@ -216,6 +306,9 @@ export class ClassbookComponent implements OnInit {
       } else if ([AbsenceType.EARLY].includes(previousAbsence)) {
         absenceType = AbsenceType.ABSENCE;
       }
+      if (!this.perms.checkPermission(this.absenceConfig[absenceType].perms, this.classbook.classbook.class_name)) {
+        absenceType = absenceType.ABSENCE;
+      }
       if (absenceType == undefined || absenceType == null) return;
 
       this.classbook.selectedAbsence = absenceType;
@@ -225,7 +318,6 @@ export class ClassbookComponent implements OnInit {
     })
 
     this.classbook.selectedAbsence = previous_selected_absence_type;
-    console.log(this.classbook.students);
   }
 
   // === Apply Absence ===
