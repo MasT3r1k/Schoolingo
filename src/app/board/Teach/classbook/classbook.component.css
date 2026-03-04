@@ -88,7 +88,6 @@
   font-style: italic;
 }
 
-
 .lesson-details {
   background: var(--surface);
   border: 1px solid var(--border);
@@ -98,11 +97,56 @@
 }
 
 .lesson-details>.header {
-  padding: 24px;
+  padding: 24px 24px 16px 24px;
   border-bottom: 1px solid var(--border);
   display: flex;
   flex-direction: column;
-  background: var(--surface-glow);
+  gap: 16px;
+  background: var(--surface);
+  border-radius: var(--radius) var(--radius) 0 0;
+}
+
+.header-main {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.header-main h2 {
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin: 0;
+  color: var(--text);
+}
+
+.header-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.lesson-time i-tabler {
+  width: 16px;
+  height: 16px;
+}
+
+.header-meta {
+  display: flex;
+  gap: 24px;
+  flex-wrap: wrap;
+}
+
+.meta-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--text-muted);
+  font-size: 14px;
+}
+
+.meta-item i-tabler {
+  width: 16px;
+  height: 16px;
+  color: var(--primary-100);
 }
 
 .lesson-details>.header.skeleton * {
@@ -111,72 +155,158 @@
 
 .lesson-details>.lesson-body {
   padding: 24px;
-  gap: 16px;
-  display: grid;
-}
-
-.tabs {
+  gap: 24px;
   display: flex;
+  flex-direction: column;
+}
+
+/* Tabs Navigation */
+.tabs-wrapper {
+  position: relative;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 8px;
+}
+
+.tabs-nav {
+  display: flex;
+  gap: 24px;
+  overflow-x: auto;
+  overflow-y: hidden;
+}
+
+.tab-btn {
+  display: flex;
+  align-items: center;
   gap: 8px;
-  border-bottom: 2px solid var(--border);
-  padding-bottom: 0;
+  padding: 12px 0;
+  color: var(--text-muted);
+  font-size: 15px;
+  font-weight: 500;
+  cursor: pointer;
+  position: relative;
+  transition: all 0.2s ease;
+  white-space: nowrap;
 }
 
-.tab.active {
+.tab-btn:hover {
+  color: var(--text);
+}
+
+.tab-btn.active {
   color: var(--primary);
-  background: var(--glass-1);
 }
 
-.tab.active::after {
+.tab-btn.active::after {
   content: '';
   position: absolute;
-  bottom: -2px;
+  bottom: -1px;
   left: 0;
   right: 0;
   height: 2px;
-  background: var(--primary-gradient);
+  background: var(--primary);
+  border-radius: 2px 2px 0 0;
 }
 
-.tab {
-  background: transparent;
-  border: none;
-  color: var(--text-muted);
-  padding: 12px 20px;
-  cursor: pointer;
-  font-size: 15px;
-  font-weight: 500;
-  border-radius: var(--radius) var(--radius) 0 0;
-  transition: all 0.2s;
-  position: relative;
+.tab-btn i-tabler {
+  width: 20px;
+  height: 20px;
 }
 
-.info-card {
+.card-content {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
   background: var(--elevated);
   border: 1px solid var(--border);
   border-radius: var(--radius);
-  padding: 16px;
-  margin-bottom: 16px;
+  padding: 24px;
 }
 
-.info-card h3 {
-  font-size: 14px;
-  color: var(--primary-200);
-  margin-bottom: 12px;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
+.info-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.info-card .card-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 16px;
+}
+
+.info-card .card-header h3 {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--text);
+  margin: 0;
+  flex: 1;
+}
+
+.info-card .card-header i-tabler {
+  color: var(--text-muted);
+  width: 24px;
+  height: 24px;
+}
+
+.lesson-date.badge {
+  background: var(--surface-2);
+  color: var(--text-muted);
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.info-list {
+  display: flex;
+  flex-direction: column;
 }
 
 .info-row {
   display: flex;
   justify-content: space-between;
-  padding: 8px 0;
-  color: var(--text);
-  font-size: 14px;
-  border-bottom: 1px solid var(--border);
+  align-items: center;
+  padding: 12px 0;
+  border-bottom: 1px dashed var(--border);
 }
 
 .info-row:last-child {
   border-bottom: none;
+  padding-bottom: 0;
+}
+
+.info-row:first-child {
+  padding-top: 0;
+}
+
+.info-label {
+  color: var(--text-muted);
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.info-label i-tabler {
+  width: 18px;
+  height: 18px;
+  color: var(--text-muted);
+  opacity: 0.7;
+}
+
+.info-value {
+  color: var(--text);
+  font-size: 14px;
+  font-weight: 500;
+  text-align: right;
+  max-width: 60%;
+  word-break: break-word;
 }
 
 /* === ABSENCE === */
@@ -361,18 +491,7 @@
   letter-spacing: 0.5px;
 }
 
-.info-row {
-  display: flex;
-  justify-content: space-between;
-  padding: 8px 0;
-  color: var(--text);
-  font-size: 14px;
-  border-bottom: 1px solid var(--border);
-}
 
-.info-row:last-child {
-  border-bottom: none;
-}
 
 /* === ABSENCE === */
 

@@ -126,6 +126,13 @@ export class CalendarComponent implements OnInit, OnDestroy, OnChanges {
             if (this.size === 'center') {
                 x = bounds.left + (bounds.width / 2) - (dropdownBounds.width / 2);
             }
+
+            if (x + dropdownBounds.width > window.innerWidth - 16) {
+                x = bounds.right - dropdownBounds.width;
+            }
+            if (x < 16) {
+                x = 16;
+            }
         }
 
         this.calendarManager.updateCalendar(

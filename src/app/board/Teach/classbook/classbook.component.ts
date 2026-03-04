@@ -121,6 +121,7 @@ export class ClassbookComponent implements OnInit {
     this.modalManager.addModal(
       'add_homework',
       {
+        icon: 'notebook',
         title: 'classbook.add_homework.title',
         closeable: true,
         items: [
@@ -215,7 +216,7 @@ export class ClassbookComponent implements OnInit {
       } else if ([AbsenceType.EARLY].includes(previousAbsence)) {
         absenceType = AbsenceType.ABSENCE;
       }
-      if (!absenceType) return;
+      if (absenceType == undefined || absenceType == null) return;
 
       this.classbook.selectedAbsence = absenceType;
       this.classbook.selectedStudent = student.student_id;

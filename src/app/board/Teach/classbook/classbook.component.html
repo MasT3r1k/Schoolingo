@@ -30,7 +30,7 @@
                         </div>
                     </div>
                     <div class="lesson-meta">
-                        <span class="lesson-time" style="flex: 0 0 100px;">{{ hours[$index].start }} - {{
+                        <span class="lesson-time" style="flex: 0 0 125px;">{{ hours[$index].start }} - {{
                             hours[$index].end }}</span>
                         <span style="flex: 0 0 72px;">{{ `${lesson.class_name || ''} ${lesson.group_name ?
                             lesson.group_name : ''}` }}</span>
@@ -72,50 +72,72 @@
         <div class="lesson-details">
             @if (classbook.classbook) {
             <div class="header" [class.skeleton]="is_lesson_loading">
-                <h2>{{ classbook.classbook ? classbook.classbook.subject_name : '' }}</h2>
-                <div class="lesson-meta">
-                    <span class="lesson-time">{{ hours[selected_lesson.getValue()].start }} - {{ hours[selected_lesson.getValue()].end }}</span>
-                    <span>{{ classbook.classbook ? classbook.classbook.class_name : '' }}</span>
-                    <span>{{ classbook.classbook ? Utils.formatDateShort(classbook.classbook.date) : '' }} ({{
-                        l.s('days.' + Utils.makeMoment(classbook.classbook.date).day()) }})</span>
+                <div class="header-main">
+                    <h2>{{ classbook.classbook ? classbook.classbook.subject_name : '' }}</h2>
+                    <div class="header-actions">
+                        <div class="lesson-time">
+                            <i-tabler name="clock"></i-tabler>
+                            {{ hours[selected_lesson.getValue()].start }} - {{ hours[selected_lesson.getValue()].end }}
+                        </div>
+                    </div>
                 </div>
-                <div class="lesson-meta lesson-muted">
-                    {{ l.s('classbook.class_service') }}: {{ classbook.classbook.classService ?? 'Žádná pořádková služba' }}
+                <div class="header-meta">
+                    <div class="meta-item">
+                        <i-tabler name="users"></i-tabler>
+                        <span>{{ classbook.classbook ? classbook.classbook.class_name : '' }}</span>
+                    </div>
+                    <div class="meta-item">
+                        <i-tabler name="calendar-event"></i-tabler>
+                        <span>{{ classbook.classbook ? Utils.formatDateShort(classbook.classbook.date) : '' }} ({{
+                            l.s('days.' + Utils.makeMoment(classbook.classbook.date).day()) }})</span>
+                    </div>
+                    <div class="meta-item">
+                        <i-tabler name="broom"></i-tabler>
+                        <span>{{ l.s('classbook.class_service') }}: {{ classbook.classbook.classService ?? 'Žádná pořádková služba' }}</span>
+                    </div>
                 </div>
             </div>
             <div class="lesson-body">
                 @if (!is_lesson_loading) {
-                <div class="tabs">
-                    <div class="tab" [class.active]="selected_tab == 0" (click)="selected_tab = 0">
-                        {{ l.s('classbook.write_lesson') }}
-                    </div>
-                    <div class="tab" [class.active]="selected_tab == 1" (click)="selected_tab = 1">
-                        {{ l.s('classbook.absence') }}
-                    </div>
-                    <div class="tab" [class.active]="selected_tab == 2" (click)="selected_tab = 2">
-                        {{ l.s('sidebar.teach.homeworks') }}
-                    </div>
-                    <div class="tab" [class.active]="selected_tab == 3" (click)="selected_tab = 3">
-                        {{ l.s('classbook.notes') }}
-                    </div>
+                <div class="tabs-wrapper">
+                    <nav class="tabs-nav">
+                        <div class="tab-btn" [class.active]="selected_tab == 0" (click)="selected_tab = 0">
+                            <i-tabler name="book"></i-tabler>
+                            <span>{{ l.s('classbook.write_lesson') }}</span>
+                        </div>
+                        <div class="tab-btn" [class.active]="selected_tab == 1" (click)="selected_tab = 1">
+                            <i-tabler name="users"></i-tabler>
+                            <span>{{ l.s('classbook.absence') }}</span>
+                        </div>
+                        <div class="tab-btn" [class.active]="selected_tab == 2" (click)="selected_tab = 2">
+                            <i-tabler name="notebook"></i-tabler>
+                            <span>{{ l.s('sidebar.teach.homeworks') }}</span>
+                        </div>
+                        <div class="tab-btn" [class.active]="selected_tab == 3" (click)="selected_tab = 3">
+                            <i-tabler name="notes"></i-tabler>
+                            <span>{{ l.s('classbook.notes') }}</span>
+                        </div>
+                    </nav>
                 </div>
 
                 @if (selected_tab == 0) {
                 <div class="card-content">
-                    <div class="form-group">
-                        <label for="lessonNumber">
-                            {{ l.s('classbook.lesson_number') }}
-                        </label>
-                        <input type="text" [(ngModel)]="classbook.classbook.lessonNumber" readonly
-                            [placeholder]="l.s('classbook.placeholder_number')">
-                    </div>
+                    <div class="lesson-form-grid" style="display: grid; grid-template-columns: 120px 1fr; gap: 16px;">
+                        <div class="form-group">
+                            <label for="lessonNumber">
+                                {{ l.s('classbook.lesson_number') }}
+                            </label>
+                            <input type="text" [(ngModel)]="classbook.classbook.lessonNumber" readonly
+                                [placeholder]="l.s('classbook.placeholder_number')">
+                        </div>
 
-                    <div class="form-group">
-                        <label for="lessonTopic">
-                            {{ l.s('classbook.lesson_topic') }}
-                        </label>
-                        <input type="text" [(ngModel)]="classbook.classbook.topic"
-                            [placeholder]="l.s('classbook.placeholder_topic')">
+                        <div class="form-group">
+                            <label for="lessonTopic">
+                                {{ l.s('classbook.lesson_topic') }}
+                            </label>
+                            <input type="text" [(ngModel)]="classbook.classbook.topic"
+                                [placeholder]="l.s('classbook.placeholder_topic')">
+                        </div>
                     </div>
 
                     <div class="form-group">
@@ -138,7 +160,7 @@
                     </div>
 
                     <div class="form-group">
-                        <div class="btn btn--primary">
+                        <div class="btn btn--primary" style="align-self: flex-start; width: max-content; gap: 8px;">
                             <i-tabler name="device-floppy"></i-tabler>
                             {{ l.s('classbook.save_lesson') }}
                         </div>
@@ -229,7 +251,8 @@
 
                 <div class="absence-selector">
                     @if (selected_lesson.getValue()) {
-                    <div class="clickable" style="display: flex;align-items: center;color: var(--primary-100)" (click)="copyAbsenceFromPreviousHour()">
+                    <div class="clickable" style="display: flex;align-items: center;color: var(--primary-100)"
+                        (click)="copyAbsenceFromPreviousHour()">
                         <i-tabler style="margin-right: .5rem;" name="copy"></i-tabler>
                         {{ l.s('classbook.copy_from_previous_lesson') }}
                     </div>
