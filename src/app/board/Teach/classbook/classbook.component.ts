@@ -257,7 +257,8 @@ export class ClassbookComponent implements OnInit {
               ...data.classbook,
               lessonNumber: data.lessonNumber,
               lessonTotal: data.lessonTotal,
-              classService: Object.values(data.classService)
+              classService: Object.values(data.classService),
+              classMaxHours: data.classMaxHours
             };
 
             this.classbook.students = data.students.map((student: any) => ({

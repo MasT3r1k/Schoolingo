@@ -11,6 +11,8 @@ import { TabsComponent } from '@Components/Tabs';
 import { School } from '@Schoolingo/school';
 import { Utils } from '@Schoolingo/utils';
 import { ActivatedRoute, Router } from '@angular/router';
+import { ModalManager } from '@Schoolingo/modal';
+import { DeleteConfirmComponent } from './modals/delete-confirm/delete-confirm.component';
 
 // --- INTERFACES ---
 
@@ -25,12 +27,14 @@ export interface GdprConsent {
   expires_at?: Date;
   required: boolean;
   person_name?: string;
+  target_user_id: number;
 }
 
 export interface GdprTraining {
   training_id: number;
   name: string;
   description: string;
+  valid_days: number;
   valid_to: Date;
   questions_count: number;
   status: 'not_started' | 'in_progress' | 'completed' | 'failed';
@@ -80,6 +84,7 @@ export class GdprComponent implements OnInit {
   public l = inject(Locale);
   private route = inject(ActivatedRoute);
   private router = inject(Router);
+  private modalManager = inject(ModalManager);
   public Utils = Utils;
 
   // VIEW NAVIGATION
@@ -116,7 +121,33 @@ export class GdprComponent implements OnInit {
   // ADMIN DATA
   public adminConsents: AdminGdprConsent[] = [];
   public adminReports: AdminGdprReport[] = [];
-  public adminTraining: GdprTraining[] = [];
+  public adminTraining: (GdprTraining & { training_id: number })[] = [];
+  public adminReviews: any[] = [];
+
+  // ADMIN MODALS & FORMS
+  public showConsentModal = false;
+  public consentForm: any = {
+    id: null,
+    title: '',
+    type: 'essential',
+    description: '',
+    purpose: '',
+    instructions: '',
+    required: false,
+    target_group: 'all'
+  };
+
+  public showTrainingModal = false;
+  public trainingForm: any = {
+    id: null,
+    name: '',
+    description: '',
+    valid_days: 365,
+    target_group: 'all'
+  };
+
+  public showReportDetailModal = false;
+  public selectedReport: AdminGdprReport | null = null;
 
   // LOADING STATES
   public loading = false;
@@ -210,6 +241,16 @@ export class GdprComponent implements OnInit {
         }
     });
 
+    // Modals
+    this.modalManager.addModal('gdpr_delete-user', {
+      title: 'gdpr.officer.actions.forget_me',
+      icon: 'user-minus',
+      closeable: true,
+      items: [
+        {  type: 'component', component: DeleteConfirmComponent }
+      ]
+    })
+
     this.loadAllData();
   }
 
@@ -223,6 +264,11 @@ export class GdprComponent implements OnInit {
     this.loadAdminConsents();
     this.loadAdminReports();
     this.loadAdminTraining();
+    this.loadAdminReviews();
+  }
+
+  public openDeleteConfirmModal(): void {
+    this.modalManager.openModal('gdpr_delete-user');
   }
 
   // DATA LOADING METHODS
@@ -286,7 +332,7 @@ export class GdprComponent implements OnInit {
   }
 
   public loadAdminTraining(): void {
-    this.http.get<{ training: GdprTraining[] }>(
+    this.http.get<{ training: any[] }>(
       `${Config.API_URL}/v1/gdpr/admin/training`,
       { withCredentials: true }
     ).subscribe({
@@ -296,13 +342,129 @@ export class GdprComponent implements OnInit {
     });
   }
 
+  public loadAdminReviews(): void {
+    this.http.get<{ reviews: any[] }>(
+      `${Config.API_URL}/v1/gdpr/admin/reviews`,
+      { withCredentials: true }
+    ).subscribe({
+      next: (data) => {
+        if (data.reviews) this.adminReviews = data.reviews;
+      }
+    });
+  }
+
+  // ADMIN ACTIONS - CONSENTS
+  public openConsentModal(consent: any = null): void {
+    if (consent) {
+        this.consentForm = { ...consent };
+    } else {
+        this.consentForm = {
+            id: null,
+            title: '',
+            type: 'essential',
+            description: '',
+            purpose: '',
+            instructions: '',
+            required: false,
+            active: true,
+            target_group: 'all'
+        };
+    }
+    this.showConsentModal = true;
+  }
+
+  public saveConsent(): void {
+    const url = `${Config.API_URL}/v1/gdpr/admin/consents` + (this.consentForm.id ? `/${this.consentForm.id}` : '');
+    const method = this.consentForm.id ? 'put' : 'post';
+
+    this.http[method](url, this.consentForm, { withCredentials: true }).subscribe({
+        next: () => {
+            this.showConsentModal = false;
+            this.loadAdminConsents();
+            this.loadConsents();
+        }
+    });
+  }
+
+  public deleteConsent(id: number): void {
+    if (!confirm('Opravdu chcete tento souhlas smazat?')) return;
+    this.http.delete(`${Config.API_URL}/v1/gdpr/admin/consents/${id}`, { withCredentials: true }).subscribe({
+        next: () => this.loadAdminConsents()
+    });
+  }
+
+  // ADMIN ACTIONS - TRAINING
+  public openTrainingModal(training: any = null): void {
+    if (training) {
+        this.trainingForm = { ...training, id: training.training_id };
+    } else {
+        this.trainingForm = {
+            id: null,
+            name: '',
+            description: '',
+            valid_days: 365,
+            target_group: 'all',
+            active: true
+        };
+    }
+    this.showTrainingModal = true;
+  }
+
+  public saveTraining(): void {
+    const url = `${Config.API_URL}/v1/gdpr/admin/training` + (this.trainingForm.id ? `/${this.trainingForm.id}` : '');
+    const method = this.trainingForm.id ? 'put' : 'post';
+
+    this.http[method](url, this.trainingForm, { withCredentials: true }).subscribe({
+        next: () => {
+            this.showTrainingModal = false;
+            this.loadAdminTraining();
+            this.loadTraining();
+        }
+    });
+  }
+
+  public deleteTraining(id: number): void {
+    if (!confirm('Opravdu chcete toto školení smazat?')) return;
+    this.http.delete(`${Config.API_URL}/v1/gdpr/admin/training/${id}`, { withCredentials: true }).subscribe({
+        next: () => this.loadAdminTraining()
+    });
+  }
+
+  // ADMIN ACTIONS - REPORTS
+  public openReportDetail(report: AdminGdprReport): void {
+    this.selectedReport = report;
+    this.showReportDetailModal = true;
+  }
+
+  public updateReportStatus(reportId: number, status: string): void {
+    this.http.patch(`${Config.API_URL}/v1/gdpr/admin/reports/${reportId}/status`, { status }, { withCredentials: true }).subscribe({
+        next: () => {
+            this.loadAdminReports();
+            if (this.selectedReport && this.selectedReport.report_id === reportId) {
+                this.selectedReport.status = status as any;
+            }
+        }
+    });
+  }
+
   // ACTIONS
+  public takeTest(tr: GdprTraining): void {
+    if (tr.status === 'not_started') {
+        tr.status = 'in_progress';
+        this.http.patch(`${Config.API_URL}/v1/gdpr/training/${tr.training_id}/status`, { status: tr.status }, { withCredentials: true }).subscribe();
+    }
+  }
+
   public updateConsent(consent: GdprConsent, status: boolean | null): void {
     const oldStatus = consent.granted;
     consent.granted = status;
     this.http.put(
       `${Config.API_URL}/v1/gdpr/consents`,
-      { consent_id: consent.consent_id, granted: status },
+      {
+        consent_id: consent.consent_id,
+        granted: status,
+        target_user_id: consent.target_user_id
+      },
       { withCredentials: true }
     ).subscribe({
       error: () => {

@@ -606,6 +606,13 @@
             <h2>Správa uživatelů</h2>
 
             <div class="right">
+                @if (school.config.getValue()?.auth_ldap) {
+                <div class="btn btn--sm btn--secondary" (click)="openImportModal()">
+                    <i-tabler name="user-search"></i-tabler>
+                    Importovat uživatele
+                </div>
+                }
+            
                 <div class="btn btn--sm btn--primary" (click)="openAddUserModal()">
                     <i-tabler name="user-plus"></i-tabler>
                     Přidat uživatele
@@ -939,12 +946,6 @@
             </div>
         </div>
     </div>
-    }
-
-    <!-- File Manager Modal -->
-    @if (selectedUserForFiles) {
-    <app-user-files-modal [user]="selectedUserForFiles" (closeModal)="closeFileManager()">
-    </app-user-files-modal>
     }
     }
 

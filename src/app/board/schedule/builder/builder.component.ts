@@ -55,6 +55,7 @@ export class BuilderComponent implements OnInit {
     this.modalManager.addModal(
       'schedule_edit_lesson',
       {
+        icon: 'chalkboard-teacher',
         title: 'schedule.builder.edit_lesson',
         closeable: true,
         items: [
@@ -202,6 +203,7 @@ export class BuilderComponent implements OnInit {
                 subjectName: data.subject_name,
                 subjectShortcut: data.subject_shortcut,
                 teacherId: null,
+                teacher2Id: null,
                 room: '',
                 groupId: this.scheduleBuilder.classes.find(c => c.class_id == this.scheduleBuilder.selectedClass.getValue())?.group_id || 0,
                 type: 0,
@@ -412,6 +414,7 @@ export class BuilderComponent implements OnInit {
             subjectName: '',
             subjectShortcut: '',
             teacherId: 0,
+            teacher2Id: null,
             room: '',
             classId: this.scheduleBuilder.selectedClass.getValue(),
             groupId: this.scheduleBuilder.classes.find(c => c.class_id == this.scheduleBuilder.selectedClass.getValue())?.group_id || 0,

@@ -3,6 +3,7 @@ import { permType } from "@Schoolingo/permission";
 export interface AbsenceConfig {
     locale: string;
     icon?: string;
+    class?: string;
     perms: permType[];
     reasons: string[];
 }
@@ -24,14 +25,14 @@ export enum AbsenceType {
 }
 
 export const absence: AbsenceConfig[] = [
-    { locale: 'absence',    icon: 'slash',    perms: ['teacher'],  reasons: [] },
-    { locale: 'excused',    icon: 'x',        perms: ['classteacher:', 'principal'],  reasons: ['illness', 'family', 'doctor', 'oversleep', 'connection', 'hospitalization'] },
-    { locale: 'unexcused',  icon: 'letter-n', perms: ['classteacher:', 'principal'],  reasons: []},
-    { locale: 'non_count',  icon: 'minus',    perms: ['classteacher:', 'principal'],  reasons: ['school_event'] }, 
-    { locale: 'late',       icon: 'letter-p', perms: ['teacher'],  reasons: ['oversleep', 'connection'] },
-    { locale: 'early',      icon: 'letter-o', perms: ['teacher'],  reasons: ['connection'] },
-    { locale: 'distance',   icon: 'letter-d', perms: ['classteacher:', 'principal'],  reasons: [] },
-    { locale: 'excluded',   icon : '',        perms: ['principal'],reasons: []}
+    { locale: 'absence',    icon: 'slash',    class: 'badge--info',    perms: ['teacher'],  reasons: [] },
+    { locale: 'excused',    icon: 'x',        class: 'badge--success', perms: ['classteacher:', 'principal'],  reasons: ['illness', 'family', 'doctor', 'oversleep', 'connection', 'hospitalization'] },
+    { locale: 'unexcused',  icon: 'letter-n', class: 'badge--danger',  perms: ['classteacher:', 'principal'],  reasons: []},
+    { locale: 'non_count',  icon: 'minus',    class: 'badge--neutral', perms: ['classteacher:', 'principal'],  reasons: ['school_event'] }, 
+    { locale: 'late',       icon: 'letter-p', class: 'badge--warning', perms: ['teacher'],  reasons: ['oversleep', 'connection'] },
+    { locale: 'early',      icon: 'letter-o', class: 'badge--warning', perms: ['teacher'],  reasons: ['connection'] },
+    { locale: 'distance',   icon: 'letter-d', class: 'badge--primary', perms: ['classteacher:', 'principal'],  reasons: [] },
+    { locale: 'excluded',   icon : '',        class: 'badge--neutral', perms: ['principal'],reasons: []}
 ]
 
 export const working_mode: WorkingModeConfig[] = [

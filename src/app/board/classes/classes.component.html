@@ -1,11 +1,11 @@
 <div class="classes-page card">
     <div class="list-view">
         <div class="card-header">
-            <h2>Seznam tříd</h2>
+            <h2>{{ l.s('sidebar.classes') }}</h2>
             <div class="header-actions">
                 <button class="btn btn--sm btn--primary" (click)="openAddClassModal()">
                     <i-tabler name="chalkboard"></i-tabler>
-                    {{ 'Přidat třídu' }}
+                    {{ l.s('classes.add_class') }}
                 </button>
             </div>
         </div>
@@ -13,7 +13,7 @@
         <div class="filters-row-container">
             <div class="search-wrapper full-width">
                 <i-tabler name="search"></i-tabler>
-                <input type="search" placeholder="Hledat třídu..." [(ngModel)]="searchStr">
+                <input type="search" [placeholder]="l.s('classes.search_class')" [(ngModel)]="searchStr">
             </div>
 
             <div class="filter-dropdown-wrapper">
@@ -156,12 +156,12 @@
             <table class="classes-table">
                 <thead>
                     <tr>
-                        <th class="col-name">Název třídy</th>
-                        <th class="col-rocnik">Ročník</th>
-                        <th class="col-obor">Obor studia</th>
-                        <th class="col-headteacher">Třídní učitel</th>
-                        <th class="col-room">Kmenová učebna</th>
-                        <th class="col-students">Počet žáků</th>
+                        <th class="col-name">{{ l.s('classes.name_class') }}</th>
+                        <th class="col-rocnik">{{ l.s('classes.year_class') }}</th>
+                        <th class="col-obor">{{ l.s('classes.field_of_study') }}</th>
+                        <th class="col-headteacher">{{ l.s('roles.classteacher') }}</th>
+                        <th class="col-room">{{ l.s('classes.room_class') }}</th>
+                        <th class="col-students">{{ l.s('classes.students_count') }}</th>
                         <th class="col-actions"></th>
                     </tr>
                 </thead>
@@ -173,10 +173,10 @@
                                 <span class="name">{{ cls.name }}</span>
                             </div>
                         </td>
-                        <td class="col-rocnik">{{ cls.year }}. ročník</td>
+                        <td class="col-rocnik">{{ cls.year }}. {{ l.s('classes.year_class') }}</td>
                         <td class="col-obor">{{ cls.fieldOfStudy }}</td>
-                        <td class="col-headteacher">{{ cls.headTeacher || 'Nepřiřazeno' }}</td>
-                        <td class="col-room">{{ cls.classroom || 'Žádná' }}</td>
+                        <td class="col-headteacher">{{ cls.headTeacher || l.s('classes.no_classteacher') }}</td>
+                        <td class="col-room">{{ cls.classroom || l.s('classes.no_room') }}</td>
                         <td class="col-students">
                             <span class="students-count-badge">{{ cls.studentsCount || 0 }}</span>
                         </td>
@@ -200,7 +200,7 @@
             <h3>Žádné třídy nenalezeny</h3>
             <p>Zkuste upravit hledaný výraz nebo vytvořte novou třídu</p>
             <button class="btn btn--primary btn--sm" (click)="openAddClassModal()">
-                Vytvořit třídu
+                {{ l.s('classes.add_class') }}
             </button>
         </div>
         }

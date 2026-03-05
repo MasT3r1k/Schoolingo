@@ -1,109 +1,115 @@
 <div class="class-detail-page card">
-    <div class="header-banner">
-        <div class="back-btn" [routerLink]="['/classes']"
-            style="display: inline-flex; align-items: center; gap: 0.5rem; cursor: pointer; margin-bottom: 2rem; color: var(--text-subtle); transition: color 0.2s;"
-            onmouseover="this.style.color='var(--text-color)'" onmouseout="this.style.color='var(--text-subtle)'">
-            <i-tabler name="arrow-left" style="width: 20px; height: 20px;"></i-tabler>
-            <span>Zpět na seznam tříd</span>
-        </div>
+    <div class="detail-view">
 
+        <!-- Back Button -->
+        <a class="back-btn" [routerLink]="['/classes']">
+            <i-tabler name="arrow-left"></i-tabler>
+            <span>Zpět na seznam tříd</span>
+        </a>
+
+        <!-- Loading -->
         @if (isLoading) {
-        <div class="loading-state" style="text-align: center; padding: 3rem 0;">
+        <div class="loading-state">
             <div class="loading-spinner"></div>
-            <p style="margin-top: 1rem; color: var(--text-subtle);">Načítání detailů třídy...</p>
+            <p>Načítání detailů třídy...</p>
         </div>
-        } @else if (loadError) {
-        <div class="error-state" style="text-align: center; padding: 3rem 0;">
-            <i-tabler name="alert-circle"
-                style="width: 48px; height: 48px; margin-bottom: 1rem; color: var(--danger-color);"></i-tabler>
+        }
+
+        <!-- Error -->
+        @else if (loadError) {
+        <div class="error-state">
+            <i-tabler name="alert-circle"></i-tabler>
             <h3>Chyba</h3>
-            <p style="color: var(--text-subtle); margin-bottom: 1.5rem;">{{ loadError }}</p>
+            <p>{{ loadError }}</p>
             <button class="btn btn--primary" [routerLink]="['/classes']">
                 Přehled tříd
             </button>
         </div>
-        } @else if (classData) {
-        <div class="class-header" style="display: flex; flex-direction: column; align-items: flex-start; gap: 1rem;">
-            <h2 style="font-size: 2rem; margin: 0;">Detail třídy: {{ classData.name }}</h2>
-            <div class="class-info-badges row" style="display: flex; gap: 1rem; flex-wrap: wrap; margin-top: 0.5rem;">
-                <div class="badge"
-                    style="display: flex; align-items: center; gap: 0.5rem; background: var(--bg-subtle); padding: 0.5rem 1rem; border-radius: 8px; font-weight: 500;">
-                    <i-tabler name="school" style="width: 20px; height: 20px; color: var(--primary-color);"></i-tabler>
+        }
+
+        <!-- Content -->
+        @else if (classData) {
+
+        <!-- Class Header -->
+        <div class="class-header">
+            <div class="class-title-row">
+                <div class="class-avatar">
+                    <i-tabler name="chalkboard"></i-tabler>
+                </div>
+                <div>
+                    <h2 class="class-name">{{ classData.name }}</h2>
+                    <p class="class-subtitle">Detail třídy</p>
+                </div>
+            </div>
+
+            <div class="info-badges">
+                <div class="info-badge">
+                    <i-tabler name="school"></i-tabler>
                     <span>{{ classData.year }}. ročník</span>
                 </div>
-                <div class="badge"
-                    style="display: flex; align-items: center; gap: 0.5rem; background: var(--bg-subtle); padding: 0.5rem 1rem; border-radius: 8px; font-weight: 500;">
-                    <i-tabler name="book" style="width: 20px; height: 20px; color: var(--warning-color);"></i-tabler>
+                <div class="info-badge">
+                    <i-tabler name="book"></i-tabler>
                     <span>{{ classData.fieldOfStudy || 'Neznámý obor' }}</span>
                 </div>
-                <div class="badge"
-                    style="display: flex; align-items: center; gap: 0.5rem; background: var(--bg-subtle); padding: 0.5rem 1rem; border-radius: 8px; font-weight: 500;">
-                    <i-tabler name="user" style="width: 20px; height: 20px; color: var(--success-color);"></i-tabler>
-                    <span>Třídní učitel: {{ classData.headTeacher || 'Nepřiřazeno' }}</span>
+                <div class="info-badge">
+                    <i-tabler name="user-star"></i-tabler>
+                    <span>{{ classData.headTeacher || 'Třídní učitel nepřiřazen' }}</span>
                 </div>
-                <div class="badge"
-                    style="display: flex; align-items: center; gap: 0.5rem; background: var(--bg-subtle); padding: 0.5rem 1rem; border-radius: 8px; font-weight: 500;">
-                    <i-tabler name="door" style="width: 20px; height: 20px; color: var(--info-color);"></i-tabler>
-                    <span>Kmenová učebna: {{ classData.classroom || 'Žádná' }}</span>
+                <div class="info-badge">
+                    <i-tabler name="door"></i-tabler>
+                    <span>{{ classData.classroom || 'Kmenová učebna nezadána' }}</span>
                 </div>
             </div>
         </div>
 
-        <div class="students-section" style="margin-top: 3rem;">
-            <h3
-                style="font-size: 1.5rem; margin-bottom: 1.5rem; padding-bottom: 0.5rem; border-bottom: 1px solid var(--border-color);">
-                Seznam studentů ({{ students.length }})
-            </h3>
+        <!-- Students Section -->
+        <div class="students-section">
+            <div class="section-header">
+                <h3 class="section-title">
+                    <i-tabler name="users"></i-tabler>
+                    Seznam studentů
+                </h3>
+                <span class="count-badge">{{ students.length }}</span>
+            </div>
 
             @if (students.length > 0) {
-            <div class="students-table-wrapper" style="overflow-x: auto;">
-                <table class="students-table" style="width: 100%; border-collapse: collapse; text-align: left;">
+            <div class="students-table-wrapper">
+                <table class="students-table">
                     <thead>
-                        <tr style="border-bottom: 2px solid var(--border-color); color: var(--text-subtle);">
-                            <th style="padding: 1rem 1rem 1rem 0; font-weight: 600;">Student</th>
-                            <th style="padding: 1rem; font-weight: 600;">Email</th>
-                            <th style="padding: 1rem; font-weight: 600;">Datum narození</th>
-                            <th style="padding: 1rem; font-weight: 600;">Průměr</th>
-                            <th style="padding: 1rem 0 1rem 1rem; text-align: right; font-weight: 600;">Status</th>
+                        <tr>
+                            <th class="col-student">Student</th>
+                            <th class="col-email">Email</th>
+                            <th class="col-birthday">Datum narození</th>
+                            <th class="col-grade">Průměr</th>
+                            <th class="col-status">Status</th>
                         </tr>
                     </thead>
                     <tbody>
                         @for (student of students; track student.person_id) {
-                        <tr [routerLink]="['/', 'students', student.person_id]"
-                            style="cursor: pointer; border-bottom: 1px solid var(--border-subtle); transition: background-color 0.2s;"
-                            onmouseover="this.style.backgroundColor='var(--bg-subtle)'"
-                            onmouseout="this.style.backgroundColor='transparent'">
-                            <td style="padding: 1rem 1rem 1rem 0;">
-                                <div class="student-cell" style="display: flex; align-items: center; gap: 1rem;">
-                                    <div class="student-avatar-sm"
-                                        style="width: 40px; height: 40px; border-radius: 50%; background: var(--primary-subtle); color: var(--primary-color); display: flex; align-items: center; justify-content: center; font-size: 0.9rem; font-weight: bold; overflow: hidden;">
+                        <tr [routerLink]="['/', 'students', student.person_id]" class="clickable-row">
+                            <td class="col-student">
+                                <div class="student-cell">
+                                    <div class="student-avatar">
                                         @if (student.photo_url) {
-                                        <img [src]="student.photo_url" [alt]="student.full_name"
-                                            style="width: 100%; height: 100%; object-fit: cover;">
+                                        <img [src]="student.photo_url" [alt]="student.full_name">
                                         } @else {
                                         <span>{{ Utils.getInitials(student.full_name) }}</span>
                                         }
                                     </div>
-                                    <span class="name" style="font-weight: 500; font-size: 1.05rem;">{{
-                                        student.full_name }}</span>
+                                    <span class="student-name">{{ student.full_name }}</span>
                                 </div>
                             </td>
-                            <td style="padding: 1rem; color: var(--text-color);">{{ student.email || '---' }}</td>
-                            <td style="padding: 1rem; color: var(--text-color);">{{ student.birthday ?
+                            <td class="col-email text-muted">{{ student.email || '---' }}</td>
+                            <td class="col-birthday text-muted">{{ student.birthday ?
                                 Utils.formatDateShort(student.birthday) : 'Neznámé' }}</td>
-                            <td style="padding: 1rem;">
-                                <span class="average-badge"
-                                    style="padding: 0.3rem 0.6rem; border-radius: 6px; font-weight: 600; font-size: 0.9rem;"
-                                    [class]="getGradeClass(student.average_grade)"
-                                    [ngStyle]="!student.average_grade ? {'background':'var(--bg-subtle)', 'color':'var(--text-subtle)'} : {}">
+                            <td class="col-grade">
+                                <span class="grade-badge" [class]="getGradeClass(student.average_grade)"
+                                    [class.grade-none]="!student.average_grade">
                                     {{ student.average_grade ?? '---' }}
                                 </span>
                             </td>
-                            <td style="padding: 1rem 0 1rem 1rem; text-align: right;">
-                                <span class="status-badge"
-                                    style="padding: 0.4rem 0.8rem; border-radius: 20px; font-size: 0.85rem; font-weight: 500; display: inline-block;"
-                                    [class]="getStatusClass(student.status)"
-                                    [ngStyle]="student.status === 'active' ? {'background':'var(--success-subtle)', 'color':'var(--success-color)'} : (student.status === 'former' ? {'background':'var(--warning-subtle)', 'color':'var(--warning-color)'} : {'background':'var(--danger-subtle)', 'color':'var(--danger-color)'})">
+                            <td class="col-status">
+                                <span class="status-badge" [class]="getStatusClass(student.status)">
                                     {{ getStatusText(student.status) }}
                                 </span>
                             </td>
@@ -112,17 +118,17 @@
                     </tbody>
                 </table>
             </div>
-            } @else if (!isLoading) {
-            <div class="empty-state"
-                style="text-align: center; padding: 4rem 0; background: var(--bg-subtle); border-radius: 12px; border: 1px dashed var(--border-color); margin-top: 1rem;">
-                <i-tabler name="users"
-                    style="width: 48px; height: 48px; margin-bottom: 1.5rem; color: var(--text-subtle); opacity: 0.5;"></i-tabler>
-                <h4 style="font-size: 1.25rem; font-weight: 600; margin-bottom: 0.5rem; color: var(--text-color);">Žádní
-                    studenti</h4>
-                <p style="color: var(--text-subtle); margin: 0;">V této třídě se nenacházejí žádní studenti.</p>
+            } @else {
+            <div class="empty-state">
+                <div class="empty-icon">
+                    <i-tabler name="users-minus"></i-tabler>
+                </div>
+                <h4>Žádní studenti</h4>
+                <p>V této třídě se nenacházejí žádní studenti.</p>
             </div>
             }
         </div>
+
         }
     </div>
 </div>

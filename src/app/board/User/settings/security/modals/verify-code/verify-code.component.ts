@@ -8,8 +8,10 @@ import { HttpClient } from '@angular/common/http';
 import { Config } from '@Schoolingo/config';
 import { BaseAlertManager } from '../../../../../../infrastructure/alert/alert.manager';
 
+import { IconsModule } from '@Schoolingo/icons';
+
 @Component({
-  imports: [FormsModule, ReactiveFormsModule],
+  imports: [FormsModule, ReactiveFormsModule, IconsModule],
   templateUrl: './verify-code.component.html',
   styleUrl: './verify-code.component.css'
 })
@@ -88,7 +90,7 @@ export class VerifyCodeComponent {
             if ('error' in data && data.error instanceof Array) {
               if (data.error.includes('Not activated TFA')) {
                 this.settings.refreshSecurityAPI();
-                this.modalManager.closeDropdown('verify_code');
+                this.modalManager.closeModal('verify_code');
                 this.settings.action = '';
                 return;
               }

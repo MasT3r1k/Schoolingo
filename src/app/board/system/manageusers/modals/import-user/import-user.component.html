@@ -1,0 +1,163 @@
+<div class="import-user-container">
+    @if (isLoading) {
+    <div class="loading-state">
+        <div class="loading-spinner"></div>
+        <p>Načítání uživatelů z Active Directory...</p>
+    </div>
+    } @else if (error) {
+    <div class="error-state">
+        <i-tabler name="alert-circle"></i-tabler>
+        <h3>Chyba načítání</h3>
+        <p>{{ error }}</p>
+        <button class="btn btn--primary" (click)="fetchUnimportedUsers()">
+            <i-tabler name="refresh"></i-tabler>
+            Zkusit znovu
+        </button>
+    </div>
+    } @else if (users.length === 0) {
+    <div class="empty-state">
+        <div class="illustration">
+            <i-tabler name="check"></i-tabler>
+        </div>
+        <h3>Všichni uživatelé jsou naimportováni</h3>
+        <p>V Active Directory jsme nenalezli žádné další uživatele k importu.</p>
+    </div>
+    } @else {
+
+    <div class="import-actions p-4">
+        <div class="left">
+            <label class="custom-checkbox">
+                <input type="checkbox" [(ngModel)]="selectAll" (change)="toggleSelectAll()">
+                <span class="checkmark"></span>
+                Vybrat všechny
+            </label>
+        </div>
+        <div class="right" style="display: flex; gap: 0.5rem; flex: 1; justify-content: flex-end; align-items: center;">
+            <span class="muted" style="font-size: 0.875rem;">Nastavit roli vybraným:</span>
+            <div class="custom-select" id="import-role-select" style="min-width: 150px; position: relative"
+                (click)="$event.stopPropagation(); dropdownManager.selected_dropdown = dropdownManager.selected_dropdown == 'import_user_role' ? '' : 'import_user_role'">
+                <div class="selected-value">
+                    <div class="row" style="gap: .5rem">
+                        Vyberte roli...
+                    </div>
+                    <i-tabler name="chevron-down"></i-tabler>
+                </div>
+                @if (dropdownManager.selected_dropdown == 'import_user_role') {
+                <div class="options-dropdown" style="width: 100%; top: calc(100% + 4px);">
+                    <div class="list">
+                        <div class="option row" style="gap: .5rem"
+                            (click)="$event.stopPropagation(); setRoleForSelected('admin')">
+                            <i-tabler name="shield-check" style="width: 14px"></i-tabler> Administrátor
+                        </div>
+                        <div class="option row" style="gap: .5rem"
+                            (click)="$event.stopPropagation(); setRoleForSelected('teacher')">
+                            <i-tabler name="school" style="width: 14px"></i-tabler> Učitel
+                        </div>
+                        <div class="option row" style="gap: .5rem"
+                            (click)="$event.stopPropagation(); setRoleForSelected('student')">
+                            <i-tabler name="book" style="width: 14px"></i-tabler> Student
+                        </div>
+                        <div class="option row" style="gap: .5rem"
+                            (click)="$event.stopPropagation(); setRoleForSelected('parent')">
+                            <i-tabler name="users" style="width: 14px"></i-tabler> Rodič
+                        </div>
+                    </div>
+                </div>
+                }
+            </div>
+        </div>
+    </div>
+
+    <div class="users-table-wrapper" style="max-height: 400px; overflow-y: auto;">
+        <table class="users-table w-full">
+            <thead>
+                <tr>
+                    <th class="col-check" style="width: 40px;"></th>
+                    <th class="col-user">Uživatel z AD</th>
+                    <th class="col-email">Email</th>
+                    <th class="col-role" style="width: 200px;">Přiřazená role</th>
+                </tr>
+            </thead>
+            <tbody>
+                @for (user of users; track user.username; let i = $index) {
+                <tr class="clickable-row" (click)="user.selected = !user.selected; checkSelectAll()">
+                    <td class="col-check" (click)="$event.stopPropagation()">
+                        <label class="custom-checkbox m-0">
+                            <input type="checkbox" [(ngModel)]="user.selected" (change)="checkSelectAll()">
+                            <span class="checkmark"></span>
+                        </label>
+                    </td>
+                    <td class="col-user">
+                        <div class="user-cell">
+                            <div class="user-avatar-sm">
+                                <span>{{ (user.first_name?.[0] || '') + (user.last_name?.[0] || '') || user.username[0]
+                                    }}</span>
+                            </div>
+                            <div class="user-name-cell">
+                                <span class="name">{{ user.first_name }} {{ user.last_name }}</span>
+                                <span class="username">{{ user.username }}</span>
+                            </div>
+                        </div>
+                    </td>
+                    <td class="col-email">
+                        <span class="muted">{{ user.email || '—' }}</span>
+                    </td>
+                    <td class="col-role" (click)="$event.stopPropagation()">
+                        <div class="custom-select" id="role-{{i}}" style="width: 100%"
+                            (click)="$event.stopPropagation(); dropdownManager.selected_dropdown = dropdownManager.selected_dropdown == 'role_' + i ? '' : 'role_' + i">
+                            <div class="selected-value">
+                                <div class="row" style="gap: .5rem">
+                                    {{ getRoleText(user.role || 'student') }}
+                                </div>
+                                <i-tabler name="chevron-down"></i-tabler>
+                            </div>
+                            @if (dropdownManager.selected_dropdown == 'role_' + i) {
+                            <div class="options-dropdown" style="top: calc(100% + 4px);">
+                                <div class="list">
+                                    <div class="option"
+                                        (click)="user.role = 'admin'; dropdownManager.selected_dropdown = ''">
+                                        Administrátor</div>
+                                    <div class="option"
+                                        (click)="user.role = 'teacher'; dropdownManager.selected_dropdown = ''">Učitel
+                                    </div>
+                                    <div class="option"
+                                        (click)="user.role = 'student'; dropdownManager.selected_dropdown = ''">Student
+                                    </div>
+                                    <div class="option"
+                                        (click)="user.role = 'parent'; dropdownManager.selected_dropdown = ''">Rodič
+                                    </div>
+                                </div>
+                            </div>
+                            }
+                        </div>
+                    </td>
+                </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+
+    <div class="modal-footer p-4 border-t"
+        style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid var(--border-color); margin-top: 1rem; padding-top: 1rem;">
+        <div class="selected-count muted">
+            Vybráno k importu: <strong>{{ selectedUsers.length }}</strong>
+        </div>
+        <div class="buttons" style="display: flex; gap: 0.5rem">
+            <button class="btn btn--secondary" (click)="modalManager.closeModal('import_user')"
+                [disabled]="isImporting">
+                Zrušit
+            </button>
+            <button class="btn btn--primary" (click)="importSelected()"
+                [disabled]="selectedUsers.length === 0 || isImporting">
+                @if (isImporting) {
+                <span class="btn-spinner"></span>
+                Importuji...
+                } @else {
+                <i-tabler name="download"></i-tabler>
+                Naimportovat
+                }
+            </button>
+        </div>
+    </div>
+    }
+</div>

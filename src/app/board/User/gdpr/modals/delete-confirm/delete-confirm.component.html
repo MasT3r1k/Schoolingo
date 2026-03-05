@@ -1,0 +1,18 @@
+<div class="modal-body">
+    <div class="danger-notice mt">
+        <i-tabler name="alert-triangle"></i-tabler>
+        <p>Tato akce je <strong>nevratná</strong>. Dojde k trvalému smazání vašeho účtu a všech s ním
+            spojených osobních údajů, které není škola povinna uchovávat ze zákona.</p>
+    </div>
+    <div class="form-group">
+        <label>Pro potvrzení napište: <strong>{{ require_word }}</strong></label>
+        <input type="text" class="form-control" [(ngModel)]="deleteConfirmText">
+    </div>
+</div>
+<div class="modal-actions">
+    <button class="btn btn--secondary" (click)="closeModal()">Zrušit</button>
+    <button class="btn btn--danger" (click)="requestAccountDeletion()"
+        [disabled]="deleteConfirmText.toLowerCase() !== require_word || deleteAccountLoading">
+        {{ deleteAccountLoading ? '...' : l.s('gdpr.officer.actions.forget_me') }}
+    </button>
+</div>

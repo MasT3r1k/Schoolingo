@@ -3,37 +3,39 @@
 </div>
 
 @if (settings.codes.length) {
-    <div class="note">
-        {{ l.s('settings.2fa.backup_codes.note', { remain: getRemainingCodes(), all: getAllCodes() }) }}
-    </div>
+<div class="note">
+    {{ l.s('settings.2fa.backup_codes.note', { remain: getRemainingCodes(), all: getAllCodes() }) }}
+</div>
 }
 
 <div class="codes">
     @for (code of settings.codes;track code.code) {
-        <div class="code" [class.is-used]="code.used">
-            <code>{{ code.code }}</code>
-            @if (code.used) {
-                <span class="used-label">
-                    {{ l.s('settings.2fa.backup_codes.used') }}
-                </span>
-            } @else {
-                <div class="code-btn" (click)="Utils.copyTextToClipboard(code.code)">
-                    <i-tabler name="copy"></i-tabler>
-                </div>
-            }
+    <div class="code" [class.is-used]="code.used">
+        <code>{{ code.code }}</code>
+        @if (code.used) {
+        <span class="used-label">
+            {{ l.s('settings.2fa.backup_codes.used') }}
+        </span>
+        } @else {
+        <div class="code-btn" (click)="Utils.copyTextToClipboard(code.code)">
+            <i-tabler name="copy"></i-tabler>
         </div>
+        }
+    </div>
     } @empty {
-        <div class="note danger">
-            {{ l.s('settings.2fa.backup_codes.empty') }}
-        </div>
+    <div class="note danger">
+        {{ l.s('settings.2fa.backup_codes.empty') }}
+    </div>
     }
 </div>
 <div class="form-group">
-    <span class="note primary clickable" (click)="downloadBackupCodes()">
-        {{ l.s('settings.2fa.backup_codes.download_backup_codes') }}
+    <span class="note primary clickable" (click)="downloadBackupCodes()"
+        style="display: flex; align-items: center; gap: 4px;">
+        <i-tabler name="download"></i-tabler>
+        <span>{{ l.s('settings.2fa.backup_codes.download_backup_codes') }}</span>
     </span>
 </div>
-<div class="form-group">
+<div class="modal-actions">
     <div class="btn btn--primary" (click)="refreshBackupCodes()">
         <i-tabler name="rocket"></i-tabler>
         <span>{{ l.s('settings.2fa.backup_codes.generate_new_codes') }}</span>

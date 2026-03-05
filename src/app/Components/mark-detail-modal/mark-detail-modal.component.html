@@ -1,46 +1,45 @@
 <div class="mark-detail-container" *ngIf="mark">
     <div class="mark-detail-row">
-        <span class="label">{{ l.s('marks.subject') }}</span>
+        <span class="key">{{ l.s('marks.subject') }}</span>
         <span class="value">{{ mark.subject_name }}</span>
     </div>
     <div class="mark-detail-row">
-        <span class="label">{{ l.s('marks.topic') }}</span>
+        <span class="key">{{ l.s('marks.topic') }}</span>
         <span class="value">{{ mark.topic }}</span>
     </div>
     <div class="mark-detail-row">
-        <span class="label">{{ l.s('marks.mark') }}</span>
+        <span class="key">{{ l.s('marks.mark') }}</span>
         <span class="value mark-value" [class]="'mark-color-' + getBaseMark(mark)">
             {{ formatMark(mark) }}
         </span>
     </div>
     <div class="mark-detail-row">
-        <span class="label">{{ l.s('marks.weight') }}</span>
+        <span class="key">{{ l.s('marks.weight') }}</span>
         <span class="value">{{ mark.weight }}</span>
     </div>
     @if (mark.type === 1) {
     <div class="mark-detail-row">
-        <span class="label">{{ l.s('marks.points') }}</span>
+        <span class="key">{{ l.s('marks.points') }}</span>
         <span class="value">{{ mark.mark }} / {{ mark.max_points }}</span>
     </div>
     }
     <div class="mark-detail-row">
-        <span class="label">{{ l.s('date') }}</span>
+        <span class="key">{{ l.s('date') }}</span>
         <span class="value">{{ Utils.formatDateShort(mark.created) }}</span>
     </div>
     @if (mark.teacher_full_name || (mark.teacher_first_name && mark.teacher_last_name)) {
     <div class="mark-detail-row">
-        <span class="label">{{ l.s('roles.teacher') }}</span>
-        <span class="value">{{ mark.teacher_full_name || (mark.teacher_first_name + ' ' + mark.teacher_last_name)
-            }}</span>
+        <span class="key">{{ l.s('roles.teacher') }}</span>
+        <span class="value">{{ mark.teacher_full_name || (mark.teacher_first_name + ' ' + mark.teacher_last_name) }}</span>
     </div>
     }
     @if (mark.column_id && markStats?.[mark.column_id]) {
     <div class="mark-detail-row">
-        <span class="label">{{ l.s('marks.class_average') }}</span>
+        <span class="key">{{ l.s('marks.class_average') }}</span>
         <span class="value">{{ markStats[mark.column_id].avg }}</span>
     </div>
     <div class="mark-detail-row">
-        <span class="label">{{ l.s('marks.class_rank') }}</span>
+        <span class="key">{{ l.s('marks.class_rank') }}</span>
         <span class="value">{{ markStats[mark.column_id].rank }}</span>
     </div>
     }

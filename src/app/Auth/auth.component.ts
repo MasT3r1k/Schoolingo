@@ -71,7 +71,7 @@ export class AuthComponent implements OnInit {
   public showInstallModal = false;
 
   public school = inject(School);
-  public page: 'login' | '2fa' | 'forgotpass_email' | 'forgotpass_code' | 'forgotpass_password' | 'forgotpass_2fa' = 'login';
+  public page: 'login' | '2fa' | 'forgotpass_email' | 'forgotpass_code' | 'forgotpass_password' | 'forgotpass_2fa' | 'expired_password' = 'login';
   public isLoading = true;
   public errors: { [key: string]: string } = {};
   formSubmitted = false;
@@ -137,6 +137,14 @@ export class AuthComponent implements OnInit {
           // Handle errors
           this.isLoggingIn = false;
 
+          if ('require_password_change' in data && (data as any).require_password_change === true) {
+             this.page = 'expired_password';
+             this.oldPassword = this.loginForm.value.password as string;
+             this.newPassword = '';
+             this.newAgainPassword = '';
+             return;
+          }
+
           if ('error' in data && data.error instanceof Array) {
             if (data.error?.includes('Invalid username')) {
               this.errors['username'] = this.l.s(
@@ -191,6 +199,46 @@ export class AuthComponent implements OnInit {
   public newPassword?: string;
   public newAgainPassword?: string;
   public emailTFA?: string;
+  
+  public isChangePasswordLoading = false;
+  public oldPassword?: string;
+
+  public changeExpiredPassword(): void {
+    this.errors = {};
+    if (this.newPassword !== this.newAgainPassword) {
+       this.errors['new_password'] = this.l.s('form.passwords_not_same');
+       return;
+    }
+    if ((this.newPassword?.length ?? 0) === 0) {
+       this.errors['new_password'] = this.l.s('form.required');
+       return;
+    }
+
+    this.isChangePasswordLoading = true;
+    this.http.post(Config.ELYSIA_URL + '/auth-change-expired-password', {
+       username: this.loginForm.value.username,
+       oldPassword: this.oldPassword,
+       newPassword: this.newPassword
+    }, { withCredentials: true }).subscribe((data: any) => {
+       this.isChangePasswordLoading = false;
+       if (data.success) {
+           this.a.alert('success', 'auth.forgotpass.done');
+           this.page = 'login';
+           this.loginForm.patchValue({ password: this.newPassword });
+           this.oldPassword = undefined;
+           this.newPassword = undefined;
+           this.newAgainPassword = undefined;
+           this.login(); // Auto-login
+       } else if (data.error) {
+           if (data.error[0]) {
+               this.a.alert('error', data.error[0]);
+           }
+       }
+    }, (err) => {
+       this.isChangePasswordLoading = false;
+       this.a.alert('error', 'auth.errors.429');
+    })
+  }
 
   // 🚀 Hlavní metoda pro zapomenuté heslo
   public forgotPassword(): void {
@@ -349,7 +397,9 @@ export class AuthComponent implements OnInit {
     this.selectedEmail = undefined;
     this.emailCode = undefined;
     this.newPassword = undefined;
+    this.newAgainPassword = undefined;
     this.emailTFA = undefined;
+    this.oldPassword = undefined;
   }
 
   async ngOnInit(): Promise<void> {

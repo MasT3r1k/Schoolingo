@@ -1,117 +1,136 @@
-<h2 class="small mb">{{ l.s('settings.security') }}</h2>
-<div class="items">
-    <div class="item" [class.collapse]="collapses[0]" style="justify-content: space-between;" (click)="settings.getSecurity()!['2fa'] ? collapses[0] = !collapses[0] : activate2FA()">
-        <div class="row justify-content-space-between" style="width: 100%;">
-            <div class="item-info">
-                <div class="row">
-                    <span class="title">{{ l.s('settings.2fa.title') }}</span>
-                    <div class="badge badge--primary" style="margin-left: 8px;">
-                        {{ l.s('settings.2fa.methods.mobile_app') }}
-                    </div>
+<div class="security-container" style="display: flex; flex-direction: column; gap: 1.5rem;">
+    <div class="section" [class.collapsed]="!collapses[0]">
+        <div class="section-header" style="cursor: pointer; margin-bottom: 0; padding-bottom: 0; border-bottom: none;"
+            (click)="settings.getSecurity()!['2fa'] ? collapses[0] = !collapses[0] : activate2FA()">
+            <div class="header-content">
+                <i-tabler name="shield-lock"></i-tabler>
+                <div>
+                    <h3 style="display: flex; align-items: center; gap: 8px; margin: 0;">
+                        {{ l.s('settings.2fa.title') }}
+                        <div class="badge badge--primary" style="margin-top: 0;">
+                            {{ l.s('settings.2fa.methods.mobile_app') }}
+                        </div>
+                    </h3>
+                    <span class="meta muted">{{ l.s('settings.2fa.description') }}</span>
                 </div>
-                <p class="description">
-                    {{ l.s('settings.2fa.description') }}
-                </p>
             </div>
 
-            <div [ngClass]="{btn: true, 'btn--sm': true, 'btn--primary': settings.getSecurity(), loading: !settings.getSecurity(), skeleton: !settings.getSecurity()}">
+            <div
+                [ngClass]="{btn: true, 'btn--sm': true, 'btn--primary': settings.getSecurity(), loading: !settings.getSecurity(), skeleton: !settings.getSecurity()}">
                 @if (!settings.getSecurity()) {
-                    <div class="loader"></div>
-                    {{ l.s('loading') }}
+                <div class="loader"></div>
+                {{ l.s('loading') }}
                 } @else {
-                    {{ l.s(settings.getSecurity()!['2fa'] ? 'activated' : 'activate') }}
+                {{ l.s(settings.getSecurity()!['2fa'] ? 'activated' : 'activate') }}
                 }
             </div>
         </div>
-    
+
 
         @if (collapses[0] && settings.getSecurity()?.['2fa']) {
-            <div class="collapse-section" (click)="$event.stopImmediatePropagation()">
+        <div class="section-content"
+            style="margin-top: 1.5rem; border-top: 2px solid var(--border); padding-top: 1rem;">
+            <div class="collapse-section" (click)="$event.stopImmediatePropagation()"
+                style="border-top: none; padding-top: 0; margin-top: 0;">
                 <div class="row justify-content-space-between align-items-center">
-                    <div class="left">
-                        <div class="btn btn--primary mb" (click)="openBackupCodes()">
-                            {{ l.s('buttons.show_backup_codes') }}
+                    <div class="left" style="display: flex;gap: 8px;">
+                        <div class="btn btn--primary" (click)="openBackupCodes()">
+                            <i-tabler name="eye"></i-tabler>
+                            <span>{{ l.s('buttons.show_backup_codes') }}</span>
                         </div>
 
                         <div class="btn" (click)="refreshBackupCodes()">
-                            {{ l.s('buttons.refresh_backup_codes') }}
+                            <i-tabler name="refresh"></i-tabler>
+                            <span>{{ l.s('buttons.refresh_backup_codes') }}</span>
                         </div>
                     </div>
 
                     <div class="right">
                         <div class="btn btn--danger mb" (click)="$event.stopPropagation();openDeactivate2FA();">
-                            {{ l.s('settings.2fa.deactivate') }}
+                            <i-tabler name="lock-off"></i-tabler>
+                            <span>{{ l.s('settings.2fa.deactivate') }}</span>
                         </div>
-                    
+
                         <p style="font-size: 14px;opacity: .7;text-align: center;">
-                            {{ l.s('settings.2fa.validSince', { date: settings.getSecurity()!['2fa_activated'].format("D. M. YYYY") || "", time: settings.getSecurity()!['2fa_activated'].format("HH:mm:ss") || "" }) }}
+                            {{ l.s('settings.2fa.validSince', { date:
+                            settings.getSecurity()!['2fa_activated'].format("D. M. YYYY") || "", time:
+                            settings.getSecurity()!['2fa_activated'].format("HH:mm:ss") || "" }) }}
                         </p>
                     </div>
                 </div>
             </div>
+        </div>
         }
     </div>
-    <div class="item" [class.collapse]="collapses[1]" style="justify-content: space-between;" (click)="collapses[1] = !collapses[1]">
-        <div class="row justify-content-space-between" style="width: 100%;">
-            <div class="item-info">
-                <div class="row">
-                    <span class="title">{{ l.s('settings.passkeys.title') }}</span>
+
+    <div class="section" [class.collapsed]="!collapses[1]">
+        <div class="section-header" style="cursor: pointer; margin-bottom: 0; padding-bottom: 0; border-bottom: none;"
+            (click)="collapses[1] = !collapses[1]">
+            <div class="header-content">
+                <i-tabler name="fingerprint"></i-tabler>
+                <div>
+                    <h3 style="margin: 0;">{{ l.s('settings.passkeys.title') }}</h3>
+                    <span class="meta muted">{{ l.s('settings.passkeys.description') }}</span>
                 </div>
-                <p class="description">
-                    {{ l.s('settings.passkeys.description') }}
-                </p>
             </div>
 
-            <div class="btn btn--sm" [class.btn--primary]="isPasskeySupported" [class.loading]="isPasskeySupported !== true" [class.skeleton]="isPasskeySupported == null" (click)="$event.stopPropagation();addPasskey()">
-                @if (!isPasskeySupported == null) {
-                    <div class="loader"></div>
-                    <span>{{ l.s('loading') }}</span>
+            <div class="btn btn--sm" [class.btn--primary]="isPasskeySupported"
+                [class.loading]="isPasskeySupported !== true" [class.skeleton]="isPasskeySupported == null"
+                (click)="$event.stopPropagation();addPasskey()">
+                @if (isPasskeySupported === null) {
+                <div class="loader"></div>
+                <span>{{ l.s('loading') }}</span>
                 } @else {
-                    {{ l.s('settings.passkeys.add') }}
+                <i-tabler name="plus"></i-tabler>
+                <span>{{ l.s('settings.passkeys.add') }}</span>
                 }
             </div>
         </div>
-    
+
 
         @if (collapses[1]) {
-            <div class="collapse-section" (click)="$event.stopImmediatePropagation()">
+        <div class="section-content"
+            style="margin-top: 1.5rem; border-top: 2px solid var(--border); padding-top: 1rem;">
+            <div class="collapse-section" (click)="$event.stopImmediatePropagation()"
+                style="border-top: none; padding-top: 0; margin-top: 0;">
                 <div class="table-list">
                     <h2>{{ l.s('settings.passkeys.list') }}</h2>
                     <div class="items">
                         @for (passkey of settings.getSecurity()?.passkeys;track $index) {
-                            <div class="item row">
-                                <div class="left">
-                                    <div class="row mb">
-                                        <i-tabler name="key-filled" style="margin-right: .5rem"></i-tabler>
-                                        <span>
-                                            {{ passkey.device_name }}
-                                        </span>
-                                    </div>
-                                    <div class="row">
-                                        {{
-                                        "Přidané %added_at% | Naposledy použité %last_used%"
-                                        .replaceAll("%added_at%", moment(passkey.registered_at).format("D. M. YYYY HH:mm"))
-                                        .replaceAll("%last_used%", moment(passkey.last_used).format("D. M. YYYY HH:mm"))
-                                        }}
-                                    </div>
+                        <div class="item row">
+                            <div class="left">
+                                <div class="row mb">
+                                    <i-tabler name="key-filled" style="margin-right: .5rem"></i-tabler>
+                                    <span>
+                                        {{ passkey.device_name }}
+                                    </span>
                                 </div>
-                                <div class="actions row">
-                                    <div class="btn edit" (click)="editPasskey(passkey.id)">
-                                        <i-tabler name="edit"></i-tabler>
-                                    </div>
-                                    <div class="btn btn--danger delete" (click)="removePasskey(passkey.id)">
-                                        <i-tabler name="trash-x"></i-tabler>
-                                    </div>
+                                <div class="row">
+                                    {{
+                                    "Přidané %added_at% | Naposledy použité %last_used%"
+                                    .replaceAll("%added_at%", moment(passkey.registered_at).format("D. M. YYYY HH:mm"))
+                                    .replaceAll("%last_used%", moment(passkey.last_used).format("D. M. YYYY HH:mm"))
+                                    }}
                                 </div>
                             </div>
+                            <div class="actions row">
+                                <div class="btn edit" (click)="editPasskey(passkey.id)">
+                                    <i-tabler name="edit"></i-tabler>
+                                </div>
+                                <div class="btn btn--danger delete" (click)="removePasskey(passkey.id)">
+                                    <i-tabler name="trash-x"></i-tabler>
+                                </div>
+                            </div>
+                        </div>
                         } @empty {
-                            <div class="message message--error">
-                                {{ l.s('settings.passkeys.empty') }}
-                            </div>
+                        <div class="message message--error">
+                            {{ l.s('settings.passkeys.empty') }}
+                        </div>
                         }
                     </div>
                 </div>
             </div>
+        </div>
         }
     </div>
 </div>

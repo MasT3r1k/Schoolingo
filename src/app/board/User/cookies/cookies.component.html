@@ -4,24 +4,36 @@
             <h2>Nastavení Cookies</h2>
             <span class="meta muted">Spravujte, jaké cookies můžeme používat</span>
         </div>
+        <div class="header-summary">
+            <span class="summary-value">{{ cookies.getEnabledCount() }}</span>
+            <span class="summary-sep">/</span>
+            <span class="summary-total">{{ cookies.getTotalCategories() }}</span>
+            <span class="summary-label">kategorií povoleno</span>
+        </div>
     </div>
 
     <!-- Quick Actions Section -->
     <div class="section quick-actions-section">
-        <div class="quick-actions">
-            <button class="btn btn--primary btn--lg" (click)="cookies.acceptAll()" [disabled]="cookies.saving">
-                <i-tabler name="check"></i-tabler>
-                Přijmout vše
-            </button>
-            <button class="btn btn--secondary btn--lg" (click)="cookies.acceptEssentialOnly()" [disabled]="cookies.saving">
-                <i-tabler name="shield-check"></i-tabler>
-                Pouze nezbytné
-            </button>
+        <div class="section-header">
+            <div class="header-content">
+                <i-tabler name="cookie"></i-tabler>
+                <div>
+                    <h3>Rychlé nastavení</h3>
+                    <span class="meta muted">Přijměte nebo odmítněte všechny cookies najednou</span>
+                </div>
+            </div>
         </div>
-        <div class="cookies-summary">
-            <div class="summary-stat">
-                <span class="stat-value">{{ cookies.getEnabledCount() }}</span>
-                <span class="stat-label">z {{ cookies.getTotalCategories() }} kategorií povoleno</span>
+        <div class="section-content">
+            <div class="quick-actions">
+                <button class="btn btn--primary btn--lg" (click)="cookies.acceptAll()" [disabled]="cookies.saving">
+                    <i-tabler name="check"></i-tabler>
+                    Přijmout vše
+                </button>
+                <button class="btn btn--secondary btn--lg" (click)="cookies.acceptEssentialOnly()"
+                    [disabled]="cookies.saving">
+                    <i-tabler name="shield-check"></i-tabler>
+                    Pouze nezbytné
+                </button>
             </div>
         </div>
     </div>
@@ -30,7 +42,7 @@
     <div class="section">
         <div class="section-header">
             <div class="header-content">
-                <i-tabler name="cookie"></i-tabler>
+                <i-tabler name="adjustments-horizontal"></i-tabler>
                 <div>
                     <h3>Kategorie cookies</h3>
                     <span class="meta muted">Vyberte, které kategorie cookies chcete povolit</span>
@@ -58,7 +70,10 @@
                             <div class="category-header">
                                 <h4>{{ category.name }}</h4>
                                 @if (category.required) {
-                                <span class="required-badge">Vždy aktivní</span>
+                                <span class="required-badge">
+                                    <i-tabler name="lock"></i-tabler>
+                                    Vždy aktivní
+                                </span>
                                 }
                             </div>
                             <p>{{ category.description }}</p>
@@ -70,6 +85,10 @@
                                     (change)="cookies.toggleCategory(category.id)">
                                 <span class="slider"></span>
                             </label>
+                            } @else {
+                            <div class="toggle-locked">
+                                <i-tabler name="check"></i-tabler>
+                            </div>
                             }
                             <button class="expand-btn" [class.rotated]="cookies.selectedCategory === category.id">
                                 <i-tabler name="chevron-down"></i-tabler>
@@ -80,7 +99,7 @@
                     @if (cookies.selectedCategory === category.id) {
                     <div class="category-details" @fadeInOut>
                         <div class="examples-list">
-                            <h5>Příklady použití:</h5>
+                            <h5>Příklady použití</h5>
                             <ul>
                                 @for (example of category.examples; track example) {
                                 <li>
@@ -92,7 +111,7 @@
                         </div>
 
                         <div class="cookies-table">
-                            <h5>Cookies v této kategorii:</h5>
+                            <h5>Cookies v této kategorii</h5>
                             <table>
                                 <thead>
                                     <tr>
@@ -157,7 +176,7 @@
                         zapamatování informací o vaší návštěvě.</p>
                 </div>
                 <div class="info-card">
-                    <div class="info-icon">
+                    <div class="info-icon purple">
                         <i-tabler name="target"></i-tabler>
                     </div>
                     <h5>Účel</h5>
@@ -165,7 +184,7 @@
                         reklam.</p>
                 </div>
                 <div class="info-card">
-                    <div class="info-icon">
+                    <div class="info-icon green">
                         <i-tabler name="shield"></i-tabler>
                     </div>
                     <h5>Vaše práva</h5>
@@ -173,7 +192,7 @@
                     </p>
                 </div>
                 <div class="info-card">
-                    <div class="info-icon">
+                    <div class="info-icon amber">
                         <i-tabler name="clock"></i-tabler>
                     </div>
                     <h5>Doba uložení</h5>
@@ -196,30 +215,27 @@
             </div>
         </div>
         <div class="section-content">
-            <div class="browser-info">
-                <p>Kromě nastavení na této stránce můžete cookies spravovat také přímo v nastavení vašeho prohlížeče:
-                </p>
-                <div class="browser-links">
-                    <a href="https://support.google.com/chrome/answer/95647" target="_blank" class="browser-link">
-                        <i-tabler name="brand-chrome"></i-tabler>
-                        <span>Google Chrome</span>
-                    </a>
-                    <a href="https://mzl.la/3vVeO8Y" target="_blank"
-                        class="browser-link">
-                        <i-tabler name="brand-firefox"></i-tabler>
-                        <span>Mozilla Firefox</span>
-                    </a>
-                    <a href="https://support.microsoft.com/cs-cz/microsoft-edge/odstran%C4%9Bn%C3%AD-soubor%C5%AF-cookie-v-aplikaci-microsoft-edge-63947406-40ac-c3b8-57b9-2a946a29ae09"
-                        target="_blank" class="browser-link">
-                        <i-tabler name="brand-edge"></i-tabler>
-                        <span>Microsoft Edge</span>
-                    </a>
-                    <a href="https://support.apple.com/cs-cz/guide/safari/sfri11471/mac" target="_blank"
-                        class="browser-link">
-                        <i-tabler name="brand-safari"></i-tabler>
-                        <span>Safari</span>
-                    </a>
-                </div>
+            <p class="section-text">Kromě nastavení na této stránce můžete cookies spravovat také přímo v nastavení
+                vašeho prohlížeče:</p>
+            <div class="browser-links">
+                <a href="https://support.google.com/chrome/answer/95647" target="_blank" class="browser-link">
+                    <i-tabler name="brand-chrome"></i-tabler>
+                    <span>Google Chrome</span>
+                </a>
+                <a href="https://mzl.la/3vVeO8Y" target="_blank" class="browser-link">
+                    <i-tabler name="brand-firefox"></i-tabler>
+                    <span>Mozilla Firefox</span>
+                </a>
+                <a href="https://support.microsoft.com/cs-cz/microsoft-edge/odstran%C4%9Bn%C3%AD-soubor%C5%AF-cookie-v-aplikaci-microsoft-edge-63947406-40ac-c3b8-57b9-2a946a29ae09"
+                    target="_blank" class="browser-link">
+                    <i-tabler name="brand-edge"></i-tabler>
+                    <span>Microsoft Edge</span>
+                </a>
+                <a href="https://support.apple.com/cs-cz/guide/safari/sfri11471/mac" target="_blank"
+                    class="browser-link">
+                    <i-tabler name="brand-safari"></i-tabler>
+                    <span>Safari</span>
+                </a>
             </div>
         </div>
     </div>
@@ -291,4 +307,5 @@
             </div>
         </div>
     </div>
+
 </div>

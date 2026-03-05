@@ -10,6 +10,9 @@ import { DropdownManager } from '@Schoolingo/dropdown';
 import { Locale } from '@Schoolingo/locale';
 import { CalendarComponent } from '@Components/calendar';
 import moment from 'moment';
+import { School } from '@Schoolingo/school';
+import { ModalManager } from '@Schoolingo/modal';
+import { ImportUserComponent } from './modals/import-user/import-user.component';
 
 // Interfaces
 export interface User {
@@ -86,7 +89,9 @@ export class ManageusersComponent implements OnInit {
   private http = inject(HttpClient);
   public l = inject(Locale);
   public Utils = Utils;
+  public modalManager = inject(ModalManager);
   public dropdownManager = inject(DropdownManager);
+  public school = inject(School);
 
   // Loading state
   isLoading = false;
@@ -191,6 +196,19 @@ export class ManageusersComponent implements OnInit {
 
   ngOnInit() {
     this.loadUsers();
+
+    this.modalManager.addModal('import_user', {
+      icon: 'user-search',
+      title: '',
+      closeable: true,
+      items: [
+        { type: 'component', component: ImportUserComponent }
+      ]
+    })
+  }
+
+  public openImportModal(): void {
+    this.modalManager.openModal('import_user');
   }
 
   // Load users from API

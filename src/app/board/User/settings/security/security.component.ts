@@ -209,6 +209,7 @@ export class SecurityComponent implements OnInit {
       'add_2FA',
       {
         title: 'settings.2fa.title',
+        icon: 'shield-lock',
         closeable: true,
         items: [{
           type: 'component',
@@ -221,6 +222,7 @@ export class SecurityComponent implements OnInit {
       'verify_code',
       {
         title: 'settings.2fa.title',
+        icon: 'lock-check',
         closeable: true,
         items: [
           {
@@ -235,6 +237,7 @@ export class SecurityComponent implements OnInit {
       'backup_codes',
       {
         title: 'settings.2fa.backup_codes.title',
+        icon: 'key',
         closeable: true,
         items: [
           {
@@ -249,6 +252,7 @@ export class SecurityComponent implements OnInit {
       'update_passkey',
       {
         title: 'settings.passkeys.edit.title',
+        icon: 'fingerprint',
         closeable: true,
         items: [
           {

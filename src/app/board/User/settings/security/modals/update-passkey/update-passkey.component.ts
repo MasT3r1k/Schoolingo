@@ -7,8 +7,10 @@ import { ModalManager } from '@Schoolingo/modal';
 import { Settings } from '@Schoolingo/settings';
 import Swal from 'sweetalert2';
 
+import { IconsModule } from '@Schoolingo/icons';
+
 @Component({
-  imports: [FormsModule, ReactiveFormsModule],
+  imports: [FormsModule, ReactiveFormsModule, IconsModule],
   templateUrl: './update-passkey.component.html',
   styleUrl: './update-passkey.component.css'
 })

@@ -1,148 +1,167 @@
-<div class="panel">
-  <div class="theme-selector">
-    <div class="title">
-      <h2>{{ l.s('settings.theme') }}</h2>
-      <p>{{ l.s('settings.themes.selector.description') }}</p>
+<div class="theme-container" style="display: flex; flex-direction: column; gap: 1.5rem;">
+  <div class="section">
+    <div class="section-header">
+      <div class="header-content">
+        <i-tabler name="palette"></i-tabler>
+        <div>
+          <h3>{{ l.s('settings.theme') }}</h3>
+          <span class="meta muted">{{ l.s('settings.themes.selector.description') }}</span>
+        </div>
+      </div>
     </div>
 
-    <div class="theme-options-grid">
-      @for (theme of t.getThemes(); track $index) {
-      <div [ngClass]="{
+    <div class="section-content">
+      <div class="theme-options-grid">
+        @for (theme of t.getThemes(); track $index) {
+        <div [ngClass]="{
           'theme-option': true,
           selected: t.getTheme().getValue() == theme
         }" (click)="t.updateTheme(theme)">
-        <!-- Visual Preview with actual theme class -->
-        <div class="theme-preview" [ngClass]="theme">
-          <!-- Sidebar -->
-          <div class="preview-sidebar">
-            <div class="preview-nav-item"></div>
-            <div class="preview-nav-item"></div>
-            <div class="preview-nav-item"></div>
-            <div class="preview-nav-item"></div>
-          </div>
-
-          <!-- Navbar -->
-          <div class="preview-navbar">
-            <div class="preview-nav-dot"></div>
-            <div class="preview-nav-text"></div>
-          </div>
-
-          <!-- Content -->
-          <div class="preview-content">
-            <div class="preview-card">
-              <div class="preview-text"></div>
-              <div class="preview-text-muted"></div>
-              <div class="preview-text-muted" style="width: 60%;"></div>
-              <div class="preview-btn"></div>
+          <!-- Visual Preview with actual theme class -->
+          <div class="theme-preview" [ngClass]="theme">
+            <!-- Sidebar -->
+            <div class="preview-sidebar">
+              <div class="preview-nav-item"></div>
+              <div class="preview-nav-item"></div>
+              <div class="preview-nav-item"></div>
+              <div class="preview-nav-item"></div>
             </div>
-          </div>
 
-          <!-- Selected checkmark -->
-          @if (t.getTheme().getValue() == theme) {
-          <div class="selected-check">
-            <i-tabler name="check"></i-tabler>
-          </div>
-          }
-        </div>
+            <!-- Navbar -->
+            <div class="preview-navbar">
+              <div class="preview-nav-dot"></div>
+              <div class="preview-nav-text"></div>
+            </div>
 
-        <!-- Info -->
-        <div class="option-info">
-          <span class="option-title">
-            {{ l.s("themes." + theme) }}
-            @if (theme == 'moon') {
-            <span class="badge badge--primary" style="font-size: 10px;">OLED</span>
+            <!-- Content -->
+            <div class="preview-content">
+              <div class="preview-card">
+                <div class="preview-text"></div>
+                <div class="preview-text-muted"></div>
+                <div class="preview-text-muted" style="width: 60%;"></div>
+                <div class="preview-btn"></div>
+              </div>
+            </div>
+
+            <!-- Selected checkmark -->
+            @if (t.getTheme().getValue() == theme) {
+            <div class="selected-check">
+              <i-tabler name="check"></i-tabler>
+            </div>
             }
-          </span>
-          <span class="option-desc">
-            {{ l.s("settings.themes_description." + theme) }}
-          </span>
-        </div>
+          </div>
 
-        <!-- Status badge -->
-        @if (t.getTheme().getValue() == theme && t.getAction() != 'selected') {
-        <div
-          [ngClass]="{badge: true, 'badge--loading': t.getAction() == 'saving', 'badge--danger': t.getAction() == 'error'}">
-          @if (t.getAction() == 'saving') {
-          <div class="loader"></div>
-          {{ l.s('settings.themes.saving') }}
-          }
-          @if (t.getAction() == 'error') {
-          <i-tabler name="x"></i-tabler>
-          {{ l.s('settings.themes.error') }}
+          <!-- Info -->
+          <div class="option-info">
+            <span class="option-title">
+              {{ l.s("themes." + theme) }}
+              @if (theme == 'moon') {
+              <span class="badge badge--primary" style="font-size: 10px;">OLED</span>
+              }
+            </span>
+            <span class="option-desc">
+              {{ l.s("settings.themes_description." + theme) }}
+            </span>
+          </div>
+
+          <!-- Status badge -->
+          @if (t.getTheme().getValue() == theme && t.getAction() != 'selected') {
+          <div
+            [ngClass]="{badge: true, 'badge--loading': t.getAction() == 'saving', 'badge--danger': t.getAction() == 'error'}">
+            @if (t.getAction() == 'saving') {
+            <div class="loader"></div>
+            {{ l.s('settings.themes.saving') }}
+            }
+            @if (t.getAction() == 'error') {
+            <i-tabler name="x"></i-tabler>
+            {{ l.s('settings.themes.error') }}
+            }
+          </div>
           }
         </div>
         }
       </div>
-      }
     </div>
 
     @if (t.getTheme().getValue() == "system") {
-      <div class="title">
-        <h2>{{ l.s('settings.themes.system_settings.title') }}</h2>
-        <p>{{ l.s('settings.themes.system_settings.description') }}</p>
+    <div class="section">
+      <div class="section-header">
+        <div class="header-content">
+          <i-tabler name="device-desktop"></i-tabler>
+          <div>
+            <h3>{{ l.s('settings.themes.system_settings.title') }}</h3>
+            <span class="meta muted">{{ l.s('settings.themes.system_settings.description') }}</span>
+          </div>
+        </div>
       </div>
+      <div class="section-content">
 
-      @let category_light = t.getThemesInCategory('light');
-      @let category_dark = t.getThemesInCategory('dark');
-      @if (category_light.length >= 2) {
+        @let category_light = t.getThemesInCategory('light');
+        @let category_dark = t.getThemesInCategory('dark');
+        @if (category_light.length >= 2) {
         <div class="category-item">
           <div class="left">
             <div class="title">Přizbůsobení světlého režimu</div>
             <p>Vyberte vzhled, který se použije, když je systém nastaven na světlý režim.</p>
           </div>
           <div class="right">
-            <div class="custom-select" id="type" (click)="$event.stopPropagation();dropdownManager.selected_dropdown = dropdownManager.selected_dropdown == 'settings_theme_select_light' ? '' : 'settings_theme_select_light'">
-                <div class="selected-value">
-                    <div class="row" style="gap: .5rem">
-                        {{ l.s('themes.' + t.getSystemTheme('light')) }}
-                    </div>
-                    <i-tabler name="chevron-down"></i-tabler>
+            <div class="custom-select" id="type"
+              (click)="$event.stopPropagation();dropdownManager.selected_dropdown = dropdownManager.selected_dropdown == 'settings_theme_select_light' ? '' : 'settings_theme_select_light'">
+              <div class="selected-value">
+                <div class="row" style="gap: .5rem">
+                  {{ l.s('themes.' + t.getSystemTheme('light')) }}
                 </div>
-                @if (dropdownManager.selected_dropdown == 'settings_theme_select_light') {
-                <div class="options-dropdown">
-                    <div class="list">
-                        @for (theme of t.getThemesInCategory('light'); track $index) {
-                        <div class="option row" style="gap: .5rem" (click)="$event.stopPropagation();dropdownManager.selected_dropdown = '';t.setSystemTheme('light', theme)">
-                            {{ l.s('themes.' + theme) }}
-                        </div>
-                        }
-                    </div>
+                <i-tabler name="chevron-down"></i-tabler>
+              </div>
+              @if (dropdownManager.selected_dropdown == 'settings_theme_select_light') {
+              <div class="options-dropdown">
+                <div class="list">
+                  @for (theme of t.getThemesInCategory('light'); track $index) {
+                  <div class="option row" style="gap: .5rem"
+                    (click)="$event.stopPropagation();dropdownManager.selected_dropdown = '';t.setSystemTheme('light', theme)">
+                    {{ l.s('themes.' + theme) }}
+                  </div>
+                  }
                 </div>
-                }
+              </div>
+              }
             </div>
           </div>
         </div>
-      }
+        }
 
-      @if (category_dark.length >= 2) {
+        @if (category_dark.length >= 2) {
         <div class="category-item">
           <div class="left">
             <div class="title">Přizbůsobení tmavého režimu</div>
             <p>Vyberte vzhled, který se použije, když je systém nastaven na tmavý režim.</p>
           </div>
           <div class="right">
-            <div class="custom-select" id="type" (click)="$event.stopPropagation();dropdownManager.selected_dropdown = dropdownManager.selected_dropdown == 'settings_theme_select_dark' ? '' : 'settings_theme_select_dark'">
-                <div class="selected-value">
-                    <div class="row" style="gap: .5rem">
-                        {{ l.s('themes.' + t.getSystemTheme('dark')) }}
-                    </div>
-                    <i-tabler name="chevron-down"></i-tabler>
+            <div class="custom-select" id="type"
+              (click)="$event.stopPropagation();dropdownManager.selected_dropdown = dropdownManager.selected_dropdown == 'settings_theme_select_dark' ? '' : 'settings_theme_select_dark'">
+              <div class="selected-value">
+                <div class="row" style="gap: .5rem">
+                  {{ l.s('themes.' + t.getSystemTheme('dark')) }}
                 </div>
-                @if (dropdownManager.selected_dropdown == 'settings_theme_select_dark') {
-                <div class="options-dropdown">
-                    <div class="list">
-                        @for (theme of t.getThemesInCategory('dark'); track $index) {
-                        <div class="option row" style="gap: .5rem" (click)="$event.stopPropagation();dropdownManager.selected_dropdown = '';t.setSystemTheme('dark', theme)">
-                            {{ l.s('themes.' + theme) }}
-                        </div>
-                        }
-                    </div>
+                <i-tabler name="chevron-down"></i-tabler>
+              </div>
+              @if (dropdownManager.selected_dropdown == 'settings_theme_select_dark') {
+              <div class="options-dropdown">
+                <div class="list">
+                  @for (theme of t.getThemesInCategory('dark'); track $index) {
+                  <div class="option row" style="gap: .5rem"
+                    (click)="$event.stopPropagation();dropdownManager.selected_dropdown = '';t.setSystemTheme('dark', theme)">
+                    {{ l.s('themes.' + theme) }}
+                  </div>
+                  }
                 </div>
-                }
+              </div>
+              }
             </div>
           </div>
         </div>
-      }
+        }
+      </div>
+    </div>
     }
   </div>
-</div>

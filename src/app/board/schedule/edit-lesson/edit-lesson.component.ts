@@ -39,12 +39,14 @@ export class EditLessonComponent implements OnInit {
 
   public selectedSubjectId: number | null = null;
   public selectedTeacherId: number | null = null;
+  public selectedTeacher2Id: number | null = null;
   public weeks = ['both', 'odd', 'even'];
   public selectedWeek: 'both' | 'odd' | 'even' = 'both';
   public selectedRoom: string = '';
 
   public searchSubject = new FormControl('');
   public searchTeacher = new FormControl('');
+  public searchTeacher2 = new FormControl('');
   public searchRoom = new FormControl('');
 
   public types: string[] = [];
@@ -104,14 +106,15 @@ export class EditLessonComponent implements OnInit {
           this.types.push('cancel');
       }
       
-      this.selectedSubjectId = lesson.subjectId;
-      this.selectedTeacherId = lesson.teacherId;
+      this.selectedSubjectId = lesson.subject_id;
+      this.selectedTeacherId = lesson.teacher_id;
+      this.selectedTeacher2Id = lesson.teacher2_id || null;
       this.selectedWeek = lesson.week || this.weeks[0];
     }
     
     this.types.push('classroom_lesson', 'change_timetable');
     
-    if (lesson && !lesson.lessonId) {
+    if (lesson && !lesson.lesson_id) {
         this.selected_type = 'classroom_lesson';
         const cls = this.scheduleBuilder.classes.find((c: any) => c.class_id === lesson.classId);
         if (cls && cls.teacher_id) {
@@ -119,7 +122,7 @@ export class EditLessonComponent implements OnInit {
         }
     } else {
         const classSubject = this.scheduleBuilder.all_subjects.find((s: any) => s.is_class_time === 1 || s.is_class_time === true);
-        if (classSubject && lesson && lesson.subjectId === classSubject.subject_id) {
+        if (classSubject && lesson && lesson.subject_id === classSubject.subject_id) {
             this.selected_type = 'classroom_lesson';
         } else if (this.types.includes('change_timetable')) {
              this.selected_type = 'change_timetable';
@@ -160,10 +163,21 @@ export class EditLessonComponent implements OnInit {
   public getFilteredTeachers(): any[] {
     const search = this.searchTeacher.value?.toLowerCase() || '';
     return this.scheduleBuilder.getTeachers().filter((t: any) => 
+      t.teacherId != this.selectedTeacher2Id && (
       t.teacherName.toLowerCase().includes(search) ||
       t.firstName.toLowerCase().includes(search) ||
       t.lastName.toLowerCase().includes(search)
-    );
+    ));
+  }
+
+  public getFilteredTeachers2(): any[] {
+    const search = this.searchTeacher2.value?.toLowerCase() || '';
+    return this.scheduleBuilder.getTeachers().filter((t: any) => 
+      t.teacherId != this.selectedTeacherId && (
+      t.teacherName.toLowerCase().includes(search) ||
+      t.firstName.toLowerCase().includes(search) ||
+      t.lastName.toLowerCase().includes(search)
+    ));
   }
 
   public getFilteredRooms(): roomAPI[] {
@@ -230,6 +244,7 @@ export class EditLessonComponent implements OnInit {
             hour: lesson.hour + 1,
             subjectId: this.selectedSubjectId,
             teacherId: this.selectedTeacherId,
+            teacher2Id: this.selectedTeacher2Id,
             roomId: this.selectedRoomId,
             groupId: this.selectedGroupId,
             type: this.weeks.indexOf(this.selectedWeek)
@@ -255,13 +270,13 @@ export class EditLessonComponent implements OnInit {
 
   public deleteLesson(): void {
     console.log(this.scheduleBuilder.activeLesson)
-    if (!this.scheduleBuilder.activeLesson?.lessonId) return;
+    if (!this.scheduleBuilder.activeLesson?.lesson_id) return;
 
     this.http.post(
         `${Config.API_URL}/v1/timetable/manage`,
         {
             action: 'delete',
-            lessonId: this.scheduleBuilder.activeLesson.lessonId
+            lessonId: this.scheduleBuilder.activeLesson.lesson_id
         },
         { withCredentials: true }
     ).subscribe((res: any) => {
@@ -303,6 +318,7 @@ export class EditLessonComponent implements OnInit {
         group_id: this.selectedGroupId !== null ? this.selectedGroupId : lesson.group_id,
         subject_id: subType === 'cancelled' ? -1 : this.selectedSubjectId,
         teacher_id: subType === 'cancelled' ? -1 : this.selectedTeacherId,
+        teacher2_id: subType === 'cancelled' ? -1 : this.selectedTeacher2Id,
         room_id: this.selectedRoomId,
         start_date: currentDay.format('YYYY-MM-DD'),
         start_hour: lesson.hour + 1,

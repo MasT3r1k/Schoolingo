@@ -562,7 +562,8 @@
                         <div class="custom-select" style="width: 100%"
                             (click)="$event.stopPropagation(); dropdownManager.selected_dropdown = dropdownManager.selected_dropdown == 'rollbackBackup' ? '' : 'rollbackBackup'">
                             <div class="selected-value">
-                                {{ selected_backup_to_rollback ? selected_backup_to_rollback : 'Vyberte zálohu pro návrat...' }}
+                                {{ selected_backup_to_rollback ? selected_backup_to_rollback : 'Vyberte zálohu pro
+                                návrat...' }}
                                 <i-tabler name="chevron-down"></i-tabler>
                             </div>
                             @if (dropdownManager.selected_dropdown == 'rollbackBackup') {
@@ -640,7 +641,8 @@
                     <div>
                         <div class="license-type">{{ system.settings.license_type || 'FREE' }} LICENSE</div>
                         <div class="license-status">
-                            {{ system.settings.license_until ? 'Platné do ' + system.settings.license_until : 'Trvalá licence' }}
+                            {{ system.settings.license_until ? 'Platné do ' + system.settings.license_until : 'Trvalá
+                            licence' }}
                         </div>
                     </div>
                     <div style="margin-left: auto;">
@@ -655,7 +657,8 @@
                     <div class="stat-item">
                         <div class="stat-label">Využití studentů</div>
                         <div class="stat-value">
-                            {{ system.student_count }} <span class="stat-limit">/ {{ system.settings.students_limit == -1 ? '∞' : system.settings.students_limit }}</span>
+                            {{ system.student_count }} <span class="stat-limit">/ {{ system.settings.students_limit ==
+                                -1 ? '∞' : system.settings.students_limit }}</span>
                         </div>
                         <div class="progress-bar">
                             <div class="progress-fill" [style.width.%]="getStudentPercentage()"></div>
@@ -1049,23 +1052,10 @@
         <div class="form-section">
             <h3 class="section-title">Připojení k serveru</h3>
 
-            <div class="form-grid">
-                <div class="form-group">
-                    <label for="ldap-host">IP adresa / Hostname serveru</label>
-                    <input type="text" id="ldap-host" placeholder="ldap.example.com nebo 192.168.1.10">
-                </div>
-
-                <div class="form-group">
-                    <label for="ldap-port">Port</label>
-                    <input type="number" id="ldap-port" value="389" style="max-width: 150px;">
-                </div>
-            </div>
-
             <div class="form-group">
-                <label>
-                    <input type="checkbox" checked>
-                    Použít SSL/TLS (LDAPS - port 636)
-                </label>
+                <label for="ldap-url">URL adresa LDAP serveru (např. ldap://192.168.1.10:389)</label>
+                <input type="text" id="ldap-url" [(ngModel)]="system.ldap_config.server_url"
+                    placeholder="ldap.example.com nebo 192.168.1.10">
             </div>
         </div>
 
@@ -1074,13 +1064,15 @@
 
             <div class="form-group">
                 <label for="ldap-bind-dn">Bind DN (Distinguished Name)</label>
-                <input type="text" id="ldap-bind-dn" placeholder="cn=admin,dc=example,dc=com">
+                <input type="text" id="ldap-bind-dn" [(ngModel)]="system.ldap_config.bind_dn"
+                    placeholder="cn=admin,dc=example,dc=com">
                 <small class="note">Uživatel s oprávněními pro čtení z LDAP</small>
             </div>
 
             <div class="form-group">
                 <label for="ldap-password">Heslo</label>
-                <input type="password" id="ldap-password" placeholder="••••••••">
+                <input type="password" id="ldap-password" [(ngModel)]="system.ldap_config.bind_password"
+                    placeholder="••••••••">
             </div>
         </div>
 
@@ -1089,33 +1081,32 @@
 
             <div class="form-group">
                 <label for="ldap-base-dn">Base DN</label>
-                <input type="text" id="ldap-base-dn" placeholder="dc=example,dc=com">
+                <input type="text" id="ldap-base-dn" [(ngModel)]="system.ldap_config.search_base"
+                    placeholder="dc=example,dc=com">
                 <small class="note">Výchozí vyhledávací cesta</small>
             </div>
 
             <div class="form-group">
                 <label for="ldap-user-filter">Filtr uživatelů</label>
-                <input type="text" id="ldap-user-filter" placeholder="(objectClass=person)">
+                <input type="text" id="ldap-user-filter" [(ngModel)]="system.ldap_config.user_filter"
+                    placeholder="(objectClass=person)">
             </div>
 
             <div class="form-group">
                 <label for="ldap-username-attr">Atribut uživatelského jména</label>
-                <input type="text" id="ldap-username-attr" value="sAMAccountName">
-            </div>
-
-            <div class="form-group">
-                <label for="ldap-timeout">Timeout připojení (sekundy)</label>
-                <input type="number" id="ldap-timeout" value="10" min="5" max="60" style="max-width: 150px;">
+                <input type="text" id="ldap-username-attr" [(ngModel)]="system.ldap_config.mapping_username"
+                    value="sAMAccountName">
             </div>
         </div>
 
         <div class="form-section">
             <div class="form-actions">
-                <button class="btn btn--secondary">
-                    <i-tabler name="plug-connected"></i-tabler>
+                <button class="btn btn--secondary" (click)="test_ldap()">
+                    <i-tabler [name]="test_ldap_loading ? 'loader' : 'plug-connected'"
+                        [class.animate-spin]="test_ldap_loading"></i-tabler>
                     Otestovat připojení
                 </button>
-                <button class="btn btn--primary">
+                <button class="btn btn--primary" (click)="update_ldap()">
                     <i-tabler name="device-floppy"></i-tabler>
                     Uložit LDAP konfiguraci
                 </button>

@@ -289,6 +289,7 @@ export class DetailComponent implements OnInit, AfterViewInit {
     this.refreshTimetable();
 
     this.modalManager.addModal('medical_record', {
+      icon: 'report-medical',
       title: 'students.medical.title',
       closeable: true,
       width: 500,
@@ -324,6 +325,7 @@ export class DetailComponent implements OnInit, AfterViewInit {
     });
 
     this.modalManager.addModal('create_parent', {
+      icon: 'user-plus',
       title: 'students.create_parent.title',
       closeable: true,
       width: 600,

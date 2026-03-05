@@ -1,6 +1,7 @@
 import { Component, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { RouterModule } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { Config } from '@Schoolingo/config';
 import { IconsModule } from '@Schoolingo/icons';
@@ -24,7 +25,7 @@ interface CookieInfo {
 @Component({
   selector: 'app-cookies',
   standalone: true,
-  imports: [CommonModule, FormsModule, IconsModule],
+  imports: [CommonModule, FormsModule, IconsModule, RouterModule],
   templateUrl: './cookies.component.html',
   styleUrl: './cookies.component.css'
 })

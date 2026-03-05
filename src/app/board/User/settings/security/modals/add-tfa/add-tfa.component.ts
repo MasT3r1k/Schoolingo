@@ -9,9 +9,10 @@ import { ModalManager } from '@Schoolingo/modal';
 import { QRCodeComponent } from 'angularx-qrcode';
 import { BaseAlertManager } from '../../../../../../infrastructure/alert/alert.manager';
 import { Theme } from '@Schoolingo/theme';
+import { IconsModule } from '@Schoolingo/icons';
 
 @Component({
-  imports: [FormsModule, ReactiveFormsModule, QRCodeComponent],
+  imports: [FormsModule, ReactiveFormsModule, QRCodeComponent, IconsModule],
   templateUrl: './add-tfa.component.html',
   styleUrl: './add-tfa.component.css'
 })

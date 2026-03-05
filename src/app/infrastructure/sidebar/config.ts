@@ -19,7 +19,7 @@ export const config: SidebarGroup[] = [
                 permission: ['teacher']
             },
             {
-                item: "Třídy", // or sidebar.classes
+                item: "sidebar.classes",
                 url: 'classes',
                 icon: 'chalkboard',
                 permission: ['teacher']

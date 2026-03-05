@@ -1009,6 +1009,31 @@ public school_types = SchoolTypes;
     return this.available_teachers.find(t => t.teacherId == id)?.teacherName || '';
   }
 
+  public test_ldap_loading = false;
+  
+  public test_ldap(): void {
+    const config = this.system.ldap_config;
+    if (!config) return;
+
+    this.test_ldap_loading = true;
+    this.http.post(
+      `${Config.API_URL}/v1/system/test_ldap`,
+      config,
+      { withCredentials: true }
+    )
+    .subscribe((data: any) => {
+      this.test_ldap_loading = false;
+      if (data.success) {
+        alert('Testovací připojení LDAP proběhlo úspěšně!');
+      } else {
+        alert('Chyba při připojování k LDAP: ' + (data.message || 'Neznámá chyba'));
+      }
+    }, (err) => {
+       this.test_ldap_loading = false;
+       alert('Chyba při připojování k LDAP: ' + err.error?.message);
+    });
+  }
+
   public update_ldap(): void {
     if (!this.system.ldap_config) {
         // Init default if null
@@ -1035,6 +1060,7 @@ public school_types = SchoolTypes;
       { withCredentials: true }
     )
     .subscribe((data) => {
+      alert('Nastavení LDAP úspěšně uloženo.');
       console.log('LDAP settings updated', data);
     });
   }

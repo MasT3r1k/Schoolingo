@@ -1,19 +1,380 @@
+/* ─── Layout ──────────────────────────────────────────── */
 .class-detail-page {
-    padding: 2rem;
+    /* inherits .card padding */
+}
+
+.detail-view {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+}
+
+/* ─── Back Button ─────────────────────────────────────── */
+.back-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: var(--text-muted);
+    text-decoration: none;
+    font-size: 0.9rem;
+    font-weight: 500;
+    transition: color 0.2s ease;
+    width: fit-content;
+}
+
+.back-btn:hover {
+    color: var(--text);
+}
+
+.back-btn i-tabler {
+    width: 1.1rem;
+    height: 1.1rem;
+}
+
+/* ─── Class Header ────────────────────────────────────── */
+.class-header {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+    padding-bottom: 2rem;
+    border-bottom: 1px solid var(--border);
+}
+
+.class-title-row {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.class-avatar {
+    width: 3.5rem;
+    height: 3.5rem;
+    border-radius: var(--radius);
+    background: var(--primary-subtle, rgba(74, 163, 255, 0.12));
+    color: var(--primary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.class-avatar i-tabler {
+    width: 1.75rem;
+    height: 1.75rem;
+}
+
+.class-name {
+    font-size: 1.75rem;
+    font-weight: 700;
+    margin: 0 0 0.1rem 0;
+    color: var(--text);
+    line-height: 1.2;
+}
+
+.class-subtitle {
+    margin: 0;
+    font-size: 0.875rem;
+    color: var(--text-muted);
+}
+
+/* ─── Info Badges ─────────────────────────────────────── */
+.info-badges {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.625rem;
+}
+
+.info-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    padding: 0.4rem 0.875rem;
+    border-radius: 999px;
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--text);
+    transition: background 0.15s ease, border-color 0.15s ease;
+}
+
+.info-badge:hover {
+    background: var(--hover-bg);
+    border-color: var(--primary);
+}
+
+.info-badge i-tabler {
+    width: 1rem;
+    height: 1rem;
+    color: var(--primary);
+    flex-shrink: 0;
+}
+
+/* ─── Loading / Error / Empty states ─────────────────── */
+.loading-state,
+.error-state,
+.empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 3.5rem 1rem;
+    text-align: center;
+    gap: 0.875rem;
+    background: var(--surface-2);
+    border-radius: var(--radius);
+    border: 1px dashed var(--border);
+}
+
+.loading-state p,
+.error-state p,
+.empty-state p {
+    margin: 0;
+    color: var(--text-muted);
+    font-size: 0.9375rem;
+}
+
+.error-state i-tabler,
+.empty-icon i-tabler {
+    width: 2.5rem;
+    height: 2.5rem;
+    color: var(--text-muted);
+    opacity: 0.5;
+}
+
+.error-state i-tabler {
+    color: var(--danger, #ef4444);
+    opacity: 1;
+}
+
+.error-state h3,
+.empty-state h4 {
+    margin: 0;
+    font-weight: 600;
+    color: var(--text);
+}
+
+.loading-spinner {
+    width: 2.5rem;
+    height: 2.5rem;
+    border: 3px solid var(--border);
+    border-top-color: var(--primary);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* ─── Students Section ────────────────────────────────── */
+.students-section {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+}
+
+.section-header {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.section-title {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: var(--text);
+    margin: 0;
+}
+
+.section-title i-tabler {
+    width: 1.25rem;
+    height: 1.25rem;
+    color: var(--primary);
+}
+
+.count-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 1.75rem;
+    height: 1.75rem;
+    padding: 0 0.5rem;
+    background: var(--primary-subtle, rgba(74, 163, 255, 0.12));
+    color: var(--primary);
+    border-radius: 999px;
+    font-size: 0.8125rem;
+    font-weight: 700;
+}
+
+/* ─── Students Table ──────────────────────────────────── */
+.students-table-wrapper {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+    overflow-x: auto;
+}
+
+.students-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.students-table thead {
+    background: var(--surface-2);
+    border-bottom: 1px solid var(--border);
+}
+
+.students-table th {
+    padding: 0.875rem 1rem;
+    text-align: left;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    white-space: nowrap;
+}
+
+.students-table tbody tr {
+    border-bottom: 1px solid var(--border);
+    transition: background 0.15s ease;
+    cursor: pointer;
+}
+
+.students-table tbody tr:last-child {
+    border-bottom: none;
+}
+
+.students-table tbody tr:hover {
+    background: var(--hover-bg);
+}
+
+.students-table td {
+    padding: 0.875rem 1rem;
+    font-size: 0.9375rem;
+    color: var(--text);
+    vertical-align: middle;
+}
+
+.text-muted {
+    color: var(--text-muted) !important;
+}
+
+/* ─── Column widths ───────────────────────────────────── */
+.col-student {
+    width: 28%;
+}
+
+.col-email {
+    width: 28%;
+}
+
+.col-birthday {
+    width: 16%;
+}
+
+.col-grade {
+    width: 12%;
+}
+
+.col-status {
+    width: 16%;
+    text-align: right;
+}
+
+/* ─── Student Cell ────────────────────────────────────── */
+.student-cell {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.student-avatar {
+    width: 2.25rem;
+    height: 2.25rem;
+    border-radius: 50%;
+    background: var(--primary-subtle, rgba(74, 163, 255, 0.12));
+    color: var(--primary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.8125rem;
+    font-weight: 700;
+    flex-shrink: 0;
+    overflow: hidden;
+}
+
+.student-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.student-name {
+    font-weight: 500;
+}
+
+/* ─── Grade Badge ─────────────────────────────────────── */
+.grade-badge {
+    display: inline-block;
+    padding: 0.25rem 0.6rem;
+    border-radius: 6px;
+    font-weight: 700;
+    font-size: 0.875rem;
+}
+
+.grade-none {
+    background: var(--surface-2);
+    color: var(--text-muted);
 }
 
 .grade-excellent {
-    color: var(--success-color, #28a745);
+    background: rgba(34, 197, 94, 0.12);
+    color: #16a34a;
 }
 
 .grade-good {
-    color: var(--primary-color, #007bff);
+    background: rgba(74, 163, 255, 0.12);
+    color: var(--primary);
 }
 
 .grade-fair {
-    color: var(--warning-color, #ffc107);
+    background: rgba(245, 158, 11, 0.12);
+    color: #d97706;
 }
 
 .grade-poor {
-    color: var(--danger-color, #dc3545);
+    background: rgba(239, 68, 68, 0.12);
+    color: #dc2626;
+}
+
+/* ─── Status Badge ────────────────────────────────────── */
+.status-badge {
+    display: inline-block;
+    padding: 0.3rem 0.75rem;
+    border-radius: 999px;
+    font-size: 0.8125rem;
+    font-weight: 600;
+}
+
+.status-active {
+    background: rgba(34, 197, 94, 0.12);
+    color: #16a34a;
+}
+
+.status-former {
+    background: rgba(245, 158, 11, 0.12);
+    color: #d97706;
+}
+
+.status-suspended {
+    background: rgba(239, 68, 68, 0.12);
+    color: #dc2626;
 }
