@@ -77,14 +77,15 @@
                             <div class="stat-val danger">{{ stats.denied }}</div>
                             <div class="stat-lab">{{ l.s('gdpr.stats.denied') }}</div>
                         </div>
-                        <div class="stat-card-mini highlighted" (click)="selectedView.next(ViewSelector.consents)">
+                        <div class="stat-card-mini highlighted clickable"
+                            (click)="selectedView.next(ViewSelector.consents)">
                             <div class="stat-val warning">{{ stats.pending }}</div>
                             <div class="stat-lab">{{ l.s('gdpr.stats.pending') }}</div>
                         </div>
                     </div>
 
                     <div class="summary-footer">
-                        <button class="btn btn--secondary btn--sm btn--block"
+                        <button class="btn btn-outline btn-block btn--sm"
                             (click)="selectedView.next(ViewSelector.consents)">
                             {{ l.s('gdpr.overview.view_all_consents') }}
                             <i-tabler name="arrow-right"></i-tabler>
@@ -250,6 +251,13 @@
                             </div>
                         </div>
                         }
+
+                        @if (parentConsents.length === 0 && childConsents.length === 0) {
+                        <div class="empty-state">
+                            <i-tabler name="shield-off"></i-tabler>
+                            <p>Žádné souhlasy k zobrazení.</p>
+                        </div>
+                        }
                     </div>
                 </div>
             </div>
@@ -296,7 +304,7 @@
                         </div>
                     </div>
                     <div class="training-card-footer">
-                        <button class="btn btn-block btn-outline" [disabled]="training.status === 'completed'">
+                        <button class="btn btn-outline btn-block btn-sm" [disabled]="training.status === 'completed'">
                             <i-tabler name="player-play"></i-tabler>
                             {{ l.s('gdpr.training.take_test') }}
                         </button>
@@ -322,25 +330,25 @@
 
             <div class="officer-grid">
                 <!-- Action Cards -->
-                <div class="action-card card" (click)="reportForm.type = 'breach'; reportForm.success = false">
+                <div class="action-card" (click)="reportForm.type = 'breach'; reportForm.success = false">
                     <div class="action-card-header">
                         <i-tabler name="alert-circle" class="icon orange"></i-tabler>
                         <h4>{{ l.s('gdpr.officer.actions.breach_report') }}</h4>
                     </div>
                 </div>
-                <div class="action-card card" (click)="reportForm.type = 'objection'; reportForm.success = false">
+                <div class="action-card" (click)="reportForm.type = 'objection'; reportForm.success = false">
                     <div class="action-card-header">
                         <i-tabler name="gavel" class="icon purple"></i-tabler>
                         <h4>{{ l.s('gdpr.officer.actions.objection') }}</h4>
                     </div>
                 </div>
-                <div class="action-card card" (click)="requestDataExport()">
+                <div class="action-card" (click)="requestDataExport()">
                     <div class="action-card-header">
                         <i-tabler name="download" class="icon blue"></i-tabler>
                         <h4>{{ l.s('gdpr.officer.actions.data_request') }}</h4>
                     </div>
                 </div>
-                <div class="action-card card danger" (click)="showDeleteConfirm = true">
+                <div class="action-card danger" (click)="showDeleteConfirm = true">
                     <div class="action-card-header">
                         <i-tabler name="trash" class="icon red"></i-tabler>
                         <h4>{{ l.s('gdpr.officer.actions.forget_me') }}</h4>
@@ -388,7 +396,7 @@
                 <div class="card exports-card">
                     <div class="card-header">
                         <div class="header-content">
-                            <h3>{{ l.s('gdpr.officer.actions.data_request') }} - Historie</h3>
+                            <h3>{{ l.s('gdpr.officer.actions.data_request') }} – Historie</h3>
                         </div>
                     </div>
                     <div class="card-body">
@@ -613,8 +621,7 @@
                 <div class="danger-notice">
                     <i-tabler name="alert-triangle"></i-tabler>
                     <p>Tato akce je <strong>nevratná</strong>. Dojde k trvalému smazání vašeho účtu a všech s ním
-                        spojených
-                        osobních údajů, které není škola povinna uchovávat ze zákona.</p>
+                        spojených osobních údajů, které není škola povinna uchovávat ze zákona.</p>
                 </div>
                 <div class="form-group">
                     <label>Pro potvrzení napište: <strong>smazat účet</strong></label>
@@ -631,3 +638,4 @@
         </div>
     </div>
     }
+</div>
