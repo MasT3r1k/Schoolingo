@@ -74,6 +74,7 @@ import { OnlineComponent } from './board/online/online.component';
 import { PollSharesComponent } from './board/polls/poll-shares/poll-shares.component';
 import { ArchitectureDashboardComponent } from './board/Admin/architecture/dashboard/dashboard.component';
 import { ArchitectureBuildingsComponent } from './board/Admin/architecture/buildings/buildings.component';
+import { ArchitectureBuildingDetailComponent } from './board/Admin/architecture/buildings/detail/detail.component';
 import { ArchitectureRoomsComponent } from './board/Admin/architecture/rooms/rooms.component';
 import { InventoryComponent } from './board/Admin/inventory/inventory.component';
 import { SetupComponent } from './setup/setup.component';
@@ -454,6 +455,10 @@ export const routes: Routes = [
                             {
                                 path: 'buildings',
                                 component: ArchitectureBuildingsComponent
+                            },
+                            {
+                                path: 'buildings/:id',
+                                component: ArchitectureBuildingDetailComponent
                             },
                             {
                                 path: 'rooms',

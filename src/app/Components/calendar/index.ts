@@ -43,12 +43,18 @@ export class CalendarComponent implements OnInit, OnDestroy, OnChanges {
             const current = calData.selected_date[0].getValue();
             if (!current.isSame(this.value, 'day')) {
                 calData.selected_date[0].next(this.value.clone());
+                if (calData.options['multiple_days']) {
+                    calData.selected_date[1].next(this.value.clone());
+                }
             }
         }
         if (changes['valueEnd'] && this.valueEnd) {
             const current = calData.selected_date[1].getValue();
             if (!current.isSame(this.valueEnd, 'day')) {
                 calData.selected_date[1].next(this.valueEnd.clone());
+                if (calData.options['multiple_days']) {
+                    calData.selected_date[0].next(this.valueEnd.clone());
+                }
             }
         }
     }

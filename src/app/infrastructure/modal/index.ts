@@ -49,6 +49,10 @@ export class ModalManager {
                 break;
             case "width":
                 modal.width = value;
+                break;
+            case "icon":
+                modal.icon = value;
+                break;
         }
     }
 

@@ -151,7 +151,7 @@ export class CalendarManager {
     public isBetweenDay(calendar: CalendarData, day: moment.Moment): boolean {
         const start = calendar.selected_date[0].getValue();
         const end = calendar.selected_date[1].getValue();
-        return day.isAfter(start, 'day') && day.isBefore(end, 'day');
+        return day.isAfter(start, 'day') && day.isBefore(end, 'day') && calendar.options['multiple_days'];
     }
 
     public getCalendar(date: moment.Moment): Calendar[] {

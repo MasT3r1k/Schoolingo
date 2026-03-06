@@ -148,6 +148,7 @@ export class InventoryComponent implements OnInit {
   ngOnInit(): void {
     this.modalManager.addModal('inventory-item', {
       title: 'architecture.inventory',
+      icon: 'plus',
       closeable: true,
       width: 600,
       items: [{ type: 'component', component: InventoryItemModalComponent }]
@@ -180,6 +181,7 @@ export class InventoryComponent implements OnInit {
 
   openItemModal(item: any = null): void {
     this.modalManager.updateModal('inventory-item', 'title', item ? this.l.s('architecture.edit_item') : this.l.s('architecture.new_item'));
+    this.modalManager.updateModal('inventory-item', 'icon', item ? 'edit' : 'plus');
     this.modalManager.openModal('inventory-item', {
       item,
       rooms: this.rooms,

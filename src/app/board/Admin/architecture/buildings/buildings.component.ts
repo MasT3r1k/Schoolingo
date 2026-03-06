@@ -7,6 +7,7 @@ import { Config } from '@Schoolingo/config';
 import { FormsModule } from '@angular/forms';
 import { AddBuildingModalComponent } from '../modals/add-building-modal/add-building-modal.component';
 import { ModalManager } from '@Schoolingo/modal';
+import { Router } from '@angular/router';
 
 @Component({
   standalone: true,
@@ -34,6 +35,8 @@ import { ModalManager } from '@Schoolingo/modal';
             <th class="table__th">ID</th>
             <th class="table__th">{{ l.s('architecture.building_name') }}</th>
             <th class="table__th">{{ l.s('architecture.building_type') }}</th>
+            <th class="table__th">Počet místností</th>
+            <th class="table__th">Kapacita osob</th>
             <th class="table__th">{{ l.s('actions') }}</th>
           </tr>
         </thead>
@@ -45,8 +48,13 @@ import { ModalManager } from '@Schoolingo/modal';
               <td class="table__td">
                 <span class="badge badge--neutral">{{ l.s('architecture.types.' + building.type) }}</span>
               </td>
+              <td class="table__td">{{ building.rooms_count }}</td>
+              <td class="table__td">{{ building.persons_capacity }}</td>
               <td class="table__td">
                 <div class="actions">
+                    <button class="btn btn--icon btn--sm btn--ghost" (click)="goToDetail(building.building_id)" title="Spravovat patra">
+                        <i-tabler name="layers-intersect"></i-tabler>
+                    </button>
                     <button class="btn btn--icon btn--sm btn--ghost" (click)="editBuilding(building)">
                         <i-tabler name="edit"></i-tabler>
                     </button>
@@ -58,7 +66,7 @@ import { ModalManager } from '@Schoolingo/modal';
             </tr>
           } @empty {
             <tr>
-              <td colspan="4" class="table__td" style="text-align: center; padding: 3rem;">
+              <td colspan="6" class="table__td" style="text-align: center; padding: 3rem;">
                 <div class="empty-state">
                   <i-tabler name="building-off" class="empty-state__icon"></i-tabler>
                   <p class="empty-state__title">Žádné budovy nebyly nalezeny</p>
@@ -184,6 +192,7 @@ export class ArchitectureBuildingsComponent implements OnInit {
   public l = inject(Locale);
   private http = inject(HttpClient);
   private modalManager = inject(ModalManager);
+  private router = inject(Router);
 
   public buildings: any[] = [];
   public showModal = false;
@@ -218,7 +227,10 @@ export class ArchitectureBuildingsComponent implements OnInit {
 
   editBuilding(building: any): void {
     this.editingBuilding = building;
-    this.buildingForm = { ...building };
+    this.buildingForm = { 
+        name: building.name, 
+        type: building.type 
+    };
     this.showModal = true;
   }
 
@@ -244,5 +256,9 @@ export class ArchitectureBuildingsComponent implements OnInit {
           this.http.delete(`${Config.API_URL}/v1/school/architecture/buildings/${id}`, { withCredentials: true })
             .subscribe(() => this.loadBuildings());
       }
+  }
+
+  goToDetail(id: number): void {
+      this.router.navigate(['/admin/architecture/buildings', id]);
   }
 }

@@ -175,44 +175,50 @@
                         </div>
                     </div>
                 </div>
+                @if (classbook.classbook.previousLesson) {
                 <div class="info-card">
                     <h3>{{ l.s('classbook.last_lesson') }}</h3>
+                    @if (!classbook.classbook.previousLesson.recorded) {
                     <div class="alert alert--danger">
                         <span>
                             {{ l.s('classbook.last_lesson_not_written') }}
                         </span>
                         <div class="actions">
-                            <div class="btn">
+                            <div class="btn" (click)="goToPreviousLesson()">
                                 {{ l.s('classbook.save_lesson') }}
                             </div>
                         </div>
                     </div>
-                    <small class="muted">2. hodina, 23. 7. 2025, Úterý</small>
+                    }
+                    <small class="muted">{{ classbook.classbook.previousLesson.hour + 1 }}. hodina, {{
+                        Utils.formatDateShort(classbook.classbook.previousLesson.date) }}, {{ l.s('days.' +
+                        Utils.makeMoment(classbook.classbook.previousLesson.date).day()) }}</small>
+                    @if (classbook.classbook.previousLesson.topic) {
                     <div class="info-row">
                         <span class="muted">
                             {{ l.s('classbook.lesson_topic') }}
                         </span>
-                        <span>Lineární funkce</span>
+                        <span>{{ classbook.classbook.previousLesson.topic }}</span>
                     </div>
+                    }
+                    @if (classbook.classbook.previousLesson.note) {
                     <div class="info-row">
                         <span class="muted">
                             {{ l.s('classbook.lesson_note') }}
                         </span>
-                        <span>Žáci dobře zvládli grafické znázornění</span>
+                        <span>{{ classbook.classbook.previousLesson.note }}</span>
                     </div>
+                    }
+                    @if (classbook.classbook.previousLesson.internal_note) {
                     <div class="info-row">
                         <span class="muted">
                             {{ l.s('classbook.lesson_teacher_note') }}
                         </span>
-                        <span>OLAAAA</span>
+                        <span>{{ classbook.classbook.previousLesson.internal_note }}</span>
                     </div>
-                    <div class="info-row">
-                        <span class="muted">
-                            {{ l.s('classbook.absence') }}
-                        </span>
-                        <span>Baček</span>
-                    </div>
+                    }
                 </div>
+                }
                 }
 
                 @if (selected_tab == 1) {

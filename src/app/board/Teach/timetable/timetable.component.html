@@ -15,7 +15,7 @@
             {{ l.s('sidebar.teach.timetable') }}
         </h2>
         <div class="flex-items">
-            @if (perms.checkPermission([["teacher"]])) {
+            @if (perms.checkPermission(['teacher', 'admin', 'principal'])) {
             <div class="select-items">
                 <schoolingo-tabs [value]="selectedTimetable" [options]="teacherOptions"></schoolingo-tabs>
             </div>
@@ -27,19 +27,28 @@
                     (click)="$event.stopPropagation(); dropdownManager.selected_dropdown = dropdownManager.selected_dropdown == 'timetable_selectClass' ? '' : 'timetable_selectClass'">
                     <div class="selected-value">
                         {{ getClassName(selectedClass.getValue()) }}
-                        @if (u.getUser().classes.length >= 2) {
+                        @if (perms.checkPermission(['admin', 'principal']) || u.getUser().classes.length >= 2) {
                         <i-tabler name="chevron-down"></i-tabler>
                         }
                     </div>
-                    @if (dropdownManager.selected_dropdown == 'timetable_selectClass' && u.getUser().classes.length >=
-                    2) {
+                    @if (dropdownManager.selected_dropdown == 'timetable_selectClass' &&
+                    (perms.checkPermission(['admin', 'principal']) || u.getUser().classes.length >= 2)) {
                     <div class="options-dropdown">
                         <div class="list">
+                            @if (perms.checkPermission(['admin', 'principal'])) {
+                            @for (class of all_classes; track $index) {
+                            <div class="option"
+                                (click)="$event.stopPropagation();dropdownManager.selected_dropdown = '';selectedClass.next(class.id)">
+                                {{ class.name }}
+                            </div>
+                            }
+                            } @else {
                             @for (class of u.getUser().classes; track $index) {
                             <div class="option"
                                 (click)="$event.stopPropagation();dropdownManager.selected_dropdown = '';selectedClass.next(class.class_id)">
                                 {{ class.class_name }}
                             </div>
+                            }
                             }
                         </div>
                     </div>

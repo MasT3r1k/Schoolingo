@@ -140,11 +140,12 @@ export class TimetableComponent implements OnInit {
     rooms: new BehaviorSubject<boolean>(true)
   };
   public teacherOptions: string[] = [];
+  public all_classes: any[] = [];
 
 
 
   public getTimetableType(): 'teacher' | 'student' | 'class' | 'room' | 'supervision' {
-    if (!this.perms.checkPermission(['teacher'])) {
+    if (!this.perms.checkPermission(['teacher', 'admin', 'principal'])) {
       return 'student';
     }
     switch(this.selectedTimetable.getValue()) {
@@ -160,6 +161,9 @@ export class TimetableComponent implements OnInit {
   }
 
   public getClassName(class_id: number): string {
+    if (this.perms.checkPermission(['admin', 'principal']) && this.all_classes.length > 0) {
+      return this.all_classes.find((item: any) => item.id == class_id)?.name ?? '';
+    }
     return this.u.getUser().classes.find((item) => item.class_id == class_id)?.class_name ?? '';
   }
 
@@ -189,8 +193,12 @@ export class TimetableComponent implements OnInit {
     this.selectedTimetable
     .pipe(distinctUntilChanged())
     .subscribe(() => {
-      if (this.selectedClass.getValue() === 0 && this.u.getUser().classes.length) {
-        this.selectedClass.next(this.u.getUser().classes[0].class_id)
+      if (this.selectedClass.getValue() === 0) {
+        if (this.perms.checkPermission(['admin', 'principal']) && this.all_classes.length > 0) {
+          this.selectedClass.next(this.all_classes[0].id);
+        } else if (this.u.getUser().classes.length) {
+          this.selectedClass.next(this.u.getUser().classes[0].class_id);
+        }
       }
       this.refreshData()
     });
@@ -201,10 +209,24 @@ export class TimetableComponent implements OnInit {
       this.refreshData()
     })
 
-    if (this.perms.checkPermission(['teacher'])) {
-      this.teacherOptions.push('dropdown.select_timetable.my_timetable', 'dropdown.select_timetable.supervision');
-      if (this.perms.checkPermission(['classTeacher'])) {
+    if (this.perms.checkPermission(['teacher', 'admin', 'principal'])) {
+      if (this.perms.checkPermission(['teacher'])) {
+        this.teacherOptions.push('dropdown.select_timetable.my_timetable', 'dropdown.select_timetable.supervision');
+      }
+      if (this.perms.checkPermission(['classTeacher', 'admin', 'principal'])) {
         this.teacherOptions.push('dropdown.select_timetable.class_timetable')
+      }
+
+      if (this.perms.checkPermission(['admin', 'principal'])) {
+        this.http.get<any>(`${Config.API_URL}/v1/school/classes`, { withCredentials: true })
+        .subscribe({
+          next: (response) => {
+            this.all_classes = response.data || response;
+            if (this.selectedClass.getValue() === 0 && this.all_classes.length > 0) {
+              this.selectedClass.next(this.all_classes[0].id);
+            }
+          }
+        });
       }
     }
 

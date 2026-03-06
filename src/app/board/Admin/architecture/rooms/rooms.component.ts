@@ -34,6 +34,7 @@ import { RoomTimetableModalComponent } from './modals/room-timetable-modal.compo
           <tr>
             <th class="table__th">ID</th>
             <th class="table__th">{{ l.s('architecture.room_name') }}</th>
+            <th class="table__th">Umístění</th>
             <th class="table__th">{{ l.s('architecture.room_type') }}</th>
             <th class="table__th">{{ l.s('architecture.capacity') }}</th>
             <th class="table__th">{{ l.s('architecture.room_manager') }}</th>
@@ -51,9 +52,27 @@ import { RoomTimetableModalComponent } from './modals/room-timetable-modal.compo
                 }
               </td>
               <td class="table__td">
+                <strong>{{ room.building_name }}</strong><br>
+                <small class="muted">
+                  @if (room.level === 0) {
+                    Přízemí (0)
+                  } @else if (room.level > 0) {
+                    {{ room.level }}. patro
+                  } @else {
+                    Suterén ({{ room.level }})
+                  }
+                </small>
+              </td>
+              <td class="table__td">
                 <span class="badge badge--primary">{{ l.s('architecture.types.' + room.type) }}</span>
               </td>
-              <td class="table__td">{{ room.capacity || 0 }} {{ l.s('students.count') }}</td>
+              <td class="table__td">
+                @if (!['hallway', 'other'].includes(room.type)) {
+                    {{ room.capacity || 0 }} {{ l.s('students.count') }}
+                } @else {
+                    <span class="muted">-</span>
+                }
+              </td>
               <td class="table__td">
                 @if (room.manager_firstName) {
                   {{ room.manager_firstName }} {{ room.manager_lastName }}
@@ -77,7 +96,7 @@ import { RoomTimetableModalComponent } from './modals/room-timetable-modal.compo
             </tr>
           } @empty {
             <tr>
-              <td colspan="6" class="table__td" style="text-align: center; padding: 3rem;">
+              <td colspan="7" class="table__td" style="text-align: center; padding: 3rem;">
                 <div class="empty-state">
                   <i-tabler name="door-off" class="empty-state__icon"></i-tabler>
                   <p class="empty-state__title">{{ l.s('architecture.empty.rooms') }}</p>

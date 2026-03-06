@@ -81,7 +81,16 @@ export class ClassbookComponent implements OnInit {
   public selected_date = moment();
   public hours: TimetableHours[] = [];
 
-  public updateLessons(): void {
+  public goToPreviousLesson(): void {
+    if (!this.classbook.classbook || !this.classbook.classbook.previousLesson) return;
+    const prevLesson = this.classbook.classbook.previousLesson;
+
+    this.selected_date = moment(prevLesson.date);
+    this.selected_tab = 0;
+    this.updateLessons(prevLesson.hour);
+  }
+
+  public updateLessons(targetHour?: number): void {
     this.is_loading = true;
     this.http.post(
       `${Config.API_URL}/v1/timetable`,
@@ -172,7 +181,9 @@ export class ClassbookComponent implements OnInit {
 
         this.is_loading = false;
         const firstValidLesson = this.timetable.find(l => !l.isEmpty);
-        if (firstValidLesson) {
+        if (targetHour !== undefined && this.timetable[targetHour] && !this.timetable[targetHour].isEmpty) {
+          this.selected_lesson.next(targetHour);
+        } else if (firstValidLesson) {
           this.selected_lesson.next(firstValidLesson.hour - 1);
         } else {
           this.classbook.classbook = null as any;
@@ -258,7 +269,8 @@ export class ClassbookComponent implements OnInit {
               lessonNumber: data.lessonNumber,
               lessonTotal: data.lessonTotal,
               classService: Object.values(data.classService),
-              classMaxHours: data.classMaxHours
+              classMaxHours: data.classMaxHours,
+              previousLesson: data.previousLesson
             };
 
             this.classbook.students = data.students.map((student: any) => ({

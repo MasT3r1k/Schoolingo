@@ -79,11 +79,11 @@ import { AddBuildingModalComponent } from '../modals/add-building-modal/add-buil
                 </div>
                 <div class="card-stats">
                     <div class="card-stat">
-                        <span class="value">{{ building.roomCount || 0 }}</span>
+                        <span class="value">{{ building.rooms_count || 0 }}</span>
                         <span class="label">MÍSTNOSTÍ</span>
                     </div>
                     <div class="card-stat">
-                        <span class="value">{{ building.totalCapacity || 0 }} osob</span>
+                        <span class="value">{{ building.persons_capacity || 0 }} osob</span>
                         <span class="label">KAPACITA</span>
                     </div>
                 </div>

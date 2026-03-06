@@ -449,7 +449,7 @@ export class MyClassComponent implements OnInit {
       if (!confirm(`Opravdu chcete automaticky vybrat ${this.autoServiceRange.count} studentů (${methodText})? Termín: ${this.autoServiceRange.start.format('DD.MM.YYYY')} - ${this.autoServiceRange.end.format('DD.MM.YYYY')}`)) return;
 
       this.http.post(`${Config.API_URL}/v1/teach/my-class/service/auto`, {
-          classId: this.classInfo.classId,
+          classId: this.classInfo.class_id,
           start: this.autoServiceRange.start.format('YYYY-MM-DD'),
           end: this.autoServiceRange.end.format('YYYY-MM-DD'),
           count: this.autoServiceRange.count,
