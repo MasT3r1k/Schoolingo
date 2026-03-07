@@ -1,13 +1,16 @@
 @if (documents.renamingFile) {
 <div class="form-group">
     <label for="name">{{ l.s('documents.name_' + documents.renamingFile.type) }}</label>
-    <input type="text" name="name" id="name" [(ngModel)]="documents.renamingFile.name" autocomplete="off" />
+    <input type="text" name="name" id="name" [(ngModel)]="documents.renamingFile.name" autocomplete="off"
+        (keydown.enter)="saveRename()" />
 </div>
 
-<div class="form-group">
-    <div class="btn btn--primary">
+<div class="modal-actions">
+    <button type="button" class="btn btn--secondary" (click)="modalManager.closeModal('rename_file')">{{ l.s('cancel')
+        }}</button>
+    <button type="button" class="btn btn--primary" (click)="saveRename()">
         <i-tabler name="pencil"></i-tabler>
         {{ l.s('documents.save_' + documents.renamingFile.type) }}
-    </div>
+    </button>
 </div>
 }

@@ -15,7 +15,7 @@ import { ModalManager } from '@Schoolingo/modal';
 export class CreateFileComponent {
   public l = inject(Locale);
   private http = inject(HttpClient);
-  private modalManager = inject(ModalManager);
+  public modalManager = inject(ModalManager);
   private documents = inject(Documents);
   public folder_name = '';
   public input_errors: any = {};

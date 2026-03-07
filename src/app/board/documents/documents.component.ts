@@ -159,6 +159,7 @@ export class DocumentsComponent implements OnInit {
       'create_folder',
       {
         title: 'documents.create_folder',
+        icon: 'folder-plus',
         closeable: true,
         items: [
           {
@@ -173,6 +174,7 @@ export class DocumentsComponent implements OnInit {
       'create_file',
       {
         title: 'documents.create_file',
+        icon: 'file-plus',
         closeable: true,
         items: [
           {
@@ -187,6 +189,7 @@ export class DocumentsComponent implements OnInit {
       'upload_files',
       {
         title: 'documents.upload_files',
+        icon: 'cloud-upload',
         closeable: true,
         items: [
           {
@@ -201,6 +204,7 @@ export class DocumentsComponent implements OnInit {
       'rename_file',
       {
         title: 'documents.rename_file',
+        icon: 'pencil',
         closeable: true,
         items: [
           {
@@ -215,6 +219,7 @@ export class DocumentsComponent implements OnInit {
       'delete_file',
       {
         title: 'documents.delete_file',
+        icon: 'trash-x',
         closeable: true,
         items: [
           {

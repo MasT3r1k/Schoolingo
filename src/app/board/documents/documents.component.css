@@ -1,50 +1,97 @@
+/* ============================================================
+   DOCUMENTS PAGE — kompletní stylesheet
+   ============================================================ */
+
+/* ─── Kontejner ─────────────────────────────────────── */
 .documents-container {
     display: flex;
     height: 100%;
     width: 100%;
     overflow: hidden;
     background: var(--bg);
-    gap: 8px;
 }
 
-.sidebar {
-    width: 280px;
+/* ============================================================
+   SIDEBAR
+   ============================================================ */
+
+.doc-sidebar {
+    width: 260px;
+    flex-shrink: 0;
     display: flex;
     flex-direction: column;
     background: var(--surface);
+    border-right: 1px solid var(--border);
     z-index: 10;
+    overflow: hidden;
 }
 
-.header {
-    height: 72px;
-    padding: 0 1.5rem;
+.doc-sidebar__header {
+    height: 56px;
+    padding: 0 0.75rem 0 1rem;
     display: flex;
+    align-items: center;
     justify-content: space-between;
-    align-items: center;
     border-bottom: 1px solid var(--border);
+    flex-shrink: 0;
 }
 
-.header h3 {
-    margin: 0;
-    font-size: 0.875rem;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-    font-weight: 700;
-    color: var(--text);
-}
-
-.header>div {
+.doc-sidebar__title {
     display: flex;
-    flex-direction: row;
     align-items: center;
-    gap: 8px;
+    gap: 0.5rem;
+    color: var(--text-muted);
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
 }
 
-.sidebar-content {
+.doc-sidebar__title i-tabler {
+    width: 16px;
+    height: 16px;
+    color: var(--primary);
+}
+
+.doc-sidebar__add-btn {
+    width: 28px;
+    height: 28px;
+    border-radius: var(--radius-sm);
+    border: 1px solid transparent;
+    background: transparent;
+    color: var(--text-muted);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+}
+
+.doc-sidebar__add-btn i-tabler {
+    width: 16px;
+    height: 16px;
+}
+
+.doc-sidebar__add-btn:hover,
+.doc-sidebar__add-btn.active {
+    background: var(--hover-bg);
+    border-color: var(--border);
+    color: var(--primary);
+}
+
+.doc-sidebar__content {
     flex: 1;
     overflow-y: auto;
-    padding: 0.5rem 1rem;
+    padding: 0.5rem;
 }
+
+.doc-sidebar__content>ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+/* ─── Stromová navigace ──────────────────────────────── */
 
 ul {
     list-style: none;
@@ -54,7 +101,8 @@ ul {
 
 ul.tree {
     padding-left: 0;
-    margin-left: 12px;
+    margin-left: 16px;
+    border-left: 1px solid var(--border);
 }
 
 ul.tree li {
@@ -68,36 +116,48 @@ ul li .tree-label {
     align-items: center;
     gap: 6px;
     flex: 1;
+    font-size: 0.875rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 ul li .tree-label i-tabler {
-    width: 16px;
-    height: 16px;
+    width: 15px;
+    height: 15px;
+    flex-shrink: 0;
     color: var(--text-muted);
+}
+
+.tree-size {
+    font-size: 0.72rem;
+    color: var(--text-muted);
+    margin-left: auto;
+    padding-left: 0.5rem;
+    opacity: 0.6;
 }
 
 .tree-content {
     display: flex;
     align-items: center;
-    padding: 4px 0px;
-    margin: 1px 0;
-    height: 32px;
-    border-radius: var(--radius);
+    padding: 0 4px;
+    height: 30px;
+    border-radius: var(--radius-sm);
     cursor: pointer;
-    color: var(--text);
-    transition: background-color 0.15s ease;
-    position: relative;
-    font-size: 0.875rem;
+    color: var(--text-muted);
+    transition: background-color 0.15s ease, color 0.15s ease;
     user-select: none;
+    margin: 1px 0;
 }
 
 .tree-content:hover {
     background: var(--hover-bg);
+    color: var(--text);
 }
 
 .tree-content.active {
-    background: var(--active-bg);
-    color: var(--text);
+    background: rgba(var(--primary-rgb), 0.1);
+    color: var(--primary);
     font-weight: 500;
 }
 
@@ -106,19 +166,17 @@ ul li .tree-label i-tabler {
 }
 
 .toggle-icon {
+    width: 22px;
+    height: 30px;
     display: flex;
     align-items: center;
     justify-content: center;
-    height: 32px;
-    margin-right: .5rem;
-    border-top-left-radius: inherit;
-    border-bottom-left-radius: inherit;
-    transition: transform 0.2s ease, background-color 0.15s ease;
     flex-shrink: 0;
+    transition: color 0.15s;
 }
 
 .toggle-icon:hover {
-    background-color: var(--hover-bg);
+    color: var(--primary);
 }
 
 .toggle-icon i-tabler {
@@ -126,365 +184,642 @@ ul li .tree-label i-tabler {
 }
 
 .toggle-spacer {
-    width: 20px;
+    width: 22px;
     flex-shrink: 0;
 }
 
-.search {
+/* ============================================================
+   HLAVNÍ OBLAST
+   ============================================================ */
+
+.main-area {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    background: var(--surface);
+    min-width: 0;
+}
+
+/* ─── Toolbar ────────────────────────────────────────── */
+
+.doc-toolbar {
+    height: 56px;
     display: flex;
     align-items: center;
-    background: var(--surface);
-    padding: 0.6rem 1.2rem;
-    border-radius: var(--radius);
+    justify-content: space-between;
+    padding: 0 1rem;
+    border-bottom: 1px solid var(--border);
+    gap: 1rem;
+    flex-shrink: 0;
+}
+
+.doc-toolbar__left {
+    display: flex;
+    align-items: center;
     gap: 0.75rem;
-    width: 360px;
-    border: 1px solid var(--border);
-    transition: all 0.3s ease;
+    flex: 1;
+    min-width: 0;
 }
 
-.search:focus-within {
-    border-color: var(--primary);
+.doc-toolbar__right {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex-shrink: 0;
 }
 
-.search i-tabler {
+/* Breadcrumb */
+.doc-breadcrumb {
+    display: flex;
+    align-items: center;
+    gap: 0.375rem;
+    font-size: 0.875rem;
+    flex-shrink: 0;
+    white-space: nowrap;
+}
+
+.doc-breadcrumb__root {
     color: var(--text-muted);
-    width: 20px;
-    height: 20px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    padding: 4px;
+    border-radius: var(--radius-sm);
+    transition: color 0.15s, background 0.15s;
 }
 
-.search input {
+.doc-breadcrumb__root:hover {
+    color: var(--primary);
+    background: var(--hover-bg);
+}
+
+.doc-breadcrumb__root i-tabler {
+    width: 16px;
+    height: 16px;
+}
+
+.doc-breadcrumb__sep {
+    width: 14px;
+    height: 14px;
+    color: var(--text-muted);
+    opacity: 0.5;
+}
+
+.doc-breadcrumb__current {
+    display: flex;
+    align-items: center;
+    gap: 0.375rem;
+    font-weight: 600;
+    color: var(--text);
+}
+
+.doc-breadcrumb__current i-tabler {
+    width: 16px;
+    height: 16px;
+    color: var(--text-muted);
+}
+
+/* Vyhledávání */
+.doc-search {
+    display: flex;
+    align-items: center;
+    background: var(--bg);
+    padding: 0.45rem 0.875rem;
+    border-radius: var(--radius);
+    gap: 0.625rem;
+    width: 280px;
+    border: 1px solid var(--border);
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.doc-search:focus-within {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(var(--primary-rgb), 0.08);
+}
+
+.doc-search i-tabler {
+    color: var(--text-muted);
+    width: 16px;
+    height: 16px;
+    flex-shrink: 0;
+}
+
+.doc-search input {
     border: none;
     background: transparent;
     outline: none;
     width: 100%;
     color: var(--text);
-    font-size: 0.95rem;
+    font-size: 0.875rem;
     padding: 0;
     height: auto;
     border-radius: 0;
 }
 
-.btn-icon {
-    background: transparent;
-    border: none;
-    cursor: pointer;
+.doc-search input::placeholder {
     color: var(--text-muted);
-    padding: 0.5rem;
-    border-radius: 8px;
+}
+
+/* Ikona-tlačítka v toolbaru */
+.doc-toolbar__icon-btn {
+    width: 34px;
+    height: 34px;
+    border-radius: var(--radius-sm);
+    border: none;
+    background: transparent;
+    color: var(--text-muted);
+    cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
     transition: all 0.2s;
 }
 
-.btn-icon:hover {
+.doc-toolbar__icon-btn i-tabler {
+    width: 18px;
+    height: 18px;
+}
+
+.doc-toolbar__icon-btn:hover {
     background: var(--hover-bg);
     color: var(--text);
 }
 
-i-tabler {
-    width: 20px;
-    height: 20px;
-}
-
-.main-area {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    position: relative;
-    background: var(--surface);
-    width: 0;
-}
+/* ─── Explorer ───────────────────────────────────────── */
 
 .document-explorer {
     flex: 1;
     overflow-y: auto;
     padding: 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
 }
 
+/* List header */
+.explorer-list-header {
+    display: flex;
+    align-items: center;
+    padding: 0 0.625rem 0 3.5rem;
+    height: 32px;
+    border-radius: var(--radius-sm);
+    background: var(--bg);
+    border: 1px solid var(--border);
+    gap: 0;
+}
+
+.elh-name {
+    flex: 1;
+    font-size: 0.72rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--primary);
+}
+
+.elh-meta {
+    width: 120px;
+    font-size: 0.72rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--primary);
+    text-align: left;
+}
+
+/* Explorer: Grid / List */
 .explorer {
     display: flex;
     flex-wrap: wrap;
 }
 
 .explorer-grid {
-    gap: 1rem;
+    gap: 0.625rem;
     flex-direction: row;
+    align-items: flex-start;
+    align-content: flex-start;
 }
 
 .explorer-list {
     flex-direction: column;
-    gap: 4px;
+    gap: 2px;
 }
 
-.file-card {
-    display: flex;
-    border-radius: var(--radius);
-    cursor: pointer;
-    transition: all 0.2s;
-    border: 1px solid transparent;
-    align-items: center;
-}
+/* ─── File Card (Grid) ───────────────────────────────── */
 
 .explorer-grid .file-card {
-    flex: 0 0 120px;
+    flex: 0 0 110px;
+    max-width: 110px;
     flex-direction: column;
-    max-width: 120px;
-    padding: 1rem;
+    align-items: center;
+    padding: 0.875rem 0.5rem 0.625rem;
+    border-radius: var(--radius);
+    cursor: pointer;
+    transition: all 0.18s;
+    border: 1px solid transparent;
+    gap: 0.5rem;
+    display: flex;
+    position: relative;
 }
 
-.explorer-list .file-card {
-    padding: .25rem .5rem;
-    padding-right: 1.5rem;
-    flex-direction: row;
-}
-
-.file-card:hover {
+.explorer-grid .file-card:hover {
     background: var(--hover-bg);
 }
 
-.file-card.selected {
-    background: var(--active-bg);
-    border-color: var(--primary);
+.explorer-grid .file-card.selected {
+    background: rgba(var(--primary-rgb), 0.08);
+    border-color: rgba(var(--primary-rgb), 0.3);
 }
 
-.icon-wrapper {
+/* Ikona - Grid */
+.file-card__icon {
+    width: 52px;
+    height: 52px;
+    border-radius: 12px;
     display: flex;
     align-items: center;
     justify-content: center;
-    color: var(--text-muted);
+    position: relative;
 }
 
-.explorer-grid .icon-wrapper {
-    width: 48px;
-    height: 48px;
-    margin-bottom: 0.5rem;
+.file-card__icon i-tabler {
+    width: 28px;
+    height: 28px;
 }
 
-.explorer-list .icon-wrapper {
-    height: 32px;
-    width: 32px;
-    margin-right: 0.5rem;
-}
-
-.explorer-grid .icon-wrapper i-tabler {
-    width: 2rem;
-    height: 2rem;
-}
-
-.explorer-list .icon-wrapper i-tabler {
-    width: 1.5rem;
-    height: 1.5rem;
-}
-
-.icon-wrapper.folder {
+.file-card__icon.folder {
+    background: rgba(255, 193, 7, 0.12);
     color: #FFC107;
 }
 
-.icon-wrapper.pdf {
-    color: #F44336;
+.file-card__icon.file {
+    background: rgba(var(--primary-rgb), 0.1);
+    color: var(--primary);
 }
 
-.icon-wrapper.image {
-    color: #4CAF50;
-}
-
-.icon-wrapper.video {
-    color: #2196F3;
-}
-
-.file-info {
-    width: 100%;
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    justify-content: space-between;
-    gap: 2rem;
-}
-
-.explorer-grid .file-info {
-    justify-content: center;
-}
-
-.name {
-    font-weight: 400;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    font-size: 0.85rem;
+.file-card__name {
+    font-size: 0.78rem;
+    font-weight: 500;
     color: var(--text);
-    flex: 1;
-}
-
-.explorer-grid .name {
     text-align: center;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    width: 100%;
+    padding: 0 4px;
 }
 
-.file-meta {
-    padding: 0 1rem;
-    gap: 2rem;
+.file-card__grid-meta {
+    font-size: 0.72rem;
+    color: var(--text-muted);
+    margin-top: -2px;
+}
+
+/* ─── File Card (List) ───────────────────────────────── */
+
+.explorer-list .file-card {
     display: flex;
     flex-direction: row;
     align-items: center;
+    padding: 0.35rem 0.625rem;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    transition: all 0.15s;
+    border: 1px solid transparent;
+    gap: 0;
 }
 
-.meta {
-    flex: 0 0 115px;
-    font-size: 0.75rem;
-    color: var(--text-muted);
-    text-overflow: ellipsis;
+.explorer-list .file-card:hover {
+    background: var(--hover-bg);
+}
+
+.explorer-list .file-card.selected {
+    background: rgba(var(--primary-rgb), 0.07);
+    border-color: rgba(var(--primary-rgb), 0.2);
+}
+
+.file-card__icon-sm {
+    width: 28px;
+    height: 28px;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    margin-right: 0.625rem;
+}
+
+.file-card__icon-sm i-tabler {
+    width: 16px;
+    height: 16px;
+}
+
+.file-card__icon-sm.folder {
+    background: rgba(255, 193, 7, 0.12);
+    color: #FFC107;
+}
+
+.file-card__icon-sm.file {
+    background: rgba(var(--primary-rgb), 0.1);
+    color: var(--primary);
+}
+
+.file-card__list-name {
+    flex: 1;
+    min-width: 0;
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--text);
     overflow: hidden;
-    text-wrap: nowrap;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
-.file-meta.layout-header>.meta {
-    color: var(--primary)
+.file-card__list-meta {
+    width: 120px;
+    font-size: 0.78rem;
+    color: var(--text-muted);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
-.meta i-tabler {
-    margin-right: .5rem;
-}
+/* ─── Empty state ────────────────────────────────────── */
 
-.empty-state {
-    grid-column: 1 / -1;
+.doc-empty-state {
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    padding: 3rem;
+    padding: 4rem 2rem;
     color: var(--text-muted);
     gap: 1rem;
+    text-align: center;
+    flex: 1;
+    min-height: 300px;
 }
 
-.empty-state i-tabler {
-    width: 48px;
-    height: 48px;
+.doc-empty-state__icon {
+    width: 72px;
+    height: 72px;
+    border-radius: 50%;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
+
+.doc-empty-state__icon i-tabler {
+    width: 36px;
+    height: 36px;
+}
+
+.doc-empty-state__text {
+    margin: 0;
+    font-size: 0.9rem;
+}
+
+/* ============================================================
+   DETAILS PANEL (pravá strana)
+   ============================================================ */
 
 .details-panel {
     width: 0;
     background: var(--surface);
-    transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    border-left: 1px solid transparent;
+    transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+        border-color 0.3s;
     overflow: hidden;
-    height: 100%;
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
 }
 
 .details-panel.open {
-    width: 320px;
+    width: 300px;
+    border-left-color: var(--border);
 }
 
-.detail-header h3 {
-    margin: 0;
-    font-size: 1.1rem;
+.details-panel__header {
+    height: 56px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 0.75rem 0 1rem;
+    border-bottom: 1px solid var(--border);
+    flex-shrink: 0;
+    font-size: 0.875rem;
     font-weight: 600;
     color: var(--text);
+    white-space: nowrap;
 }
 
-.detail-content {
-    padding: 1.5rem;
+.details-panel__body {
+    flex: 1;
+    overflow-y: auto;
+    padding: 1.25rem;
     display: flex;
     flex-direction: column;
-    gap: 1.5rem;
+    gap: 1.25rem;
 }
 
-.detail-preview {
+/* Preview sekce */
+.details-panel__preview {
     display: flex;
-    justify-content: center;
+    flex-direction: column;
     align-items: center;
-    padding: 3rem 0;
-    background: var(--surface-2);
-    border-radius: 16px;
-    color: var(--primary);
-    box-shadow: inset 0 0 0 1px var(--border);
+    justify-content: center;
+    gap: 0.75rem;
+    padding: 2rem 1rem;
+    border-radius: var(--radius);
+    border: 1px solid var(--border);
+    background: var(--bg);
 }
 
-.info-group {
+.details-panel__preview i-tabler {
+    width: 48px;
+    height: 48px;
+}
+
+.details-panel__preview.folder {
+    color: #FFC107;
+    background: rgba(255, 193, 7, 0.05);
+    border-color: rgba(255, 193, 7, 0.2);
+}
+
+.details-panel__preview.file {
+    color: var(--primary);
+    background: rgba(var(--primary-rgb), 0.04);
+    border-color: rgba(var(--primary-rgb), 0.15);
+}
+
+.details-panel__preview-name {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--text);
+    text-align: center;
+    word-break: break-all;
+    max-width: 100%;
+}
+
+/* Info tabulka */
+.details-panel__info {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+}
+
+.details-panel__info-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.6rem 0.875rem;
+    gap: 0.5rem;
+    border-bottom: 1px solid var(--border);
+}
+
+.details-panel__info-item:last-child {
+    border-bottom: none;
+}
+
+.details-panel__info-label {
+    font-size: 0.78rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--text-muted);
+    flex-shrink: 0;
+}
+
+.details-panel__info-value {
+    font-size: 0.85rem;
+    color: var(--text);
+    text-align: right;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* Akční tlačítka */
+.details-panel__actions {
     display: flex;
     flex-direction: column;
     gap: 0.5rem;
 }
 
-.info-group label {
-    display: block;
-    font-size: 0.8rem;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-    color: var(--text-muted);
-    margin: 0;
+.details-panel__actions .btn {
+    width: 100%;
+    justify-content: flex-start;
 }
 
-.info-group p {
-    margin: 0;
-    color: var(--text);
+.details-panel__actions-sep {
+    height: 1px;
+    background: var(--border);
+    margin: 0.25rem 0;
 }
 
-.buttons {
+/* ============================================================
+   SOUBOR — code viewer
+   ============================================================ */
+
+.doc-file-info {
     display: flex;
-    flex-direction: column;
-    gap: 0.75rem;
-    margin-top: auto;
+    align-items: center;
+    gap: 0.625rem;
 }
 
-.btn.secondary {
-    background: var(--surface-2);
+.doc-file-info__icon {
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(var(--primary-rgb), 0.1);
+    color: var(--primary);
+    flex-shrink: 0;
+}
+
+.doc-file-info__icon i-tabler {
+    width: 16px;
+    height: 16px;
+}
+
+.doc-file-info__name {
+    font-size: 0.9rem;
+    font-weight: 600;
     color: var(--text);
-    border-color: var(--border);
 }
 
-.btn.secondary:hover {
-    background: var(--hover-bg);
-    border-color: var(--text-muted);
+.doc-file-info__meta {
+    font-size: 0.78rem;
+    color: var(--text-muted);
 }
 
-.btn.danger {
-    background: rgba(231, 76, 60, 0.1);
-    color: var(--danger);
-    border-color: rgba(231, 76, 60, 0.2);
-}
-
-.btn.danger:hover {
-    background: rgba(231, 76, 60, 0.15);
-    border-color: var(--danger);
-}
-
-/* Kód */
+/* Code container */
 .code-container {
     margin: 0;
     overflow: auto;
+    flex: 1;
+    font-size: 0.85rem;
+    line-height: 1.6;
+    font-family: 'JetBrains Mono', 'Fira Code', 'Consolas', monospace;
 }
 
-/* Řádek */
 .line {
     display: flex;
-    padding: 0 12px;
-    line-height: 1.6;
-    white-space: wrap;
+    padding: 0 16px;
+    white-space: pre;
+    min-height: 1.6em;
 }
 
 .line:hover {
-    background: rgba(255, 255, 255, 0.04);
+    background: rgba(var(--primary-rgb), 0.03);
 }
 
-/* Čísla řádků */
 .line-number {
+    min-width: 3ch;
     text-align: right;
-    padding-right: 12px;
-    color: #64748b;
+    padding-right: 1.5rem;
+    color: var(--text-muted);
+    opacity: 0.5;
     user-select: none;
+    font-size: 0.8em;
+    padding-top: 0.1em;
 }
 
-/* Scrollbar (volitelné) */
 .code-container::-webkit-scrollbar {
-    height: 10px;
-    width: 10px;
+    height: 8px;
+    width: 8px;
+}
+
+.code-container::-webkit-scrollbar-track {
+    background: transparent;
 }
 
 .code-container::-webkit-scrollbar-thumb {
-    background: #334155;
-    border-radius: 6px;
+    background: var(--border);
+    border-radius: 4px;
 }
 
-@keyframes rotate {
+.code-container::-webkit-scrollbar-thumb:hover {
+    background: var(--text-muted);
+}
+
+/* ============================================================
+   ANIMACE
+   ============================================================ */
+
+.spinning {
+    animation: spin 0.8s ease-in-out infinite;
+}
+
+@keyframes spin {
     from {
         transform: rotate(0deg);
     }
@@ -494,6 +829,8 @@ i-tabler {
     }
 }
 
-.spinning {
-    animation: rotate 0.8s ease-in-out;
+/* ─── Globální i-tabler fallback ─────────────────────── */
+i-tabler {
+    width: 20px;
+    height: 20px;
 }

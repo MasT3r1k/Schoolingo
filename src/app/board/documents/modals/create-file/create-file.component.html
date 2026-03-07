@@ -2,15 +2,18 @@
     <label for="name" [class.error-color]="this.input_errors['name']">
         {{ l.s('documents.name_file') }}
         @if (this.input_errors['name']) {
-            - {{ this.input_errors['name'] }}
+        <span class="error-text"> — {{ this.input_errors['name'] }}</span>
         }
     </label>
-    <input type="text" [class.input-error]="this.input_errors['name']" id="name" [(ngModel)]="folder_name">
+    <input type="text" [class.input-error]="this.input_errors['name']" id="name" [(ngModel)]="folder_name"
+        [placeholder]="l.s('documents.new_file')" (keydown.enter)="createFolder()">
 </div>
 
-<div class="form-group">
-    <div class="btn btn--primary" (click)="createFolder()">
-        <i-tabler name="plus"></i-tabler>
+<div class="modal-actions">
+    <button type="button" class="btn btn--secondary" (click)="modalManager.closeModal('create_file')">{{ l.s('cancel')
+        }}</button>
+    <button type="button" class="btn btn--primary" (click)="createFolder()">
+        <i-tabler name="file-plus"></i-tabler>
         {{ l.s('documents.new_file') }}
-    </div>
+    </button>
 </div>

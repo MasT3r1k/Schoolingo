@@ -20,7 +20,7 @@ export class UploadFilesComponent {
   private uploadService = inject(UploadService);
   private documents = inject(Documents);
   private http = inject(HttpClient);
-  private modalManager = inject(ModalManager);
+  public modalManager = inject(ModalManager);
   
   public files: UploadFile[] = [];
   public isDragging = false;

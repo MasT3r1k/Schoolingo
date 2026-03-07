@@ -1,12 +1,18 @@
 <div class="documents-container" (click)="dropdownManager.selected_dropdown = ''">
-    <div class="sidebar">
-        <div class="header">
-            <h3>{{ l.s('documents.folders') }}</h3>
+
+    <!-- Sidebar: Strom složek -->
+    <div class="doc-sidebar">
+        <div class="doc-sidebar__header">
+            <div class="doc-sidebar__title">
+                <i-tabler name="folders"></i-tabler>
+                <span>{{ l.s('documents.folders') }}</span>
+            </div>
             <div class="item-btn"
                 (click)="$event.stopPropagation();dropdownManager.selected_dropdown = (dropdownManager.selected_dropdown == 'documents_add') ? '' : 'documents_add'">
-                <div class="icon">
+                <button class="doc-sidebar__add-btn"
+                    [class.active]="dropdownManager.selected_dropdown === 'documents_add'">
                     <i-tabler name="plus"></i-tabler>
-                </div>
+                </button>
                 <div class="dropdown" style="min-width: 225px;"
                     [hidden]="dropdownManager.selected_dropdown !== 'documents_add'" (click)="$event.stopPropagation()">
                     <ul>
@@ -31,7 +37,7 @@
                 </div>
             </div>
         </div>
-        <div class="sidebar-content">
+        <div class="doc-sidebar__content">
             <ul>
                 @for (tree of documents.getTree(); track $index) {
                 <ng-container [ngTemplateOutlet]="tree_content" [ngTemplateOutletContext]="{ item: tree }" />
@@ -40,163 +46,203 @@
         </div>
     </div>
 
+    <!-- Hlavní oblast -->
     @if (documents.getOpenedFile() == null) {
     <div class="main-area">
-        <div class="navbar header">
-            <div class="left">
-                <div class="search">
+
+        <!-- Toolbar -->
+        <div class="doc-toolbar">
+            <div class="doc-toolbar__left">
+                <!-- Breadcrumb -->
+                <div class="doc-breadcrumb">
+                    @if (documents.getSelectedFolder()?.name) {
+                    <span class="doc-breadcrumb__root" (click)="documents.selectFolder(null)">
+                        <i-tabler name="home"></i-tabler>
+                    </span>
+                    <i-tabler name="chevron-right" class="doc-breadcrumb__sep"></i-tabler>
+                    <span class="doc-breadcrumb__current">{{ documents.getSelectedFolder()?.name }}</span>
+                    } @else {
+                    <span class="doc-breadcrumb__current">
+                        <i-tabler name="home"></i-tabler>
+                        {{ l.s('documents.all_files') }}
+                    </span>
+                    }
+                </div>
+
+                <!-- Hledání -->
+                <div class="doc-search">
                     <i-tabler name="search"></i-tabler>
                     <input type="text" [formControl]="search" [placeholder]="l.s('documents.search_files')">
                 </div>
-                <div class="btn-icon" (click)="toggleLayout()">
-                    <i-tabler [name]="'layout-' + layout"></i-tabler>
-                </div>
             </div>
 
-            <div class="right">
-                <div class="btn-icon" (click)="refreshFiles()">
+            <div class="doc-toolbar__right">
+                <button class="doc-toolbar__icon-btn" (click)="toggleLayout()" [title]="'Přepnout zobrazení'">
+                    <i-tabler [name]="layout === 'grid' ? 'layout-list' : 'layout-grid'"></i-tabler>
+                </button>
+                <button class="doc-toolbar__icon-btn" (click)="refreshFiles()" [title]="'Obnovit'">
                     <i-tabler name="refresh" [class.spinning]="isRefreshing"></i-tabler>
-                </div>
-                <div class="btn btn--sm primary" (click)="openUploadFiles()">
-                    <i-tabler name="upload"></i-tabler>
+                </button>
+                <button class="btn btn--primary btn--sm" (click)="openUploadFiles()">
+                    <i-tabler name="cloud-upload"></i-tabler>
                     {{ l.s('documents.upload') }}
-                </div>
+                </button>
             </div>
         </div>
+
+        <!-- Explorer: Obsah složky -->
         <div class="document-explorer" (contextmenu)="$event.stopPropagation();rightClickOnGrid($event)">
+
             @if (layout == 'list') {
-            <div class="layout-header file-meta" style="padding: 0 1.5rem">
-                <div class="meta" style="flex: 1;">{{ l.s('documents.file_name') }}</div>
-                <div class="meta">{{ l.s('documents.file_modified') }}</div>
-                <div class="meta">{{ l.s('documents.file_type') }}</div>
-                <div class="meta">{{ l.s('documents.file_size') }}</div>
+            <div class="explorer-list-header">
+                <div class="elh-name">{{ l.s('documents.file_name') }}</div>
+                <div class="elh-meta">{{ l.s('documents.file_modified') }}</div>
+                <div class="elh-meta">{{ l.s('documents.file_type') }}</div>
+                <div class="elh-meta">{{ l.s('documents.file_size') }}</div>
             </div>
             }
+
             <div class="explorer" [class.explorer-grid]="layout == 'grid'" [class.explorer-list]="layout == 'list'">
                 @for(file of documents.getFiles(search.value ?? '');track $index) {
                 <div class="file-card" [class.selected]="documents.getSelectedFile()?.document_id == file.document_id"
                     (contextmenu)="$event.stopPropagation();rightClickOnItem(file.document_id, $event)"
                     (click)="documents.showProperties(file)" (dblclick)="documents.selectFolder(file)">
-                    <div class="icon-wrapper">
+
+                    @if (layout == 'grid') {
+                    <!-- Grid karta -->
+                    <div class="file-card__icon" [class.folder]="file.type=='folder'" [class.file]="file.type=='file'">
                         <i-tabler [name]="documents.getIcon(file.type)"></i-tabler>
                     </div>
-                    <div class="file-info">
-                        <div class="name" [title]="file.name">{{ file.name }}</div>
-                        @if (layout == 'list') {
-                        <div class="meta">
-                            {{ Utils.formatDateShort(file.modified_at) }}
-                        </div>
-
-                        <div class="meta">
-                            {{ l.s('documents.types.' + file.type) }}
-                        </div>
-
-                        <div class="meta">
-                            {{ file.file_size }} B
-                        </div>
-                        }
+                    <div class="file-card__name" [title]="file.name ?? ''">{{ file.name }}</div>
+                    <div class="file-card__grid-meta">{{ Utils.formatBytes(file.file_size) }}</div>
+                    } @else {
+                    <!-- List řádek -->
+                    <div class="file-card__icon-sm" [class.folder]="file.type=='folder'"
+                        [class.file]="file.type=='file'">
+                        <i-tabler [name]="documents.getIcon(file.type)"></i-tabler>
                     </div>
+                    <div class="file-card__list-name">
+                        <span [title]="file.name ?? ''">{{ file.name }}</span>
+                    </div>
+                    <div class="file-card__list-meta">{{ Utils.formatDateShort(file.modified_at) }}</div>
+                    <div class="file-card__list-meta">{{ l.s('documents.types.' + file.type) }}</div>
+                    <div class="file-card__list-meta">{{ Utils.formatBytes(file.file_size) }}</div>
+                    }
                 </div>
                 } @empty {
-                <div class="empty-state">
-                    <i-tabler name="folder-off"></i-tabler>
-                    <p>{{ l.s('documents.folder_empty') }}</p>
+                <div class="doc-empty-state">
+                    <div class="doc-empty-state__icon">
+                        <i-tabler name="folder-off"></i-tabler>
+                    </div>
+                    <p class="doc-empty-state__text">{{ l.s('documents.folder_empty') }}</p>
+                    <button class="btn btn--secondary btn--sm" (click)="openUploadFiles()">
+                        <i-tabler name="cloud-upload"></i-tabler>
+                        {{ l.s('documents.upload') }}
+                    </button>
                 </div>
                 }
             </div>
         </div>
     </div>
 
+    <!-- Panel detailů -->
     @let file = documents.getSelectedFile();
     <div class="details-panel" [class.open]="file">
-        <div class="detail-header header">
-            <h3>{{ l.s('documents.file_details') }}</h3>
-            <div class="btn-icon" (click)="documents.closeProperties()">
+        <div class="details-panel__header">
+            <span>{{ l.s('documents.file_details') }}</span>
+            <button class="doc-toolbar__icon-btn" (click)="documents.closeProperties()">
                 <i-tabler name="x"></i-tabler>
-            </div>
+            </button>
         </div>
+
         @if (file) {
-        <div class="detail-content">
-            <div class="detail-preview">
-                <i-tabler [name]="documents.getIcon(file.type)" style="width: 64px; height: 64px;"></i-tabler>
-            </div>
-            <div class="info-group">
-                <label>{{ l.s('documents.file_name') }}</label>
-                <p>{{ file.name }}</p>
-            </div>
-            <div class="info-group">
-                <label>{{ l.s('documents.file_type') }}</label>
-                <p>{{ l.s('documents.types.' + file.type) }}</p>
-            </div>
-            <div class="info-group">
-                <label>{{ l.s('documents.file_size') }}</label>
-                <p>{{ Utils.formatBytes(file.file_size) }}</p>
-            </div>
-            <div class="info-group">
-                <label>{{ l.s('documents.file_modified') }}</label>
-                <p>{{ Utils.formatDate(file.modified_at) }}</p>
+        <div class="details-panel__body">
+            <!-- Preview ikona -->
+            <div class="details-panel__preview" [class.folder]="file.type=='folder'" [class.file]="file.type=='file'">
+                <i-tabler [name]="documents.getIcon(file.type)"></i-tabler>
+                <span class="details-panel__preview-name">{{ file.name }}</span>
             </div>
 
-            <div class="buttons">
+            <!-- Info skupiny -->
+            <div class="details-panel__info">
+                <div class="details-panel__info-item">
+                    <span class="details-panel__info-label">{{ l.s('documents.file_type') }}</span>
+                    <span class="details-panel__info-value">{{ l.s('documents.types.' + file.type) }}</span>
+                </div>
+                <div class="details-panel__info-item">
+                    <span class="details-panel__info-label">{{ l.s('documents.file_size') }}</span>
+                    <span class="details-panel__info-value">{{ Utils.formatBytes(file.file_size) }}</span>
+                </div>
+                <div class="details-panel__info-item">
+                    <span class="details-panel__info-label">{{ l.s('documents.file_modified') }}</span>
+                    <span class="details-panel__info-value">{{ Utils.formatDate(file.modified_at) }}</span>
+                </div>
+            </div>
+
+            <!-- Akce -->
+            <div class="details-panel__actions">
                 @if (file.type == 'folder') {
-                <div class="btn btn--secondary" (click)="documents.selectFolder(file)">
+                <button class="btn btn--secondary" (click)="documents.selectFolder(file)">
                     <i-tabler name="folder-open"></i-tabler>
                     {{ l.s('documents.open_folder') }}
-                </div>
+                </button>
                 }
                 @if (file.type == 'file') {
-                <div class="btn btn--secondary" (click)="documents.openFile(file)">
-                    <i-tabler name="click"></i-tabler>
+                <button class="btn btn--secondary" (click)="documents.openFile(file)">
+                    <i-tabler name="eye"></i-tabler>
                     {{ l.s('documents.open_file') }}
-                </div>
-
-                <div class="btn btn--secondary" (click)="documents.downloadFile(file)">
+                </button>
+                <button class="btn btn--secondary" (click)="documents.downloadFile(file)">
                     <i-tabler name="download"></i-tabler>
                     {{ l.s('documents.download_file') }}
-                </div>
+                </button>
                 }
-                <div class="btn btn--secondary" (click)="renameFile(file)">
-                    <i-tabler name="edit"></i-tabler>
+                <button class="btn btn--secondary" (click)="renameFile(file)">
+                    <i-tabler name="pencil"></i-tabler>
                     {{ l.s('documents.rename_file') }}
-                </div>
-                <div class="btn btn--secondary">
+                </button>
+                <button class="btn btn--secondary">
                     <i-tabler name="lock"></i-tabler>
                     {{ l.s('documents.permissions_file') }}
-                </div>
-                <div class="btn btn--danger" (click)="deleteFile(file)">
+                </button>
+                <div class="details-panel__actions-sep"></div>
+                <button class="btn btn--danger" (click)="deleteFile(file)">
                     <i-tabler name="trash-x"></i-tabler>
                     {{ l.s('documents.delete') }}
-                </div>
+                </button>
             </div>
         </div>
         }
     </div>
+
     } @else {
+    <!-- Otevřený soubor -->
     @let open_file = documents.getOpenedFile()!;
     <div class="main-area">
-        <div class="navbar header">
-            <div class="left">
-                <span>
-                    {{ open_file.name }}
-                </span>
-                <span>&ndash;</span>
-                @if (documents.fileData != null) {
-                <span>
-                    {{ documents.fileData.lines }} lines
-                    ·
-                    {{ Utils.formatBytes(open_file.file_size) }}
-                </span>
-                }
+        <div class="doc-toolbar">
+            <div class="doc-toolbar__left">
+                <div class="doc-file-info">
+                    <div class="doc-file-info__icon" [class.file]="true">
+                        <i-tabler [name]="documents.getIcon(open_file.type)"></i-tabler>
+                    </div>
+                    <div>
+                        <div class="doc-file-info__name">{{ open_file.name }}</div>
+                        @if (documents.fileData != null) {
+                        <div class="doc-file-info__meta">
+                            {{ documents.fileData.lines }} řádků · {{ Utils.formatBytes(open_file.file_size) }}
+                        </div>
+                        }
+                    </div>
+                </div>
             </div>
-
-            <div class="right">
-                <div class="btn-icon" (click)="documents.downloadFile(open_file)">
+            <div class="doc-toolbar__right">
+                <button class="btn btn--secondary btn--sm" (click)="documents.downloadFile(open_file)">
                     <i-tabler name="download"></i-tabler>
-                </div>
-
-                <div class="btn-icon" (click)="documents.openFile(null)">
+                    Stáhnout
+                </button>
+                <button class="doc-toolbar__icon-btn" (click)="documents.openFile(null)" [title]="'Zavřít soubor'">
                     <i-tabler name="x"></i-tabler>
-                </div>
+                </button>
             </div>
         </div>
         <div class="document-explorer">
@@ -219,8 +265,10 @@
         </div>
     </div>
     }
+
 </div>
 
+<!-- Template pro strom složek -->
 <ng-template #tree_content let-item="item">
     <li>
         <div class="tree-content" (click)="context_menu.hideContextMenu();documents.selectFolder(item)"
@@ -239,6 +287,9 @@
                 <i-tabler
                     [name]="documents.getIcon(item.type) == 'folder-filled' ? isFolderExpanded(item) ? 'folder-open' : 'folder'  : documents.getIcon(item.type)"></i-tabler>
                 {{ item.name || l.s('documents.all_files') }}
+                @if (item.file_size > 0) {
+                <span class="tree-size">{{ Utils.formatBytes(item.file_size) }}</span>
+                }
             </span>
         </div>
         @if ((item.files_count || (item.children && item.children.length)) && isFolderExpanded(item)) {
