@@ -338,6 +338,17 @@ export class IntermComponent implements OnInit {
     return 5;
   }
 
+  public getGradeClass(grade: any): string {
+    if (grade === null || grade === '-') return '';
+    const g = typeof grade === 'number' ? grade : parseInt(grade);
+    if (isNaN(g)) return '';
+    if (g === 1) return 'grade--success';
+    if (g >= 4) return 'grade--danger';
+    if (g === 3) return 'grade--warning';
+    return 'grade--primary';
+  }
+
+
   public formatMark(mark: any): string {
     if (!mark) return "";
     let mark_id: number;

@@ -1,17 +1,16 @@
 <div class="modal" [class.edit-mode]="isEditMode" *ngIf="instructor">
+    @if (!isEditMode) {
     <div class="modal-header">
         <div style="display: flex; align-items: center; gap: 1rem;">
             <div class="avatar-placeholder">
                 <i-tabler name="user" style="width: 32px; height: 32px;"></i-tabler>
             </div>
             <div>
-                @if (!isEditMode) {
                 <h2>{{ instructor.name }}</h2>
-                }
             </div>
         </div>
         <div class="actions">
-            @if (canEdit && !isEditMode) {
+            @if (canEdit) {
             <button class="btn btn--sm btn--secondary" (click)="toggleEdit()">
                 <i-tabler name="pencil"></i-tabler>
                 {{ l.s("buttons.edit") }}
@@ -19,6 +18,7 @@
             }
         </div>
     </div>
+    }
 
     <div class="modal-body">
         <!-- View Mode -->
@@ -132,7 +132,7 @@
     </div>
     } @else {
     <div class="modal-actions">
-        <button class="btn btn--primary" (click)="closeModal()">{{ l.s("buttons.cancel") }}</button>
+        <button class="btn btn--secondary" (click)="closeModal()">{{ l.s("buttons.cancel") }}</button>
     </div>
     }
 </div>

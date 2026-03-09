@@ -61,6 +61,8 @@ export class CreateFolderComponent {
         created_at: data.created_at,
         owner_id: data.owner_id,
         permissions: [],
+        files_count: 0,
+        can_manage_permissions: true,
         file_size: 0
       })
     })

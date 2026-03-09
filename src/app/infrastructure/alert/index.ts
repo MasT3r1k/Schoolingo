@@ -21,4 +21,5 @@ export class AlertManager {
     }
 }
 
-export type { Alert, AlertButton };
+export { Alert };
+export type { AlertButton };

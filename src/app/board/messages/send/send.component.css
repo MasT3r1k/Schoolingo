@@ -178,185 +178,6 @@
     width: 100%;
 }
 
-/* Selected Pills */
-.selected-pills {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.5rem;
-    margin-bottom: 1rem;
-    padding: 0.75rem;
-    background: var(--surface);
-    border-radius: var(--radius);
-    border: 1px solid var(--border);
-    max-height: 150px;
-    overflow-y: auto;
-}
-
-/* Custom Scrollbar for Pills */
-.selected-pills::-webkit-scrollbar {
-    width: 6px;
-}
-
-.selected-pills::-webkit-scrollbar-track {
-    background: transparent;
-}
-
-.selected-pills::-webkit-scrollbar-thumb {
-    background: var(--border);
-    border-radius: 3px;
-}
-
-.selected-pills::-webkit-scrollbar-thumb:hover {
-    background: var(--primary);
-}
-
-.pill {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.5rem;
-    padding: 0.375rem 0.75rem;
-    background: linear-gradient(135deg, var(--primary), var(--primary-hover));
-    color: white;
-    border-radius: 16px;
-    font-size: 0.8125rem;
-    font-weight: 500;
-    animation: pillIn 0.2s ease;
-}
-
-@keyframes pillIn {
-    from {
-        opacity: 0;
-        transform: scale(0.8);
-    }
-
-    to {
-        opacity: 1;
-        transform: scale(1);
-    }
-}
-
-.pill i-tabler {
-    width: 0.875rem;
-    cursor: pointer;
-    transition: transform 0.2s ease;
-}
-
-.pill i-tabler:hover {
-    transform: scale(1.2);
-}
-
-/* Recipients List */
-.recipients-list {
-    flex: 1;
-    overflow-y: auto;
-    overflow-x: hidden;
-    display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
-    padding-right: 0.25rem;
-}
-
-/* Custom Scrollbar for Recipients List */
-.recipients-list::-webkit-scrollbar {
-    width: 6px;
-}
-
-.recipients-list::-webkit-scrollbar-track {
-    background: transparent;
-}
-
-.recipients-list::-webkit-scrollbar-thumb {
-    background: var(--border);
-    border-radius: 3px;
-}
-
-.recipients-list::-webkit-scrollbar-thumb:hover {
-    background: var(--primary);
-}
-
-.recipient-card {
-    display: flex;
-    align-items: center;
-    gap: 0.875rem;
-    padding: 0.875rem;
-    background: var(--surface);
-    border: 2px solid var(--border);
-    border-radius: var(--radius);
-    cursor: pointer;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.recipient-card:hover {
-    border-color: var(--primary);
-    transform: translateX(4px);
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-}
-
-.recipient-card.selected {
-    background: linear-gradient(135deg, rgba(74, 163, 255, 0.1), rgba(74, 163, 255, 0.05));
-    border-color: var(--primary);
-}
-
-.recipient-avatar {
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    background: var(--surface-2);
-    color: var(--text-muted);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-weight: 600;
-    font-size: 0.875rem;
-    flex-shrink: 0;
-}
-
-.recipient-info {
-    flex: 1;
-    min-width: 0;
-}
-
-.recipient-name {
-    font-weight: 500;
-    color: var(--text);
-    font-size: 0.9375rem;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-}
-
-.recipient-role {
-    font-size: 0.8125rem;
-    color: var(--text-muted);
-    margin-top: 0.125rem;
-}
-
-.recipient-checkbox {
-    flex-shrink: 0;
-}
-
-.checkbox {
-    width: 24px;
-    height: 24px;
-    border: 2px solid var(--border);
-    border-radius: 6px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.checkbox.checked {
-    background: linear-gradient(135deg, var(--primary), var(--primary-hover));
-    border-color: var(--primary);
-    color: white;
-    transform: scale(1.1);
-}
-
-.checkbox i-tabler {
-    width: 1rem;
-}
-
 /* Empty State */
 .empty-state {
     display: flex;
@@ -579,6 +400,11 @@
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
 }
 
+.option-item.active {
+    border-color: var(--primary);
+    background-color: rgba(var(--primary-rgb), 0.12);
+}
+
 .option-content {
     display: flex;
     align-items: center;
@@ -588,6 +414,7 @@
 
 .option-content i-tabler {
     width: 1.25rem;
+    height: 1.25rem;
     color: var(--primary);
 }
 
@@ -767,6 +594,72 @@
 
 .mt-2 {
     margin-top: 0.5rem;
+}
+
+/* Mode Selector */
+.mode-selector {
+    display: flex;
+    gap: 0.5rem;
+    background: var(--surface-2);
+    padding: 0.375rem;
+    border-radius: 12px;
+    border: 1px solid var(--border);
+}
+
+.mode-btn {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 0.625rem;
+    border: none;
+    background: transparent;
+    border-radius: 10px;
+    color: var(--text-muted);
+    font-size: 0.875rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.mode-btn:hover {
+    background: var(--surface);
+    color: var(--text);
+}
+
+.mode-btn.active {
+    background: var(--surface);
+    color: var(--primary);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.mode-btn i-tabler {
+    width: 1.125rem;
+    height: 1.125rem;
+}
+
+.selection-controls {
+    min-height: 45px;
+}
+
+.dropdown-search {
+    padding: 0.5rem;
+    border-bottom: 1px solid var(--border);
+}
+
+.dropdown-search input {
+    width: 100%;
+    padding: 0.5rem 0.75rem;
+    font-size: 0.8125rem;
+    border-radius: 6px;
+    border: 1px solid var(--border);
+    background: var(--surface-2);
+}
+
+.recipients-info-text {
+    font-size: 0.875rem;
+    padding: 0.5rem;
 }
 
 /* Selected Pills */

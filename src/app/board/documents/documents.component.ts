@@ -15,6 +15,7 @@ import { RenameFileComponent } from './modals/rename-file/rename-file.component'
 import { SidebarItem } from '../board.component';
 import { DropdownManager } from '@Schoolingo/dropdown';
 import { Config } from '@Schoolingo/config';
+import { PermissionsComponent } from './modals/permissions/permissions.component';
 
 @Component({
   selector: 'app-documents',
@@ -44,7 +45,15 @@ export class DocumentsComponent implements OnInit {
   public searchFiles: (FileItem | FolderItem)[] = [];
   public search = new FormControl('');
   public expandedFolders = new Set<string | null>();
-  public isRefreshing: boolean = false;
+  public get canWrite(): boolean {
+    const folder = this.documents.getSelectedFolder();
+    if (folder === null) return true; // Root is usually writable
+    return folder.permissions.includes('WRITE');
+  }
+
+  public get isRefreshing(): boolean {
+    return this.documents.isRefreshing$.getValue();
+  }
   private modalManager = inject(ModalManager);
   Utils = Utils;
   Config = Config;
@@ -55,29 +64,29 @@ export class DocumentsComponent implements OnInit {
 
   public refreshFiles(): void {
     if (this.isRefreshing) return;
-    this.isRefreshing = true;
-    this.documents.loadFiles(this.documents.getSelectedFolder()?.file_id ?? null)
-    setTimeout(() => this.isRefreshing = false, 800);
+    this.documents.loadFiles(this.documents.getSelectedFolder()?.document_id ?? null)
   }
 
   public rightClickOnGrid(event: MouseEvent): void {
     event.preventDefault();
     let items: ContextMenuItem[] = [];
 
-    items.push(
-      {
-        text: 'documents.new_folder',
-        action: () => { this.context_menu.hideContextMenu();this.openCreationFolder(); }
-      },
-      {
-        text: 'documents.new_file',
-        action: () => { this.context_menu.hideContextMenu();this.openCreationFile(); }
-      },
-      {
-        text: 'documents.upload_files',
-        action: () => {this.context_menu.hideContextMenu();this.openUploadFiles()}
-      }
-    )
+    if (this.canWrite) {
+      items.push(
+        {
+          text: 'documents.new_folder',
+          action: () => { this.context_menu.hideContextMenu();this.openCreationFolder(); }
+        },
+        {
+          text: 'documents.new_file',
+          action: () => { this.context_menu.hideContextMenu();this.openCreationFile(); }
+        },
+        {
+          text: 'documents.upload_files',
+          action: () => {this.context_menu.hideContextMenu();this.openUploadFiles()}
+        }
+      )
+    }
 
     this.context_menu.setItems(items);
     this.context_menu.showContextMenu(event.x, event.y);
@@ -90,6 +99,8 @@ export class DocumentsComponent implements OnInit {
     if (!file) {
       return;
     }
+
+    this.documents.showProperties(file);
 
     if (file.type == 'folder') {
       items.push({
@@ -104,9 +115,10 @@ export class DocumentsComponent implements OnInit {
           text: 'documents.rename_' + file.type,
           action: () => {this.context_menu.hideContextMenu();this.renameFile(file)}
         },
-        {
-          text: 'documents.permissions_file'
-        },
+        ...(file.can_manage_permissions ? [{
+          text: 'documents.permissions_file',
+          action: () => {this.context_menu.hideContextMenu();this.openManagePermissions(file)}
+        }] : []),
         {
           icon: 'trash-x',
           text: 'documents.delete',
@@ -230,6 +242,21 @@ export class DocumentsComponent implements OnInit {
       }
     )
 
+    this.modalManager.addModal(
+      'manage_permissions',
+      {
+        title: 'documents.permissions_file',
+        icon: 'lock',
+        closeable: true,
+        items: [
+          {
+            type: 'component',
+            component: PermissionsComponent
+          }
+        ]
+      }
+    )
+
     this.documents.currentFolder$.subscribe((data: any) => {
       const tree = this.documents.getTree();
       tree.forEach((item: any) => {
@@ -238,8 +265,6 @@ export class DocumentsComponent implements OnInit {
         }
       });
     });
-
-    this.documents.loadFiles(this.documents.getSelectedFolder()?.parent_id || null);
   }
 
   public openCreationFolder(): void {
@@ -263,6 +288,11 @@ export class DocumentsComponent implements OnInit {
   public deleteFile(file: FileItem | FolderItem): void {
     console.log(file);
     this.modalManager.openModal('delete_file');
+  }
+
+  public openManagePermissions(file: FileItem | FolderItem): void {
+    this.documents.showProperties(file);
+    this.modalManager.openModal('manage_permissions');
   }
 
   public toggleFolder(item: any, event: Event): void {

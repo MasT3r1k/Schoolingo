@@ -83,6 +83,8 @@ export interface ParentInfo {
   email: string;
   phone: string;
   occupation?: string;
+  register_number?: string;
+  siblings?: any[];
 }
 
 export interface StudentFilters {
@@ -388,10 +390,14 @@ export class StudentsComponent implements OnInit {
   }
 
   // Get grade color class
-  getGradeClass(grade: string): string {
-    if (parseFloat(grade) <= 2.0) return 'grade-excellent';
-    if (parseFloat(grade) <= 3.0) return 'grade-good';
-    if (parseFloat(grade) <= 4.0) return 'grade-fair';
-    return 'grade-poor';
+  public getGradeClass(grade: any): string {
+    if (grade === null || grade === '-') return '';
+    const g = typeof grade === 'number' ? grade : parseInt(grade);
+    if (isNaN(g)) return '';
+    if (g === 1) return 'grade--success';
+    if (g >= 4) return 'grade--danger';
+    if (g === 3) return 'grade--warning';
+    return 'grade--primary';
   }
+
 }

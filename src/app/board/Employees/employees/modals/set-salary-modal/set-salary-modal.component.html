@@ -1,7 +1,16 @@
 <form class="salary-form">
     <div class="form-section">
         <div class="form-group">
-            <label>Zaměstnanec <span class="required">*</span></label>
+            <label>Zaměstnanec</label>
+            @if (data && data.personId) {
+            @for (emp of employees; track emp.person_id) {
+            @if (emp.person_id == newSalary.teacherId) {
+            <div class="form-input disabled-field" style="background: var(--surface-2); color: var(--text-muted); line-height: 1;">
+                {{ emp.full_name }}
+            </div>
+            }
+            }
+            } @else {
             <div class="custom-select" id="salary-employee"
                 (click)="$event.stopPropagation(); dropdownManager.selected_dropdown = dropdownManager.selected_dropdown == 'salary_employee' ? '' : 'salary_employee'">
                 <div class="selected-value">
@@ -21,7 +30,7 @@
                 @if (dropdownManager.selected_dropdown == 'salary_employee') {
                 <div class="options-dropdown">
                     <div class="list">
-                        @for (emp of employees; track emp.personId) {
+                        @for (emp of employees; track emp.person_id) {
                         <div class="option row" style="gap: .5rem"
                             (click)="$event.stopPropagation(); dropdownManager.selected_dropdown = ''; newSalary.teacherId = emp.person_id">
                             {{ emp.full_name }}
@@ -30,12 +39,15 @@
                     </div>
                 </div>
                 }
+
             </div>
+            }
         </div>
+
 
         <div class="form-row">
             <div class="form-group" style="flex: 2">
-                <label>Částka <span class="required">*</span></label>
+                <label>Částka</label>
                 <input type="number" class="form-input" [(ngModel)]="newSalary.salary" name="salary" placeholder="0"
                     min="0" required>
             </div>

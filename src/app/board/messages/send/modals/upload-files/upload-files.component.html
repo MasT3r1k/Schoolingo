@@ -1,6 +1,6 @@
 <div class="modal-close" (click)="closeModal()">
-        <i-tabler name="x"></i-tabler>
-    </div>
+    <i-tabler name="x"></i-tabler>
+</div>
 
 <div class="tab-content">
     <div class="alert alert--info mb">
@@ -15,7 +15,9 @@
         <i-tabler name="cloud-upload"></i-tabler>
         <span>{{ l.s("buttons.upload_files") }}</span>
         <small>{{ l.s('upload.drag_files_description') }}</small>
-        <input #fileInput type="file" multiple (change)="handleFiles($any($event.target).files)" [size]="messageManager.getConfig().files_limit" [accept]="messageManager.getConfig().supported_files" style="display: none;">
+        <input #fileInput type="file" multiple (change)="handleFiles($any($event.target).files)"
+            [size]="messageManager.getConfig().files_limit" [accept]="messageManager.getConfig().supported_files"
+            style="display: none;">
     </div>
 
     <div class="files-list">
@@ -26,15 +28,15 @@
             </div>
             <div class="file-info">
                 <div class="file-name">{{ file.file.name }}</div>
-                    <div class="file-size">
-                        {{ Utils.formatBytes(file.file.size) }}
-                        @if (checkFile(file.file) != null) {
-                            <span style="margin-inline: 0.5rem;color:var(--color-darker)">&ndash;</span>
-                            <span class="file-error">
-                                {{ l.s('upload.errors.' + checkFile(file.file)) }}
-                            </span>
-                        }
-                    </div>
+                <div class="file-size">
+                    {{ Utils.formatBytes(file.file.size) }}
+                    @if (checkFile(file.file) != null) {
+                    <span style="color:var(--text-muted)">&ndash;</span>
+                    <span class="file-error-text">
+                        {{ l.s('upload.errors.' + checkFile(file.file)) }}
+                    </span>
+                    }
+                </div>
             </div>
             <div class="btn btn--outline-danger icon-only" (click)="removeFile(file)">
                 <i-tabler name="x"></i-tabler>
@@ -42,31 +44,37 @@
             <div class="file-upload-progress">
                 <div class="progress-bar">
                     <div class="progress-fill" [style.width.%]="getFileProgress(file)"
-                    [class.danger]="checkFile(file.file) != null"
-                    [class.loading]="getFileProgress(file) != 100"
-                    [class.good]="checkFile(file.file) == null && getFileProgress(file) == 100"
-                    ></div>
+                        [class.danger]="checkFile(file.file) != null" [class.loading]="getFileProgress(file) != 100"
+                        [class.good]="checkFile(file.file) == null && getFileProgress(file) == 100"></div>
                 </div>
             </div>
         </div>
         } @empty {
-            <div class="no-selection">
-                <div class="illustration">
-                    <i-tabler name="file-off"></i-tabler>
-                </div>
-                <p>{{ l.s('upload.no_files') }}</p>
+        <div class="no-selection">
+            <div class="illustration">
+                <i-tabler name="file-off"></i-tabler>
             </div>
+            <p>{{ l.s('upload.no_files') }}</p>
+        </div>
         }
     </div>
-    <div class="form-group">
-        <div class="btn" [class.btn--primary]="checkFilesUploaded()" (click)="assignFiles()">
+
+    @if (checkFilesError()) {
+    <div class="note danger mt-1 mb-1" style="text-align: center;">
+        {{ l.s('upload.upload_failed', { files: checkFilesError() }) }}
+    </div>
+    }
+
+    <div class="upload-note">{{ l.s('messages.upload.upload_info', { max_size:
+        messageManager.getConfig().file_max_size_in_mb, max_files: messageManager.getConfig().files_limit }) }}</div>
+
+    <div class="modal-actions">
+        <button type="button" class="btn btn--secondary" (click)="closeModal()">{{ l.s('cancel') }}</button>
+        <button type="button" class="btn" [class.btn--primary]="files.length > 0 && checkFilesUploaded()"
+            [class.btn--secondary]="files.length === 0 || !checkFilesUploaded()"
+            [disabled]="files.length === 0 || !checkFilesUploaded()" (click)="assignFiles()">
+            <i-tabler name="cloud-upload"></i-tabler>
             {{ l.s('messages.add_attachments') }}
-        </div>
-        @if (checkFilesError()) {
-        <div class="note danger mt-1">
-            {{ l.s('upload.upload_failed', { files: checkFilesError() }) }}
-        </div>
-        }
+        </button>
     </div>
-    <div class="note">{{ l.s('messages.upload.upload_info', { max_size: messageManager.getConfig().file_max_size_in_mb, max_files: messageManager.getConfig().files_limit }) }}</div>
 </div>

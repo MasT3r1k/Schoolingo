@@ -134,15 +134,11 @@ export class BoardComponent implements OnInit, OnDestroy {
   public appClickHandler(): void {
     this.dropdownManager.selected_dropdown = '';
     this.context_menu.hideContextMenu();
-    if (moment(this.u.getUser().expires).diff(moment(), 'minutes') < 5) {
-      this.http.post<{ success: boolean; expires: string }>(
-        Config.API_URL + '/v1/sessionexpand',
-        {},
-        { withCredentials: true }
-      ).subscribe({
-        next: (response) => {
+    const expiresAt = this.tokenExpirationService.getExpiresAt();
+    if (expiresAt && moment(expiresAt).diff(moment(), 'minutes') < 5) {
+      this.u.refreshToken().subscribe({
+        next: () => {
           console.log('[TokenWarning] Session extended successfully');
-          this.tokenExpirationService.setTokenExpiration(response.expires);
           this.modalManager.closeModal('token-warning');
         },
         error: (error) => {

@@ -1,0 +1,61 @@
+<div class="modal-body" (click)="dropdownManager.selected_dropdown = ''">
+    <div class="form-grid">
+        <div class="form-group">
+            <label>Ulice</label>
+            <input type="text" class="form-control" [(ngModel)]="form.street" placeholder="Např. Slunná">
+        </div>
+        <div class="form-group">
+            <label>Číslo popisné</label>
+            <input type="text" class="form-control" [(ngModel)]="form.houseNumber" placeholder="Např. 123/4">
+        </div>
+    </div>
+    <div class="form-grid">
+        <div class="form-group">
+            <label>Město</label>
+            <input type="text" class="form-control" [(ngModel)]="form.city" placeholder="Např. Praha">
+        </div>
+        <div class="form-group">
+            <label>PSČ</label>
+            <input type="text" class="form-control" [(ngModel)]="form.postcode" placeholder="Např. 110 00">
+        </div>
+    </div>
+    <div class="form-group">
+        <label>Země</label>
+        <div class="custom-select"
+            (click)="$event.stopPropagation(); dropdownManager.selected_dropdown = dropdownManager.selected_dropdown == 'edit-address_country' ? '' : 'edit-address_country'">
+            <div class="selected-value">
+                <div class="row gap-2" style="display: flex; align-items: center; gap: 0.5rem;">
+                    <span>{{ getSelectedCountryFlag() }}</span>
+                    <span>{{ getSelectedCountryLabel() }}</span>
+                </div>
+                <i-tabler name="chevron-down"></i-tabler>
+            </div>
+            @if (dropdownManager.selected_dropdown == 'edit-address_country') {
+            <div class="options-dropdown">
+                <div class="list">
+                    @for (country of countries; track country.country_id) {
+                    <div class="option"
+                        (click)="$event.stopPropagation(); dropdownManager.selected_dropdown = ''; form.countryId = country.country_id">
+                        <div class="row gap-2" style="display: flex; align-items: center; gap: 0.5rem;">
+                            <span>{{ Utils.getFlagFromCountry(country.code2) }}</span>
+                            <span>{{ country.nationality }}</span>
+                        </div>
+                    </div>
+                    }
+                </div>
+            </div>
+            }
+        </div>
+    </div>
+</div>
+
+<div class="modal-actions">
+    <button class="btn btn--secondary" (click)="closeModal()">
+        <i-tabler name="x"></i-tabler>
+        <span>Zrušit</span>
+    </button>
+    <button class="btn btn--primary" (click)="save()">
+        <i-tabler name="check"></i-tabler>
+        <span>Uložit změny</span>
+    </button>
+</div>

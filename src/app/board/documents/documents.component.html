@@ -7,6 +7,7 @@
                 <i-tabler name="folders"></i-tabler>
                 <span>{{ l.s('documents.folders') }}</span>
             </div>
+            @if (canWrite) {
             <div class="item-btn"
                 (click)="$event.stopPropagation();dropdownManager.selected_dropdown = (dropdownManager.selected_dropdown == 'documents_add') ? '' : 'documents_add'">
                 <button class="doc-sidebar__add-btn"
@@ -18,7 +19,7 @@
                     <ul>
                         @for (item of addDropdown; track $index) {
                         <li [ngClass]="[item.type ? item.type : '']"
-                            (click)="dropdownManager.selected_dropdown = '';item?.action()">
+                            (click)="dropdownManager.selected_dropdown = ''; (item.action ? item.action() : null)">
                             <div class="item">
                                 <div class="row">
                                     @if (item.icon) {
@@ -36,6 +37,7 @@
                     </ul>
                 </div>
             </div>
+            }
         </div>
         <div class="doc-sidebar__content">
             <ul>
@@ -83,10 +85,12 @@
                 <button class="doc-toolbar__icon-btn" (click)="refreshFiles()" [title]="'Obnovit'">
                     <i-tabler name="refresh" [class.spinning]="isRefreshing"></i-tabler>
                 </button>
+                @if (canWrite) {
                 <button class="btn btn--primary btn--sm" (click)="openUploadFiles()">
                     <i-tabler name="cloud-upload"></i-tabler>
                     {{ l.s('documents.upload') }}
                 </button>
+                }
             </div>
         </div>
 
@@ -135,10 +139,12 @@
                         <i-tabler name="folder-off"></i-tabler>
                     </div>
                     <p class="doc-empty-state__text">{{ l.s('documents.folder_empty') }}</p>
+                    @if (canWrite) {
                     <button class="btn btn--secondary btn--sm" (click)="openUploadFiles()">
                         <i-tabler name="cloud-upload"></i-tabler>
                         {{ l.s('documents.upload') }}
                     </button>
+                    }
                 </div>
                 }
             </div>
@@ -201,10 +207,12 @@
                     <i-tabler name="pencil"></i-tabler>
                     {{ l.s('documents.rename_file') }}
                 </button>
-                <button class="btn btn--secondary">
+                @if (file.can_manage_permissions) {
+                <button class="btn btn--secondary" (click)="openManagePermissions(file)">
                     <i-tabler name="lock"></i-tabler>
                     {{ l.s('documents.permissions_file') }}
                 </button>
+                }
                 <div class="details-panel__actions-sep"></div>
                 <button class="btn btn--danger" (click)="deleteFile(file)">
                     <i-tabler name="trash-x"></i-tabler>

@@ -1,5 +1,4 @@
 import { Component, OnInit, inject } from '@angular/core';
-import { UserFilesModalComponent } from './modals/user-files-modal/user-files-modal.component';
 import { CommonModule, DatePipe } from '@angular/common';
 import { IconsModule } from '@Schoolingo/icons';
 import { FormsModule } from '@angular/forms';
@@ -13,6 +12,7 @@ import moment from 'moment';
 import { School } from '@Schoolingo/school';
 import { ModalManager } from '@Schoolingo/modal';
 import { ImportUserComponent } from './modals/import-user/import-user.component';
+import { Router } from '@angular/router';
 
 // Interfaces
 export interface User {
@@ -44,6 +44,9 @@ export interface UserDetail extends User {
   login_history: { created: string; ip: string; user_agent: string; success: boolean }[];
   logins_7days: number;
   failed_logins_7days: number;
+  student?: any;
+  employee?: any;
+  parent?: any;
 }
 
 export interface UserFilters {
@@ -81,7 +84,7 @@ interface UserAPIResponse {
 @Component({
   selector: 'app-manageusers',
   standalone: true,
-  imports: [CommonModule, IconsModule, FormsModule, UserFilesModalComponent, DatePipe, CalendarComponent],
+  imports: [CommonModule, IconsModule, FormsModule, DatePipe, CalendarComponent],
   templateUrl: './manageusers.component.html',
   styleUrl: './manageusers.component.css'
 })
@@ -89,6 +92,7 @@ export class ManageusersComponent implements OnInit {
   private http = inject(HttpClient);
   public l = inject(Locale);
   public Utils = Utils;
+  public router = inject(Router);
   public modalManager = inject(ModalManager);
   public dropdownManager = inject(DropdownManager);
   public school = inject(School);
@@ -140,7 +144,7 @@ export class ManageusersComponent implements OnInit {
   // Selected User
   selectedUser: UserDetail | null = null;
   isDetailLoading = false;
-  activeTab: 'overview' | 'edit' | 'security' | 'activity' = 'overview';
+  activeTab: 'overview' | 'edit' | 'security' | 'activity' | 'student' | 'employee' = 'overview';
 
   // Edit form
   editForm = {
@@ -160,7 +164,8 @@ export class ManageusersComponent implements OnInit {
   resetPasswordForm = {
     new_password: '',
     confirm_password: '',
-    showPassword: false
+    showPassword: false,
+    generatedPassword: '' as string | null
   };
   isResettingPassword = false;
   resetPasswordSuccess = false;
@@ -328,6 +333,7 @@ export class ManageusersComponent implements OnInit {
           failed_logins_7days: response.failed_logins_7days || 0
         };
         this.fillEditForm();
+        this.loadSpecificData();
         this.isDetailLoading = false;
       },
       error: (err) => {
@@ -335,6 +341,34 @@ export class ManageusersComponent implements OnInit {
         this.isDetailLoading = false;
       }
     });
+  }
+
+  loadSpecificData() {
+    if (!this.selectedUser || !this.selectedUser.person_id) return;
+
+    const { role, person_id } = this.selectedUser;
+
+    if (role === 'student') {
+      this.http.get<any>(`${Config.API_URL}/v1/student/${person_id}`, { withCredentials: true }).subscribe({
+        next: (data) => this.selectedUser!.student = data
+      });
+    } else if (role === 'teacher') {
+      this.http.get<any>(`${Config.API_URL}/v1/employees/${person_id}`, { withCredentials: true }).subscribe({
+        next: (data) => this.selectedUser!.employee = data
+      });
+    } else if (role === 'parent') {
+      this.http.post<any>(`${Config.API_URL}/v1/parents/search`, { 
+        search: this.selectedUser.full_name,
+        limit: 10,
+        offset: 0
+      }, { withCredentials: true }).subscribe({
+        next: (res) => {
+          if (res.data && res.data.length > 0) {
+            this.selectedUser!.parent = res.data.find((p: any) => p.parent_id === person_id) || res.data[0];
+          }
+        }
+      });
+    }
   }
 
   fillEditForm() {
@@ -353,12 +387,13 @@ export class ManageusersComponent implements OnInit {
     this.selectedUser = null;
   }
 
-  setActiveTab(tab: typeof this.activeTab) {
+  setActiveTab(tab: 'overview' | 'edit' | 'security' | 'activity' | 'student' | 'employee') {
     this.activeTab = tab;
     this.saveSuccess = false;
     this.saveError = null;
     this.resetPasswordSuccess = false;
     this.resetPasswordError = null;
+    this.resetPasswordForm.generatedPassword = null;
   }
 
   // Save User
@@ -401,48 +436,31 @@ export class ManageusersComponent implements OnInit {
     this.resetPasswordError = null;
     this.resetPasswordSuccess = false;
 
-    if (this.resetPasswordForm.new_password.length < 8) {
-      this.resetPasswordError = 'Heslo musí mít alespoň 8 znaků';
-      return;
-    }
-    if (this.resetPasswordForm.new_password !== this.resetPasswordForm.confirm_password) {
-      this.resetPasswordError = 'Hesla se neshodují';
-      return;
-    }
-
+    const newPassword = Utils.randomstring(14);
     this.isResettingPassword = true;
 
     this.http.post<any>(
       `${Config.API_URL}/v1/system/users/${this.selectedUser.id}/reset-password`,
-      { new_password: this.resetPasswordForm.new_password },
+      { new_password: newPassword },
       { withCredentials: true }
     ).subscribe({
       next: () => {
         this.isResettingPassword = false;
         this.resetPasswordSuccess = true;
-        this.resetPasswordForm = { new_password: '', confirm_password: '', showPassword: false };
-        setTimeout(() => this.resetPasswordSuccess = false, 5000);
+        this.resetPasswordForm.generatedPassword = newPassword;
+        this.resetPasswordForm.new_password = '';
+        this.resetPasswordForm.confirm_password = '';
+        this.resetPasswordForm.showPassword = false;
       },
       error: (err) => {
         console.error('Error resetting password:', err);
         this.isResettingPassword = false;
-        this.resetPasswordError = err.error?.error === 'password_too_short'
-          ? 'Heslo musí mít alespoň 8 znaků'
-          : 'Nepodařilo se resetovat heslo';
+        this.resetPasswordError = 'Nepodařilo se resetovat heslo';
       }
     });
   }
 
-  generateNewPassword() {
-    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%';
-    let password = '';
-    for (let i = 0; i < 14; i++) {
-      password += chars.charAt(Math.floor(Math.random() * chars.length));
-    }
-    this.resetPasswordForm.new_password = password;
-    this.resetPasswordForm.confirm_password = password;
-    this.resetPasswordForm.showPassword = true;
-  }
+
 
   // Transform API response
   private transformUser(apiUser: UserAPIResponse['data'][0]): User {
@@ -561,6 +579,7 @@ export class ManageusersComponent implements OnInit {
 
   resetPassword(user: User, event: Event) {
     event.stopPropagation();
+    this.resetPasswordForm.generatedPassword = null;
     this.selectUser(user);
     setTimeout(() => this.setActiveTab('security'), 600);
   }
@@ -577,6 +596,7 @@ export class ManageusersComponent implements OnInit {
 
   openAddUserModal() {
     this.showAddUserModal = true;
+    this.resetPasswordForm.generatedPassword = null;
     this.resetForm();
     this.generatePassword();
   }
@@ -607,12 +627,7 @@ export class ManageusersComponent implements OnInit {
   }
 
   generatePassword() {
-    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%';
-    let password = '';
-    for (let i = 0; i < 12; i++) {
-      password += chars.charAt(Math.floor(Math.random() * chars.length));
-    }
-    this.newUser.password = password;
+    this.newUser.password = Utils.randomstring(12);
   }
 
   validateForm(): boolean {

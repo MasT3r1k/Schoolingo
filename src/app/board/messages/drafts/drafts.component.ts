@@ -9,6 +9,9 @@ import { HttpClient } from '@angular/common/http';
 import { Config } from '@Schoolingo/config';
 import { ActivatedRoute, Router } from '@angular/router';
 import { MessageManager } from '@Schoolingo/messages';
+import { ModalManager } from '@Schoolingo/modal';
+import { DeleteDraftComponent } from './modals/delete-draft/delete-draft.component';
+
 
 interface Draft {
   draft_id: number;
@@ -35,6 +38,8 @@ export class DraftsComponent implements OnInit {
   private route = inject(ActivatedRoute);
   private router = inject(Router);
   private messageManager = inject(MessageManager);
+  private modalManager = inject(ModalManager);
+
 
   public drafts: Draft[] = [];
   public selectedDraft: Draft | null = null;
@@ -49,7 +54,21 @@ export class DraftsComponent implements OnInit {
          this.selectedDraft = this.drafts.find((d) => d.draft_id == draft_id) ?? null;
       }
     });
+
+    this.modalManager.addModal(
+      'delete_draft',
+      {
+        title: '',
+        closeable: true,
+        width: 600,
+        items: [{
+          type: 'component',
+          component: DeleteDraftComponent
+        }]
+      }
+    );
   }
+
 
   public loadDrafts(): void {
     this.http.get<{ success: boolean, drafts: Draft[] }>(
@@ -85,16 +104,11 @@ export class DraftsComponent implements OnInit {
 
   public deleteDraft(draft: Draft, event: MouseEvent): void {
     event.stopPropagation();
-    if (!confirm(this.l.s('messages.drafts_confirm.delete_confirm'))) return;
-
-    this.http.delete(
-      `${Config.API_URL}/v1/messages/draft/${draft.draft_id}`,
-      { withCredentials: true }
-    )
-    .subscribe((res: any) => {
-      if (res.success) {
-        this.drafts = this.drafts.filter(d => d.draft_id !== draft.draft_id);
-        if (this.selectedDraft?.draft_id === draft.draft_id) {
+    this.modalManager.openModal('delete_draft', {
+      draft,
+      onDeleted: (draft_id: number) => {
+        this.drafts = this.drafts.filter(d => d.draft_id !== draft_id);
+        if (this.selectedDraft?.draft_id === draft_id) {
           this.selectedDraft = null;
         }
       }

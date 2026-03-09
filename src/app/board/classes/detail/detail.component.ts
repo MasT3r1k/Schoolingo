@@ -99,14 +99,13 @@ export class DetailComponent implements OnInit {
     }
   }
 
-  getGradeClass(grade: string | null): string {
-    if (!grade) return 'grade-none';
-    const parsed = parseFloat(grade);
-    if (isNaN(parsed)) return 'grade-none';
-    
-    if (parsed <= 2.0) return 'grade-excellent';
-    if (parsed <= 3.0) return 'grade-good';
-    if (parsed <= 4.0) return 'grade-fair';
-    return 'grade-poor';
+  public getGradeClass(grade: any): string {
+    if (grade === null || grade === '-') return '';
+    const g = typeof grade === 'number' ? grade : parseInt(grade);
+    if (isNaN(g)) return '';
+    if (g === 1) return 'grade--success';
+    if (g >= 4) return 'grade--danger';
+    if (g === 3) return 'grade--warning';
+    return 'grade--primary';
   }
 }

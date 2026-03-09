@@ -20,6 +20,7 @@ export interface FileItem {
     permissions: permType[];
     owner_id: number | null;
     content?: string;
+    can_manage_permissions: boolean;
     modified_at: Date;
     created_at: Date;
 }
@@ -28,6 +29,17 @@ export interface FolderItem extends FileItem {
     type: 'folder';
     files_count: number;
     expanded?: boolean;
+}
+
+export interface DocumentPermission {
+    document_permission_id?: number;
+    role_id: number | null;
+    role_name?: string;
+    user_id: number | null;
+    username?: string;
+    first_name?: string;
+    last_name?: string;
+    permission_type: 'READ' | 'WRITE' | 'DENY';
 }
 
 export class Documents {
@@ -41,6 +53,7 @@ export class Documents {
     public selectedFile$ = this._selected_file.asObservable();
     private _opened_file = new BehaviorSubject<FileItem | null>(null);
     public openedFile$ = this._opened_file.asObservable();
+    public isRefreshing$ = new BehaviorSubject<boolean>(false);
 
     public declare preview_url: SafeUrl;
     public fileData: any = null;
@@ -51,15 +64,18 @@ export class Documents {
 
     public selectFolder(folder: FileItem | FolderItem | null, select_file: FileItem | FolderItem | number | null = null): void {
         this._opened_file.next(null);
-        if (folder?.type !== 'folder') {
+        if (folder !== null && folder.type !== 'folder') {
             this.openFile(folder);
             return;
         }
 
-        if (folder.type == 'folder') {
+        if (folder !== null && folder.type === 'folder') {
             this.loadFiles(folder.document_id);
+        } else if (folder === null) {
+            this.loadFiles(null);
         }
-        this._current_folder.next(folder as FolderItem);
+        
+        this._current_folder.next(folder as FolderItem | null);
         if (select_file instanceof Number) {
             this._selected_file.next(this._files.getValue()[0]);
         } else {
@@ -135,15 +151,47 @@ export class Documents {
         });
     }
 
+    public getPermissions(document_id: number) {
+        return this.http.post<DocumentPermission[]>(
+            `${Config.API_URL}/v1/documents/get_permissions`,
+            { document_id },
+            { withCredentials: true }
+        );
+    }
+
+    public setPermissions(document_id: number, permissions: DocumentPermission[]) {
+        return this.http.post<{ success: boolean }>(
+            `${Config.API_URL}/v1/documents/set_permissions`,
+            { document_id, permissions },
+            { withCredentials: true }
+        );
+    }
+
+    public getPermissionOptions() {
+        return this.http.get<{ roles: any[], users: any[] }>(
+            `${Config.API_URL}/v1/documents/permission_options`,
+            { withCredentials: true }
+        );
+    }
+
     public loadFiles(parent_id: number | null): void {
+        this.isRefreshing$.next(true);
         this.http.post<(FileItem | FolderItem)[]>(
             `${Config.API_URL}/v1/documents/files`,
             { parent_id },
             { withCredentials: true }
         )
-        .subscribe((files: (FileItem | FolderItem)[]) => {
-            files.forEach((file) => this.addFile(file));
-        });
+        .subscribe(
+            (files: (FileItem | FolderItem)[]) => {
+                const currentFiles = this._files.getValue();
+                const otherFiles = currentFiles.filter(f => f.parent_id !== parent_id || f.document_id === null);
+                this._files.next([...otherFiles, ...files]);
+                setTimeout(() => this.isRefreshing$.next(false), 800);
+            },
+            (error) => {
+                this.isRefreshing$.next(false);
+            }
+        );
     }
 
     public getFile(file_id: number | null): FileItem | FolderItem {
@@ -153,8 +201,12 @@ export class Documents {
     public addFile(file: FileItem | FolderItem): void {
         const files = this._files.getValue();
 
-        const exists = files.some(f => f.document_id === file.document_id);
-        if (exists) return;
+        const existsIndex = files.findIndex(f => f.document_id === file.document_id && file.document_id !== null);
+        if (existsIndex !== -1) {
+            files[existsIndex] = file;
+            this._files.next([...files]);
+            return;
+        }
 
         this._files.next([...files, file]);
     }
@@ -251,6 +303,8 @@ export class Documents {
                 created_at: new Date(),
                 owner_id: null,
                 permissions: [],
+                files_count: 0,
+                can_manage_permissions: true,
                 file_size: 0
             }
         ]

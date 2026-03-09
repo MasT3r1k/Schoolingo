@@ -1,0 +1,46 @@
+<div class="message message--info">
+    <p style="margin: 0;">{{ l.s('employees.request_vacation.request_extra_vacation.description') }}</p>
+</div>
+
+<form (ngSubmit)="submit()" class="extra-vacation-form">
+    <div class="form-group mb-4">
+        <label>{{
+            l.s('employees.request_vacation.request_extra_vacation.amount_label') }}</label>
+        <div class="input-icon-wrap" style="position: relative;">
+            <i-tabler name="beach"></i-tabler>
+            <input type="number" class="form-input" [(ngModel)]="amount" min="1" max="20" name="amount">
+        </div>
+        @if (amount < 1 || amount> 20) {
+            <p class="error" style="color: var(--error-color, #ef4444); font-size: 0.8125rem; margin-top: 0.5rem;">{{
+                l.s('employees.request_vacation.request_extra_vacation.invalid_amount') }}</p>
+            }
+    </div>
+
+    <div class="form-group mb-4">
+        <label>{{
+            l.s('employees.request_vacation.request_extra_vacation.reason_label') }}</label>
+        <textarea class="form-textarea" rows="4" [(ngModel)]="reason" name="reason"
+            [placeholder]="l.s('employees.request_vacation.request_extra_vacation.reason_placeholder')"></textarea>
+    </div>
+
+    @if (submit_error) {
+    <p class="error-msg"
+        style="padding: 0.75rem; background: rgba(239, 68, 68, 0.1); border-radius: 8px; color: #ef4444; font-size: 0.875rem; margin-bottom: 1.5rem;">
+        {{ l.s('employees.request_vacation.errors.' + submit_error) }}
+    </p>
+    }
+
+    <div class="modal-actions">
+        <button type="button" class="btn btn--secondary" (click)="close()">
+            {{ l.s('cancel') }}
+        </button>
+        <button type="submit" class="btn btn--primary" [disabled]="!is_valid || loading" [style.opacity]="is_valid && !loading ? 1 : 0.6">
+            @if (loading) {
+            <span class="loader"
+                style="display: inline-block; width: 1.25rem; height: 1.25rem; border: 2px solid rgba(255,255,255,0.3); border-top-color: #fff; border-radius: 50%; animation: spin 1s linear infinite;"></span>
+            } @else {
+            {{ l.s('employees.request_vacation.request_extra_vacation.submit') }}
+            }
+        </button>
+    </div>
+</form>

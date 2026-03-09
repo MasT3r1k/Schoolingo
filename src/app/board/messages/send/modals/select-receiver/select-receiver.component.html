@@ -1,35 +1,49 @@
-<div class="receiver-modal-body">
-    <!-- Left Panel - Categories and Users -->
-    <div class="panel">
-        <div class="panel-header">
-            <h3 class="panel-title">{{ 'Dostupní příjemci' }}</h3>
-            <span class="panel-count">{{ getTotalFilteredUsers() }}</span>
+<div class="receiver-modal-container">
+    @if (alerts['selection']) {
+    <div class="alert alert--danger mb-4">
+        <div class="center">
+            <i-tabler name="exclamation-circle"></i-tabler>
+            <span>{{ alerts['selection'].text }}</span>
         </div>
+    </div>
+    }
 
-        <!-- Search -->
-        <div class="search-wrapper">
-            <svg class="search-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                stroke-width="2">
-                <circle cx="11" cy="11" r="8" />
-                <path d="m21 21-4.35-4.35" />
-            </svg>
-            <input type="text" class="search-input" placeholder="Hledat..." [(ngModel)]="searchText">
-        </div>
-
+    @if (!isAllCategory()) {
+    <!-- Search Section -->
+    <div class="panels-grid">
         <div class="form-group">
-            <div class="custom-select"
-                (click)="$event.stopPropagation(); dropdownManager.selected_dropdown = dropdownManager.selected_dropdown == 'message_receiver_select_category' ? '' : 'message_receiver_select_category'">
-                <div class="selected-value">
-                    {{ selectedCategory?.label ?? 'Není vybrána skupina' }}
-                    <i-tabler name="chevron-down"></i-tabler>
-                </div>
-                @if (dropdownManager.selected_dropdown == 'message_receiver_select_category') {
-                <div class="options-dropdown">
-                    <div class="list">
-                        @for (group of getFilteredGroups(); track $index) {
-                        <div class="option" (click)="selectCategory(group)">
-                            {{ group.label }}
-                        </div>
+            <div class="input-icon-wrap">
+                <i-tabler name="search"></i-tabler>
+                <input type="text" class="form-input" [(ngModel)]="searchText"
+                    [placeholder]="l.s('messages.search_receiver')">
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content Grid -->
+    <div class="panels-grid">
+        <!-- Available Column -->
+        <div class="panel-column">
+            <label class="panel-label">Dostupní uživatelé:</label>
+            <div class="list-surface scrollable">
+                @for (user of getFlattenedUsers(); track user.person_id) {
+                <div class="item-row" [class.checked]="isCheckedLeft(user.person_id)"
+                    (click)="toggleCheckLeft(user.person_id)">
+                    <div class="checkbox-box" [class.active]="isCheckedLeft(user.person_id)">
+                        @if (isCheckedLeft(user.person_id)) {
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="4">
+                            <polyline points="20 6 9 17 4 12"></polyline>
+                        </svg>
+                        }
+                    </div>
+                    <div class="item-info">
+                        <span class="item-name">{{ user.full_name }}</span>
+                        @if (user.role) {
+                        <span class="item-role">
+                            {{ l.s('roles.' + user.role.split('_')[0]) }}
+                            {{ user.role.includes('_') ? '(' + user.role.split('_')[1] + ')' : '' }}
+                        </span>
                         }
                     </div>
                 </div>
@@ -37,92 +51,146 @@
             </div>
         </div>
 
-        <div class="selection-grid">
-            <!-- Items Section (Recipients in Category) -->
-            <div class="items-section">
-                <div class="column-label">Položky</div>
-                <div class="list-container">
-                    @for (user of getUsersInCategory(); track user.person_id) {
-                    <div class="recipient-item" [class.selected]="isSelected(user)" (click)="toggleRecipient(user)">
-                        <div class="recipient-avatar">
-                            {{ user.first_name[0] }}{{ user.last_name[0] }}
-                        </div>
-                        <div class="recipient-info">
-                            <div class="recipient-name">{{ user.full_name }}</div>
-                            <div class="recipient-role">{{ l.s('roles.' + user.role) }}</div>
-                        </div>
-                        <div class="recipient-checkbox">
-                            @if (isSelected(user)) {
-                            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="4">
-                                <polyline points="20 6 9 17 4 12" />
-                            </svg>
+        <!-- Middle Controls -->
+        <div class="middle-controls">
+            <button class="arrow-btn" (click)="moveSelectedToRight()" [disabled]="checkedInLeft.size === 0">
+                <i-tabler name="chevron-right"></i-tabler>
+            </button>
+            <button class="arrow-btn" [disabled]="getFlattenedUsers().length === 0" (click)="moveAllToRight()">
+                <i-tabler name="chevrons-right"></i-tabler>
+            </button>
+            <button class="arrow-btn" (click)="moveSelectedToLeft()" [disabled]="checkedInRight.size === 0">
+                <i-tabler name="chevron-left"></i-tabler>
+            </button>
+            <button class="arrow-btn" [disabled]="selectedReceivers.length === 0" (click)="moveAllToLeft()">
+                <i-tabler name="chevrons-left"></i-tabler>
+            </button>
+        </div>
+
+        <!-- Selected Column -->
+        <div class="panel-column">
+            <label class="panel-label">Vámi vybraní příjemci:</label>
+            <div class="list-surface scrollable">
+                @for (user of selectedReceivers; track user.person_id) {
+                <div class="item-row" [class.checked]="isCheckedRight(user.person_id)"
+                    (click)="toggleCheckRight(user.person_id)">
+                    <div class="checkbox-box" [class.active]="isCheckedRight(user.person_id)">
+                        @if (isCheckedRight(user.person_id)) {
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="4">
+                            <polyline points="20 6 9 17 4 12"></polyline>
+                        </svg>
+                        }
+                    </div>
+                    <span class="item-name">{{ user.full_name }}</span>
+                </div>
+                }
+            </div>
+        </div>
+    </div>
+    } @else {
+    <div class="all-selected-container">
+        <div class="all-selected-card">
+            <div class="all-selected-icon">
+                <i-tabler name="users-group"></i-tabler>
+            </div>
+            <div class="all-selected-content">
+                <h3>Všichni uživatelé vybráni</h3>
+                <p>Zvolili jste kategorii <strong>{{ selectedCategory?.label }}</strong>. Všichni uživatelé z této
+                    skupiny budou zahrnuti do seznamu příjemců.</p>
+            </div>
+        </div>
+    </div>
+    }
+
+    <div class="panels-grid">
+        <div>
+            <div class="category-select-wrapper">
+                <div class="custom-select"
+                    (click)="$event.stopPropagation(); dropdownManager.selected_dropdown = dropdownManager.selected_dropdown === 'modal_receiver_category' ? '' : 'modal_receiver_category'">
+                    <div class="selected-value">
+                        @if (selectedGroup) {
+                        <span>Skupina: {{ selectedGroup.name }}</span>
+                        } @else {
+                        <span>Rychle přidat skupinu...</span>
+                        }
+                        <i-tabler name="chevron-down"></i-tabler>
+                    </div>
+                    @if (dropdownManager.selected_dropdown === 'modal_receiver_category') {
+                    <div class="options-dropdown options-dropdown--up">
+                        <div class="list">
+                            @if (customGroups.length > 0) {
+                            @for (group of customGroups; track group.id) {
+                            <div class="option option--has-action"
+                                (click)="$event.stopPropagation(); selectUserGroup(group)">
+                                <span class="option-label">{{ group.name }}</span>
+                                <div class="option-actions">
+                                    <button class="btn-icon-danger" title="Smazat skupinu"
+                                        (click)="$event.stopPropagation(); deleteGroup(group)">
+                                        <i-tabler name="trash"></i-tabler>
+                                    </button>
+                                </div>
+                            </div>
+                            }
+                            } @else {
+                            <div class="option disabled">Žádné skupiny k dispozici</div>
                             }
                         </div>
                     </div>
                     }
-                    @if (getUsersInCategory().length === 0) {
-                    <div class="empty-state-mini">
-                        Žádné položky
-                    </div>
-                    }
+                </div>
+            </div>
+        </div>
+        <div>
+            @if (selectedGroup) {
+            <button class="arrow-btn" (click)="addGroupMembers()" title="Přidat členy skupiny do výběru">
+                <i-tabler name="chevrons-right"></i-tabler>
+            </button>
+            }
+        </div>
+        <div class="management-row">
+            <div class="group-management">
+                <div class="mgmt-action" [class.disabled]="selectedReceivers.length === 0"
+                    (click)="showGroupSave = !showGroupSave">
+                    <span>Uložit aktuální výběr jako skupinu</span>
+                    <i-tabler name="device-floppy"></i-tabler>
+                </div>
+                <div class="mgmt-action" [class.disabled]="!selectedGroup" (click)="deleteGroup(selectedGroup)">
+                    <span>Smazat skupinu</span>
+                    <i-tabler name="trash"></i-tabler>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Middle Panel - Actions -->
-    <div class="transfer-controls">
-        <button class="transfer-btn" (click)="addAllInCategory()" [title]="'Přidat vše z kategorie'"
-            [disabled]="!selectedCategory">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <polyline points="13 17 18 12 13 7" />
-                <polyline points="6 17 11 12 6 7" />
-            </svg>
-        </button>
-        <button class="transfer-btn" (click)="removeAllSelected()" [title]="'Odebrat vše'"
-            [disabled]="selectedReceivers.length === 0">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <polyline points="11 17 6 12 11 7" />
-                <polyline points="18 17 13 12 18 7" />
-            </svg>
-        </button>
+    <!-- Footer Actions -->
+    <div class="modal-actions">
+        <button class="btn btn--secondary" (click)="closeModal()">Zrušit</button>
+        <button class="btn btn--primary" (click)="confirmSelection()">Vybrat</button>
     </div>
 
-    <!-- Right Panel - Selected Recipients -->
-    <div class="panel">
-        <div class="panel-header">
-            <h3 class="panel-title">Vybraní příjemci</h3>
-            <span class="panel-count">{{ selectedReceivers.length }}</span>
+    <!-- Group Save Input (Popover) -->
+    @if (showGroupSave) {
+    <div class="group-save-popover">
+        <div class="popover-header">
+            <span class="popover-title">Uložit skupinu</span>
+            <button class="btn-close-popover" (click)="showGroupSave = false; newGroupName = ''">
+                <i-tabler name="x"></i-tabler>
+            </button>
         </div>
-
-        <div class="recipients-container">
-            <div class="recipients-list">
-                @if (selectedReceivers.length === 0) {
-                <div class="empty-state">
-                    <div class="empty-icon">📭</div>
-                    <div class="empty-text">Zatím nebyli vybráni žádní příjemci</div>
+        <div class="popover-body">
+            <div class="form-group" style="margin-top: 0;">
+                <label>Název skupiny:</label>
+                <div class="input-with-action">
+                    <input type="text" maxlength="15" [(ngModel)]="newGroupName" placeholder="Např. Vedení školy"
+                        (keyup.enter)="saveAsGroup()" autofocus>
+                    <button class="btn-save-group" (click)="saveAsGroup()" [disabled]="!newGroupName" title="Uložit">
+                        <i-tabler name="device-floppy"></i-tabler>
+                    </button>
                 </div>
-                }
-
-                @for (user of selectedReceivers; track user.person_id) {
-                <div class="recipient-item" (click)="removeRecipient(user)">
-                    <div class="recipient-avatar">
-                        {{ user.first_name[0] }}{{ user.last_name[0] }}
-                    </div>
-                    <div class="recipient-info">
-                        <div class="recipient-name">{{ user.full_name }}</div>
-                        <div class="recipient-role">{{ l.s('roles.' + user.role) }}</div>
-                    </div>
-                    <div class="remove-btn">
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                            stroke-width="2">
-                            <line x1="18" y1="6" x2="6" y2="18"></line>
-                            <line x1="6" y1="6" x2="18" y2="18"></line>
-                        </svg>
-                    </div>
-                </div>
-                }
             </div>
+            <p class="popover-hint">Tento výběr uvidíte v seznamu skupin.</p>
         </div>
     </div>
+    }
 </div>

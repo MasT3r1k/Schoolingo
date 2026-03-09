@@ -103,8 +103,10 @@ export class VacationRequestModalComponent {
   }
 
   requestMoreDays() {
-    // Placeholder logic or modal opening for requesting more days
-    console.log('Requesting more days...');
-    // This could open another modal or navigate to a specialized request page
+    this.modalManager.openModal('request_extra_vacation', {
+      onSave: () => {
+        this.loadBalance();
+      }
+    });
   }
 }

@@ -751,7 +751,7 @@ public school_types = SchoolTypes;
   }
 
   public load_teachers(): void {
-    this.http.get<TeacherAPI[]>(`${Config.API_URL}/v1/teachers`).subscribe((data) => {
+    this.http.get<TeacherAPI[]>(`${Config.API_URL}/v1/teachers`, { withCredentials: true }).subscribe((data) => {
         this.available_teachers = data;
     });
   }
@@ -852,7 +852,8 @@ public school_types = SchoolTypes;
     this.load_roles();
 
     this.http.get<ElysiaVersion>(
-      `${Config.API_URL}/v1/version`
+      `${Config.API_URL}/v1/version`,
+      { withCredentials: true }
     )
     .subscribe((version) => {
       this.version = version

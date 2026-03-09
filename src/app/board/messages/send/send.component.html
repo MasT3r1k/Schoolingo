@@ -5,6 +5,16 @@
       <h2>{{ l.s("sidebar.messages.send") }}</h2>
       <p class="meta muted">{{ l.s("messages.send_description") }}</p>
     </div>
+    <div class="flex-items">
+      @if (perms.checkPermission(['principal'])) {
+      <div class="option-item" style="padding: .5rem 1rem;border-radius: var(--radius-full);" [class.active]="messageManager.options.asPrincipal == true" (click)="messageManager.options.asPrincipal = !messageManager.options.asPrincipal">
+        <div class="option-content">
+          <i-tabler name="tie"></i-tabler>
+          <span>{{ l.s('messages.as_principal') }}</span>
+        </div>
+      </div>
+      }
+    </div>
   </div>
 
   <div class="card-body">
@@ -69,13 +79,7 @@
     </div>
 
     <div class="form-group pb-2">
-      <label>Komu</label>
-
-      <!-- Search in Komu -->
-      <div class="search-wrapper mb-2">
-        <input type="text" class="search-input" [placeholder]="l.s('messages.search_placeholder')"
-          [(ngModel)]="searchText">
-      </div>
+      <label>{{ l.s("messages.to") }}</label>
 
       <div class="form-row">
         <!-- Category Dropdown -->
@@ -89,9 +93,10 @@
             @if (dropdownManager.selected_dropdown == 'message_receiver_select_category') {
             <div class="options-dropdown">
               <div class="list">
+                <!-- Special "All" option if needed or specific groups from API -->
                 @for (group of getFilteredGroups(); track group.group) {
                 <div class="option" [class.active]="selectedCategory?.group === group.group"
-                  (click)="selectCategory(group)">
+                  (click)="dropdownManager.selected_dropdown = '';selectCategory(group)">
                   {{ group.label }}
                 </div>
                 }
@@ -101,28 +106,36 @@
           </div>
         </div>
 
-        <!-- Item Dropdown (Recipients) -->
+        <!-- Item Selection / Modal Button -->
         <div class="form-group mb-0 flex-1">
+          @if (selectedCategory?.group?.includes('select')) {
+          <!-- Modal Trigger for "Free Selection" or "All" categories -->
+          <button class="selected-value" (click)="openReceiverModal()"
+            style="display:flex;justify-content:space-between;line-height: 1;">
+            <span>{{ selectedCategory?.group?.includes('all') ? 'Vybráni všichni' : 'Vybrat příjemce' }} ({{
+              selectedReceivers.length }})</span>
+            <i-tabler style="width: 20px;height: 20px;" name="external-link"></i-tabler>
+          </button>
+          } @else if (selectedCategory?.group?.includes('all')) {} @else {
+          <!-- Standard Dropdown for specific categories (e.g. 1 teacher) -->
           <div class="custom-select"
             (click)="$event.stopPropagation(); dropdownManager.selected_dropdown = dropdownManager.selected_dropdown == 'message_receiver_select_item' ? '' : 'message_receiver_select_item'">
             <div class="selected-value">
-              <span>{{ 'Vyberte příjemce' }} ({{ selectedCategory?.users?.length ?? 0 }})</span>
+              <span>{{ selectedReceivers.length > 0 ? selectedReceivers[0].full_name : 'Vyberte příjemce' }}</span>
               <i-tabler name="chevron-down"></i-tabler>
             </div>
             @if (dropdownManager.selected_dropdown == 'message_receiver_select_item') {
             <div class="options-dropdown">
+              <div class="dropdown-search">
+                <input type="text" [(ngModel)]="searchText" [placeholder]="l.s('messages.search_placeholder')"
+                  (click)="$event.stopPropagation()">
+              </div>
               <div class="list">
-                <!-- Add All Option -->
-                @if (getUsersInCategory().length > 0) {
-                <div class="option" (click)="$event.stopPropagation(); addAllInCategory()">
-                  <strong>Přidat vše z této kategorie</strong>
-                </div>
-                }
                 @for (user of getUsersInCategory(); track user.person_id) {
                 <div class="option" [class.selected]="isSelected(user)"
-                  (click)="$event.stopPropagation(); toggleRecipient(user)">
+                  (click)="$event.stopPropagation(); toggleRecipient(user); dropdownManager.selected_dropdown = ''">
                   <div class="recipient-option-content">
-                    <span>{{ user.full_name }} ({{ l.s('roles.' + user.role) }})</span>
+                    <span>{{ user.full_name }}</span>
                     @if (isSelected(user)) {
                     <i-tabler name="check" class="check-icon"></i-tabler>
                     }
@@ -136,23 +149,9 @@
             </div>
             }
           </div>
+          }
         </div>
       </div>
-
-      <!-- Selected Recipients Display -->
-      @if (selectedReceivers.length > 0) {
-      <div class="selected-pills mt-2">
-        @for (user of selectedReceivers; track user.person_id) {
-        <div class="pill">
-          <span>{{ user.full_name }}</span>
-          <i-tabler name="x" (click)="toggleRecipient(user)"></i-tabler>
-        </div>
-        }
-        <div class="pill pill--danger" (click)="removeAllSelected()">
-          <span>{{ l.s('messages.buttons.clear_all') }}</span>
-        </div>
-      </div>
-      }
     </div>
 
     <div class="row message-options">

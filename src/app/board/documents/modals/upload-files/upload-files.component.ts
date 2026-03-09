@@ -38,6 +38,7 @@ export class UploadFilesComponent {
     .subscribe((data: any) => {
       if (data.success) {
         this.modalManager.closeModal('upload_files')
+        this.documents.loadFiles(folderId ?? null)
       }
     });
   }
@@ -95,7 +96,6 @@ export class UploadFilesComponent {
                 uploadFile.serverId = uploaded.id;
                 uploadFile.status = 'done';
                 uploadFile.progress = 100;
-                this.assignFiles(event.body.files.map((file: any) => (file.id)))
               }
             }
           },
@@ -106,6 +106,13 @@ export class UploadFilesComponent {
           },
         });
     });
+  }
+
+  public assignAllFiles(): void {
+    const file_ids = this.files.filter((f) => f.serverId != null).map((f) => Number(f.serverId));
+    if (file_ids.length > 0) {
+      this.assignFiles(file_ids);
+    }
   }
 
   public checkFile(file: File): string | null {

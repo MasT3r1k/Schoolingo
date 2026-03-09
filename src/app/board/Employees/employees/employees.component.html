@@ -235,54 +235,68 @@
                             </div>
                         </div>
 
-                        <!-- Filters -->
-                        <div class="filters-row">
-                            <div class="filter-group">
-                                <label>Období</label>
-                                <div class="custom-select" id="attendance-period-1" style="min-width: 150px;"
-                                    (click)="$event.stopPropagation(); dropdownManager.selected_dropdown = dropdownManager.selected_dropdown == 'attendance_period_1' ? '' : 'attendance_period_1'">
-                                    <div class="selected-value">
-                                        <div class="row" style="gap: .5rem">
-                                            {{ getFilterLabel('attendancePeriod', attendanceFilter().period) }}
+                        <!-- Filters & Actions Toolbar -->
+                        <div class="attendance-toolbar mt-4 mb-4">
+                            <div class="toolbar-left">
+                                <div class="filter-item">
+                                    <label class="toolbar-label">
+                                        <i-tabler name="calendar-event"></i-tabler>
+                                        <span>Období:</span>
+                                    </label>
+                                    <div class="custom-select period-select" id="attendance-period-1"
+                                        (click)="$event.stopPropagation(); dropdownManager.selected_dropdown = dropdownManager.selected_dropdown == 'attendance_period_1' ? '' : 'attendance_period_1'">
+                                        <div class="selected-value">
+                                            <span>{{ getFilterLabel('attendancePeriod', attendanceFilter().period)
+                                                }}</span>
+                                            <i-tabler name="chevron-down"></i-tabler>
                                         </div>
-                                        <i-tabler name="chevron-down"></i-tabler>
-                                    </div>
-                                    @if (dropdownManager.selected_dropdown == 'attendance_period_1') {
-                                    <div class="options-dropdown">
-                                        <div class="list">
-                                            @for (opt of getFilterOptions('attendancePeriod'); track $index) {
-                                            <div class="option row" style="gap: .5rem"
-                                                (click)="$event.stopPropagation(); dropdownManager.selected_dropdown = ''; setAttendanceFilterPeriod(opt.value)">
-                                                {{ opt.label }}
+                                        @if (dropdownManager.selected_dropdown == 'attendance_period_1') {
+                                        <div class="options-dropdown">
+                                            <div class="list">
+                                                @for (opt of getFilterOptions('attendancePeriod'); track $index) {
+                                                <div class="option"
+                                                    (click)="$event.stopPropagation(); dropdownManager.selected_dropdown = ''; setAttendanceFilterPeriod(opt.value)">
+                                                    {{ opt.label }}
+                                                </div>
+                                                }
                                             </div>
-                                            }
                                         </div>
+                                        }
                                     </div>
+                                </div>
+
+                                @if (attendanceFilter().period === 'custom') {
+                                <div class="date-range-group">
+                                    <div class="filter-item">
+                                        <label class="toolbar-label">Od</label>
+                                        <input type="date" class="form-input date-input"
+                                            [ngModel]="attendanceFilter().startDate"
+                                            (ngModelChange)="setAttendanceFilterStartDate($event)">
+                                    </div>
+                                    <div class="filter-item">
+                                        <label class="toolbar-label">Do</label>
+                                        <input type="date" class="form-input date-input"
+                                            [ngModel]="attendanceFilter().endDate"
+                                            (ngModelChange)="setAttendanceFilterEndDate($event)">
+                                    </div>
+                                </div>
+                                }
+                            </div>
+
+                            <div class="toolbar-right">
+                                <div class="action-group">
+                                    @if (canManage) {
+                                    <button class="btn btn--success btn--sm" (click)="addAttendanceRecord()">
+                                        <i-tabler name="plus"></i-tabler>
+                                        <span>Přidat záznam</span>
+                                    </button>
                                     }
+                                    <button class="btn btn--secondary btn--sm" (click)="exportAttendanceCSV()">
+                                        <i-tabler name="download"></i-tabler>
+                                        <span>Export CSV</span>
+                                    </button>
                                 </div>
                             </div>
-                            @if (attendanceFilter().period === 'custom') {
-                            <div class="filter-group">
-                                <label>Od</label>
-                                <input type="date" class="form-input" [ngModel]="attendanceFilter().startDate"
-                                    (ngModelChange)="setAttendanceFilterStartDate($event)">
-                            </div>
-                            <div class="filter-group">
-                                <label>Do</label>
-                                <input type="date" class="form-input" [ngModel]="attendanceFilter().endDate"
-                                    (ngModelChange)="setAttendanceFilterEndDate($event)">
-                            </div>
-                            }
-                            @if (canManage) {
-                            <button class="btn btn--success btn--sm" (click)="addAttendanceRecord()">
-                                <i-tabler name="plus"></i-tabler>
-                                Přidat záznam
-                            </button>
-                            }
-                            <button class="btn btn--primary btn--sm" (click)="exportAttendanceCSV()">
-                                <i-tabler name="download"></i-tabler>
-                                Export CSV
-                            </button>
                         </div>
 
                         <!-- Attendance Records Table -->
@@ -348,9 +362,13 @@
                         <!-- Balance Card -->
                         <div class="vacation-balance-card">
                             <div class="card-header-flex">
-                                <h3>Stav dovolené {{ currentYear }}</h3>
+                                <h3>
+                                    <i-tabler name="beach"
+                                        style="width: 1.25rem; height: 1.25rem; vertical-align: middle; margin-right: 0.5rem; color: var(--primary);"></i-tabler>
+                                    Stav dovolené {{ currentYear }}
+                                </h3>
                                 @if (canManage) {
-                                <button class="btn-adjust" title="Upravit celkový nárok"
+                                <button class="btn btn--xs btn--secondary" title="Upravit celkový nárok"
                                     (click)="changeVacationEntitlement()">
                                     <i-tabler name="settings"></i-tabler>
                                     Upravit nárok
@@ -458,33 +476,56 @@
                                 <div class="card-header">
                                     <i-tabler name="wallet"></i-tabler>
                                     <h3>Aktuální plat</h3>
-                                    @if (canManage) {
+                                    @if (canManage && currentSalary()) {
                                     <button class="card-link-btn" (click)="openSetSalaryModal()">
                                         Změnit
                                         <i-tabler name="pencil"></i-tabler>
                                     </button>
                                     }
+
                                 </div>
                                 <div class="salary-display-premium">
                                     @if (currentSalary()) {
                                     <div class="salary-main">
-                                        <span class="amount">{{ currentSalary()!.amount | number:'1.0-0' }}</span>
+                                        <span class="amount">{{ currentSalary()!.salary | number:'1.0-0' }}</span>
                                         <span class="currency">{{ currentSalary()!.currency }}</span>
                                         <span class="period">/ měsíc</span>
                                     </div>
                                     <div class="salary-details">
                                         <div class="detail-item">
                                             <span class="label">Platnost od:</span>
-                                            <span class="value">{{ currentSalary()!.validFrom | date:'dd.MM.yyyy'
+                                            <span class="value">{{ currentSalary()!.valid_from | date:'dd.MM.yyyy'
                                                 }}</span>
                                         </div>
+                                        @if (currentSalary()!.valid_to) {
+                                        <div class="detail-item">
+                                            <span class="label">Platnost do:</span>
+                                            <span class="value">{{ currentSalary()!.valid_to | date:'dd.MM.yyyy'
+                                                }}</span>
+                                        </div>
+                                        }
                                     </div>
+
+
                                     } @else {
-                                    <div class="empty-salary">
-                                        <i-tabler name="cash-off"></i-tabler>
-                                        <p>Plat nebyl nastaven</p>
+                                    <div class="empty-salary-premium">
+                                        <div class="empty-icon-wrapper">
+                                            <i-tabler name="cash-off"></i-tabler>
+                                        </div>
+                                        <div class="empty-text">
+                                            <h4>Není nastaven plat</h4>
+                                            <p>V systému zatím nejsou evidovány žádné mzdové údaje pro tohoto
+                                                zaměstnance.</p>
+                                        </div>
+                                        @if (canManage) {
+                                        <button class="btn btn--primary btn--sm" (click)="openSetSalaryModal()">
+                                            <i-tabler name="plus"></i-tabler>
+                                            <span>Nastavit platové údaje</span>
+                                        </button>
+                                        }
                                     </div>
                                     }
+
                                 </div>
                             </div>
 
@@ -526,12 +567,12 @@
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        @for (salary of salaryHistory(); track salary.salaryId) {
+                                        @for (salary of salaryHistory(); track salary.salary_id) {
                                         <tr>
-                                            <td><strong>{{ salary.amount | number:'1.0-0' }}</strong></td>
+                                            <td><strong>{{ salary.salary | number:'1.0-0' }}</strong></td>
                                             <td>{{ salary.currency }}</td>
-                                            <td>{{ salary.validFrom | date:'dd.MM.yyyy' }}</td>
-                                            <td>{{ salary.validTo ? (salary.validTo | date:'dd.MM.yyyy') : 'Dosud' }}
+                                            <td>{{ salary.valid_from | date:'dd.MM.yyyy' }}</td>
+                                            <td>{{ salary.valid_to ? (salary.valid_to | date:'dd.MM.yyyy') : 'Dosud' }}
                                             </td>
                                             <td>
                                                 <span class="deduction-tag"
@@ -541,6 +582,7 @@
                                             </td>
                                         </tr>
                                         }
+
                                     </tbody>
                                 </table>
                             </div>
@@ -732,13 +774,15 @@
                         </span>
                         <button class="btn btn--warning btn--sm" (click)="performCheckOut(30)">
                             <i-tabler name="logout"></i-tabler>
-                            {{ currentAttendanceRecord()?.check_out ? l.s('employees.attendance_status.early_checkout') : l.s('employees.attendance_status.checkout') }}
+                            {{ currentAttendanceRecord()?.check_out ? l.s('employees.attendance_status.early_checkout')
+                            : l.s('employees.attendance_status.checkout') }}
                         </button>
                     </div>
                     }
                 </div>
 
-                <button class="btn btn--sm" [class.btn--ghost]="canManage" [class.btn--primary]="!canManage" (click)="openVacationRequestModal()">
+                <button class="btn btn--sm" [class.btn--ghost]="canManage" [class.btn--primary]="!canManage"
+                    (click)="openVacationRequestModal()">
                     <i-tabler name="beach"></i-tabler>
                     {{ l.s('employees.request_vacation.title') }}
                 </button>

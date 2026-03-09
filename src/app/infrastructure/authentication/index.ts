@@ -101,6 +101,9 @@ export class Authentication {
         ).pipe(
             tap(response => {
                 this.tokenExpirationService.setTokenExpiration(response.expires);
+                if (this.user) {
+                    this.user.expires = new Date(response.expires);
+                }
             }),
             map(() => void 0)
         );

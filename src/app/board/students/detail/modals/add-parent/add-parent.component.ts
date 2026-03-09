@@ -82,9 +82,12 @@ export class AddParentComponent implements OnInit {
 
   public openCreateParentModal(): void {
     const data = this.modalManager.getModalData('add_parent');
+    this.modalManager.updateModal('create_parent', 'title', 'students.create_parent.title');
+    this.modalManager.updateModal('create_parent', 'icon', 'user-plus');
     this.modalManager.openModal('create_parent', { 
       student_id: data.student_id || null,
-      callback: data.callback || null
+      callback: data.callback || null,
+      mode: 'new'
     });
   }
 }

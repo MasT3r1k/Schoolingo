@@ -1,0 +1,32 @@
+<div class="delete-confirmation">
+    <div class="danger-header">
+        <div class="icon-circle">
+            <i-tabler name="trash-x"></i-tabler>
+        </div>
+        <h3>{{ l.s('messages.drafts_confirm.delete_title') || 'Smazat koncept' }}</h3>
+        <p>{{ l.s('messages.drafts_confirm.delete_desc') || 'Opravdu si přejete smazat tento rozpracovaný koncept? Tato
+            akce je nevratná.' }}</p>
+    </div>
+
+    @if (draft?.topic || draft?.message) {
+    <div class="draft-preview-container">
+        <div class="draft-card">
+            <div class="draft-topic">
+                <i-tabler name="file-pencil"></i-tabler>
+                {{ draft.topic || l.s('messages.no_subject') }}
+            </div>
+            <div class="draft-snippet" [innerHTML]="draft.message"></div>
+        </div>
+    </div>
+    }
+
+    <div class="modal-actions-centered">
+        <button class="btn btn--secondary" (click)="closeModal()">
+            {{ l.s('buttons.cancel') }}
+        </button>
+        <button class="btn btn--danger" (click)="confirmDelete()">
+            <i-tabler name="trash"></i-tabler>
+            {{ l.s('messages.drafts_confirm.delete_btn') }}
+        </button>
+    </div>
+</div>

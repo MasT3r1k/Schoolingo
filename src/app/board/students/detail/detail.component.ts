@@ -24,6 +24,7 @@ import { AddParentComponent } from './modals/add-parent/add-parent.component';
 import { CreateParentComponent } from './modals/create-parent/create-parent.component';
 import { RemoveParentComponent } from './modals/remove-parent/remove-parent.component';
 import { SaveHistoryModalComponent } from './modals/save-history-modal/save-history-modal.component';
+import { EditAddressModalComponent } from './modals/edit-address/edit-address.component';
 import { TabsComponent } from '@Components/Tabs';
 import { MarkDetailModalComponent } from '../../../Components/mark-detail-modal/mark-detail-modal.component';
 
@@ -119,7 +120,7 @@ interface StudentNote {
 })
 export class DetailComponent implements OnInit, AfterViewInit {
   private http = inject(HttpClient);
-  private router = inject(Router);
+  public router = inject(Router);
   private route = inject(ActivatedRoute);
   private modalManager = inject(ModalManager);
   public Utils = Utils;
@@ -202,9 +203,7 @@ export class DetailComponent implements OnInit, AfterViewInit {
   public editingNote: Partial<StudentNote> | null = null;
 
   public matrikaSaveType: 'change' | 'correction' = 'change';
-  public addressSaveType: 'change' | 'correction' = 'change';
   private originalMatrika: any = null;
-  private originalAddress: any = null;
 
   get praiseCount(): number {
     return this.educationalMeasures.filter(m => m.type === 'praise').length;
@@ -262,12 +261,7 @@ export class DetailComponent implements OnInit, AfterViewInit {
           if (student.matrika) {
             this.originalMatrika = { ...student.matrika };
           }
-          this.originalAddress = {
-            street: student.street,
-            houseNumber: student.house_number,
-            city: student.city_name,
-            postcode: student.postcode
-          };
+
           this.loadMarks();
           this.refreshTimetable();
           this.isLoading = false;
@@ -312,7 +306,17 @@ export class DetailComponent implements OnInit, AfterViewInit {
       icon: 'history',
       closeable: true,
       width: 700,
+      index: 600,
       items: [{ type: 'component', component: SaveHistoryModalComponent }]
+    });
+
+    this.modalManager.addModal('edit_address', {
+      title: 'Upravit adresu',
+      description: 'Změna trvalého bydliště studenta',
+      icon: 'home',
+      closeable: true,
+      width: 550,
+      items: [{ type: 'component', component: EditAddressModalComponent }]
     });
 
     this.modalManager.addModal('add_parent', {
@@ -329,6 +333,7 @@ export class DetailComponent implements OnInit, AfterViewInit {
       title: 'students.create_parent.title',
       closeable: true,
       width: 600,
+      index: 600,
       items: [{ type: 'component', component: CreateParentComponent }]
     });
 
@@ -378,12 +383,7 @@ export class DetailComponent implements OnInit, AfterViewInit {
           if (student.matrika) {
             this.originalMatrika = { ...student.matrika };
           }
-          this.originalAddress = {
-            street: student.street,
-            houseNumber: student.house_number,
-            city: student.city_name,
-            postcode: student.postcode
-          };
+
           this.loadMarks();
           this.isLoading = false;
         },
@@ -394,7 +394,12 @@ export class DetailComponent implements OnInit, AfterViewInit {
   }
 
   public openParentSettings(): void {
-    this.modalManager.openModal('parents_settings', { student_id: this.selectedStudent.person_id, student: this.selectedStudent, parents: this.selectedStudent.parents });
+    this.modalManager.openModal('parents_settings', { 
+      student_id: this.selectedStudent.person_id, 
+      student: this.selectedStudent, 
+      parents: this.selectedStudent.parents,
+      callback: () => this.refreshStudentData()
+    });
   }
 
   public openAddParentModal(): void {
@@ -1131,12 +1136,16 @@ export class DetailComponent implements OnInit, AfterViewInit {
   }
 
   // Get grade color class
-  getGradeClass(grade: string): string {
-    if (parseFloat(grade) <= 2.0) return 'grade-excellent';
-    if (parseFloat(grade) <= 3.0) return 'grade-good';
-    if (parseFloat(grade) <= 4.0) return 'grade-fair';
-    return 'grade-poor';
+  public getGradeClass(grade: any): string {
+    if (grade === null || grade === '-') return '';
+    const g = typeof grade === 'number' ? grade : parseInt(grade);
+    if (isNaN(g)) return '';
+    if (g === 1) return 'grade--success';
+    if (g >= 4) return 'grade--danger';
+    if (g === 3) return 'grade--warning';
+    return 'grade--primary';
   }
+
 
   // Parent Management
   showAddParentModal = false;
@@ -1208,63 +1217,14 @@ export class DetailComponent implements OnInit, AfterViewInit {
   }
 
   // Address Management
-  showEditAddressModal = false;
-  editingAddress = {
-    street: '',
-    houseNumber: '',
-    city: '',
-    postcode: ''
-  };
+
 
   openEditAddress() {
-    if (!this.selectedStudent) return;
-    this.editingAddress = {
-      street: this.selectedStudent.street || '',
-      houseNumber: this.selectedStudent.houseNumber || '',
-      city: this.selectedStudent.city || '',
-      postcode: this.selectedStudent.postcode || ''
-    };
-    this.showEditAddressModal = true;
-  }
-
-  saveAddress() {
-    if (!this.selectedStudent) return;
-
-    const changes = [];
-    if ((this.originalAddress?.street ?? '') !== (this.editingAddress.street ?? '')) {
-      changes.push({ label: 'Ulice', oldValue: this.originalAddress?.street || 'Nezadáno', newValue: this.editingAddress.street || 'Nezadáno' });
-    }
-    if ((this.originalAddress?.houseNumber ?? '') !== (this.editingAddress.houseNumber ?? '')) {
-      changes.push({ label: 'Číslo popisné', oldValue: this.originalAddress?.houseNumber || 'Nezadáno', newValue: this.editingAddress.houseNumber || 'Nezadáno' });
-    }
-    if ((this.originalAddress?.city ?? '') !== (this.editingAddress.city ?? '')) {
-      changes.push({ label: 'Město', oldValue: this.originalAddress?.city || 'Nezadáno', newValue: this.editingAddress.city || 'Nezadáno' });
-    }
-    if ((this.originalAddress?.postcode ?? '') !== (this.editingAddress.postcode ?? '')) {
-      changes.push({ label: 'PSČ', oldValue: this.originalAddress?.postcode || 'Nezadáno', newValue: this.editingAddress.postcode || 'Nezadáno' });
-    }
-
-    if (changes.length === 0 && this.addressSaveType === 'change') {
-      alert('Žádné změny k uložení.');
-      return;
-    }
-
-    const personId = this.selectedStudent.person_id;
-    this.http.patch(`${Config.API_URL}/v1/student/${personId}/address`, {
-      ...this.editingAddress,
-      saveType: this.addressSaveType,
-      changes
-    }, {
-      withCredentials: true
-    }).subscribe({
-      next: () => {
-        this.showEditAddressModal = false;
-        this.refreshStudentData();
-      },
-      error: (err) => {
-        console.error('Failed to update address', err);
-        alert('Nepodařilo se uložit adresu.');
-      }
+    this.modalManager.openModal('edit_address', {
+      student: this.selectedStudent,
+      callback: () => this.refreshStudentData()
     });
   }
+
+
 }

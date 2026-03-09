@@ -233,7 +233,7 @@
                         <div class="chrono-timeline">
                             @for (grade of selectedStudent.last_grades; track $index) {
                             <div class="chrono-card overview-style" (click)="selectMark(grade)">
-                                <div class="chrono-badge" [class]="'mark-color-' + getBaseMark(grade)">
+                                <div class="chrono-badge" [class]="getGradeClass(formatMark(grade))">
                                     {{ formatMark(grade) }}
                                 </div>
                                 <div class="chrono-content">
@@ -399,7 +399,11 @@
                                     {{ selectedStudent.nationality }}
                                 </span>
                             </div>
-
+                            <div class="data-item">
+                                <span class="data-label">Pojišťovna</span>
+                                <span class="data-value">{{ selectedStudent.insurance_name }} ({{
+                                    selectedStudent.insurance_short }})</span>
+                            </div>
                         </div>
                     </div>
 
@@ -457,6 +461,13 @@
                                 <span class="data-label">PSČ</span>
                                 <span class="data-value">{{ selectedStudent.postcode }}</span>
                             </div>
+                            <div class="data-item">
+                                <span class="data-label">Země</span>
+                                <span class="data-value">
+                                    {{ Utils.getFlagFromCountry(selectedStudent.address_country_code2) }}
+                                    {{ selectedStudent.address_country }}
+                                </span>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -511,6 +522,157 @@
                         <div><i-tabler name="check"></i-tabler> Je nejbližším zák. zástupcem</div>
                         <div><i-tabler name="check"></i-tabler> Je zák. zástupcem de jure</div>
                         <div><i-tabler name="check"></i-tabler> Smí dostávat informace o žákovi</div>
+                    </div>
+                </div>
+
+                <div class="section-grid" style="margin-top: 1.5rem;">
+                    <!-- Personal Info Card -->
+                    <div class="info-card full">
+                        <div class="card-header">
+                            <i-tabler name="id"></i-tabler>
+                            <h3>{{ l.s('students.tabs.personal') }}</h3>
+                        </div>
+                        <div class="data-grid">
+                            <div class="data-item">
+                                <span class="data-label">{{ l.s('person.gender') }}</span>
+                                <span class="data-value">{{ selectedParent.gender == 1 ? l.s('genders.male') :
+                                    (selectedParent.gender == 2 ? l.s('genders.female') : l.s('unknown')) }}</span>
+                            </div>
+                            <div class="data-item">
+                                <span class="data-label">{{ l.s('person.titles') }}</span>
+                                <span class="data-value">
+                                    {{ selectedParent.prefixTitle || '—' }}
+                                    @if(selectedParent.suffixTitle) { , {{ selectedParent.suffixTitle }} }
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Contact Card -->
+                    <div class="info-card full">
+                        <div class="card-header">
+                            <i-tabler name="phone"></i-tabler>
+                            <h3>{{ l.s('students.tabs.contact') }}</h3>
+                        </div>
+                        <div class="data-grid">
+                            <div class="data-item">
+                                <span class="data-label">{{ l.s('students.phone') }}</span>
+                                <span class="data-value"><strong>{{ Utils.formatPhone(selectedParent.phone) || '—'
+                                        }}</strong></span>
+                            </div>
+                            <div class="data-item">
+                                <span class="data-label">{{ l.s('students.email') }}</span>
+                                <span class="data-value">
+                                    @if (selectedParent.email) {
+                                    <a [href]="'mailto:' + selectedParent.email">{{ selectedParent.email }}</a>
+                                    } @else {
+                                    —
+                                    }
+                                </span>
+                            </div>
+                            <div class="data-item">
+                                <span class="data-label">{{ l.s('person.data_box') }}</span>
+                                <span class="data-value">{{ selectedParent.dataBox || '—' }}</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Residence Card -->
+                    <div class="info-card full">
+                        <div class="card-header">
+                            <i-tabler name="home"></i-tabler>
+                            <h3>{{ l.s('family.residence') }}</h3>
+                        </div>
+                        <div class="data-grid">
+                            <div class="data-item">
+                                <span class="data-label">{{ l.s('address.street') }} a {{ l.s('address.house_number')
+                                    }}</span>
+                                <span class="data-value">{{ selectedParent.street || '—' }} {{
+                                    selectedParent.houseNumber }}</span>
+                            </div>
+                            <div class="data-item">
+                                <span class="data-label">{{ l.s('address.city') }}</span>
+                                <span class="data-value">{{ selectedParent.city || '—' }}</span>
+                            </div>
+                            <div class="data-item">
+                                <span class="data-label">{{ l.s('address.postcode') }}</span>
+                                <span class="data-value">{{ selectedParent.postcode || '—' }}</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Relationship Card -->
+                    <div class="info-card full">
+                        <div class="card-header">
+                            <i-tabler name="link"></i-tabler>
+                            <h3>{{ l.s('students.tabs.relationship') }}</h3>
+                        </div>
+                        <div class="data-grid">
+                            <div class="data-item">
+                                <span class="data-label">Vztah</span>
+                                <span class="data-value">{{ l.s('family.' + selectedParent.relationship) }}</span>
+                            </div>
+                            <div class="data-item">
+                                <span class="data-label">{{ l.s('students.register_number') }}</span>
+                                <span class="data-value">{{ selectedParent.register_number || '—' }}</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Siblings Card -->
+                    <div class="info-card full">
+                        <div class="card-header">
+                            <i-tabler name="users"></i-tabler>
+                            <h3>{{ l.s('students.siblings') }}</h3>
+                        </div>
+                        <div class="siblings-container">
+                            @for(sibling of (selectedParent.siblings || []); track sibling.id) {
+                            <div class="sibling-item clickable"
+                                (click)="$event.stopPropagation(); router.navigate(['/board/students/detail', sibling.id])">
+                                <div class="sibling-main-info">
+                                    <div class="sibling-avatar">
+                                        {{ Utils.getInitials(sibling.fullName) }}
+                                    </div>
+                                    <div class="sibling-identity">
+                                        <strong>{{ sibling.fullName }}</strong>
+                                        <span class="sibling-meta">
+                                            {{ Utils.formatDateShort(sibling.birthday) }} ({{
+                                            Utils.getAge(Utils.makeMoment(sibling.birthday)) }} let,
+                                            {{ l.s('genders.' + Utils.getGender(sibling.gender)) }})
+                                        </span>
+                                    </div>
+                                </div>
+                                <div class="sibling-academic-info">
+                                    <div class="info-group">
+                                        <span class="label">{{ l.s('students.class') }}:</span>
+                                        <span class="value">{{ sibling.class_name }}</span>
+                                    </div>
+                                    <div class="info-group">
+                                        <span class="label">{{ l.s('students.field_of_study') }}:</span>
+                                        <span class="value">{{ sibling.field_of_study }}</span>
+                                    </div>
+                                </div>
+                                <div class="sibling-extra-info">
+                                    <div class="info-group">
+                                        <span class="label">Třídní učitel:</span>
+                                        <span class="value">{{ sibling.teacher_name }}</span>
+                                    </div>
+                                    <div class="info-group">
+                                        <span class="label">{{ l.s('students.register_number') }}:</span>
+                                        <span class="value">{{ sibling.register_number }}</span>
+                                    </div>
+                                </div>
+                                <div class="sibling-action">
+                                    <i-tabler name="chevron-right"></i-tabler>
+                                </div>
+                            </div>
+                            } @empty {
+                            <div class="no-data-info">
+                                <i-tabler name="info-circle"></i-tabler>
+                                <span>Žádní sourozenci nenalezeni</span>
+                            </div>
+                            }
+                        </div>
                     </div>
                 </div>
                 } @else {
@@ -946,7 +1108,7 @@
                                 </div>
                                 <div class="grades-row">
                                     @for(mark of subject.marks; track $index) {
-                                    <div class="grade-item" [class]="'mark-color-' + getBaseMark(mark)"
+                                    <div class="grade-item" [class]="getGradeClass(formatMark(mark))"
                                         [style.fontSize.px]="getFontSize(mark.weight)" [title]="getMarkTooltip(mark)"
                                         (click)="selectMark(mark)">
                                         <span class="mark">{{ formatMark(mark) }}</span>
@@ -966,7 +1128,7 @@
                         <div class="chrono-timeline">
                             @for (mark of marks; track mark.column_id) {
                             <div class="chrono-card" (click)="selectMark(mark)">
-                                <div class="chrono-badge" [class]="'mark-color-' + getBaseMark(mark)">
+                                <div class="chrono-badge" [class]="getGradeClass(formatMark(mark))">
                                     {{ formatMark(mark) }}
                                 </div>
                                 <div class="chrono-content">
@@ -1249,71 +1411,6 @@
         </main>
     </div>
 </div>
-
-<!-- Edit Address Modal -->
-@if (showEditAddressModal) {
-<div class="modal-overlay">
-    <div class="modal">
-        <div class="modal-header">
-            <h3>Upravit adresu</h3>
-            <button class="close-btn" (click)="showEditAddressModal = false">
-                <i-tabler name="x"></i-tabler>
-            </button>
-        </div>
-        <div class="modal-body">
-            <div class="form-row">
-                <div class="form-group">
-                    <label>Ulice</label>
-                    <input type="text" class="form-control" [(ngModel)]="editingAddress.street">
-                </div>
-                <div class="form-group">
-                    <label>Číslo popisné</label>
-                    <input type="text" class="form-control" [(ngModel)]="editingAddress.houseNumber">
-                </div>
-            </div>
-            <div class="form-row">
-                <div class="form-group">
-                    <label>Město</label>
-                    <input type="text" class="form-control" [(ngModel)]="editingAddress.city">
-                </div>
-                <div class="form-group">
-                    <label>PSČ</label>
-                    <input type="text" class="form-control" [(ngModel)]="editingAddress.postcode">
-                </div>
-            </div>
-
-            <div class="form-group"
-                style="margin-top: 2rem; border-top: 1px solid var(--border-color); padding-top: 1.5rem; width: 100%;">
-                <label style="font-weight: 600; margin-bottom: 1rem; display: block;">Důvod uložení</label>
-                <div style="display: flex; gap: 2rem;">
-                    <label style="display: flex; align-items: center; gap: 0.75rem; cursor: pointer;">
-                        <input type="radio" name="addressSaveType" [(ngModel)]="addressSaveType" value="change"
-                            style="width: 1.25rem; height: 1.25rem; accent-color: var(--primary-color);">
-                        <div>
-                            <div style="font-weight: 500;">Změna</div>
-                            <div style="font-size: 0.85rem; color: var(--text-muted);">Zapíše informaci do historie
-                                studenta</div>
-                        </div>
-                    </label>
-                    <label style="display: flex; align-items: center; gap: 0.75rem; cursor: pointer;">
-                        <input type="radio" name="addressSaveType" [(ngModel)]="addressSaveType" value="correction"
-                            style="width: 1.25rem; height: 1.25rem; accent-color: var(--primary-color);">
-                        <div>
-                            <div style="font-weight: 500;">Oprava</div>
-                            <div style="font-size: 0.85rem; color: var(--text-muted);">Oprava chybného údaje (nezapisuje
-                                se do historie)</div>
-                        </div>
-                    </label>
-                </div>
-            </div>
-        </div>
-        <div class="modal-footer">
-            <button class="btn btn-secondary" (click)="showEditAddressModal = false">Zrušit</button>
-            <button class="btn btn-primary" (click)="saveAddress()">Uložit</button>
-        </div>
-    </div>
-</div>
-}
 
 <!-- Note Modal -->
 @if (showNoteModal && editingNote) {

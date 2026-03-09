@@ -62,6 +62,7 @@ export class CreateFileComponent {
         created_at: data.created_at,
         owner_id: data.owner_id,
         permissions: [],
+        can_manage_permissions: true,
         file_size: data.file_size
       })
     })

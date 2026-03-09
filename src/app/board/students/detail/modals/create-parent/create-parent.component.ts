@@ -23,6 +23,7 @@ export class CreateParentComponent implements OnInit {
   public Utils = Utils;
   public dropdownManager = inject(DropdownManager);
   public roles = ['father', 'mother', 'other'];
+  public mode = 'new';
 
   public form = {
     firstName: '',
@@ -54,6 +55,29 @@ export class CreateParentComponent implements OnInit {
         this.prefixDegrees = api.filter((d: any) => d.is_before === 1);
         this.suffixDegrees = api.filter((d: any) => d.is_before === 0);
       });
+
+    const data = this.modalManager.getModalData('create_parent');
+    this.mode = data.mode || 'new';
+    if (this.mode === 'edit' && data.parent) {
+      this.form = {
+        firstName: data.parent.firstName || '',
+        lastName: data.parent.lastName || '',
+        role: data.parent.relationship || this.roles[0],
+        gender: data.parent.gender || 0,
+        prefixTitle: data.parent.prefixTitle || '',
+        suffixTitle: data.parent.suffixTitle || '',
+        email: data.parent.email || '',
+        dataBox: data.parent.dataBox || '',
+        mobile: data.parent.phone || '',
+        phone: data.parent.phone || '',
+        address: {
+          street: data.parent.street || '',
+          houseNumber: data.parent.houseNumber || '',
+          city: data.parent.city || '',
+          postcode: data.parent.postcode || ''
+        }
+      };
+    }
   }
 
   public getSelectedPrefixTitles(): string {
@@ -97,14 +121,14 @@ export class CreateParentComponent implements OnInit {
   }
 
   public save(): void {
-    const student_id = this.modalManager.getModalData('create_parent').student_id;
+    const modalData = this.modalManager.getModalData('create_parent');
+    const student_id = modalData.student_id;
     if (!student_id) return;
 
-    const payload = {
-      mode: 'new',
+    const payload: any = {
+      mode: modalData.mode || 'new',
       role: this.form.role,
       firstName: this.form.firstName,
-
       lastName: this.form.lastName,
       gender: this.form.gender,
       prefixTitle: this.form.prefixTitle,
@@ -115,10 +139,14 @@ export class CreateParentComponent implements OnInit {
       address: this.form.address
     };
 
+    if (modalData.mode === 'edit') {
+      payload.personId = modalData.parent.id;
+    }
+
     this.http.post(`${Config.API_URL}/v1/student/${student_id}/parent`, payload, { withCredentials: true })
       .subscribe((api: any) => {
         if (api.success) {
-          const callback = this.modalManager.getModalData('create_parent').callback;
+          const callback = modalData.callback;
           if (callback) callback();
           this.closeModal();
           // Also close the add_parent modal if it was open

@@ -1,170 +1,206 @@
 <form class="student-form-modal">
-    <!-- Import method tabs -->
-    <div class="modal-tabs">
-        <button class="modal-tab" type="button" [class.active]="addStudentTab === 'manual'"
-            (click)="setAddStudentTab('manual')">
-            <i-tabler name="pencil"></i-tabler>
-            Ruční zadání
-        </button>
-        <button class="modal-tab" type="button" [class.active]="addStudentTab === 'ldap'"
-            (click)="setAddStudentTab('ldap')">
-            <i-tabler name="server"></i-tabler>
-            Active Directory
-        </button>
-        <button class="modal-tab" type="button" [class.active]="addStudentTab === 'excel'"
-            (click)="setAddStudentTab('excel')">
-            <i-tabler name="file-spreadsheet"></i-tabler>
-            Import z Excel
-        </button>
-    </div>
+    <div class="modal-body" (click)="dropdownManager.selected_dropdown = ''">
 
-    <div class="modal-body">
+        <div class="form-grid">
+            <div class="form-group">
+                <label>Jméno <span class="required">*</span></label>
+                <input type="text" class="form-control" [(ngModel)]="newStudent.firstName" name="firstName">
+            </div>
+            <div class="form-group">
+                <label>Příjmení <span class="required">*</span></label>
+                <input type="text" class="form-control" [(ngModel)]="newStudent.lastName" name="lastName">
+            </div>
+        </div>
 
-        @if (addStudentTab === 'manual') {
-        <div class="student-form-body">
-
-            <!-- Osobní údaje -->
-            <div class="form-section">
-                <div class="section-label">
-                    <i-tabler name="user"></i-tabler>
-                    Osobní údaje
-                </div>
-                <div class="form-row">
-                    <div class="form-group">
-                        <label>Jméno <span class="required">*</span></label>
-                        <div class="input-icon-wrap">
-                            <i-tabler name="user"></i-tabler>
-                            <input type="text" class="form-input" placeholder="Jan" [(ngModel)]="newStudent.firstName"
-                                name="firstName">
+        <div class="form-grid">
+            <div class="form-group">
+                <label>Tituly před jménem</label>
+                <div class="custom-select"
+                    (click)="$event.stopPropagation(); dropdownManager.selected_dropdown = dropdownManager.selected_dropdown == 'add-student_prefix' ? '' : 'add-student_prefix'">
+                    <div class="selected-value">
+                        {{ getSelectedPrefixTitles() }}
+                        <i-tabler name="chevron-down"></i-tabler>
+                    </div>
+                    @if (dropdownManager.selected_dropdown == 'add-student_prefix') {
+                    <div class="options-dropdown">
+                        <div class="list">
+                            @for (degree of prefixDegrees; track degree.degree_id) {
+                            <div class="option" [class.selected]="isPrefixTitleSelected(degree.shortcut)"
+                                (click)="$event.stopPropagation(); togglePrefixTitle(degree.shortcut)">
+                                <span>{{ degree.shortcut }}</span>
+                                @if (isPrefixTitleSelected(degree.shortcut)) {
+                                <i-tabler name="check"></i-tabler>
+                                }
+                            </div>
+                            }
                         </div>
                     </div>
-                    <div class="form-group">
-                        <label>Příjmení <span class="required">*</span></label>
-                        <div class="input-icon-wrap">
-                            <i-tabler name="user"></i-tabler>
-                            <input type="text" class="form-input" placeholder="Novák" [(ngModel)]="newStudent.lastName"
-                                name="lastName">
+                    }
+                </div>
+            </div>
+            <div class="form-group">
+                <label>Tituly za jménem</label>
+                <div class="custom-select"
+                    (click)="$event.stopPropagation(); dropdownManager.selected_dropdown = dropdownManager.selected_dropdown == 'add-student_suffix' ? '' : 'add-student_suffix'">
+                    <div class="selected-value">
+                        {{ getSelectedSuffixTitles() }}
+                        <i-tabler name="chevron-down"></i-tabler>
+                    </div>
+                    @if (dropdownManager.selected_dropdown == 'add-student_suffix') {
+                    <div class="options-dropdown">
+                        <div class="list">
+                            @for (degree of suffixDegrees; track degree.degree_id) {
+                            <div class="option" [class.selected]="isSuffixTitleSelected(degree.shortcut)"
+                                (click)="$event.stopPropagation(); toggleSuffixTitle(degree.shortcut)">
+                                <span>{{ degree.shortcut }}</span>
+                                @if (isSuffixTitleSelected(degree.shortcut)) {
+                                <i-tabler name="check"></i-tabler>
+                                }
+                            </div>
+                            }
                         </div>
                     </div>
+                    }
                 </div>
-                <div class="form-group">
-                    <label>E-mail</label>
-                    <div class="input-icon-wrap">
-                        <i-tabler name="mail"></i-tabler>
-                        <input type="email" class="form-input" placeholder="jan.novak@skola.cz"
-                            [(ngModel)]="newStudent.email" name="email">
+            </div>
+        </div>
+
+        <div class="form-grid">
+            <div class="form-group">
+                <label>Třída</label>
+                <div class="custom-select"
+                    (click)="$event.stopPropagation(); dropdownManager.selected_dropdown = dropdownManager.selected_dropdown == 'add-student_class' ? '' : 'add-student_class'">
+                    <div class="selected-value">
+                        {{ getSelectedClassLabel() }}
+                        <i-tabler name="chevron-down"></i-tabler>
                     </div>
-                </div>
-                <div class="form-group">
-                    <label>Datum narození</label>
-                    <app-calendar id="student_birthday" [value]="newStudent.birthday"
-                        (valueChange)="newStudent.birthday = $event" size="full"></app-calendar>
+                    @if (dropdownManager.selected_dropdown == 'add-student_class') {
+                    <div class="options-dropdown">
+                        <div class="list">
+                            <div class="option"
+                                (click)="$event.stopPropagation(); dropdownManager.selected_dropdown = ''; newStudent.classId = 0">
+                                Vyberte třídu...
+                            </div>
+                            @for (cls of classes; track cls.class_id) {
+                            <div class="option"
+                                (click)="$event.stopPropagation(); dropdownManager.selected_dropdown = ''; newStudent.classId = cls.class_id">
+                                {{ cls.class_name }}
+                            </div>
+                            }
+                        </div>
+                    </div>
+                    }
                 </div>
             </div>
 
-            <!-- Školní zařazení -->
-            <div class="form-section">
-                <div class="section-label">
-                    <i-tabler name="school"></i-tabler>
-                    Školní zařazení
-                </div>
-                <div class="form-row">
-                    <div class="form-group">
-                        <label>Třída</label>
-                        <div class="custom-select" id="new-student-class"
-                            (click)="$event.stopPropagation(); dropdownManager.selected_dropdown = dropdownManager.selected_dropdown == 'new_student_class' ? '' : 'new_student_class'">
-                            <div class="selected-value">
-                                <div class="row" style="gap:.5rem; align-items:center">
-                                    <i-tabler name="users-group"
-                                        style="width:1rem;height:1rem;color:var(--text-muted)"></i-tabler>
-                                    {{ selectedClass() }}
-                                </div>
-                                <i-tabler name="chevron-down"></i-tabler>
+            <div class="form-group">
+                <label>Pohlaví</label>
+                <div class="custom-select"
+                    (click)="$event.stopPropagation(); dropdownManager.selected_dropdown = dropdownManager.selected_dropdown == 'add-student_gender' ? '' : 'add-student_gender'">
+                    <div class="selected-value">
+                        {{ l.s('genders.' + Utils.getGender(newStudent.gender)) }}
+                        <i-tabler name="chevron-down"></i-tabler>
+                    </div>
+                    @if (dropdownManager.selected_dropdown == 'add-student_gender') {
+                    <div class="options-dropdown">
+                        <div class="list">
+                            <div class="option"
+                                (click)="$event.stopPropagation(); dropdownManager.selected_dropdown = ''; newStudent.gender = 0">
+                                {{ l.s('genders.male') }}
                             </div>
-                            @if (dropdownManager.selected_dropdown == 'new_student_class') {
-                            <div class="options-dropdown">
-                                <div class="list">
-                                    @for (cls of availableClasses; track cls.id) {
-                                    <div class="option"
-                                        (click)="$event.stopPropagation(); dropdownManager.selected_dropdown = ''; newStudent.classId = cls.id">
-                                        {{ cls.name }}
-                                    </div>
-                                    }
+                            <div class="option"
+                                (click)="$event.stopPropagation(); dropdownManager.selected_dropdown = ''; newStudent.gender = 1">
+                                {{ l.s('genders.female') }}
+                            </div>
+                        </div>
+                    </div>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label>Pojišťovna</label>
+            <div class="custom-select"
+                (click)="$event.stopPropagation(); dropdownManager.selected_dropdown = dropdownManager.selected_dropdown == 'add-student_insurance' ? '' : 'add-student_insurance'">
+                <div class="selected-value">
+                    {{ getInsuranceLabel(newStudent.insuranceId) }}
+                    <i-tabler name="chevron-down"></i-tabler>
+                </div>
+                @if (dropdownManager.selected_dropdown == 'add-student_insurance') {
+                <div class="options-dropdown">
+                    <div class="list">
+                        <div class="option"
+                            (click)="$event.stopPropagation(); dropdownManager.selected_dropdown = ''; newStudent.insuranceId = null">
+                            Nezadáno
+                        </div>
+                        @for (ins of insurances; track ins.insurance_id) {
+                        <div class="option"
+                            (click)="$event.stopPropagation(); dropdownManager.selected_dropdown = ''; newStudent.insuranceId = ins.insurance_id">
+                            {{ getInsuranceLabel(ins.insurance_id) }}
+                        </div>
+                        }
+                    </div>
+                </div>
+                }
+            </div>
+        </div>
+
+        <div class="form-grid">
+            <div class="form-group">
+                <label>Rodné číslo</label>
+                <input type="text" class="form-control" [(ngModel)]="newStudent.birthNum" name="birthNum"
+                    placeholder="XXXXXX/XXXX">
+            </div>
+            <div class="form-group">
+                <label>Datum narození</label>
+                <input type="date" class="form-control" [(ngModel)]="newStudent.birthday" name="birthday">
+            </div>
+        </div>
+
+        <div class="form-grid">
+            <div class="form-group">
+                <label>Místo narození</label>
+                <input type="text" class="form-control" [(ngModel)]="newStudent.birthPlace" name="birthPlace">
+            </div>
+            <div class="form-group">
+                <label>Státní občanství</label>
+                <div class="custom-select"
+                    (click)="$event.stopPropagation(); dropdownManager.selected_dropdown = dropdownManager.selected_dropdown == 'add-student_nationality' ? '' : 'add-student_nationality'">
+                    <div class="selected-value">
+                        <div class="row gap-2">
+                            <span>{{ getSelectedNationalityFlag() }}</span>
+                            <span>{{ getSelectedNationalityLabel() }}</span>
+                        </div>
+                        <i-tabler name="chevron-down"></i-tabler>
+                    </div>
+                    @if (dropdownManager.selected_dropdown == 'add-student_nationality') {
+                    <div class="options-dropdown">
+                        <div class="list">
+                            @for (country of countries; track country.country_id) {
+                            <div class="option"
+                                (click)="$event.stopPropagation(); dropdownManager.selected_dropdown = ''; newStudent.nationalityId = country.country_id">
+                                <div class="row gap-2">
+                                    <span>{{ Utils.getFlagFromCountry(country.code2) }}</span>
+                                    <span>{{ country.nationality }}</span>
                                 </div>
                             </div>
                             }
                         </div>
                     </div>
-                    <div class="form-group">
-                        <label>Obor</label>
-                        <div class="custom-select" id="new-student-scope"
-                            (click)="$event.stopPropagation(); dropdownManager.selected_dropdown = dropdownManager.selected_dropdown == 'new_student_scope' ? '' : 'new_student_scope'">
-                            <div class="selected-value">
-                                <div class="row" style="gap:.5rem; align-items:center">
-                                    <i-tabler name="book"
-                                        style="width:1rem;height:1rem;color:var(--text-muted)"></i-tabler>
-                                    {{ selectedScope() }}
-                                </div>
-                                <i-tabler name="chevron-down"></i-tabler>
-                            </div>
-                            @if (dropdownManager.selected_dropdown == 'new_student_scope') {
-                            <div class="options-dropdown">
-                                <div class="list">
-                                    @for (scope of availableScopes; track scope.id) {
-                                    <div class="option"
-                                        (click)="$event.stopPropagation(); dropdownManager.selected_dropdown = ''; newStudent.scopeId = scope.id">
-                                        {{ scope.name }}
-                                    </div>
-                                    }
-                                </div>
-                            </div>
-                            }
-                        </div>
-                    </div>
+                    }
+
                 </div>
             </div>
-
         </div>
-        }
-
-        @if (addStudentTab === 'ldap') {
-        <div class="import-panel">
-            <div class="search-wrapper large">
-                <i-tabler name="search"></i-tabler>
-                <input type="text" placeholder="Vyhledat uživatele v Active Directory...">
-            </div>
-            <div class="import-placeholder">
-                <i-tabler name="user-search"></i-tabler>
-                <p>Zadejte jméno nebo login pro vyhledání</p>
-            </div>
-        </div>
-        }
-
-        @if (addStudentTab === 'excel') {
-        <div class="import-panel">
-            <div class="drop-zone">
-                <i-tabler name="cloud-upload"></i-tabler>
-                <h3>Přetáhněte soubor sem</h3>
-                <p>nebo klikněte pro výběr souboru (.xlsx, .csv)</p>
-                <button type="button" class="btn btn--ghost">Vybrat soubor</button>
-            </div>
-            <a href="#" class="template-link">
-                <i-tabler name="download"></i-tabler>
-                Stáhnout šablonu pro import
-            </a>
-        </div>
-        }
 
     </div>
 
-    <!-- Actions -->
     <div class="modal-actions">
-        <button type="button" class="btn btn--ghost" (click)="close()">Zrušit</button>
+        <button type="button" class="btn btn--secondary" (click)="close()">Zrušit</button>
         <button type="button" class="btn btn--primary" (click)="submit()"
-            [disabled]="addStudentTab === 'manual' && (!newStudent.firstName || !newStudent.lastName)">
-            <i-tabler name="user-plus"></i-tabler>
-            @if (addStudentTab === 'manual') { Uložit studenta }
-            @else { Importovat }
+            [disabled]="!newStudent.firstName || !newStudent.lastName">
+            <i-tabler name="user-plus"></i-tabler> Uložit studenta
         </button>
     </div>
 

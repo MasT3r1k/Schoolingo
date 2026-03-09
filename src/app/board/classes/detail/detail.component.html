@@ -30,34 +30,58 @@
         <!-- Content -->
         @else if (classData) {
 
-        <!-- Class Header -->
-        <div class="class-header">
-            <div class="class-title-row">
-                <div class="class-avatar">
+        <!-- Class Hero Banner -->
+        <div class="class-hero">
+            <div class="hero-bg-glow"></div>
+            <div class="hero-content">
+                <div class="hero-icon">
                     <i-tabler name="chalkboard"></i-tabler>
                 </div>
-                <div>
-                    <h2 class="class-name">{{ classData.name }}</h2>
-                    <p class="class-subtitle">Detail třídy</p>
+                <div class="hero-text">
+                    <h1 class="hero-title">{{ classData.name }}</h1>
+                    <p class="hero-subtitle">Detail třídy</p>
                 </div>
             </div>
+            <div class="hero-stats">
+                <div class="hero-stat">
+                    <span class="hero-stat-value">{{ students.length }}</span>
+                    <span class="hero-stat-label">Studentů</span>
+                </div>
+                <div class="hero-stat-divider"></div>
+                <div class="hero-stat">
+                    <span class="hero-stat-value">{{ classData.year }}.</span>
+                    <span class="hero-stat-label">Ročník</span>
+                </div>
+            </div>
+        </div>
 
-            <div class="info-badges">
-                <div class="info-badge">
-                    <i-tabler name="school"></i-tabler>
-                    <span>{{ classData.year }}. ročník</span>
-                </div>
-                <div class="info-badge">
+        <!-- Info Cards Row -->
+        <div class="info-cards-row">
+            <div class="info-card">
+                <div class="info-card-icon">
                     <i-tabler name="book"></i-tabler>
-                    <span>{{ classData.fieldOfStudy || 'Neznámý obor' }}</span>
                 </div>
-                <div class="info-badge">
+                <div class="info-card-body">
+                    <span class="info-card-label">Obor studia</span>
+                    <span class="info-card-value">{{ classData.fieldOfStudy || 'Nezadán' }}</span>
+                </div>
+            </div>
+            <div class="info-card">
+                <div class="info-card-icon accent">
                     <i-tabler name="user-star"></i-tabler>
-                    <span>{{ classData.headTeacher || 'Třídní učitel nepřiřazen' }}</span>
                 </div>
-                <div class="info-badge">
+                <div class="info-card-body">
+                    <span class="info-card-label">Třídní učitel</span>
+                    <span class="info-card-value">{{ classData.headTeacher || 'Nepřiřazen' }}</span>
+                </div>
+            </div>
+            <div class="info-card">
+                <div class="info-card-icon success">
                     <i-tabler name="door"></i-tabler>
-                    <span>{{ classData.classroom || 'Kmenová učebna nezadána' }}</span>
+                </div>
+                <div class="info-card-body">
+                    <span class="info-card-label">Kmenová učebna</span>
+                    <span class="info-card-value">{{ classData.classroom || 'Nezadána' }}</span>
                 </div>
             </div>
         </div>

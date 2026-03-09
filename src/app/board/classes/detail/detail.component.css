@@ -6,7 +6,7 @@
 .detail-view {
     display: flex;
     flex-direction: column;
-    gap: 2rem;
+    gap: 1.75rem;
 }
 
 /* ─── Back Button ─────────────────────────────────────── */
@@ -16,98 +16,214 @@
     gap: 0.5rem;
     color: var(--text-muted);
     text-decoration: none;
-    font-size: 0.9rem;
+    font-size: 0.875rem;
     font-weight: 500;
-    transition: color 0.2s ease;
+    transition: color 0.2s ease, gap 0.2s ease;
     width: fit-content;
 }
 
 .back-btn:hover {
-    color: var(--text);
+    color: var(--primary);
+    gap: 0.625rem;
 }
 
 .back-btn i-tabler {
     width: 1.1rem;
     height: 1.1rem;
+    transition: transform 0.2s ease;
 }
 
-/* ─── Class Header ────────────────────────────────────── */
-.class-header {
-    display: flex;
-    flex-direction: column;
-    gap: 1.25rem;
-    padding-bottom: 2rem;
-    border-bottom: 1px solid var(--border);
+.back-btn:hover i-tabler {
+    transform: translateX(-2px);
 }
 
-.class-title-row {
+/* ─── Hero Banner ─────────────────────────────────────── */
+.class-hero {
+    position: relative;
     display: flex;
     align-items: center;
-    gap: 1rem;
+    justify-content: space-between;
+    gap: 1.5rem;
+    padding: 2rem 2rem;
+    background: linear-gradient(135deg,
+            rgba(var(--primary-rgb), 0.12) 0%,
+            rgba(var(--primary-rgb), 0.05) 50%,
+            rgba(var(--accent-rgb, 139, 92, 246), 0.08) 100%);
+    border: 1px solid rgba(var(--primary-rgb), 0.2);
+    border-radius: var(--radius-xl);
+    overflow: hidden;
 }
 
-.class-avatar {
-    width: 3.5rem;
-    height: 3.5rem;
-    border-radius: var(--radius);
-    background: var(--primary-subtle, rgba(74, 163, 255, 0.12));
-    color: var(--primary);
+.hero-bg-glow {
+    position: absolute;
+    top: -40px;
+    right: -40px;
+    width: 200px;
+    height: 200px;
+    background: radial-gradient(circle, rgba(var(--primary-rgb), 0.15) 0%, transparent 70%);
+    pointer-events: none;
+}
+
+.hero-content {
+    display: flex;
+    align-items: center;
+    gap: 1.25rem;
+    z-index: 1;
+}
+
+.hero-icon {
     display: flex;
     align-items: center;
     justify-content: center;
-    flex-shrink: 0;
-}
-
-.class-avatar i-tabler {
-    width: 1.75rem;
-    height: 1.75rem;
-}
-
-.class-name {
-    font-size: 1.75rem;
-    font-weight: 700;
-    margin: 0 0 0.1rem 0;
-    color: var(--text);
-    line-height: 1.2;
-}
-
-.class-subtitle {
-    margin: 0;
-    font-size: 0.875rem;
-    color: var(--text-muted);
-}
-
-/* ─── Info Badges ─────────────────────────────────────── */
-.info-badges {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.625rem;
-}
-
-.info-badge {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.5rem;
-    background: var(--surface-2);
-    border: 1px solid var(--border);
-    padding: 0.4rem 0.875rem;
-    border-radius: 999px;
-    font-size: 0.875rem;
-    font-weight: 500;
-    color: var(--text);
-    transition: background 0.15s ease, border-color 0.15s ease;
-}
-
-.info-badge:hover {
-    background: var(--hover-bg);
-    border-color: var(--primary);
-}
-
-.info-badge i-tabler {
-    width: 1rem;
-    height: 1rem;
+    width: 4rem;
+    height: 4rem;
+    background: rgba(var(--primary-rgb), 0.15);
+    border: 1px solid rgba(var(--primary-rgb), 0.25);
+    border-radius: var(--radius-lg);
     color: var(--primary);
     flex-shrink: 0;
+}
+
+.hero-icon i-tabler {
+    width: 2rem;
+    height: 2rem;
+}
+
+.hero-text {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+.hero-title {
+    font-size: 2rem;
+    font-weight: 800;
+    color: var(--text);
+    line-height: 1.15;
+    letter-spacing: -0.02em;
+    margin: 0;
+}
+
+.hero-subtitle {
+    font-size: 0.875rem;
+    color: var(--text-muted);
+    margin: 0;
+    font-weight: 500;
+}
+
+.hero-stats {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    z-index: 1;
+    flex-shrink: 0;
+}
+
+.hero-stat {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.2rem;
+}
+
+.hero-stat-value {
+    font-size: 1.75rem;
+    font-weight: 800;
+    color: var(--primary);
+    line-height: 1;
+    letter-spacing: -0.03em;
+}
+
+.hero-stat-label {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.hero-stat-divider {
+    width: 1px;
+    height: 2.5rem;
+    background: rgba(var(--primary-rgb), 0.2);
+    border-radius: 999px;
+}
+
+/* ─── Info Cards Row ──────────────────────────────────── */
+.info-cards-row {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.875rem;
+}
+
+.info-card {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem 1.125rem;
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
+}
+
+.info-card:hover {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(var(--primary-rgb), 0.08);
+    transform: translateY(-1px);
+}
+
+.info-card-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.5rem;
+    height: 2.5rem;
+    background: rgba(var(--primary-rgb), 0.12);
+    color: var(--primary);
+    border-radius: var(--radius-md);
+    flex-shrink: 0;
+    transition: background 0.2s ease;
+}
+
+.info-card-icon.accent {
+    background: rgba(var(--accent-rgb, 139, 92, 246), 0.12);
+    color: var(--accent, #8b5cf6);
+}
+
+.info-card-icon.success {
+    background: rgba(34, 197, 94, 0.12);
+    color: #16a34a;
+}
+
+.info-card-icon i-tabler {
+    width: 1.25rem;
+    height: 1.25rem;
+}
+
+.info-card-body {
+    display: flex;
+    flex-direction: column;
+    gap: 0.1rem;
+    min-width: 0;
+}
+
+.info-card-label {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    white-space: nowrap;
+}
+
+.info-card-value {
+    font-size: 0.9375rem;
+    font-weight: 600;
+    color: var(--text);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
 /* ─── Loading / Error / Empty states ─────────────────── */
@@ -122,7 +238,7 @@
     text-align: center;
     gap: 0.875rem;
     background: var(--surface-2);
-    border-radius: var(--radius);
+    border-radius: var(--radius-lg);
     border: 1px dashed var(--border);
 }
 
@@ -173,7 +289,7 @@
 .students-section {
     display: flex;
     flex-direction: column;
-    gap: 1.25rem;
+    gap: 1rem;
 }
 
 .section-header {
@@ -186,10 +302,11 @@
     display: flex;
     align-items: center;
     gap: 0.5rem;
-    font-size: 1.125rem;
-    font-weight: 600;
+    font-size: 1.0625rem;
+    font-weight: 700;
     color: var(--text);
     margin: 0;
+    letter-spacing: -0.01em;
 }
 
 .section-title i-tabler {
@@ -205,7 +322,7 @@
     min-width: 1.75rem;
     height: 1.75rem;
     padding: 0 0.5rem;
-    background: var(--primary-subtle, rgba(74, 163, 255, 0.12));
+    background: rgba(var(--primary-rgb), 0.12);
     color: var(--primary);
     border-radius: 999px;
     font-size: 0.8125rem;
@@ -216,7 +333,7 @@
 .students-table-wrapper {
     background: var(--surface);
     border: 1px solid var(--border);
-    border-radius: var(--radius);
+    border-radius: var(--radius-lg);
     overflow: hidden;
     overflow-x: auto;
 }
@@ -254,6 +371,10 @@
 
 .students-table tbody tr:hover {
     background: var(--hover-bg);
+}
+
+.students-table tbody tr:hover .student-name {
+    color: var(--primary);
 }
 
 .students-table td {
@@ -300,7 +421,7 @@
     width: 2.25rem;
     height: 2.25rem;
     border-radius: 50%;
-    background: var(--primary-subtle, rgba(74, 163, 255, 0.12));
+    background: rgba(var(--primary-rgb), 0.12);
     color: var(--primary);
     display: flex;
     align-items: center;
@@ -309,6 +430,12 @@
     font-weight: 700;
     flex-shrink: 0;
     overflow: hidden;
+    border: 2px solid rgba(var(--primary-rgb), 0.15);
+    transition: border-color 0.15s ease;
+}
+
+.students-table tbody tr:hover .student-avatar {
+    border-color: rgba(var(--primary-rgb), 0.35);
 }
 
 .student-avatar img {
@@ -318,13 +445,14 @@
 }
 
 .student-name {
-    font-weight: 500;
+    font-weight: 600;
+    transition: color 0.15s ease;
 }
 
 /* ─── Grade Badge ─────────────────────────────────────── */
 .grade-badge {
     display: inline-block;
-    padding: 0.25rem 0.6rem;
+    padding: 0.25rem 0.65rem;
     border-radius: 6px;
     font-weight: 700;
     font-size: 0.875rem;
@@ -341,7 +469,7 @@
 }
 
 .grade-good {
-    background: rgba(74, 163, 255, 0.12);
+    background: rgba(var(--primary-rgb), 0.12);
     color: var(--primary);
 }
 
@@ -377,4 +505,21 @@
 .status-suspended {
     background: rgba(239, 68, 68, 0.12);
     color: #dc2626;
+}
+
+/* ─── Responsive ──────────────────────────────────────── */
+@media (max-width: 768px) {
+    .class-hero {
+        flex-direction: column;
+        align-items: flex-start;
+        padding: 1.5rem;
+    }
+
+    .hero-stats {
+        align-self: flex-start;
+    }
+
+    .info-cards-row {
+        grid-template-columns: 1fr;
+    }
 }

@@ -10,36 +10,69 @@ import { Locale } from '@Schoolingo/locale';
   standalone: true,
   imports: [CommonModule, FormsModule, IconsModule],
   template: `
-    <div class="modal-body">
-      <div class="message message--info">
-        <p>Zadejte celkový počet dní dovolené pro zaměstnance <strong>{{ data.employee.full_name }}</strong> v aktuálním roce.</p>
+    <div class="message message--info">
+      <p>Zadejte celkový počet dní dovolené pro zaměstnance <strong>{{ data.employee.full_name }}</strong> v aktuálním roce.</p>
+    </div>
+    
+    <div class="form-group mb-4">
+      <label>Počet dní (celkem)</label>
+      <div class="input-icon-wrap">
+          <i-tabler name="beach"></i-tabler>
+          <input type="number" class="form-input" [(ngModel)]="amount" min="0" max="100">
       </div>
-      
-      <div class="form-group">
-        <label>Počet dní (celkem)</label>
-        <input type="number" class="form-input" [(ngModel)]="amount" min="0" max="100">
-      </div>
+    </div>
 
-      <div class="info-alert mt">
+    <div class="info-alert mt-4">
+      <div class="info-alert__icon">
         <i-tabler name="info-circle"></i-tabler>
-        <span>Tato hodnota přepíše základní nárok pro aktuální rok.</span>
       </div>
-      <div class="modal-actions">
-        <button class="btn btn--ghost" (click)="close()">Zrušit</button>
-        <button class="btn btn--primary" (click)="confirm()">Uložit změny</button>
+      <div class="info-alert__content">
+        Tato hodnota přepíše základní nárok pro aktuální rok.
       </div>
+    </div>
+    
+    <div class="modal-actions mt-6">
+      <button class="btn btn--secondary" (click)="close()">Zrušit</button>
+      <button class="btn btn--primary" (click)="confirm()">Uložit změny</button>
     </div>
   `,
   styles: [`
+    .message--info {
+        background: rgba(var(--primary-rgb), 0.05);
+        border: 1px solid rgba(var(--primary-rgb), 0.1);
+        border-radius: 12px;
+        padding: 1rem;
+        margin-bottom: 1.5rem;
+    }
+    .message--info p {
+        margin: 0;
+        font-size: 0.9375rem;
+        color: var(--text-main);
+    }
+
     .info-alert {
-      display: flex;
-      gap: 0.75rem;
-      padding: 1rem;
-      background: var(--bg-secondary);
-      border-radius: 0.5rem;
-      font-size: 0.8125rem;
-      color: var(--text-secondary);
-      align-items: center;
+        display: flex;
+        gap: 0.75rem;
+        padding: 1rem;
+        background: var(--bg-secondary);
+        border-radius: 12px;
+        align-items: flex-start;
+    }
+    .info-alert__icon {
+        color: var(--primary-color);
+        flex-shrink: 0;
+        display: flex;
+        align-items: center;
+        margin-top: 2px;
+    }
+    .info-alert__icon i-tabler {
+        width: 1.125rem;
+        height: 1.125rem;
+    }
+    .info-alert__content {
+        font-size: 0.8125rem;
+        line-height: 1.4;
+        color: var(--text-secondary);
     }
   `]
 })

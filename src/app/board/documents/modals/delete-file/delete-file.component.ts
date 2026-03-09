@@ -17,10 +17,19 @@ export class DeleteFileComponent {
   public l = inject(Locale);
   public documents = inject(Documents);
   public modalManager = inject(ModalManager);
+  public selected_option: number = 0;
   private http = inject(HttpClient);
 
   public getFile() {
     return this.documents.getSelectedFile();
+  }
+
+  public getActionIcon(): string {
+    return this.selected_option === 0 ? 'link-off' : 'trash-x';
+  }
+
+  public getActionText(): string {
+    return this.selected_option === 0 ? this.l.s('documents.delete_modal.action_remove') : this.l.s('documents.delete_modal.action_delete');
   }
 
   public deleteFile(): void {
@@ -31,7 +40,10 @@ export class DeleteFileComponent {
     this.http.delete(
       `${Config.API_URL}/v1/documents/delete`,
       {
-        body: { document_id: docId },
+        body: { 
+          document_id: docId,
+          type: this.selected_option === 0 ? 'remove_access' : 'complete_delete'
+        },
         withCredentials: true
       }
     ).subscribe((data: any) => {

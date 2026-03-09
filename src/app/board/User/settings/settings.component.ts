@@ -23,6 +23,13 @@ import { Settings } from '@Schoolingo/settings';
 })
 export class SettingsComponent implements OnInit {
   public selectedTab = new BehaviorSubject<number>(0);
+
+  public options_icons = [
+    'password',
+    'language',
+    'brush',
+    'shield-lock'
+  ];
   public options = [
     'settings.change_password',
     'settings.language',

@@ -1,0 +1,89 @@
+<div class="permissions-modal">
+    <div class="current-perms">
+        <h3>{{ l.s('documents.current_permissions') }}</h3>
+        @if (loading) {
+        <div class="loading"><i-tabler name="loader" class="animate-spin"></i-tabler> {{ l.s('documents.loading') }}
+        </div>
+        } @else {
+        <div class="perm-list">
+            @for (perm of permissions; track $index) {
+            <div class="perm-item">
+                <div class="perm-info">
+                    <i-tabler [name]="perm.role_id ? 'users' : 'user'"></i-tabler>
+                    <div class="perm-label">
+                        @if (perm.role_id) {
+                        <strong>{{ perm.role_name }}</strong>
+                        } @else {
+                        <strong>{{ perm.first_name }} {{ perm.last_name }}</strong>
+                        <small>({{ perm.username }})</small>
+                        }
+                    </div>
+                </div>
+                <div class="perm-actions">
+                    <span class="badge" [class.badge-write]="perm.permission_type === 'WRITE'"
+                        [class.badge-deny]="perm.permission_type === 'DENY'">
+                        {{ perm.permission_type }}
+                    </span>
+                    <button class="btn-icon btn-danger" (click)="removePermission($index)">
+                        <i-tabler name="trash-x"></i-tabler>
+                    </button>
+                </div>
+            </div>
+            } @empty {
+            <p class="empty-msg">{{ l.s('documents.no_extra_permissions') }}</p>
+            }
+        </div>
+        }
+    </div>
+
+    <hr>
+
+    <div class="add-perm">
+        <h3>{{ l.s('documents.add_permission') }}</h3>
+        <div class="form-grid">
+            <div class="form-group">
+                <label>{{ l.s('documents.target_type') }}</label>
+                <select [(ngModel)]="selectedType" (change)="selectedId = ''">
+                    <option value="role">{{ l.s('documents.role') }}</option>
+                    <option value="user">{{ l.s('documents.user') }}</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>{{ l.s('documents.target') }}</label>
+                <select [(ngModel)]="selectedId">
+                    <option value="" disabled>{{ l.s('documents.select_target') }}</option>
+                    @if (selectedType === 'role') {
+                    @for (role of availableRoles; track role.role_id) {
+                    <option [value]="role.role_id">{{ role.role_name }}</option>
+                    }
+                    } @else {
+                    @for (user of availableUsers; track user.user_id) {
+                    <option [value]="user.user_id">{{ user.first_name }} {{ user.last_name }} ({{ user.username }})
+                    </option>
+                    }
+                    }
+                </select>
+            </div>
+            <div class="form-group">
+                <label>{{ l.s('documents.permission_type') }}</label>
+                <select [(ngModel)]="selectedPerm">
+                    <option value="READ">READ</option>
+                    <option value="WRITE">WRITE</option>
+                    <option value="DENY">{{ l.s('documents.deny') }}</option>
+                </select>
+            </div>
+            <div class="form-actions">
+                <button class="btn btn--primary" [disabled]="!selectedId" (click)="addPermission()">
+                    <i-tabler name="plus"></i-tabler>
+                    {{ l.s('documents.add') }}
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-footer">
+        <button class="btn btn--secondary" (click)="modalManager.closeModal('manage_permissions')">{{ l.s('form.cancel')
+            }}</button>
+        <button class="btn btn--primary" (click)="save()">{{ l.s('form.save') }}</button>
+    </div>
+</div>

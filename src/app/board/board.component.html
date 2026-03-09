@@ -216,7 +216,8 @@
                     <ul>
                         @for (item of userDropdown; track $index) {
                         <li [routerLink]="item.url" [ngClass]="[item.type ?? '']"
-                            (click)="dropdownManager.selected_dropdown='';item?.action();" [routerLinkActive]="'active'"
+                            (click)="dropdownManager.selected_dropdown=''; (item.action ? item.action() : null);"
+                            [routerLinkActive]="'active'"
                             [routerLinkActiveOptions]="{ exact: false, queryParams: 'ignored' }">
                             <div class="item">
                                 @if (item.icon) {
@@ -317,7 +318,7 @@
     [style.top.px]="context_menu.getPosition().y" [style.left.px]="context_menu.getPosition().x">
     @for(item of context_menu.getItems();track $index) {
     @if (item.text != undefined) {
-    <div class="menu-item" [class.danger]="item.color == 'danger'" (click)="item?.action()">
+    <div class="menu-item" [class.danger]="item.color == 'danger'" (click)="item.action ? item.action() : null">
         {{ l.s(item.text) }}
     </div>
     }

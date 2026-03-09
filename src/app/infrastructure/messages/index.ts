@@ -29,11 +29,6 @@ export type MessageOptions =
   | 'copyToParents'
   | 'toAll';
 
-export enum MessageSendSecondTab {
-  RECEIVERS,
-  ATTACHMENTS,
-}
-
 export enum messageTypes {
   MESSAGE,
   HOMEWORK,
@@ -52,6 +47,7 @@ export type messageReceiver = {
   class?: string;
   classTeacher?: messageReceiver[];
   parents?: messageReceiver[];
+  members?: number[];
   child: string;
   type?: 'parent';
 };
@@ -149,6 +145,7 @@ export class MessageManager {
   // Receivers
   public receivers: number[] = [];
   public selectedReceivers$ = new BehaviorSubject<messageReceiver[]>([]);
+  public activeCategory$ = new BehaviorSubject<string | null>(null);
 
   // Files
   public files: UploadFile[] = [];

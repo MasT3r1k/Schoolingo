@@ -22,6 +22,7 @@ import { DropdownManager } from '@Schoolingo/dropdown';
 import { editCompanyModalComponent } from './editCompanyModal/editCompanyModal';
 import { selectCompanyModalComponent } from './selectCompanyModal/selectCompanyModal';
 import { instructorDetailModalComponent } from './instructorDetailModal/instructorDetailModal';
+import { removeCompanyModalComponent } from './removeCompanyModal/removeCompanyModal';
 
 type Scope = {
   scope_id: number;
@@ -311,20 +312,41 @@ export class CompaniesComponent implements OnInit {
 
   public removeCompany(): void {
     if (!this.permissions.checkPermission(["manager:traineeship:removeCompany"])) return;
-    Swal.fire({
-      title: this.l.s("traineeship.alerts.remove_company_title"),
-      text: this.l.s("traineeship.alerts.remove_company_description"),
-      icon: "warning",
-      showCancelButton: true,
-      confirmButtonColor: "var(--red)",
-      customClass: {
-        cancelButton: "gray",
-      },
-      confirmButtonText: this.l.s("traineeship.remove_company"),
-      cancelButtonText: this.l.s("buttons.cancel"),
-      reverseButtons: true
-    }).then((result) => {
-      if (result.isConfirmed) {
+    this.modalManager.openModal('remove_company', {
+      company: this.traineeship.selectedCompany,
+      callback: (option: number) => {
+        const payload = {
+          companyId: this.traineeship.selectedCompany.companyId,
+          type: option === 0 ? 'archive' : 'delete'
+        };
+
+        this.http.post(`${Config.API_URL}/v1/traineeship/remove_company`, payload, { withCredentials: true })
+          .subscribe({
+            next: (res: any) => {
+              if (res.status === 'success') {
+                Swal.fire({
+                  title: this.l.s('traineeship.alerts.remove_success_title'),
+                  text: this.l.s('traineeship.alerts.remove_success_description'),
+                  icon: 'success'
+                }).then(() => {
+                  this.goToList();
+                });
+              } else {
+                Swal.fire({
+                  title: this.l.s('traineeship.alerts.remove_error_title'),
+                  text: res.error || 'Failed',
+                  icon: 'error'
+                });
+              }
+            },
+            error: (err) => {
+              Swal.fire({
+                title: this.l.s('traineeship.alerts.remove_error_title'),
+                text: err.message,
+                icon: 'error'
+              });
+            }
+          });
       }
     });
   }
@@ -461,19 +483,34 @@ export class CompaniesComponent implements OnInit {
     }
   )
 
-  this.modalManager.addModal(
-    'instructor_detail', {
-      closeable: true,
-      title: 'traineeship.instructor_detail',
-      width: 500,
-      items: [
-        {
-          type: 'component',
-          component: instructorDetailModalComponent
-        }
-      ]
-    }
-  )
+    this.modalManager.addModal(
+      'instructor_detail', {
+        closeable: true,
+        title: 'traineeship.instructor_detail',
+        width: 500,
+        items: [
+          {
+            type: 'component',
+            component: instructorDetailModalComponent
+          }
+        ]
+      }
+    )
+
+    this.modalManager.addModal(
+      'remove_company', {
+        closeable: true,
+        title: 'traineeship.remove_company',
+        icon: 'building-off',
+        width: 500,
+        items: [
+          {
+            type: 'component',
+            component: removeCompanyModalComponent
+          }
+        ]
+      }
+    )
 
     // this.listeners.push(
     //   this.schoolingo.socketService.addFunction("traineeship:getCompanyInstructors")

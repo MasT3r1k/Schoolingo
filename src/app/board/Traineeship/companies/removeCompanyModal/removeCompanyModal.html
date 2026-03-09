@@ -1,0 +1,26 @@
+<div class="row-type-selector">
+    <div class="row-option" (click)="selected_option = 0" [class.selected]="selected_option == 0">
+        <div class="row-option__dot"></div>
+        <div class="row-option__content">
+            <h4>Odebrat firmu jen pro studenty (do archivu)</h4>
+            <p>Firma nebude u studentů viditelná a bude v archivu, aby byla zachována historie.</p>
+        </div>
+    </div>
+    <div class="row-option row-option--danger" (click)="selected_option = 1" [class.selected]="selected_option == 1">
+        <div class="row-option__dot"></div>
+        <div class="row-option__content">
+            <h4 style="color: var(--danger);">Kompletně smazat včetně dat</h4>
+            <p>Data budou smazána (přepsána na ""). Zůstane pouze evidence toho, že zde někdo měl firmu, ale nebude
+                dohledatelné jakou.</p>
+        </div>
+    </div>
+</div>
+
+<div class="modal-actions">
+    <div class="btn btn--ghost" (click)="closeModal()">{{ l.s('buttons.cancel') }}</div>
+    <div class="btn" [class.btn--primary]="selected_option === 0" [class.btn--danger]="selected_option === 1"
+        (click)="confirm()">
+        <i-tabler [name]="getActionIcon()"></i-tabler>
+        {{ getActionText() }}
+    </div>
+</div>

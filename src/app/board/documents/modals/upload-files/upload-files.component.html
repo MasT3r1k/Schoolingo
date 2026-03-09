@@ -17,8 +17,8 @@
             <div class="file-size">
                 {{ Utils.formatBytes(file.file.size) }}
                 @if (checkFile(file.file) != null) {
-                <span style="margin-inline: 0.5rem;color:var(--color-darker)">&ndash;</span>
-                <span class="file-error">
+                <span style="color:var(--text-muted)">&ndash;</span>
+                <span class="file-error-text">
                     {{ checkFile(file.file) }}
                 </span>
                 }
@@ -50,7 +50,9 @@
 <div class="modal-actions">
     <button type="button" class="btn btn--secondary" (click)="modalManager.closeModal('upload_files')">{{ l.s('cancel')
         }}</button>
-    <button type="button" class="btn btn--primary" [disabled]="files.length === 0 || !checkFilesUploaded()">
+    <button type="button" class="btn" [class.btn--primary]="files.length > 0 && checkFilesUploaded()"
+        [class.btn--secondary]="files.length === 0 || !checkFilesUploaded()"
+        [disabled]="files.length === 0 || !checkFilesUploaded()" (click)="assignAllFiles()">
         <i-tabler name="cloud-upload"></i-tabler>
         {{ l.s('documents.upload_files') }}
     </button>

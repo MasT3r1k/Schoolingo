@@ -4,7 +4,6 @@ import { Locale } from '@Schoolingo/locale';
 import {
   MessageManager,
   messageReceiver,
-  MessageSendSecondTab,
   MessageType,
   messageTypes,
 } from '@Schoolingo/messages';
@@ -40,7 +39,6 @@ import { SelectReceiverComponent } from './modals/select-receiver/select-receive
 export class SendComponent implements OnInit {
   AppConfig = Config;
   messageTypes = messageTypes;
-  MessageSendSecondTab = MessageSendSecondTab;
   subscribers: Subscription[] = [];
 
   // === Injections ===
@@ -144,7 +142,7 @@ export class SendComponent implements OnInit {
       next: (groups) => {
         this.availableGroups = groups;
         if (this.availableGroups.length > 0) {
-          this.selectedCategory = this.availableGroups[0];
+          this.selectCategory(this.availableGroups[0]);
         } else {
           this.selectedCategory = null;
         }
@@ -154,16 +152,34 @@ export class SendComponent implements OnInit {
   }
 
   public selectCategory(group: RecipientGroup) {
-      this.selectedCategory = group;
-      this.dropdownManager.selected_dropdown = '';
+    if (this.selectedCategory?.group === group.group) {
+        this.dropdownManager.selected_dropdown = '';
+        return;
+    }
+    this.selectedCategory = group;
+    this.messageManager.activeCategory$.next(group.group);
+    this.messageManager.selectedReceivers$.next([]);
+    this.dropdownManager.selected_dropdown = '';
+    
+    if (group.group.includes('all')) {
+      this.addAllInCategory();
+    }
   }
 
   public toggleRecipient(receiver: messageReceiver) {
-    const index = this.selectedReceivers.findIndex(r => r.person_id === receiver.person_id);
-    if (index > -1) {
-      this.selectedReceivers.splice(index, 1);
+    const isSingle = !this.selectedCategory?.group?.includes('select') && !this.selectedCategory?.group?.includes('all');
+    const newReceivers = [...this.selectedReceivers];
+    
+    if (isSingle) {
+        this.messageManager.selectedReceivers$.next([receiver]);
     } else {
-      this.selectedReceivers.push(receiver);
+        const index = newReceivers.findIndex(r => r.person_id === receiver.person_id);
+        if (index > -1) {
+          newReceivers.splice(index, 1);
+        } else {
+          newReceivers.push(receiver);
+        }
+        this.messageManager.selectedReceivers$.next(newReceivers);
     }
   }
 
@@ -195,15 +211,21 @@ export class SendComponent implements OnInit {
 
   public addAllInCategory() {
       if (!this.selectedCategory) return;
+      const newReceivers = [...this.selectedReceivers];
       this.getUsersInCategory().forEach((u: messageReceiver) => {
-          if (!this.isSelected(u)) {
-              this.selectedReceivers.push(u);
+          if (!newReceivers.some(r => r.person_id === u.person_id)) {
+              newReceivers.push(u);
           }
       });
+      this.messageManager.selectedReceivers$.next(newReceivers);
+  }
+
+  public openReceiverModal() {
+      this.modalManager.openModal('select_receiver');
   }
 
   public removeAllSelected() {
-      this.selectedReceivers = [];
+      this.messageManager.selectedReceivers$.next([]);
   }
 
   public getTotalFilteredUsers(): number {
@@ -216,9 +238,9 @@ export class SendComponent implements OnInit {
 
   // === Lifecycle ===
   ngOnInit(): void {
-    this.loadRecipients();
     this.subscribers.push(
       this.messageManager.messageType.subscribe(() => {
+        this.messageManager.selectedReceivers$.next([]);
         this.loadRecipients();
         setTimeout(() => this.selectedOptionTab.next(0), 300);
       })
@@ -252,6 +274,19 @@ export class SendComponent implements OnInit {
       }
     )
 
+    this.modalManager.addModal(
+      'select_receiver',
+      {
+        icon: 'users',
+        title: 'messages.select_receiver',
+        closeable: true,
+        width: 800,
+        items: [
+          { type: 'component', component: SelectReceiverComponent }
+        ]
+      }
+    )
+
   }
 
   // === Sending message ===
@@ -260,7 +295,7 @@ export class SendComponent implements OnInit {
       type: this.messageManager.messageType.getValue(),
       topic: this.messageManager.topic,
       message: this.messageManager.message,
-      receivers: this.selectedReceivers.map((r) => r.person_id),
+      receivers: this.selectedReceivers.flatMap((r) => r.members ? r.members : [r.person_id]),
       require_confirm: this.messageManager.options.requireConfirmation
     };
     if (this.messageManager.draft_id) payload.draft_id = this.messageManager.draft_id;
@@ -317,7 +352,7 @@ export class SendComponent implements OnInit {
 
     const payload: any = {
       content: message,
-      receivers: this.selectedReceivers.map((r) => r.person_id),
+      receivers: this.selectedReceivers.flatMap((r) => r.members ? r.members : [r.person_id]),
       files: this.messageManager.files,
       message_type: type
     };

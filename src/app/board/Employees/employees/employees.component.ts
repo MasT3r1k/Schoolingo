@@ -22,6 +22,7 @@ import { EditAttendanceModalComponent } from './modals/edit-attendance-modal/edi
 import { EditEmployeeModalComponent } from './modals/edit-employee-modal/edit-employee-modal.component';
 import { RejectVacationModalComponent } from './modals/reject-vacation-modal/reject-vacation-modal.component';
 import { AdjustVacationModalComponent } from './modals/adjust-vacation-modal/adjust-vacation-modal.component';
+import { RequestMoreVacationModalComponent } from './modals/request-more-vacation-modal/request-more-vacation-modal.component';
 import { EMPLOYEE_CONFIG } from '../../../infrastructure/employees/const';
 import moment from 'moment';
 
@@ -148,7 +149,24 @@ export class EmployeesComponent implements OnInit {
   checkInTime = signal<string | null>(null);
 
   // Detail view data - Signals
-  attendanceStats = signal<{ totalHours: number; daysPresent: number; avgDaily: number }>({ totalHours: 0, daysPresent: 0, avgDaily: 0 });
+  attendanceStats = computed(() => {
+    const records = this.attendanceRecords();
+    let totalMinutes = 0;
+    let daysWithRecords = 0;
+
+    records.forEach(record => {
+      if (record.worked_minutes) {
+        totalMinutes += record.worked_minutes;
+        daysWithRecords++;
+      }
+    });
+
+    return {
+      totalHours: Number((totalMinutes / 60).toFixed(1)),
+      daysPresent: daysWithRecords,
+      avgDaily: daysWithRecords > 0 ? Number((totalMinutes / 60 / daysWithRecords).toFixed(1)) : 0
+    };
+  });
   attendanceFilter = signal<{ period: string; startDate: string; endDate: string }>({ period: 'month', startDate: '', endDate: '' });
   
   salaryHistory = signal<any[]>([]);
@@ -298,6 +316,7 @@ export class EmployeesComponent implements OnInit {
     this.modalManager.addModal(
       'set_salary',
       {
+        icon: 'wallet',
         title: 'Nastavit plat',
         closeable: true,
         width: 600,
@@ -307,6 +326,7 @@ export class EmployeesComponent implements OnInit {
         }]
       }
     );
+
 
     this.modalManager.addModal(
       'edit_attendance',
@@ -326,12 +346,28 @@ export class EmployeesComponent implements OnInit {
     this.modalManager.addModal(
       'adjust_vacation',
       {
+        icon: 'beach',
         title: 'Upravit nárok na dovolenou',
         closeable: true,
         width: 450,
         items: [{
           type: 'component',
           component: AdjustVacationModalComponent
+        }]
+      }
+    );
+
+    this.modalManager.addModal(
+      'request_extra_vacation',
+      {
+        icon: 'beach',        
+        title: 'employees.request_vacation.request_extra_vacation.title',
+        description: 'employees.request_vacation.request_extra_vacation.description',
+        closeable: true,
+        width: 500,
+        items: [{
+          type: 'component',
+          component: RequestMoreVacationModalComponent
         }]
       }
     );
@@ -538,7 +574,7 @@ export class EmployeesComponent implements OnInit {
   setAttendanceFilterPeriod(period: string) {
     this.attendanceFilter.set({ ...this.attendanceFilter(), period });
     const emp = this.selectedEmployee.getValue();
-    if (emp) this.loadAttendanceRecords(emp.person_id);
+    if (emp) this.loadAttendanceForDetail(emp.person_id);
   }
   setAttendanceFilterStartDate(startDate: string) {
     this.attendanceFilter.set({ ...this.attendanceFilter(), startDate });
@@ -592,9 +628,9 @@ export class EmployeesComponent implements OnInit {
     this.selectedEmployee.next(employee);
     this.selectedDetailTab.next(0);
     this.loadEmployeeDetail(employee.person_id);
-    this.loadAttendanceRecords(employee.person_id);
+    this.loadAttendanceForDetail(employee.person_id);
     this.loadVacationData(employee.person_id);
-    this.loadBonuses(employee.person_id);
+    this.loadBonusesData(employee.person_id);
   }
 
   //Load employee detail from API
@@ -616,55 +652,9 @@ export class EmployeesComponent implements OnInit {
     });
   }
 
-  // Load attendance records
-  loadAttendanceRecords(employeeId?: number) {
-    const today = new Date();
-    const dateFrom = new Date(today.getFullYear(), today.getMonth(), 1).toISOString().split('T')[0];
-    const dateTo = today.toISOString().split('T')[0];
 
-    let url = `${Config.API_URL}/v1/employees/attendance?dateFrom=${dateFrom}&dateTo=${dateTo}`;
-    if (employeeId) {
-      url += `&employeeId=${employeeId}`;
-    }
 
-    this.http.get<{ data: AttendanceRecord[] }>(
-      url,
-      { withCredentials: true }
-    ).subscribe({
-      next: (response) => {
-        this.attendanceRecords.set(response.data);
-      },
-      error: (error) => {
-        console.error('Failed to load attendance:', error);
-        this.alertManager.alert('error', 'employees.attendance.load_failed').closeable(true);
-      }
-    });
-  }
 
-  // Load bonuses
-  loadBonuses(employeeId?: number) {
-    let url = `${Config.API_URL}/v1/employees/bonuses`;
-    if (employeeId) {
-      url += `?employeeId=${employeeId}`;
-    }
-
-    this.http.get<{ data: any[], unpaidTotal?: number }>(
-      url,
-      { withCredentials: true }
-    ).subscribe({
-      next: (response) => {
-        // Store bonuses for display
-        const current = this.selectedEmployee.getValue();
-        if (current) {
-          this.selectedEmployee.next({ ...current, bonuses: response.data } as any);
-        }
-      },
-      error: (error) => {
-        console.error('Failed to load bonuses:', error);
-        this.alertManager.alert('error', 'employees.bonuses.load_failed').closeable(true);
-      }
-    });
-  }
 
   loadAllAttendance() {
     // Default to today if not set
@@ -888,11 +878,10 @@ export class EmployeesComponent implements OnInit {
     this.http.get<{ data: any[] }>(
       `${Config.API_URL}/v1/employees/attendance`,
       { params, withCredentials: true }
-    ).subscribe({
-      next: (response) => {
-        this.attendanceRecords.set(response.data);
-        this.calculateAttendanceStats();
-      },
+     ).subscribe({
+       next: (response) => {
+         this.attendanceRecords.set(response.data);
+       },
       error: (error) => {
         console.error('Failed to load attendance:', error);
         this.alertManager.alert('error', 'employees.attendance.load_detail_failed').closeable(true);
@@ -900,24 +889,7 @@ export class EmployeesComponent implements OnInit {
     });
   }
 
-  calculateAttendanceStats() {
-    const records = this.attendanceRecords();
-    let totalMinutes = 0;
-    let daysWithRecords = 0;
 
-    records.forEach(record => {
-      if (record.worked_minutes) {
-        totalMinutes += record.worked_minutes;
-        daysWithRecords++;
-      }
-    });
-
-    this.attendanceStats.set({
-      totalHours: Number((totalMinutes / 60).toFixed(1)),
-      daysPresent: daysWithRecords,
-      avgDaily: daysWithRecords > 0 ? Number((totalMinutes / 60 / daysWithRecords).toFixed(1)) : 0
-    });
-  }
 
   editAttendanceRecord(record: any) {
     this.modalManager.openModal('edit_attendance', {
@@ -987,9 +959,9 @@ export class EmployeesComponent implements OnInit {
       `${Config.API_URL}/v1/employees/vacations/balance?employeeId=${personId}&year=${this.currentYear}`,
       { withCredentials: true }
     ).subscribe({
-      next: (response) => {
-        const data = response.balance || response;
-        this.vacationBalance.set({
+       next: (response) => {
+         const data = response.data?.balance || response.data || response.balance || response;
+         this.vacationBalance.set({
           total: data.entitlement || data.total || 0,
           used: data.used || 0,
           remaining: data.remaining || 0
@@ -1097,9 +1069,10 @@ export class EmployeesComponent implements OnInit {
       next: (response) => {
         this.salaryHistory.set(response.data);
         const current = response.data.find(s => 
-          !s.validTo || new Date(s.validTo) > new Date()
+          !s.valid_to || new Date(s.valid_to) > new Date()
         ) || null;
         this.currentSalary.set(current);
+
       },
       error: (error) => {
         console.error('Failed to load salary:', error);
@@ -1109,8 +1082,15 @@ export class EmployeesComponent implements OnInit {
   }
 
   openSetSalaryModal() {
-    this.modalManager.openModal('set_salary');
+    const employee = this.selectedEmployee.getValue();
+    this.modalManager.openModal('set_salary', {
+      personId: employee?.person_id,
+      onSave: () => {
+        if (employee) this.loadSalaryData(employee.person_id);
+      }
+    });
   }
+
 
   exportPayrollXML() {
     this.alertManager.alert('info', 'employees.salaries.xml_export_not_implemented').closeable(true);

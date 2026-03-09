@@ -1,26 +1,30 @@
 <div class="zz-list">
-@for(parent of parents;track $index) {
-    <div class="zz-item">
-      <div class="drag-handle">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <circle cx="9" cy="5" r="1"/><circle cx="9" cy="12" r="1"/><circle cx="9" cy="19" r="1"/>
-          <circle cx="15" cy="5" r="1"/><circle cx="15" cy="12" r="1"/><circle cx="15" cy="19" r="1"/>
-        </svg>
-      </div>
-      
-      <div class="zz-info">
-        <span class="zz-name">{{ parent.fullName }}</span>
-        <span class="zz-role">{{ l.s('family.' + parent.relationship) }}</span>
-      </div>
-      
-      <div class="zz-actions">
-        <button class="btn icon-only" title="Upravit roli">
-            <i-tabler name="pencil"></i-tabler>
-        </button>
-        <button class="btn icon-only btn--danger" (click)="removeParent(parent.id)" title="Odebrat">
-          <i-tabler name="trash"></i-tabler>
-        </button>
-      </div>
+  @for(parent of parents;track $index) {
+  <div class="zz-item">
+    <div class="drag-handle">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <circle cx="9" cy="5" r="1" />
+        <circle cx="9" cy="12" r="1" />
+        <circle cx="9" cy="19" r="1" />
+        <circle cx="15" cy="5" r="1" />
+        <circle cx="15" cy="12" r="1" />
+        <circle cx="15" cy="19" r="1" />
+      </svg>
     </div>
-}
+
+    <div class="zz-info">
+      <span class="zz-name">{{ parent.fullName }}</span>
+      <span class="zz-role">{{ l.s('family.' + parent.relationship) }}</span>
+    </div>
+
+    <div class="zz-actions">
+      <button class="btn icon-only" (click)="editParent(parent)" title="Upravit">
+        <i-tabler name="pencil"></i-tabler>
+      </button>
+      <button class="btn icon-only btn--danger" (click)="removeParent(parent.id)" title="Odebrat">
+        <i-tabler name="trash"></i-tabler>
+      </button>
+    </div>
+  </div>
+  }
 </div>

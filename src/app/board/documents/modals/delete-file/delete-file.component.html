@@ -1,23 +1,30 @@
 @let file = getFile();
 @if (file) {
-<div class="delete-confirm">
-    <div class="delete-icon-wrapper">
-        <i-tabler [name]="documents.getIcon(file.type)" class="file-type-icon"></i-tabler>
+
+<div class="row-type-selector">
+    <div class="row-option" (click)="selected_option = 0" [class.selected]="selected_option == 0">
+        <div class="row-option__dot"></div>
+        <div class="row-option__content">
+            <h4>{{ l.s('documents.delete_modal.remove_access_title') }}</h4>
+            <p>{{ l.s('documents.delete_modal.remove_access_desc') }}</p>
+        </div>
     </div>
-    <p class="delete-message">
-        Opravdu chcete smazat <strong>{{ file.name }}</strong>?
-        @if (file.type === 'folder') {
-        <br><span class="delete-warning">Tato akce odstraní složku a veškerý její obsah.</span>
-        }
-    </p>
+    <div class="row-option row-option--danger" (click)="selected_option = 1" [class.selected]="selected_option == 1">
+        <div class="row-option__dot"></div>
+        <div class="row-option__content">
+            <h4 style="color: var(--danger);">{{ l.s('documents.delete_modal.complete_delete_title') }}</h4>
+            <p>{{ l.s('documents.delete_modal.complete_delete_desc') }}</p>
+        </div>
+    </div>
 </div>
 
 <div class="modal-actions">
     <button type="button" class="btn btn--secondary" (click)="modalManager.closeModal('delete_file')">{{ l.s('cancel')
         }}</button>
-    <button type="button" class="btn btn--danger" (click)="deleteFile()">
-        <i-tabler name="trash-x"></i-tabler>
-        {{ l.s('documents.delete') }}
+    <button type="button" class="btn" [class.btn--primary]="selected_option === 0"
+        [class.btn--danger]="selected_option === 1" (click)="deleteFile()">
+        <i-tabler [name]="getActionIcon()"></i-tabler>
+        {{ getActionText() }}
     </button>
 </div>
 }

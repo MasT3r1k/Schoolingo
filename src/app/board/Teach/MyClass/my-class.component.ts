@@ -478,13 +478,15 @@ export class MyClassComponent implements OnInit {
     });
   }
 
-  getGradeClass(grade: number | string | null): string {
-    if (!grade) return 'badge--gray';
-    const g = Number(grade);
-    if (g <= 1.5) return 'badge--success';
-    if (g <= 2.5) return 'badge--info';
-    if (g <= 3.5) return 'badge--warning';
-    if (g <= 4.5) return 'badge--danger';
-    return 'badge--danger'; 
+  public getGradeClass(grade: any): string {
+    if (grade === null || grade === '-') return '';
+    const g = typeof grade === 'number' ? grade : parseInt(grade);
+    if (isNaN(g)) return '';
+    if (g === 1) return 'grade--success';
+    if (g >= 4) return 'grade--danger';
+    if (g === 3) return 'grade--warning';
+    return 'grade--primary';
   }
+
+
 }
