@@ -47,6 +47,11 @@
                         }
                     </div>
                 </div>
+                } @empty {
+                <div class="empty-selection">
+                    <i-tabler name="user-search"></i-tabler>
+                    <span>{{ l.s('messages.no_receivers') }}</span>
+                </div>
                 }
             </div>
         </div>
@@ -83,6 +88,11 @@
                         }
                     </div>
                     <span class="item-name">{{ user.full_name }}</span>
+                </div>
+                } @empty {
+                <div class="empty-selection">
+                    <i-tabler name="user-plus"></i-tabler>
+                    <span>{{ l.s('messages.no_selected_receivers') }}</span>
                 </div>
                 }
             </div>
@@ -148,17 +158,15 @@
             </button>
             }
         </div>
-        <div class="management-row">
-            <div class="group-management">
-                <div class="mgmt-action" [class.disabled]="selectedReceivers.length === 0"
-                    (click)="showGroupSave = !showGroupSave">
-                    <span>Uložit aktuální výběr jako skupinu</span>
-                    <i-tabler name="device-floppy"></i-tabler>
-                </div>
-                <div class="mgmt-action" [class.disabled]="!selectedGroup" (click)="deleteGroup(selectedGroup)">
-                    <span>Smazat skupinu</span>
-                    <i-tabler name="trash"></i-tabler>
-                </div>
+        <div class="management-column">
+            <div class="mgmt-action" [class.disabled]="selectedReceivers.length === 0"
+                (click)="showGroupSave = !showGroupSave">
+                <i-tabler name="device-floppy"></i-tabler>
+                <span>Uložit aktuální výběr jako skupinu</span>
+            </div>
+            <div class="mgmt-action danger" [class.disabled]="!selectedGroup" (click)="deleteGroup(selectedGroup)">
+                <i-tabler name="trash"></i-tabler>
+                <span>Smazat skupinu</span>
             </div>
         </div>
     </div>
