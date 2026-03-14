@@ -1,6 +1,8 @@
 import { Component, inject, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
 import { Config } from '@Schoolingo/config';
 import { Locale } from '@Schoolingo/locale';
+import moment from 'moment';
 import {
   MessageManager,
   messageReceiver,
@@ -25,6 +27,7 @@ import { HttpClient } from '@angular/common/http';
 import { DropdownManager } from '@Schoolingo/dropdown';
 import { Utils } from '@Schoolingo/utils';
 import { ModalManager } from '@Schoolingo/modal';
+import { School } from '@Schoolingo/school';
 import { UploadFilesComponent } from './modals/upload-files/upload-files.component';
 import { SelectReceiverComponent } from './modals/select-receiver/select-receiver.component';
 
@@ -51,6 +54,8 @@ export class SendComponent implements OnInit {
   public homeworks = inject(Homeworks);
   private http = inject(HttpClient);
   public Utils = Utils;
+  private router = inject(Router);
+  private school = inject(School);
 
 
   // === Alerts ===
@@ -62,6 +67,101 @@ export class SendComponent implements OnInit {
   // === Options ===
   public excuseAllDay = false;
   public config: any = {};
+
+  // === Excuses ===
+  public excuseDate = moment().format('YYYY-MM-DD');
+  public excuseDateTo = moment().format('YYYY-MM-DD');
+  public excuseHourFrom = 1;
+  public excuseHourTo = 1;
+  public hours: { label: string, start: string, end: string }[] = [];
+
+  public getHourLabel(hour: number): string {
+    const h = this.hours[hour - 1];
+    return h ? `${h.label} (${h.start} - ${h.end})` : `${hour}. hodina`;
+  }
+
+  public calculateHours(limit: number = 10): void {
+    const schoolConfig = this.school.config.getValue();
+    if (!schoolConfig) return;
+    
+    const start_hour = schoolConfig.start_hour;
+    const start_minute = schoolConfig.start_minute;
+    const lesson_hour = schoolConfig.lesson_hour;
+    const break_time = schoolConfig.break_time;
+    const breaks = schoolConfig.breaks || [];
+    
+    const newHours: { label: string, start: string, end: string }[] = [];
+    let currentStart = moment().set({ hour: start_hour, minute: start_minute, second: 0, millisecond: 0 });
+    
+    /** 
+     * We generate up to the limit, but at least 8 hours by default 
+     * to provide a consistent UI if timetable is empty.
+     */
+    const finalLimit = Math.max(limit, 8);
+
+    for (let i = 1; i <= finalLimit; i++) {
+        const startStr = currentStart.format('HH:mm');
+        const currentEnd = currentStart.clone().add(lesson_hour, 'minutes');
+        const endStr = currentEnd.format('HH:mm');
+        
+        newHours.push({
+            label: `${i}. hodina`,
+            start: startStr,
+            end: endStr
+        });
+        
+        // Calculate next start using the break AFTER this hour
+        const breakRule = breaks.find((b: { hour: number, minutes: number }) => b.hour === i + 1);
+        const breakMinutes = breakRule ? breakRule.minutes : break_time;
+        currentStart = currentEnd.clone().add(breakMinutes, 'minutes');
+    }
+    this.hours = newHours;
+
+    // Reset offsets if exceeding new limit
+    if (this.excuseHourFrom > finalLimit) this.excuseHourFrom = 1;
+    if (this.excuseHourTo > finalLimit) this.excuseHourTo = 1;
+  }
+
+  public updateMaxHours(): void {
+    if (this.auth.getUser().role !== 'parent' || !this.checkMessageType([messageTypes.EXCUSESTUDENT])) {
+      this.calculateHours(10);
+      return;
+    }
+
+    const childIndex = this.auth.selectedChild.getValue();
+    const child = this.auth.getUser().children[childIndex];
+    if (!child) return;
+
+    const payload = {
+      type: 'person',
+      id: child.childId,
+      time: this.excuseDate
+    };
+
+    this.http.post<any>(`${Config.API_URL}/v1/timetable`, payload, { withCredentials: true }).subscribe({
+      next: (data) => {
+        let max = 0;
+        if (data.timetable) {
+          data.timetable.forEach((t: any) => {
+            if (t.hour > max) max = t.hour;
+          });
+        }
+        if (data.substitution) {
+          data.substitution.forEach((s: any) => {
+            if (s.end_hour > max) max = s.end_hour;
+          });
+        }
+        
+        // backend hour is 1-indexed in timetable table for many records, 
+        // but let's check timetable.ts (backend). 
+        // Actually in timetable.ts: .where('timetable.hour', '=', hour + 1)
+        // So h is hour number (1-indexed).
+        this.calculateHours(max);
+      },
+      error: () => this.calculateHours(10)
+    });
+  }
+
 
   // === Receivers ===
   public availableGroups: RecipientGroup[] = [];
@@ -136,13 +236,35 @@ export class SendComponent implements OnInit {
   }
 
   public loadRecipients() {
-    this.http.post<RecipientGroup[]>(`${Config.API_URL}/v1/messages/recipients`, { 
+    const payload: any = { 
       message_type: this.messageManager.messageType.getValue() 
-    }, { withCredentials: true }).subscribe({
+    };
+
+    if (this.auth.getUser().role === 'parent' && this.messageManager.messageType.getValue() === messageTypes.EXCUSESTUDENT) {
+      const childIndex = this.auth.selectedChild.getValue();
+      const child = this.auth.getUser().children[childIndex];
+      if (child) {
+        payload.child_id = child.childId;
+      }
+    }
+
+    this.http.post<RecipientGroup[]>(`${Config.API_URL}/v1/messages/recipients`, payload, { withCredentials: true }).subscribe({
       next: (groups) => {
         this.availableGroups = groups;
         if (this.availableGroups.length > 0) {
           this.selectCategory(this.availableGroups[0]);
+
+          // Automatically select class teacher for parent excuses
+          if (this.auth.getUser().role === 'parent' && this.messageManager.messageType.getValue() === messageTypes.EXCUSESTUDENT) {
+            const classTeacherGroup = this.availableGroups.find(g => g.group === 'teacher');
+            if (classTeacherGroup && classTeacherGroup.users.length > 0) {
+              // The backend for excuses filters to only relevant teachers, 
+              // but we want the class teacher specifically or just all of them.
+              // If it's plural, we take all. If singular, just one.
+              // Usually parents want to excuse student to the class teacher.
+              this.messageManager.selectedReceivers$.next([...classTeacherGroup.users]);
+            }
+          }
         } else {
           this.selectedCategory = null;
         }
@@ -236,12 +358,47 @@ export class SendComponent implements OnInit {
     return this.selectedReceivers.filter((r) => r.role === type).length;
   }
 
+  public shouldShowCopyToClassTeacher(): boolean {
+    if (!this.selectedCategory) return false;
+    const group = this.selectedCategory.group;
+    return (
+      group.startsWith('student') ||
+      group.startsWith('parents') ||
+      group === 'students_select' ||
+      group === 'parents_select'
+    );
+  }
+
+  public shouldShowCopyToParents(): boolean {
+    if (!this.selectedCategory) return false;
+    const group = this.selectedCategory.group;
+    return (
+      group.startsWith('student') ||
+      group === 'students_select'
+    );
+  }
+
+  public shouldShowCopyToStudents(): boolean {
+    if (!this.selectedCategory) return false;
+    const group = this.selectedCategory.group;
+    return (
+      group.startsWith('parents') ||
+      group === 'parents_select'
+    );
+  }
+
   // === Lifecycle ===
   ngOnInit(): void {
     this.subscribers.push(
-      this.messageManager.messageType.subscribe(() => {
+      this.messageManager.messageType.subscribe((type) => {
         this.messageManager.selectedReceivers$.next([]);
         this.loadRecipients();
+        if (type === messageTypes.EXCUSESTUDENT && this.auth.getUser().role === 'parent') {
+          this.updateMaxHours();
+        }
+        if (type === messageTypes.RATESTUDENT) {
+          this.messageManager.options.copyToParents = true;
+        }
         setTimeout(() => this.selectedOptionTab.next(0), 300);
       })
     );
@@ -260,8 +417,16 @@ export class SendComponent implements OnInit {
         withCredentials: true,
       })
       .subscribe((data) => {
-        if (!('error' in data)) this.config = data;
+        if (!('error' in data)) {
+          this.config = data;
+        }
       });
+
+    this.subscribers.push(
+      this.school.config.subscribe(() => {
+        this.calculateHours();
+      })
+    );
 
     this.modalManager.addModal(
       'sendMessage_files',
@@ -296,7 +461,10 @@ export class SendComponent implements OnInit {
       topic: this.messageManager.topic,
       message: this.messageManager.message,
       receivers: this.selectedReceivers.flatMap((r) => r.members ? r.members : [r.person_id]),
-      require_confirm: this.messageManager.options.requireConfirmation
+      require_confirm: this.messageManager.options.requireConfirmation,
+      copy_to_class_teacher: this.messageManager.options.copyToClassTeacher,
+      copy_to_parents: this.messageManager.options.copyToParents,
+      copy_to_students: this.messageManager.options.copyToStudents
     };
     if (this.messageManager.draft_id) payload.draft_id = this.messageManager.draft_id;
 
@@ -323,7 +491,7 @@ export class SendComponent implements OnInit {
 
     const type = this.messageManager.messageType.getValue();
     if (!this.perms.checkPermission(this.messageManager.types[type].perms)) {
-      this.alerts['main'] = new Alert('error', 'messages/noTypeAccess');
+      this.alerts['main'] = new Alert('error', 'messages.no_type_access');
       return;
     }
 
@@ -340,7 +508,7 @@ export class SendComponent implements OnInit {
         break;
       case messageTypes.HOMEWORK:
         if (!this.homeworks.list.length) {
-          this.alerts['main'] = new Alert('error', 'messages/homeworks/empty');
+          this.alerts['main'] = new Alert('error', 'messages.homeworks.empty');
         }
         if (this.messageManager.selectedHomework.getValue() == null) {
           this.alerts['homework'] = new Alert('error', 'form.required');
@@ -350,11 +518,42 @@ export class SendComponent implements OnInit {
 
     if (Object.keys(this.alerts).length > 0) return;
 
+    if (this.selectedReceivers.length === 0) {
+      this.alerts['main'] = new Alert('error', 'messages.no_receivers');
+      return;
+    }
+
+    let finalMessage = message;
+    if (type === messageTypes.EXCUSESTUDENT && this.auth.getUser().role === 'parent') {
+      const dateRange = this.excuseDate === this.excuseDateTo 
+        ? moment(this.excuseDate).format('DD. MM. YYYY')
+        : `${moment(this.excuseDate).format('DD. MM. YYYY')} - ${moment(this.excuseDateTo).format('DD. MM. YYYY')}`;
+      
+      finalMessage = `Datum: ${dateRange}\n` +
+                    `Rozsah: ${this.excuseAllDay ? 'Celý den' : this.getHourLabel(this.excuseHourFrom) + ' - ' + this.getHourLabel(this.excuseHourTo)}\n\n` +
+                    message;
+    }
+
     const payload: any = {
-      content: message,
-      receivers: this.selectedReceivers.flatMap((r) => r.members ? r.members : [r.person_id]),
-      files: this.messageManager.files,
-      message_type: type
+      message: finalMessage,
+      recipients: this.selectedReceivers.flatMap((r) => r.members ? r.members : [r.person_id]),
+      files: (this.messageManager.files || []).map(f => f.serverId),
+      type: type,
+      topic: type === messageTypes.RATESTUDENT 
+        ? this.l.s(this.messageManager.ratingTypes[this.messageManager.selectedRatingType.getValue()].label)
+        : (type === messageTypes.EXCUSESTUDENT && this.auth.getUser().role === 'parent'
+          ? 'Omluvenka: ' + this.getSelectedChildName()
+          : this.messageManager.topic),
+      require_confirm: this.messageManager.options.requireConfirmation,
+      copy_to_class_teacher: this.messageManager.options.copyToClassTeacher,
+      copy_to_parents: this.messageManager.options.copyToParents,
+      copy_to_students: this.messageManager.options.copyToStudents,
+      draft_id: this.messageManager.draft_id,
+      excuse_date_from: type === messageTypes.EXCUSESTUDENT ? this.excuseDate : null,
+      excuse_date_to: type === messageTypes.EXCUSESTUDENT ? this.excuseDateTo : null,
+      excuse_hour_from: type === messageTypes.EXCUSESTUDENT ? (this.excuseAllDay ? null : this.excuseHourFrom) : null,
+      excuse_hour_to: type === messageTypes.EXCUSESTUDENT ? (this.excuseAllDay ? null : this.excuseHourTo) : null,
+      excuse_all_day: type === messageTypes.EXCUSESTUDENT ? (this.excuseAllDay ? true : false) : null
     };
 
     if (type === messageTypes.RATESTUDENT) {
@@ -362,25 +561,24 @@ export class SendComponent implements OnInit {
     }
 
     this.http
-      .post<{ status: boolean; messageId?: number; error?: string }>(
-        `${Config.API_URL}/v1/messages/messages/send`,
+      .post<{ success: boolean; message_id?: number; error?: string }>(
+        `${Config.API_URL}/v1/messages/send`,
         payload,
         { withCredentials: true }
       )
       .subscribe({
         next: (res) => {
-          if (res?.status) {
-            // Delete draft if exists
-            if (this.messageManager.draft_id) {
-              this.http.delete(`${Config.API_URL}/v1/messages/draft/${this.messageManager.draft_id}`, { withCredentials: true }).subscribe();
-            }
-
+          if (res?.success) {
             this.messageManager.message = '';
             this.messageManager.topic = '';
             this.messageManager.files = [];
             this.selectedReceivers = [];
+            this.messageManager.selectedReceivers$.next([]);
             this.messageManager.draft_id = null;
-            this.alerts['main'] = new Alert('success', 'messages/sent');
+            this.alerts['main'] = new Alert('success', 'messages.sent');
+            setTimeout(() => {
+              this.router.navigate(['/messages/sent'], { queryParams: { id: res.message_id } });
+            }, 1000);
           } else {
             this.alerts['main'] = new Alert(
               'error',
@@ -407,5 +605,18 @@ export class SendComponent implements OnInit {
 
   public openFiles(): void {
     this.modalManager.openModal('sendMessage_files')
+  }
+
+  // === Child Handling ===
+  public getSelectedChildName(): string {
+    const childIndex = this.auth.selectedChild.getValue();
+    const child = this.auth.getUser().children[childIndex];
+    return child ? `${child.first_name} ${child.last_name} (${child.classes[0]?.class_name ?? ''})` : 'Vyberte žáka';
+  }
+
+  public selectChild(index: number): void {
+    this.auth.selectedChild.next(index);
+    this.loadRecipients();
+    this.updateMaxHours();
   }
 }

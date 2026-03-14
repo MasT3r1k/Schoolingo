@@ -70,6 +70,56 @@
             <div class="message-body">
                 {{ selectedMessage.message }}
             </div>
+
+            <!-- @if (selectedMessage.receivers) {
+                <div class="message-footer-stats">
+                    <div class="stats-overview">
+                        <div class="stat-badge" [title]="l.s('messages.seen_by')">
+                            <i-tabler name="eye"></i-tabler>
+                            <span>{{ getReadCount() }} / {{ selectedMessage.receivers.length }}</span>
+                        </div>
+                        @if (selectedMessage.require_confirm) {
+                            <div class="stat-badge confirm" [title]="l.s('messages.confirmed_by')">
+                                <i-tabler name="check"></i-tabler>
+                                <span>{{ getConfirmedCount() }} / {{ selectedMessage.receivers.length }}</span>
+                            </div>
+                        }
+                    </div>
+
+                    <div class="recipients-container">
+                        <div class="recipients-header">
+                            <h3>{{ l.s("messages.recipients_list") }}</h3>
+                            @if (selectedMessage.target_groups && selectedMessage.target_groups.length > 0) {
+                                <div class="target-groups">
+                                    @for (group of selectedMessage.target_groups; track group) {
+                                        <span class="group-tag">{{ group }}</span>
+                                    }
+                                </div>
+                            }
+                        </div>
+                        <div class="recipients-grid">
+                            @for (receiver of selectedMessage.receivers; track receiver.personId) {
+                                <div class="recipient-card" [class.seen]="receiver.read_at" [class.confirmed]="receiver.confirmed_at">
+                                    <div class="recipient-info">
+                                        <div class="recipient-name">{{ receiver.full_name }}</div>
+                                        <div class="recipient-sub">{{ receiver.groupName }}</div>
+                                    </div>
+                                    <div class="recipient-status-icons">
+                                        <i-tabler name="eye" [class.active]="receiver.read_at" 
+                                            [title]="receiver.read_at ? (l.s('messages.read_at') + ': ' + Utils.formatDate(receiver.read_at)) : l.s('messages.not_read_yet')">
+                                        </i-tabler>
+                                        @if (selectedMessage.require_confirm) {
+                                            <i-tabler name="check" [class.active]="receiver.confirmed_at"
+                                                [title]="receiver.confirmed_at ? (l.s('messages.confirmed_at') + ': ' + Utils.formatDate(receiver.confirmed_at)) : l.s('messages.not_confirmed_yet')">
+                                            </i-tabler>
+                                        }
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                </div>
+            } -->
         } @else {
         <div class="no-selection">
             <div class="illustration">

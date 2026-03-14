@@ -2,7 +2,6 @@ import { Component, inject, OnInit } from '@angular/core';
 import { FormBuilder, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Config } from '../infrastructure/config';
 import { NgClass } from '@angular/common';
-import { QRCodeComponent } from 'angularx-qrcode';
 import { Locale } from '@Schoolingo/locale';
 import { School } from '@Schoolingo/school';
 import { Theme } from '@Schoolingo/theme';
@@ -18,6 +17,7 @@ import {
   startAuthentication,
 } from '@simplewebauthn/browser';
 import { InstallAppModalComponent } from '@Components/InstallAppModal/install-app-modal.component';
+import { QrCodeComponent } from '@Components/qr-code/qr-code.component';
 import { Passkey } from '@Schoolingo/passkey';
 import { DropdownManager } from '@Schoolingo/dropdown';
 import { SessionExpiredService } from '../infrastructure/session/session-expired.service';
@@ -35,7 +35,7 @@ export function isoBase64URLBuffer(buffer: Uint8Array): string {
   standalone: true,
   imports: [
     NgClass,
-    QRCodeComponent,
+    QrCodeComponent,
     ReactiveFormsModule,
     FormsModule,
     IconsModule,

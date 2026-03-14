@@ -23,6 +23,7 @@ import { EditEmployeeModalComponent } from './modals/edit-employee-modal/edit-em
 import { RejectVacationModalComponent } from './modals/reject-vacation-modal/reject-vacation-modal.component';
 import { AdjustVacationModalComponent } from './modals/adjust-vacation-modal/adjust-vacation-modal.component';
 import { RequestMoreVacationModalComponent } from './modals/request-more-vacation-modal/request-more-vacation-modal.component';
+import { AvatarService } from '../../../infrastructure/utils/avatar.service';
 import { EMPLOYEE_CONFIG } from '../../../infrastructure/employees/const';
 import moment from 'moment';
 
@@ -44,6 +45,7 @@ export interface Employee {
   email?: string;
   phone?: string;
   date_of_birth?: string;
+  avatar?: string;
 }
 
 export interface VacationRequest {
@@ -75,6 +77,7 @@ export interface AttendanceRecord {
   worked_minutes: number;
   type: string;
   approved: boolean;
+  avatar?: string;
 }
 
 export interface EmployeeFilters {
@@ -101,6 +104,7 @@ export class EmployeesComponent implements OnInit {
   private subscriptions: Subscription[] = [];
   public modalManager = inject(ModalManager);
   private alertManager = inject(BoardAlertManager) as BoardAlertManager;
+  public avatarService = inject(AvatarService);
   public canViewAllEmployees: boolean = true;
   EMPLOYEE_CONFIG = EMPLOYEE_CONFIG
 
@@ -1099,7 +1103,7 @@ export class EmployeesComponent implements OnInit {
   // Bonus methods
   loadBonusesData(personId: number) {
     this.http.get<{ data: any[] }>(
-      `${Config.API_URL}/v1/employees/bonuses?personId=${personId}`,
+      `${Config.API_URL}/v1/employees/bonuses?employeeId=${personId}`,
       { withCredentials: true }
     ).subscribe({
       next: (response) => {

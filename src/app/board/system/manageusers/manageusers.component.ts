@@ -1,4 +1,4 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, inject, ViewChild, ElementRef, AfterViewInit, HostListener } from '@angular/core';
 import { CommonModule, DatePipe } from '@angular/common';
 import { IconsModule } from '@Schoolingo/icons';
 import { FormsModule } from '@angular/forms';
@@ -13,6 +13,7 @@ import { School } from '@Schoolingo/school';
 import { ModalManager } from '@Schoolingo/modal';
 import { ImportUserComponent } from './modals/import-user/import-user.component';
 import { Router } from '@angular/router';
+import { AvatarService } from '../../../infrastructure/utils/avatar.service';
 
 // Interfaces
 export interface User {
@@ -26,6 +27,7 @@ export interface User {
   role: 'admin' | 'teacher' | 'student' | 'parent';
   status: 'active' | 'inactive' | 'suspended';
   photo_url?: string;
+  avatar: string | null;
   last_login: string | null;
   created_at: string;
   updated_at: string;
@@ -68,6 +70,7 @@ interface UserAPIResponse {
     role: string;
     status: string;
     photo_url?: string;
+    avatar: string | null;
     last_login: string | null;
     last_login_ip: string | null;
     last_login_user_agent: string | null;
@@ -88,7 +91,7 @@ interface UserAPIResponse {
   templateUrl: './manageusers.component.html',
   styleUrl: './manageusers.component.css'
 })
-export class ManageusersComponent implements OnInit {
+export class ManageusersComponent implements OnInit, AfterViewInit {
   private http = inject(HttpClient);
   public l = inject(Locale);
   public Utils = Utils;
@@ -96,6 +99,32 @@ export class ManageusersComponent implements OnInit {
   public modalManager = inject(ModalManager);
   public dropdownManager = inject(DropdownManager);
   public school = inject(School);
+  public avatarService = inject(AvatarService);
+
+  @ViewChild('tabsNav') tabsNav?: ElementRef;
+  public showLeftScroll = false;
+  public showRightScroll = false;
+
+  ngAfterViewInit(): void {
+    setTimeout(() => this.checkScroll(), 250);
+  }
+
+  @HostListener('window:resize')
+  public onResize() {
+    this.checkScroll();
+  }
+
+  public checkScroll() {
+    const el = this.tabsNav?.nativeElement;
+    if (!el) return;
+    this.showLeftScroll = el.scrollLeft > 5;
+    this.showRightScroll = el.scrollLeft < el.scrollWidth - el.clientWidth - 5;
+  }
+
+  public scrollTabs(dir: number) {
+    const el = this.tabsNav?.nativeElement;
+    if (el) el.scrollBy({ left: dir * 150, behavior: 'smooth' });
+  }
 
   // Loading state
   isLoading = false;
@@ -177,22 +206,49 @@ export class ManageusersComponent implements OnInit {
   // Add User Modal
   showAddUserModal = false;
   newUser = {
+    mode: 'new' as 'new' | 'import',
+    person_id: null as number | null,
     username: '',
     first_name: '',
     last_name: '',
     email: '',
-    role: 'student' as 'admin' | 'teacher' | 'student' | 'parent',
+    role: 'student' as 'admin' | 'teacher' | 'student' | 'parent' | 'management' | 'admin_staff' | 'personnel' | 'maintenance' | 'other',
+    class_id: null as number | null,
+    is_distance: false,
+    cabinet_id: null as number | null,
+    employee_number: '',
+    contract_type: 'fulltime' as 'fulltime' | 'parttime' | 'dpp' | 'dpc' | null,
+    hours_per_week: 40,
     password: ''
   };
+
+  currentStep = 1;
+  availableClasses: any[] = [];
+  unlinkedPersons: any[] = [];
+  availableRooms: any[] = [];
+
+
   
-  formErrors = {
+  formErrors: {
+    username: string;
+    first_name: string;
+    last_name: string;
+    email: string;
+    role: string;
+    password: string;
+    general: string;
+    [key: string]: string;
+  } = {
     username: '',
     first_name: '',
     last_name: '',
     email: '',
     role: '',
-    password: ''
+    password: '',
+    general: ''
   };
+
+
 
   isSubmitting = false;
 
@@ -316,6 +372,8 @@ export class ManageusersComponent implements OnInit {
           login_type: response.login_type,
           role: this.mapRole(response.role),
           status: this.mapStatus('active'),
+          photo_url: response.photo_url,
+          avatar: response.avatar,
           last_login: response.last_login,
           created_at: response.created_at,
           updated_at: response.updated_at,
@@ -394,6 +452,7 @@ export class ManageusersComponent implements OnInit {
     this.resetPasswordSuccess = false;
     this.resetPasswordError = null;
     this.resetPasswordForm.generatedPassword = null;
+    setTimeout(() => this.checkScroll(), 100);
   }
 
   // Save User
@@ -475,6 +534,7 @@ export class ManageusersComponent implements OnInit {
       role: this.mapRole(apiUser.role),
       status: this.mapStatus(apiUser.status),
       photo_url: apiUser.photo_url,
+      avatar: apiUser.avatar,
       last_login: apiUser.last_login,
       created_at: apiUser.created_at,
       updated_at: apiUser.updated_at
@@ -595,24 +655,77 @@ export class ManageusersComponent implements OnInit {
   }
 
   openAddUserModal() {
+    this.resetNewUserForm();
+    this.loadClasses();
+    this.loadUnlinkedPersons();
+    this.loadRooms();
     this.showAddUserModal = true;
-    this.resetPasswordForm.generatedPassword = null;
-    this.resetForm();
-    this.generatePassword();
+    this.currentStep = 1;
   }
 
-  closeAddUserModal() {
-    this.showAddUserModal = false;
-    this.resetForm();
+  loadRooms() {
+    this.http.get<{ rooms: any[] }>(`${Config.API_URL}/v1/school/architecture/rooms`, { withCredentials: true })
+      .subscribe(res => {
+        if (res.rooms) this.availableRooms = res.rooms;
+      });
   }
 
-  resetForm() {
+
+  loadClasses() {
+    this.http.get<{ success: boolean; data: any[] }>(`${Config.API_URL}/v1/system/users/classes`, { withCredentials: true })
+      .subscribe(res => {
+        if (res.success) this.availableClasses = res.data;
+      });
+  }
+
+  loadUnlinkedPersons() {
+    this.http.get<{ success: boolean; data: any[] }>(`${Config.API_URL}/v1/system/users/unlinked_persons`, { withCredentials: true })
+      .subscribe(res => {
+        if (res.success) this.unlinkedPersons = res.data;
+      });
+  }
+
+  onPersonSelect(personId: number) {
+    const person = this.unlinkedPersons.find(p => p.person_id === personId);
+    if (person) {
+      this.newUser.person_id = person.person_id;
+      this.newUser.first_name = person.first_name;
+      this.newUser.last_name = person.last_name;
+      if (person.suggested_role) {
+        this.newUser.role = person.suggested_role;
+      }
+    }
+  }
+
+  getClassName(classId: number | null): string {
+    if (!classId) return 'Vyberte třídu...';
+    const c = this.availableClasses.find(c => c.class_id === classId);
+    return c ? c.class_name : 'Vyberte třídu...';
+  }
+
+  getRoomName(roomId: number | null): string {
+    if (!roomId) return 'Žádný / Vyberte...';
+    const r = this.availableRooms.find(r => r.room_id === roomId);
+    return r ? `${r.name} (${r.building_name})` : 'Vyberte...';
+  }
+
+
+  resetNewUserForm(mode?: 'new' | 'import') {
+    const currentMode = mode || this.newUser.mode || 'new';
     this.newUser = {
+      mode: currentMode,
+      person_id: null,
       username: '',
       first_name: '',
       last_name: '',
       email: '',
       role: 'student',
+      class_id: null,
+      is_distance: false,
+      cabinet_id: null,
+      employee_number: '',
+      contract_type: 'fulltime',
+      hours_per_week: 40,
       password: ''
     };
     this.formErrors = {
@@ -621,16 +734,26 @@ export class ManageusersComponent implements OnInit {
       last_name: '',
       email: '',
       role: '',
-      password: ''
+      password: '',
+      general: ''
     };
-    this.isSubmitting = false;
+    this.generatePassword();
   }
 
-  generatePassword() {
-    this.newUser.password = Utils.randomstring(12);
+  nextStep() {
+    if (this.currentStep === 1) {
+      if (!this.validateStep1()) return;
+      this.currentStep = 2;
+    }
   }
 
-  validateForm(): boolean {
+  prevStep() {
+    if (this.currentStep > 1) {
+      this.currentStep--;
+    }
+  }
+
+  validateStep1(): boolean {
     let isValid = true;
     this.formErrors = {
       username: '',
@@ -638,86 +761,109 @@ export class ManageusersComponent implements OnInit {
       last_name: '',
       email: '',
       role: '',
-      password: ''
+      password: '',
+      general: ''
     };
 
-    // Username validation
-    if (!this.newUser.username) {
-      this.formErrors.username = 'Uživatelské jméno je povinné';
-      isValid = false;
-    } else if (!/^[a-zA-Z0-9._]{3,50}$/.test(this.newUser.username)) {
-      this.formErrors.username = 'Uživatelské jméno musí mít 3-50 znaků (pouze písmena, čísla, tečka, podtržítko)';
+    if (this.newUser.mode === 'import' && !this.newUser.person_id) {
+      this.formErrors['general'] = 'Vyberte osobu k importu';
       isValid = false;
     }
 
-    // First name validation
+    if (!this.newUser.username || this.newUser.username.length < 3) {
+      this.formErrors['username'] = 'Uživatelské jméno musí mít alespoň 3 znaky';
+      isValid = false;
+    }
+
     if (!this.newUser.first_name) {
-      this.formErrors.first_name = 'Jméno je povinné';
-      isValid = false;
-    } else if (this.newUser.first_name.length < 2 || this.newUser.first_name.length > 100) {
-      this.formErrors.first_name = 'Jméno musí mít 2-100 znaků';
+      this.formErrors['first_name'] = 'Jméno je povinné';
       isValid = false;
     }
-
-    // Last name validation
     if (!this.newUser.last_name) {
-      this.formErrors.last_name = 'Příjmení je povinné';
-      isValid = false;
-    } else if (this.newUser.last_name.length < 2 || this.newUser.last_name.length > 100) {
-      this.formErrors.last_name = 'Příjmení musí mít 2-100 znaků';
+      this.formErrors['last_name'] = 'Příjmení je povinné';
       isValid = false;
     }
 
-    // Email validation
-    if (!this.newUser.email) {
-      this.formErrors.email = 'Email je povinný';
-      isValid = false;
-    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(this.newUser.email)) {
-      this.formErrors.email = 'Neplatný formát emailu';
+    if (this.newUser.mode === 'new' && !this.newUser.email) {
+      this.formErrors['email'] = 'Email je povinný';
       isValid = false;
     }
 
-    // Password validation
-    if (!this.newUser.password) {
-      this.formErrors.password = 'Heslo je povinné';
-      isValid = false;
-    } else if (this.newUser.password.length < 8) {
-      this.formErrors.password = 'Heslo musí mít alespoň 8 znaků';
-      isValid = false;
-    } else if (!/(?=.*[a-zA-Z])(?=.*[0-9])/.test(this.newUser.password)) {
-      this.formErrors.password = 'Heslo musí obsahovat písmena i čísla';
+    if (!this.newUser.password || this.newUser.password.length < 8) {
+      this.formErrors['password'] = 'Heslo musí mít alespoň 8 znaků';
       isValid = false;
     }
 
     return isValid;
   }
 
-  submitNewUser() {
-    if (!this.validateForm()) {
-      return;
+  validateStep2(): boolean {
+    let isValid = true;
+    this.formErrors = {
+      username: '',
+      first_name: '',
+      last_name: '',
+      email: '',
+      role: '',
+      password: '',
+      general: ''
+    };
+
+    if (!this.newUser.role) {
+      this.formErrors['general'] = 'Vyberte roli uživatele';
+      isValid = false;
     }
 
-    this.isSubmitting = true;
+    if (this.newUser.role === 'student' && !this.newUser.class_id) {
+      this.formErrors['general'] = 'Vyberte třídu pro studenta';
+      isValid = false;
+    }
 
-    this.http.post<{ success: boolean; data: any }>(
+    return isValid;
+  }
+
+
+
+
+
+  closeAddUserModal() {
+    this.showAddUserModal = false;
+    this.resetNewUserForm();
+  }
+
+  generatePassword() {
+    this.newUser.password = Utils.randomstring(12);
+  }
+
+
+
+  submitNewUser() {
+    if (!this.validateStep1()) {
+      this.currentStep = 1;
+      return;
+    }
+    if (!this.validateStep2()) return;
+
+    this.isSubmitting = true;
+    this.http.post<{ success: boolean; data: any; error?: string }>(
       `${Config.API_URL}/v1/system/users`,
       this.newUser,
       { withCredentials: true }
-    ).subscribe({
-      next: (response) => {
-        console.log('User created successfully:', response);
-        this.closeAddUserModal();
-        this.loadUsers(1);
-      },
-      error: (error) => {
-        console.error('Error creating user:', error);
-        this.isSubmitting = false;
-        if (error.error?.message) {
-          alert('Chyba: ' + error.error.message);
-        } else {
-          alert('Nepodařilo se vytvořit uživatele');
+    )
+      .subscribe({
+        next: (res) => {
+          this.isSubmitting = false;
+          if (res.success) {
+            this.closeAddUserModal();
+            this.loadUsers();
+          } else {
+            this.formErrors['general'] = res.error || 'Nastala chyba při vytváření uživatele';
+          }
+        },
+        error: (err) => {
+          this.isSubmitting = false;
+          this.formErrors['general'] = err.error?.error || 'Chyba spojení se serverem';
         }
-      }
     });
   }
 }

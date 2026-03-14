@@ -7,6 +7,7 @@ import { ChangePasswordComponent } from './change-password/change-password.compo
 import { LanguageComponent } from './language/language.component';
 import { ThemeComponent } from './theme/theme.component';
 import { SecurityComponent } from './security/security.component';
+import { AvatarComponent } from './avatar/avatar.component';
 import { Settings } from '@Schoolingo/settings';
 
 @Component({
@@ -17,6 +18,7 @@ import { Settings } from '@Schoolingo/settings';
     LanguageComponent,
     ThemeComponent,
     SecurityComponent,
+    AvatarComponent,
   ],
   templateUrl: './settings.component.html',
   styleUrl: './settings.component.css',
@@ -28,13 +30,15 @@ export class SettingsComponent implements OnInit {
     'password',
     'language',
     'brush',
-    'shield-lock'
+    'shield-lock',
+    'user-circle'
   ];
   public options = [
     'settings.change_password',
     'settings.language',
     'settings.theme',
-    'settings.security'
+    'settings.security',
+    'settings.avatar'
   ];
   public l = inject(Locale);
   public alert: '2FAEnabled' | '' = '';

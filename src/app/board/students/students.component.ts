@@ -12,42 +12,68 @@ import { CalendarComponent } from '@Components/calendar';
 import { CalendarManager } from '@Components/calendar-dropdown';
 import { ModalManager } from '@Schoolingo/modal';
 import { AddStudentModalComponent } from './modals/add-student-modal/add-student-modal.component';
+import { AvatarService } from '../../infrastructure/utils/avatar.service';
 import moment from 'moment';
 
 // Interfaces
 export interface Student {
   id: number;
   person_id: number;
-  firstName: string;
-  lastName: string;
-  fullName: string;
-  photoUrl?: string;
-  className: string;
-  year: number;
-  fieldOfStudy: string;
-  status: 'active' | 'former' | 'suspended';
+  first_name: string;
+  last_name: string;
+  full_name: string;
+  avatar: string | null;
+  photo_url?: string;
   gender: number;
   birthday: Date;
+  status: string;
   email: string;
   phone: string;
-  address: string;
-  enrollmentDate: string;
-  graduationDate?: string;
-  averageGrade: string;
-  absenceRate: string;
-  absence_rate_excused?: string;
-  absence_rate_unexcused?: string;
-  disciplinaryIssues: number;
+  
+  // Study info
+  class_name: string;
+  year: number;
+  field_of_study: string;
+  start_study: string;
+  graduation_date?: string;
+  teacher_name?: string;
+  
+  // Stats
+  average_grade: any;
+  absence_rate: any;
+  absence_rate_excused: any;
+  absence_rate_unexcused: any;
+  education_measures_count: number;
+  class_rank?: number;
 
-  // Parent info
+  // Address
+  street: string;
+  house_number: string;
+  city_name: string;
+  postcode: string;
+  address_country: string;
+  address_country_code2: string;
+  
+  // Identity
+  birthnum: string;
+  birth_place: string;
+  nationality: string;
+  nationality_code2: string;
+  insurance_id: number | null;
+  insurance_name: string;
+  insurance_short: string;
+
+  // Associated data
   parents: ParentInfo[];
-
-  // Additional details
-  notes?: string;
-  allergies?: string[];
-  medicalConditions?: string[];
+  history: any[];
+  timetable: any[];
+  substitution: any[];
+  medical_records: any[];
+  student_notes: any[];
+  evaluations: any[];
   matrika?: StudentMatrika;
   matrika_records?: StudentMatrikaRecord[];
+  last_grades: any[];
 }
 
 export interface StudentMatrikaRecord {
@@ -60,6 +86,7 @@ export interface StudentMatrikaRecord {
 }
 
 export interface StudentMatrika {
+  [key: string]: string | number | null | Date | undefined;
   student_id: number;
   highest_education_id: number | null;
   previous_school_izo: string | null;
@@ -107,6 +134,7 @@ interface StudentAPIResponse {
     full_name: string;
     email?: string;
     phone?: string;
+    avatar: string | null;
     gender: number;
     birthday: Date;
     status: string;
@@ -138,6 +166,7 @@ export class StudentsComponent implements OnInit {
   public l = inject(Locale);
   public calendarManager = inject(CalendarManager);
   public modalManager = inject(ModalManager);
+  public avatarService = inject(AvatarService);
 
   // Loading state
   isLoading = false;
@@ -357,7 +386,7 @@ export class StudentsComponent implements OnInit {
   }
 
   // Direct access for template since we rely on server filtering now
-  get filteredStudents(): any[] {
+  public get filteredStudents(): Student[] {
     return this.students;
   }
 

@@ -1,0 +1,69 @@
+<div class="update-container">
+  @if (loading) {
+    <div class="loading-state">
+      <div class="spinner"></div>
+      <p>{{ l.s('loading') }}...</p>
+    </div>
+  } @else {
+    <div class="update-header">
+      <div class="version-comparison">
+        <div class="version-box current">
+          <span class="label">{{ l.s('system.current_version') }}</span>
+          <span class="value">{{ versionInfo?.version }}</span>
+        </div>
+        <div class="arrow">
+          <i-tabler name="chevron-right"></i-tabler>
+        </div>
+        <div class="version-box new">
+          <span class="label">{{ l.s('system.new_version') }}</span>
+          <span class="value">{{ versionInfo?.remoteVersion || '???' }}</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="changelog-section">
+      <h3>{{ l.s('system.changelog') }}</h3>
+      <div class="changelog-content">
+        @if (versionInfo?.isBehind) {
+          <p class="behind-info">{{ l.s('system.behind_count', { count: versionInfo.behindCount }) }}</p>
+        }
+        
+        @for (entry of changelog.slice(0, 3); track entry.version) {
+          <div class="changelog-entry">
+            <div class="entry-header">
+              <span class="entry-version">v{{ entry.version }}</span>
+              <span class="entry-date">{{ entry.date }}</span>
+            </div>
+            <ul class="changes-list">
+              @for (change of entry.changes; track change) {
+                <li>{{ change }}</li>
+              }
+            </ul>
+          </div>
+        }
+      </div>
+    </div>
+
+    <div class="modal-actions">
+      @if (updating) {
+        <div class="update-progress">
+          <div class="progress-info">
+            <div class="spinner small"></div>
+            <span>{{ updateStatus?.progress || 'Probíhá aktualizace...' }}</span>
+          </div>
+          @if (updateStatus?.error) {
+            <p class="error-msg">{{ updateStatus.error }}</p>
+          }
+        </div>
+      } @else {
+        <button class="btn btn--secondary" (click)="close()">
+          {{ l.s('system.update_later') }}
+        </button>
+        <button class="btn btn--primary" (click)="performUpdate()" [disabled]="!versionInfo?.isBehind">
+          <i-tabler name="refresh"></i-tabler>
+          {{ l.s('system.update_button') }}
+        </button>
+      }
+    </div>
+  }
+</div>

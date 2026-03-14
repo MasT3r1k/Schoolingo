@@ -1,6 +1,7 @@
 import { Routes } from '@angular/router';
 import { AuthComponent } from './Auth/auth.component';
 import { NotUserGuard, UserGuard } from './Guards/Auth.guard';
+import { DemoGuard } from './Guards/Demo.guard';
 import { BoardComponent } from './board/board.component';
 import { MainComponent } from './board/main/main.component';
 import { MyClassComponent } from './board/Teach/MyClass/my-class.component';
@@ -101,6 +102,7 @@ export const routes: Routes = [
         path: '',
         component: BoardComponent,
         canActivate: [UserGuard],
+        canActivateChild: [DemoGuard],
         children: [
             {
                 path: 'main',

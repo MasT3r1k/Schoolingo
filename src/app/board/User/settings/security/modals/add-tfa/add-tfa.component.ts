@@ -6,13 +6,13 @@ import { Settings } from '@Schoolingo/settings';
 import { AuthConfig } from '../../../../../../infrastructure/authentication/config';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { ModalManager } from '@Schoolingo/modal';
-import { QRCodeComponent } from 'angularx-qrcode';
+import { QrCodeComponent } from '@Components/qr-code/qr-code.component';
 import { BaseAlertManager } from '../../../../../../infrastructure/alert/alert.manager';
 import { Theme } from '@Schoolingo/theme';
 import { IconsModule } from '@Schoolingo/icons';
 
 @Component({
-  imports: [FormsModule, ReactiveFormsModule, QRCodeComponent, IconsModule],
+  imports: [FormsModule, ReactiveFormsModule, QrCodeComponent, IconsModule],
   templateUrl: './add-tfa.component.html',
   styleUrl: './add-tfa.component.css'
 })

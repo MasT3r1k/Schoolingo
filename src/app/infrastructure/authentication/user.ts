@@ -16,9 +16,7 @@ export interface User {
     avatar: {
         seed: string;
         type: string;
-        eyebrows: string;
-        eyes: string;
-        mouth: string;
+        [key: string]: any;
     };
     locale: string;
     theme: number;

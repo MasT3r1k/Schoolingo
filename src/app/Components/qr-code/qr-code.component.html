@@ -1,0 +1,12 @@
+<div class="qrcode-box" [style.--qrcode-size]="size + 'px'">
+    @if (data === '') {
+    <div class="skeleton"></div>
+    } @else {
+    @if (showScanner) {
+    <div class="qr-scanner-line"></div>
+    }
+    <qrcode [allowEmptyString]="false" [width]="size" [elementType]="'canvas'"
+        [errorCorrectionLevel]="errorCorrectionLevel" [margin]="margin" [qrdata]="data" [imageSrc]="icon"
+        [imageHeight]="iconSize" [imageWidth]="iconSize" [colorDark]="colorDark" [colorLight]="colorLight"></qrcode>
+    }
+</div>

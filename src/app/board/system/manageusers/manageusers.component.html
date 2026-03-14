@@ -13,6 +13,7 @@
                 <i-tabler name="arrow-left"></i-tabler>
                 <span>Zpět na seznam</span>
             </button>
+            <h1 class="detail-title">Karta uživatele</h1>
             <div class="detail-actions">
                 <button class="action-btn" title="Resetovat heslo" (click)="setActiveTab('security')">
                     <i-tabler name="key"></i-tabler>
@@ -31,11 +32,9 @@
             <aside class="profile-sidebar">
                 <div class="profile-card">
                     <div class="profile-avatar">
-                        @if (selectedUser.photo_url) {
-                        <img [src]="selectedUser.photo_url" [alt]="selectedUser.full_name">
-                        } @else {
-                        <span class="avatar-initials">{{ Utils.getInitials(selectedUser.full_name) }}</span>
-                        }
+                        <div class="avatar--image avatar--image-large">
+                            <img [src]="avatarService.getAvatar(selectedUser.avatar, selectedUser.full_name)" [alt]="selectedUser.full_name">
+                        </div>
                         <span class="status-dot" [class]="selectedUser.status"></span>
                     </div>
                     <h1 class="profile-name">{{ selectedUser.full_name }}</h1>
@@ -45,17 +44,16 @@
                     </div>
 
                     @if (selectedUser.birthday) {
-                    <div class="student-birthday"
-                        style="font-size: 13px; color: var(--text-muted); margin-top: 0.25rem;">
+                    <div class="student-birthday">
                         {{ Utils.formatDateShort(selectedUser.birthday) }}
-                        ({{Utils.getAge(Utils.makeMoment(selectedUser.birthday))}} let)
+                        ({{Utils.getAge(Utils.makeMoment(selectedUser.birthday))}} let,
+                        {{ l.s('genders.' + (selectedUser.gender || 'unknown')) }})
                     </div>
                     }
 
                     @if (selectedUser.role === 'student' && selectedUser.student?.class_name) {
-                    <div class="profile-class"
-                        style="font-size: 13px; font-weight: 500; margin-top: 0.5rem; color: var(--primary);">
-                        Třída: {{ selectedUser.student.class_name }}
+                    <div class="profile-class">
+                        {{ l.s('students.class') }}: {{ selectedUser.student.class_name }}
                     </div>
                     }
 
@@ -145,40 +143,48 @@
             <!-- Main Content -->
             <main class="detail-main">
                 <!-- Tabs Navigation -->
-                <nav class="tabs-nav">
-                    <button class="tab-btn" [class.active]="activeTab === 'overview'"
-                        (click)="setActiveTab('overview')">
-                        <i-tabler name="layout-dashboard"></i-tabler>
-                        <span>Přehled</span>
+                <div class="tabs-wrapper">
+                    <button class="tab-scroll-btn left" *ngIf="showLeftScroll" (click)="scrollTabs(-1)">
+                        <i-tabler name="chevron-left"></i-tabler>
                     </button>
-                    @if (selectedUser.role === 'student') {
-                    <button class="tab-btn" [class.active]="activeTab === 'student'" (click)="setActiveTab('student')">
-                        <i-tabler name="school"></i-tabler>
-                        <span>Student</span>
+                    <nav class="tabs-nav" #tabsNav (scroll)="checkScroll()">
+                        <div class="tab-btn" [class.active]="activeTab === 'overview'"
+                            (click)="setActiveTab('overview')">
+                            <i-tabler name="layout-dashboard"></i-tabler>
+                            <span>Přehled</span>
+                        </div>
+                        @if (selectedUser.role === 'student') {
+                        <div class="tab-btn" [class.active]="activeTab === 'student'" (click)="setActiveTab('student')">
+                            <i-tabler name="school"></i-tabler>
+                            <span>Student</span>
+                        </div>
+                        }
+                        @if (selectedUser.role === 'teacher') {
+                        <div class="tab-btn" [class.active]="activeTab === 'employee'"
+                            (click)="setActiveTab('employee')">
+                            <i-tabler name="user-check"></i-tabler>
+                            <span>Zaměstnanec</span>
+                        </div>
+                        }
+                        <div class="tab-btn" [class.active]="activeTab === 'edit'" (click)="setActiveTab('edit')">
+                            <i-tabler name="edit"></i-tabler>
+                            <span>Upravit</span>
+                        </div>
+                        <div class="tab-btn" [class.active]="activeTab === 'security'"
+                            (click)="setActiveTab('security')">
+                            <i-tabler name="shield-lock"></i-tabler>
+                            <span>Bezpečnost</span>
+                        </div>
+                        <div class="tab-btn" [class.active]="activeTab === 'activity'"
+                            (click)="setActiveTab('activity')">
+                            <i-tabler name="activity"></i-tabler>
+                            <span>Aktivita</span>
+                        </div>
+                    </nav>
+                    <button class="tab-scroll-btn right" *ngIf="showRightScroll" (click)="scrollTabs(1)">
+                        <i-tabler name="chevron-right"></i-tabler>
                     </button>
-                    }
-                    @if (selectedUser.role === 'teacher') {
-                    <button class="tab-btn" [class.active]="activeTab === 'employee'"
-                        (click)="setActiveTab('employee')">
-                        <i-tabler name="user-check"></i-tabler>
-                        <span>Zaměstnanec</span>
-                    </button>
-                    }
-                    <button class="tab-btn" [class.active]="activeTab === 'edit'" (click)="setActiveTab('edit')">
-                        <i-tabler name="edit"></i-tabler>
-                        <span>Upravit</span>
-                    </button>
-                    <button class="tab-btn" [class.active]="activeTab === 'security'"
-                        (click)="setActiveTab('security')">
-                        <i-tabler name="shield-lock"></i-tabler>
-                        <span>Bezpečnost</span>
-                    </button>
-                    <button class="tab-btn" [class.active]="activeTab === 'activity'"
-                        (click)="setActiveTab('activity')">
-                        <i-tabler name="activity"></i-tabler>
-                        <span>Aktivita</span>
-                    </button>
-                </nav>
+                </div>
 
                 <!-- Tab Content -->
                 <div class="tab-content">
@@ -945,11 +951,9 @@
                         <td class="col-user">
                             <div class="user-cell">
                                 <div class="user-avatar-sm">
-                                    @if (user.photo_url) {
-                                    <img [src]="user.photo_url" [alt]="user.full_name">
-                                    } @else {
-                                    <span>{{ Utils.getInitials(user.full_name) }}</span>
-                                    }
+                                    <div class="avatar--image">
+                                        <img [src]="avatarService.getAvatar(user.avatar, user.full_name)" [alt]="user.full_name">
+                                    </div>
                                 </div>
                                 <div class="user-name-cell">
                                     <span class="name">{{ user.full_name }}</span>
@@ -1058,125 +1062,242 @@
             </div>
 
             <div class="modal-body">
-                <form (submit)="$event.preventDefault(); submitNewUser()">
-                    <!-- Username -->
-                    <div class="form-group">
-                        <label class="form-label" for="username">
-                            Uživatelské jméno <span class="required">*</span>
-                        </label>
-                        <input type="text" id="username" class="form-input" [(ngModel)]="newUser.username"
-                            [class.error]="formErrors.username" name="username" placeholder="jnovak" autocomplete="off">
-                        @if (formErrors.username) {
-                        <span class="form-error">{{ formErrors.username }}</span>
-                        }
-                    </div>
+                @if (formErrors['general']) {
+                <div class="alert alert--danger" style="margin-bottom: 1rem;">
+                    <i-tabler name="alert-circle"></i-tabler>
+                    <span>{{ formErrors['general'] }}</span>
+                </div>
+                }
 
-                    <!-- First Name & Last Name -->
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label class="form-label" for="firstName">
-                                Jméno <span class="required">*</span>
-                            </label>
-                            <input type="text" id="firstName" class="form-input" [(ngModel)]="newUser.first_name"
-                                [class.error]="formErrors.first_name" name="firstName" placeholder="Jan"
-                                autocomplete="off">
-                            @if (formErrors.first_name) {
-                            <span class="form-error">{{ formErrors.first_name }}</span>
-                            }
+                <!-- Step Progress -->
+                <div class="step-progress" style="display: flex; align-items: center; justify-content: center; gap: 2rem; margin-bottom: 2rem;">
+                    <div class="step-item" [class.active]="currentStep === 1" [class.completed]="currentStep > 1" style="display: flex; flex-direction: column; align-items: center; gap: 0.5rem; position: relative;">
+                        <div class="step-circle" style="width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; transition: all 0.3s;"
+                             [style.background]="currentStep >= 1 ? 'var(--primary)' : 'var(--bg-secondary)'"
+                             [style.color]="currentStep >= 1 ? 'white' : 'var(--text-muted)'">
+                            1
                         </div>
-
-                        <div class="form-group">
-                            <label class="form-label" for="lastName">
-                                Příjmení <span class="required">*</span>
-                            </label>
-                            <input type="text" id="lastName" class="form-input" [(ngModel)]="newUser.last_name"
-                                [class.error]="formErrors.last_name" name="lastName" placeholder="Novák"
-                                autocomplete="off">
-                            @if (formErrors.last_name) {
-                            <span class="form-error">{{ formErrors.last_name }}</span>
-                            }
+                        <span style="font-size: 11px; font-weight: 500;">Identita</span>
+                    </div>
+                    <div style="flex: 0 0 50px; height: 2px; background: var(--border); margin-top: -1.25rem;"></div>
+                    <div class="step-item" [class.active]="currentStep === 2" style="display: flex; flex-direction: column; align-items: center; gap: 0.5rem;">
+                        <div class="step-circle" style="width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; transition: all 0.3s;"
+                             [style.background]="currentStep === 2 ? 'var(--primary)' : 'var(--bg-secondary)'"
+                             [style.color]="currentStep === 2 ? 'white' : 'var(--text-muted)'">
+                            2
                         </div>
+                        <span style="font-size: 11px; font-weight: 500;">Specifika</span>
+                    </div>
+                </div>
+
+                @if (currentStep === 1) {
+                    <!-- STEP 1: Mode and Basic Info -->
+                    <div class="modal-tabs"
+                        style="display: flex; gap: 0.5rem; margin-bottom: 1.5rem; background: var(--surface-2); padding: 0.25rem; border-radius: var(--radius-md);">
+                        <button class="btn btn--sm" style="flex: 1; border: none;"
+                            [class.btn--primary]="newUser.mode === 'new'" [class.btn--ghost]="newUser.mode !== 'new'"
+                            (click)="newUser.mode = 'new'; resetNewUserForm('new')">
+                            Nový uživatel
+                        </button>
+                        <button class="btn btn--sm" style="flex: 1; border: none;"
+                            [class.btn--primary]="newUser.mode === 'import'" [class.btn--ghost]="newUser.mode !== 'import'"
+                            (click)="newUser.mode = 'import'; resetNewUserForm('import')">
+                            Importovat z DB
+                        </button>
                     </div>
 
-                    <!-- Email -->
-                    <div class="form-group">
-                        <label class="form-label" for="email">
-                            Email <span class="required">*</span>
-                        </label>
-                        <input type="email" id="email" class="form-input" [(ngModel)]="newUser.email"
-                            [class.error]="formErrors.email" name="email" placeholder="jan.novak@school.cz"
-                            autocomplete="off">
-                        @if (formErrors.email) {
-                        <span class="form-error">{{ formErrors.email }}</span>
-                        }
-                    </div>
-
-                    <!-- Role -->
-                    <div class="form-group">
-                        <label class="form-label" for="role">
-                            Role <span class="required">*</span>
-                        </label>
-                        <div class="custom-select" id="role" style="width: 100%"
-                            (click)="$event.stopPropagation(); dropdownManager.selected_dropdown = dropdownManager.selected_dropdown == 'new_user_role' ? '' : 'new_user_role'">
-                            <div class="selected-value">
-                                <div class="row" style="gap: .5rem">
-                                    {{ getRoleText(newUser.role) }}
+                    <form (submit)="$event.preventDefault(); nextStep()">
+                        @if (newUser.mode === 'import') {
+                        <div class="form-group">
+                            <label class="form-label">Vybrat osobu <span class="required">*</span></label>
+                            <div class="custom-select" style="width: 100%"
+                                (click)="$event.stopPropagation(); dropdownManager.selected_dropdown = dropdownManager.selected_dropdown == 'import_person' ? '' : 'import_person'">
+                                <div class="selected-value">
+                                    <div class="row" style="gap: .5rem">
+                                        {{ newUser.person_id ? newUser.first_name + ' ' + newUser.last_name : 'Vyberte osobu...' }}
+                                    </div>
+                                    <i-tabler name="chevron-down"></i-tabler>
                                 </div>
-                                <i-tabler name="chevron-down"></i-tabler>
+                                @if (dropdownManager.selected_dropdown == 'import_person') {
+                                <div class="options-dropdown">
+                                    <div class="list">
+                                        @for (p of unlinkedPersons; track p.person_id) {
+                                        <div class="option" (click)="$event.stopPropagation(); dropdownManager.selected_dropdown = ''; onPersonSelect(p.person_id)">
+                                            {{ p.first_name }} {{ p.last_name }}
+                                            <span class="muted" style="font-size: 11px; margin-left: 0.5rem;">({{ getRoleText(p.suggested_role) }})</span>
+                                        </div>
+                                        } @empty {
+                                        <div class="option muted">Žádné osoby k importu nenalezeny</div>
+                                        }
+                                    </div>
+                                </div>
+                                }
                             </div>
-                            @if (dropdownManager.selected_dropdown == 'new_user_role') {
-                            <div class="options-dropdown">
-                                <div class="list">
-                                    @for (opt of getFilterOptions('role'); track $index) {
-                                    @if (opt.value !== 'all') {
-                                    <div class="option row" style="gap: .5rem"
-                                        (click)="$event.stopPropagation(); dropdownManager.selected_dropdown = ''; newUser.role = $any(opt.value)">
-                                        {{ opt.label }}
+                        </div>
+                        }
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label class="form-label" for="firstName">Jméno <span class="required">*</span></label>
+                                <input type="text" id="firstName" class="form-input" [(ngModel)]="newUser.first_name" [class.error]="formErrors['first_name']" name="firstName" [disabled]="newUser.mode === 'import'">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label" for="lastName">Příjmení <span class="required">*</span></label>
+                                <input type="text" id="lastName" class="form-input" [(ngModel)]="newUser.last_name" [class.error]="formErrors['last_name']" name="lastName" [disabled]="newUser.mode === 'import'">
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label" for="username">Uživatelské jméno <span class="required">*</span></label>
+                            <input type="text" id="username" class="form-input" [(ngModel)]="newUser.username" [class.error]="formErrors['username']" name="username">
+                        </div>
+
+                        @if (newUser.mode === 'new') {
+                        <div class="form-group">
+                            <label class="form-label" for="email">Email <span class="required">*</span></label>
+                            <input type="email" id="email" class="form-input" [(ngModel)]="newUser.email" [class.error]="formErrors['email']" name="email">
+                        </div>
+                        }
+
+                        <div class="form-group">
+                            <label class="form-label" for="password">Dočasné heslo <span class="required">*</span></label>
+                            <div class="password-input-group">
+                                <input type="text" id="password" class="form-input" [(ngModel)]="newUser.password" [class.error]="formErrors['password']" name="password">
+                                <button type="button" class="btn btn--secondary btn--sm" (click)="generatePassword()"><i-tabler name="refresh"></i-tabler></button>
+                            </div>
+                        </div>
+                    </form>
+                } @else {
+                    <!-- STEP 2: Role and Role specifics -->
+                    <form (submit)="$event.preventDefault(); submitNewUser()">
+                        <div class="form-group">
+                            <label class="form-label">Role <span class="required">*</span></label>
+                            <div class="custom-select" style="width: 100%"
+                                (click)="$event.stopPropagation(); dropdownManager.selected_dropdown = dropdownManager.selected_dropdown == 'new_user_role' ? '' : 'new_user_role'">
+                                <div class="selected-value">
+                                    <div class="row" style="gap: .5rem">{{ getRoleText(newUser.role) }}</div>
+                                    <i-tabler name="chevron-down"></i-tabler>
+                                </div>
+                                @if (dropdownManager.selected_dropdown == 'new_user_role') {
+                                <div class="options-dropdown">
+                                    <div class="list">
+                                        <div class="option" (click)="$event.stopPropagation(); dropdownManager.selected_dropdown = ''; newUser.role = 'student'">Student</div>
+                                        <div class="option" (click)="$event.stopPropagation(); dropdownManager.selected_dropdown = ''; newUser.role = 'teacher'">Učitel</div>
+                                        <div class="dropdown-divider"></div>
+                                        <div class="option" (click)="$event.stopPropagation(); dropdownManager.selected_dropdown = ''; newUser.role = 'parent'">Rodič</div>
+                                        <div class="option" (click)="$event.stopPropagation(); dropdownManager.selected_dropdown = ''; newUser.role = 'management'">Vedení školy</div>
+                                    </div>
+                                </div>
+                                }
+                            </div>
+                        </div>
+
+                        @if (newUser.role === 'student') {
+                            <!-- Student Specifics -->
+                            <div class="form-group">
+                                <label class="form-label">Třída <span class="required">*</span></label>
+                                <div class="custom-select" style="width: 100%"
+                                    (click)="$event.stopPropagation(); dropdownManager.selected_dropdown = dropdownManager.selected_dropdown == 'new_user_class' ? '' : 'new_user_class'">
+                                    <div class="selected-value">
+                                        <div class="row" style="gap: .5rem">{{ getClassName(newUser.class_id) }}</div>
+                                        <i-tabler name="chevron-down"></i-tabler>
+                                    </div>
+                                    @if (dropdownManager.selected_dropdown == 'new_user_class') {
+                                    <div class="options-dropdown">
+                                        <div class="list">
+                                            @for (c of availableClasses; track c.class_id) {
+                                            <div class="option" (click)="$event.stopPropagation(); dropdownManager.selected_dropdown = ''; newUser.class_id = c.class_id">
+                                                {{ c.class_name }}
+                                            </div>
+                                            }
+                                        </div>
                                     </div>
                                     }
-                                    }
                                 </div>
                             </div>
-                            }
-                        </div>
-                    </div>
 
-                    <!-- Password -->
-                    <div class="form-group">
-                        <label class="form-label" for="password">
-                            Dočasné heslo <span class="required">*</span>
-                        </label>
-                        <div class="password-input-group">
-                            <input type="text" id="password" class="form-input" [(ngModel)]="newUser.password"
-                                [class.error]="formErrors.password" name="password" autocomplete="off">
-                            <button type="button" class="btn btn--secondary btn--sm" (click)="generatePassword()">
-                                <i-tabler name="refresh"></i-tabler>
-                                Generovat
-                            </button>
-                            @if (newUser.password) {
-                            <button type="button" class="btn btn--ghost btn--sm" [title]="'Kopírovat heslo'"
-                                (click)="Utils.copyTextToClipboard(newUser.password)">
-                                <i-tabler name="copy"></i-tabler>
-                            </button>
-                            }
-                        </div>
-                        @if (formErrors.password) {
-                        <span class="form-error">{{ formErrors.password }}</span>
+                            <div class="form-group" style="display: flex; align-items: center; gap: 0.75rem; margin-top: 1rem;">
+                                <input type="checkbox" id="is_distance" [(ngModel)]="newUser.is_distance" name="is_distance" style="width: 18px; height: 18px; cursor: pointer;">
+                                <label for="is_distance" style="cursor: pointer; font-weight: 500;">Vzdálené studium</label>
+                            </div>
+                        } @else if (newUser.role === 'teacher') {
+                            <!-- Teacher Specifics -->
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label class="form-label">Číslo zaměstnance</label>
+                                    <input type="text" class="form-input" [(ngModel)]="newUser.employee_number" name="employee_number" placeholder="T-123">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Typ úvazku</label>
+                                    <div class="custom-select" style="width: 100%"
+                                        (click)="$event.stopPropagation(); dropdownManager.selected_dropdown = dropdownManager.selected_dropdown == 'contract_type' ? '' : 'contract_type'">
+                                        <div class="selected-value">
+                                            {{ newUser.contract_type === 'fulltime' ? 'Plný úvazek' : newUser.contract_type === 'parttime' ? 'Částečný' : newUser.contract_type?.toUpperCase() }}
+                                            <i-tabler name="chevron-down"></i-tabler>
+                                        </div>
+                                        @if (dropdownManager.selected_dropdown == 'contract_type') {
+                                        <div class="options-dropdown">
+                                            <div class="list">
+                                                <div class="option" (click)="$event.stopPropagation(); dropdownManager.selected_dropdown = ''; newUser.contract_type = 'fulltime'">Plný úvazek</div>
+                                                <div class="option" (click)="$event.stopPropagation(); dropdownManager.selected_dropdown = ''; newUser.contract_type = 'parttime'">Částečný úvazek</div>
+                                                <div class="option" (click)="$event.stopPropagation(); dropdownManager.selected_dropdown = ''; newUser.contract_type = 'dpp'">DPP</div>
+                                                <div class="option" (click)="$event.stopPropagation(); dropdownManager.selected_dropdown = ''; newUser.contract_type = 'dpc'">DPČ</div>
+                                            </div>
+                                        </div>
+                                        }
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label class="form-label">Kabinet</label>
+                                    <div class="custom-select" style="width: 100%"
+                                        (click)="$event.stopPropagation(); dropdownManager.selected_dropdown = dropdownManager.selected_dropdown == 'cabinet' ? '' : 'cabinet'">
+                                        <div class="selected-value">
+                                            {{ getRoomName(newUser.cabinet_id) }}
+
+                                            <i-tabler name="chevron-down"></i-tabler>
+                                        </div>
+                                        @if (dropdownManager.selected_dropdown == 'cabinet') {
+                                        <div class="options-dropdown">
+                                            <div class="list">
+                                                <div class="option" (click)="$event.stopPropagation(); dropdownManager.selected_dropdown = ''; newUser.cabinet_id = null">Žádný</div>
+                                                @for (room of availableRooms; track room.room_id) {
+                                                <div class="option" (click)="$event.stopPropagation(); dropdownManager.selected_dropdown = ''; newUser.cabinet_id = room.room_id">
+                                                    {{ room.name }} ({{ room.building_name }})
+                                                </div>
+                                                }
+                                            </div>
+                                        </div>
+                                        }
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Hodin týdně</label>
+                                    <input type="number" class="form-input" [(ngModel)]="newUser.hours_per_week" name="hours_per_week" min="0" max="100">
+                                </div>
+                            </div>
                         }
-                    </div>
-                </form>
+                    </form>
+                }
             </div>
 
             <div class="modal-footer">
-                <button type="button" class="btn btn--ghost" (click)="closeAddUserModal()" [disabled]="isSubmitting">
-                    Zrušit
-                </button>
-                <button type="button" class="btn btn--primary" (click)="submitNewUser()" [disabled]="isSubmitting">
-                    @if (isSubmitting) {
-                    <span class="btn-spinner"></span>
-                    }
-                    {{ isSubmitting ? 'Vytvářím...' : 'Vytvořit uživatele' }}
-                </button>
+                @if (currentStep === 1) {
+                    <button type="button" class="btn btn--ghost" (click)="closeAddUserModal()">Zrušit</button>
+                    <button type="button" class="btn btn--primary" (click)="$event.preventDefault(); nextStep()">
+                        Pokračovat <i-tabler name="arrow-right" style="width: 14px; margin-left: 0.5rem;"></i-tabler>
+                    </button>
+                } @else {
+                    <button type="button" class="btn btn--ghost" (click)="prevStep()">
+                        <i-tabler name="arrow-left" style="width: 14px; margin-right: 0.5rem;"></i-tabler> Zpět
+                    </button>
+                    <button type="button" class="btn btn--primary" (click)="submitNewUser()" [disabled]="isSubmitting">
+                        @if (isSubmitting) { <span class="btn-spinner"></span> }
+                        {{ isSubmitting ? 'Vytvářím...' : 'Vytvořit uživatele' }}
+                    </button>
+                }
             </div>
         </div>
     </div>

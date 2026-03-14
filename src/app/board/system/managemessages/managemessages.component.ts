@@ -47,7 +47,7 @@ export class ManagemessagesComponent implements OnInit {
 
   ngOnInit(): void {
     this.http.get(
-      `${Config.API_URL}/v1/messages/received`,
+      `${Config.API_URL}/v1/messages/list`,
       { withCredentials: true }
     )
     .subscribe((data: any) => {
@@ -68,15 +68,6 @@ export class ManagemessagesComponent implements OnInit {
 
   public selectMessage(message: Message | null): void {
     this.selectedMessage = message;
-    if (message != null && !message.read_at) {
-      message.read_at = new Date();
-      this.http.post(
-        `${Config.API_URL}/v1/messages/update`,
-        { message_id: message.message_id, read: true },
-        { withCredentials: true }
-      )
-      .subscribe((data) => console.log(data));
-    }
   }
 
   public get filteredMessages(): Message[] {

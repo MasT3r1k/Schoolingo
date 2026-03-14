@@ -11,8 +11,7 @@
 
         <div class="messages-list">
             @for (message of filteredMessages; track message.message_id) {
-            <div class="message-item" [class.active]="selectedMessage?.message_id === message.message_id" [class.unread]="!message.read_at"
-                (click)="selectMessage(message)">
+            <div class="message-item" [class.active]="selectedMessage?.message_id === message.message_id" (click)="selectMessage(message)">
 
                 <div class="avatar" [class.teacher]="message.author.role === 'teacher'"
                     [class.system]="message.author.role === 'system'">
@@ -31,10 +30,6 @@
                     <div class="subject">{{ message.topic }}</div>
                     <div class="preview-text">{{ message.message }}</div>
                 </div>
-
-                @if (!message.read_at) {
-                <div class="unread-indicator"></div>
-                }
             </div>
             } @empty {
             <div class="empty-state">

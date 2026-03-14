@@ -82,9 +82,8 @@
         <aside class="profile-sidebar">
             <div class="profile-card">
                 <div class="profile-avatar">
-                    <span class="avatar-initials">
-                        {{ Utils.getInitials(selectedStudent.full_name) }}
-                    </span>
+                    <img [src]="avatarService.getAvatar(selectedStudent.avatar, selectedStudent.full_name)" [alt]="selectedStudent.full_name">
+                    <div class="status-dot" [class]="selectedStudent.status"></div>
                 </div>
                 <h1 class="profile-name">
                     {{ selectedStudent.full_name }}
@@ -98,6 +97,9 @@
                 </div>
                 <div class="profile-class">
                     {{ l.s('students.class') }}: {{ selectedStudent.class_name }}
+                    <span class="class-rank" *ngIf="selectedStudent.class_rank" [title]="l.s('students.class_rank')">
+                        ({{ l.s('students.tk_rank', { rank: selectedStudent.class_rank }) }})
+                    </span>
                 </div>
             </div>
 
@@ -198,10 +200,16 @@
                                 <span class="info-label">Délka studia</span>
                                 <span class="info-value">4 roky</span>
                             </div>
-                            <div class="info-row">
+                             <div class="info-row">
                                 <span class="info-label">Třídní učitel</span>
                                 <span class="info-value">{{ selectedStudent.teacher_name }}</span>
                             </div>
+                            @if (selectedStudent.class_rank) {
+                            <div class="info-row">
+                                <span class="info-label">{{ l.s('students.class_rank') }}</span>
+                                <span class="info-value">{{ selectedStudent.class_rank }}.</span>
+                            </div>
+                            }
                             <div class="info-row">
                                 <span class="info-label">Pojišťovna</span>
                                 <span class="info-value">
@@ -231,7 +239,7 @@
                             </button>
                         </div>
                         <div class="chrono-timeline">
-                            @for (grade of selectedStudent.last_grades; track $index) {
+                            @for (grade of $any(selectedStudent).last_grades; track $index) {
                             <div class="chrono-card overview-style" (click)="selectMark(grade)">
                                 <div class="chrono-badge" [class]="getGradeClass(formatMark(grade))">
                                     {{ formatMark(grade) }}
@@ -269,16 +277,16 @@
                                         stroke-width="14" />
 
                                     <circle cx="60" cy="60" r="50" fill="none" stroke="var(--success)" stroke-width="14"
-                                        [attr.stroke-dasharray]="((100 - selectedStudent.absence_rate) / 100) * 314.16 + ' 314.16'"
+                                        [attr.stroke-dasharray]="((100 - $any(selectedStudent).absence_rate) / 100) * 314.16 + ' 314.16'"
                                         stroke-dashoffset="0" />
 
                                     <circle cx="60" cy="60" r="50" fill="none" stroke="var(--warning)" stroke-width="14"
-                                        [attr.stroke-dasharray]="(selectedStudent.absence_rate_excused / 100) * 314.16 + ' 314.16'"
-                                        [attr.stroke-dashoffset]="-1 * ((100 - selectedStudent.absence_rate) / 100) * 314.16" />
+                                        [attr.stroke-dasharray]="($any(selectedStudent).absence_rate_excused / 100) * 314.16 + ' 314.16'"
+                                        [attr.stroke-dashoffset]="-1 * ((100 - $any(selectedStudent).absence_rate) / 100) * 314.16" />
 
                                     <circle cx="60" cy="60" r="50" fill="none" stroke="var(--danger)" stroke-width="14"
-                                        [attr.stroke-dasharray]="(selectedStudent.absence_rate_unexcused / 100) * 314.16 + ' 314.16'"
-                                        [attr.stroke-dashoffset]="-1 * ((100 - selectedStudent.absence_rate_unexcused) / 100) * 314.16" />
+                                        [attr.stroke-dasharray]="($any(selectedStudent).absence_rate_unexcused / 100) * 314.16 + ' 314.16'"
+                                        [attr.stroke-dashoffset]="-1 * ((100 - $any(selectedStudent).absence_rate_unexcused) / 100) * 314.16" />
                                 </svg>
                             </div>
                             <!-- Legend -->
@@ -287,7 +295,7 @@
                                     <span class="dot success"></span>
                                     <div class="legend-info">
                                         <span class="label">Přítomnost</span>
-                                        <span class="value">{{ (100 - selectedStudent.absence_rate).toFixed(2)
+                                        <span class="value">{{ (100 - $any(selectedStudent).absence_rate).toFixed(2)
                                             }}%</span>
                                     </div>
                                 </div>
@@ -425,10 +433,16 @@
                                 <span class="data-label">Třídní učitel</span>
                                 <span class="data-value">{{ selectedStudent.teacher_name }}</span>
                             </div>
-                            <div class="data-item">
+                             <div class="data-item">
                                 <span class="data-label">Datum nástupu</span>
                                 <span class="data-value">{{ Utils.formatDateShort(selectedStudent.start_study) }}</span>
                             </div>
+                            @if (selectedStudent.class_rank) {
+                            <div class="data-item">
+                                <span class="data-label">{{ l.s('students.class_rank') }}</span>
+                                <span class="data-value">{{ selectedStudent.class_rank }}.</span>
+                            </div>
+                            }
                             @if (selectedStudent.graduation_date) {
                             <div class="data-item">
                                 <span class="data-label">Datum ukončení</span>
@@ -493,7 +507,7 @@
                         </div>
                     </div>
                 </div>
-                @if (selectedStudent.parents.length) {
+                @if (selectedParent) {
                 <div class="parent-highlight">
                     <div class="parent-top">
                         <div class="parent-identity">
@@ -535,14 +549,17 @@
                         <div class="data-grid">
                             <div class="data-item">
                                 <span class="data-label">{{ l.s('person.gender') }}</span>
-                                <span class="data-value">{{ selectedParent.gender == 1 ? l.s('genders.male') :
-                                    (selectedParent.gender == 2 ? l.s('genders.female') : l.s('unknown')) }}</span>
+                                <span class="data-value">{{ selectedParent.gender == 0 ? l.s('genders.male') :
+                                    (selectedParent.gender == 1 ? l.s('genders.female') : l.s('unknown')) }}</span>
                             </div>
                             <div class="data-item">
                                 <span class="data-label">{{ l.s('person.titles') }}</span>
                                 <span class="data-value">
-                                    {{ selectedParent.prefixTitle || '—' }}
-                                    @if(selectedParent.suffixTitle) { , {{ selectedParent.suffixTitle }} }
+                                    @if (selectedParent.prefixTitle || selectedParent.suffixTitle) {
+                                        {{ selectedParent.prefixTitle }}
+                                        @if (selectedParent.prefixTitle && selectedParent.suffixTitle) { , }
+                                        {{ selectedParent.suffixTitle }}
+                                    } @else { — }
                                 </span>
                             </div>
                         </div>
@@ -628,7 +645,7 @@
                         <div class="siblings-container">
                             @for(sibling of (selectedParent.siblings || []); track sibling.id) {
                             <div class="sibling-item clickable"
-                                (click)="$event.stopPropagation(); router.navigate(['/board/students/detail', sibling.id])">
+                                (click)="$event.stopPropagation(); selectStudent(sibling.id)">
                                 <div class="sibling-main-info">
                                     <div class="sibling-avatar">
                                         {{ Utils.getInitials(sibling.fullName) }}
@@ -645,7 +662,9 @@
                                 <div class="sibling-academic-info">
                                     <div class="info-group">
                                         <span class="label">{{ l.s('students.class') }}:</span>
-                                        <span class="value">{{ sibling.class_name }}</span>
+                                        <span class="value">
+                                            {{ sibling.class_name }}
+                                        </span>
                                     </div>
                                     <div class="info-group">
                                         <span class="label">{{ l.s('students.field_of_study') }}:</span>
@@ -658,8 +677,8 @@
                                         <span class="value">{{ sibling.teacher_name }}</span>
                                     </div>
                                     <div class="info-group">
-                                        <span class="label">{{ l.s('students.register_number') }}:</span>
-                                        <span class="value">{{ sibling.register_number }}</span>
+                                        <span class="label">{{ l.s('students.class_rank') }}:</span>
+                                        <span class="value">{{ sibling.class_rank }}.</span>
                                     </div>
                                 </div>
                                 <div class="sibling-action">
@@ -939,39 +958,6 @@
                                         [(ngModel)]="selectedStudent.matrika.health_status_code">
                                 </div>
                             </div>
-
-                            <!-- Save reason -->
-                            <div class="save-reason-section">
-                                <div class="save-reason-title">
-                                    <i-tabler name="git-branch"></i-tabler>
-                                    <span>Důvod uložení</span>
-                                </div>
-                                <div class="save-reason-options">
-                                    <label class="save-reason-option" [class.selected]="matrikaSaveType === 'change'">
-                                        <input type="radio" name="matrikaSaveType" [(ngModel)]="matrikaSaveType"
-                                            value="change">
-                                        <div class="save-reason-icon change">
-                                            <i-tabler name="history"></i-tabler>
-                                        </div>
-                                        <div class="save-reason-text">
-                                            <strong>Změna</strong>
-                                            <span>Zapíše informaci do historie studenta</span>
-                                        </div>
-                                    </label>
-                                    <label class="save-reason-option"
-                                        [class.selected]="matrikaSaveType === 'correction'">
-                                        <input type="radio" name="matrikaSaveType" [(ngModel)]="matrikaSaveType"
-                                            value="correction">
-                                        <div class="save-reason-icon correction">
-                                            <i-tabler name="pencil"></i-tabler>
-                                        </div>
-                                        <div class="save-reason-text">
-                                            <strong>Oprava</strong>
-                                            <span>Oprava chybného údaje (nezapisuje se do historie)</span>
-                                        </div>
-                                    </label>
-                                </div>
-                            </div>
                         </div>
                     </div>
                 </div>
@@ -1162,6 +1148,52 @@
                             }
                         </div>
                         }
+                    </div>
+                </div>
+                }
+
+                <!-- Evaluation Tab -->
+                @if (activeTab === 'evaluation') {
+                <div class="section-grid">
+                    <div class="info-card full">
+                        <div class="card-header">
+                            <i-tabler name="checklist"></i-tabler>
+                            <h3>Hodnocení studenta (Zprávy)</h3>
+                        </div>
+
+                        <div class="notes-list">
+                            @for (eval of evaluations; track eval.message_id) {
+                            <div class="note-item">
+                                <div class="note-header">
+                                    <div class="note-author">
+                                        <i-tabler name="user"></i-tabler>
+                                        <strong>{{ eval.teacher_first_name }} {{ eval.teacher_last_name }}</strong>
+                                    </div>
+                                    @if (getRatingType(eval.message_rating_type); as rate) {
+                                        <div class="eval-badge" [class.positive]="rate.type === 'positive'" [class.negative]="rate.type === 'negative'">
+                                            <i-tabler [name]="rate.type === 'positive' ? 'thumb-up' : 'thumb-down'"></i-tabler>
+                                            <span>{{ l.s(rate.label) }}</span>
+                                        </div>
+                                    }
+                                    <div class="note-date">
+                                        {{ Utils.formatDate(eval.sent_at) }}
+                                    </div>
+                                </div>
+                                @if (eval.topic) {
+                                  <div style="font-weight: 600; margin-bottom: 0.5rem; color: var(--text-color);">{{ eval.topic }}</div>
+                                }
+                                <div class="note-body" style="white-space: pre-wrap;">{{ eval.message }}</div>
+                            </div>
+                            } @empty {
+                            <div class="no-selection">
+                                <div class="illustration">
+                                    <i-tabler name="message-off"></i-tabler>
+                                </div>
+                                <h3>Žádná hodnocení</h3>
+                                <p>Student zatím neobdržel žádné zprávy s hodnocením.</p>
+                            </div>
+                            }
+                        </div>
                     </div>
                 </div>
                 }

@@ -170,6 +170,44 @@ export const config: SidebarGroup[] = [
                 }]
             },
             {
+                item: 'sidebar.messages.main',
+                icon: 'message',
+                children: [
+                {
+                    item: 'sidebar.messages.send',
+                    url: 'messages/send',
+                    icon: 'send',
+                }, {
+                    item: 'sidebar.messages.received',
+                    url: 'messages/received',
+                    icon: 'inbox',
+                    badge: (api: any) => {
+                        if (api.unreadMessages == 0) return '';
+                        if (api.unreadMessages >= 10) return '9+';
+                        return api.unreadMessages;
+                    }
+                }, {
+                    item: 'sidebar.messages.sent',
+                    url: 'messages/sent',
+                    icon: 'mail-forward',
+                }, {
+                    item: 'sidebar.messages.drafts',
+                    url: 'messages/drafts',
+                    icon: 'file-pencil',
+                },
+                // {
+                //     item: 'sidebar.messages.groups',
+                //     url: 'messages/groups',
+                //     icon: 'users-group',
+                // },
+                {
+                    item: 'sidebar.messages.noticeboard',
+                    url: 'messages/noticeboard',
+                    icon: 'clipboard-list',
+                    setting: 'msg_type_noticeboard_active'
+                }]
+            },
+            {
                 item: 'sidebar.online.main',
                 icon: 'video',
                 url: 'online',
@@ -211,44 +249,6 @@ export const config: SidebarGroup[] = [
                         permission: ['management', 'admin_staff', 'manager']
                     }
                 ]
-            },
-            {
-                item: 'sidebar.messages.main',
-                icon: 'message',
-                children: [
-                {
-                    item: 'sidebar.messages.send',
-                    url: 'messages/send',
-                    icon: 'send',
-                }, {
-                    item: 'sidebar.messages.received',
-                    url: 'messages/received',
-                    icon: 'inbox',
-                    badge: (api: any) => {
-                        if (api.unreadMessages == 0) return '';
-                        if (api.unreadMessages >= 10) return '9+';
-                        return api.unreadMessages;
-                    }
-                }, {
-                    item: 'sidebar.messages.sent',
-                    url: 'messages/sent',
-                    icon: 'mail-forward',
-                }, {
-                    item: 'sidebar.messages.drafts',
-                    url: 'messages/drafts',
-                    icon: 'file-pencil',
-                },
-                // {
-                //     item: 'sidebar.messages.groups',
-                //     url: 'messages/groups',
-                //     icon: 'users-group',
-                // },
-                {
-                    item: 'sidebar.messages.noticeboard',
-                    url: 'messages/noticeboard',
-                    icon: 'clipboard-list',
-                    setting: 'msg_type_noticeboard_active'
-                }]
             },
             {
                 item: 'sidebar/payments/main',

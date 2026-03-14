@@ -6,6 +6,7 @@ import { Locale } from '@Schoolingo/locale';
 import { IconsModule } from '@Schoolingo/icons';
 import { HttpClient } from '@angular/common/http';
 import { School } from '@Schoolingo/school';
+import { AvatarService } from '../../infrastructure/utils/avatar.service';
 
 // Interfaces for student summary data - ready for API integration
 interface SubjectGrade {
@@ -61,12 +62,13 @@ interface StudentSummaryData {
   styleUrls: ['./student-summary.component.css', './leaderboard.css']
 })
 export class studentSummaryComponent implements OnInit, OnDestroy, AfterViewInit {
-  private auth = inject(Authentication);
+  public auth = inject(Authentication);
   private school = inject(School);
   private modalManager = inject(ModalManager);
   private http = inject(HttpClient);
   private elementRef = inject(ElementRef);
   public l = inject(Locale);
+  public avatarService = inject(AvatarService);
 
   public getStudentName(): string {
     return this.auth.getUser()?.full_name ?? '';

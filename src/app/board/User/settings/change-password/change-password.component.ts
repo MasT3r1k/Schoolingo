@@ -16,7 +16,7 @@ import { Settings } from '@Schoolingo/settings';
   imports: [ReactiveFormsModule, IconsModule],
   selector: 'settings-change-password',
   templateUrl: './change-password.component.html',
-  styleUrl: './change-password.component.css'
+  styleUrls: ['../settings.component.css', './change-password.component.css']
 })
 export class ChangePasswordComponent implements OnInit {
   public AuthConfig = AuthConfig;

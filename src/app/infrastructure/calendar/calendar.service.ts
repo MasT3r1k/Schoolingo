@@ -1,6 +1,6 @@
 import { Injectable, inject, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable, map, catchError, of } from 'rxjs';
+import { Observable, map, catchError, of, Subject } from 'rxjs';
 import { Config } from '@Schoolingo/config';
 
 export interface CalendarEvent {
@@ -20,6 +20,15 @@ export class CalendarService {
   
   public events = signal<CalendarEvent[]>([]);
   public loading = signal<boolean>(false);
+  private refresh$ = new Subject<void>();
+
+  public onRefresh(): Observable<void> {
+    return this.refresh$.asObservable();
+  }
+
+  public refresh(): void {
+    this.refresh$.next();
+  }
 
   /**
    * Load events for a date range
@@ -109,11 +118,14 @@ export class CalendarService {
    * Get all classes for event assignment
    */
   getClasses(): Observable<{ classId: number; className: string }[]> {
-    return this.http.get<{ classes: { classId: number; className: string }[] }>(
+    return this.http.get<{ classes: any[] }>(
       `${Config.API_URL}/v1/schedule/classes`,
       { withCredentials: true }
     ).pipe(
-      map(response => response.classes),
+      map(response => response.classes.map(c => ({
+        classId: c.class_id,
+        className: c.class_name
+      }))),
       catchError(() => of([]))
     );
   }

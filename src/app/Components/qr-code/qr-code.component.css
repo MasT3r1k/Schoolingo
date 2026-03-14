@@ -1,0 +1,90 @@
+.qrcode-box {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--elevated);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    margin: 1rem auto;
+    transition: all var(--transition-base);
+    overflow: hidden;
+
+    /* Subtle glow effect */
+    box-shadow:
+        0 0 0 1px rgba(255, 255, 255, 0.03) inset,
+        var(--shadow-sm);
+}
+
+.qrcode-box:hover {
+    border-color: var(--primary);
+    box-shadow:
+        0 0 0 1px rgba(255, 255, 255, 0.05) inset,
+        var(--shadow-glow);
+}
+
+.qrcode-box qrcode,
+.qrcode-box .skeleton {
+    display: block;
+    width: var(--qrcode-size) !important;
+    height: var(--qrcode-size) !important;
+    border-radius: var(--radius-sm);
+}
+
+.qrcode-box .skeleton {
+    background: linear-gradient(90deg,
+            var(--surface-2) 0%,
+            var(--surface-3) 50%,
+            var(--surface-2) 100%);
+    background-size: 200% 100%;
+    animation: shimmer 1.8s ease-in-out infinite;
+    position: relative;
+}
+
+.qrcode-box .skeleton::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="rgba(161,161,170,0.3)" stroke-width="1.5"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><path d="M14 14h7v7h-7z"/></svg>') center/60% no-repeat;
+    opacity: 0.4;
+}
+
+@keyframes shimmer {
+    0% {
+        background-position: 200% 0;
+    }
+
+    100% {
+        background-position: -200% 0;
+    }
+}
+
+/* Scanner line animation */
+.qr-scanner-line {
+    position: absolute;
+    top: 12px;
+    left: 0px;
+    right: 0px;
+    height: 2px;
+    background: linear-gradient(90deg,
+            transparent 0%,
+            var(--primary) 25%,
+            var(--primary) 75%,
+            transparent 100%);
+    animation: qr-scan 2.5s ease-in-out infinite;
+    z-index: 10;
+    opacity: 0.75;
+    pointer-events: none;
+}
+
+@keyframes qr-scan {
+
+    0%,
+    100% {
+        top: 12px;
+    }
+
+    50% {
+        top: calc(100% - 14px);
+    }
+}

@@ -11,7 +11,7 @@ import { IconsModule } from '@Schoolingo/icons';
 import { Passkey } from '@Schoolingo/passkey';
 import Swal from 'sweetalert2';
 import { PublicKeyCredentialCreationOptionsJSON, startRegistration } from '@simplewebauthn/browser';
-import { QRCodeComponent } from 'angularx-qrcode';
+
 import { Theme } from '@Schoolingo/theme';
 import { BaseAlertManager } from '../../../../infrastructure/alert/alert.manager';
 import { BackupCode } from '../../../../infrastructure/settings/security';
@@ -47,7 +47,7 @@ export class SecurityComponent implements OnInit {
   public isPasskeySupported: boolean | null = null;
   public codes: BackupCode[] = [];
 
-  public TFA_qrcode?: string;
+
   public errors: { [key: string]: string } = {};
   public active_action: 'activating_2fa' | '' = '';
 
@@ -68,7 +68,7 @@ export class SecurityComponent implements OnInit {
 
   public activate2FA(): void {
     this.errors = {};
-    delete this.TFA_qrcode;
+
     this.modalManager.openModal('add_2FA');
   }
 

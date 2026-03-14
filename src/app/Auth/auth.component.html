@@ -521,16 +521,7 @@
                 <span>{{ l.s('or') }}</span>
             </div>
             <div class="right qrcode">
-                <div class="qrcode-box">
-                    @if (qrcode.getValue() == '') {
-                    <div class="skeleton"></div>
-                    } @else {
-                    <div class="qr-scanner-line"></div>
-                    <qrcode [allowEmptyString]="false" [width]="224" [elementType]="'canvas'"
-                        [errorCorrectionLevel]="'L'" [margin]="2" [imageSrc]="'./assets/logo/login_black_100.webp'"
-                        [imageHeight]="50" [imageWidth]="50" [qrdata]="qrcode.getValue()"></qrcode>
-                    }
-                </div>
+                <qr-code [data]="qrcode.getValue()"></qr-code>
                 <div class="qr-text">
                     {{ l.s('auth.login.qrcode') }}
                 </div>

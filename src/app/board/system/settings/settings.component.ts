@@ -139,7 +139,7 @@ type ElysiaSystemAPI = {
     ico: string;
     school_type: string;
     izo: string;
-    online_enabled: number;
+    online_enabled: boolean;
     online_default_platform: string;
     gdpr_first_name: string;
     gdpr_last_name: string;
@@ -159,6 +159,13 @@ type ElysiaSystemAPI = {
     employee_vacation_requests_enabled: boolean;
     employee_attendance_enabled: boolean;
     employee_salaries_enabled: boolean;
+    documents_enabled: boolean;
+    traineeship_enabled: boolean;
+    noticeboard_student_enabled: boolean;
+    noticeboard_teacher_enabled: boolean;
+    tests_enabled: boolean;
+    rewards_enabled: boolean;
+    demo_enabled: boolean;
   };
 
   ldap_config: LdapConfig | null;
@@ -302,6 +309,15 @@ export class SettingsComponent implements OnInit {
       this.system.settings.employee_vacation_requests_enabled = data.settings.employee_vacation_requests_enabled ? true : false;
       this.system.settings.employee_attendance_enabled = data.settings.employee_attendance_enabled ? true : false;
       this.system.settings.employee_salaries_enabled = data.settings.employee_salaries_enabled ? true : false;
+      
+      this.system.settings.documents_enabled = data.settings.documents_enabled ? true : false;
+      this.system.settings.traineeship_enabled = data.settings.traineeship_enabled ? true : false;
+      this.system.settings.online_enabled = data.settings.online_enabled ? true : false;
+      this.system.settings.noticeboard_student_enabled = data.settings.noticeboard_student_enabled ? true : false;
+      this.system.settings.noticeboard_teacher_enabled = data.settings.noticeboard_teacher_enabled ? true : false;
+      this.system.settings.tests_enabled = data.settings.tests_enabled ? true : false;
+      this.system.settings.rewards_enabled = data.settings.rewards_enabled ? true : false;
+      this.system.settings.demo_enabled = data.settings.demo_enabled ? true : false;
 
       this.system_loading_error = false;
     },
@@ -974,7 +990,13 @@ public school_types = SchoolTypes;
         employee_vacation_days_default: Number(this.system.settings.employee_vacation_days_default),
         employee_vacation_requests_enabled: this.system.settings.employee_vacation_requests_enabled ? true : false,
         employee_attendance_enabled: this.system.settings.employee_attendance_enabled ? true : false,
-        employee_salaries_enabled: this.system.settings.employee_salaries_enabled ? true : false
+        employee_salaries_enabled: this.system.settings.employee_salaries_enabled ? true : false,
+        documents_enabled: this.system.settings.documents_enabled ? true : false,
+        traineeship_enabled: this.system.settings.traineeship_enabled ? true : false,
+        noticeboard_student_enabled: this.system.settings.noticeboard_student_enabled ? true : false,
+        noticeboard_teacher_enabled: this.system.settings.noticeboard_teacher_enabled ? true : false,
+        tests_enabled: this.system.settings.tests_enabled ? true : false,
+        rewards_enabled: this.system.settings.rewards_enabled ? true : false
       },
       { withCredentials: true }
     )

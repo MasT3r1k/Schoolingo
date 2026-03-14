@@ -48,6 +48,10 @@ export class CalendarComponent implements OnInit {
     });
     this.generateWeekDays();
     this.loadEvents();
+
+    this.calendarService.onRefresh().subscribe(() => {
+      this.loadEvents();
+    });
   }
 
   private generateWeekDays(): void {
@@ -77,25 +81,20 @@ export class CalendarComponent implements OnInit {
 
     this.calendarService.loadEvents(startStr, endStr).subscribe({
       next: (apiEvents) => {
-        if (apiEvents.length > 0) {
-          // Map API events to component format
-          this.events = apiEvents.map((e, index) => ({
-            id: e.event_id,
-            title: e.name,
-            type: this.mapEventType(e.type),
-            start: new Date(e.date),
-            end: new Date(new Date(e.date).getTime() + 45 * 60000), // Default 45 min duration
-            description: e.description,
-            color: this.getEventColor(e.type)
-          }));
-        } else {
-          // Fallback to mock if no API data
-          this.loadMockEvents();
-        }
+        // Map API events to component format
+        this.events = apiEvents.map((e, index) => ({
+          id: e.event_id,
+          title: e.name,
+          type: this.mapEventType(e.type),
+          start: new Date(e.date),
+          end: new Date(new Date(e.date).getTime() + 45 * 60000), // Default 45 min duration
+          description: e.description,
+          color: this.getEventColor(e.type)
+        }));
         this.loading = false;
       },
       error: () => {
-        this.loadMockEvents();
+        this.events = [];
         this.loading = false;
       }
     });
@@ -118,57 +117,6 @@ export class CalendarComponent implements OnInit {
     return colors[type] || 'var(--primary)';
   }
 
-  private loadMockEvents(): void {
-    const today = new Date();
-    const startOfWeek = this.getStartOfWeek(today);
-
-    // Helper to set time
-    const setTime = (dayOffset: number, hour: number, minute: number) => {
-      const d = new Date(startOfWeek);
-      d.setDate(startOfWeek.getDate() + dayOffset);
-      d.setHours(hour, minute, 0, 0);
-      return d;
-    };
-
-    this.events = [
-      {
-        id: 1,
-        title: 'Matematika',
-        type: 'lesson',
-        start: setTime(0, 8, 0),
-        end: setTime(0, 8, 45),
-        location: 'U12',
-        color: 'var(--primary)'
-      },
-      {
-        id: 2,
-        title: 'Anglický jazyk',
-        type: 'lesson',
-        start: setTime(0, 8, 55),
-        end: setTime(0, 9, 40),
-        location: 'J1',
-        color: 'var(--accent)'
-      },
-      {
-        id: 3,
-        title: 'Školní výlet',
-        type: 'event',
-        start: setTime(2, 8, 0),
-        end: setTime(2, 14, 0),
-        description: 'Návštěva muzea',
-        color: 'var(--success)'
-      },
-      {
-        id: 4,
-        title: 'Test z Dějepisu',
-        type: 'exam',
-        start: setTime(3, 10, 0),
-        end: setTime(3, 10, 45),
-        location: 'U5',
-        color: 'var(--danger)'
-      }
-    ];
-  }
 
   public getEventsForDay(date: Date): CalendarEvent[] {
     return this.events.filter(event => 

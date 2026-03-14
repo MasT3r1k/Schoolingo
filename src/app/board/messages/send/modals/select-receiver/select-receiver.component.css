@@ -89,30 +89,31 @@
     display: flex;
     align-items: center;
     gap: var(--space-3);
-    padding: var(--space-2) var(--space-4);
+    padding: var(--space-3) var(--space-4);
     cursor: pointer;
     transition: all 0.2s;
     border-bottom: 1px solid var(--border-subtle);
+    position: relative;
+    border-radius: var(--radius-xs);
+    margin: 2px 4px;
 }
 
 .item-row:hover {
     background: var(--hover-bg);
-}
-
-.item-row.checked {
-    background: rgba(var(--primary-rgb), 0.05);
+    transform: translateX(4px);
 }
 
 .item-info {
     display: flex;
     flex-direction: column;
     gap: 2px;
+    flex: 1;
 }
 
 .item-name {
     font-size: var(--text-sm);
     font-weight: 500;
-    color: var(--text-secondary);
+    color: var(--text-heading);
 }
 
 .item-role {
@@ -123,24 +124,37 @@
     font-weight: 600;
 }
 
-.checkbox-box {
-    width: 20px;
-    height: 20px;
-    border: 1.5px solid var(--primary);
+.item-row--selected {
+    justify-content: space-between;
+}
+
+.btn-remove {
+    width: 32px;
+    height: 32px;
+    border: none;
+    background: transparent;
+    color: var(--text-muted);
     border-radius: var(--radius-xs);
     display: flex;
     align-items: center;
     justify-content: center;
-    background: var(--surface);
+    cursor: pointer;
+    transition: all 0.2s;
+    opacity: 0;
 }
 
-.checkbox-box.active {
-    background: var(--surface);
-    color: var(--primary);
+.item-row--selected:hover .btn-remove {
+    opacity: 1;
 }
 
-.item-name {
-    font-size: var(--text-sm);
+.btn-remove:hover {
+    background: rgba(var(--danger-rgb), 0.1);
+    color: var(--danger);
+}
+
+.btn-remove i-tabler {
+    width: 18px;
+    height: 18px;
 }
 
 /* Arrow Column */
@@ -148,27 +162,42 @@
     display: flex;
     flex-direction: column;
     justify-content: center;
-    gap: var(--space-2);
+    gap: var(--space-3);
     padding: 0 4px;
 }
 
 .arrow-btn {
     width: 50px;
-    height: 40px;
-    background: var(--primary);
-    border: none;
-    border-radius: var(--radius-xs);
-    color: white;
+    height: 46px;
+    background: var(--surface-3);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    color: var(--text-secondary);
     display: flex;
     align-items: center;
     justify-content: center;
     cursor: pointer;
-    transition: opacity var(--transition-fast);
+    transition: all 0.2s;
+}
+
+.arrow-btn:hover:not(:disabled) {
+    background: var(--primary);
+    border-color: var(--primary);
+    color: white;
+    transform: scale(1.05);
+    box-shadow: var(--shadow-md);
+}
+
+.arrow-btn--group {
+    border-color: var(--primary);
+    color: var(--primary);
+    background: rgba(var(--primary-rgb), 0.05);
 }
 
 .arrow-btn:disabled {
-    background: var(--surface-3);
+    background: var(--surface-2);
     color: var(--text-muted);
+    opacity: 0.5;
     cursor: default;
 }
 
@@ -218,12 +247,22 @@
     height: 18px;
 }
 
+.mgmt-action.primary {
+    border-color: rgba(var(--primary-rgb), 0.1);
+}
+
 .mgmt-action.danger {
     border-color: rgba(var(--danger-rgb), 0.1);
 }
 
 .mgmt-action.danger i-tabler {
     color: var(--danger);
+}
+
+.mgmt-action.primary:hover {
+    background: rgba(var(--primary-rgb), 0.05);
+    border-color: rgba(var(--primary-rgb), 0.2);
+    color: var(--primary);
 }
 
 .mgmt-action.danger:hover {
@@ -235,6 +274,43 @@
 .category-select-wrapper {
     display: flex;
     position: relative;
+    gap: var(--space-2);
+    align-items: stretch;
+}
+
+.btn-add-group-members {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    background-color: var(--primary);
+    color: #fff;
+    padding: 0 var(--space-4);
+    border: none;
+    border-radius: var(--radius-sm);
+    font-size: var(--text-sm);
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    white-space: nowrap;
+    animation: popoverFadeIn 0.2s ease-out;
+}
+
+.btn-add-group-members:not(.active) {
+    background: var(--surface-2);
+    opacity: .4;
+    pointer-events: none;
+    filter: grayscale(1);
+}
+
+.btn-add-group-members:hover {
+    background: var(--primary-hover);
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-md);
+}
+
+.btn-add-group-members i-tabler {
+    width: 18px;
+    height: 18px;
 }
 
 .custom-select {

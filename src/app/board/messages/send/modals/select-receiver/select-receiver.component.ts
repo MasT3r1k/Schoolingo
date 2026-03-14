@@ -39,8 +39,6 @@ export class SelectReceiverComponent implements OnInit {
   public leftTab: 'categories' | 'groups' = 'categories';
   public l = inject(Locale);
 
-  public checkedInLeft = new Set<number>();
-  public checkedInRight = new Set<number>();
 
   public alerts: Record<string, Alert> = {};
   public selectedType: 'category' | 'group' = 'category';
@@ -237,64 +235,19 @@ export class SelectReceiverComponent implements OnInit {
 
   removeAllSelected() {
       this.selectedReceivers = [];
-      this.checkedInRight.clear();
-      this.updateGlobalState();
-  }
-
-  // === UI Helpers for the new dual-panel design ===
-  public toggleCheckLeft(person_id: number) {
-      if (this.checkedInLeft.has(person_id)) {
-          this.checkedInLeft.delete(person_id);
-      } else {
-          this.checkedInLeft.add(person_id);
-      }
-  }
-
-  public toggleCheckRight(person_id: number) {
-      if (this.checkedInRight.has(person_id)) {
-          this.checkedInRight.delete(person_id);
-      } else {
-          this.checkedInRight.add(person_id);
-      }
-  }
-
-  public isCheckedLeft(person_id: number): boolean {
-      return this.checkedInLeft.has(person_id);
-  }
-
-  public isCheckedRight(person_id: number): boolean {
-      return this.checkedInRight.has(person_id);
-  }
-
-  public moveSelectedToRight() {
-      const allAvailable = this.availableGroups.flatMap(g => g.users);
-      const toMove = allAvailable.filter(u => this.checkedInLeft.has(u.person_id));
-      
-      toMove.forEach(u => {
-          if (!this.isSelected(u)) this.selectedReceivers.push(u);
-      });
-      this.checkedInLeft.clear();
       this.updateGlobalState();
   }
 
   public moveAllToRight() {
-      const allAvailable = this.availableGroups.flatMap(g => g.users);
+      const allAvailable = this.getFlattenedUsers();
       allAvailable.forEach(u => {
           if (!this.isSelected(u)) this.selectedReceivers.push(u);
       });
-      this.checkedInLeft.clear();
-      this.updateGlobalState();
-  }
-
-  public moveSelectedToLeft() {
-      this.selectedReceivers = this.selectedReceivers.filter(u => !this.checkedInRight.has(u.person_id));
-      this.checkedInRight.clear();
       this.updateGlobalState();
   }
 
   public moveAllToLeft() {
       this.selectedReceivers = [];
-      this.checkedInRight.clear();
       this.updateGlobalState();
   }
 

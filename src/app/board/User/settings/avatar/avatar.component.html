@@ -1,0 +1,307 @@
+<div class="avatar-settings-container" style="display: flex; flex-direction: column; gap: 1.5rem;">
+  <div class="section">
+    <div class="section-header">
+      <div class="header-content">
+        <i-tabler name="user-circle"></i-tabler>
+        <div>
+          <h3>{{ l.s('settings.avatar') }}</h3>
+          <span class="meta muted">{{ l.s('settings.avatar_settings.description') }}</span>
+        </div>
+      </div>
+    </div>
+
+  <div class="playground-container">
+    <!-- Left: Preview Sidebar -->
+    <aside class="preview-sidebar">
+      <div class="preview-card">
+        <div class="preview-label">{{ l.s('settings.avatar_settings.preview') }}</div>
+        <div class="preview-main">
+          <img [src]="previewDataUri" alt="Avatar Preview">
+        </div>
+        <div class="preview-actions">
+          <button class="btn-playground btn-random" (click)="randomize()">
+            <i-tabler name="refresh"></i-tabler>
+            Náhodně
+          </button>
+          <button class="btn-playground btn-save-main" (click)="save()" [disabled]="saving">
+            @if (saving) {
+              <div class="loader"></div>
+            } @else {
+              <i-tabler name="check"></i-tabler>
+              Uložit nastavení
+            }
+          </button>
+        </div>
+      </div>
+
+      <!-- History / Random Avatars -->
+      <div class="avatar-history-section" style="margin-top: 2rem;">
+        
+        @if (avatarHistory.length > 0) {
+          <div class="section-header-small" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem;">
+            <h4 style="margin: 0; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-muted);">
+              {{ l.s('settings.avatar_settings.history') }}
+            </h4>
+            <div class="history-limit-chips">
+              <span (click)="setHistoryLimit(10)" [class.active]="historyLimit === 10">10</span>
+              <span (click)="setHistoryLimit(20)" [class.active]="historyLimit === 20">20</span>
+              <span (click)="setHistoryLimit(30)" [class.active]="historyLimit === 30">30</span>
+            </div>
+          </div>
+          
+          <div class="avatar-history-scroll">
+            <div class="avatar-grid-sidebar" style="margin-bottom: 2rem;">
+              @for (hist of avatarHistory; track $index) {
+                <div class="sidebar-avatar-item" (click)="applyAvatar(hist.config)" [class.active]="JSON.stringify(currentAvatar) === JSON.stringify(hist.config)">
+                  <img [src]="hist.preview" alt="History">
+                </div>
+              }
+            </div>
+          </div>
+        }
+
+        <div class="section-header-small" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem;">
+          <h4 style="margin: 0; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-muted);">
+            {{ l.s('settings.avatar_settings.random') }}
+          </h4>
+          <button (click)="generateRandomAvatars()" class="btn-refresh-small" title="Nové náhodné návrhy">
+            <i-tabler name="refresh"></i-tabler>
+          </button>
+        </div>
+        
+        <div class="avatar-grid-sidebar">
+          @for (rand of randomAvatars; track rand.config.seed) {
+            <div class="sidebar-avatar-item" (click)="applyAvatar(rand.config)" [class.active]="currentAvatar.seed === rand.config.seed">
+              <img [src]="rand.preview" alt="Random">
+            </div>
+          }
+        </div>
+      </div>
+    </aside>
+
+    <!-- Right: Customization Panel -->
+    <div class="customization-panel">
+      @for (opt of getAvailableOptions() | keyvalue; track opt.key) {
+        @if (!(currentAvatar.type === 'thumbs' && opt.key === 'eyesColor')) {
+        <div class="option-card">
+          <h4>
+            @switch (opt.key) {
+              @case ('eyes') { Výraz očí }
+              @case ('eyesColor') { Barva očí }
+              @case ('face') { Tvar obličeje }
+              @case ('shapeOffsetX') { Natočení hlavy }
+              @case ('mouth') { Výraz pusy }
+              @case ('mouthColor') { Barva pusy }
+              @case ('shapeColor') { Barva pleti }
+              @case ('backgroundColor') { Barva pozadí }
+              @case ('baseColor') { Barva pleti }
+              @default { {{ opt.key }} }
+            }
+          </h4>
+
+          <div class="control-content">
+            @if (isColor($any(opt.key))) {
+              <div class="swatch-grid">
+                @for (color of $any(opt.value); track color) {
+                  <div class="swatch-item" 
+                       [class.active]="isOptionActive($any(opt.key), color)"
+                       (click)="updateOption($any(opt.key), color)">
+                    <div class="swatch-inner" [style.background-color]="color === 'transparent' ? 'transparent' : '#' + color"></div>
+                  </div>
+                }
+                <!-- Custom Color Picker -->
+                <div class="color-picker-item" title="Vlastní barva"
+                     [class.active]="isCustomColor($any(opt.key), $any(opt.value))"
+                     [style.background]="isCustomColor($any(opt.key), $any(opt.value)) ? getColorPickerValue($any(opt.key)) : ''"
+                     (click)="toggleColorPicker($any(opt.key), $event)">
+                  <i-tabler name="color-picker" [style.color]="isCustomColor($any(opt.key), $any(opt.value)) ? 'white' : ''"></i-tabler>
+                  <input #colorInput type="hidden" [attr.data-key]="opt.key">
+                </div>
+
+                <!-- Inline Color Picker Popover -->
+                @if (activeColorPicker === opt.key) {
+                  <div class="color-picker-popover modern-style" (click)="$event.stopPropagation()">
+                    <div class="picker-header">
+                      <span>Výběr barev</span>
+                      <button class="close-picker" (click)="activeColorPicker = null"><i-tabler name="x"></i-tabler></button>
+                    </div>
+                    
+                    <div class="picker-main-area">
+                      <div class="current-color-block" [style.background-color]="getColorPickerValue($any(opt.key))"></div>
+                      <div class="color-field-2d" #colorArea 
+                           [style.background-color]="'#' + getHueColor()"
+                           (mousedown)="startColorPick($event)"
+                           (touchstart)="startColorPick($event)">
+                        <div class="white-grad"></div>
+                        <div class="black-grad"></div>
+                        <div class="color-cursor" 
+                             [style.left.%]="hsv.s" 
+                             [style.bottom.%]="hsv.v"></div>
+                      </div>
+                    </div>
+
+                    <div class="picker-controls">
+                      <div class="hue-slider-container">
+                        <input type="range" min="0" max="360" [value]="hsv.h" 
+                               (input)="hsv.h = $any($event.target).value; updateHSV()" 
+                               class="hue-slider-modern">
+                      </div>
+                      <div class="hex-input-modern">
+                        <span>#</span>
+                        <input type="text" [value]="hsvToHex(hsv.h, hsv.s, hsv.v)" readonly>
+                      </div>
+                    </div>
+                  </div>
+                }
+              </div>
+            } @else {
+              <div class="variant-grid">
+                @for (val of $any(opt.value); track val) {
+                   @let itemValue = $any(val).value !== undefined ? $any(val).value : val;
+                   
+                   <div class="variant-card" 
+                        [class.active]="isOptionActive($any(opt.key), itemValue)"
+                        (click)="updateOption($any(opt.key), itemValue)">
+                        <div class="variant-thumb">
+                          <img [src]="getOptionPreview($any(opt.key), itemValue)" alt="Preview">
+                        </div>
+                        <span class="variant-label">{{ getVariantLabel(val) }}</span>
+                   </div>
+                }
+              </div>
+
+              <!-- Eye Width Slider Inline -->
+              @if (currentAvatar.type === 'thumbs' && opt.key === 'eyes') {
+                <div class="slider-inline-container" style="margin-top: 1.5rem; padding-top: 1.25rem; border-top: 1px solid var(--border-light, rgba(0,0,0,0.05));">
+                  <h5 style="font-size: 0.75rem; font-weight: 700; color: var(--text-muted); margin-bottom: 1rem; text-transform: uppercase; letter-spacing: 0.05em;">Rozestup očí</h5>
+                  <div class="slider-control">
+                    <div class="slider-wrapper">
+                      <input type="range" min="10" max="16" step="2" 
+                             [value]="getCurrentEyeWidth()" 
+                             (input)="updateOption('eyeWidth', $any($event.target).value)">
+                    </div>
+                    <div class="slider-labels">
+                      <span>10</span>
+                      <span>12</span>
+                      <span>14</span>
+                      <span>16</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="color-inline-container" style="margin-top: 1.5rem; padding-top: 1.25rem; border-top: 1px solid var(--border-light, rgba(0,0,0,0.05));">
+                    <h5 style="font-size: 0.75rem; font-weight: 700; color: var(--text-muted); margin-bottom: 1rem; text-transform: uppercase; letter-spacing: 0.05em;">Barva očí</h5>
+                    <div class="swatch-grid">
+                      @for (color of styleSchemas['thumbs']['eyesColor']; track color) {
+                        <div class="swatch-item" 
+                             [class.active]="isOptionActive('eyesColor', color)"
+                             (click)="updateOption('eyesColor', color)">
+                          <div class="swatch-inner" [style.background-color]="color === 'transparent' ? 'transparent' : '#' + color"></div>
+                        </div>
+                      }
+                      <div class="color-picker-item" title="Vlastní barva"
+                           [class.active]="isCustomColor('eyesColor', styleSchemas['thumbs']['eyesColor'])"
+                           [style.background]="isCustomColor('eyesColor', styleSchemas['thumbs']['eyesColor']) ? getColorPickerValue('eyesColor') : ''"
+                           (click)="toggleColorPicker('eyesColor', $event)">
+                        <i-tabler name="color-picker" [style.color]="isCustomColor('eyesColor', styleSchemas['thumbs']['eyesColor']) ? 'white' : ''"></i-tabler>
+                        <input #eyeColorInput type="hidden" data-key="eyesColor">
+                      </div>
+
+                      <!-- Inline Color Picker Popover for Eyes -->
+                      @if (activeColorPicker === 'eyesColor') {
+                        <div class="color-picker-popover modern-style" (click)="$event.stopPropagation()">
+                          <div class="picker-header">
+                            <span>Výběr barev</span>
+                            <button class="close-picker" (click)="activeColorPicker = null"><i-tabler name="x"></i-tabler></button>
+                          </div>
+                          
+                          <div class="picker-main-area">
+                            <div class="current-color-block" [style.background-color]="getColorPickerValue('eyesColor')"></div>
+                            <div class="color-field-2d" #colorArea 
+                                 [style.background-color]="'#' + getHueColor()"
+                                 (mousedown)="startColorPick($event)"
+                                 (touchstart)="startColorPick($event)">
+                              <div class="white-grad"></div>
+                              <div class="black-grad"></div>
+                              <div class="color-cursor" 
+                                   [style.left.%]="hsv.s" 
+                                   [style.bottom.%]="hsv.v"></div>
+                            </div>
+                          </div>
+
+                          <div class="picker-controls">
+                            <div class="hue-slider-container">
+                              <input type="range" min="0" max="360" [value]="hsv.h" 
+                                     (input)="hsv.h = $any($event.target).value; updateHSV()" 
+                                     class="hue-slider-modern">
+                            </div>
+                            <div class="hex-input-modern">
+                              <span>#</span>
+                              <input type="text" [value]="hsvToHex(hsv.h, hsv.s, hsv.v)" readonly>
+                            </div>
+                          </div>
+                        </div>
+                      }
+                    </div>
+                </div>
+              }
+            }
+          </div>
+        </div>
+        }
+      }
+
+      <div class="option-card">
+        <h4>Ostatní úpravy</h4>
+        <div class="options-grid">
+          <!-- Rotate -->
+          <div class="option-item">
+            <label style="font-size: 0.75rem; margin-bottom: 0.5rem; display: block; text-align: center;">Rotace ({{ currentAvatar.rotate || 0 }}°)</label>
+            <div class="rotation-dial-wrapper">
+              <div class="dial-container" #rotationDial 
+                   (mousedown)="startRotation($event)"
+                   (touchstart)="startRotation($event)">
+                <div class="dial-track"></div>
+                <div class="dial-handle" 
+                     [class.no-transition]="isRotating"
+                     [style.transform]="'rotate(' + ((currentAvatar.rotate || 0) - 180) + 'deg)'">
+                  <div class="dial-pointer"></div>
+                </div>
+                <div class="dial-center">
+                  <i-tabler name="refresh"></i-tabler>
+                </div>
+              </div>
+              <div class="dial-info">{{ currentAvatar.rotate || 0 }}°</div>
+            </div>
+          </div>
+
+          <!-- Face Offset X (Pohled) -->
+          @if (currentAvatar.type === 'thumbs') {
+            <div class="option-item" style="grid-column: span 2; margin-top: 1rem; border-top: 1px solid var(--border-light, rgba(0,0,0,0.05)); padding-top: 1.5rem;">
+                <label style="font-size: 0.75rem; font-weight: 700; color: var(--text-muted); margin-bottom: 1rem; text-transform: uppercase; letter-spacing: 0.05em; display: block;">Pohled (vlevo / vpravo)</label>
+                <div class="slider-control">
+                  <div class="slider-wrapper">
+                    <input type="range" min="-15" max="15" step="1" 
+                           [value]="getCurrentFaceOffset()" 
+                           (input)="updateOption('faceOffsetX', $any($event.target).value)">
+                  </div>
+                  <div class="slider-labels">
+                    <span>Vlevo</span>
+                    <span>Střed</span>
+                    <span>Vpravo</span>
+                  </div>
+                </div>
+            </div>
+          }
+        </div>
+      </div>
+    </div>
+  </div>
+
+  @if (error) {
+    <div class="alert alert--danger" style="margin-top: 1.5rem;">
+      {{ l.s('settings.avatar_settings.error') }}
+    </div>
+  }
+  </div>
+</div>

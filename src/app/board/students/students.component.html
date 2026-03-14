@@ -213,11 +213,9 @@
                         <td class="col-student">
                             <div class="student-cell">
                                 <div class="student-avatar-sm">
-                                    @if (student.photo_url) {
-                                    <img [src]="student.photo_url" [alt]="student.full_name">
-                                    } @else {
-                                    <span>{{ Utils.getInitials(student.full_name) }}</span>
-                                    }
+                                    <div class="avatar--image">
+                                        <img [src]="avatarService.getAvatar(student.avatar, student.full_name)" [alt]="student.full_name">
+                                    </div>
                                 </div>
                                 <div class="student-name-cell">
                                     <span class="name">{{ student.full_name }}</span>
@@ -239,7 +237,7 @@
                                 [title]="'Omluvená: ' + student.absence_rate_excused + '%, Neomluvená: ' + student.absence_rate_unexcused + '%'">
                                 <span class="absence-percent">{{ student.absence_rate }}%</span>
                                 <div class="mini-attendance-bar">
-                                    <div class="bar-segment success" [style.width.%]="100 - student.absence_rate"></div>
+                                    <div class="bar-segment success" [style.width.%]="100 - $any(student).absence_rate"></div>
                                     <div class="bar-segment warning" [style.width.%]="student.absence_rate_excused">
                                     </div>
                                     <div class="bar-segment danger" [style.width.%]="student.absence_rate_unexcused">

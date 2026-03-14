@@ -32,9 +32,9 @@
             <aside class="profile-sidebar">
                 <div class="profile-card">
                     <div class="profile-avatar">
-                        <span class="avatar-initials">
-                            {{ Utils.getInitials(get_employee.full_name) }}
-                        </span>
+                        <div class="avatar--image">
+                            <img [src]="avatarService.getAvatar(get_employee.avatar, get_employee.full_name)" [alt]="get_employee.full_name">
+                        </div>
                         <span class="status-dot" [class]="getStatusClass(get_employee.status)"></span>
                     </div>
                     <h1 class="profile-name">{{ get_employee.full_name }}</h1>
@@ -882,6 +882,11 @@
                     <tr (click)="selectEmployee(employee)">
                         <td>
                             <div class="employee-cell">
+                                <div class="employee-avatar-sm">
+                                    <div class="avatar--image">
+                                        <img [src]="avatarService.getAvatar(employee.avatar, employee.full_name)" [alt]="employee.full_name">
+                                    </div>
+                                </div>
                                 <div class="employee-name-cell">
                                     <span class="name">{{ employee.full_name }}</span>
                                     <span class="email">{{ employee.email }}</span>
@@ -999,9 +1004,11 @@
                         <tr class="att-row" [class.att-row--active]="getAttendanceStatus(record) === 'active'">
                             <td class="col-name">
                                 <div class="name-cell">
-                                    <div class="avatar-circle"
+                                    <div class="employee-avatar-sm"
                                         [class.avatar-circle--active]="getAttendanceStatus(record) === 'active'">
-                                        {{ Utils.getInitials(record.full_name) }}
+                                        <div class="avatar--image">
+                                            <img [src]="avatarService.getAvatar(record.avatar, record.full_name)" [alt]="record.full_name">
+                                        </div>
                                     </div>
                                     <div class="details">
                                         <span class="name">{{ record.first_name }} {{ record.last_name }}</span>

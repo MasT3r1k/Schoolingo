@@ -439,10 +439,207 @@
     </div>
     }
 
+    @case(enumSidebar.MODULE_DOCUMENTS) {
+    <div class="container-content">
+        <div class="settings-header">
+            <h1>{{ l.s('system.documents_settings') }}</h1>
+            <p class="settings-subtitle">Nastavení modulu dokumentů a správy souborů.</p>
+        </div>
 
+        <div class="form-section">
+            <h3 class="section-title">{{ l.s('system.module_features') }}</h3>
+            <div class="setting-row">
+                <div class="setting-info">
+                    <div class="setting-title">Povolit modul dokumentů</div>
+                    <div class="setting-desc">Povolení/vypnutí celého modulu Dokumenty.</div>
+                </div>
+                <div class="setting-control">
+                    <div class="switch" [class.on]="system.settings.documents_enabled"
+                        (click)="system.settings.documents_enabled = !system.settings.documents_enabled">
+                        <div class="knob"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="form-actions">
+            <button class="btn btn--primary" (click)="update_school()">
+                <i-tabler name="device-floppy"></i-tabler>
+                Uložit nastavení dokumentů
+            </button>
+        </div>
+    </div>
+    }
 
+    @case(enumSidebar.MODULE_TRAINEESHIP) {
+    <div class="container-content">
+        <div class="settings-header">
+            <h1>{{ l.s('system.traineeship_settings') }}</h1>
+            <p class="settings-subtitle">Nastavení modulu praxí a studentských stáží.</p>
+        </div>
 
+        <div class="form-section">
+            <h3 class="section-title">{{ l.s('system.module_features') }}</h3>
+            <div class="setting-row">
+                <div class="setting-info">
+                    <div class="setting-title">Povolit modul praxí</div>
+                    <div class="setting-desc">Povolení/vypnutí celého modulu Praxe.</div>
+                </div>
+                <div class="setting-control">
+                    <div class="switch" [class.on]="system.settings.traineeship_enabled"
+                        (click)="system.settings.traineeship_enabled = !system.settings.traineeship_enabled">
+                        <div class="knob"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="form-actions">
+            <button class="btn btn--primary" (click)="update_school()">
+                <i-tabler name="device-floppy"></i-tabler>
+                Uložit nastavení praxí
+            </button>
+        </div>
+    </div>
+    }
 
+    @case(enumSidebar.MODULE_ONLINE) {
+    <div class="container-content">
+        <div class="settings-header">
+            <h1>{{ l.s('system.online_settings') }}</h1>
+            <p class="settings-subtitle">Nastavení modulu online výuky.</p>
+        </div>
+
+        <div class="form-section">
+            <h3 class="section-title">{{ l.s('system.module_features') }}</h3>
+            <div class="setting-row">
+                <div class="setting-info">
+                    <div class="setting-title">Povolit modul online výuky</div>
+                    <div class="setting-desc">Povolení/vypnutí celého modulu Online Výuka.</div>
+                </div>
+                <div class="setting-control">
+                    <div class="switch" [class.on]="system.settings.online_enabled"
+                        (click)="system.settings.online_enabled = !system.settings.online_enabled">
+                        <div class="knob"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="form-actions">
+            <button class="btn btn--primary" (click)="update_school()">
+                <i-tabler name="device-floppy"></i-tabler>
+                Uložit nastavení online výuky
+            </button>
+        </div>
+    </div>
+    }
+
+    @case(enumSidebar.MODULE_NOTICEBOARD) {
+    <div class="container-content">
+        <div class="settings-header">
+            <h1>{{ l.s('system.noticeboard_settings') }}</h1>
+            <p class="settings-subtitle">Nastavení studentské, učitelské a školní nástěnky.</p>
+        </div>
+
+        <div class="form-section">
+            <h3 class="section-title">{{ l.s('system.module_features') }}</h3>
+            
+            <div class="setting-row">
+                <div class="setting-info">
+                    <div class="setting-title">Studentská nástěnka</div>
+                    <div class="setting-desc">Povolení nástěnky určené pro studenty.</div>
+                </div>
+                <div class="setting-control">
+                    <div class="switch" [class.on]="system.settings.noticeboard_student_enabled"
+                        (click)="system.settings.noticeboard_student_enabled = !system.settings.noticeboard_student_enabled">
+                        <div class="knob"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="setting-row">
+                <div class="setting-info">
+                    <div class="setting-title">Učitelská nástěnka</div>
+                    <div class="setting-desc">Povolení nástěnky určené pouze pro učitele.</div>
+                </div>
+                <div class="setting-control">
+                    <div class="switch" [class.on]="system.settings.noticeboard_teacher_enabled"
+                        (click)="system.settings.noticeboard_teacher_enabled = !system.settings.noticeboard_teacher_enabled">
+                        <div class="knob"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="form-actions">
+            <button class="btn btn--primary" (click)="update_school()">
+                <i-tabler name="device-floppy"></i-tabler>
+                Uložit nastavení nástěnek
+            </button>
+        </div>
+    </div>
+    }
+
+    @case(enumSidebar.MODULE_TESTS) {
+    <div class="container-content">
+        <div class="settings-header">
+            <h1>{{ l.s('system.tests_settings') }}</h1>
+            <p class="settings-subtitle">Nastavení modulu pro testy a zkoušení.</p>
+        </div>
+
+        <div class="form-section">
+            <h3 class="section-title">{{ l.s('system.module_features') }}</h3>
+            
+            <div class="setting-row">
+                <div class="setting-info">
+                    <div class="setting-title">Povolit modul testů</div>
+                    <div class="setting-desc">Povolení/vypnutí celého modulu Testy.</div>
+                </div>
+                <div class="setting-control">
+                    <div class="switch" [class.on]="system.settings.tests_enabled"
+                        (click)="system.settings.tests_enabled = !system.settings.tests_enabled">
+                        <div class="knob"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="form-actions">
+            <button class="btn btn--primary" (click)="update_school()">
+                <i-tabler name="device-floppy"></i-tabler>
+                Uložit nastavení testů
+            </button>
+        </div>
+    </div>
+    }
+
+    @case(enumSidebar.MODULE_REWARDS) {
+    <div class="container-content">
+        <div class="settings-header">
+            <h1>{{ l.s('system.rewards_settings') }}</h1>
+            <p class="settings-subtitle">Nastavení odměn, pochval a bodování žáků.</p>
+        </div>
+
+        <div class="form-section">
+            <h3 class="section-title">{{ l.s('system.module_features') }}</h3>
+            
+            <div class="setting-row">
+                <div class="setting-info">
+                    <div class="setting-title">Povolit modul odměn</div>
+                    <div class="setting-desc">Povolení/vypnutí celého modulu Odměny a pochvaly.</div>
+                </div>
+                <div class="setting-control">
+                    <div class="switch" [class.on]="system.settings.rewards_enabled"
+                        (click)="system.settings.rewards_enabled = !system.settings.rewards_enabled">
+                        <div class="knob"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="form-actions">
+            <button class="btn btn--primary" (click)="update_school()">
+                <i-tabler name="device-floppy"></i-tabler>
+                Uložit nastavení odměn
+            </button>
+        </div>
+    </div>
+    }
     @case(enumSidebar.SYSTEM) {
     @if (this.system) {
     <div class="container-content">
@@ -515,7 +712,22 @@
             </div>
         </div>
 
+        <div class="form-section">
+            <h3 class="section-title">Speciální nastavení</h3>
 
+            <div class="setting-row">
+                <div class="setting-info">
+                    <div class="setting-title">Demo režim</div>
+                    <div class="setting-desc">Omezí funkce systému pouze na rozvrh, známky a zprávy (ukázkový režim).</div>
+                </div>
+                <div class="setting-control">
+                    <div class="switch" [class.on]="system.settings.demo_enabled"
+                        (click)="system.settings.demo_enabled = !system.settings.demo_enabled; update_school()">
+                        <div class="knob"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
 
         <div class="form-section">
             <h3 class="section-title">Bezpečnost & Aktualizace</h3>

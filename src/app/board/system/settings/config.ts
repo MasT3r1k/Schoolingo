@@ -12,7 +12,13 @@ export enum enumSidebar {
   // Modules
   MODULE_MESSAGES,
   MODULE_EMPLOYEES,
-  MODULE_ROLES
+  MODULE_ROLES,
+  MODULE_DOCUMENTS,
+  MODULE_TRAINEESHIP,
+  MODULE_ONLINE,
+  MODULE_NOTICEBOARD,
+  MODULE_TESTS,
+  MODULE_REWARDS
 }
 
 export const Sidebar = {
@@ -79,5 +85,35 @@ export const Sidebar = {
             id: enumSidebar.MODULE_ROLES,
             icon: "license"
         },
+        {
+            item: "system.documents_settings",
+            id: enumSidebar.MODULE_DOCUMENTS,
+            icon: "file-text"
+        },
+        {
+            item: "system.traineeship_settings",
+            id: enumSidebar.MODULE_TRAINEESHIP,
+            icon: "briefcase"
+        },
+        {
+            item: "system.online_settings",
+            id: enumSidebar.MODULE_ONLINE,
+            icon: "video"
+        },
+        {
+            item: "system.noticeboard_settings",
+            id: enumSidebar.MODULE_NOTICEBOARD,
+            icon: "chalkboard"
+        },
+        {
+            item: "system.tests_settings",
+            id: enumSidebar.MODULE_TESTS,
+            icon: "file-check"
+        },
+        {
+            item: "system.rewards_settings",
+            id: enumSidebar.MODULE_REWARDS,
+            icon: "award"
+        }
     ]
 }

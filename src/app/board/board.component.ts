@@ -27,6 +27,7 @@ import { WsService, NotificationPayload } from '@Schoolingo/websocket';
 import { SeasonalService } from '@Schoolingo/seasonal';
 import { SnowEffectComponent } from '@Components/seasonal/snow-effect/snow-effect.component';
 import { studentSummaryComponent } from '@Components/student-summary/student-summary.component';
+import { UpdateModalComponent } from '@Components/update-modal/update-modal.component';
 import { Cookies } from '@Schoolingo/cookies';
 
 export interface SidebarItem {
@@ -42,41 +43,41 @@ export interface SidebarItem {
 }
 
 const notification_types: Record<string, any> = {
-  message: {
+  new_message: {
     color: "#4aa3ff",
     icon: "message",
-    title: "Nová zpráva",
+    title: "notifications.message.title",
     url: "/messages/received",
     close_after_action: true,
-    description: "Dostal jste novou zprávu od %name%."
+    description: "notifications.message.description"
   },
   new_login: {
     color: "#ff5757",
     icon: "lock",
-    title: "Neznámé přihlášení",
+    title: "notifications.new_login.title",
     url: "/user/logins",
     close_after_action: true,
-    description: "Zaznamenali jsme nové přihlášení z neznámého zařízení ze %city%, %country_code%."
+    description: "notifications.new_login.description"
   },
   new_grade: {
     color: "#ffc107",
     icon: "star",
-    title: "Nová známka",
+    title: "notifications.new_grade.title",
     url: "/marks/interm",
     close_after_action: true,
-    description: "Dostal jste novou známku %mark%."
+    description: "notifications.new_grade.description"
   },
   homework: {
     color: "#7cd67c",
     icon: "book-2",
-    title: "Nový domácí úkol",
-    description: "Byl přidán nový úkol z předmětu %subject%."
+    title: "notifications.homework.title",
+    description: "notifications.homework.description"
   },
   reward: {
     color: "#f5d142",
     icon: "trophy",
-    title: "Nová odměna",
-    description: "Za splněné aktivity máš novou odměnu."
+    title: "notifications.reward.title",
+    description: "notifications.reward.description"
   }
 }
 
@@ -110,6 +111,7 @@ export class BoardComponent implements OnInit, OnDestroy {
   sidebarToggled = false;
   public notification_loading = true;
   public notification_count = 0;
+  public updateAvailable = false;
   private router = inject(Router);
   public sidebar = inject(Sidebar);
   public sidebarClickHandler(item: SidebarItem, index: number): void {
@@ -123,7 +125,7 @@ export class BoardComponent implements OnInit, OnDestroy {
   private marks = inject(MarksManager);
   private messages = inject(MessageManager);
   private http = inject(HttpClient);
-  private perm = inject(Permission);
+  public perm = inject(Permission);
   private traineeship = inject(Traineeship);
   public context_menu = inject(ContextMenu);
   school = inject(School);
@@ -151,13 +153,18 @@ export class BoardComponent implements OnInit, OnDestroy {
   public notifications_types = notification_types;
   public notifications: Notification[] = [];
 
-  public getNotificationText(notification: Notification): string {
-    let text = this.notifications_types[notification.type].description;
-    Object.entries(JSON.parse(notification.data)).forEach((data) => {
-      text = text.replaceAll(`%${data[0]}%`, data[1] || this.l.s('unknown'));
-    })
+  public getNotificationTitle(notification: Notification): string {
+    const config = this.notifications_types[notification.type];
+    if (!config) return '';
+    const data = typeof notification.data === 'string' ? JSON.parse(notification.data) : notification.data;
+    return this.l.s(config.title, data);
+  }
 
-    return text;
+  public getNotificationText(notification: Notification): string {
+    const config = this.notifications_types[notification.type];
+    if (!config) return '';
+    const data = typeof notification.data === 'string' ? JSON.parse(notification.data) : notification.data;
+    return this.l.s(config.description, data);
   }
 
   public markAllAsRead(): void {
@@ -225,8 +232,15 @@ export class BoardComponent implements OnInit, OnDestroy {
   public addDropdown: SidebarItem[] = [];
   public buildAddDropdown(): void {
     this.addDropdown = [];
+    const isDemo = this.school.config.getValue()?.demo_enabled;
+
     this.addDropdownConfig.forEach((item) => {
       if (this.perm.checkPermission(item.permission)) {
+        if (isDemo) {
+          const demoAllowed = ['dropdown.add.message', 'dropdown.add.mark'];
+          if (!demoAllowed.includes(item.item)) return;
+        }
+
         this.addDropdown.push(item);
       }
     })
@@ -284,6 +298,18 @@ export class BoardComponent implements OnInit, OnDestroy {
       }
     )
 
+    this.modalManager.addModal(
+      'system_update',
+      {
+        title: 'system.update_title',
+        closeable: true,
+        width: 600,
+        items: [
+          { type: 'component', component: UpdateModalComponent }
+        ]
+      }
+    )
+
     // if (this.perm.checkPermission(['student'])) {
     //   this.modalManager.openModal('student_summary')
     // }
@@ -311,9 +337,9 @@ export class BoardComponent implements OnInit, OnDestroy {
           // Add to notifications list
           this.notifications.unshift({
             notification_id: notification.id,
-            type: notification.type.replace('_new', ''),
+            type: notification.type,
             data: notification.data || {},
-            url: notification.url,
+            url: notification.url || '',
             read_at: null,
             created_at: new Date()
           });
@@ -331,6 +357,11 @@ export class BoardComponent implements OnInit, OnDestroy {
         
         // === Update add dropdown ===
         this.buildAddDropdown();
+
+        // === Check for system updates ===
+        if (this.perm.checkPermission(['manager:admin'])) {
+          this.checkUpdates();
+        }
 
         // === Get dashboard stats ===
         this.http.get(
@@ -439,6 +470,20 @@ export class BoardComponent implements OnInit, OnDestroy {
     }
 
     return roles.join(', ');
+  }
+
+  public checkUpdates(): void {
+    this.http.get<any>(`${Config.API_URL}/v1/version`, { withCredentials: true }).subscribe({
+      next: (data) => {
+        if (data.isBehind) {
+          this.updateAvailable = true;
+        }
+      }
+    });
+  }
+
+  public openUpdateModal(): void {
+    this.modalManager.openModal('system_update');
   }
 
 }

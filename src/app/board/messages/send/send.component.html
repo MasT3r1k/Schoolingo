@@ -7,7 +7,9 @@
     </div>
     <div class="flex-items">
       @if (perms.checkPermission(['principal'])) {
-      <div class="option-item" style="padding: .5rem 1rem;border-radius: var(--radius-full);" [class.active]="messageManager.options.asPrincipal == true" (click)="messageManager.options.asPrincipal = !messageManager.options.asPrincipal">
+      <div class="option-item" style="padding: .5rem 1rem;border-radius: var(--radius-full);"
+        [class.active]="messageManager.options.asPrincipal == true"
+        (click)="messageManager.options.asPrincipal = !messageManager.options.asPrincipal">
         <div class="option-content">
           <i-tabler name="tie"></i-tabler>
           <span>{{ l.s('messages.as_principal') }}</span>
@@ -25,7 +27,7 @@
     </div>
     }
     @if (messageManager.types && messageManager.types.length) {
-    <div class="form-row">
+    <div>
       <!-- Message Type Selection -->
       <div class="form-group flex-1">
         <label>{{ l.s("messages.type") }}</label>
@@ -76,14 +78,108 @@
         </div>
       </div>
       }
+
+      <!-- Child Selection (for Parents sending Excuses) -->
+      @if (checkMessageType([messageTypes.EXCUSESTUDENT]) && auth.getUser().role === 'parent') {
+      <div class="form-group flex-1">
+        <label>Žák</label>
+        <div class="custom-select"
+          (click)="$event.stopPropagation(); dropdownManager.selected_dropdown = dropdownManager.selected_dropdown == 'messagechild' ? '' : 'messagechild'">
+          <div class="selected-value">
+            <span>{{ getSelectedChildName() }}</span>
+            <i-tabler name="chevron-down"></i-tabler>
+          </div>
+          @if (dropdownManager.selected_dropdown == 'messagechild') {
+          <div class="options-dropdown">
+            <div class="list">
+              @for (child of auth.getUser().children; track $index) {
+              <div class="option" style="display: flex; justify-content: space-between; width: 100%; align-items: center;"
+                (click)="$event.stopPropagation();dropdownManager.selected_dropdown = ''; selectChild($index)">
+                <span>{{ child.first_name }} {{ child.last_name }}</span>
+                @if (child.classes && child.classes.length > 0) {
+                <span style="font-size: 0.85em; opacity: 0.7; margin-left: 8px;">{{ child.classes[0].class_name }}</span>
+                }
+              </div>
+              }
+            </div>
+          </div>
+          }
+        </div>
+      </div>
+
+      <div class="form-row flex-1 mt-2" style="gap: 1rem; align-items: flex-end;">
+        <div class="form-group flex-1">
+          <label>Datum od</label>
+          <input type="date" [(ngModel)]="excuseDate" (ngModelChange)="updateMaxHours()" class="form-input">
+        </div>
+        <div class="form-group flex-1">
+          <label>Datum do</label>
+          <input type="date" [(ngModel)]="excuseDateTo" (ngModelChange)="updateMaxHours()" class="form-input">
+        </div>
+        @if (!excuseAllDay) {
+          <div class="form-group flex-1">
+            <label>Od (hod.)</label>
+            <div class="custom-select" (click)="$event.stopPropagation(); dropdownManager.selected_dropdown = dropdownManager.selected_dropdown == 'excuse_hour_from' ? '' : 'excuse_hour_from'">
+              <div class="selected-value">
+                <span>{{ getHourLabel(excuseHourFrom) }}</span>
+                <i-tabler name="chevron-down"></i-tabler>
+              </div>
+              @if (dropdownManager.selected_dropdown == 'excuse_hour_from') {
+                <div class="options-dropdown">
+                  <div class="list">
+                    @for (hour of hours; track $index) {
+                      <div class="option" (click)="$event.stopPropagation(); excuseHourFrom = $index + 1; dropdownManager.selected_dropdown = ''">
+                        {{ hour.label }} ({{ hour.start }} - {{ hour.end }})
+                      </div>
+                    }
+                  </div>
+                </div>
+              }
+            </div>
+          </div>
+          <div class="form-group flex-1">
+            <label>Do (hod.)</label>
+            <div class="custom-select" (click)="$event.stopPropagation(); dropdownManager.selected_dropdown = dropdownManager.selected_dropdown == 'excuse_hour_to' ? '' : 'excuse_hour_to'">
+              <div class="selected-value">
+                <span>{{ getHourLabel(excuseHourTo) }}</span>
+                <i-tabler name="chevron-down"></i-tabler>
+              </div>
+              @if (dropdownManager.selected_dropdown == 'excuse_hour_to') {
+                <div class="options-dropdown">
+                  <div class="list">
+                    @for (hour of hours; track $index) {
+                      <div class="option" (click)="$event.stopPropagation(); excuseHourTo = $index + 1; dropdownManager.selected_dropdown = ''">
+                        {{ hour.label }} ({{ hour.start }} - {{ hour.end }})
+                      </div>
+                    }
+                  </div>
+                </div>
+              }
+            </div>
+          </div>
+        }
+        <div class="form-group flex-1">
+          <label>Celý den</label>
+          <div class="option-item" style="max-width: 100%; border-radius: 6px; padding: 0.625rem 0.75rem; margin-bottom: 0;" (click)="excuseAllDay = !excuseAllDay">
+            <div class="option-content">
+              <i-tabler name="calendar-event"></i-tabler>
+              <span>Omluvit na celý den</span>
+            </div>
+            <div class="modern-toggle" [class.active]="excuseAllDay">
+              <div class="toggle-slider"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    }
     </div>
 
-    <div class="form-group pb-2">
-      <label>{{ l.s("messages.to") }}</label>
+    <div class="form-group pb-2" [hidden]="checkMessageType([messageTypes.EXCUSESTUDENT]) && auth.getUser().role === 'parent'">
+      <label>{{ l.s("messages.receiver") }}</label>
 
       <div class="form-row">
         <!-- Category Dropdown -->
-        <div class="form-group mb-0 flex-1">
+        <div class="mb-0 flex-1">
           <div class="custom-select"
             (click)="$event.stopPropagation(); dropdownManager.selected_dropdown = dropdownManager.selected_dropdown == 'message_receiver_select_category' ? '' : 'message_receiver_select_category'">
             <div class="selected-value">
@@ -107,7 +203,7 @@
         </div>
 
         <!-- Item Selection / Modal Button -->
-        <div class="form-group mb-0 flex-1">
+        <div class="mb-0 flex-1">
           @if (selectedCategory?.group?.includes('select')) {
           <!-- Modal Trigger for "Free Selection" or "All" categories -->
           <button class="selected-value" (click)="openReceiverModal()"
@@ -127,7 +223,7 @@
             @if (dropdownManager.selected_dropdown == 'message_receiver_select_item') {
             <div class="options-dropdown">
               <div class="dropdown-search">
-                <input type="text" [(ngModel)]="searchText" [placeholder]="l.s('messages.search_placeholder')"
+                <input type="text" [(ngModel)]="searchText" [placeholder]="l.s('messages.findreceiver')"
                   (click)="$event.stopPropagation()">
               </div>
               <div class="list">
@@ -167,6 +263,7 @@
       </div>
 
       @if(perms.checkPermission(["teacher"])) {
+      @if(shouldShowCopyToClassTeacher()) {
       <div class="option-item"
         (click)="messageManager.options.copyToClassTeacher = !messageManager.options.copyToClassTeacher">
         <div class="option-content">
@@ -177,7 +274,9 @@
           <div class="toggle-slider"></div>
         </div>
       </div>
+      }
 
+      @if(shouldShowCopyToParents()) {
       <div class="option-item" (click)="messageManager.options.copyToParents = !messageManager.options.copyToParents">
         <div class="option-content">
           <i-tabler name="users-group"></i-tabler>
@@ -187,6 +286,19 @@
           <div class="toggle-slider"></div>
         </div>
       </div>
+      }
+
+      @if(shouldShowCopyToStudents()) {
+      <div class="option-item" (click)="messageManager.options.copyToStudents = !messageManager.options.copyToStudents">
+        <div class="option-content">
+          <i-tabler name="school"></i-tabler>
+          <span>{{ l.s("messages.copy_student") }}</span>
+        </div>
+        <div class="modern-toggle" [class.active]="messageManager.options.copyToStudents">
+          <div class="toggle-slider"></div>
+        </div>
+      </div>
+      }
       }
     </div>
 

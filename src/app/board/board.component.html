@@ -11,6 +11,9 @@
                 </div>
                 <div class="school" [title]="school.config.getValue()?.name">
                     {{ school.config.getValue()?.short_name }}
+                    @if (school.config.getValue()?.demo_enabled) {
+                        <span style="background: var(--warning); color: #fff; padding: 2px 6px; border-radius: 4px; font-size: 0.7em; margin-left: 8px; font-weight: bold; text-transform: uppercase;">Režim DEMO</span>
+                    }
                 </div>
             </div>
             <div class="options">
@@ -20,17 +23,21 @@
                         <i-tabler name="menu-2"></i-tabler>
                     </div>
                 </div>
-                <div class="item-btn" [routerLink]="['', 'teach', 'classbook']" [routerLinkActive]="'active'">
-                    <div class="icon">
-                        <i-tabler name="chalkboard"></i-tabler>
+                @if (perm.checkPermission(['teacher'])) {
+                @if (!school.config.getValue()?.demo_enabled) {
+                    <div class="item-btn" [routerLink]="['', 'teach', 'classbook']" [routerLinkActive]="'active'">
+                        <div class="icon">
+                            <i-tabler name="chalkboard"></i-tabler>
+                        </div>
                     </div>
-                </div>
+                }
 
                 <div class="item-btn" [routerLink]="['', 'marks', 'intermrecord']" [routerLinkActive]="'active'">
                     <div class="icon">
                         <i-tabler name="time-duration-5"></i-tabler>
                     </div>
                 </div>
+                }
             </div>
         </div>
         <div class="right">
@@ -44,6 +51,48 @@
                         <i-tabler [name]="seasonalService.isActive() ? 'snowflake' : 'snowflake-off'"></i-tabler>
                     </div>
                 </div>
+                }
+
+                @if (updateAvailable && perm.checkPermission(['manager:admin'])) {
+                <div class="item-btn update-btn" (click)="$event.stopPropagation();openUpdateModal()"
+                    [title]="l.s('system.system_has_update')">
+                    <div class="icon">
+                        <i-tabler name="refresh" style="color: var(--warning)"></i-tabler>
+                    </div>
+                    <div class="badge"
+                        style="position: absolute;bottom: -.5rem;right: -.5rem;background: var(--warning);aspect-ratio: 1;max-width: 14px;">
+                    </div>
+                </div>
+                }
+
+                @if (addDropdown.length > 0) {
+                    <div class="item-btn" (click)="$event.stopPropagation();dropdownManager.selected_dropdown = (dropdownManager.selected_dropdown == 'add') ? '' : 'add'">
+                        <div class="icon">
+                            <i-tabler name="plus"></i-tabler>
+                        </div>
+                        <div class="dropdown" style="min-width: 250px;" [hidden]="dropdownManager.selected_dropdown !== 'add'"
+                            (click)="$event.stopPropagation()">
+                            <ul>
+                                @for (item of addDropdown; track $index) {
+                                <li [routerLink]="item.url"
+                                    (click)="dropdownManager.selected_dropdown=''; (item.action ? item.action() : null);"
+                                    [routerLinkActive]="'active'"
+                                    [routerLinkActiveOptions]="{ exact: false, queryParams: 'ignored' }">
+                                    <div class="item">
+                                        @if (item.icon) {
+                                        <div class="icon">
+                                            <i-tabler [name]="item.icon"></i-tabler>
+                                        </div>
+                                        }
+                                        <div class="item-label">
+                                            {{ l.s(item.item) }}
+                                        </div>
+                                    </div>
+                                </li>
+                                }
+                            </ul>
+                        </div>
+                    </div>
                 }
 
                 <div class="item-btn" (click)="$event.stopPropagation();openNotificationDropdown()">
@@ -79,15 +128,15 @@
                             @let config = notifications_types[notification.type];
                             <div class="notification-item" [class.unread]="!notification.read_at"
                                 (click)="config.close_after_action ? dropdownManager.selected_dropdown = '' : {}; notification.read_at != null"
-                                [routerLink]="config.url" [queryParams]="{ id: notification.data.id }">
-                                <div class="notification-icon center" [style.color]="config.color"
-                                    [style.background]="config.color + '1a'">
-                                    <i-tabler [name]="config.icon"></i-tabler>
+                                [routerLink]="config?.url ?? ''" [queryParams]="{ id: notification.data.id }">
+                                <div class="notification-icon center" [style.color]="config?.color ?? '#fff'"
+                                    [style.background]="(config?.color ?? '#fff') + '1a'">
+                                    <i-tabler [name]="config?.icon ?? 'bell'"></i-tabler>
                                 </div>
                                 <div class="notification-content">
                                     <div class="notification-top">
                                         <span class="notification-title">
-                                            {{ config.title }}
+                                            {{ getNotificationTitle(notification) }}
                                         </span>
                                         <span class="time">
                                             {{ Utils.formatDateShort(notification.created_at) }}
@@ -148,8 +197,11 @@
                                         <i-tabler style="color: #FFC0CB;" name="gender-female"></i-tabler>
                                         }
                                     </div>
-                                    <div class="item-label">
-                                        {{ item.first_name + ' ' + item.last_name }}
+                                    <div class="item-label" style="display: flex; justify-content: space-between; width: 100%; align-items: center;">
+                                        <span>{{ item.first_name + ' ' + item.last_name }}</span>
+                                        @if (item.classes && item.classes.length > 0) {
+                                            <span style="font-size: 0.85em; opacity: 0.7; margin-left: 8px;">{{ item.classes[0].class_name }}</span>
+                                        }
                                     </div>
                                     @if (u.selectedChild.getValue() == $index) {
                                     <i-tabler name="check" style="margin-left:.5rem;color: var(--primary)"></i-tabler>
@@ -191,8 +243,12 @@
                     </div>
                 } -->
 
-                <div class="avatar">
-                    {{ Utils.getInitials(u.getUser().full_name) }}
+                <div class="avatar" [class.avatar--image]="App.ALLOW_AVATARS">
+                    @if (App.ALLOW_AVATARS) {
+                        <img [src]="u.getAvatar()" alt="Avatar">
+                    } @else {
+                        {{ Utils.getInitials(u.getUser().full_name) }}
+                    }
                 </div>
 
                 @if (App.ALLOW_LEVEL_SYSTEM) {

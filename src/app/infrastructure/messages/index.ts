@@ -27,6 +27,7 @@ export type MessageOptions =
   | 'requireConfirmation'
   | 'copyToClassTeacher'
   | 'copyToParents'
+  | 'copyToStudents'
   | 'toAll';
 
 export enum messageTypes {
@@ -126,6 +127,7 @@ export class MessageManager {
     requireConfirmation: false,
     copyToClassTeacher: false,
     copyToParents: false,
+    copyToStudents: false,
     toAll: false,
   };
 

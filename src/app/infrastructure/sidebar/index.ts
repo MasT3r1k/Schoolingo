@@ -88,6 +88,48 @@ export class Sidebar {
               badge: item.badge
             };
             if ((item.permission && !this.perm.checkPermission(item.permission)) || (item.modules && !this.modules.checkModule(item.modules)) || (item.setting && this.settings && this.settings[item.setting] == false)) return;
+
+            if (this.settings?.demo_enabled) {
+              const allowedDemoItems = [
+                'sidebar.home', 
+                'sidebar.schedule.main', 
+                'sidebar.schedule.template_timetable',
+                'sidebar.schedule.template_subject',
+                'sidebar.schedule.builder',
+                'sidebar.schedule.supervision',
+                'sidebar.marks.main',  
+                'sidebar.marks.interm',
+                'sidebar.marks.midterm',
+                'sidebar.marks.marks_record',
+                'sidebar.marks.education_measures',
+                'sidebar.teach.main',
+                'sidebar.teach.timetable',
+                'sidebar.messages.main', 
+                'sidebar.messages.send',
+                'sidebar.messages.received',
+                'sidebar.messages.sent',
+                'sidebar.messages.drafts',
+                'sidebar.messages.noticeboard',
+                'sidebar.account',
+                'user.login_history',
+                'user.devices',
+                'sidebar.user.notifications',
+                'sidebar.user.cookies',
+                'sidebar.settings',
+                'sidebar.system.main',
+                'sidebar.system.settings',
+                'sidebar.system.manage_users',
+                'sidebar.system.manage_files',
+                'sidebar.system.manage_messages',
+                'sidebar.system.auditlog',
+                'sidebar.system.monitoring',
+                'admin.schoolYears.title'
+              ];
+              // Block if not in allowed list
+              if (!allowedDemoItems.includes(item.item)) {
+                return;
+              }
+            }
             
 
             if (item.children && item.children.length) {

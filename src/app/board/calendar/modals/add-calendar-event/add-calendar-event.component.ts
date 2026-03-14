@@ -75,6 +75,7 @@ export class CalendarAddEventComponent implements OnInit {
     }).subscribe({
       next: (res) => {
         if (res.success) {
+          this.calendarService.refresh();
           this.modalManager.closeModal('calendar_add_event');
         }
       }

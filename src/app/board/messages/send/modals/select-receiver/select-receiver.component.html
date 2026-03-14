@@ -27,16 +27,7 @@
             <label class="panel-label">Dostupní uživatelé:</label>
             <div class="list-surface scrollable">
                 @for (user of getFlattenedUsers(); track user.person_id) {
-                <div class="item-row" [class.checked]="isCheckedLeft(user.person_id)"
-                    (click)="toggleCheckLeft(user.person_id)">
-                    <div class="checkbox-box" [class.active]="isCheckedLeft(user.person_id)">
-                        @if (isCheckedLeft(user.person_id)) {
-                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                            stroke-width="4">
-                            <polyline points="20 6 9 17 4 12"></polyline>
-                        </svg>
-                        }
-                    </div>
+                <div class="item-row" (click)="toggleRecipient(user)">
                     <div class="item-info">
                         <span class="item-name">{{ user.full_name }}</span>
                         @if (user.role) {
@@ -58,16 +49,13 @@
 
         <!-- Middle Controls -->
         <div class="middle-controls">
-            <button class="arrow-btn" (click)="moveSelectedToRight()" [disabled]="checkedInLeft.size === 0">
-                <i-tabler name="chevron-right"></i-tabler>
-            </button>
-            <button class="arrow-btn" [disabled]="getFlattenedUsers().length === 0" (click)="moveAllToRight()">
+            <button class="arrow-btn" [disabled]="getFlattenedUsers().length === 0" (click)="moveAllToRight()"
+                [title]="l.s('messages.select_all')">
                 <i-tabler name="chevrons-right"></i-tabler>
             </button>
-            <button class="arrow-btn" (click)="moveSelectedToLeft()" [disabled]="checkedInRight.size === 0">
-                <i-tabler name="chevron-left"></i-tabler>
-            </button>
-            <button class="arrow-btn" [disabled]="selectedReceivers.length === 0" (click)="moveAllToLeft()">
+
+            <button class="arrow-btn" [disabled]="selectedReceivers.length === 0" (click)="moveAllToLeft()"
+                [title]="l.s('messages.deselect_all')">
                 <i-tabler name="chevrons-left"></i-tabler>
             </button>
         </div>
@@ -77,17 +65,11 @@
             <label class="panel-label">Vámi vybraní příjemci:</label>
             <div class="list-surface scrollable">
                 @for (user of selectedReceivers; track user.person_id) {
-                <div class="item-row" [class.checked]="isCheckedRight(user.person_id)"
-                    (click)="toggleCheckRight(user.person_id)">
-                    <div class="checkbox-box" [class.active]="isCheckedRight(user.person_id)">
-                        @if (isCheckedRight(user.person_id)) {
-                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                            stroke-width="4">
-                            <polyline points="20 6 9 17 4 12"></polyline>
-                        </svg>
-                        }
-                    </div>
+                <div class="item-row item-row--selected" (click)="removeRecipient(user)">
                     <span class="item-name">{{ user.full_name }}</span>
+                    <button class="btn-remove" (click)="$event.stopPropagation(); removeRecipient(user)">
+                        <i-tabler name="trash"></i-tabler>
+                    </button>
                 </div>
                 } @empty {
                 <div class="empty-selection">
@@ -149,17 +131,16 @@
                     </div>
                     }
                 </div>
+                <button class="btn-add-group-members" [class.active]="selectedGroup" (click)="addGroupMembers()"
+                    [title]="l.s('messages.add_group_members')">
+                    <i-tabler name="users-plus"></i-tabler>
+                    <span>Vložit</span>
+                </button>
             </div>
         </div>
-        <div>
-            @if (selectedGroup) {
-            <button class="arrow-btn" (click)="addGroupMembers()" title="Přidat členy skupiny do výběru">
-                <i-tabler name="chevrons-right"></i-tabler>
-            </button>
-            }
-        </div>
+        <div></div>
         <div class="management-column">
-            <div class="mgmt-action" [class.disabled]="selectedReceivers.length === 0"
+            <div class="mgmt-action primary" [class.disabled]="selectedReceivers.length === 0"
                 (click)="showGroupSave = !showGroupSave">
                 <i-tabler name="device-floppy"></i-tabler>
                 <span>Uložit aktuální výběr jako skupinu</span>

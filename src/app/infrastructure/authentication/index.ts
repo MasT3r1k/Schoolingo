@@ -5,17 +5,17 @@ import { tap, map } from 'rxjs/operators';
 import { Config } from '../config';
 import { handleHttpException } from '../http/http';
 import { User } from './user';
-import { createAvatar } from '@dicebear/core';
-import { avataaarsNeutral } from '@dicebear/collection';
-import moment from 'moment';
-import { Router } from '@angular/router';
 import { TokenExpirationService } from '../token-expiration/token-expiration.service';
 import { AuthConfig } from './config';
+import { AvatarService } from '../utils/avatar.service';
+import { Router } from '@angular/router';
+import moment from 'moment';
 
 export class Authentication {
     private http = inject(HttpClient);
     private router = inject(Router);
     private tokenExpirationService = inject(TokenExpirationService);
+    private avatarService = inject(AvatarService);
     private authState$ = new BehaviorSubject<boolean | 'offline' | null>(null);
     private passwordExpires = new BehaviorSubject(new Date());
     private declare user: User;
@@ -36,6 +36,13 @@ export class Authentication {
                     this.user = user as User;
                     this.user.emails = user.emails.map((email) => ({ ...email, is_created: true }))
                     this.user.phones = user.phones.map((phone) => ({ ...phone, is_created: true }))
+                    if (this.user.children) {
+                        this.user.children.sort((a, b) => {
+                            const nameA = `${a.last_name} ${a.first_name}`;
+                            const nameB = `${b.last_name} ${b.first_name}`;
+                            return nameA.localeCompare(nameB, 'cs');
+                        });
+                    }
                     this.passwordExpires.next(user.expires);
 
                     // Initialize token expiration tracking
@@ -114,11 +121,8 @@ export class Authentication {
     }
 
     public getAvatar(): string {
-        const avatar = createAvatar(avataaarsNeutral, {
-            seed: this.user.avatar.seed
-        });
-
-        return avatar.toDataUri();
+        if (!this.user) return '';
+        return this.avatarService.getAvatar(this.user.avatar, this.user.full_name);
     }
 
     public getRole(): string {
