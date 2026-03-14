@@ -94,7 +94,7 @@
         <div class="user-panel">
             <div class="user-info">
                 <div class="user-avatar">
-                    <span>JN</span>
+                    <img [src]="avatarService.getAvatar(null, 'JN')" alt="JN">
                     <span class="status-dot online"></span>
                 </div>
                 <div class="user-details">
@@ -179,7 +179,7 @@
                 @if (message.replyTo) {
                 <div class="reply-context">
                     <div class="reply-line"></div>
-                    <img class="reply-avatar">
+                    <img class="reply-avatar" [src]="avatarService.getAvatar(getMessageById(message.replyTo)?.sender?.avatar, getMessageById(message.replyTo)?.sender?.name || '')">
                     <span class="reply-name">{{ getMessageById(message.replyTo)?.sender?.name }}</span>
                     <span class="reply-text">{{ getMessageById(message.replyTo)?.content | slice:0:60 }}...</span>
                 </div>
@@ -187,7 +187,7 @@
 
                 <div class="message" [class.compact]="!first">
                     <div class="message-avatar" [class]="message.sender.role">
-                        {{ message.sender.name.charAt(0) }}
+                        <img [src]="avatarService.getAvatar(message.sender.avatar, message.sender.name)" [alt]="message.sender.name">
                     </div>
                     <div class="message-content">
                         <div class="message-header">
@@ -260,7 +260,7 @@
             @for (member of teachers; track member.id) {
             <div class="member-row" [class.offline]="member.status !== 'online'">
                 <div class="member-avatar teacher">
-                    <span>{{ member.name.charAt(0) }}</span>
+                    <img [src]="avatarService.getAvatar(member.avatar, member.name)" [alt]="member.name">
                     <span class="status-ring" [class]="member.status"></span>
                 </div>
                 <div class="member-info">
@@ -279,7 +279,7 @@
             @for (member of onlineStudents; track member.id) {
             <div class="member-row">
                 <div class="member-avatar student">
-                    <span>{{ member.name.charAt(0) }}</span>
+                    <img [src]="avatarService.getAvatar(member.avatar, member.name)" [alt]="member.name">
                     <span class="status-ring online"></span>
                 </div>
                 <div class="member-info">
@@ -298,7 +298,7 @@
             @for (member of offlineStudents; track member.id) {
             <div class="member-row offline">
                 <div class="member-avatar student">
-                    <span>{{ member.name.charAt(0) }}</span>
+                    <img [src]="avatarService.getAvatar(member.avatar, member.name)" [alt]="member.name">
                     <span class="status-ring" [class]="member.status"></span>
                 </div>
                 <div class="member-info">

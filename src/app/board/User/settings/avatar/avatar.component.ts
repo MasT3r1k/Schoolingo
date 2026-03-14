@@ -43,12 +43,15 @@ export class AvatarComponent implements OnInit {
   public savingValue = false;
   public errorValue = false;
   public isRotating = false;
-  public isPickingColor = false;
   public activeColorPicker: string | null = null;
   public hsv = { h: 0, s: 100, v: 100 };
+  public hsvHue = { h: 0, s: 100, v: 100 }; // For background in 2D field
 
   @ViewChild('rotationDial') rotationDial!: ElementRef;
-  @ViewChild('colorArea') colorArea!: ElementRef;
+  private currentPickingArea: HTMLElement | null = null;
+  public isPickingSwatches = false;
+  public isPickingColor = false;
+  public isDragging = false;
 
   public avatarHistory: { config: any, preview: string }[] = [];
   public randomAvatars: { config: any, preview: string }[] = [];
@@ -58,18 +61,24 @@ export class AvatarComponent implements OnInit {
   get error() { return this.errorValue; }
   set error(v) { this.errorValue = v; }
 
-  public startColorPick(event: MouseEvent | TouchEvent): void {
+  public get JSON_STRING() { return JSON.stringify(this.currentAvatar); }
+
+  public startColorPick(event: MouseEvent | TouchEvent, area: HTMLElement, key?: string): void {
+    if (key) this.activeColorPicker = key;
     event.preventDefault();
+    event.stopPropagation();
     this.isPickingColor = true;
+    this.isDragging = true;
+    this.currentPickingArea = area;
     this.handleColorPick(event);
   }
 
   @HostListener('window:mousemove', ['$event'])
   @HostListener('window:touchmove', ['$event'])
   public handleColorPick(event: MouseEvent | TouchEvent): void {
-    if (!this.isPickingColor || !this.colorArea) return;
+    if (!this.isPickingColor || !this.currentPickingArea) return;
 
-    const area = this.colorArea.nativeElement;
+    const area = this.currentPickingArea;
     const rect = area.getBoundingClientRect();
     
     const clientX = 'touches' in event ? event.touches[0].clientX : event.clientX;
@@ -82,16 +91,28 @@ export class AvatarComponent implements OnInit {
     x = Math.max(0, Math.min(1, x));
     y = Math.max(0, Math.min(1, y));
 
-    this.hsv.s = Math.round(x * 100);
-    this.hsv.v = Math.round((1 - y) * 100);
-    this.updateHSV();
+    const type = area.getAttribute('data-picker-type') || 'sv';
+
+    if (type === 'hue') {
+      this.hsv = { ...this.hsv, h: Math.round(x * 360) };
+      this.hsvHue = { h: this.hsv.h, s: 100, v: 100 };
+      this.updateHSV(false);
+    } else if (type === 'swatches') {
+      const element = document.elementFromPoint(clientX, clientY);
+      const swatch = element?.closest('.swatch-item') as HTMLElement;
+      if (swatch) {
+        const color = swatch.getAttribute('data-color');
+        const key = area.getAttribute('data-swatch-key');
+        if (color && key) {
+          this.updateOption(key, color, false);
+        }
+      }
+    } else {
+      this.hsv = { ...this.hsv, s: Math.round(x * 100), v: Math.round((1 - y) * 100) };
+      this.updateHSV(false);
+    }
   }
 
-  @HostListener('window:mouseup')
-  @HostListener('window:touchend')
-  public stopColorPick(): void {
-    this.isPickingColor = false;
-  }
 
   public getHueColor(): string {
     return this.hsvToHex(this.hsv.h, 100, 100);
@@ -287,11 +308,20 @@ export class AvatarComponent implements OnInit {
         if (singleValueProps.includes(key)) {
             props[key] = val;
         } else if (typeof val === 'string') {
-            props[key] = [val];
+            let finalVal = val;
+            if ((config.type === 'thumbs' || !config.type) && key === 'eyes' && !val.includes('W')) {
+                finalVal = val + 'W12';
+            }
+            props[key] = [finalVal];
         } else {
             props[key] = val;
         }
     });
+
+    if (config.type === 'thumbs' || !config.type) {
+      if (!props['eyesColor']) props['eyesColor'] = ['000000'];
+      if (!props['mouthColor']) props['mouthColor'] = ['000000'];
+    }
 
     const avatar = createAvatar(collection, props);
     return avatar.toDataUri().toString();
@@ -357,7 +387,7 @@ export class AvatarComponent implements OnInit {
     return avatar.toDataUri().toString();
   }
 
-  public updateOption(key: string, value: any): void {
+  public updateOption(key: string, value: any, forceSave = true): void {
     if (this.currentAvatar.type === 'thumbs' && key === 'eyes') {
       const current = this.currentAvatar['eyes'] || this.styleDefaults['thumbs'].eyes;
       const width = current.includes('W') ? current.split('W')[1] : '12';
@@ -381,7 +411,7 @@ export class AvatarComponent implements OnInit {
     // Clone to ensure change detection and stabilize [value] bindings
     this.currentAvatar = { ...this.currentAvatar };
     this.updatePreview();
-    this.saveDraft();
+    if (forceSave) this.saveDraft();
     this.cdr.detectChanges();
   }
 
@@ -409,6 +439,15 @@ export class AvatarComponent implements OnInit {
       return this.styleDefaults[this.currentAvatar.type]?.[key] === val;
     }
     return false;
+  }
+
+  public startSwatchScrub(event: MouseEvent | TouchEvent, area: HTMLElement): void {
+    event.preventDefault();
+    event.stopPropagation();
+    this.isPickingSwatches = true;
+    this.isDragging = true;
+    this.currentPickingArea = area;
+    this.handleColorPick(event);
   }
 
   public isCustomColor(key: string, swatches: any): boolean {
@@ -479,14 +518,15 @@ export class AvatarComponent implements OnInit {
       let current = this.currentAvatar[key] || '000000';
       if (current === 'transparent') current = 'ffffff';
       this.hsv = this.hexToHsv(current);
+      this.hsvHue = { ...this.hsv, s: 100, v: 100 };
     }
   }
 
-  public updateHSV(): void {
+  public updateHSV(forceSave = true): void {
     if (!this.activeColorPicker) return;
     const hex = this.hsvToHex(this.hsv.h, this.hsv.s, this.hsv.v);
-    this.updateOption(this.activeColorPicker, hex);
-    this.saveDraft();
+    this.hsvHue = { h: this.hsv.h, s: 100, v: 100 };
+    this.updateOption(this.activeColorPicker, hex, forceSave);
   }
 
   public hexToHsv(hex: string): {h: number, s: number, v: number} {
@@ -534,7 +574,6 @@ export class AvatarComponent implements OnInit {
 
   public triggerColorPicker(event: MouseEvent, input: HTMLInputElement): void {
     event.stopPropagation();
-    // input.click(); // We no longer need the native picker
     const key = input.getAttribute('data-key');
     if (key) this.toggleColorPicker(key, event);
   }
@@ -542,13 +581,22 @@ export class AvatarComponent implements OnInit {
   public startRotation(event: MouseEvent | TouchEvent): void {
     event.preventDefault();
     this.isRotating = true;
+    this.isDragging = true;
   }
 
   @HostListener('window:mousemove', ['$event'])
   @HostListener('window:touchmove', ['$event'])
-  public handleRotation(event: MouseEvent | TouchEvent): void {
-    if (!this.isRotating || !this.rotationDial) return;
+  public handleGlobalMove(event: MouseEvent | TouchEvent): void {
+    if (this.isDragging) {
+      if (this.isRotating) {
+        this.handleRotationMove(event);
+      } else if (this.currentPickingArea) {
+        this.handleColorPick(event);
+      }
+    }
+  }
 
+  private handleRotationMove(event: MouseEvent | TouchEvent): void {
     const dial = this.rotationDial.nativeElement;
     const rect = dial.getBoundingClientRect();
     const centerX = rect.left + rect.width / 2;
@@ -561,20 +609,35 @@ export class AvatarComponent implements OnInit {
     const deltaY = clientY - centerY;
 
     let angle = Math.atan2(deltaY, deltaX) * (180 / Math.PI);
-    angle = (angle + 270 + 360) % 360; // Offset shifted by 180 degrees (was 90)
+    angle = (angle + 270 + 360) % 360;
     
-    this.updateOption('rotate', Math.round(angle));
-    this.saveDraft();
+    this.updateOption('rotate', Math.round(angle), false);
   }
 
   @HostListener('window:mouseup')
   @HostListener('window:touchend')
-  public stopRotation(): void {
+  public globalMouseUp(): void {
+    if (this.isDragging) {
+      if (this.isPickingColor || this.isPickingSwatches) {
+        this.updateHSV(true);
+      }
+      if (this.isRotating) {
+        this.saveDraft();
+      }
+    }
+    this.isDragging = false;
     this.isRotating = false;
+    this.isPickingColor = false;
+    this.isPickingSwatches = false;
+    this.currentPickingArea = null;
+    this.cdr.detectChanges();
   }
 
-  @HostListener('document:click')
-  public closePickers(): void {
+  @HostListener('document:click', ['$event'])
+  public closePickers(event: MouseEvent): void {
+    if (this.isPickingColor || this.isRotating || this.isPickingSwatches || this.isDragging) return;
+    const target = event.target as HTMLElement;
+    if (target.closest('.color-picker-popover') || target.closest('.color-picker-item') || target.closest('.swatch-grid')) return;
     this.activeColorPicker = null;
   }
 

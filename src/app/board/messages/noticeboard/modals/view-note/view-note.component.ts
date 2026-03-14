@@ -6,6 +6,8 @@ import { Locale } from '@Schoolingo/locale';
 import { IconsModule } from '@Schoolingo/icons';
 import { Utils } from '@Schoolingo/utils';
 import { NoticeboardService } from '../../noticeboard.service';
+import { AvatarService } from '../../../../../infrastructure/utils/avatar.service';
+
 
 interface MessageDetail {
   message_id: number;
@@ -16,6 +18,7 @@ interface MessageDetail {
     first_name: string;
     last_name: string;
     full_name: string;
+    avatar: string | null;
   };
   receivers: {
     personId: number;
@@ -40,6 +43,7 @@ export class ViewNoteComponent implements OnInit {
   public service = inject(NoticeboardService);
   private http = inject(HttpClient);
   public l = inject(Locale);
+  public avatarService = inject(AvatarService);
   public Utils = Utils;
   
   public note: MessageDetail | null = null;

@@ -20,7 +20,9 @@ export class AvatarService {
         avataaars,
         bottts,
         lorelei,
+        'open-peeps': openPeeps,
         openPeeps,
+        'pixel-art': pixelArt,
         pixelArt,
         thumbs,
         initials
@@ -45,24 +47,37 @@ export class AvatarService {
             config = avatarConfig;
         }
 
-        const options: any = {};
+        const props: any = {};
         if (config) {
             Object.keys(config).forEach(key => {
+                if (key === 'type') return;
                 const val = config[key];
-                const isColorKey = key.toLowerCase().includes('color') || key === 'backgroundColor';
-                const isVariantKey = ['eyes', 'face', 'mouth'].includes(key);
-
-                if (typeof val === 'string' && (isColorKey || isVariantKey)) {
-                    options[key] = [val];
+                
+                const singleValueProps = ['radius', 'rotate', 'size', 'scale', 'flip', 'faceOffsetX', 'faceOffsetY', 'shapeOffsetX', 'shapeOffsetY', 'translateX', 'translateY', 'seed'];
+                if (singleValueProps.includes(key)) {
+                    props[key] = val;
+                } else if (typeof val === 'string') {
+                    let finalVal = val;
+                    // Fix for thumbs eyes (needs W suffix in v9)
+                    if ((config.type === 'thumbs' || !config.type) && key === 'eyes' && !val.includes('W')) {
+                        finalVal = val + 'W12';
+                    }
+                    props[key] = [finalVal];
                 } else {
-                    options[key] = val;
+                    props[key] = val;
                 }
             });
         }
 
-        if (!options.seed) options.seed = backupSeed;
+        if (!props.seed) props.seed = backupSeed;
 
-        const avatar = createAvatar(this.collections[config?.type] || thumbs, options);
+        // Ensure default colors for thumbs if missing
+        if (config.type === 'thumbs' || !config.type) {
+            if (!props['eyesColor']) props['eyesColor'] = ['000000'];
+            if (!props['mouthColor']) props['mouthColor'] = ['000000'];
+        }
+
+        const avatar = createAvatar(this.collections[config?.type] || thumbs, props);
 
         return avatar.toDataUri().toString();
     }

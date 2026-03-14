@@ -6,6 +6,8 @@ import { FormsModule } from '@angular/forms';
 import { Utils } from '@Schoolingo/utils';
 import { HttpClient } from '@angular/common/http';
 import { Config } from '@Schoolingo/config';
+import { AvatarService } from '../../../infrastructure/utils/avatar.service';
+
 
 interface Group {
   id: number;
@@ -94,7 +96,7 @@ interface Reaction {
 interface Member {
   id: number;
   name: string;
-  avatar?: string;
+  avatar: string | null;
   role: 'teacher' | 'student';
   status: 'online' | 'offline' | 'away';
   statusText?: string;
@@ -110,6 +112,7 @@ interface Member {
 export class GroupsComponent implements OnInit {
   public l = inject(Locale);
   private http = inject(HttpClient);
+  public avatarService = inject(AvatarService);
   Utils = Utils;
 
   // State
@@ -267,11 +270,11 @@ export class GroupsComponent implements OnInit {
   private loadMembers(): void {
     // Mock members - replace with API call
     this.members = [
-      { id: 1, name: 'Mgr. Jana Nováková', role: 'teacher', status: 'online', statusText: 'Učím' },
-      { id: 2, name: 'Petr Dvořák', role: 'student', status: 'online' },
-      { id: 3, name: 'Marie Svobodová', role: 'student', status: 'away', statusText: 'Oběd' },
-      { id: 4, name: 'Jan Novák', role: 'student', status: 'offline' },
-      { id: 5, name: 'Eva Procházková', role: 'student', status: 'online', statusText: 'Studuji' }
+      { id: 1, name: 'Mgr. Jana Nováková', role: 'teacher', status: 'online', statusText: 'Učím', avatar: null },
+      { id: 2, name: 'Petr Dvořák', role: 'student', status: 'online', avatar: null },
+      { id: 3, name: 'Marie Svobodová', role: 'student', status: 'away', statusText: 'Oběd', avatar: null },
+      { id: 4, name: 'Jan Novák', role: 'student', status: 'offline', avatar: null },
+      { id: 5, name: 'Eva Procházková', role: 'student', status: 'online', statusText: 'Studuji', avatar: null }
     ];
   }
 
