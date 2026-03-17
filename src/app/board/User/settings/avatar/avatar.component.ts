@@ -8,6 +8,7 @@ import { IconsModule } from '@Schoolingo/icons';
 import { Locale } from '@Schoolingo/locale';
 import { createAvatar } from '@dicebear/core';
 import { adventurer, avataaars, bottts, lorelei, openPeeps, pixelArt, thumbs } from '@dicebear/collection';
+import { AvatarService } from '../../../../infrastructure/utils/avatar.service';
 
 @Component({
   selector: 'settings-avatar',
@@ -22,12 +23,11 @@ export class AvatarComponent implements OnInit {
   private http = inject(HttpClient);
   private cdr = inject(ChangeDetectorRef);
   private cookies = inject(Cookies);
+  public avatarService = inject(AvatarService);
   public JSON = JSON;
 
   public historyLimit = 10;
-
-
-  public allowedStyles = Config.ALLOWED_AVATAR_STYLES;
+  public allowedStyles: string[] = [];
   public collections: any = {
     adventurer,
     avataaars,
@@ -127,6 +127,56 @@ export class AvatarComponent implements OnInit {
       mouthColor: ['000000', 'ef4444', 'f472b6', 'ffffff'],
       shapeColor: ['f0d5be', 'd8b08d', 'c68642', '8d5524', 'f3cfbb'],
       backgroundColor: ['0a5b83', '1c799f', '69d2e7', 'f1f4dc', 'f88c49', 'transparent']
+    },
+    adventurer: {
+      eyes: ['variant1', 'variant2', 'variant3', 'variant4', 'variant5', 'variant6', 'variant7', 'variant8', 'variant9', 'variant10', 'variant11', 'variant12', 'variant13', 'variant14', 'variant15', 'variant16', 'variant17', 'variant18', 'variant19', 'variant20', 'variant21', 'variant22', 'variant23', 'variant24', 'variant25', 'variant26'],
+      eyebrows: ['variant1', 'variant2', 'variant3', 'variant4', 'variant5', 'variant6', 'variant7', 'variant8', 'variant9', 'variant10', 'variant11', 'variant12', 'variant13', 'variant14', 'variant15'],
+      mouth: ['variant1', 'variant2', 'variant3', 'variant4', 'variant5', 'variant6', 'variant7', 'variant8', 'variant9', 'variant10', 'variant11', 'variant12', 'variant13', 'variant14', 'variant15', 'variant16', 'variant17', 'variant18', 'variant19', 'variant20', 'variant21', 'variant22', 'variant23', 'variant24', 'variant25', 'variant26', 'variant27', 'variant28', 'variant29', 'variant30'],
+      hair: ['variant1', 'variant2', 'variant3', 'variant4', 'variant5', 'variant6', 'variant7', 'variant8', 'variant9', 'variant10', 'variant11', 'variant12', 'variant13', 'variant14', 'variant15', 'variant16', 'variant17', 'variant18', 'variant19', 'variant20', 'variant21', 'variant22', 'variant23', 'variant24', 'variant25', 'variant26', 'variant27', 'variant28', 'variant29', 'variant30'],
+      hairColor: ['0e0e0e', '2c1b18', '4a312c', '724130', 'a55728', 'b58143', 'c93305', 'e8e1e1', 'f5af19'],
+      skinColor: ['f0d5be', 'd8b08d', 'c68642', '8d5524', 'f3cfbb', 'ffdbac'],
+      backgroundColor: ['0a5b83', '1c799f', '69d2e7', 'f1f4dc', 'f88c49', 'transparent']
+    },
+    avataaars: {
+      eyes: ['default', 'happy', 'surprised', 'wink', 'hearts', 'side', 'squint', 'eyeRoll', 'close', 'cry', 'dizzy'],
+      eyebrows: ['default', 'defaultNatural', 'raisedExcited', 'upDown', 'flatNatural', 'sadConcerned', 'angry', 'angryNatural'],
+      mouth: ['default', 'smile', 'serious', 'tongue', 'twinkle', 'grimace', 'disbelief', 'eating', 'screamOpen', 'vomit'],
+      hair: ['longHair', 'shortHair', 'eyepatch', 'hat', 'hijab', 'turban', 'bob', 'bun', 'curly', 'shaggy'],
+      hairColor: ['2c1b18', '4a312c', '724130', 'a55728', 'b58143', 'c93305', 'e8e1e1', 'f5af19'],
+      clothing: ['blazer', 'blazerAndShirt', 'collarAndSweater', 'graphicShirt', 'hoodie', 'overall', 'shirtCrewNeck', 'shirtScoopNeck', 'shirtVNeck'],
+      clothingColor: ['262e33', '3c4e5a', '5199e4', '65c9ff', 'a7ca50', 'e6e6e6', 'ff5c5c', 'ffffb1'],
+      skinColor: ['615c4d', '724130', '8e583e', 'ae5d29', 'd08b5b', 'edb98a', 'ffdbac'],
+      backgroundColor: ['0a5b83', '1c799f', '69d2e7', 'f1f4dc', 'f88c49', 'transparent']
+    },
+    bottts: {
+      face: ['variant01', 'variant02', 'variant03', 'variant04'],
+      mouth: ['variant01', 'variant02', 'variant03', 'variant04'],
+      eyes: ['variant01', 'variant02', 'variant03', 'variant04', 'variant05'],
+      sides: ['variant01', 'variant02', 'variant03', 'variant04', 'variant05'],
+      top: ['variant01', 'variant02', 'variant03', 'variant04', 'variant05'],
+      baseColor: ['e5e7eb', '9ca3af', '4b5563', 'f87171', '60a5fa', '34d399'],
+      backgroundColor: ['0a5b83', '1c799f', '69d2e7', 'f1f4dc', 'f88c49', 'transparent']
+    },
+    lorelei: {
+      eyes: ['variant1', 'variant2', 'variant3', 'variant4', 'variant5', 'variant6', 'variant7', 'variant8', 'variant9', 'variant10', 'variant11', 'variant12', 'variant13', 'variant14', 'variant15', 'variant16', 'variant17', 'variant18', 'variant19', 'variant20', 'variant21', 'variant22', 'variant23', 'variant24', 'variant25', 'variant26'],
+      eyebrows: ['variant1', 'variant2', 'variant3', 'variant4', 'variant5', 'variant6', 'variant7'],
+      mouth: ['variant1', 'variant2', 'variant3', 'variant4', 'variant5', 'variant6', 'variant7', 'variant8', 'variant9', 'variant10', 'variant11', 'variant12', 'variant13', 'variant14', 'variant15', 'variant16', 'variant17', 'variant18', 'variant19', 'variant20', 'variant21', 'variant22', 'variant23', 'variant24', 'variant25', 'variant26', 'variant27', 'variant28', 'variant29', 'variant30'],
+      hair: ['variant1', 'variant2', 'variant3', 'variant4', 'variant5', 'variant6', 'variant7', 'variant8', 'variant9', 'variant10', 'variant11', 'variant12', 'variant13', 'variant14', 'variant15', 'variant16', 'variant17', 'variant18', 'variant19', 'variant20', 'variant21', 'variant22', 'variant23', 'variant24', 'variant25', 'variant26', 'variant27', 'variant28', 'variant29', 'variant30', 'variant31', 'variant32', 'variant33', 'variant34', 'variant35', 'variant36', 'variant37', 'variant38', 'variant39', 'variant40', 'variant41', 'variant42', 'variant43', 'variant44', 'variant45', 'variant46', 'variant47', 'variant48', 'variant49', 'variant50', 'variant51', 'variant52', 'variant53', 'variant54', 'variant55'],
+      hairColor: ['2c1b18', '4a312c', '724130', 'a55728', 'b58143', 'c93305', 'e8e1e1', 'f5af19'],
+      skinColor: ['f0d5be', 'd8b08d', 'c68642', '8d5524', 'f3cfbb', 'ffdbac'],
+      backgroundColor: ['0a5b83', '1c799f', '69d2e7', 'f1f4dc', 'f88c49', 'transparent']
+    },
+    'open-peeps': {
+      face: ['variant01', 'variant02', 'variant03', 'variant04', 'variant05'],
+      hair: ['variant01', 'variant02', 'variant03', 'variant04', 'variant05'],
+      body: ['variant01', 'variant02', 'variant03', 'variant04', 'variant05'],
+      backgroundColor: ['0a5b83', '1c799f', '69d2e7', 'f1f4dc', 'f88c49', 'transparent']
+    },
+    'pixel-art': {
+      eyes: ['variant1', 'variant2', 'variant3', 'variant4', 'variant5'],
+      mouth: ['variant1', 'variant2', 'variant3', 'variant4', 'variant5'],
+      clothing: ['variant1', 'variant2', 'variant3', 'variant4', 'variant5'],
+      backgroundColor: ['0a5b83', '1c799f', '69d2e7', 'f1f4dc', 'f88c49', 'transparent']
     }
   };
 
@@ -136,7 +186,7 @@ export class AvatarComponent implements OnInit {
 
   public styleDefaults: Record<string, any> = {
     thumbs: {
-      eyes: 'variant1W10',
+      eyes: 'variant1W12',
       eyesColor: '000000',
       face: 'variant1',
       faceOffsetX: 0,
@@ -144,20 +194,74 @@ export class AvatarComponent implements OnInit {
       mouthColor: '000000',
       shapeColor: 'f0d5be',
       backgroundColor: 'transparent'
+    },
+    adventurer: {
+      eyes: 'variant1',
+      eyebrows: 'variant1',
+      mouth: 'variant1',
+      hair: 'variant1',
+      skinColor: 'f0d5be',
+      backgroundColor: 'transparent'
+    },
+    avataaars: {
+      eyes: 'default',
+      eyebrows: 'default',
+      mouth: 'default',
+      hair: 'longHair',
+      clothing: 'blazer',
+      skinColor: 'ffdbac',
+      backgroundColor: 'transparent'
+    },
+    bottts: {
+      face: 'variant01',
+      mouth: 'variant01',
+      eyes: 'variant01',
+      sides: 'variant01',
+      top: 'variant01',
+      baseColor: '9ca3af',
+      backgroundColor: 'transparent'
+    },
+    lorelei: {
+      eyes: 'variant1',
+      eyebrows: 'variant1',
+      mouth: 'variant1',
+      hair: 'variant1',
+      skinColor: 'f0d5be',
+      backgroundColor: 'transparent'
+    },
+    'open-peeps': {
+      face: 'variant01',
+      hair: 'variant01',
+      body: 'variant01',
+      backgroundColor: 'transparent'
+    },
+    'pixel-art': {
+      eyes: 'variant1',
+      mouth: 'variant1',
+      clothing: 'variant1',
+      backgroundColor: 'transparent'
     }
   };
 
   ngOnInit(): void {
     const user = this.u.getUser();
 
-    // Load history limit
-    if (this.cookies.getCategoryPreference('functional')?.enabled) {
-      const savedLimit = localStorage.getItem('avatar_history_limit');
-      if (savedLimit) this.historyLimit = parseInt(savedLimit);
+    // Resolve allowed styles from config
+    const rawAllowed = Config.ALLOWED_AVATAR_STYLES;
+    if (rawAllowed === 'all') {
+      this.allowedStyles = Object.keys(this.collections);
+    } else if (Array.isArray(rawAllowed)) {
+      if (rawAllowed.includes('all')) {
+        this.allowedStyles = Object.keys(this.collections);
+      } else {
+        this.allowedStyles = rawAllowed;
+      }
+    } else {
+      this.allowedStyles = [rawAllowed];
     }
 
     const defaults = { 
-      type: 'thumbs', 
+      type: this.allowedStyles[0] || 'thumbs', 
       radius: 50,
       seed: user.full_name || user.username
     };
@@ -173,7 +277,24 @@ export class AvatarComponent implements OnInit {
       }
     }
 
-    this.currentAvatar = draft || { ...defaults, ...(user.avatar || {}) };
+    let userAvatar: any = user.avatar;
+    if (typeof userAvatar === 'string' && userAvatar.trim() !== '') {
+      try {
+        userAvatar = JSON.parse(userAvatar);
+      } catch (e) {
+        userAvatar = {};
+      }
+    }
+
+    // Normalize backend format { collection, options }
+    if (userAvatar && (userAvatar.collection || userAvatar.options)) {
+      const type = userAvatar.type || userAvatar.collection;
+      const options = userAvatar.options || {};
+      userAvatar = { ...userAvatar, ...options };
+      if (type) userAvatar.type = type;
+    }
+
+    this.currentAvatar = draft || { ...defaults, ...(userAvatar || {}) };
     if (this.currentAvatar.rotate === undefined) this.currentAvatar.rotate = 0;
     this.updatePreview();
     this.loadHistory();
@@ -223,7 +344,7 @@ export class AvatarComponent implements OnInit {
   }
 
   private generateRandomConfig(seedSuffix: number): any {
-    const type = 'thumbs';
+    const type = this.currentAvatar?.type || this.allowedStyles[0] || 'thumbs';
     const schema = this.styleSchemas[type] || {};
     const config: any = { 
         type, 
@@ -257,85 +378,55 @@ export class AvatarComponent implements OnInit {
     this.currentAvatar = { ...avatar };
     this.updatePreview();
     this.saveDraft();
+    this.cdr.detectChanges();
   }
 
   public updatePreview(): void {
     this.previewDataUri = this.getPreview(this.currentAvatar.type || 'thumbs');
+    this.cdr.markForCheck();
+    this.cdr.detectChanges();
   }
 
   public getPreview(style: string): string {
-    const collection = this.collections[style];
-    if (!collection) return '';
-
-    // Create options for preview: style-specific properties plus common ones
-    const props: any = {
-      seed: this.currentAvatar.seed || this.u.getUser().username
-    };
-
-    // Only include properties relevant to the style if it's the current one
     if (this.currentAvatar.type === style) {
-        Object.keys(this.currentAvatar).forEach(key => {
-          if (key === 'type') return; // Exclude type property from DiceBear options
-          const val = this.currentAvatar[key];
-          
-          // Core DiceBear props that are usually single values
-          const coreProps = ['seed', 'flip', 'rotate', 'size', 'scale', 'radius', 'translateX', 'translateY'];
-          if (coreProps.includes(key)) {
-            props[key] = val;
-            return;
-          }
-
-          // Collection specific props (eyes, face, mouth, colors, style-specific offsets)
-          // DiceBear v9 often expects these as arrays, even for single values
-          props[key] = Array.isArray(val) ? val : [val];
-        });
+      return this.avatarService.getAvatar(this.currentAvatar, this.currentAvatar.seed || this.u.getUser().username);
     }
-
-    const avatar = createAvatar(collection, props);
-    return avatar.toDataUri().toString();
+    // Preview other styles with just the seed/defaults
+    return this.avatarService.getAvatar({ type: style }, this.currentAvatar.seed || this.u.getUser().username);
   }
 
   public getAvatarFromConfig(config: any): string {
-    const collection = this.collections[config.type || 'thumbs'];
-    if (!collection) return '';
-
-    const props: any = {};
-    Object.keys(config).forEach(key => {
-        if (key === 'type') return;
-        const val = config[key];
-        
-        const singleValueProps = ['radius', 'rotate', 'size', 'scale', 'flip', 'faceOffsetX', 'faceOffsetY', 'shapeOffsetX', 'shapeOffsetY', 'translateX', 'translateY', 'seed'];
-        if (singleValueProps.includes(key)) {
-            props[key] = val;
-        } else if (typeof val === 'string') {
-            let finalVal = val;
-            if ((config.type === 'thumbs' || !config.type) && key === 'eyes' && !val.includes('W')) {
-                finalVal = val + 'W12';
-            }
-            props[key] = [finalVal];
-        } else {
-            props[key] = val;
-        }
-    });
-
-    if (config.type === 'thumbs' || !config.type) {
-      if (!props['eyesColor']) props['eyesColor'] = ['000000'];
-      if (!props['mouthColor']) props['mouthColor'] = ['000000'];
-    }
-
-    const avatar = createAvatar(collection, props);
-    return avatar.toDataUri().toString();
+    return this.avatarService.getAvatar(config, config.seed || (this.u.getUser()?.full_name || this.u.getUser()?.username));
   }
 
   public selectStyle(style: string): void {
-    this.currentAvatar.type = style;
-    this.save();
+    if (this.currentAvatar.type === style) return;
+    
+    const user = this.u.getUser();
+    const defaults = this.styleDefaults[style] || {};
+    
+    // Completely reset currentAvatar to defaults for the new style
+    // This removes any options that were specific to the previous style
+    this.currentAvatar = {
+      type: style,
+      seed: user.full_name || user.username,
+      radius: 50,
+      rotate: 0,
+      ...defaults
+    };
+    
+    this.updatePreview();
+    this.saveDraft();
+    this.generateRandomAvatars();
+    this.cdr.detectChanges();
   }
 
   public updateSeed(event: any): void {
     this.currentAvatar.seed = event.target.value;
+    this.currentAvatar = { ...this.currentAvatar };
     this.updatePreview();
     this.saveDraft();
+    this.cdr.detectChanges();
   }
 
   public getAvailableOptions(): any {
@@ -354,37 +445,29 @@ export class AvatarComponent implements OnInit {
   }
 
   public getOptionPreview(key: string, value: any): string {
-    const collection = this.collections[this.currentAvatar.type || 'thumbs'];
-    const props: any = {
-      seed: 'preview',
-      rotate: 0,
-      radius: 0
-    };
-
     const val = typeof value === 'object' ? value.value : value;
+    const style = this.currentAvatar.type || 'thumbs';
     
-    if (this.currentAvatar.type === 'thumbs') {
+    // Create temporary config to preview the option
+    const tempConfig: any = { type: style, seed: 'preview', radius: 0, rotate: 0 };
+    
+    if (style === 'thumbs') {
       if (key === 'eyes') {
         const current = this.currentAvatar['eyes'] || this.styleDefaults['thumbs'].eyes;
         const width = current.includes('W') ? current.split('W')[1] : '12';
-        props['eyes'] = [val + 'W' + width];
+        tempConfig['eyes'] = val + 'W' + width;
       } else if (key === 'eyeWidth') {
         const current = this.currentAvatar['eyes'] || this.styleDefaults['thumbs'].eyes;
         const variant = current.includes('W') ? current.split('W')[0] : 'variant1';
-        props['eyes'] = [variant + 'W' + val];
-      } else if (typeof val === 'string') {
-        props[key] = [val];
+        tempConfig['eyes'] = variant + 'W' + val;
       } else {
-        props[key] = val;
+        tempConfig[key] = val;
       }
-    } else if (typeof val === 'string') {
-      props[key] = [val];
     } else {
-      props[key] = val;
+      tempConfig[key] = val;
     }
 
-    const avatar = createAvatar(collection, props);
-    return avatar.toDataUri().toString();
+    return this.avatarService.getAvatar(tempConfig, 'preview');
   }
 
   public updateOption(key: string, value: any, forceSave = true): void {
@@ -412,7 +495,6 @@ export class AvatarComponent implements OnInit {
     this.currentAvatar = { ...this.currentAvatar };
     this.updatePreview();
     if (forceSave) this.saveDraft();
-    this.cdr.detectChanges();
   }
 
   public isColor(key: string): boolean {
@@ -501,6 +583,7 @@ export class AvatarComponent implements OnInit {
     this.currentAvatar = { ...this.currentAvatar };
     this.updatePreview();
     this.saveDraft();
+    this.cdr.detectChanges();
   }
 
   public getColorPickerValue(key: string): string {
@@ -520,6 +603,7 @@ export class AvatarComponent implements OnInit {
       this.hsv = this.hexToHsv(current);
       this.hsvHue = { ...this.hsv, s: 100, v: 100 };
     }
+    this.cdr.detectChanges();
   }
 
   public updateHSV(forceSave = true): void {
@@ -639,6 +723,7 @@ export class AvatarComponent implements OnInit {
     const target = event.target as HTMLElement;
     if (target.closest('.color-picker-popover') || target.closest('.color-picker-item') || target.closest('.swatch-grid')) return;
     this.activeColorPicker = null;
+    this.cdr.detectChanges();
   }
 
   public save(): void {

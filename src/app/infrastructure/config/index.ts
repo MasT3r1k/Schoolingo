@@ -19,6 +19,6 @@ export namespace Config {
     export const SHOW_DOWNLOAD_BUTTON = false;
     export const ALLOW_LEVEL_SYSTEM = false;
     export const ALLOW_AVATARS = true;
-    export const ALLOWED_AVATAR_STYLES = ['thumbs'];
+    export const ALLOWED_AVATAR_STYLES: string | string[] = ['thumbs'];
     export const ALLOW_ACHIEVEMENTS = false;
 }

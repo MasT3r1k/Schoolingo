@@ -1122,9 +1122,16 @@
                                 <div class="options-dropdown">
                                     <div class="list">
                                         @for (p of unlinkedPersons; track p.person_id) {
-                                        <div class="option" (click)="$event.stopPropagation(); dropdownManager.selected_dropdown = ''; onPersonSelect(p.person_id)">
-                                            {{ p.first_name }} {{ p.last_name }}
-                                            <span class="muted" style="font-size: 11px; margin-left: 0.5rem;">({{ getRoleText(p.suggested_role) }})</span>
+                                        <div class="option row" style="gap: .75rem" (click)="$event.stopPropagation(); dropdownManager.selected_dropdown = ''; onPersonSelect(p.person_id)">
+                                            <div class="user-avatar-sm" style="width: 28px; height: 28px; font-size: 10px;">
+                                                <div class="avatar--image">
+                                                    <img [src]="avatarService.getAvatar(p.avatar, p.first_name + ' ' + p.last_name)" [alt]="p.first_name">
+                                                </div>
+                                            </div>
+                                            <div class="column">
+                                                {{ p.first_name }} {{ p.last_name }}
+                                                <span class="muted" style="font-size: 11px; margin-left: 0.5rem;">({{ getRoleText(p.suggested_role) }})</span>
+                                            </div>
                                         </div>
                                         } @empty {
                                         <div class="option muted">Žádné osoby k importu nenalezeny</div>

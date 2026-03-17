@@ -6,7 +6,7 @@
             @if (perm.checkPermission(['teacher'])) {
             <button class="btn btn--primary btn--sm" (click)="toggleCreateForm()">
                 <i-tabler name="plus"></i-tabler>
-                {{ 'Nové opatření' }}
+                {{ l.s('education_measures.new_measure') }}
             </button>
             }
         </div>
@@ -15,7 +15,7 @@
         <!-- Filter bar -->
         <div class="filter-bar">
             <div class="filter-group">
-                <label style="margin: 0;">Filtr:</label>
+                <label style="margin: 0;">{{ l.s('education_measures.filter') }}</label>
                 <div class="custom-select" style="min-width:200px" (click)="$event.stopPropagation();dropdownManager.selected_dropdown = dropdownManager.selected_dropdown == 'education_measure_filter' ? '' : 'education_measure_filter'">
                     <div class="selected-value">
                         {{ getTypeLabel(filterType) }}
@@ -37,11 +37,11 @@
             <div class="flex-items form-row">
                 <span class="badge badge--success">
                     <i-tabler name="star"></i-tabler>
-                    {{ praiseCount }} pochval
+                    {{ l.s('education_measures.praise_count', { count: praiseCount }) }}
                 </span>
                 <span class="badge badge--danger">
                     <i-tabler name="alert-triangle"></i-tabler>
-                    {{ otherCount }} ostatních
+                    {{ l.s('education_measures.other_count', { count: otherCount }) }}
                 </span>
             </div>
         </div>
@@ -84,13 +84,13 @@
                     }
                     @if (measure.issued_by_name) {
                     <div class="measure-footer">
-                        <span class="text--muted">Udělil: {{ measure.issued_by_name }}</span>
+                        <span class="text--muted">{{ l.s('education_measures.issued_by') }} {{ measure.issued_by_name }}</span>
                     </div>
                     }
                 </div>
                 @if (perm.checkPermission(['admin'])) {
                 <div class="measure-actions">
-                    <button class="btn btn--ghost btn--icon" (click)="deleteMeasure(measure)" title="Smazat">
+                    <button class="btn btn--ghost btn--icon" (click)="deleteMeasure(measure)" [title]="l.s('education_measures.delete_tooltip')">
                         <i-tabler name="trash"></i-tabler>
                     </button>
                 </div>
@@ -101,8 +101,8 @@
                 <div class="illustration">
                     <i-tabler name="gavel"></i-tabler>
                 </div>
-                <h3>Žádná opatření</h3>
-                <p class="note">Zatím nebyla udělena žádná výchovná opatření.</p>
+                <h3>{{ l.s('education_measures.no_measures') }}</h3>
+                <p class="note">{{ l.s('education_measures.no_measures_hint') }}</p>
             </div>
             }
         </div>

@@ -46,7 +46,7 @@ export class MeasuresComponent implements OnInit {
     this.modalManager.addModal(
       'add_education_measure',
       {
-        title: '',
+        title: 'education_measures.new_measure',
         closeable: true,
         items: [
           { type: 'component', component: AddMeasureComponent }
@@ -92,7 +92,7 @@ export class MeasuresComponent implements OnInit {
   }
 
   public deleteMeasure(measure: EducationMeasure): void {
-    if (!confirm('Opravdu chcete smazat toto opatření?')) return;
+    if (!confirm(this.l.s('education_measures.delete_confirm'))) return;
 
     this.measuresService.deleteMeasure(measure.id).subscribe({
       next: (response) => {
@@ -106,15 +106,7 @@ export class MeasuresComponent implements OnInit {
   public formatDate = Utils.formatDate;
 
   public getTypeLabel(type: typeof this.filterType): string {
-    const labels: Record<typeof this.filterType, string> = {
-      'all': 'Všechny',
-      'praise': 'Pochvala',
-      'reprimand': 'Důtka',
-      'warning': 'Napomenutí',
-      'reduced_behavior': 'Snížená známka z chování',
-      'other': 'Jiné'
-    };
-    return labels[type] || type;
+    return this.l.s('education_measures.types.' + type);
   }
 
   public getTypeIcon(type: MeasureType): string {

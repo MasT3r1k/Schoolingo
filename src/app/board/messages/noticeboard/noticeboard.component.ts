@@ -51,6 +51,7 @@ export class NoticeboardComponent implements OnInit {
     this.modalManager.addModal(
       'add_message_to_noticeboard',
       {
+        icon: 'message-plus',
         title: 'messages.new_announcement',
         closeable: true,
         items: [
@@ -64,8 +65,9 @@ export class NoticeboardComponent implements OnInit {
 
     this.modalManager.addModal(
         'view_note',
-        {
-          title: 'messages.details', // Ensure this locale key exists or use a generic one
+        { 
+          icon: 'message',
+          title: 'messages.details',
           closeable: true,
           width: 800,
           items: [

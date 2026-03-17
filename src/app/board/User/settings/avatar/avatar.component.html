@@ -87,6 +87,31 @@
 
       <!-- Right: Customization Panel -->
       <div class="customization-panel">
+        
+        <!-- Style Selector (only if multiple styles allowed) -->
+        @if (allowedStyles.length > 1) {
+        <div class="option-card">
+          <h4>{{ l.s('settings.avatar_settings.style') || 'Styl avataru' }}</h4>
+          <div class="style-selector-grid">
+            @for (style of allowedStyles; track style) {
+            <div class="style-option" [class.selected]="currentAvatar.type === style" (click)="selectStyle(style)">
+              <div class="style-preview">
+                <img [src]="getPreview(style)" [alt]="style">
+                @if (currentAvatar.type === style) {
+                <div class="selected-check">
+                  <i-tabler name="check"></i-tabler>
+                </div>
+                }
+              </div>
+              <div class="style-info">
+                <span class="style-name">{{ style }}</span>
+              </div>
+            </div>
+            }
+          </div>
+        </div>
+        }
+
         @for (opt of getAvailableOptions() | keyvalue; track opt.key) {
         @if (!(currentAvatar.type === 'thumbs' && opt.key === 'eyesColor')) {
         <div class="option-card">
@@ -94,13 +119,24 @@
             @switch (opt.key) {
             @case ('eyes') { Výraz očí }
             @case ('eyesColor') { Barva očí }
+            @case ('eyebrows') { Obočí }
             @case ('face') { Tvar obličeje }
             @case ('shapeOffsetX') { Natočení hlavy }
             @case ('mouth') { Výraz pusy }
             @case ('mouthColor') { Barva pusy }
             @case ('shapeColor') { Barva pleti }
+            @case ('skinColor') { Barva pleti }
+            @case ('baseColor') { Barva těla }
             @case ('backgroundColor') { Barva pozadí }
-            @case ('baseColor') { Barva pleti }
+            @case ('hair') { Vlasy }
+            @case ('hairColor') { Barva vlasů }
+            @case ('top') { Vlasy / Pokrývka hlavy }
+            @case ('clothes') { Oblečení }
+            @case ('clothing') { Oblečení }
+            @case ('clothingColor') { Barva oblečení }
+            @case ('body') { Tělo }
+            @case ('facialHair') { Vousy }
+            @case ('sides') { Boční části }
             @default { {{ opt.key }} }
             }
           </h4>

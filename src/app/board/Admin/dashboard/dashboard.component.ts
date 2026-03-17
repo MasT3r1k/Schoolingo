@@ -7,6 +7,7 @@ import { Config } from '@Schoolingo/config';
 import { Utils } from '@Schoolingo/utils';
 import { TabsComponent } from '@Components/Tabs';
 import { BehaviorSubject } from 'rxjs';
+import { AvatarService } from '../../../infrastructure/utils/avatar.service';
 
 enum ViewSelector {
   overview,
@@ -26,6 +27,7 @@ interface StudentRisk {
   risk_score: number;
   risk_factor: 'absence' | 'grades' | 'discipline' | 'combined';
   disciplinary_issues: number;
+  avatar: any;
 }
 
 interface ClassStats {
@@ -54,6 +56,7 @@ interface TeacherStats {
   class_average: number;
   student_count: number;
   absence_in_classes: number;
+  avatar: any;
 }
 
 interface AbsenceHeatmap {
@@ -89,6 +92,7 @@ export class DashboardComponent implements OnInit {
   public l = inject(Locale);
   private http = inject(HttpClient);
   public Utils = Utils;
+  public avatarService = inject(AvatarService);
 
   // Loading state
   public loading = true;

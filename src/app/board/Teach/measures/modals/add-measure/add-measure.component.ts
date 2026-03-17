@@ -2,6 +2,7 @@ import { Component, inject, OnInit } from '@angular/core';
 import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { EducationMeasuresService, EducationMeasure, MeasureType, MeasureCategory, MeasureSeverity } from '../../../../../infrastructure/measures/education-measures.service';
 import { IconsModule } from '@Schoolingo/icons';
+import { Locale } from '@Schoolingo/locale';
 import { ModalManager } from '@Schoolingo/modal';
 import { DropdownManager } from '@Schoolingo/dropdown';
 import { HttpClient } from '@angular/common/http';
@@ -12,11 +13,11 @@ import { CalendarManager } from '@Components/calendar-dropdown';
 import moment from 'moment';
 
 export interface StudentSearchDataAPI {
-  personId: number;
-  firstName: string;
-  lastName: string;
-  fullName: string;
-  className: string;
+  person_id: number;
+  first_name: string;
+  last_name: string;
+  full_name: string;
+  class_name: string;
   year: number;
 }
 
@@ -47,6 +48,7 @@ export class AddMeasureComponent implements OnInit {
   public dropdownManager = inject(DropdownManager);
   private http = inject(HttpClient);
   public calendarManager = inject(CalendarManager);
+  public l = inject(Locale);
 
   public measureTypes: MeasureType[] = ['praise', 'reprimand', 'warning', 'reduced_behavior', 'other'];
   public measureCategories: MeasureCategory[] = ['positive', 'negative'];
@@ -90,15 +92,7 @@ export class AddMeasureComponent implements OnInit {
   }
 
   public getTypeLabel(type: MeasureType | 'all'): string {
-    const labels: Record<MeasureType | 'all', string> = {
-      'all': 'Všechny',
-      'praise': 'Pochvala',
-      'reprimand': 'Důtka',
-      'warning': 'Napomenutí',
-      'reduced_behavior': 'Snížená známka z chování',
-      'other': 'Jiné'
-    };
-    return labels[type] || type;
+    return this.l.s('education_measures.types.' + type);
   }
 
   public getTypeIcon(type: MeasureType): string {
@@ -130,11 +124,7 @@ export class AddMeasureComponent implements OnInit {
   }
 
   public getCategoryLabel(type: MeasureCategory): string {
-    const labels: Record<MeasureCategory, string> = {
-      'positive': 'Pozitivní',
-      'negative': 'Negativní'
-    };
-    return labels[type] || type;
+    return this.l.s('education_measures.categories.' + type);
   }
 
   public getCategoryIcon(type: MeasureCategory): string {
@@ -154,12 +144,7 @@ export class AddMeasureComponent implements OnInit {
   }
 
   public getSeverityLabel(type: MeasureSeverity): string {
-    const labels: Record<MeasureSeverity, string> = {
-      'low': 'Nízká závažnost',
-      'medium': 'Střední závažnost',
-      'high': 'Vysoká závažnost',
-    };
-    return labels[type] || type;
+    return this.l.s('education_measures.severities.' + type);
   }
 
   public getSeverityIcon(type: MeasureSeverity): string {
@@ -183,7 +168,7 @@ export class AddMeasureComponent implements OnInit {
     this.filters.loading_details = true;
     if (!this.selected_student || this.newMeasure.type != "reduced_behavior") return;
     this.http.get<StudentBehaveAPI>(
-      `${Config.API_URL}/v1/measure/student?id=${this.selected_student!.personId}`,
+      `${Config.API_URL}/v1/measure/student?id=${this.selected_student!.person_id}`,
       { withCredentials: true }
     )
     .subscribe(

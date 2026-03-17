@@ -15,7 +15,7 @@
 
                 <div class="avatar" [class.teacher]="message.author.role === 'teacher'"
                     [class.system]="message.author.role === 'system'">
-                    {{ Utils.getInitials(message.author.full_name) }}
+                    <img [src]="avatarService.getAvatar(message.author.avatar, message.author.full_name)" [alt]="message.author.full_name">
                 </div>
 
                 <div class="message-preview-info">
@@ -48,7 +48,7 @@
                 <div class="sender-info">
                     <div class="avatar large" [class.teacher]="selectedMessage.author.role === 'teacher'"
                         [class.system]="selectedMessage.author.role === 'system'">
-                        {{ Utils.getInitials(selectedMessage.author.full_name) }}
+                        <img [src]="avatarService.getAvatar(selectedMessage.author.avatar, selectedMessage.author.full_name)" [alt]="selectedMessage.author.full_name">
                     </div>
                     <div class="meta">
                         <div class="name">{{ selectedMessage.author.full_name }}</div>

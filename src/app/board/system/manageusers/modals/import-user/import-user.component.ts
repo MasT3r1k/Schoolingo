@@ -6,6 +6,7 @@ import { HttpClient } from '@angular/common/http';
 import { Config } from '@Schoolingo/config';
 import { ModalManager } from '@Schoolingo/modal';
 import { DropdownManager } from '@Schoolingo/dropdown';
+import { AvatarService } from '../../../../../infrastructure/utils/avatar.service';
 
 export interface LDAPUser {
   username: string;
@@ -30,6 +31,7 @@ export class ImportUserComponent implements OnInit {
   private http = inject(HttpClient);
   public modalManager = inject(ModalManager);
   public dropdownManager = inject(DropdownManager);
+  public avatarService = inject(AvatarService);
 
   isLoading = true;
   isImporting = false;

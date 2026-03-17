@@ -37,6 +37,10 @@ export class AvatarService {
     public getAvatar(avatarConfig: any, backupSeed: string): string {
         let config: any = {};
         
+        if (typeof avatarConfig === 'string' && (avatarConfig.startsWith('http') || avatarConfig.startsWith('/') || avatarConfig.startsWith('./') || avatarConfig.includes('.'))) {
+            return avatarConfig;
+        }
+
         if (typeof avatarConfig === 'string') {
             try {
                 config = JSON.parse(avatarConfig);
@@ -49,9 +53,17 @@ export class AvatarService {
 
         const props: any = {};
         if (config) {
-            Object.keys(config).forEach(key => {
-                if (key === 'type') return;
-                const val = config[key];
+            // Support for backend format { collection: string, options: object }
+            const type = config.type || config.collection;
+            const options = config.options || {};
+            
+            // Merge all properties
+            const mergedConfig = { ...config, ...options };
+            if (type) mergedConfig.type = type;
+
+            Object.keys(mergedConfig).forEach(key => {
+                if (key === 'type' || key === 'collection' || key === 'options') return;
+                const val = mergedConfig[key];
                 
                 const singleValueProps = ['radius', 'rotate', 'size', 'scale', 'flip', 'faceOffsetX', 'faceOffsetY', 'shapeOffsetX', 'shapeOffsetY', 'translateX', 'translateY', 'seed'];
                 if (singleValueProps.includes(key)) {
@@ -59,7 +71,7 @@ export class AvatarService {
                 } else if (typeof val === 'string') {
                     let finalVal = val;
                     // Fix for thumbs eyes (needs W suffix in v9)
-                    if ((config.type === 'thumbs' || !config.type) && key === 'eyes' && !val.includes('W')) {
+                    if ((type === 'thumbs' || !type) && key === 'eyes' && !val.includes('W')) {
                         finalVal = val + 'W12';
                     }
                     props[key] = [finalVal];
@@ -67,6 +79,8 @@ export class AvatarService {
                     props[key] = val;
                 }
             });
+            
+            if (type) config.type = type; // Ensure type is set for later use
         }
 
         if (!props.seed) props.seed = backupSeed;
@@ -76,6 +90,8 @@ export class AvatarService {
             if (!props['eyesColor']) props['eyesColor'] = ['000000'];
             if (!props['mouthColor']) props['mouthColor'] = ['000000'];
         }
+
+        if (!props.radius) props.radius = 50;
 
         const avatar = createAvatar(this.collections[config?.type] || thumbs, props);
 

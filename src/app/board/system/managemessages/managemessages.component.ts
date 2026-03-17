@@ -8,6 +8,7 @@ import { Utils } from '@Schoolingo/utils';
 import { HttpClient } from '@angular/common/http';
 import { Config } from '@Schoolingo/config';
 import { ActivatedRoute } from '@angular/router';
+import { AvatarService } from '../../../infrastructure/utils/avatar.service';
 
 interface Message {
   message_id: number;
@@ -19,6 +20,7 @@ interface Message {
     first_name: string;
     last_name: string;
     role: string;
+    avatar: string | any;
   };
   sent_at: Date;
   deleted: boolean;
@@ -38,6 +40,7 @@ export class ManagemessagesComponent implements OnInit {
 
   public l = inject(Locale);
   public auth = inject(Authentication);
+  public avatarService = inject(AvatarService);
   private http = inject(HttpClient);
   private route = inject(ActivatedRoute);
 

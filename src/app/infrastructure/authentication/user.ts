@@ -13,7 +13,7 @@ export interface User {
 
     manager: number;
     birthday: moment.Moment;
-    avatar: {
+    avatar: string | {
         seed: string;
         type: string;
         [key: string]: any;

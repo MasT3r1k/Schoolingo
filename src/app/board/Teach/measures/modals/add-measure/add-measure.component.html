@@ -1,10 +1,10 @@
 <div class="create-form">
     <div class="form-group">
-        <label>Žák *</label>
+        <label>{{ l.s('education_measures.student') }} *</label>
         <div class="custom-select" style="min-width:200px"
             (click)="$event.stopPropagation();dropdownManager.selected_dropdown = dropdownManager.selected_dropdown == 'add_education_measure_student' ? '' : 'add_education_measure_student'">
             <div class="selected-value">
-                {{ selected_student?.fullName ?? 'Vyber studenta' }}
+                {{ selected_student?.full_name ?? l.s('education_measures.select_student') }}
                 <i-tabler name="chevron-down"></i-tabler>
             </div>
             @if (dropdownManager.selected_dropdown == 'add_education_measure_student') {
@@ -12,14 +12,14 @@
                 <div class="search">
                     <div class="search-wrapper" [class.loading]="filters.loading">
                         <i-tabler name="search"></i-tabler>
-                        <input type="search" placeholder="Hledat žáka podle jména" [formControl]="filters.search">
+                        <input type="search" [placeholder]="l.s('education_measures.search_student_placeholder')" [formControl]="filters.search">
                     </div>
                 </div>
                 <div class="list">
                     @for (student of students; track $index) {
                     <div class="option" style="text-align: left;"
-                        (click)="dropdownManager.selected_dropdown = '';selected_student = student;newMeasure.studentId = student.personId;loadBehaveMark()">
-                        {{ `${student.fullName}, třída ${student.className}` }}
+                        (click)="dropdownManager.selected_dropdown = '';selected_student = student;newMeasure.studentId = student.person_id;loadBehaveMark()">
+                        {{ `${student.full_name}, třída ${student.class_name}` }}
                     </div>
                     }
                 </div>
@@ -28,7 +28,7 @@
         </div>
     </div>
     <div class="form-group">
-        <label>Typ opatření *</label>
+        <label>{{ l.s('education_measures.type') }} *</label>
         <div class="custom-select" style="min-width:200px"
             (click)="$event.stopPropagation();dropdownManager.selected_dropdown = dropdownManager.selected_dropdown == 'add_education_measure_type' ? '' : 'add_education_measure_type'">
             <div class="selected-value">
@@ -56,23 +56,23 @@
         <div style="padding: 8px 4px">
             @if (newMeasure.type == 'reduced_behavior' && !selected_student) {
             <div class="note danger">
-                <span>Vyberte žáka pro zobrazení podrobností</span>
+                <span>{{ l.s('education_measures.reduced_behavior_info.select_student') }}</span>
             </div>
             } @else if (newMeasure.type == 'reduced_behavior' && selected_student) {
             @if (filters.loading_details) {
             <div class="note">
                 <div class="small-loader"></div>
-                <span>Probíhá načítání stavu známky z chování žáka</span>
+                <span>{{ l.s('education_measures.reduced_behavior_info.loading') }}</span>
             </div>
             } @else {
             @if (student_behave.allow_add) {
             <div class="note">
-                <span>Tenhle student má známku z chování: {{ student_behave.mark }}</span>
+                <span>{{ l.s('education_measures.reduced_behavior_info.current_mark', { mark: student_behave.mark }) }}</span>
             </div>
             } @else {
             <div class="note danger">
                 <i-tabler name="x"></i-tabler>
-                <span>Tenhle student má již známku z chování: {{ student_behave.mark }}</span>
+                <span>{{ l.s('education_measures.reduced_behavior_info.already_has_mark', { mark: student_behave.mark }) }}</span>
             </div>
             }
             }
@@ -80,13 +80,13 @@
         </div>
     </div>
     <div class="form-group">
-        <label>Datum *</label>
+        <label>{{ l.s('education_measures.date') }} *</label>
         <app-calendar id="add_measure_date" [value]="newMeasure.date" (valueChange)="newMeasure.date = $event"
             size="full"></app-calendar>
     </div>
     @if (newMeasure.type == 'other') {
     <div class="form-group">
-        <label for="category">Kategorie *</label>
+        <label for="category">{{ l.s('education_measures.category') }} *</label>
         <div class="custom-select" style="min-width:200px"
             (click)="$event.stopPropagation();dropdownManager.selected_dropdown = dropdownManager.selected_dropdown == 'add_education_measure_category' ? '' : 'add_education_measure_category'">
             <div class="selected-value">
@@ -115,7 +115,7 @@
     </div>
 
     <div class="form-group">
-        <label for="category">Závažnost *</label>
+        <label for="category">{{ l.s('education_measures.severity') }} *</label>
         <div class="custom-select" style="min-width:200px"
             (click)="$event.stopPropagation();dropdownManager.selected_dropdown = dropdownManager.selected_dropdown == 'add_education_measure_severity' ? '' : 'add_education_measure_severity'">
             <div class="selected-value">
@@ -144,18 +144,18 @@
     </div>
     }
     <div class="form-group">
-        <label>Důvod *</label>
-        <textarea [(ngModel)]="newMeasure.reason" rows="3" placeholder="Důvod pro udělení opatření..."></textarea>
+        <label>{{ l.s('education_measures.reason') }} *</label>
+        <textarea [(ngModel)]="newMeasure.reason" rows="3" [placeholder]="l.s('education_measures.reason_placeholder')"></textarea>
     </div>
     <div class="form-group">
-        <label>Poznámka</label>
-        <input type="text" [(ngModel)]="newMeasure.note" placeholder="Volitelná poznámka">
+        <label>{{ l.s('education_measures.note') }}</label>
+        <input type="text" [(ngModel)]="newMeasure.note" [placeholder]="l.s('education_measures.note_placeholder')">
     </div>
     <div class="buttons end mt-4">
-        <button class="btn btn--secondary" (click)="closeModal()">Zrušit</button>
+        <button class="btn btn--secondary" (click)="closeModal()">{{ l.s('buttons.cancel') }}</button>
         <button class="btn btn--primary" (click)="createMeasure()"
             [disabled]="!newMeasure.reason || !newMeasure.studentId || (newMeasure.type == 'reduced_behavior' && student_behave.mark == -1 && student_behave.allow_add == false)">
-            <i-tabler name="check"></i-tabler> Udělit opatření
+            <i-tabler name="check"></i-tabler> {{ l.s('education_measures.give_measure') }}
         </button>
     </div>
 </div>

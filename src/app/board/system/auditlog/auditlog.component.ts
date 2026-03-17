@@ -7,6 +7,7 @@ import { Config } from '@Schoolingo/config';
 import { Utils } from '@Schoolingo/utils';
 import { Locale } from '@Schoolingo/locale';
 import { DropdownManager } from '@Schoolingo/dropdown';
+import { AvatarService } from '../../../infrastructure/utils/avatar.service';
 
 // ... interfaces ... (unchanged)
 export interface AuditLogEntry {
@@ -15,6 +16,7 @@ export interface AuditLogEntry {
   user_id: number;
   username: string;
   user_full_name: string;
+  avatar: any;
   user_role: string;
   target_type?: string; // e.g., 'student', 'grade', 'user'
   target_id?: number;
@@ -49,6 +51,7 @@ interface AuditLogAPIResponse {
     user_id: number;
     username: string;
     user_full_name: string;
+    avatar: any;
     user_role: string;
     target_type?: string;
     target_id?: number;
@@ -78,6 +81,7 @@ export class AuditlogComponent implements OnInit {
   public l = inject(Locale)
   public Utils = Utils;
   public dropdownManager = inject(DropdownManager);
+  public avatarService = inject(AvatarService);
 
   // Loading state
   isLoading = false;
@@ -231,6 +235,7 @@ export class AuditlogComponent implements OnInit {
       user_id: apiLog.user_id,
       username: apiLog.username,
       user_full_name: apiLog.user_full_name,
+      avatar: apiLog.avatar,
       user_role: apiLog.user_role,
       target_type: apiLog.target_type,
       target_id: apiLog.target_id,
