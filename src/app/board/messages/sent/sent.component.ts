@@ -12,13 +12,14 @@ import { AvatarService } from '../../../infrastructure/utils/avatar.service';
 
 
 interface Receiver {
-  personId: number;
+  person_id: number;
   first_name: string;
-  lastName: string;
+  last_name: string;
   full_name: string;
-  groupName: string;
-  read_at: string | null;
-  confirmed_at: string | null;
+  groupName?: string;
+  read_at?: string | null;
+  confirmed_at?: string | null;
+  avatar?: string | null;
 }
 
 interface Message {
@@ -40,6 +41,7 @@ interface Message {
   confirmed_at: Date | null;
   receivers?: Receiver[];
   target_groups?: string[];
+  attachments?: any[];
 }
 
 @Component({
@@ -61,6 +63,8 @@ export class SentComponent implements OnInit {
   public selectedMessage: Message | null = null;
   public searchText = '';
   public loading = true;
+  public Config = Config;
+  public showAttachments = false;
 
   ngOnInit(): void {
     this.http.get(
@@ -87,12 +91,13 @@ export class SentComponent implements OnInit {
 
   public selectMessage(message: Message | null): void {
     this.selectedMessage = message;
-    if (message && !message.receivers) {
+    this.showAttachments = false;
+    if (message && (!message.target_groups)) {
       this.http.get(`${Config.API_URL}/v1/messages/details/${message.message_id}`, { withCredentials: true })
         .subscribe((data: any) => {
           if (data && this.selectedMessage?.message_id === message.message_id) {
-            this.selectedMessage.receivers = data.receivers;
-            this.selectedMessage.target_groups = data.target_groups;
+            // Mychame to s detailem API
+            Object.assign(this.selectedMessage, { target_groups: data.target_groups });
           }
         });
     }
@@ -107,9 +112,26 @@ export class SentComponent implements OnInit {
   }
 
   public get filteredMessages(): Message[] {
-    return this.messages.filter((m: Message) => 
-      m.topic?.toLowerCase().includes(this.searchText.toLowerCase()) ||
-      m.author.full_name.toLowerCase().includes(this.searchText.toLowerCase())
-    );
+    return this.messages.filter((m: Message) => {
+      const topicMatch = m.topic?.toLowerCase().includes(this.searchText.toLowerCase());
+      const receiverMatch = m.receivers?.some(r => r.full_name?.toLowerCase().includes(this.searchText.toLowerCase()));
+      return topicMatch || receiverMatch;
+    });
+  }
+
+  public getReceiversText(message: Message | null): string {
+    if (!message || !message.receivers || message.receivers.length === 0) return '';
+    if (message.receivers.length === 1) return message.receivers[0].full_name;
+    if (message.receivers.length <= 2) return message.receivers.map(r => r.full_name).join(', ');
+    const extraCount = message.receivers.length - 1;
+    let extraText = 'dalších';
+    if (extraCount === 1) extraText = 'další';
+    if (extraCount >= 2 && extraCount <= 4) extraText = 'další';
+    return `${message.receivers[0].full_name} a ${extraCount} ${extraText}`;
+  }
+
+  public getReceiverAvatar(message: Message | null): string {
+    if (!message || !message.receivers || message.receivers.length === 0) return this.avatarService.getAvatar(null, '?');
+    return this.avatarService.getAvatar(message.receivers[0].avatar || null, message.receivers[0].full_name);
   }
 }

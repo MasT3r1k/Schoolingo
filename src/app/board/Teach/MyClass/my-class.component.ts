@@ -14,6 +14,7 @@ import { CalendarManager } from '@Components/calendar-dropdown';
 import { absence, AbsenceType } from '@Schoolingo/absence';
 import moment from 'moment';
 import { RouterLink } from '@angular/router';
+import { AvatarService } from '../../../infrastructure/utils/avatar.service';
 
 @Component({
   selector: 'app-my-class',
@@ -29,6 +30,8 @@ export class MyClassComponent implements OnInit {
   l = inject(Locale);
   Utils = Utils;
   public calendarManager = inject(CalendarManager);
+  public avatarService: AvatarService = inject(AvatarService);
+
 
   classes: any[] = [];
   selectedClassId: number | null = null;

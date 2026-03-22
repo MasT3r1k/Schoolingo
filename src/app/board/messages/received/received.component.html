@@ -24,9 +24,14 @@
                         <span class="sender-name">
                             {{ message.author.full_name }}
                         </span>
-                        <span class="date">
-                            {{ Utils.formatDateShort(message.sent_at) }}
-                        </span>
+                        <div class="date-container" style="display: flex; gap: 0.5rem; align-items: center;">
+                            @if (message.attachments && message.attachments.length > 0) {
+                                <i-tabler name="paperclip" class="attachment-icon-sm"></i-tabler>
+                            }
+                            <span class="date">
+                                {{ Utils.formatDateShort(message.sent_at) }}
+                            </span>
+                        </div>
                     </div>
                     <div class="subject">{{ message.topic }}</div>
                     <div class="preview-text">{{ message.message }}</div>
@@ -64,6 +69,12 @@
                     <div class="date">
                         {{ Utils.formatDate(selectedMessage.sent_at) }}
                     </div>
+                    @if (selectedMessage.attachments && selectedMessage.attachments.length > 0) {
+                        <div class="attachment-action" (click)="showAttachments = !showAttachments" [class.active]="showAttachments">
+                            <i-tabler name="paperclip"></i-tabler>
+                            <span>{{ selectedMessage.attachments.length }}</span>
+                        </div>
+                    }
                     <!-- Future actions like reply/delete could go here -->
                 </div>
             </div>
@@ -75,6 +86,26 @@
             <div class="message-body">
                 {{ selectedMessage.message }}
             </div>
+
+            @if (showAttachments && selectedMessage.attachments && selectedMessage.attachments.length > 0) {
+            <div class="attachments-info">
+                <h4>{{ l.s("files.attachments") || 'Přílohy' }}</h4>
+                <div class="attachments-list">
+                    @for (attachment of selectedMessage.attachments; track attachment.file_id) {
+                    <div class="attachment-item">
+                        <i-tabler name="file" class="file-icon"></i-tabler>
+                        <div class="attachment-meta">
+                            <div class="attachment-name">{{ attachment.real_file_name }}</div>
+                            <div class="attachment-size">{{ Utils.formatBytes(attachment.file_size) }}</div>
+                        </div>
+                        <a [href]="Config.API_URL + '/v1/files/download/' + attachment.file_uuid" target="_blank" class="download-btn">
+                            <i-tabler name="download"></i-tabler>
+                        </a>
+                    </div>
+                    }
+                </div>
+            </div>
+            }
         } @else {
         <div class="no-selection">
             <div class="illustration">

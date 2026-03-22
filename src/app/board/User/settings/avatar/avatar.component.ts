@@ -430,6 +430,10 @@ export class AvatarComponent implements OnInit {
   }
 
   public getAvailableOptions(): any {
+    const styles = Object.keys(this.styleSchemas);
+    if (!styles.includes(this.currentAvatar.type)) {
+      this.currentAvatar.type = styles[0];
+    }
     return this.styleSchemas[this.currentAvatar.type] || {};
   }
 

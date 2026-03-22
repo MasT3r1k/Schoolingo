@@ -11,6 +11,15 @@ import { ActivatedRoute } from '@angular/router';
 import { AvatarService } from '../../../infrastructure/utils/avatar.service';
 
 
+export interface Attachment {
+  file_id: number;
+  file_uuid: string;
+  name: string;
+  mime_type: string;
+  file_size: number;
+  real_file_name: string;
+}
+
 interface Message {
   message_id: number;
   topic: string | null;
@@ -28,6 +37,7 @@ interface Message {
   require_conform: boolean;
   read_at: Date | null;
   confirmed_at: Date | null;
+  attachments: Attachment[];
 }
 
 @Component({
@@ -45,9 +55,11 @@ export class ReceivedComponent implements OnInit {
   private http = inject(HttpClient);
   private route = inject(ActivatedRoute);
 
+  public Config = Config;
   public messages: Message[] = [];
   public selectedMessage: Message | null = null;
   public searchText = '';
+  public showAttachments = false;
 
   ngOnInit(): void {
     this.http.get(
@@ -72,6 +84,7 @@ export class ReceivedComponent implements OnInit {
 
   public selectMessage(message: Message | null): void {
     this.selectedMessage = message;
+    this.showAttachments = false;
     if (message != null && !message.read_at) {
       message.read_at = new Date();
       this.http.post(

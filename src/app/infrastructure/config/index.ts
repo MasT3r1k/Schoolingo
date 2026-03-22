@@ -9,7 +9,7 @@ export namespace Config {
     export const LOCALE_URL = ELYSIA_URL + '/locales/';
 
     // App Config
-    export const APP_NAME = "Schoolingo";
+    export const APP_NAME = "Školní systém";
     export let APP_VERSION = "";
     export const APP_CREDITS = "Made by Josef Kosík with 💙"
     export const APP_TYPE: AppType = "DEV";

@@ -12,7 +12,7 @@ import { QRCodeComponent } from 'angularx-qrcode';
 export class QrCodeComponent {
   @Input({ required: true }) data: string = '';
   @Input() size: number = 224;
-  @Input() icon: string = './assets/logo/login_black_100.webp';
+  @Input() icon: string = '';
   @Input() iconSize: number = 50;
   @Input() errorCorrectionLevel: 'L' | 'M' | 'Q' | 'H' = 'L';
   @Input() margin: number = 2;
