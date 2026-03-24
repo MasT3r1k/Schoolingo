@@ -54,7 +54,8 @@ export class HomeworkComponent implements OnInit {
       'homeworks_homework-detail',
       {
         title: '',
-        closeable: false,
+        closeable: true,
+        icon: 'clipboard-list',
         forceScrollbar: true,
         width: 900,
         items: [
@@ -169,7 +170,7 @@ export class HomeworkComponent implements OnInit {
   public getDaysUntilDue(dueDate: Date): number {
     const now = moment();
     const due = moment(dueDate);
-    return now.diff(due, 'days');
+    return due.diff(now, 'days');
   }
 
   public toggleViewMode(): void {
@@ -177,7 +178,9 @@ export class HomeworkComponent implements OnInit {
   }
 
   public openHomeworkDetail(homework_id: number): void {
-    this.modalManager.updateModal('homeworks_homework-detail', 'width', '900px')
-    this.modalManager.openModal('homeworks_homework-detail');
+    const hw = this.homework.find(h => h.homework_id === homework_id);
+    if (!hw) return;
+    this.modalManager.updateModal('homeworks_homework-detail', 'title', hw.headline);
+    this.modalManager.openModal('homeworks_homework-detail', hw);
   }
 }

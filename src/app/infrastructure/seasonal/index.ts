@@ -51,30 +51,30 @@ export interface SeasonalAdminSettings {
  * Graduation: May 15 – Jun 15
  */
 const DEFAULT_SEASONS: SeasonConfig[] = [
-  {
-    season: 'christmas',
-    startMonth: 12,
-    startDay: 12,
-    endMonth: 1,
-    endDay: 6,
-    cssClass: 'seasonal-christmas'
-  },
-  {
-    season: 'summer',
-    startMonth: 6,
-    startDay: 15,
-    endMonth: 9,
-    endDay: 1,
-    cssClass: 'seasonal-summer'
-  },
-  {
-    season: 'graduation',
-    startMonth: 5,
-    startDay: 15,
-    endMonth: 6,
-    endDay: 15,
-    cssClass: 'seasonal-graduation'
-  }
+  // {
+  //   season: 'christmas',
+  //   startMonth: 12,
+  //   startDay: 12,
+  //   endMonth: 1,
+  //   endDay: 6,
+  //   cssClass: 'seasonal-christmas'
+  // },
+  // {
+  //   season: 'summer',
+  //   startMonth: 6,
+  //   startDay: 15,
+  //   endMonth: 9,
+  //   endDay: 1,
+  //   cssClass: 'seasonal-summer'
+  // },
+  // {
+  //   season: 'graduation',
+  //   startMonth: 5,
+  //   startDay: 15,
+  //   endMonth: 6,
+  //   endDay: 15,
+  //   cssClass: 'seasonal-graduation'
+  // }
   // Easter is calculated dynamically based on year
 ];
 
@@ -187,24 +187,24 @@ export class SeasonalService implements OnDestroy {
    * Detect the current season based on date
    */
   private detectSeason(): void {
-    const now = new Date();
-    const month = now.getMonth() + 1; // 1-12
-    const day = now.getDate();
+    // const now = new Date();
+    // const month = now.getMonth() + 1; // 1-12
+    // const day = now.getDate();
 
-    for (const config of DEFAULT_SEASONS) {
-      if (this.isDateInRange(month, day, config)) {
-        this.season.next(config.season);
-        return;
-      }
-    }
+    // for (const config of DEFAULT_SEASONS) {
+    //   if (this.isDateInRange(month, day, config)) {
+    //     this.season.next(config.season);
+    //     return;
+    //   }
+    // }
 
-    // Check for Easter (dynamic calculation)
-    if (this.isEasterSeason(now)) {
-      this.season.next('easter');
-      return;
-    }
+    // // Check for Easter (dynamic calculation)
+    // if (this.isEasterSeason(now)) {
+    //   this.season.next('easter');
+    //   return;
+    // }
 
-    this.season.next('none');
+    // this.season.next('none');
   }
 
   /**

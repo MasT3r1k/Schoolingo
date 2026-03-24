@@ -157,17 +157,18 @@ export const config: SidebarGroup[] = [
                     url: 'teach/subjects',
                     icon: 'books',
                     permission: ['student', 'parent']
-                }, {
-                    item: 'sidebar.teach.rewards',
-                    url: 'teach/rewards',
-                    icon: 'trophy',
-                    permission: ['student', 'teacher']
-                }, {
-                    item: 'sidebar.teach.tests',
-                    url: 'tests',
-                    icon: 'clipboard-check',
-                    permission: ['student', 'teacher', 'admin']
-                }]
+                }//, {
+                //     item: 'sidebar.teach.rewards',
+                //     url: 'teach/rewards',
+                //     icon: 'trophy',
+                //     permission: ['student', 'teacher']
+                // }, {
+                //     item: 'sidebar.teach.tests',
+                //     url: 'tests',
+                //     icon: 'clipboard-check',
+                //     permission: ['student', 'teacher', 'admin']
+                // }
+            ]
             },
             {
                 item: 'sidebar.messages.main',
@@ -207,49 +208,49 @@ export const config: SidebarGroup[] = [
                     setting: 'msg_type_noticeboard_active'
                 }]
             },
-            {
-                item: 'sidebar.online.main',
-                icon: 'video',
-                url: 'online',
-                permission: ['student', 'teacher', 'parent']
-            },
-            {
-                item: 'gdpr.sidebar',
-                icon: 'shield-lock',
-                permission: ['all'],
-                children: [
-                    {
-                        item: 'gdpr.tabs.overview',
-                        url: 'user/gdpr/overview',
-                        icon: 'layout-dashboard',
-                        permission: ['all']
-                    },
-                    {
-                        item: 'gdpr.tabs.consents',
-                        url: 'user/gdpr/consents',
-                        icon: 'shield-check',
-                        permission: ['all']
-                    },
-                    {
-                        item: 'gdpr.tabs.training',
-                        url: 'user/gdpr/training',
-                        icon: 'school',
-                        permission: ['all']
-                    },
-                    {
-                        item: 'gdpr.tabs.officer',
-                        url: 'user/gdpr/officer',
-                        icon: 'user-shield',
-                        permission: ['all']
-                    },
-                    {
-                        item: 'gdpr.tabs.admin',
-                        url: 'user/gdpr/admin',
-                        icon: 'settings',
-                        permission: ['management', 'admin_staff', 'manager']
-                    }
-                ]
-            },
+            // {
+            //     item: 'sidebar.online.main',
+            //     icon: 'video',
+            //     url: 'online',
+            //     permission: ['student', 'teacher', 'parent']
+            // },
+            // {
+            //     item: 'gdpr.sidebar',
+            //     icon: 'shield-lock',
+            //     permission: ['all'],
+            //     children: [
+            //         {
+            //             item: 'gdpr.tabs.overview',
+            //             url: 'user/gdpr/overview',
+            //             icon: 'layout-dashboard',
+            //             permission: ['all']
+            //         },
+            //         {
+            //             item: 'gdpr.tabs.consents',
+            //             url: 'user/gdpr/consents',
+            //             icon: 'shield-check',
+            //             permission: ['all']
+            //         },
+            //         {
+            //             item: 'gdpr.tabs.training',
+            //             url: 'user/gdpr/training',
+            //             icon: 'school',
+            //             permission: ['all']
+            //         },
+            //         {
+            //             item: 'gdpr.tabs.officer',
+            //             url: 'user/gdpr/officer',
+            //             icon: 'user-shield',
+            //             permission: ['all']
+            //         },
+            //         {
+            //             item: 'gdpr.tabs.admin',
+            //             url: 'user/gdpr/admin',
+            //             icon: 'settings',
+            //             permission: ['management', 'admin_staff', 'manager']
+            //         }
+            //     ]
+            // },
             {
                 item: 'sidebar/payments/main',
                 icon: 'wallet',
