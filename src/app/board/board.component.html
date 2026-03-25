@@ -269,6 +269,10 @@
 
                 <div class="dropdown" style="min-width: 250px;" [hidden]="dropdownManager.selected_dropdown !== 'user'"
                     (click)="$event.stopPropagation()">
+                    <div class="user-info-mobile">
+                        <div class="name">{{ u.getUser().full_name }}</div>
+                        <div class="role">{{ getUserRole() }}</div>
+                    </div>
                     <ul>
                         @for (item of userDropdown; track $index) {
                         <li [routerLink]="item.url" [ngClass]="[item.type ?? '']"

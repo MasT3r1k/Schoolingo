@@ -203,6 +203,7 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
+    gap: 1rem;
 }
 
 .sender-info {
@@ -258,4 +259,89 @@
     font-size: 0.75rem;
     color: var(--text-muted);
     font-weight: 500;
+}
+
+/* Mobile Back Button */
+.back-button {
+    display: none;
+    align-items: center;
+    gap: 0.5rem;
+    background: none;
+    border: none;
+    color: var(--text-muted);
+    cursor: pointer;
+    font-size: 0.9rem;
+    padding: 0.5rem;
+    border-radius: 6px;
+    transition: background 0.2s, color 0.2s;
+}
+
+.back-button:hover {
+    background: var(--surface-2);
+    color: var(--text);
+}
+
+.back-button i-tabler {
+    width: 20px;
+    height: 20px;
+}
+
+/* Responsive adjustments */
+@media screen and (max-width: 900px) {
+    .received-container {
+        gap: 0;
+    }
+
+    .message-list-panel {
+        flex: 1;
+        width: 100%;
+        display: block;
+    }
+
+    .message-content-panel {
+        flex: 1;
+        width: 100%;
+        display: none;
+        height: 100%;
+    }
+
+    .received-container.message-selected .message-list-panel {
+        display: none !important;
+    }
+
+    .received-container.message-selected .message-content-panel {
+        display: flex !important;
+    }
+
+    .back-button {
+        display: flex;
+    }
+
+    .message-detail {
+        border-radius: 0;
+        border: none;
+        height: 100%;
+    }
+
+    .message-header {
+        padding: 1rem;
+        flex-wrap: wrap;
+        gap: 0.75rem;
+    }
+
+    .message-actions {
+        order: 3;
+        width: 100%;
+        display: flex;
+        justify-content: flex-end;
+    }
+
+    .message-subject {
+        padding: 1.5rem 1rem 0.5rem;
+        font-size: 1.25rem;
+    }
+
+    .message-body {
+        padding: 0 1rem 1.5rem;
+    }
 }

@@ -8,6 +8,7 @@
                     <h3 style="display: flex; align-items: center; gap: 8px; margin: 0;">
                         {{ l.s('settings.2fa.title') }}
                         <div class="badge badge--primary" style="margin-top: 0;">
+                            <i-tabler name="device-mobile"></i-tabler>
                             {{ l.s('settings.2fa.methods.mobile_app') }}
                         </div>
                     </h3>
@@ -15,12 +16,12 @@
                 </div>
             </div>
 
-            <div
-                [ngClass]="{btn: true, 'btn--sm': true, 'btn--primary': settings.getSecurity(), loading: !settings.getSecurity(), skeleton: !settings.getSecurity()}">
+            <div class="btn btn--sm" [class.btn--primary]="settings.getSecurity()" [class.loading]="!settings.getSecurity()" [class.skeleton]="!settings.getSecurity()">
                 @if (!settings.getSecurity()) {
                 <div class="loader"></div>
                 {{ l.s('loading') }}
                 } @else {
+                    <i-tabler name="click"></i-tabler>
                 {{ l.s(settings.getSecurity()!['2fa'] ? 'activated' : 'activate') }}
                 }
             </div>

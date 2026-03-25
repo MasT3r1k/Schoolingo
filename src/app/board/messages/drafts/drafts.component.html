@@ -1,4 +1,4 @@
-<div class="received-container">
+<div class="received-container" [class.message-selected]="selectedDraft">
     <!-- Draft List (Sidebar) -->
     <div class="message-list-panel">
         <div class="panel-header">
@@ -51,6 +51,10 @@
         <div class="message-detail card">
             @if (selectedDraft) {
             <div class="message-header">
+                <button class="back-button" (click)="selectDraft(null)">
+                    <i-tabler name="chevron-left"></i-tabler>
+                    <span>{{ l.s("messages.back") }}</span>
+                </button>
                 <div class="sender-info">
                     <div class="avatar large">
                         <i-tabler name="file-pencil"></i-tabler>

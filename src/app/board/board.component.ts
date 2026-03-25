@@ -29,6 +29,7 @@ import { SnowEffectComponent } from '@Components/seasonal/snow-effect/snow-effec
 import { studentSummaryComponent } from '@Components/student-summary/student-summary.component';
 import { UpdateModalComponent } from '@Components/update-modal/update-modal.component';
 import { Cookies } from '@Schoolingo/cookies';
+import { Country } from 'country-state-city';
 
 export interface SidebarItem {
     item: string;
@@ -164,7 +165,9 @@ export class BoardComponent implements OnInit, OnDestroy {
     const config = this.notifications_types[notification.type];
     if (!config) return '';
     const data = typeof notification.data === 'string' ? JSON.parse(notification.data) : notification.data;
-    return this.l.s(config.description, data);
+    let text = this.l.s(config.description, data);
+    Object.entries(data).forEach((arg) => {text = text.replaceAll(`%flag_${arg[0]}%`, `${Country.getCountryByCode(String(arg[1]))?.flag}`) ?? ''});
+    return text;
   }
 
   public markAllAsRead(): void {

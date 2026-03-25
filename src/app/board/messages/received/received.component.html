@@ -1,4 +1,4 @@
-<div class="received-container">
+<div class="received-container" [class.message-selected]="selectedMessage">
     <!-- Message List (Sidebar) -->
     <div class="message-list-panel">
         <div class="panel-header">
@@ -50,6 +50,10 @@
         <div class="message-detail card">
         @if (selectedMessage) {
             <div class="message-header">
+                <button class="back-button" (click)="selectMessage(null)">
+                    <i-tabler name="chevron-left"></i-tabler>
+                    <span>{{ l.s("messages.back") }}</span>
+                </button>
                 <div class="sender-info">
                     <div class="avatar large" [class.teacher]="selectedMessage.author.role === 'teacher'"
                         [class.system]="selectedMessage.author.role === 'system'">
