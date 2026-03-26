@@ -486,7 +486,7 @@ export class EmployeesComponent implements OnInit {
         const myRecord = response.data.find(r => 
           Number(r.teacher_id) === personId && 
           moment(r.date).format('YYYY-MM-DD') == today.format('YYYY-MM-DD') &&
-          this.getAttendanceStatus(r) == 'active'
+          !r.check_out
         );
 
         if (myRecord) {

@@ -73,7 +73,19 @@ export interface Student {
   evaluations: any[];
   matrika?: StudentMatrika;
   matrika_records?: StudentMatrikaRecord[];
+  subject_exemptions?: StudentSubjectExemption[];
   last_grades: any[];
+}
+
+export interface StudentSubjectExemption {
+  exemption_id: number;
+  student_id: number;
+  subject_id: number;
+  subject_name: string;
+  subject_shortcut: string;
+  valid_from: string | null;
+  valid_to: string | null;
+  note: string | null;
 }
 
 export interface StudentMatrikaRecord {

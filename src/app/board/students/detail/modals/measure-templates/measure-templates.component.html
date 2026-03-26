@@ -1,0 +1,54 @@
+<div class="templates-modal" (click)="contextMenu.hideContextMenu()">
+    <div class="templates-container">
+        <!-- Table Body -->
+        <div class="table-container shadow-sm">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th class="th-check"></th>
+                        <th class="th-name">{{ l.s('education_measures.templates.table_name') }}</th>
+                        <th class="th-text">{{ l.s('education_measures.templates.table_text') }}</th>
+                        <th class="th-actions"></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @for (template of measuresService.templates(); track template.id) {
+                    <tr class="tr-hoverable" [class.selected]="selectedTemplateId === template.id"
+                        (click)="selectedTemplateId = template.id">
+                        <td class="td-check">
+                            <div class="radio-circle">
+                                @if (selectedTemplateId === template.id) {
+                                    <div class="radio-inner"></div>
+                                }
+                            </div>
+                        </td>
+                        <td class="td-name">{{ template.title }}</td>
+                        <td class="td-text">{{ template.content }}</td>
+                    <td class="td-actions">
+                        <button class="btn-more" (click)="toggleMenu($event, template)">
+                            <i-tabler name="dots-vertical"></i-tabler>
+                        </button>
+                    </td>
+                    </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Modal Footer Actions -->
+    <div class="modal-actions mt-lg">
+        <button class="btn btn--secondary" (click)="closeModal()">
+            <i-tabler name="x"></i-tabler>
+            {{ l.s('close') }}
+        </button>
+        <button class="btn btn--outline" (click)="openAddModal()">
+            <i-tabler name="plus"></i-tabler>
+            {{ l.s('education_measures.templates.add_new_text') }}
+        </button>
+        <button class="btn btn--primary" (click)="selectTemplate()" [disabled]="!selectedTemplateId">
+            <i-tabler name="check"></i-tabler>
+            {{ l.s('education_measures.templates.insert_text') }}
+        </button>
+    </div>
+</div>

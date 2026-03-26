@@ -7,6 +7,7 @@ import { IconsModule } from '@Schoolingo/icons';
 import { Locale } from '@Schoolingo/locale';
 import { Utils } from '@Schoolingo/utils';
 import { Permission } from '@Schoolingo/permission';
+import { Authentication } from '@Schoolingo/authentication';
 
 @Component({
   selector: 'app-attendance-widget',
@@ -19,6 +20,7 @@ export class AttendanceComponent implements OnInit {
   private http = inject(HttpClient);
   public l = inject(Locale);
   public perm = inject(Permission);
+  private auth = inject(Authentication);
   public Utils = Utils;
 
   isLoading = true;
@@ -55,7 +57,11 @@ export class AttendanceComponent implements OnInit {
       `${Config.API_URL}/v1/employees/attendance`,
       { 
         withCredentials: true, 
-        params: { dateFrom: today, dateTo: today } 
+        params: { 
+          dateFrom: today, 
+          dateTo: today,
+          employeeId: this.auth.getId()
+        } 
       }
     ).subscribe({
       next: (response) => {

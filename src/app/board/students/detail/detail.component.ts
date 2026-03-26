@@ -26,6 +26,11 @@ import { CreateParentComponent } from './modals/create-parent/create-parent.comp
 import { RemoveParentComponent } from './modals/remove-parent/remove-parent.component';
 import { SaveHistoryModalComponent } from './modals/save-history-modal/save-history-modal.component';
 import { EditAddressModalComponent } from './modals/edit-address/edit-address.component';
+import { StudentEducationalMeasureComponent } from './modals/student-educational-measure/student-educational-measure.component';
+import { MeasureTemplatesComponent } from './modals/measure-templates/measure-templates.component';
+import { MeasureTypesComponent } from './modals/measure-types/measure-types.component';
+import { AddMeasureTypeComponent } from './modals/add-measure-type/add-measure-type.component';
+import { AddMeasureTemplateComponent } from './modals/add-measure-template/add-measure-template.component';
 import { TabsComponent } from '@Components/Tabs';
 import { MarkDetailModalComponent } from '../../../Components/mark-detail-modal/mark-detail-modal.component';
 import { AvatarService } from '../../../infrastructure/utils/avatar.service';
@@ -208,6 +213,9 @@ export class DetailComponent implements OnInit, AfterViewInit {
 
   // Evaluations
   public evaluations: any[] = [];
+  
+  // Exemptions
+  public availableSubjects: any[] = [];
 
   public matrikaSaveType: 'change' | 'correction' = 'change';
   private originalMatrika: any = null;
@@ -219,7 +227,7 @@ export class DetailComponent implements OnInit, AfterViewInit {
   // Detail View Tabs
   public tabs: (typeof this.activeTab)[] = ['overview', 'personal', 'parents', 'matrika', 'medical', 'history', 'marks', 'notes', 'evaluation', 'educational_measures', 'timetable'];
   activeTab: 'overview' | 'personal' | 'parents' | 'academic' | 'matrika' | 'medical' | 'history' | 'marks' | 'notes' | 'evaluation' | 'educational_measures' | 'timetable' = 'overview';
-  activeMatrikaSubTab: 'specific_data' | 'notes' | 'recommendations' | 'basic' = 'specific_data';
+  activeMatrikaSubTab: 'specific_data' | 'exemptions' | 'notes' | 'recommendations' | 'basic' = 'specific_data';
   activeHistorySubTab: 'details' | 'changes' | 'term_status' = 'details';
 
   public getTabIcon(tab: typeof this.activeTab): string {
@@ -337,6 +345,50 @@ export class DetailComponent implements OnInit, AfterViewInit {
       closeable: true,
       width: 450,
       items: [{ type: 'component', component: MarkDetailModalComponent }]
+    });
+
+    this.modalManager.addModal('add_measure_student', {
+      title: 'education_measures.new_measure',
+      icon: 'gavel',
+      closeable: true,
+      width: 900,
+      items: [{ type: 'component', component: StudentEducationalMeasureComponent }]
+    });
+
+    this.modalManager.addModal('measure_templates', {
+      title: 'education_measures.templates.title',
+      icon: 'file-text',
+      closeable: true,
+      width: 800,
+      index: 1000,
+      items: [{ type: 'component', component: MeasureTemplatesComponent }]
+    });
+
+    this.modalManager.addModal('measure_types', {
+      title: 'education_measures.types_management.title',
+      icon: 'list-details',
+      closeable: true,
+      width: 900,
+      index: 1100,
+      items: [{ type: 'component', component: MeasureTypesComponent }]
+    });
+
+    this.modalManager.addModal('add_measure_type', {
+      title: 'education_measures.types_management.add',
+      icon: 'plus',
+      closeable: true,
+      width: 500,
+      index: 1200,
+      items: [{ type: 'component', component: AddMeasureTypeComponent }]
+    });
+
+    this.modalManager.addModal('add_measure_template', {
+      title: 'education_measures.templates.add',
+      icon: 'plus',
+      closeable: true,
+      width: 600,
+      index: 1200,
+      items: [{ type: 'component', component: AddMeasureTemplateComponent }]
     });
   }
 
@@ -462,6 +514,9 @@ export class DetailComponent implements OnInit, AfterViewInit {
     if (tab == 'notes') {
       this.refreshNotes();
     }
+    if (tab == 'matrika') {
+      this.refreshAvailableSubjects();
+    }
   }
 
   public refreshMeasures(): void {
@@ -475,6 +530,14 @@ export class DetailComponent implements OnInit, AfterViewInit {
       error: () => {
         this.isLoadingMeasures = false;
       }
+    });
+  }
+
+  public openAddMeasureModal(): void {
+    this.modalManager.openModal('add_measure_student', {
+      student_id: this.selectedStudent!.person_id,
+      student: this.selectedStudent!,
+      callback: () => this.refreshMeasures()
     });
   }
 
@@ -1009,6 +1072,35 @@ export class DetailComponent implements OnInit, AfterViewInit {
   public deleteMatrikaRecord(id: number) {
     if (!this.selectedStudent?.person_id) return;
     this.http.delete(`${Config.API_URL}/v1/student/${this.selectedStudent!.person_id}/matrika/record/${id}`, { withCredentials: true })
+      .subscribe(() => {
+        this.refreshStudentData();
+      });
+  }
+
+  public refreshAvailableSubjects() {
+    if (!this.selectedStudent?.person_id) return;
+    this.http.get<any[]>(`${Config.API_URL}/v1/student/${this.selectedStudent!.person_id}/subjects`, { withCredentials: true })
+      .subscribe(subjects => {
+        this.availableSubjects = subjects;
+      });
+  }
+
+  public addExemption(subjectId: string, from: string, to: string, note: string) {
+    if (!this.selectedStudent?.person_id || !subjectId) return;
+    this.http.post(`${Config.API_URL}/v1/student/${this.selectedStudent!.person_id}/exemptions`, {
+      subject_id: parseInt(subjectId), 
+      valid_from: from || null, 
+      valid_to: to || null, 
+      note
+    }, { withCredentials: true })
+      .subscribe(() => {
+        this.refreshStudentData();
+      });
+  }
+
+  public deleteExemption(id: number) {
+    if (!this.selectedStudent?.person_id) return;
+    this.http.delete(`${Config.API_URL}/v1/student/${this.selectedStudent!.person_id}/exemptions/${id}`, { withCredentials: true })
       .subscribe(() => {
         this.refreshStudentData();
       });

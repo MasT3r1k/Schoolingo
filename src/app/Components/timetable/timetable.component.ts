@@ -79,7 +79,7 @@ export class SharedTimetableComponent implements OnInit, OnDestroy {
     return moment.utc(diff).format('m:ss');
   }
 
-  public getBreakRemainingTime(hourIndex: number): string | null {
+  public getBreakRemainingTime(dayIndex: number, hourIndex: number): string | null {
     if (this.selectedTab === 1 || hourIndex >= this.timetableHours.length - 1) return null;
     
     const now = moment();
@@ -89,8 +89,7 @@ export class SharedTimetableComponent implements OnInit, OnDestroy {
     if (!h1 || !h2) return null;
 
     const week = this.selectedWeek || moment();
-    const todayIndex = now.isoWeekday();
-    const lessonDay = this.Utils.getDayOfWeek(week, todayIndex);
+    const lessonDay = this.Utils.getDayOfWeek(week, dayIndex);
     if (!now.isSame(lessonDay, 'day')) return null;
 
     const breakStart = moment(h1.end, 'HH:mm');

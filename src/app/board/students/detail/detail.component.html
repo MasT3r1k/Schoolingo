@@ -58,23 +58,6 @@
             <span>Přepnout na seznam žáků</span>
         </button>
         <h1 class="detail-title">Karta žáka</h1>
-        <div class="detail-actions">
-            <button class="action-btn" title="Poslat zprávu">
-                <i-tabler name="mail"></i-tabler>
-            </button>
-            <button class="action-btn" title="Tisk">
-                <i-tabler name="printer"></i-tabler>
-            </button>
-            <button class="action-btn" title="Sdílet">
-                <i-tabler name="share"></i-tabler>
-            </button>
-            <button class="action-btn" title="Nastavení">
-                <i-tabler name="settings"></i-tabler>
-            </button>
-            <button class="action-btn more" title="Více akcí">
-                <i-tabler name="dots-vertical"></i-tabler>
-            </button>
-        </div>
     </div>
 
     <div class="detail-layout">
@@ -778,6 +761,11 @@
                             <i-tabler name="list-details"></i-tabler>
                             <span>Specifické údaje</span>
                         </button>
+                        <button class="matrika-sub-tab" [class.active]="activeMatrikaSubTab === 'exemptions'"
+                            (click)="activeMatrikaSubTab = 'exemptions'">
+                            <i-tabler name="calendar-off"></i-tabler>
+                            <span>Osvobození z výuky</span>
+                        </button>
                         <button class="matrika-sub-tab" [class.active]="activeMatrikaSubTab === 'notes'"
                             (click)="activeMatrikaSubTab = 'notes'">
                             <i-tabler name="heart-handshake"></i-tabler>
@@ -856,6 +844,82 @@
                                         (click)="addMatrikaRecord(newType.value, newDesc.value, newFrom.value, newTo.value); newType.value=''; newDesc.value=''; newFrom.value=''; newTo.value=''">
                                         <i-tabler name="plus"></i-tabler>
                                         Přidat
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Subject Exemptions -->
+                    <div class="matrika-panel" *ngIf="activeMatrikaSubTab === 'exemptions'">
+                        <div class="matrika-panel-header">
+                            <div class="matrika-panel-title">
+                                <i-tabler name="calendar-off"></i-tabler>
+                                <span>Osvobození z výuky (uvolnění)</span>
+                            </div>
+                        </div>
+
+                        <!-- Exemptions list -->
+                        <div class="spec-records-list">
+                            @for (exemption of selectedStudent.subject_exemptions; track exemption.exemption_id) {
+                            <div class="spec-record-item">
+                                <div class="spec-record-type">
+                                    <span class="type-badge">{{ exemption.subject_name }}</span>
+                                </div>
+                                <div class="spec-record-desc">{{ exemption.note }}</div>
+                                <div class="spec-record-validity">
+                                    <i-tabler name="calendar-range"></i-tabler>
+                                    <span>{{ exemption.valid_from ? Utils.formatDateShort(exemption.valid_from) : '' }}<span *ngIf="exemption.valid_to"> — {{ Utils.formatDateShort(exemption.valid_to) }}</span></span>
+                                </div>
+                                <button class="spec-record-delete" (click)="deleteExemption(exemption.exemption_id)"
+                                    title="Smazat">
+                                    <i-tabler name="trash"></i-tabler>
+                                </button>
+                            </div>
+                            } @empty {
+                            <div class="matrika-empty">
+                                <i-tabler name="calendar-off"></i-tabler>
+                                <p>Žádná osvobození</p>
+                                <span>Student není uvolněn z žádného předmětu.</span>
+                            </div>
+                            }
+                        </div>
+
+                        <!-- Add new exemption row -->
+                        <div class="add-record-form">
+                            <div class="add-record-form-title">
+                                <i-tabler name="circle-plus"></i-tabler>
+                                <span>Uvolnit z dalšího předmětu</span>
+                            </div>
+                            <div class="add-record-fields">
+                                <div class="add-record-field">
+                                    <label>Předmět</label>
+                                    <select #selSubject class="matrika-input">
+                                        <option value="">Vyberte předmět...</option>
+                                        @for (sub of availableSubjects; track sub.subject_id) {
+                                            <option [value]="sub.subject_id">{{ sub.label }} ({{ sub.shortcut }})</option>
+                                        }
+                                    </select>
+                                </div>
+                                <div class="add-record-field grow">
+                                    <label>Důvod / Poznámka</label>
+                                    <input #exNote type="text" class="matrika-input"
+                                        placeholder="Např. Zdravotní důvody">
+                                </div>
+                                <div class="add-record-field">
+                                    <label>Platnost od</label>
+                                    <input #exFrom type="text" class="matrika-input" placeholder="RRRR-MM-DD">
+                                </div>
+                                <div class="add-record-field">
+                                    <label>Platnost do</label>
+                                    <input #exTo type="text" class="matrika-input" placeholder="RRRR-MM-DD">
+                                </div>
+                                <div class="add-record-field shrink">
+                                    <label>&nbsp;</label>
+                                    <button class="add-record-btn"
+                                        (click)="addExemption(selSubject.value, exFrom.value, exTo.value, exNote.value); exNote.value=''; exFrom.value=''; exTo.value=''; selSubject.value=''">
+                                        <i-tabler name="plus"></i-tabler>
+                                        Uvolnit
                                     </button>
                                 </div>
                             </div>
@@ -1206,10 +1270,10 @@
                             <i-tabler name="alert-triangle"></i-tabler>
                             <h3>Výchovná opatření</h3>
                             <div class="header-actions">
-                                <span class="badge badge--success">
-                                    <i-tabler name="star"></i-tabler>
-                                    {{ praiseCount }} pochval
-                                </span>
+                                <button class="btn btn--secondary btn--sm" (click)="openAddMeasureModal()">
+                                    <i-tabler name="plus"></i-tabler>
+                                    <span>Přidat záznam</span>
+                                </button>
                             </div>
                         </div>
 

@@ -270,8 +270,17 @@
                 <div class="dropdown" style="min-width: 250px;" [hidden]="dropdownManager.selected_dropdown !== 'user'"
                     (click)="$event.stopPropagation()">
                     <div class="user-info-mobile">
-                        <div class="name">{{ u.getUser().full_name }}</div>
-                        <div class="role">{{ getUserRole() }}</div>
+                        <div class="user-info-mobile__avatar" [class.user-info-mobile__avatar--image]="App.ALLOW_AVATARS">
+                            @if (App.ALLOW_AVATARS) {
+                                <img [src]="u.getAvatar()" alt="Avatar">
+                            } @else {
+                                {{ Utils.getInitials(u.getUser().full_name) }}
+                            }
+                        </div>
+                        <div class="user-info-mobile__details">
+                            <div class="name">{{ u.getUser().full_name }}</div>
+                            <div class="role">{{ getUserRole() }}</div>
+                        </div>
                     </div>
                     <ul>
                         @for (item of userDropdown; track $index) {
@@ -378,7 +387,7 @@
     [style.top.px]="context_menu.getPosition().y" [style.left.px]="context_menu.getPosition().x">
     @for(item of context_menu.getItems();track $index) {
     @if (item.text != undefined) {
-    <div class="menu-item" [class.danger]="item.color == 'danger'" (click)="item.action ? item.action() : null">
+    <div class="menu-item" [class.danger]="item.color == 'danger'" (click)="(item.action ? item.action() : null); context_menu.hideContextMenu()">
         {{ l.s(item.text) }}
     </div>
     }

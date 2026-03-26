@@ -1,0 +1,24 @@
+<div class="add-template-modal">
+    <div class="form-body p-md">
+        <div class="form-group mb-md">
+            <label class="form-label">{{ l.s('education_measures.templates.name') }}</label>
+            <input type="text" [(ngModel)]="template.title" class="form-input" [placeholder]="l.s('education_measures.templates.name_placeholder')">
+        </div>
+        <div class="form-group">
+            <label class="form-label">{{ l.s('education_measures.templates.content') }}</label>
+            <textarea [(ngModel)]="template.content" rows="6" class="form-input" [placeholder]="l.s('education_measures.templates.content_placeholder')"></textarea>
+        </div>
+    </div>
+
+    <!-- Modal Footer Actions -->
+    <div class="modal-actions mt-lg">
+        <button class="btn btn--secondary" (click)="closeModal()">
+            <i-tabler name="x"></i-tabler>
+            {{ l.s('cancel') }}
+        </button>
+        <button class="btn btn--primary" (click)="saveTemplate()" [disabled]="!template.title || !template.content">
+            <i-tabler name="check"></i-tabler>
+            {{ editMode ? l.s('buttons.save_changes') : l.s('education_measures.templates.save') }}
+        </button>
+    </div>
+</div>

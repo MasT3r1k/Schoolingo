@@ -1,0 +1,34 @@
+<div class="add-type-modal">
+    <div class="form-body">
+        <div class="form-horizontal-row">
+            <div class="form-group flex-1">
+                <label>{{ l.s('education_measures.types_management.shortcut') }}</label>
+                <input type="text" [(ngModel)]="newType.shortcut" [placeholder]="l.s('education_measures.types_management.shortcut_placeholder')">
+            </div>
+            <div class="form-group flex-sh">
+                <label>{{ l.s('education_measures.types_management.order') }}</label>
+                <input type="number" [(ngModel)]="newType.order">
+            </div>
+        </div>
+        <div class="form-group">
+            <label>{{ l.s('education_measures.types_management.label_1st') }}</label>
+            <input type="text" [(ngModel)]="newType.label_1st" [placeholder]="l.s('education_measures.types_management.label_1st_placeholder')">
+        </div>
+        <div class="form-group">
+            <label>{{ l.s('education_measures.types_management.label_4th') }}</label>
+            <input type="text" [(ngModel)]="newType.label_4th" [placeholder]="l.s('education_measures.types_management.label_4th_placeholder')">
+        </div>
+    </div>
+
+    <!-- Modal Footer Actions -->
+    <div class="modal-actions mt-lg">
+        <button class="btn btn--secondary" (click)="closeModal()">
+            <i-tabler name="x"></i-tabler>
+            {{ l.s('close') }}
+        </button>
+        <button class="btn btn--primary" (click)="saveType()" [disabled]="!newType.shortcut || !newType.label_1st">
+            <i-tabler name="check"></i-tabler>
+            {{ l.s('education_measures.types_management.save') }}
+        </button>
+    </div>
+</div>

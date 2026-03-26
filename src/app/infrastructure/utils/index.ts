@@ -52,7 +52,8 @@ export namespace Utils {
     return (moment.isMoment(date) ? date : moment(date)).format('H:mm:ss DD. MM. YYYY');
   }
 
-  export function formatDateShort(date: Date | moment.Moment | string): string {
+  export function formatDateShort(date: Date | moment.Moment | string | null | undefined): string {
+    if (!date) return '';
     return (moment.isMoment(date) ? date : moment(date)).format('DD. MM. YYYY');
   }
 

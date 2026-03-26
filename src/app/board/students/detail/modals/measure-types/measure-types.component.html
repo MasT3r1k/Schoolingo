@@ -1,0 +1,69 @@
+<div class="types-modal" (click)="contextMenu.hideContextMenu()">
+    <div class="alert-info mb-md">
+        <i-tabler name="info-circle" class="alert-icon"></i-tabler>
+        {{ l.s('education_measures.types_management.alert_info') }}
+    </div>
+
+    <div class="types-container">
+        <!-- Table Body -->
+        <div class="table-container shadow-sm">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th class="th-drag"></th>
+                        <th class="th-order">{{ l.s('education_measures.types_management.order') }}</th>
+                        <th class="th-shortcut">{{ l.s('education_measures.types_management.shortcut') }}</th>
+                        <th class="th-label-1st">{{ l.s('education_measures.types_management.label_1st') }}</th>
+                        <th class="th-label-4th">{{ l.s('education_measures.types_management.label_4th') }}</th>
+                        <th class="th-actions"></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @for (type of measuresService.measureTypes(); track type.id) {
+                    <tr class="tr-hoverable">
+                        <td class="td-drag">
+                            <i-tabler name="grip-vertical" class="drag-handle"></i-tabler>
+                        </td>
+                        <td class="td-order" (click)="onOrderEdit(type.id)">
+                            @if (editingOrderId === type.id) {
+                                <input type="number" 
+                                       [value]="type.order" 
+                                       (blur)="saveOrder(type, $any($event.target).value)"
+                                       (keydown.enter)="saveOrder(type, $any($event.target).value)"
+                                       class="order-input"
+                                       #orderInput>
+                            } @else {
+                                {{ type.order }}
+                            }
+                        </td>
+                        <td class="td-shortcut">{{ type.shortcut }}</td>
+                        <td class="td-label-1st">{{ type.label_1st }}</td>
+                        <td class="td-label-4th">{{ type.label_4th }}</td>
+                        <td class="td-actions">
+                            <button class="btn-more" (click)="toggleMenu($event, type)">
+                                <i-tabler name="dots-vertical"></i-tabler>
+                            </button>
+                        </td>
+                    </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+
+
+    <!-- Modal Footer Actions -->
+    <div class="modal-actions mt-lg">
+        <button class="btn btn--secondary" (click)="closeModal()">
+            <i-tabler name="x"></i-tabler>
+            {{ l.s('close') }}
+        </button>
+        <button class="btn btn--outline" (click)="openAddModal()">
+            <i-tabler name="plus"></i-tabler>
+            {{ l.s('education_measures.types_management.add_measure_type') }}
+        </button>
+        <button class="btn btn--primary" (click)="reorder()">
+            <i-tabler name="check"></i-tabler>
+            {{ l.s('education_measures.types_management.sort') }}
+        </button>
+    </div>
+</div>
