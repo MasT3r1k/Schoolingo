@@ -194,6 +194,17 @@ export class TimetableComponent implements OnInit, OnDestroy {
          });
       }
 
+      if ('exemptions' in data) {
+         data.exemptions.forEach((ex: any) => {
+             timetableData.forEach((lesson: any) => {
+                 if (lesson.subject_id === ex.subject_id) {
+                     lesson.is_exempted = true;
+                     lesson.exemption_note = ex.note;
+                 }
+             });
+         });
+      }
+
       this.timetable = timetableData;
 
       if (this.timetable.length > 0) {

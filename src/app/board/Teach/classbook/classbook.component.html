@@ -306,11 +306,15 @@
                         <div class="student-name">
                             <span class="index">{{ $index + 1 }}. </span>
                             <span class="name">{{ student.full_name }}</span>
+                            @if (student.exemption) {
+                                <span class="tag exempted" [title]="student.exemption.note || ''">{{ l.s('timetable.exempted') }}</span>
+                            }
                         </div>
                         <div class="hours">
                             @for (_ of [].constructor(classbook.classbook.classMaxHours || max_hours); track $index) {
                             <div class="hour" [class.active]="$index == selected_lesson.getValue()"
-                                (click)="applyAbsence(student.student_id, $index)">
+                                [class.exempted]="student.exemption && $index == selected_lesson.getValue()"
+                                (click)="!(student.exemption && $index == selected_lesson.getValue()) && applyAbsence(student.student_id, $index)">
                                 @if (student.absence[$index] != undefined) {
                                 <div
                                     [ngClass]="['absence-type', 'ab-' + absenceConfig[student.absence[$index]].locale]">

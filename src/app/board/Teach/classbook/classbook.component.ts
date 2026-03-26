@@ -275,6 +275,7 @@ export class ClassbookComponent implements OnInit {
 
             this.classbook.students = data.students.map((student: any) => ({
               ...student,
+              exemption: student.exemption,
               absence: Array.isArray(student.absence)
                 ? student.absence.map((a: any) => (a?.type ?? undefined))
                 : [],
