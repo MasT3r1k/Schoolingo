@@ -54,7 +54,7 @@
                 <div class="item lesson-hour">
                     @if (timetable[index]?.[index2]) {
                     @for (lesson of timetable[index][index2] ?? []; track $index) {
-                    <div [ngClass]="getLessonClasses(index, index2, lesson)" [style.backgroundColor]="lesson.color">
+                    <div [ngClass]="getLessonClasses(index, index2, lesson)" [class.active]="isCurrentLesson(index, index2)" [style.backgroundColor]="lesson.color">
                         <div class="group">
                             <span>{{
                                 (lesson.group_name ? lesson.group_name : lesson.class_name) +
@@ -87,10 +87,26 @@
                         } @else if (lesson.absence != null && lesson.absence != -1 && selectedTab != 1) {
                         <div [ngClass]="['absence', 'ab-' + absenceConfig[lesson.absence].locale]"></div>
                         }
+                        @if (getLessonRemainingTime(index, index2)) {
+                            <div class="lesson-timer">
+                                <i-tabler name="clock"></i-tabler>
+                                {{ getLessonRemainingTime(index, index2) }}
+                            </div>
+                        }
                     </div>
                     }
                     }
                 </div>
+                @if (getBreakRemainingTime(index2)) {
+                    <div class="break-indicator">
+                        <div class="line"></div>
+                        <div class="timer">
+                            <i-tabler name="bell-ringing"></i-tabler>
+                            {{ getBreakRemainingTime(index2) }}
+                        </div>
+                        <div class="line"></div>
+                    </div>
+                }
                 }
                 }
             </div>

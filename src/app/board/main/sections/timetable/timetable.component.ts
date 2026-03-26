@@ -1,10 +1,10 @@
 import { HttpClient } from '@angular/common/http';
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, inject, OnDestroy, OnInit } from '@angular/core';
 import { Authentication } from '@Schoolingo/authentication';
 import { Config } from '@Schoolingo/config';
 import { IconsModule } from '@Schoolingo/icons';
 import moment from 'moment';
-import { BehaviorSubject } from 'rxjs';
+import { BehaviorSubject, interval, Subscription } from 'rxjs';
 import { TimetableAPI, TimetableHours, TimetableLesson, TimetableLessonAPI } from '../../../Teach/timetable/timetable.component';
 import { Locale } from '@Schoolingo/locale';
 import { School } from '@Schoolingo/school';
@@ -14,7 +14,7 @@ import { School } from '@Schoolingo/school';
   templateUrl: './timetable.component.html',
   styleUrl: './timetable.component.css'
 })
-export class TimetableComponent implements OnInit {
+export class TimetableComponent implements OnInit, OnDestroy {
   public l = inject(Locale);
   private http = inject(HttpClient);
   private school = inject(School);
@@ -23,6 +23,7 @@ export class TimetableComponent implements OnInit {
   public timetable: TimetableLessonAPI[] = [];
   public hours: TimetableHours[] = [];
   public max_hours = 0;
+  private timerSubscription?: Subscription;
 
   public getSelectedDateLessons(): (TimetableLessonAPI | any)[] {
     const day = this.selected_date.getValue().isoWeekday();
@@ -95,6 +96,55 @@ export class TimetableComponent implements OnInit {
   public getLessonTime(lesson: TimetableLessonAPI | any): string {
     if (lesson.end == true) return this.hours[lesson.hour - 2].end;
     return `${this.hours[lesson.hour - 1].start} - ${this.hours[lesson.hour - 1].end}`;
+  }
+
+  public isCurrentLesson(lesson: any): boolean {
+    if (lesson.free || lesson.end || !this.hours || !this.hours[lesson.hour - 1]) return false;
+    const now = moment();
+    if (!this.selected_date.getValue().isSame(now, 'day')) return false;
+
+    const hourInfo = this.hours[lesson.hour - 1];
+    const start = moment(hourInfo.start, 'HH:mm');
+    const end = moment(hourInfo.end, 'HH:mm');
+
+    return now.isBetween(start, end);
+  }
+
+  public getLessonRemainingTime(lesson: any): string | null {
+    if (!this.isCurrentLesson(lesson)) return null;
+    const now = moment();
+    const hourInfo = this.hours[lesson.hour - 1];
+    const end = moment(hourInfo.end, 'HH:mm');
+    const diff = end.diff(now);
+    if (diff < 0) return null;
+    return moment.utc(diff).format('m:ss');
+  }
+
+  public getBreakRemainingTime(lessonIndex: number): string | null {
+    const lessons = this.getSelectedDateLessons();
+    if (lessonIndex >= lessons.length - 1) return null;
+    
+    const currentLesson = lessons[lessonIndex];
+    const nextLesson = lessons[lessonIndex + 1];
+    
+    if (currentLesson.end || nextLesson.end) return null;
+    
+    const h1 = currentLesson.hour;
+    const h2 = nextLesson.hour;
+    
+    if (!this.hours[h1 - 1] || !this.hours[h2 - 1]) return null;
+    
+    const breakStart = moment(this.hours[h1 - 1].end, 'HH:mm');
+    const breakEnd = moment(this.hours[h2 - 1].start, 'HH:mm');
+    
+    const now = moment();
+    if (!this.selected_date.getValue().isSame(now, 'day')) return null;
+    
+    if (now.isBetween(breakStart, breakEnd)) {
+        const diff = breakEnd.diff(now);
+        return moment.utc(diff).format('m:ss');
+    }
+    return null;
   }
 
   public loadTimetable(): void {
@@ -188,6 +238,16 @@ export class TimetableComponent implements OnInit {
 
     this.selected_date.subscribe(() => {
       // this.loadTimetable();
-    })
+    });
+
+    this.timerSubscription = interval(1000).subscribe(() => {
+      // This triggers change detection
+    });
+  }
+
+  ngOnDestroy(): void {
+    if (this.timerSubscription) {
+      this.timerSubscription.unsubscribe();
+    }
   }
 }

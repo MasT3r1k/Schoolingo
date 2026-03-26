@@ -252,6 +252,85 @@
     opacity: 0.5;
 }
 
+.timetable .item .sub-lesson-hour.active {
+    box-shadow: inset 0 0 0 2px var(--primary);
+    background-color: var(--primary-opacity-10) !important;
+    z-index: 2;
+}
+
+.timetable .item .sub-lesson-hour.active .subject {
+    color: var(--primary) !important;
+    font-weight: 700;
+}
+
+.lesson-timer {
+    position: absolute;
+    bottom: 4px;
+    right: 4px;
+    font-size: 9px;
+    font-weight: 700;
+    color: white;
+    background: var(--primary);
+    padding: 1px 4px;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    gap: 3px;
+    z-index: 5;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+}
+
+.lesson-timer i-tabler {
+    width: 10px;
+    height: 10px;
+}
+
+.break-indicator {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 14px;
+    height: 100%;
+    margin: 0 -7px;
+    z-index: 10;
+    pointer-events: none;
+}
+
+.break-indicator .line {
+    width: 2px;
+    flex: 1;
+    background: linear-gradient(to bottom, transparent, var(--primary), transparent);
+    opacity: 0.5;
+}
+
+.break-indicator .timer {
+    background: var(--primary);
+    color: white;
+    font-size: 9px;
+    font-weight: 700;
+    padding: 3px 6px;
+    border-radius: 8px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    min-width: 32px;
+}
+
+.break-indicator .timer i-tabler {
+    width: 12px;
+    height: 12px;
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0% { transform: scale(1); opacity: 1; }
+    50% { transform: scale(1.1); opacity: 0.8; }
+    100% { transform: scale(1); opacity: 1; }
+}
+
 @media print {
     @page {
         size: A4 landscape;
