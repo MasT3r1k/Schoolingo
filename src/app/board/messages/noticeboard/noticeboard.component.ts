@@ -28,6 +28,14 @@ interface Announcement {
   require_confirm: boolean;
   read_at: Date | null;
   confirmed_at: Date | null;
+  files: {
+    file_id: number;
+    file_uuid: string;
+    name: string;
+    file_format: string;
+    file_size: number;
+    mime_type: string;
+  }[];
 }
 
 @Component({
@@ -45,6 +53,7 @@ export class NoticeboardComponent implements OnInit {
   public school = inject(School);
   public announcements: Announcement[] = [];
   public modalManager = inject(ModalManager);
+  public Config = Config;
   Utils = Utils;
 
   ngOnInit(): void {

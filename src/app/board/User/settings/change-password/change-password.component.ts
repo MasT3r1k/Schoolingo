@@ -10,6 +10,7 @@ import { Authentication } from '@Schoolingo/authentication';
 import { ModalManager } from '@Schoolingo/modal';
 import { GeneratePasswordComponent } from './modals/generate-password/generate-password';
 import { Settings } from '@Schoolingo/settings';
+import { VerifyTfaComponent } from './modals/verify-tfa/verify-tfa.component';
 
 @Component({
   standalone: true,
@@ -95,7 +96,11 @@ export class ChangePasswordComponent implements OnInit {
           }
 
           if (data.error?.includes("Missing 2FA")) {
-            this.page = '2fa';
+            this.modalManager.openModal('verify_tfa', { 
+              oldpassword: this.changePasswordForm.value.oldpassword,
+              password: this.changePasswordForm.value.password,
+              parent: this
+            });
           }
         }
 
@@ -108,6 +113,7 @@ export class ChangePasswordComponent implements OnInit {
           });
           this.page = 'main';
           this.errors = {};
+          this.formSubmitted = false;
           this.a.alert('success', 'settings.passwords.success_changed').closeable(true);
         }
       },
@@ -137,6 +143,20 @@ export class ChangePasswordComponent implements OnInit {
           {
             type: 'component',
             component: GeneratePasswordComponent
+          }
+        ]
+      }
+    )
+
+    this.modalManager.addModal(
+      'verify_tfa',
+      {
+        title: 'auth.2fa.authentication_code',
+        closeable: true,
+        items: [
+          {
+            type: 'component',
+            component: VerifyTfaComponent
           }
         ]
       }

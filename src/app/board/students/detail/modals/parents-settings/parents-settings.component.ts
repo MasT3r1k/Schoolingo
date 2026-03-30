@@ -30,7 +30,7 @@ export class ParentsSettingsComponent implements OnInit {
 
   editParent(parent: ParentInfo): void {
     const data = this.modalManager.getModalData('parents_settings');
-    this.modalManager.updateModal('create_parent', 'title', 'Upravit zákonného zástupce');
+    this.modalManager.updateModal('create_parent', 'title', 'students.edit_parent.title');
     this.modalManager.updateModal('create_parent', 'icon', 'user-edit');
     this.modalManager.openModal('create_parent', { 
       student_id: data.student_id, 

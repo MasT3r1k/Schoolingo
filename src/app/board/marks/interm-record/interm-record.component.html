@@ -86,12 +86,19 @@
                 </thead>
                 <tbody>
                     @for (student of students; track $index;let studentIndex = $index) {
-                    <tr>
+                    <tr [class.exempted-row]="student.is_exempted">
                         <td class="student-column">
                             <div class="student-cell">
                                 <div class="student-info">
                                     <span class="student-index">{{ $index + 1 }}.</span>
-                                    <span class="student-name">{{ student.name }}</span>
+                                    <span class="student-name">
+                                        {{ student.name }}
+                                        @if (student.is_exempted) {
+                                            <span class="exempted-icon" [title]="student.exemption_note || l.s('marks.exempted_from_subject')">
+                                                <i-tabler name="circle-x"></i-tabler>
+                                            </span>
+                                        }
+                                    </span>
                                 </div>
                                 <div class="student-stats">
                                     <div class="quarter-grade" (click)="openMidterm(studentIndex)"

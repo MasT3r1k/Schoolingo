@@ -42,6 +42,8 @@ interface Student {
     verbal_assessment: string;
   }[];
   marks: (string | null)[];
+  is_exempted: boolean;
+  exemption_note?: string;
 }
 
 @Component({
@@ -240,6 +242,7 @@ export class IntermRecordComponent {
     this.modalManager.addModal(
       "edit_column",
       {
+        icon: 'table-row',
         title: "marks.edit_column",
         items: [
           { type: 'component', component: EditColumnComponent }
@@ -251,6 +254,7 @@ export class IntermRecordComponent {
     this.modalManager.addModal(
       "edit_mark",
       {
+        icon: 'question-mark',
         title: "marks.edit_mark",
         items: [
           { type: 'component', component: EditMarkComponent }
@@ -262,6 +266,7 @@ export class IntermRecordComponent {
     this.modalManager.addModal(
       'edit_marking_scale',
       {
+        icon: 'table-options',
         title: 'marks.edit_marking_scale.title',
         items: [
           { type: 'component', component: EditMarkingScaleComponent }
@@ -273,6 +278,7 @@ export class IntermRecordComponent {
     this.modalManager.addModal(
       'edit_midterm',
       {
+        icon: 'number-1',
         title: 'marks.edit_midterm.title_midterm',
         closeable: true,
         items: [

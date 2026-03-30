@@ -11,11 +11,13 @@
 
         <div class="messages-list">
             @for (message of filteredMessages; track message.message_id) {
-            <div class="message-item" [class.active]="selectedMessage?.message_id === message.message_id" (click)="selectMessage(message)">
+            <div class="message-item" [class.active]="selectedMessage?.message_id === message.message_id"
+                (click)="selectMessage(message)">
 
                 <div class="avatar" [class.teacher]="message.author.role === 'teacher'"
                     [class.system]="message.author.role === 'system'">
-                    <img [src]="avatarService.getAvatar(message.author.avatar, message.author.full_name)" [alt]="message.author.full_name">
+                    <img [src]="avatarService.getAvatar(message.author.avatar, message.author.full_name)"
+                        [alt]="message.author.full_name">
                 </div>
 
                 <div class="message-preview-info">
@@ -23,8 +25,13 @@
                         <span class="sender-name">
                             {{ message.author.full_name }}
                         </span>
-                        <span class="date">
+                        <span class="date" style="display: flex; gap: 4px;">
                             {{ Utils.formatDateShort(message.sent_at) }}
+                            @if (message.files?.length) {
+                            <span class="attachment-indicator" [title]="l.s('messages.has_attachments')">
+                                <i-tabler name="paperclip"></i-tabler>
+                            </span>
+                            }
                         </span>
                     </div>
                     <div class="subject">{{ message.topic }}</div>
@@ -43,7 +50,7 @@
     <!-- Message Content (Main) -->
     <div class="message-content-panel">
         <div class="message-detail card">
-        @if (selectedMessage) {
+            @if (selectedMessage) {
             <div class="message-header">
                 <button class="back-button" (click)="selectMessage(null)">
                     <i-tabler name="chevron-left"></i-tabler>
@@ -52,7 +59,8 @@
                 <div class="sender-info">
                     <div class="avatar large" [class.teacher]="selectedMessage.author.role === 'teacher'"
                         [class.system]="selectedMessage.author.role === 'system'">
-                        <img [src]="avatarService.getAvatar(selectedMessage.author.avatar, selectedMessage.author.full_name)" [alt]="selectedMessage.author.full_name">
+                        <img [src]="avatarService.getAvatar(selectedMessage.author.avatar, selectedMessage.author.full_name)"
+                            [alt]="selectedMessage.author.full_name">
                     </div>
                     <div class="meta">
                         <div class="name">{{ selectedMessage.author.full_name }}</div>
@@ -74,6 +82,25 @@
             <div class="message-body">
                 {{ selectedMessage.message }}
             </div>
+
+            @if (selectedMessage.files?.length) {
+            <div class="attachments-section">
+                <h4>{{ l.s("messages.attachments") }} ({{ selectedMessage.files?.length }})</h4>
+                <div class="attachments-list">
+                    @for (file of selectedMessage.files; track file.file_id) {
+                    <a [href]="Config.API_URL + '/download/' + file.file_uuid" download [title]="file.name"
+                        class="attachment-item"
+                        (click)="Utils.downloadFile(Config.API_URL + '/download/' + file.file_uuid, file.name); $event.preventDefault(); $event.stopPropagation()">
+                        <i-tabler name="file"></i-tabler>
+                        <div class="attachment-info">
+                            <span class="attachment-name" [title]="file.name">{{ file.name }}</span>
+                            <span class="attachment-size">{{ Utils.formatBytes(file.file_size) }}</span>
+                        </div>
+                    </a>
+                    }
+                </div>
+            </div>
+            }
 
             <!-- @if (selectedMessage.receivers) {
                 <div class="message-footer-stats">
@@ -124,15 +151,15 @@
                     </div>
                 </div>
             } -->
-        } @else {
-        <div class="no-selection">
-            <div class="illustration">
-                <i-tabler name="message-circle"></i-tabler>
+            } @else {
+            <div class="no-selection">
+                <div class="illustration">
+                    <i-tabler name="message-circle"></i-tabler>
+                </div>
+                <h3>{{ l.s("messages.select_message") }}</h3>
+                <p>{{ l.s("messages.select_message_desc") }}</p>
             </div>
-            <h3>{{ l.s("messages.select_message") }}</h3>
-            <p>{{ l.s("messages.select_message_desc") }}</p>
-        </div>
-        }
+            }
         </div>
 
     </div>

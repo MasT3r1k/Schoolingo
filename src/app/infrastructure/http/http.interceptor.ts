@@ -77,6 +77,9 @@ export const httpInterceptor: HttpInterceptorFn = (req, next) => {
         
         // Handle no_permission error
         if (error.error?.error === 'no_permission') {
+          if (req.headers.has('X-Skip-No-Permission-Redirect')) {
+            return;
+          }
           router.navigate(['/no-permission'], { replaceUrl: true });
           monitoringService.logError('no_permission', error);
           return;

@@ -94,8 +94,8 @@
                         <i-tabler name="chart-bar"></i-tabler>
                     </div>
                     <div class="stat-info">
-                        <span class="stat-value">{{ selectedStudent.average_grade }}</span>
-                        <span class="stat-label">Průměr</span>
+                        <span class="stat-value">{{ selectedStudent.average_grade ?? '---' }}</span>
+                        <span class="stat-label">{{ l.s('students.average') }}</span>
                     </div>
                 </div>
                 <div class="stat-card clickable"
@@ -106,7 +106,7 @@
                     </div>
                     <div class="stat-info">
                         <span class="stat-value">{{ selectedStudent.absence_rate }}%</span>
-                        <span class="stat-label">Absence celkem</span>
+                        <span class="stat-label">{{ l.s('students.absence') }}</span>
                     </div>
                 </div>
                 <div class="stat-card clickable" [class.danger]="selectedStudent.education_measures_count > 0"
@@ -116,21 +116,21 @@
                     </div>
                     <div class="stat-info">
                         <span class="stat-value">{{ selectedStudent.education_measures_count || 0 }}</span>
-                        <span class="stat-label">Kázeňská opatření</span>
+                        <span class="stat-label">{{ l.s('students.measure_educations') }}</span>
                     </div>
                 </div>
             </div>
 
             <!-- Quick Contact -->
             <div class="quick-contact">
-                <h3>Kontakt</h3>
+                <h3>{{ l.s('students.tabs.contact') }}</h3>
                 <a href="mailto:{{selectedStudent.email}}" class="contact-item">
                     <i-tabler name="mail"></i-tabler>
-                    <span>{{ selectedStudent.email || 'Není nastavený žádný email' }}</span>
+                    <span>{{ selectedStudent.email || l.s('unknown') }}</span>
                 </a>
                 <a href="tel:{{selectedStudent.phone}}" class="contact-item">
                     <i-tabler name="phone"></i-tabler>
-                    <span>{{ selectedStudent.phone || 'Není nastavený žádný telefon' }}</span>
+                    <span>{{ selectedStudent.phone || l.s('unknown') }}</span>
                 </a>
             </div>
         </aside>
@@ -163,7 +163,7 @@
                     <div class="info-card">
                         <div class="card-header">
                             <i-tabler name="info-circle"></i-tabler>
-                            <h3>Základní informace</h3>
+                            <h3>{{ l.s('students.basic_info') }}</h3>
                             <button class="card-action-btn" (click)="openEditPersonalModal()">
                                 <i-tabler name="edit"></i-tabler>
                                 <span>{{ l.s('buttons.edit') }}</span>
@@ -172,19 +172,19 @@
 
                         <div class="info-list">
                             <div class="info-row">
-                                <span class="info-label">Obor studia</span>
+                                <span class="info-label">{{ l.s('classes.field_of_study') }}</span>
                                 <span class="info-value">{{ selectedStudent.field_of_study }}</span>
                             </div>
                             <div class="info-row">
-                                <span class="info-label">Ročník</span>
-                                <span class="info-value">{{ selectedStudent.year }}. ročník</span>
+                                <span class="info-label">{{ l.s('classes.year_class') }}</span>
+                                <span class="info-value">{{ selectedStudent.year }}. {{ l.s('classes.year_class') }}</span>
                             </div>
                             <div class="info-row">
-                                <span class="info-label">Délka studia</span>
+                                <span class="info-label">{{ l.s('classes.study_length') }}</span>
                                 <span class="info-value">4 roky</span>
                             </div>
                              <div class="info-row">
-                                <span class="info-label">Třídní učitel</span>
+                                <span class="info-label">{{ l.s('roles.classteacher') }}</span>
                                 <span class="info-value">{{ selectedStudent.teacher_name }}</span>
                             </div>
                             @if (selectedStudent.class_rank) {
@@ -194,18 +194,18 @@
                             </div>
                             }
                             <div class="info-row">
-                                <span class="info-label">Pojišťovna</span>
+                                <span class="info-label">{{ l.s('students.insurance') }}</span>
                                 <span class="info-value">
                                     @if (selectedStudent.insurance_id) {
                                     {{ selectedStudent.insurance_short }} ({{ selectedStudent.insurance_id }})
                                     } @else {
-                                    Nemá nastavenou pojištovnu
+                                    {{ l.s('unknown') }}
                                     }
 
                                 </span>
                             </div>
                             <div class="info-row">
-                                <span class="info-label">Datum nástupu</span>
+                                <span class="info-label">{{ l.s('classes.date_of_start') }}</span>
                                 <span class="info-value">{{ Utils.formatDateShort(selectedStudent.start_study) }}</span>
                             </div>
                         </div>
@@ -1132,18 +1132,11 @@
                 @if (activeTab === 'marks') {
                 <div class="marks-section">
                     <div class="marks-header-controls">
-                        <div class="marks-tabs">
-                            @for (opt of marksOptions; track $index) {
-                            <button class="marks-tab" [class.active]="marksSelectedTab === $index"
-                                (click)="marksSelectedTab = $index">
-                                {{ l.s(opt) }}
-                            </button>
-                            }
-                        </div>
+                        <schoolingo-tabs [options]="marksOptions" [value]="marksSelectedTab"></schoolingo-tabs>
                     </div>
 
                     <div class="marks-content">
-                        @if (marksSelectedTab === 0) {
+                        @if (marksSelectedTab.getValue() === 0) {
                         <div class="subjects-list">
                             @for (subject of getMarksPerSubject(); track $index) {
                             <div class="subject-row">
@@ -1370,7 +1363,7 @@
                     <!-- Details Sub-tab – Timeline -->
                     @if (activeHistorySubTab === 'details') {
                     <div class="history-timeline-wrap">
-                        @if (selectedStudent.history?.length) {
+                        @if (selectedStudent.history.length) {
                         <div class="history-timeline">
                             @for (item of selectedStudent.history; track item.created_at) {
                             @let meta = formatHistoryEvent(item);
@@ -1507,39 +1500,4 @@
         </main>
     </div>
 </div>
-
-<!-- Note Modal -->
-@if (showNoteModal && editingNote) {
-<div class="modal-overlay">
-    <div class="modal">
-        <div class="modal-header">
-            <h3>{{ editingNote.note_id ? 'Upravit poznámku' : 'Přidat poznámku' }}</h3>
-            <button class="close-btn" (click)="showNoteModal = false">
-                <i-tabler name="x"></i-tabler>
-            </button>
-        </div>
-        <div class="modal-body">
-            <div class="form-group">
-                <label>Obsah poznámky</label>
-                <textarea class="form-control" rows="6" [(ngModel)]="editingNote.content"
-                    placeholder="Zde napište poznámku..."></textarea>
-            </div>
-            <div class="form-group checkbox-group">
-                <label class="checkbox-container">
-                    <input type="checkbox" [(ngModel)]="editingNote.is_public">
-                    <span class="checkmark"></span>
-                    Viditelné pro zákonné zástupce
-                </label>
-            </div>
-        </div>
-        <div class="modal-actions">
-            <button class="btn btn--secondary" (click)="showNoteModal = false">Zrušit</button>
-            <button class="btn btn--primary" (click)="saveNote()"
-                [disabled]="!editingNote.content?.trim()">Uložit</button>
-        </div>
-    </div>
-</div>
-}
-
-
 }

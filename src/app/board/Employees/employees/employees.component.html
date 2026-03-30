@@ -1,4 +1,11 @@
 <div class="employees-page card">
+    @if (isNoPermission()) {
+        <schoolingo-no-permission 
+            title="employees.errors.no_permission_title" 
+            description="employees.errors.no_permission_desc" 
+            (onBack)="goBack()">
+        </schoolingo-no-permission>
+    } @else {
     <!-- Employee Detail View -->
     @let get_employee = selectedEmployee.getValue();
     @if (get_employee) {
@@ -1160,5 +1167,6 @@
         </div>
         }
     </div>
+    }
     }
 </div>

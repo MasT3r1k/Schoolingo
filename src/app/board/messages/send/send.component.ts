@@ -544,11 +544,11 @@ export class SendComponent implements OnInit {
         : (type === messageTypes.EXCUSESTUDENT && this.auth.getUser().role === 'parent'
           ? 'Omluvenka: ' + this.getSelectedChildName()
           : this.messageManager.topic),
-      require_confirm: this.messageManager.options.requireConfirmation,
-      copy_to_class_teacher: this.messageManager.options.copyToClassTeacher,
-      copy_to_parents: this.messageManager.options.copyToParents,
-      copy_to_students: this.messageManager.options.copyToStudents,
-      draft_id: this.messageManager.draft_id,
+      require_confirm: this.messageManager.options.requireConfirmation ?? false,
+      copy_to_class_teacher: this.messageManager.options.copyToClassTeacher ?? false,
+      copy_to_parents: this.messageManager.options.copyToParents ?? false,
+      copy_to_students: this.messageManager.options.copyToStudents ?? false,
+      draft_id: this.messageManager.draft_id || null,
       excuse_date_from: type === messageTypes.EXCUSESTUDENT ? this.excuseDate : null,
       excuse_date_to: type === messageTypes.EXCUSESTUDENT ? this.excuseDateTo : null,
       excuse_hour_from: type === messageTypes.EXCUSESTUDENT ? (this.excuseAllDay ? null : this.excuseHourFrom) : null,

@@ -25,6 +25,7 @@ import { AdjustVacationModalComponent } from './modals/adjust-vacation-modal/adj
 import { RequestMoreVacationModalComponent } from './modals/request-more-vacation-modal/request-more-vacation-modal.component';
 import { AvatarService } from '../../../infrastructure/utils/avatar.service';
 import { EMPLOYEE_CONFIG } from '../../../infrastructure/employees/const';
+import { NoPermissionComponent } from '@Components/NoPermission/no-permission.component';
 import moment from 'moment';
 
 export interface Employee {
@@ -90,7 +91,7 @@ export interface EmployeeFilters {
 @Component({
   selector: 'app-employees',
   standalone: true,
-  imports: [CommonModule, IconsModule, FormsModule, TabsComponent, CalendarComponent],
+  imports: [CommonModule, IconsModule, FormsModule, TabsComponent, CalendarComponent, NoPermissionComponent],
   templateUrl: './employees.component.html',
   styleUrl: './employees.component.css'
 })
@@ -111,6 +112,7 @@ export class EmployeesComponent implements OnInit {
   // Loading state - Signals
   isLoading = signal(false);
   loadError = signal<string | null>(null);
+  isNoPermission = signal(false);
 
   // Selected employee for detail view - Signal
   selectedEmployee = new BehaviorSubject<Employee | null>(null);
@@ -446,9 +448,13 @@ export class EmployeesComponent implements OnInit {
 
     this.http.get<{ canViewAll: boolean;data: Employee[], meta: { total: number } }>(
       `${Config.API_URL}/v1/employees`,
-      { withCredentials: true, params }
+      { 
+        withCredentials: true, 
+        params
+      }
     ).subscribe({
       next: (response) => {
+        this.isNoPermission.set(false);
         this.canViewAllEmployees = response.canViewAll;
         this.employees.set(response.data);
         this.totalItems.set(response.meta.total);
@@ -456,9 +462,13 @@ export class EmployeesComponent implements OnInit {
       },
       error: (error) => {
         console.error('Error loading employees:', error);
-        this.loadError.set('Nepodařilo se načíst seznam zaměstnanců');
+        if (error.error?.error === 'no_permission') {
+          this.isNoPermission.set(true);
+        } else {
+          this.loadError.set('Nepodařilo se načíst seznam zaměstnanců');
+          this.alertManager.alert('error', 'employees.errors.load_failed').closeable(true);
+        }
         this.isLoading.set(false);
-        this.alertManager.alert('error', 'employees.errors.load_failed').closeable(true);
       }
     });
   }
@@ -599,6 +609,10 @@ export class EmployeesComponent implements OnInit {
 
   goToToday() {
     this.setAttendanceFilterStartDateAndReload(moment().format('YYYY-MM-DD'));
+  }
+
+  goBack() {
+    window.history.back();
   }
 
   // Bonus filter helpers (template cannot use spread syntax)

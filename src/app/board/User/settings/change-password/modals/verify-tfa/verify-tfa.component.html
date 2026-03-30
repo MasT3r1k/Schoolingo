@@ -1,0 +1,59 @@
+<div class="verify-tfa-modal">
+    <div class="info-box">
+        <i-tabler name="info-circle"></i-tabler>
+        <div>
+            <p><strong>Ověření vaší identity</strong></p>
+            <p>Pro dokončení změny hesla zadejte jednorázový kód z vaší autentizační aplikace.</p>
+        </div>
+    </div>
+
+    <form (ngSubmit)="verify()">
+        <div class="form-card tfa-card no-margin">
+            <div class="form-card-header">
+                <div class="form-icon tfa">
+                    <i-tabler name="auth-2fa"></i-tabler>
+                </div>
+                <div class="form-card-title">
+                    <h4>{{ l.s('auth.2fa.authentication_code') }}</h4>
+                    <span class="meta muted">6místný kód z Google Authenticator nebo podobné aplikace</span>
+                </div>
+            </div>
+            <div class="form-card-body">
+                <div class="input-group" [class.has-error]="errors['token'] !== undefined || (tokenControl.invalid && tokenControl.dirty)">
+                    <div class="token-input-wrapper">
+                        <input type="text" id="token" [minlength]="AuthConfig.token_length"
+                            [maxlength]="AuthConfig.token_length" name="token" autocomplete="off"
+                            autocorrect="off" [formControl]="tokenControl" class="token-input" />
+                        <div class="token-preview">{{ getTokenPlaceholder() }}</div>
+                    </div>
+                    @if (errors['token'] !== undefined) {
+                        <span class="input-error">
+                            <i-tabler name="alert-circle"></i-tabler>
+                            {{ errors['token'] }}
+                        </span>
+                    }
+                </div>
+
+                <div class="tfa-actions">
+                    <a class="help-link" href="#">
+                        <i-tabler name="help-circle"></i-tabler>
+                        {{ l.s('auth.2fa.click') }}
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div class="submit-section-modal">
+            <button type="submit" class="btn btn--primary btn--lg"
+                [class.btn--disabled]="tokenControl.invalid || loading"
+                [disabled]="tokenControl.invalid || loading">
+                <i-tabler name="shield-check"></i-tabler>
+                @if (loading) {
+                    Ověřuji...
+                } @else {
+                    {{ l.s('auth.2fa.verify_code') }}
+                }
+            </button>
+        </div>
+    </form>
+</div>

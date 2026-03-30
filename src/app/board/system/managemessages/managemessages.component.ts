@@ -27,6 +27,14 @@ interface Message {
   require_conform: boolean;
   read_at: Date | null;
   confirmed_at: Date | null;
+  files: {
+    file_id: number;
+    file_uuid: string;
+    name: string;
+    file_format: string;
+    file_size: number;
+    mime_type: string;
+  }[];
 }
 
 @Component({
@@ -41,6 +49,7 @@ export class ManagemessagesComponent implements OnInit {
   public l = inject(Locale);
   public auth = inject(Authentication);
   public avatarService = inject(AvatarService);
+  public Config = Config;
   private http = inject(HttpClient);
   private route = inject(ActivatedRoute);
 

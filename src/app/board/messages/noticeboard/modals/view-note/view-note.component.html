@@ -28,11 +28,29 @@
 
         <h1 class="topic">{{ note.topic }}</h1>
 
-        <div class="note-body">
-            {{ note.message }}
-        </div>
+            <div class="note-body">
+                {{ note.message }}
+            </div>
 
-        @if (note.target_groups.length) {
+            @if (note.files?.length) {
+                <div class="attachments-section">
+                    <h4>{{ l.s("messages.attachments") }} ({{ note.files?.length }})</h4>
+                    <div class="attachments-list">
+                        @for (file of note.files; track file.file_id) {
+                            <a [href]="Config.API_URL + '/download/' + file.file_uuid" download [title]="file.name" class="attachment-item"
+                                (click)="Utils.downloadFile(Config.API_URL + '/download/' + file.file_uuid, file.name); $event.preventDefault(); $event.stopPropagation()">
+                                <i-tabler name="file"></i-tabler>
+                                <div class="attachment-info">
+                                    <span class="attachment-name" [title]="file.name">{{ file.name }}</span>
+                                    <span class="attachment-size">{{ Utils.formatBytes(file.file_size) }}</span>
+                                </div>
+                            </a>
+                        }
+                    </div>
+                </div>
+            }
+
+            @if (note.target_groups.length) {
         <div class="note-footer">
             <div class="footer-section">
                 <div class="section-title">

@@ -30,6 +30,14 @@ interface MessageDetail {
     confirmed_at: Date | null;
   }[];
   target_groups: string[];
+  files: {
+    file_id: number;
+    file_uuid: string;
+    name: string;
+    file_format: string;
+    file_size: number;
+    mime_type: string;
+  }[];
 }
 
 @Component({
@@ -44,6 +52,7 @@ export class ViewNoteComponent implements OnInit {
   private http = inject(HttpClient);
   public l = inject(Locale);
   public avatarService = inject(AvatarService);
+  public Config = Config;
   public Utils = Utils;
   
   public note: MessageDetail | null = null;

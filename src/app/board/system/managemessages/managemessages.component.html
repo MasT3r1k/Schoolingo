@@ -25,6 +25,11 @@
                         </span>
                         <span class="date">
                             {{ Utils.formatDateShort(message.sent_at) }}
+                            @if (message.files?.length) {
+                                <span class="attachment-indicator" [title]="l.s('messages.has_attachments')">
+                                    <i-tabler name="paperclip"></i-tabler>
+                                </span>
+                            }
                         </span>
                     </div>
                     <div class="subject">{{ message.topic }}</div>
@@ -70,6 +75,24 @@
             <div class="message-body">
                 {{ selectedMessage.message }}
             </div>
+
+            @if (selectedMessage.files?.length) {
+                <div class="attachments-section">
+                    <h4>{{ l.s("messages.attachments") }} ({{ selectedMessage.files?.length }})</h4>
+                    <div class="attachments-list">
+                        @for (file of selectedMessage.files; track file.file_id) {
+                            <a [href]="Config.API_URL + '/download/' + file.file_uuid" download [title]="file.name" class="attachment-item"
+                                (click)="Utils.downloadFile(Config.API_URL + '/download/' + file.file_uuid, file.name); $event.preventDefault(); $event.stopPropagation()">
+                                <i-tabler name="file"></i-tabler>
+                                <div class="attachment-info">
+                                    <span class="attachment-name" [title]="file.name">{{ file.name }}</span>
+                                    <span class="attachment-size">{{ Utils.formatBytes(file.file_size) }}</span>
+                                </div>
+                            </a>
+                        }
+                    </div>
+                </div>
+            }
         } @else {
         <div class="no-selection">
             <div class="illustration">

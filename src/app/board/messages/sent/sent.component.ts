@@ -40,6 +40,14 @@ interface Message {
   confirmed_at: Date | null;
   receivers?: Receiver[];
   target_groups?: string[];
+  files?: {
+    file_id: number;
+    file_uuid: string;
+    name: string;
+    file_format: string;
+    file_size: number;
+    mime_type: string;
+  }[];
 }
 
 @Component({
@@ -54,6 +62,7 @@ export class SentComponent implements OnInit {
   public l = inject(Locale);
   public auth = inject(Authentication);
   public avatarService = inject(AvatarService);
+  public Config = Config;
   private http = inject(HttpClient);
   private route = inject(ActivatedRoute);
 
@@ -93,6 +102,7 @@ export class SentComponent implements OnInit {
           if (data && this.selectedMessage?.message_id === message.message_id) {
             this.selectedMessage.receivers = data.receivers;
             this.selectedMessage.target_groups = data.target_groups;
+            this.selectedMessage.files = data.files;
           }
         });
     }

@@ -111,7 +111,7 @@ export const config: SidebarGroup[] = [
                     item: 'sidebar.marks.education_measures',
                     url: 'marks/educationmeasures',
                     icon: 'gavel',
-                    permission: ['teacher', 'student', 'parent']
+                    permission: ['student', 'parent']
                 }]
             },
             {
@@ -157,12 +157,12 @@ export const config: SidebarGroup[] = [
                     url: 'teach/subjects',
                     icon: 'books',
                     permission: ['student', 'parent']
-                }//, {
-                //     item: 'sidebar.teach.rewards',
-                //     url: 'teach/rewards',
-                //     icon: 'trophy',
-                //     permission: ['student', 'teacher']
-                // }, {
+                }, {
+                     item: 'sidebar.teach.rewards',
+                     url: 'teach/rewards',
+                     icon: 'trophy',
+                     permission: ['student', 'teacher']
+                },// {
                 //     item: 'sidebar.teach.tests',
                 //     url: 'tests',
                 //     icon: 'clipboard-check',

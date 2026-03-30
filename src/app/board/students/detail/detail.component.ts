@@ -34,6 +34,7 @@ import { AddMeasureTemplateComponent } from './modals/add-measure-template/add-m
 import { TabsComponent } from '@Components/Tabs';
 import { MarkDetailModalComponent } from '../../../Components/mark-detail-modal/mark-detail-modal.component';
 import { AvatarService } from '../../../infrastructure/utils/avatar.service';
+import { AddNoteComponent } from './modals/add-note/add-note.component';
 
 // Interfaces
 interface TimetableAPI {
@@ -192,7 +193,7 @@ export class DetailComponent implements OnInit, AfterViewInit {
   public marking_scales: Record<string, number[]> = {};
   public marking_scale: number[] = [85, 70, 50, 30, 0]; // Default fallback
   public selectedMark: any | null = null;
-  public marksSelectedTab = 0; // 0 = by subject, 1 = chronological
+  public marksSelectedTab = new BehaviorSubject(0);
   public marksOptions = [
     'marks.interm.by_subjects',
     'marks.interm.chronologically'
@@ -208,8 +209,6 @@ export class DetailComponent implements OnInit, AfterViewInit {
   // Student Notes
   public studentNotes: StudentNote[] = [];
   public isLoadingNotes = false;
-  public showNoteModal = false;
-  public editingNote: Partial<StudentNote> | null = null;
 
   // Evaluations
   public evaluations: any[] = [];
@@ -295,8 +294,8 @@ export class DetailComponent implements OnInit, AfterViewInit {
     });
 
     this.modalManager.addModal('edit_address', {
-      title: 'Upravit adresu',
-      description: 'Změna trvalého bydliště studenta',
+      title: 'students.edit_address.title',
+      description: 'students.edit_address.description',
       icon: 'home',
       closeable: true,
       width: 550,
@@ -390,6 +389,13 @@ export class DetailComponent implements OnInit, AfterViewInit {
       index: 1200,
       items: [{ type: 'component', component: AddMeasureTemplateComponent }]
     });
+
+    this.modalManager.addModal('add_note', {
+      title: 'students.add_note.title',
+      icon: 'message-plus',
+      closeable: true,
+      items: [{ type: 'component', component: AddNoteComponent }]
+    })
   }
 
   public refreshStudentData() {
@@ -1133,34 +1139,33 @@ export class DetailComponent implements OnInit, AfterViewInit {
   }
 
   public openAddNote(): void {
-    this.editingNote = {
-      content: '',
-      is_public: false
-    };
-    this.showNoteModal = true;
+    this.modalManager.updateModal('add_note', 'title', 'students.add_note.title');
+    this.modalManager.openModal('add_note', { note: { content: '', is_public: false }, saveNote: this.saveNote });
   }
 
   public openEditNote(note: StudentNote): void {
-    this.editingNote = { ...note };
-    this.showNoteModal = true;
+    this.modalManager.updateModal('add_note', 'title', 'students.edit_note.title');
+    this.modalManager.openModal('add_note', { note, saveNote: this.saveNote });
+
   }
 
   public saveNote(): void {
-    if (!this.editingNote || !this.editingNote.content?.trim()) return;
+    const editingNote = this.modalManager.getModalData('add_note').note;
+    if (!editingNote || !editingNote.content?.trim()) return;
 
     const id = this.selectedStudent!.person_id;
-    if (this.editingNote.note_id) {
+    if (editingNote.note_id) {
       // Update
-      this.http.patch(`${Config.API_URL}/v1/student/${id}/notes/${this.editingNote.note_id}`, this.editingNote, { withCredentials: true })
+      this.http.patch(`${Config.API_URL}/v1/student/${id}/notes/${editingNote.note_id}`, editingNote, { withCredentials: true })
         .subscribe(() => {
-          this.showNoteModal = false;
+          this.modalManager.closeModal('add_note');
           this.refreshNotes();
         });
     } else {
       // Create
-      this.http.post(`${Config.API_URL}/v1/student/${id}/notes`, this.editingNote, { withCredentials: true })
+      this.http.post(`${Config.API_URL}/v1/student/${id}/notes`, editingNote, { withCredentials: true })
         .subscribe(() => {
-          this.showNoteModal = false;
+          this.modalManager.closeModal('add_note');
           this.refreshNotes();
         });
     }

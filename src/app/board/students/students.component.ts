@@ -73,7 +73,7 @@ export interface Student {
   evaluations: any[];
   matrika?: StudentMatrika;
   matrika_records?: StudentMatrikaRecord[];
-  subject_exemptions?: StudentSubjectExemption[];
+  subject_exemptions: StudentSubjectExemption[];
   last_grades: any[];
 }
 
