@@ -1,29 +1,24 @@
 <div class="card">
     <div class="card-header">
         <div class="left">
-            <h2>Odměny k vyzvednutí</h2>
-            <p class="meta muted">Přehled odměn čekajících na vyzvednutí v kanceláři školy</p>
+            <h2>{{ l.s('rewards.title') }}</h2>
+            <p class="meta muted">{{ l.s('rewards.subtitle') }}</p>
         </div>
-        @if (isTeacher) {
         <div class="flex-items">
-            <button class="btn btn--primary" (click)="openAddReward()">
-                <i-tabler name="plus"></i-tabler>
-                <span>Přidat odměnu</span>
-            </button>
+            <schoolingo-tabs prefix="rewards.status." [options]="rewardOptions" [value]="rewardSelectedTab" [icons]="['list', 'clock-hour-4', 'check']"></schoolingo-tabs>
         </div>
-        }
     </div>
 
     <div class="card-body">
         <!-- Info Banner for Students -->
-        @if (!isTeacher && pendingCount > 0) {
+        @if (pendingCount > 0) {
         <div class="info-banner">
             <div class="banner-icon">
                 <i-tabler name="gift"></i-tabler>
             </div>
             <div class="banner-content">
-                <strong>Máte {{ pendingCount }} {{ pendingCount === 1 ? 'odměnu' : 'odměny' }} k vyzvednutí!</strong>
-                <p>Navštivte kancelář školy pro vyzvednutí.</p>
+                <strong>{{ l.s('rewards.pending_banner.' + (pendingCount === 1 ? 'one' : (pendingCount < 5 && pendingCount > 1 ? 'few' : 'many')), { count: pendingCount }) }}</strong>
+                <p>{{ l.s('rewards.visit_office') }}</p>
             </div>
         </div>
         }
@@ -36,7 +31,7 @@
                 </div>
                 <div class="stat-info">
                     <span class="stat-value">{{ pendingCount }}</span>
-                    <span class="stat-label">Čeká na vyzvednutí</span>
+                    <span class="stat-label">{{ l.s('rewards.stats.pending') }}</span>
                 </div>
             </div>
             <div class="stat-card stat--success">
@@ -45,28 +40,24 @@
                 </div>
                 <div class="stat-info">
                     <span class="stat-value">{{ totalPendingAmount | number }} Kč</span>
-                    <span class="stat-label">Celkem finanční odměny</span>
+                    <span class="stat-label">{{ l.s('rewards.stats.total_amount') }}</span>
                 </div>
             </div>
         </div>
 
-        <!-- Filters -->
-        <div class="filters-bar">
-            <schoolingo-tabs [options]="['rewards.status.all', 'rewards.status.pending', 'rewards.status.collected']" [icons]="['list', 'clock-hour-4', 'check']"></schoolingo-tabs>
-        </div>
-
         <!-- Loading State -->
         @if (loading) {
-        <div class="loading-state">
-            <div class="loader"></div>
-            <p>Načítání odměn...</p>
+        <div class="loading-state" style="padding: 4rem 0; text-align: center;">
+            <div class="loader" style="margin: 0 auto 1.5rem;"></div>
+            <p style="color: var(--text-muted);">{{ l.s('rewards.loading') }}</p>
         </div>
         } @else {
 
         <!-- Rewards List -->
         <div class="rewards-list">
             @for (reward of filteredRewards; track reward.id) {
-            <div class="reward-card" [class.reward-card--collected]="reward.status === 'collected'">
+            <div class="reward-card" [class.reward-card--collected]="reward.status === 'collected'"
+                style="position: relative;">
                 <div class="reward-type-icon" [attr.data-type]="reward.type">
                     <i-tabler [name]="getTypeIcon(reward.type)"></i-tabler>
                 </div>
@@ -74,66 +65,63 @@
                 <div class="reward-content">
                     <div class="reward-header">
                         <div class="reward-info">
-                            <span class="reward-type-badge">{{ getTypeLabel(reward.type) }}</span>
-                            <h3 class="reward-title">{{ reward.title }}</h3>
+                            <div style="display: flex; align-items: center; gap: 0.75rem;">
+                                <span class="reward-type-badge">{{ getTypeLabel(reward.type) }}</span>
+                                <h3 class="reward-title">{{ reward.title }}</h3>
+                            </div>
+                            @if (reward.amount) {
+                            <div class="reward-amount">
+                                {{ reward.amount | number }} Kč
+                            </div>
+                            }
                         </div>
-                        @if (reward.amount) {
-                        <div class="reward-amount">
-                            {{ reward.amount | number }} Kč
+
+                        <p class="reward-description">{{ reward.description }}</p>
+
+                        <div class="reward-meta">
+                            <span class="meta-item">
+                                <i-tabler name="calendar"></i-tabler>
+                                {{ l.s('rewards.created_at') }}: {{ reward.createdAt | date:'dd.MM.yyyy' }}
+                            </span>
+                            @if (reward.createdByName) {
+                            <span class="meta-item">
+                                <i-tabler name="user"></i-tabler>
+                                {{ l.s('rewards.given_by') }}: {{ reward.createdByName }}
+                            </span>
+                            }
+                            @if (reward.status === 'collected' && reward.collectedAt) {
+                            <span class="meta-item meta-item--success">
+                                <i-tabler name="check"></i-tabler>
+                                {{ l.s('rewards.status.collected') }}: {{ reward.collectedAt | date:'dd.MM.yyyy' }}
+                            </span>
+                            }
                         </div>
-                        }
                     </div>
 
-                    <p class="reward-description">{{ reward.description }}</p>
-
-                    <div class="reward-meta">
-                        @if (isTeacher && reward.studentName) {
-                        <span class="meta-item">
-                            <i-tabler name="user"></i-tabler>
-                            {{ reward.studentName }}
-                        </span>
+                    <div class="reward-status">
+                        <div style="display: flex; flex-direction: column; gap: 0.75rem; align-items: flex-end;">
+                        @if (reward.status === 'pending') {
+                            <span class="status-badge status-badge--pending">
+                                <i-tabler name="clock-hour-4"></i-tabler>
+                                {{ l.s('rewards.status.pending') }}
+                            </span>
+                        } @else {
+                            <span class="status-badge status-badge--collected">
+                                <i-tabler name="check"></i-tabler>
+                                {{ l.s('rewards.status.collected') }}
+                            </span>
                         }
-                        <span class="meta-item">
-                            <i-tabler name="calendar"></i-tabler>
-                            Vytvořeno: {{ reward.createdAt | date:'dd.MM.yyyy' }}
-                        </span>
-                        @if (reward.status === 'collected' && reward.collectedAt) {
-                        <span class="meta-item meta-item--success">
-                            <i-tabler name="check"></i-tabler>
-                            Vyzvednuto: {{ reward.collectedAt | date:'dd.MM.yyyy' }}
-                        </span>
-                        }
+                        </div>
                     </div>
-                </div>
-
-                <div class="reward-status">
-                    @if (reward.status === 'pending') {
-                    <span class="status-badge status-badge--pending">
-                        <i-tabler name="clock-hour-4"></i-tabler>
-                        K vyzvednutí
-                    </span>
-                    @if (isTeacher) {
-                    <button class="btn btn--success btn--sm" (click)="markAsCollected(reward)">
-                        <i-tabler name="check"></i-tabler>
-                        Označit jako vyzvednuto
-                    </button>
-                    }
-                    } @else {
-                    <span class="status-badge status-badge--collected">
-                        <i-tabler name="check"></i-tabler>
-                        Vyzvednuto
-                    </span>
-                    }
                 </div>
             </div>
-            }
-            @empty {
+            } @empty {
             <div class="no-selection">
                 <div class="illustration">
                     <i-tabler name="gift-off"></i-tabler>
                 </div>
-                <h3>Žádné odměny</h3>
-                <p>Momentálně nejsou evidovány žádné odměny k vyzvednutí.</p>
+                <h3>{{ l.s('rewards.no_rewards') }}</h3>
+                <p>{{ l.s('rewards.no_rewards_desc') }}</p>
             </div>
             }
         </div>

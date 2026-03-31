@@ -8,6 +8,7 @@ import { FormsModule } from '@angular/forms';
 import { ModalManager } from '@Schoolingo/modal';
 import { RoomModalComponent } from './modals/room-modal.component';
 import { RoomTimetableModalComponent } from './modals/room-timetable-modal.component';
+import { DeleteRoomModalComponent } from './modals/delete-room-modal/delete-room-modal.component';
 
 @Component({
   standalone: true,
@@ -188,10 +189,17 @@ export class ArchitectureRoomsComponent implements OnInit {
     this.modalManager.addModal('room-modal', {
       icon: 'door',
       title: 'architecture.rooms',
-      description: 'Úprava parametrů existující místnosti',
       closeable: true,
       width: 600,
       items: [{ type: 'component', component: RoomModalComponent }]
+    });
+
+    this.modalManager.addModal('delete-room', {
+      icon: 'trash',
+      title: 'architecture.delete_room_title',
+      closeable: true,
+      width: 500,
+      items: [{ type: 'component', component: DeleteRoomModalComponent }]
     });
 
     this.modalManager.addModal('room-timetable-modal', {
@@ -228,7 +236,8 @@ export class ArchitectureRoomsComponent implements OnInit {
   }
 
   openRoomModal(room: any = null): void {
-    this.modalManager.updateModal('room-modal', 'title', room ? this.l.s('architecture.edit_room') : this.l.s('architecture.new_room'));
+    this.modalManager.updateModal('room-modal', 'title', room ? 'architecture.edit_room' : 'architecture.new_room');
+    this.modalManager.updateModal('room-modal', 'icon', room ? 'edit' : 'plus');
     this.modalManager.openModal('room-modal', {
       room,
       floors: this.floors,
@@ -244,9 +253,11 @@ export class ArchitectureRoomsComponent implements OnInit {
   }
 
   deleteRoom(id: number): void {
-      if (confirm('Opravdu chcete smazat tuto místnost?')) {
-          this.http.delete(`${Config.API_URL}/v1/school/architecture/rooms/${id}`, { withCredentials: true })
-            .subscribe(() => this.loadRooms());
-      }
+      this.modalManager.openModal('delete-room', {
+          callback: () => {
+              this.http.delete(`${Config.API_URL}/v1/school/architecture/rooms/${id}`, { withCredentials: true })
+                .subscribe(() => this.loadRooms());
+          }
+      });
   }
 }

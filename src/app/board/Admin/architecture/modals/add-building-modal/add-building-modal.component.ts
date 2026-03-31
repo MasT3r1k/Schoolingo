@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
 import { Config } from '@Schoolingo/config';
@@ -19,6 +19,7 @@ export class AddBuildingModalComponent {
   private http = inject(HttpClient);
   public modalManager = inject(ModalManager);
   public dropdownManager = inject(DropdownManager);
+  public buildingId: number | null = null;
 
   public selected_type: string = 'school';
 
@@ -33,6 +34,15 @@ export class AddBuildingModalComponent {
     name: ''
   };
 
+  ngOnInit(): void {
+    const data = this.modalManager.getModalData('add-building');
+    if (data?.building) {
+      this.buildingId = data.building.building_id;
+      this.buildingForm.name = data.building.name;
+      this.selected_type = data.building.type;
+    }
+  }
+
   public getSelectedTypeLabel(): string {
     const type = this.buildingTypes.find(t => t.value === this.selected_type);
     return type ? type.label : 'Vyberte typ';
@@ -40,6 +50,7 @@ export class AddBuildingModalComponent {
 
   public saveBuilding(): void {
     const payload = {
+      building_id: this.buildingId !== null ? this.buildingId : undefined,
       name: this.buildingForm.name,
       type: this.selected_type
     };

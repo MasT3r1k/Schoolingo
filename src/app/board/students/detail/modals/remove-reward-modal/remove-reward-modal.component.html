@@ -1,0 +1,35 @@
+<div class="modal-body">
+    <div *ngIf="data?.reward" class="reward-preview-card"
+        style="padding: 1.25rem; background: var(--bg-secondary); border: 1px solid var(--border); border-radius: 12px; display: flex; align-items: center; gap: 1rem;">
+        <div class="reward-icon"
+            style="width: 44px; height: 44px; background: var(--danger-light); color: var(--danger); border-radius: 10px; display: flex; align-items: center; justify-content: center;">
+            <i-tabler name="gift"></i-tabler>
+        </div>
+        <div class="reward-info">
+            <div style="font-weight: 700; color: var(--text-main);">{{ data.reward.title }}</div>
+            @if (data.reward.description) {
+            <div style="font-size: 13px; color: var(--text-muted);">{{
+                data.reward.description | slice:0:60 }}{{ data.reward.description.length > 60 ? '...' : '' }}
+            </div>
+            }
+        </div>
+    </div>
+
+    <div class="danger-notice"
+        style="margin-top: 1.5rem; display: flex; align-items: center; gap: 0.75rem; color: var(--danger); font-size: 13px; font-weight: 600;">
+        <i-tabler name="alert-triangle" style="width: 18px; height: 18px;"></i-tabler>
+        <span>{{ l.s('rewards.confirm_delete_desc') }}</span>
+    </div>
+</div>
+
+<div class="modal-actions"
+    style="margin-top: 2rem; padding-top: 1rem; border-top: 1px solid var(--border); display: flex; justify-content: flex-end; gap: 1rem;">
+    <button class="btn btn--secondary" (click)="closeModal()">
+        <i-tabler name="x"></i-tabler>
+        <span>{{ l.s('buttons.cancel') }}</span>
+    </button>
+    <button class="btn btn--danger" (click)="confirm()">
+        <i-tabler name="trash"></i-tabler>
+        <span>{{ l.s('rewards.delete_reward_btn') }}</span>
+    </button>
+</div>

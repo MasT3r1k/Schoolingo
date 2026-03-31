@@ -2,7 +2,7 @@ import { Component, inject, OnInit } from '@angular/core';
 import { Locale } from '@Schoolingo/locale';
 import { DatalistMetadata } from "@Components/datalist";
 import { HttpClient } from '@angular/common/http';
-import { BehaviorSubject } from 'rxjs';
+import { BehaviorSubject, distinctUntilChanged } from 'rxjs';
 import { Config } from '@Schoolingo/config';
 import { Utils } from '@Schoolingo/utils';
 import moment from 'moment';
@@ -79,7 +79,9 @@ export class LoginHistoryComponent implements OnInit {
       console.log(data)
     });
 
-    this.selectedPeriod.subscribe((number) => {
+    this.selectedPeriod
+    .pipe(distinctUntilChanged())
+    .subscribe((number) => {
       this.setPeriod(this.periodOptions[number]);
     })
   }

@@ -152,16 +152,17 @@ export const config: SidebarGroup[] = [
                     url: 'teach/classbook',
                     icon: 'book-2',
                     permission: ['teacher']
-                }, {
-                    item: 'sidebar.teach.subjects',
-                    url: 'teach/subjects',
-                    icon: 'books',
-                    permission: ['student', 'parent']
-                }, {
+                },// {
+                //     item: 'sidebar.teach.subjects',
+                //     url: 'teach/subjects',
+                //     icon: 'books',
+                //     permission: ['student', 'parent']
+                //},
+                {
                      item: 'sidebar.teach.rewards',
                      url: 'teach/rewards',
                      icon: 'trophy',
-                     permission: ['student', 'teacher']
+                     permission: ['student']
                 },// {
                 //     item: 'sidebar.teach.tests',
                 //     url: 'tests',

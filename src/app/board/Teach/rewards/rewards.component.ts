@@ -9,7 +9,9 @@ import { Locale } from '@Schoolingo/locale';
 import { ModalManager } from '@Schoolingo/modal';
 import { FormsModule } from '@angular/forms';
 import { TabsComponent } from '@Components/Tabs';
-import { AddRewardModalComponent } from './modals/add-reward-modal/add-reward-modal.component';
+import { AddRewardModalComponent } from '../../students/detail/modals/add-reward-modal/add-reward-modal.component';
+import { BehaviorSubject } from 'rxjs';
+
 
 interface Reward {
   id: number;
@@ -38,7 +40,6 @@ interface Student {
   styleUrl: './rewards.component.css'
 })
 export class RewardsComponent implements OnInit {
-  private auth = inject(Authentication);
   private http = inject(HttpClient);
   private modalManager = inject(ModalManager);
   public l = inject(Locale);
@@ -46,34 +47,20 @@ export class RewardsComponent implements OnInit {
   rewards: Reward[] = [];
   students: Student[] = [];
   loading = true;
-  isTeacher = false;
   
   // Filter
-  filterStatus: 'all' | 'pending' | 'collected' = 'all';
+  public rewardSelectedTab = new BehaviorSubject(0);
+  public rewardOptions = [
+    'all',
+    'pending',
+    'collected'
+  ];
+
   
   ngOnInit() {
-    this.isTeacher = this.auth.getRole() === 'teacher' || this.auth.getRole() === 'admin' || this.auth.getUser()?.manager == -1;
     this.loadRewards();
-    
-    if (this.isTeacher) {
-      this.loadStudents();
-    }
-
-    this.modalManager.addModal(
-      'add_reward',
-      {
-        icon: 'gift',
-        title: 'Přidat odměnu',
-        description: 'Udělejte někomu radost za jeho úspěchy.',
-        closeable: true,
-        width: 600,
-        items: [{
-          type: 'component',
-          component: AddRewardModalComponent
-        }]
-      }
-    );
   }
+
   
   loadRewards() {
     this.loading = true;
@@ -97,27 +84,13 @@ export class RewardsComponent implements OnInit {
     });
   }
   
-  loadStudents() {
-    this.http.get<{ students: any[] }>(
-      `${Config.API_URL}/v1/students`,
-      { withCredentials: true }
-    ).subscribe({
-      next: (response) => {
-        this.students = response.students.map(s => ({
-          person: s.person,
-          name: `${s.lastname} ${s.firstname}`
-        }));
-      },
-      error: (err) => {
-        console.error('Failed to load students:', err);
-      }
-    });
-  }
-  
   get filteredRewards(): Reward[] {
-    if (this.filterStatus === 'all') return this.rewards;
-    return this.rewards.filter(r => r.status === this.filterStatus);
+    const tab = this.rewardSelectedTab.getValue();
+    if (tab === 1) return this.rewards.filter(r => r.status === 'pending');
+    if (tab === 2) return this.rewards.filter(r => r.status === 'collected');
+    return this.rewards;
   }
+
   
   get pendingCount(): number {
     return this.rewards.filter(r => r.status === 'pending').length;
@@ -129,8 +102,8 @@ export class RewardsComponent implements OnInit {
       .reduce((sum, r) => sum + (r.amount || 0), 0);
   }
   
-  setFilter(status: 'all' | 'pending' | 'collected') {
-    this.filterStatus = status;
+  setFilter(index: number) {
+    this.rewardSelectedTab.next(index);
   }
   
   getTypeIcon(type: string): string {
@@ -162,29 +135,6 @@ export class RewardsComponent implements OnInit {
       },
       error: (err) => {
         console.error('Failed to update reward:', err);
-      }
-    });
-  }
-  
-  openAddReward() {
-    this.modalManager.openModal('add_reward');
-  }
-  
-
-  deleteReward(reward: Reward) {
-    if (!confirm(this.l.s('rewards.confirm_delete'))) {
-      return;
-    }
-    
-    this.http.delete(
-      `${Config.API_URL}/v1/rewards/${reward.id}`,
-      { withCredentials: true }
-    ).subscribe({
-      next: () => {
-        this.rewards = this.rewards.filter(r => r.id !== reward.id);
-      },
-      error: (err) => {
-        console.error('Failed to delete reward:', err);
       }
     });
   }

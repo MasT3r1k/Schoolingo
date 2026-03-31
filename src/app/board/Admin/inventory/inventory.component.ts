@@ -8,6 +8,7 @@ import { FormsModule } from '@angular/forms';
 import { ModalManager } from '@Schoolingo/modal';
 import { InventoryItemModalComponent } from './modals/inventory-item-modal.component';
 import { InventoryLogsModalComponent } from './modals/inventory-logs-modal.component';
+import { DeleteItemModalComponent } from './modals/delete-item-modal/delete-item-modal.component';
 
 @Component({
   standalone: true,
@@ -154,6 +155,14 @@ export class InventoryComponent implements OnInit {
       items: [{ type: 'component', component: InventoryItemModalComponent }]
     });
 
+    this.modalManager.addModal('delete-item', {
+      title: 'architecture.delete_item_title',
+      icon: 'trash',
+      closeable: true,
+      width: 500,
+      items: [{ type: 'component', component: DeleteItemModalComponent }]
+    });
+
     this.modalManager.addModal('inventory-logs', {
       title: 'architecture.history.title',
       closeable: true,
@@ -180,7 +189,7 @@ export class InventoryComponent implements OnInit {
   }
 
   openItemModal(item: any = null): void {
-    this.modalManager.updateModal('inventory-item', 'title', item ? this.l.s('architecture.edit_item') : this.l.s('architecture.new_item'));
+    this.modalManager.updateModal('inventory-item', 'title', item ? 'architecture.edit_item' : 'architecture.new_item');
     this.modalManager.updateModal('inventory-item', 'icon', item ? 'edit' : 'plus');
     this.modalManager.openModal('inventory-item', {
       item,
@@ -190,10 +199,12 @@ export class InventoryComponent implements OnInit {
   }
 
   deleteItem(id: number): void {
-      if (confirm('Opravdu chcete smazat tuto položku z evidence?')) {
-          this.http.delete(`${Config.API_URL}/v1/school/inventory/${id}`, { withCredentials: true })
-            .subscribe(() => this.loadInventory());
-      }
+      this.modalManager.openModal('delete-item', {
+          callback: () => {
+              this.http.delete(`${Config.API_URL}/v1/school/inventory/${id}`, { withCredentials: true })
+                .subscribe(() => this.loadInventory());
+          }
+      });
   }
 
   showLogs(id: number): void {

@@ -25,6 +25,12 @@
                     <div class="lesson-subject">
                         <span>{{ lesson.isEmpty ? l.s('timetable.free_time') : (lesson.subject_name || '') }}</span>
                         <div class="lesson-icons">
+                            @if (lesson.is_past_unrecorded) {
+                            <div class="badge" title="Nezapsaná hodina"
+                                style="background: var(--warning-100); color: var(--warning-500); font-size: 10px; padding: 2px 6px; border-radius: 4px; font-weight: bold; display: flex; align-items: center; gap: 4px;">
+                                <i-tabler name="alert-triangle" style="width: 12px; height: 12px;"></i-tabler> NEZAPSÁNO
+                            </div>
+                            }
                             @if (lesson.isSubstitution) {
                             <div class="badge"
                                 style="background: var(--danger-100); color: var(--danger-500); font-size: 10px; padding: 2px 6px; border-radius: 4px; font-weight: bold;">
@@ -161,7 +167,7 @@
                         <label for="lessonTeacherNote">
                             {{ l.s('classbook.lesson_teacher_note') }}
                         </label>
-                        <textarea [(ngModel)]="classbook.classbook.internalNote"
+                        <textarea [(ngModel)]="classbook.classbook.internal_note"
                             [placeholder]="l.s('classbook.placeholder_teacher_note')"></textarea>
                         <small class="note">
                             {{ l.s('classbook.lesson_teacher_note_note') }}
@@ -169,7 +175,8 @@
                     </div>
 
                     <div class="form-group">
-                        <div class="btn btn--primary" style="align-self: flex-start; width: max-content; gap: 8px;">
+                        <div class="btn btn--primary" (click)="saveLesson()"
+                            style="align-self: flex-start; width: max-content; gap: 8px;">
                             <i-tabler name="device-floppy"></i-tabler>
                             {{ l.s('classbook.save_lesson') }}
                         </div>
@@ -339,45 +346,55 @@
                     {{ l.s('classbook.add_homework_btn') }}
                 </div>
                 <div class="homework-list">
-                    <div class="homework-item">
+                    @for (hw of classbook.homeworks; track hw.homework_id) {
+                    <div class="homework-item clickable" (click)="expandedHomework = expandedHomework === hw.homework_id ? null : hw.homework_id">
                         <div class="homework-header">
                             <div>
-                                <div class="homework-title">Vypočítat příklady 1-15</div>
+                                <div class="homework-title">{{ hw.headline }}</div>
                                 <div class="homework-date">
-                                    {{ l.s('classbook.homework_timeline', { start: '18. 11. 2025', end: '22. 11. 2025',
-                                    submitted: 0, total: 28 }) }}
+                                    {{ l.s('classbook.homework_timeline', { start: Utils.formatDateShort(hw.assigned_at), end: Utils.formatDateShort(hw.due_date), submitted: getSubmittedCount(hw), total: hw.submissions?.length || 0 }) }}
                                 </div>
                             </div>
-                        </div>
-                        <div class="homework-desc">
-                            Vyřešit kvadratické rovnice ze sbírky, strana 45. Použít diskriminant a zkontrolovat
-                            výsledky dosazením.
-                        </div>
-                    </div>
-
-                    <div class="homework-item">
-                        <div class="homework-header">
-                            <div>
-                                <div class="homework-title">Grafické znázornění funkcí</div>
-                                <div class="homework-date">Zadáno: 15. 11. 2025 | Odevzdat do: 20. 11. 2025</div>
+                            <div class="icon" [style.transform]="expandedHomework === hw.homework_id ? 'rotate(180deg)' : 'rotate(0)'" style="transition: transform 0.2s;">
+                                <i-tabler name="chevron-down"></i-tabler>
                             </div>
                         </div>
+                        
+                        @if (expandedHomework === hw.homework_id) {
                         <div class="homework-desc">
-                            Nakreslit grafy 5 lineárních funkcí do milimetrového papíru. Označit průsečíky s osami.
+                            {{ hw.homework }}
                         </div>
-                    </div>
-
-                    <div class="homework-item">
-                        <div class="homework-header">
-                            <div>
-                                <div class="homework-title">Příprava na písemnou práci</div>
-                                <div class="homework-date">Zadáno: 12. 11. 2025 | Odevzdat do: 19. 11. 2025</div>
+                        
+                        @if (hw.submissions && hw.submissions.length > 0) {
+                        <div class="homework-submissions" style="margin-top: 1rem; border-top: 1px solid var(--border); padding-top: 1rem;">
+                            <h4 style="margin: 0 0 0.5rem 0; font-size: 14px; color: var(--text-muted); font-weight: 600;">Stav odevzdání studentů</h4>
+                            <div class="submissions-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 8px;">
+                                @for (sub of hw.submissions; track sub.student_id) {
+                                <div class="submission-item" style="display: flex; justify-content: space-between; align-items: center; padding: 6px 12px; border-radius: 6px; background: var(--bg-secondary); font-size: 13px;">
+                                     <div class="student-name">{{ sub.last_name }} {{ sub.first_name }}</div>
+                                     <div class="submission-status">
+                                         @if (sub.finished || sub.submitted) {
+                                            <span class="badge" style="background: var(--success); color: white; padding: 2px 6px; border-radius: 4px; font-size: 11px;">Odevzdáno</span>
+                                         } @else {
+                                            <span class="badge" style="background: var(--warning-100); color: var(--warning-500); padding: 2px 6px; border-radius: 4px; font-size: 11px;">Neodevzdáno</span>
+                                         }
+                                     </div>
+                                </div>
+                                }
                             </div>
                         </div>
-                        <div class="homework-desc">
-                            Zopakovat látku z kapitol 3-5. Zaměřit se na řešení rovnic a nerovnic.
-                        </div>
+                        }
+                        }
                     </div>
+                    } @empty {
+                    <div class="no-selection">
+                        <div class="illustration">
+                            <i-tabler name="pencil"></i-tabler>
+                        </div>
+                        <h3>{{ l.s('classbook.no_homework') }}</h3>
+                        <p>{{ l.s('classbook.no_homework_desc') }}</p>
+                    </div>
+                    }
                 </div>
                 }
 

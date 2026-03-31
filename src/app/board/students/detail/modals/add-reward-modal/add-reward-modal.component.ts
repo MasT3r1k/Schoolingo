@@ -13,6 +13,8 @@ interface Student {
   name: string;
 }
 
+type reward_types = 'financial' | 'certificate' | 'prize' | 'other';
+
 @Component({
   selector: 'add-reward-modal',
   standalone: true,
@@ -34,20 +36,18 @@ export class AddRewardModalComponent implements OnInit {
     title: '',
     description: '',
     amount: null as number | null,
-    type: 'other' as 'financial' | 'certificate' | 'prize' | 'other',
+    type: 'financial' as reward_types,
     studentId: null as number | null
   };
 
-  public rewardTypes: { id: 'financial' | 'certificate' | 'prize' | 'other'; name: string; icon: string }[] = [
-    { id: 'financial', name: 'Finanční', icon: 'cash' },
-    { id: 'certificate', name: 'Certifikát/Diplom', icon: 'certificate' },
-    { id: 'prize', name: 'Věcná cena', icon: 'trophy' },
-    { id: 'other', name: 'Jiné', icon: 'gift' }
+  public rewardTypes: { id: reward_types; icon: string }[] = [
+    { id: 'financial', icon: 'cash' },
+    { id: 'certificate', icon: 'certificate' },
+    { id: 'prize', icon: 'trophy' },
+    { id: 'other', icon: 'gift' }
   ];
 
   ngOnInit() {
-    this.loadStudents();
-
     // Pre-select student if provided via modal data
     const modalData = this.modalManager.getModalData('add_reward');
     if (modalData && modalData.studentId) {
@@ -56,30 +56,14 @@ export class AddRewardModalComponent implements OnInit {
     }
   }
 
-  loadStudents() {
-    this.http.get<{ students: any[] }>(
-      `${Config.API_URL}/v1/students`,
-      { withCredentials: true }
-    ).subscribe({
-      next: (response) => {
-        this.students = response.students.map(s => ({
-          person: s.person,
-          name: `${s.lastname} ${s.firstname}`
-        }));
-      },
-      error: (err) => {
-        console.error('Failed to load students in modal:', err);
-      }
-    });
-  }
+  public getTypeLabel(type: string): string {
+    const placeholder = 'rewards.type.' + type;
+    const text = this.l.s('rewards.type.' + type);
+    if (text == `[${placeholder}]`) {
+      return this.l.s('rewards.type.other');
+    }
 
-  public selectedStudentName(): string {
-    if (!this.newReward.studentId) return 'Vyberte studenta';
-    return this.students.find(s => s.person === this.newReward.studentId)?.name || 'Vyberte studenta';
-  }
-
-  public selectedTypeName(): string {
-    return this.rewardTypes.find(t => t.id === this.newReward.type)?.name || 'Jiné';
+    return text;
   }
 
   public selectedTypeIcon(): string | any {

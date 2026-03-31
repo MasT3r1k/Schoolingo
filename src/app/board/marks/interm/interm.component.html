@@ -156,9 +156,9 @@
               {{ l.s("marks.mark") }}
             </label>
             <div class="grade-selector">
-              @for (mark of [1, 2, 3, 4, 5]; track $index) {
+              @for (mark of marksManager.getConfig().mark_ids; track $index) {
               <div class="grade-btn" [class.active]="selected_mark == mark" (click)="selected_mark = mark">
-                {{ mark }}
+                {{ marksManager.getConfig().mark_display[$index] }}
               </div>
               }
             </div>
@@ -201,7 +201,7 @@
             {{ l.s('marks.predictor.stop_edit_mark') }}
           </div>
           } @else {
-          <div class="btn btn--primary btn-add-primary" (click)="addMarkToPredictor()">
+          <div class="btn btn--primary" (click)="addMarkToPredictor()">
             <i-tabler name="plus"></i-tabler>
             {{ l.s("marks.predictor.add_mark") }}
           </div>

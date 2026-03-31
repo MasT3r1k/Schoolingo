@@ -253,13 +253,15 @@ export class ArchitectureDashboardComponent implements OnInit {
 
   ngOnInit(): void {
     this.modalManager.addModal('add-building', {
-      title: this.l.s('architecture.new_building'),
+      title: 'architecture.new_building',
+      icon: 'plus',
       width: 500,
       closeable: true,
       items: [
         { type: 'component', component: AddBuildingModalComponent }
       ]
     });
+
 
     this.loadStats();
     this.loadBuildings();
@@ -280,6 +282,9 @@ export class ArchitectureDashboardComponent implements OnInit {
   }
 
   public openAddBuildingModal(): void {
+    this.modalManager.updateModal('add-building', 'title', 'architecture.new_building');
+    this.modalManager.updateModal('add-building', 'icon', 'plus');
     this.modalManager.openModal('add-building', { refreshCallback: () => { this.loadStats(); this.loadBuildings(); } });
   }
+
 }

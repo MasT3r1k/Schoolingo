@@ -3,6 +3,7 @@ import { inject } from "@angular/core";
 import { Config } from "@Schoolingo/config";
 import { ModalManager } from "@Schoolingo/modal";
 import { BehaviorSubject } from "rxjs";
+import { UploadFile } from "@Schoolingo/upload";
 
 export class Classbook {
     private modalManager = inject(ModalManager);
@@ -17,6 +18,7 @@ export class Classbook {
 
     public homeworks: any[] = [];
     public notes: any[] = [];
+    public files: UploadFile[] = [];
 
     public getStudent(student_id: number | null): any {
         if (student_id == null) return {};

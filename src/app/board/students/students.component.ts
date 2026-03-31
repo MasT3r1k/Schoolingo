@@ -255,8 +255,7 @@ export class StudentsComponent implements OnInit {
       'add_student',
       {
         icon: 'user-plus',
-        title: 'Přidat nového studenta',
-        description: 'Jeden žák navíc už vás přece nerozhází.',
+        title: 'students.add_student',
         closeable: true,
         width: 600,
         items: [{

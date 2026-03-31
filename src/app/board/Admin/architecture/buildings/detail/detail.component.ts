@@ -8,6 +8,7 @@ import { Config } from '@Schoolingo/config';
 import { FormsModule } from '@angular/forms';
 import { ModalManager } from '@Schoolingo/modal';
 import { AddFloorModalComponent } from './modals/add-floor-modal.component';
+import { DeleteFloorModalComponent } from './modals/delete-floor-modal/delete-floor-modal.component';
 
 @Component({
   standalone: true,
@@ -198,10 +199,18 @@ export class ArchitectureBuildingDetailComponent implements OnInit {
   ngOnInit(): void {
     this.modalManager.addModal('floor-modal', {
       icon: 'layers-intersect',
-      title: 'Nové patro',
+      title: 'architecture.new_floor',
       closeable: true,
       width: 500,
       items: [{ type: 'component', component: AddFloorModalComponent }]
+    });
+
+    this.modalManager.addModal('delete-floor', {
+      icon: 'trash',
+      title: 'architecture.delete_floor_title',
+      closeable: true,
+      width: 500,
+      items: [{ type: 'component', component: DeleteFloorModalComponent }]
     });
     this.route.params.subscribe(params => {
         if (params['id']) {
@@ -236,7 +245,8 @@ export class ArchitectureBuildingDetailComponent implements OnInit {
   }
 
   openAddFloorModal(): void {
-    this.modalManager.updateModal('floor-modal', 'title', 'Nové patro');
+    this.modalManager.updateModal('floor-modal', 'title', 'architecture.new_floor');
+    this.modalManager.updateModal('floor-modal', 'icon', 'plus');
     this.modalManager.openModal('floor-modal', {
         buildingId: this.buildingId,
         refreshCallback: () => this.loadFloors()
@@ -244,7 +254,8 @@ export class ArchitectureBuildingDetailComponent implements OnInit {
   }
 
   editFloor(floor: any): void {
-    this.modalManager.updateModal('floor-modal', 'title', 'Upravit patro');
+    this.modalManager.updateModal('floor-modal', 'title', 'architecture.edit_floor');
+    this.modalManager.updateModal('floor-modal', 'icon', 'edit');
     this.modalManager.openModal('floor-modal', {
         buildingId: this.buildingId,
         floor: floor,
@@ -253,9 +264,11 @@ export class ArchitectureBuildingDetailComponent implements OnInit {
   }
 
   deleteFloor(id: number): void {
-      if (confirm('Opravdu chcete smazat toto patro? Přijdete také o všechny místnosti v tomto patře!')) {
-          this.http.delete(`${Config.API_URL}/v1/school/architecture/floors/${id}`, { withCredentials: true })
-            .subscribe(() => this.loadFloors());
-      }
+      this.modalManager.openModal('delete-floor', {
+          callback: () => {
+              this.http.delete(`${Config.API_URL}/v1/school/architecture/floors/${id}`, { withCredentials: true })
+                .subscribe(() => this.loadFloors());
+          }
+      });
   }
 }

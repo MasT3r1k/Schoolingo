@@ -11,6 +11,7 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { NoteModal } from './modals/add-note/note';
 import { Classbook } from '@Schoolingo/classbook';
 import { ClassbookAbsenceComponent } from './modals/absence/absence.component';
+import { ClassbookUploadFilesComponent } from './modals/upload-files/upload-files.component';
 import { BehaviorSubject } from 'rxjs';
 import { Authentication } from '@Schoolingo/authentication';
 import { CalendarComponent } from '@Components/calendar';
@@ -20,6 +21,7 @@ import { TimetableHours } from '../timetable/timetable.component';
 import { School } from '@Schoolingo/school';
 import { Utils } from '@Schoolingo/utils';
 import { Permission } from '@Schoolingo/permission';
+import { AlertManager } from '@Schoolingo/alert';
 
 interface ClassbookLesson {
   subject_name: string;
@@ -43,6 +45,7 @@ export class ClassbookComponent implements OnInit {
   private perms = inject(Permission);
   private school = inject(School);
   private u = inject(Authentication);
+  private alertManager = inject(AlertManager);
   public l = inject(Locale);
   public absenceConfig = absence;
   public classbook = inject(Classbook);
@@ -74,8 +77,14 @@ export class ClassbookComponent implements OnInit {
     this.modalManager.openModal('add_note')
   }
 
+  public getSubmittedCount(hw: any): number {
+    if (!hw.submissions || !Array.isArray(hw.submissions)) return 0;
+    return hw.submissions.filter((s: any) => s.submitted || s.finished).length;
+  }
+
   public selected_lesson = new BehaviorSubject<number>(0);
   public selected_tab = 0;
+  public expandedHomework: number | null = null;
   public selected_absence = 0;
   public timetable: any[] = [];
   public selected_date = moment();
@@ -142,6 +151,19 @@ export class ClassbookComponent implements OnInit {
         }
 
         const day = this.selected_date.isoWeekday();
+        const dateStr = this.selected_date.format('YYYY-MM-DD');
+
+        if ('classbooks' in data) {
+            timetableData.forEach((lesson: any) => {
+                lesson.is_recorded = data.classbooks.some((cb: any) => {
+                    return moment(cb.date).format('YYYY-MM-DD') === dateStr &&
+                        cb.day_hour === (lesson.hour - 1) &&
+                        cb.group_id === lesson.group_id &&
+                        cb.topic !== null && cb.topic !== '';
+                });
+            });
+        }
+        
         const dailyLessons = timetableData.filter(
           (lesson: any) => lesson.day === day && (lesson.type == 0 || (lesson.type == 1 && this.selected_date.isoWeek() % 2) || (lesson.type == 2 && this.selected_date.isoWeek() % 2 == 0))
         );
@@ -179,6 +201,16 @@ export class ClassbookComponent implements OnInit {
           time.add(customBreak || schoolConfig?.break_time, 'minutes');
         }
 
+        for (let i = 0; i < this.max_hours; i++) {
+          let lesson = this.timetable[i];
+          if (!lesson.isEmpty && !lesson.is_recorded) {
+            let lessonEndMoment = this.hours[i].endMoment.clone().year(this.selected_date.year()).month(this.selected_date.month()).date(this.selected_date.date());
+            if (moment().isAfter(lessonEndMoment)) {
+              lesson.is_past_unrecorded = true;
+            }
+          }
+        }
+
         this.is_loading = false;
         const firstValidLesson = this.timetable.find(l => !l.isEmpty);
         if (targetHour !== undefined && this.timetable[targetHour] && !this.timetable[targetHour].isEmpty) {
@@ -189,6 +221,27 @@ export class ClassbookComponent implements OnInit {
           this.classbook.classbook = null as any;
         }
       })
+  }
+
+  public saveLesson(): void {
+    const cb = this.classbook.classbook;
+    if (!cb || !cb.classbook_id) return;
+
+    this.http.post(
+      `${Config.API_URL}/v1/classbook/lesson`,
+      {
+        classbook_id: cb.classbook_id,
+        topic: cb.topic,
+        note: cb.note,
+        internalNote: cb.internal_note
+      },
+      { withCredentials: true }
+    ).subscribe((res: any) => {
+      if (res.success) {
+        this.alertManager.alert('success', this.l.s('classbook.lesson_saved_success'));
+        this.updateLessons(this.selected_lesson.getValue());
+      }
+    });
   }
 
   public getAbsenceConfig(): AbsenceConfig[] {
@@ -216,6 +269,17 @@ export class ClassbookComponent implements OnInit {
             type: 'component',
             component: HomeworkModal
           }
+        ]
+      }
+    )
+
+    this.modalManager.addModal(
+      'classbook_files',
+      {
+        title: 'messages.attachments',
+        closeable: false,
+        items: [
+          { type: 'component', component: ClassbookUploadFilesComponent }
         ]
       }
     )

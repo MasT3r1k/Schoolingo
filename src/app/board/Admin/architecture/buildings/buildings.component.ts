@@ -6,6 +6,7 @@ import { HttpClient } from '@angular/common/http';
 import { Config } from '@Schoolingo/config';
 import { FormsModule } from '@angular/forms';
 import { AddBuildingModalComponent } from '../modals/add-building-modal/add-building-modal.component';
+import { DeleteBuildingModalComponent } from './modals/delete-building-modal/delete-building-modal.component';
 import { ModalManager } from '@Schoolingo/modal';
 import { Router } from '@angular/router';
 
@@ -205,11 +206,22 @@ export class ArchitectureBuildingsComponent implements OnInit {
   ngOnInit(): void {
     this.loadBuildings();
     this.modalManager.addModal('add-building', {
-      title: this.l.s('architecture.new_building'),
+      title: 'architecture.new_building',
+      icon: 'building',
       width: 500,
       closeable: true,
       items: [
         { type: 'component', component: AddBuildingModalComponent }
+      ]
+    });
+
+    this.modalManager.addModal('delete-building', {
+      title: 'architecture.delete_building_title',
+      icon: 'trash',
+      width: 500,
+      closeable: true,
+      items: [
+        { type: 'component', component: DeleteBuildingModalComponent }
       ]
     });
   }
@@ -222,16 +234,18 @@ export class ArchitectureBuildingsComponent implements OnInit {
   }
 
   openModal(): void {
-    this.modalManager.openModal('add-building', { refreshCallback: () => { this.loadBuildings(); } })
+    this.modalManager.updateModal('add-building', 'title', 'architecture.new_building');
+    this.modalManager.updateModal('add-building', 'icon', 'plus');
+    this.modalManager.openModal('add-building', { refreshCallback: () => { this.loadBuildings(); } });
   }
 
   editBuilding(building: any): void {
-    this.editingBuilding = building;
-    this.buildingForm = { 
-        name: building.name, 
-        type: building.type 
-    };
-    this.showModal = true;
+    this.modalManager.updateModal('add-building', 'title', 'architecture.edit_building');
+    this.modalManager.updateModal('add-building', 'icon', 'edit');
+    this.modalManager.openModal('add-building', { 
+        building,
+        refreshCallback: () => { this.loadBuildings(); } 
+    });
   }
 
   closeModal(): void {
@@ -252,10 +266,12 @@ export class ArchitectureBuildingsComponent implements OnInit {
   }
 
   deleteBuilding(id: number): void {
-      if (confirm('Opravdu chcete smazat tuto budovu?')) {
-          this.http.delete(`${Config.API_URL}/v1/school/architecture/buildings/${id}`, { withCredentials: true })
-            .subscribe(() => this.loadBuildings());
-      }
+      this.modalManager.openModal('delete-building', {
+          callback: () => {
+              this.http.delete(`${Config.API_URL}/v1/school/architecture/buildings/${id}`, { withCredentials: true })
+                .subscribe(() => this.loadBuildings());
+          }
+      });
   }
 
   goToDetail(id: number): void {

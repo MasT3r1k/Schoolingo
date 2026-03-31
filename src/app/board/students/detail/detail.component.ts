@@ -35,7 +35,8 @@ import { TabsComponent } from '@Components/Tabs';
 import { MarkDetailModalComponent } from '../../../Components/mark-detail-modal/mark-detail-modal.component';
 import { AvatarService } from '../../../infrastructure/utils/avatar.service';
 import { AddNoteComponent } from './modals/add-note/add-note.component';
-import { AddRewardModalComponent } from '../../Teach/rewards/modals/add-reward-modal/add-reward-modal.component';
+import { AddRewardModalComponent } from './modals/add-reward-modal/add-reward-modal.component';
+import { RemoveRewardModalComponent } from './modals/remove-reward-modal/remove-reward-modal.component';
 
 // Interfaces
 interface TimetableAPI {
@@ -215,6 +216,15 @@ export class DetailComponent implements OnInit, AfterViewInit {
     'marks.interm.chronologically'
   ];
 
+  // Rewards
+  public rewardSelectedTab = new BehaviorSubject(0);
+  public rewardOptions = [
+    'all',
+    'pending',
+    'collected'
+  ];
+
+
   // Medical Records
   public medicalRecords: MedicalRecord[] = [];
 
@@ -325,13 +335,25 @@ export class DetailComponent implements OnInit, AfterViewInit {
 
     this.modalManager.addModal('add_reward', {
       icon: 'award',
-      title: 'Odměny a ocenění',
-      description: 'Zde můžete udělit žákovi odměnu nebo pochvalu.',
+      title: 'students.add_reward.title',
+      description: 'students.add_reward.description',
       closeable: true,
       width: 600,
       items: [{
         type: 'component',
         component: AddRewardModalComponent
+      }]
+    });
+
+    this.modalManager.addModal('remove_reward', {
+      icon: 'trash',
+      title: 'rewards.delete_confirm_title',
+      description: 'rewards.confirm_delete',
+      closeable: true,
+      width: 500,
+      items: [{
+        type: 'component',
+        component: RemoveRewardModalComponent
       }]
     });
 
@@ -606,19 +628,20 @@ export class DetailComponent implements OnInit, AfterViewInit {
   }
 
   public deleteReward(reward: Reward): void {
-    if (!confirm(this.l.s('rewards.confirm_delete'))) {
-      return;
-    }
-    
-    this.http.delete(
-      `${Config.API_URL}/v1/rewards/${reward.id}`,
-      { withCredentials: true }
-    ).subscribe({
-      next: () => {
-        this.studentRewards = this.studentRewards.filter(r => r.id !== reward.id);
-      },
-      error: (err) => {
-        console.error('Failed to delete reward:', err);
+    this.modalManager.openModal('remove_reward', {
+      reward,
+      callback: () => {
+        this.http.delete(
+          `${Config.API_URL}/v1/rewards/${reward.id}`,
+          { withCredentials: true }
+        ).subscribe({
+          next: () => {
+            this.studentRewards = this.studentRewards.filter(r => r.id !== reward.id);
+          },
+          error: (err) => {
+            console.error('Failed to delete reward:', err);
+          }
+        });
       }
     });
   }
@@ -631,6 +654,14 @@ export class DetailComponent implements OnInit, AfterViewInit {
       default: return 'gift';
     }
   }
+
+  public getFilteredRewards(): Reward[] {
+    const tab = this.rewardSelectedTab.getValue();
+    if (tab === 1) return this.studentRewards.filter(r => r.status === 'pending');
+    if (tab === 2) return this.studentRewards.filter(r => r.status === 'collected');
+    return this.studentRewards;
+  }
+
 
   public getRewardTypeLabel(type: string): string {
     let type_id = 'other';
