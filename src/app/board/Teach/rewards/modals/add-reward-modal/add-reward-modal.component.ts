@@ -28,6 +28,7 @@ export class AddRewardModalComponent implements OnInit {
 
   public students: Student[] = [];
   public saving = false;
+  public isStudentFixed = false;
 
   public newReward = {
     title: '',
@@ -46,6 +47,13 @@ export class AddRewardModalComponent implements OnInit {
 
   ngOnInit() {
     this.loadStudents();
+
+    // Pre-select student if provided via modal data
+    const modalData = this.modalManager.getModalData('add_reward');
+    if (modalData && modalData.studentId) {
+      this.newReward.studentId = modalData.studentId;
+      this.isStudentFixed = true;
+    }
   }
 
   loadStudents() {
@@ -99,8 +107,13 @@ export class AddRewardModalComponent implements OnInit {
     ).subscribe({
       next: (response) => {
         this.saving = false;
+        const modalData = this.modalManager.getModalData('add_reward');
+        if (modalData && modalData.callback) {
+          modalData.callback();
+        } else {
+          window.location.reload();
+        }
         this.close();
-        window.location.reload();
       },
       error: (err) => {
         console.error('Failed to create reward:', err);

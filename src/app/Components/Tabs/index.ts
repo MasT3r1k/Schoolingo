@@ -20,6 +20,7 @@ export class TabsComponent {
     @Input() icons: (string | null)[] = [];
     @Input() value = new BehaviorSubject<number>(0);
     @Input() options: string[] = [];
+    @Input() prefix: string = '';
     @Input() no_bottom_radius = false;
     @Input() option_width!: string;
 

@@ -1,17 +1,18 @@
-import { Component, inject, OnInit, Sanitizer } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { Locale } from '@Schoolingo/locale';
-import { DatalistComponent, DatalistMetadata } from "@Components/datalist";
+import { DatalistMetadata } from "@Components/datalist";
 import { HttpClient } from '@angular/common/http';
-import { BehaviorSubject, distinctUntilChanged } from 'rxjs';
+import { BehaviorSubject } from 'rxjs';
 import { Config } from '@Schoolingo/config';
 import { Utils } from '@Schoolingo/utils';
 import moment from 'moment';
 import { IconsModule } from '@Schoolingo/icons';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
+import { TabsComponent } from '@Components/Tabs';
 
 @Component({
-  imports: [IconsModule, RouterLink, FormsModule],
+  imports: [IconsModule, RouterLink, FormsModule, TabsComponent],
   templateUrl: './login-history.component.html',
   styleUrl: './login-history.component.css'
 })
@@ -63,7 +64,8 @@ export class LoginHistoryComponent implements OnInit {
   public history = new BehaviorSubject<any[]>([]);
   public dateFrom: string = '';
   public dateTo: string = '';
-  public selectedPeriod: string = '30days';
+  public periodOptions = ['day', 'week', 'month', 'semester', 'school_year', '30days', 'custom'];
+  public selectedPeriod = new BehaviorSubject<number>(this.periodOptions.indexOf('30days'));
 
   ngOnInit(): void {
     this.LoadDevices(this.page.getValue());
@@ -76,16 +78,20 @@ export class LoginHistoryComponent implements OnInit {
       }
       console.log(data)
     });
+
+    this.selectedPeriod.subscribe((number) => {
+      this.setPeriod(this.periodOptions[number]);
+    })
   }
 
   public onFilterChange(): void {
-    this.selectedPeriod = 'custom';
+    this.selectedPeriod.next(this.periodOptions.indexOf('custom'));
     this.page.next(1);
     this.LoadDevices(1);
   }
 
   public setPeriod(period: string): void {
-    this.selectedPeriod = period;
+    this.selectedPeriod.next(this.periodOptions.indexOf(period));
     const now = moment();
     
     switch(period) {
@@ -112,7 +118,7 @@ export class LoginHistoryComponent implements OnInit {
                 this.dateTo = year + '-08-31';
             }
             break;
-        case 'year':
+        case 'school_year':
             const currentYear = now.year();
             const currentMonth = now.month();
             // School year starts on Sept 1st

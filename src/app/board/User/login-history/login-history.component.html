@@ -4,6 +4,9 @@
             <h2>{{ l.s('user.login_history') }}</h2>
             <span class="meta muted">Poslední aktivita na účtu — můžete zkontrolovat zařízení a IP adresy</span>
         </div>
+        <div class="flex-items">
+            <schoolingo-tabs prefix="time." [options]="periodOptions" [value]="selectedPeriod"></schoolingo-tabs>
+        </div>
     </div>
 
     <!-- Stats Section -->
@@ -42,23 +45,7 @@
     </div>
     <!-- Filter Section -->
     <div class="section filter-section">
-        <div class="period-selector">
-            <button class="period-btn" [class.active]="selectedPeriod === 'day'" (click)="setPeriod('day')">Den</button>
-            <button class="period-btn" [class.active]="selectedPeriod === 'week'"
-                (click)="setPeriod('week')">Týden</button>
-            <button class="period-btn" [class.active]="selectedPeriod === 'month'"
-                (click)="setPeriod('month')">Měsíc</button>
-            <button class="period-btn" [class.active]="selectedPeriod === 'semester'"
-                (click)="setPeriod('semester')">Pololetí</button>
-            <button class="period-btn" [class.active]="selectedPeriod === 'year'"
-                (click)="setPeriod('year')">Rok</button>
-            <button class="period-btn" [class.active]="selectedPeriod === '30days'"
-                (click)="setPeriod('30days')">Posledních 30 dní</button>
-            <button class="period-btn" [class.active]="selectedPeriod === 'custom'"
-                (click)="selectedPeriod = 'custom'">Vlastní</button>
-        </div>
-
-        @if (selectedPeriod === 'custom') {
+        @if (periodOptions[selectedPeriod.getValue()] === 'custom') {
         <div class="filter-controls-custom">
             <div class="filter-group">
                 <label for="dateFrom">Od</label>

@@ -35,6 +35,7 @@ import { TabsComponent } from '@Components/Tabs';
 import { MarkDetailModalComponent } from '../../../Components/mark-detail-modal/mark-detail-modal.component';
 import { AvatarService } from '../../../infrastructure/utils/avatar.service';
 import { AddNoteComponent } from './modals/add-note/add-note.component';
+import { AddRewardModalComponent } from '../../Teach/rewards/modals/add-reward-modal/add-reward-modal.component';
 
 // Interfaces
 interface TimetableAPI {
@@ -118,6 +119,21 @@ interface StudentNote {
   is_public: boolean;
   created_at: Date;
   updated_at: Date;
+}
+
+interface Reward {
+  id: number;
+  title: string;
+  description: string;
+  amount?: number;
+  type: 'financial' | 'certificate' | 'prize' | 'other';
+  status: 'pending' | 'collected';
+  createdAt: Date;
+  collectedAt?: Date;
+  studentName?: string;
+  student_id: number;
+  teacherId: number;
+  teacherName?: string;
 }
 
 @Component({
@@ -213,6 +229,10 @@ export class DetailComponent implements OnInit, AfterViewInit {
   // Evaluations
   public evaluations: any[] = [];
   
+  // Rewards
+  public studentRewards: Reward[] = [];
+  public isLoadingRewards = false;
+  
   // Exemptions
   public availableSubjects: any[] = [];
 
@@ -224,8 +244,8 @@ export class DetailComponent implements OnInit, AfterViewInit {
   }
 
   // Detail View Tabs
-  public tabs: (typeof this.activeTab)[] = ['overview', 'personal', 'parents', 'matrika', 'medical', 'history', 'marks', 'notes', 'evaluation', 'educational_measures', 'timetable'];
-  activeTab: 'overview' | 'personal' | 'parents' | 'academic' | 'matrika' | 'medical' | 'history' | 'marks' | 'notes' | 'evaluation' | 'educational_measures' | 'timetable' = 'overview';
+  public tabs: (typeof this.activeTab)[] = ['overview', 'personal', 'parents', 'matrika', 'medical', 'history', 'marks', 'notes', 'evaluation', 'educational_measures', 'timetable', 'rewards'];
+  activeTab: 'overview' | 'personal' | 'parents' | 'academic' | 'matrika' | 'medical' | 'history' | 'marks' | 'notes' | 'evaluation' | 'educational_measures' | 'timetable' | 'rewards' = 'overview';
   activeMatrikaSubTab: 'specific_data' | 'exemptions' | 'notes' | 'recommendations' | 'basic' = 'specific_data';
   activeHistorySubTab: 'details' | 'changes' | 'term_status' = 'details';
 
@@ -241,7 +261,8 @@ export class DetailComponent implements OnInit, AfterViewInit {
       notes: 'notes',
       evaluation: 'checklist',
       educational_measures: 'alert-triangle',
-      timetable: 'calendar-time'
+      timetable: 'calendar-time',
+      rewards: 'gift'
     };
     return iconsMap[tab] ?? 'help';
   }
@@ -300,6 +321,18 @@ export class DetailComponent implements OnInit, AfterViewInit {
       closeable: true,
       width: 550,
       items: [{ type: 'component', component: EditAddressModalComponent }]
+    });
+
+    this.modalManager.addModal('add_reward', {
+      icon: 'award',
+      title: 'Odměny a ocenění',
+      description: 'Zde můžete udělit žákovi odměnu nebo pochvalu.',
+      closeable: true,
+      width: 600,
+      items: [{
+        type: 'component',
+        component: AddRewardModalComponent
+      }]
     });
 
     this.modalManager.addModal('add_parent', {
@@ -523,6 +556,88 @@ export class DetailComponent implements OnInit, AfterViewInit {
     if (tab == 'matrika') {
       this.refreshAvailableSubjects();
     }
+    if (tab == 'rewards') {
+      this.refreshRewards();
+    }
+  }
+
+  public refreshRewards(): void {
+    if (!this.selectedStudent?.person_id) return;
+    this.isLoadingRewards = true;
+    this.http.get<{ rewards: any[] }>(
+      `${Config.API_URL}/v1/rewards?studentId=${this.selectedStudent.person_id}`,
+      { withCredentials: true }
+    ).subscribe({
+      next: (response) => {
+        this.studentRewards = response.rewards.map(r => ({
+          ...r,
+          createdAt: new Date(r.createdAt),
+          collectedAt: r.collectedAt ? new Date(r.collectedAt) : undefined
+        }));
+        this.isLoadingRewards = false;
+      },
+      error: () => {
+        this.isLoadingRewards = false;
+      }
+    });
+  }
+
+  public openAddReward(): void {
+    this.modalManager.openModal('add_reward', {
+      studentId: this.selectedStudent!.person_id,
+      callback: () => this.refreshRewards()
+    });
+  }
+
+  public markRewardAsCollected(reward: Reward): void {
+    this.http.put(
+      `${Config.API_URL}/v1/rewards/${reward.id}`,
+      { status: 'collected' },
+      { withCredentials: true }
+    ).subscribe({
+      next: () => {
+        reward.status = 'collected';
+        reward.collectedAt = new Date();
+      },
+      error: (err) => {
+        console.error('Failed to update reward:', err);
+      }
+    });
+  }
+
+  public deleteReward(reward: Reward): void {
+    if (!confirm(this.l.s('rewards.confirm_delete'))) {
+      return;
+    }
+    
+    this.http.delete(
+      `${Config.API_URL}/v1/rewards/${reward.id}`,
+      { withCredentials: true }
+    ).subscribe({
+      next: () => {
+        this.studentRewards = this.studentRewards.filter(r => r.id !== reward.id);
+      },
+      error: (err) => {
+        console.error('Failed to delete reward:', err);
+      }
+    });
+  }
+
+  public getRewardTypeIcon(type: string): string {
+    switch (type) {
+      case 'financial': return 'cash';
+      case 'certificate': return 'certificate';
+      case 'prize': return 'trophy';
+      default: return 'gift';
+    }
+  }
+
+  public getRewardTypeLabel(type: string): string {
+    let type_id = 'other';
+    if (['financial', 'certificate', 'prize'].includes(type)) {
+      type_id = type;
+    }
+    return this.l.s(`rewards.type.${type_id}`);
   }
 
   public refreshMeasures(): void {

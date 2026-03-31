@@ -1496,6 +1496,91 @@
                 </div>
                 }
 
+                <!-- Rewards Tab -->
+                @if (activeTab === 'rewards') {
+                <div class="section-grid">
+                    <div class="info-card full">
+                        <div class="card-header">
+                            <i-tabler name="gift"></i-tabler>
+                            <h3>Odměny a ocenění</h3>
+                            <button class="card-action-btn" (click)="openAddReward()">
+                                <i-tabler name="award"></i-tabler>
+                                <span>Udělit odměnu</span>
+                            </button>
+                        </div>
+
+                        <div class="rewards-list-container" style="padding: 1.5rem; display: flex; flex-direction: column; gap: 1rem;">
+                            @if (isLoadingRewards) {
+                            <div class="loading-state" style="display: flex; flex-direction: column; gap: 1rem;">
+                                <div class="skeleton" style="height: 120px; width: 100%; border-radius: 12px;"></div>
+                                <div class="skeleton" style="height: 120px; width: 100%; border-radius: 12px;"></div>
+                            </div>
+                            } @else {
+                            @for (reward of studentRewards; track reward.id) {
+                            <div class="reward-item" [class.collected]="reward.status === 'collected'" 
+                                style="border: 1px solid var(--border); border-radius: 12px; padding: 1.25rem; background: var(--card-bg); transition: all 0.2s ease;">
+                                <div class="reward-header" style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1rem;">
+                                    <div class="reward-type" style="display: flex; align-items: center; gap: 1rem;">
+                                        <div class="type-icon" [style.background]="reward.status === 'collected' ? 'var(--bg-secondary)' : 'var(--primary-light)'" 
+                                            style="width: 44px; height: 44px; border-radius: 10px; display: flex; align-items: center; justify-content: center; color: var(--primary);">
+                                            <i-tabler [name]="getRewardTypeIcon(reward.type)"></i-tabler>
+                                        </div>
+                                        <div class="type-info">
+                                            <span class="type-label" style="display: block; font-weight: 600; font-size: 14px;">{{ getRewardTypeLabel(reward.type) }}</span>
+                                            <span class="reward-date" style="font-size: 12px; color: var(--text-muted);">{{ Utils.formatDate(reward.createdAt) }}</span>
+                                        </div>
+                                    </div>
+                                    <div class="reward-status">
+                                        @if (reward.status === 'pending') {
+                                        <span class="status-badge pending" style="background: #fff8e1; color: #f57c00; padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 600;">Čeká na převzetí</span>
+                                        } @else {
+                                        <span class="status-badge collected" style="background: #e8f5e9; color: #388e3c; padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 600;">
+                                            Převzato {{ Utils.formatDate(reward.collectedAt!) }}
+                                        </span>
+                                        }
+                                    </div>
+                                </div>
+                                <div class="reward-body" style="margin-bottom: 1.25rem;">
+                                    <h4 class="reward-title" style="font-size: 18px; font-weight: 700; margin: 0 0 0.5rem 0; color: var(--text-main);">{{ reward.title }}</h4>
+                                    <p class="reward-description" *ngIf="reward.description" style="color: var(--text-muted); margin-bottom: 0.75rem; line-height: 1.5;">{{ reward.description }}</p>
+                                    <div class="reward-amount" *ngIf="reward.amount" style="display: flex; align-items: center; gap: 0.5rem; font-weight: 600; color: var(--success); font-size: 15px;">
+                                        <i-tabler name="cash" style="width: 18px; height: 18px;"></i-tabler>
+                                        <span>Částka: {{ reward.amount }} Kč</span>
+                                    </div>
+                                </div>
+                                <div class="reward-footer" style="display: flex; justify-content: space-between; align-items: center; padding-top: 1rem; border-top: 1px solid var(--border);">
+                                    <div class="reward-author" style="display: flex; align-items: center; gap: 0.5rem; font-size: 13px; color: var(--text-muted);">
+                                        <i-tabler name="user-check" style="width: 16px; height: 16px;"></i-tabler>
+                                        <span>Uděli/a: <strong>{{ reward.teacherName }}</strong></span>
+                                    </div>
+                                    <div class="reward-actions" style="display: flex; gap: 0.75rem;">
+                                        @if (reward.status === 'pending') {
+                                        <button class="btn btn--sm btn--primary" (click)="markRewardAsCollected(reward)" title="Označit jako vybrané">
+                                            <i-tabler name="check"></i-tabler>
+                                            <span>Označit jako vybrané</span>
+                                        </button>
+                                        }
+                                        <button class="btn btn--sm btn--danger btn--icon" (click)="deleteReward(reward)" title="Smazat">
+                                            <i-tabler name="trash" style="width: 18px; height: 18px;"></i-tabler>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            } @empty {
+                            <div class="no-selection" style="padding: 3rem 1rem;">
+                                <div class="illustration" style="margin-bottom: 1.5rem; opacity: 0.5;">
+                                    <i-tabler name="gift-off" style="width: 64px; height: 64px;"></i-tabler>
+                                </div>
+                                <h3>Žádné odměny</h3>
+                                <p>Tento žák zatím neobdržel žádné odměny.</p>
+                            </div>
+                            }
+                            }
+                        </div>
+                    </div>
+                </div>
+                }
+
             </div>
         </main>
     </div>
