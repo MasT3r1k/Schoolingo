@@ -45,7 +45,7 @@ export class AbsenceComponent implements OnInit {
   public selectedTab = new BehaviorSubject<number>(0);
   private listeners: Subscription[] = [];
   public monthStatus: boolean[] = [];
-  public ignoredAbsence: AbsenceType[] = [AbsenceType.NON_COUNT];
+  public ignoredAbsence: AbsenceType[] = [AbsenceType.NON_COUNT, AbsenceType.EARLY, AbsenceType.LATE];
 
   public getSubjects(): string[] {
     return Object.keys(this.absenceSubjects).sort((a: string, b: string) => 
@@ -80,14 +80,14 @@ export class AbsenceComponent implements OnInit {
     if (school_config == null) return [];
     let date = moment(school_config.year.start).clone().add(month, 'month').startOf('month').add(day, 'day');
 
+    if (countAbsence.length === 0) {
+      countAbsence = this.absenceConfig.map(() => 0);
+    }
     if (!this.absence[date.format('YYYY-MM-DD')]) {
       return countAbsence;
     }
     
     this.absence[date.format('YYYY-MM-DD')].forEach((absence: Absence) => {
-      if (!countAbsence[absence.type]) {
-        countAbsence[absence.type] = 0;
-      }
       countAbsence[absence.type] += 1;
     });
     return countAbsence;
@@ -96,8 +96,10 @@ export class AbsenceComponent implements OnInit {
   public getCountAbsenceInMonthInDay(month: number, day: number): number {
     let absence = this.getCountMonthInDay(month, day);
     let count = 0;
-    absence.forEach((ab: number) => {
-      count += ab;
+    absence.forEach((ab: number, type: number) => {
+      if (!this.ignoredAbsence.includes(type)) {
+        count += ab;
+      }
     });
     return count;
   }
@@ -117,8 +119,10 @@ export class AbsenceComponent implements OnInit {
   public getCountAbsenceInMonth(month: number): number {
     let absence = this.getCountMonth(month);
     let count = 0;
-    absence.forEach((ab: number) => {
-      count += ab;
+    absence.forEach((ab: number, type: number) => {
+      if (!this.ignoredAbsence.includes(type)) {
+        count += ab;
+      }
     });
     return count;
   }
@@ -152,7 +156,11 @@ export class AbsenceComponent implements OnInit {
       this.selectedPeriod
       .pipe(distinctUntilChanged())
       .subscribe((period: number) => {
-        this.loadAbsence();
+        if (this.selectedTab.getValue() === 0) {
+          this.loadAbsence();
+        } else {
+          this.loadAbsences();
+        }
       })
     ); 
 
@@ -251,13 +259,18 @@ export class AbsenceComponent implements OnInit {
         break;
     }
 
+    this.absence = {};
     this.http.get<any[]>(
       `${Config.API_URL}/v1/absences/${this.u.getId()}?start=${this.absenceDate.start.format('YYYY-MM-DD')}&end=${this.absenceDate.end.format('YYYY-MM-DD')}`,
       { withCredentials: true }
     )
     .subscribe((data: any[]) => {
       data.forEach(absence => {
-        this.absence[absence.date].push(absence);
+        let date = moment(absence.date).format('YYYY-MM-DD');
+        if (!this.absence[date]) {
+          this.absence[date] = [];
+        }
+        this.absence[date].push(absence);
       })
     })
   }

@@ -77,9 +77,27 @@ export class ClassbookComponent implements OnInit {
     this.modalManager.openModal('add_note')
   }
 
+  public getStatusLabel(type: number): string {
+    switch (type) {
+      case 0: return this.l.s('homework.status.todo') || 'Neodevzdáno';
+      case 1: return this.l.s('homework.status.in_progress') || 'Rozpracováno';
+      case 2: return this.l.s('homework.status.done') || 'Odevzdáno';
+      default: return 'Neznámý stav';
+    }
+  }
+
+  public getStatusClass(type: number): string {
+    switch (type) {
+      case 0: return 'badge--warning';
+      case 1: return 'badge--primary';
+      case 2: return 'badge--success';
+      default: return 'badge--secondary';
+    }
+  }
+
   public getSubmittedCount(hw: any): number {
     if (!hw.submissions || !Array.isArray(hw.submissions)) return 0;
-    return hw.submissions.filter((s: any) => s.submitted || s.finished).length;
+    return hw.submissions.filter((s: any) => s.type === 2).length;
   }
 
   public selected_lesson = new BehaviorSubject<number>(0);

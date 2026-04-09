@@ -10,11 +10,91 @@
                     {{ l.s(module.titleKey) }}
                 </h2>
             </div>
-            <div class="module-body" [class.skeleton]="module.component() == null">
+            <div class="module-body" [class.skeleton-body]="module.component() == null">
                 @if (module.component() == null) {
-                <div class="loader"></div>
+                    <div class="skeleton-container">
+                        @switch (module.skeletonType) {
+                            @case ('attendance') {
+                                <div class="skeleton-attendance">
+                                    <div class="skeleton-card">
+                                        <div class="skeleton-circle"></div>
+                                        <div class="skeleton-lines">
+                                            <div class="skeleton-line w-40"></div>
+                                            <div class="skeleton-line w-20"></div>
+                                        </div>
+                                    </div>
+                                    <div class="skeleton-card">
+                                        <div class="skeleton-circle"></div>
+                                        <div class="skeleton-lines">
+                                            <div class="skeleton-line w-60"></div>
+                                            <div class="skeleton-line w-30"></div>
+                                        </div>
+                                    </div>
+                                    <div class="skeleton-button"></div>
+                                </div>
+                            }
+                            @case ('timetable') {
+                                <div class="skeleton-timetable">
+                                    @for (_ of [1,2,3,4,5]; track $index) {
+                                        <div class="skeleton-lesson">
+                                            <div class="skeleton-hour"></div>
+                                            <div class="skeleton-lines">
+                                                <div class="skeleton-line w-80"></div>
+                                                <div class="skeleton-line w-40"></div>
+                                            </div>
+                                        </div>
+                                    }
+                                    <div class="skeleton-bottom-nav"></div>
+                                </div>
+                            }
+                            @case ('marks') {
+                                <div class="skeleton-marks">
+                                    @for (_ of [1,2,3,4,5,6]; track $index) {
+                                        <div class="skeleton-mark-row">
+                                            <div class="skeleton-line w-50"></div>
+                                            <div class="skeleton-badge"></div>
+                                        </div>
+                                    }
+                                </div>
+                            }
+                            @case ('menu') {
+                                <div class="skeleton-menu">
+                                    <div class="skeleton-tabs">
+                                        <div class="skeleton-tab"></div>
+                                        <div class="skeleton-tab"></div>
+                                    </div>
+                                    @for (_ of [1,2,3]; track $index) {
+                                        <div class="skeleton-menu-item">
+                                            <div class="skeleton-line w-30"></div>
+                                            <div class="skeleton-line w-90"></div>
+                                        </div>
+                                    }
+                                </div>
+                            }
+                            @case ('countdown') {
+                                <div class="skeleton-countdown">
+                                    <div class="skeleton-timer">
+                                        <div class="skeleton-digit"></div>
+                                        <div class="skeleton-digit"></div>
+                                        <div class="skeleton-digit"></div>
+                                    </div>
+                                    <div class="skeleton-line w-60 center"></div>
+                                </div>
+                            }
+                            @default {
+                                <div class="skeleton-list">
+                                    @for (_ of [1,2,3,4]; track $index) {
+                                        <div class="skeleton-item">
+                                            <div class="skeleton-line w-70"></div>
+                                            <div class="skeleton-line w-40"></div>
+                                        </div>
+                                    }
+                                </div>
+                            }
+                        }
+                    </div>
                 } @else {
-                <ng-container *ngComponentOutlet="module.component()"></ng-container>
+                    <ng-container *ngComponentOutlet="module.component()"></ng-container>
                 }
             </div>
         </div>

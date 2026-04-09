@@ -1,4 +1,5 @@
 import { inject, Injectable } from "@angular/core";
+export { AvatarService } from "./avatar.service";
 import { Theme, themes } from "@Schoolingo/theme";
 import country from "country-state-city/lib/country";
 import moment from "moment";

@@ -62,6 +62,48 @@ export class HomeworkComponent implements OnInit {
     }
   }
 
+  public getDaysLeftText(dueDate: string | Date): string {
+    const days = this.getDaysLeft(dueDate);
+    if (days < 0) return 'Po termínu';
+    if (days === 0) return 'Dnes';
+    if (days === 1) return 'Zítra';
+    return `${days} dní`;
+  }
+
+  public getStatusLabel(type: number): string {
+    switch (type) {
+      case 0: return this.l.s('homework.status.todo') || 'Neodevzdáno';
+      case 1: return this.l.s('homework.status.in_progress') || 'Rozpracováno';
+      case 2: return this.l.s('homework.status.done') || 'Odevzdáno';
+      default: return 'Neznámý stav';
+    }
+  }
+
+  public getStatusClass(type: number): string {
+    switch (type) {
+      case 0: return 'badge--warning';
+      case 1: return 'badge--primary';
+      case 2: return 'badge--success';
+      default: return 'badge--secondary';
+    }
+  }
+
+  public updateStatus(hw: any, status: number): void {
+    this.http.put(
+      `${Config.API_URL}/v1/homework/${hw.homework_id}/status`,
+      { type: status },
+      { withCredentials: true }
+    ).subscribe({
+      next: (res: any) => {
+        if (res.status === 'success') {
+          hw.type = status;
+          if (status === 2) hw.finished = true;
+          else hw.finished = false;
+        }
+      }
+    });
+  }
+
   public submitHomework(hw: any): void {
     if (!this.submissionText.trim()) return;
     
@@ -69,16 +111,19 @@ export class HomeworkComponent implements OnInit {
     this.http.post(
       `${Config.API_URL}/v1/homework/submit`,
       {
-        homework_id: hw.id,
+        homework_id: hw.homework_id,
         student_id: this.u.getId(),
         content: this.submissionText
       },
       { withCredentials: true }
     ).subscribe({
-      next: () => {
-        hw.finished = true;
-        this.expandedId = null;
-        this.submissionText = '';
+      next: (res: any) => {
+        if (res.success) {
+          hw.finished = true;
+          hw.type = 2;
+          this.expandedId = null;
+          this.submissionText = '';
+        }
         this.isSubmitting = false;
       },
       error: () => {
@@ -108,13 +153,5 @@ export class HomeworkComponent implements OnInit {
     if (days === 0) return 'today';
     if (days <= 2) return 'urgent';
     return 'normal';
-  }
-
-  public getDaysLeftText(dueDate: string | Date): string {
-    const days = this.getDaysLeft(dueDate);
-    if (days < 0) return 'Po termínu';
-    if (days === 0) return 'Dnes';
-    if (days === 1) return 'Zítra';
-    return `${days} dní`;
   }
 }

@@ -25,9 +25,14 @@
     border-radius: var(--radius);
     border: 1px solid var(--border);
     border-left: 3px solid var(--border);
-    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s ease;
     cursor: pointer;
     position: relative;
+}
+
+.section-item.finished {
+    opacity: 0.8;
+    border-left-color: var(--success) !important;
 }
 
 .section-item:hover {
@@ -71,40 +76,6 @@
 }
 
 /* ==============================
-   Checkbox
-   ============================== */
-.hw-checkbox {
-    width: 20px;
-    height: 20px;
-    min-width: 20px;
-    border: 2px solid var(--border);
-    border-radius: 5px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-shrink: 0;
-    cursor: pointer;
-    transition: all 0.15s ease;
-    margin-top: 1px;
-}
-
-.hw-checkbox:hover {
-    border-color: var(--primary);
-    background: rgba(var(--primary-rgb), 0.08);
-}
-
-.hw-checkbox.completed {
-    background: var(--success);
-    border-color: var(--success);
-}
-
-.hw-checkbox.completed i-tabler {
-    width: 12px;
-    height: 12px;
-    color: white;
-}
-
-/* ==============================
    Item Content
    ============================== */
 .item-content {
@@ -133,6 +104,7 @@
     overflow: hidden;
     text-overflow: ellipsis;
     max-width: 100px;
+    color: var(--primary);
 }
 
 .hw-deadline {
@@ -144,6 +116,10 @@
     border-radius: 999px;
     white-space: nowrap;
     font-weight: 500;
+}
+
+.badge i-tabler {
+    vertical-align: middle;
 }
 
 .hw-deadline i-tabler {
@@ -181,6 +157,14 @@
     overflow: hidden;
     text-overflow: ellipsis;
     line-height: 1.4;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.finished-icon {
+    color: var(--success);
+    flex-shrink: 0;
 }
 
 .item-description {
@@ -189,7 +173,50 @@
     margin: 0;
     display: -webkit-box;
     -webkit-line-clamp: 1;
+    line-clamp: 1;
     -webkit-box-orient: vertical;
     overflow: hidden;
     line-height: 1.4;
+    transition: all 0.2s ease;
+}
+
+.item-description.full {
+    -webkit-line-clamp: unset;
+    display: block;
+}
+
+.section-item.expanded {
+    background: var(--surface-3);
+    border-color: var(--primary);
+    transform: none;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    cursor: default;
+}
+
+.item-actions {
+    display: flex;
+    gap: 8px;
+    padding-top: 10px;
+    margin-top: 5px;
+    border-top: 1px solid var(--border);
+    animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-5px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.submitted-label {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.75rem;
+    color: var(--success);
+    font-weight: 600;
+}
+
+.btn--sm {
+    padding: 4px 10px;
+    font-size: 0.75rem;
 }

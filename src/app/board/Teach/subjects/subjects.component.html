@@ -19,76 +19,9 @@
         </div>
         } @else {
 
-        <!-- Stats -->
-        <div class="stats-grid mb">
-            <div class="stat-card stat--primary">
-                <div class="stat-icon">
-                    <i-tabler name="book-2"></i-tabler>
-                </div>
-                <div class="stat-info">
-                    <span class="stat-value">{{ role === 'student' ? studentSubjects.length : teacherSubjects.length
-                        }}</span>
-                    <span class="stat-label">Předmětů celkem</span>
-                </div>
-            </div>
-            <div class="stat-card stat--warning">
-                <div class="stat-icon">
-                    <i-tabler name="clock"></i-tabler>
-                </div>
-                <div class="stat-info">
-                    <span class="stat-value">{{ totalHours }}</span>
-                    <span class="stat-label">Hodin týdně</span>
-                </div>
-            </div>
-        </div>
-
         <!-- Student View -->
         @if (role === 'student') {
-        <div class="subjects-grid">
-            @for (subject of studentSubjects; track subject.subjectId) {
-            <div class="subject-card" [style.--subject-color]="getSubjectColor(subject.color)">
-                <div class="subject-decoration"></div>
-                <div class="subject-content">
-                    <div class="subject-header">
-                        <div class="subject-icon">
-                            {{ subject.shortcut }}
-                        </div>
-                        <div class="subject-title">
-                            <h3>{{ subject.label }}</h3>
-                            <div class="subject-badges">
-                                @if (subject.is_mandatory) {
-                                <span class="badge badge--primary">Povinný</span>
-                                } @else {
-                                <span class="badge badge--neutral">Volitelný</span>
-                                }
-                                <span class="hours-badge">
-                                    <i-tabler name="clock"></i-tabler>
-                                    {{ subject.hours_per_week }}h
-                                </span>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="subject-footer">
-                        <div class="footer-label">Vyučující</div>
-                        <div class="teachers-list">
-                            @for (teacher of subject.teachers; track teacher) {
-                            <div class="teacher-chip" [title]="teacher">
-                                <span class="teacher-avatar">{{ Utils.getInitials(teacher) }}</span>
-                                <span class="teacher-name">{{ teacher }}</span>
-                            </div>
-                            }
-                            @empty {
-                            <div class="teacher-chip empty">
-                                <span class="teacher-name">Není přiřazen</span>
-                            </div>
-                            }
-                        </div>
-                    </div>
-                </div>
-            </div>
-            }
-            @empty {
+            @if (studentSubjects.length === 0) {
             <div class="empty-state">
                 <div class="empty-icon-wrapper">
                     <i-tabler name="book-off"></i-tabler>
@@ -96,52 +29,164 @@
                 <h3>Žádné předměty</h3>
                 <p>Momentálně nemáte přiřazené žádné předměty.</p>
             </div>
+            } @else {
+                <!-- Mandatory Subjects Section -->
+                @if (mandatoryStudentSubjects.length > 0) {
+                <div class="section-title first">
+                    <i-tabler name="bookmark-filled"></i-tabler>
+                    <h3>Povinné předměty</h3>
+                </div>
+                <div class="subjects-table-wrapper mb-lg">
+                    <table class="subjects-table">
+                        <thead>
+                            <tr>
+                                <th>Předmět</th>
+                                <th>Hodin týdně</th>
+                                <th>Vyučující</th>
+                                <th>Email</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @for (subject of mandatoryStudentSubjects; track subject.subjectId) {
+                            <tr class="subject-row">
+                                <td>
+                                    <div class="subject-name-cell">
+                                        <span class="subject-dot" [style.background]="getSubjectColor(subject.color)"></span>
+                                        <div>
+                                            <span class="subject-label">{{ subject.label }}</span>
+                                            <span class="subject-shortcut">{{ subject.shortcut }}</span>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="hours-cell">
+                                    <span class="hours-value">{{ subject.hours_per_week }}</span>
+                                    <span class="hours-unit">h</span>
+                                </td>
+                                <td>
+                                    @if (asTeacherObjects(subject.teachers).length === 0) {
+                                    <span class="no-teacher">Není přiřazen</span>
+                                    } @else {
+                                    <div class="teacher-list">
+                                        @for (teacher of asTeacherObjects(subject.teachers); track teacher.name) {
+                                        <div class="teacher-row-item">
+                                            <div class="teacher-avatar" [class.teacher-avatar--image]="App.ALLOW_AVATARS">
+                                                @if (App.ALLOW_AVATARS) {
+                                                    <img [src]="avatarService.getAvatar(teacher.avatar, teacher.name)" alt="Avatar">
+                                                } @else {
+                                                    <span class="teacher-initials" [style.background]="getSubjectColor(subject.color)">{{ Utils.getInitials(teacher.name) }}</span>
+                                                }
+                                            </div>
+                                            <span class="teacher-name-text">{{ teacher.name }}</span>
+                                        </div>
+                                        }
+                                    </div>
+                                    }
+                                </td>
+                                <td>
+                                    @if (asTeacherObjects(subject.teachers).length === 0) {
+                                    <span class="no-teacher">—</span>
+                                    } @else {
+                                    <div class="teacher-list">
+                                        @for (teacher of asTeacherObjects(subject.teachers); track teacher.name) {
+                                        <div class="teacher-row-item">
+                                            @if (teacher.email) {
+                                            <a class="teacher-email" [href]="'mailto:' + teacher.email">{{ teacher.email }}</a>
+                                            } @else {
+                                            <span class="no-teacher">—</span>
+                                            }
+                                        </div>
+                                        }
+                                    </div>
+                                    }
+                                </td>
+                            </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+                }
+
+                <!-- Optional Subjects Section -->
+                @if (optionalStudentSubjects.length > 0) {
+                <div class="section-title">
+                    <i-tabler name="bookmark"></i-tabler>
+                    <h3>Volitelné předměty</h3>
+                </div>
+                <div class="subjects-table-wrapper">
+                    <table class="subjects-table">
+                        <thead>
+                            <tr>
+                                <th>Předmět</th>
+                                <th>Hodin týdně</th>
+                                <th>Vyučující</th>
+                                <th>Email</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @for (subject of optionalStudentSubjects; track subject.subjectId) {
+                            <tr class="subject-row">
+                                <td>
+                                    <div class="subject-name-cell">
+                                        <span class="subject-dot" [style.background]="getSubjectColor(subject.color)"></span>
+                                        <div>
+                                            <span class="subject-label">{{ subject.label }}</span>
+                                            <span class="subject-shortcut">{{ subject.shortcut }}</span>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="hours-cell">
+                                    <span class="hours-value">{{ subject.hours_per_week }}</span>
+                                    <span class="hours-unit">h</span>
+                                </td>
+                                <td>
+                                    @if (asTeacherObjects(subject.teachers).length === 0) {
+                                    <span class="no-teacher">Není přiřazen</span>
+                                    } @else {
+                                    <div class="teacher-list">
+                                        @for (teacher of asTeacherObjects(subject.teachers); track teacher.name) {
+                                        <div class="teacher-row-item">
+                                            <div class="teacher-avatar" [class.teacher-avatar--image]="App.ALLOW_AVATARS">
+                                                @if (App.ALLOW_AVATARS) {
+                                                    <img [src]="avatarService.getAvatar(teacher.avatar, teacher.name)" alt="Avatar">
+                                                } @else {
+                                                    <span class="teacher-initials" [style.background]="getSubjectColor(subject.color)">{{ Utils.getInitials(teacher.name) }}</span>
+                                                }
+                                            </div>
+                                            <span class="teacher-name-text">{{ teacher.name }}</span>
+                                        </div>
+                                        }
+                                    </div>
+                                    }
+                                </td>
+                                <td>
+                                    @if (asTeacherObjects(subject.teachers).length === 0) {
+                                    <span class="no-teacher">—</span>
+                                    } @else {
+                                    <div class="teacher-list">
+                                        @for (teacher of asTeacherObjects(subject.teachers); track teacher.name) {
+                                        <div class="teacher-row-item">
+                                            @if (teacher.email) {
+                                            <a class="teacher-email" [href]="'mailto:' + teacher.email">{{ teacher.email }}</a>
+                                            } @else {
+                                            <span class="no-teacher">—</span>
+                                            }
+                                        </div>
+                                        }
+                                    </div>
+                                    }
+                                </td>
+                            </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+                }
             }
-        </div>
         }
 
         <!-- Teacher View -->
         @if (role === 'teacher') {
-        <div class="teacher-subjects-grid">
-            @for (subject of teacherSubjects; track subject.subjectId) {
-            <div class="teacher-subject-card">
-                <div class="card-main">
-                    <div class="subject-visual">
-                        <span class="shortcut">{{ subject.shortcut }}</span>
-                    </div>
-                    <div class="subject-info">
-                        <h3>{{ subject.label }}</h3>
-                        <div class="info-stats">
-                            <span>
-                                <i-tabler name="clock"></i-tabler>
-                                {{ subject.totalHoursPerWeek }}h týdně
-                            </span>
-                            <span class="separator">•</span>
-                            <span>
-                                <i-tabler name="school"></i-tabler>
-                                {{ subject.classes.length }} tříd
-                            </span>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="card-classes">
-                    <div class="classes-label">Výuka ve třídách</div>
-                    <div class="classes-list">
-                        @for (cls of subject.classes; track cls.classId) {
-                        <div class="class-tag">
-                            <span class="name">{{ cls.className }}</span>
-                            <span class="hours">{{ cls.hoursPerWeek }}h</span>
-                        </div>
-                        }
-                        @empty {
-                        <div class="no-classes">Žádné třídy</div>
-                        }
-                    </div>
-                </div>
-            </div>
-            }
-            @empty {
+            @if (teacherSubjects.length === 0) {
             <div class="empty-state">
                 <div class="empty-icon-wrapper">
                     <i-tabler name="book-off"></i-tabler>
@@ -149,8 +194,49 @@
                 <h3>Žádné předměty</h3>
                 <p>Nemáte přiřazené žádné předměty k výuce.</p>
             </div>
+            } @else {
+            <div class="subjects-table-wrapper">
+                <table class="subjects-table">
+                    <thead>
+                        <tr>
+                            <th>Předmět</th>
+                            <th>Hodin týdně</th>
+                            <th>Třídy</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @for (subject of teacherSubjects; track subject.subjectId) {
+                        <tr class="subject-row">
+                            <td>
+                                <div class="subject-name-cell">
+                                    <div class="subject-dot-neutral"></div>
+                                    <div>
+                                        <span class="subject-label">{{ subject.label }}</span>
+                                        <span class="subject-shortcut">{{ subject.shortcut }}</span>
+                                    </div>
+                                </div>
+                            </td>
+                            <td class="hours-cell">
+                                <span class="hours-value">{{ subject.totalHoursPerWeek }}</span>
+                                <span class="hours-unit">h</span>
+                            </td>
+                            <td>
+                                @if (subject.classes.length === 0) {
+                                <span class="no-teacher">Žádné třídy</span>
+                                } @else {
+                                <div class="classes-tags">
+                                    @for (cls of subject.classes; track cls.classId) {
+                                    <span class="class-tag">{{ cls.className }} <span class="class-hours">{{ cls.hoursPerWeek }}h</span></span>
+                                    }
+                                </div>
+                                }
+                            </td>
+                        </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
             }
-        </div>
         }
         }
     </div>

@@ -16,23 +16,51 @@
     } @else {
     <div class="section-list">
         @for (hw of homework; track $index) {
-        <div class="section-item" [ngClass]="getUrgencyClass(hw.due_date)">
-            <div class="hw-checkbox" [class.completed]="hw.finished">
-                @if (hw.finished) {
-                <i-tabler name="check"></i-tabler>
-                }
-            </div>
+        <div class="section-item" [ngClass]="[getUrgencyClass(hw.due_date), expandedId === hw.homework_id ? 'expanded' : '', (hw.finished || hw.type === 2) ? 'finished' : '']" (click)="toggleExpand(hw.homework_id)">
             <div class="item-content">
                 <div class="item-header">
-                    <span class="hw-subject badge badge--primary">{{ hw.subjectName }}</span>
+                    <span class="hw-subject">{{ hw.subjectName }}</span>
+                    <span class="badge" [ngClass]="getStatusClass(hw.type)">
+                        @if (hw.type === 2) {
+                        <i-tabler name="check" size="12" style="margin-right: 4px;"></i-tabler>
+                        }
+                        {{ getStatusLabel(hw.type) }}
+                    </span>
+                    @if (hw.type < 2) {
                     <span class="hw-deadline badge" [ngClass]="getUrgencyClass(hw.due_date)">
                         <i-tabler name="clock" size="12"></i-tabler>
                         {{ getDaysLeftText(hw.due_date) }}
                     </span>
+                    }
                 </div>
-                <span class="item-title">{{ hw.headline }}</span>
+                <span class="item-title">
+                    {{ hw.headline }}
+                </span>
                 @if (hw.homework) {
-                <p class="item-description">{{ hw.homework }}</p>
+                <p class="item-description" [class.full]="expandedId === hw.homework_id">{{ hw.homework }}</p>
+                }
+
+                @if (expandedId === hw.homework_id) {
+                <div class="item-actions" (click)="$event.stopPropagation()">
+                    @if (hw.type === 0) {
+                    <button class="btn btn--sm btn--primary" (click)="updateStatus(hw, 1)">
+                        <i-tabler name="player-play" size="14"></i-tabler>
+                        {{ 'Začít pracovat' }}
+                    </button>
+                    }
+                    @if (hw.type < 2) {
+                    <button class="btn btn--sm btn--success" (click)="updateStatus(hw, 2)">
+                        <i-tabler name="check" size="14"></i-tabler>
+                        {{ 'Hotovo' }}
+                    </button>
+                    }
+                    @if (hw.type === 2) {
+                    <div class="submitted-label">
+                        <i-tabler name="check" size="16"></i-tabler>
+                        Již odevzdáno
+                    </div>
+                    }
+                </div>
                 }
             </div>
         </div>

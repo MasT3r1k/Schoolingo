@@ -17,6 +17,7 @@ interface DashboardModule {
   modules?: modules[];
   icon?: string;
   seasonal?: boolean; // Only show during active seasonal theme
+  skeletonType?: 'attendance' | 'timetable' | 'marks' | 'list' | 'menu' | 'countdown';
 }
 
 @Component({
@@ -39,7 +40,8 @@ export class MainComponent {
       icon: 'clock',
       permission: ['teacher', 'admin', 'principal', 'admin_staff', 'maintenance', 'management', 'personnel', 'other'],
       import: () => import('./sections/attendance/attendance.component').then(m => m.AttendanceComponent),
-      component: signal(null)
+      component: signal(null),
+      skeletonType: 'attendance'
     },
     {
       id: 'timetable',
@@ -47,7 +49,8 @@ export class MainComponent {
       titleUrl: '/teach/timetable',
       icon: 'calendar',
       import: () => import('./sections/timetable/timetable.component').then(m => m.TimetableComponent),
-      component: signal(null)
+      component: signal(null),
+      skeletonType: 'timetable'
     },
     {
       id: 'marks',
@@ -56,14 +59,16 @@ export class MainComponent {
       icon: 'school',
       permission: ['student', 'parent'],
       import: () => import('./sections/marks/marks.component').then(m => m.MarksComponent),
-      component: signal(null)
+      component: signal(null),
+      skeletonType: 'marks'
     },
     {
       id: 'announcements',
       titleKey: 'modules.announcements',
       icon: 'speakerphone',
       import: () => import('./sections/announcements/announcements.component').then(m => m.AnnouncementsComponent),
-      component: signal(null)
+      component: signal(null),
+      skeletonType: 'list'
     },
     {
       id: 'homework',
@@ -72,7 +77,8 @@ export class MainComponent {
       icon: 'notebook',
       permission: ['student', 'parent'],
       import: () => import('./sections/homework/homework.component').then(m => m.HomeworkComponent),
-      component: signal(null)
+      component: signal(null),
+      skeletonType: 'list'
     },
     {
       id: 'events',
@@ -80,7 +86,8 @@ export class MainComponent {
       titleUrl: '/calendar',
       icon: 'calendar-event',
       import: () => import('./sections/events/events.component').then(m => m.EventsComponent),
-      component: signal(null)
+      component: signal(null),
+      skeletonType: 'list'
     },
     {
       id: 'substitutions',
@@ -88,7 +95,8 @@ export class MainComponent {
       titleUrl: '/teach/substitution',
       icon: 'replace',
       import: () => import('./sections/substitutions/substitutions.component').then(m => m.SubstitutionsComponent),
-      component: signal(null)
+      component: signal(null),
+      skeletonType: 'list'
     },
     {
       id: 'traineeship',
@@ -98,7 +106,8 @@ export class MainComponent {
       modules: ['traineeship'],
       permission: ['student', 'parent'],
       import: () => import('./sections/traineeship/traineeship.component').then(m => m.TraineeshipComponent),
-      component: signal(null)
+      component: signal(null),
+      skeletonType: 'list'
     },
     {
       id: 'cafeteria',
@@ -106,7 +115,8 @@ export class MainComponent {
       icon: 'tools-kitchen-2',
       modules: ['canteen'],
       import: () => import('./sections/cafeteria/cafeteria.component').then(m => m.CafeteriaComponent),
-      component: signal(null)
+      component: signal(null),
+      skeletonType: 'menu'
     },
     {
       id: 'vehicles',
@@ -115,7 +125,8 @@ export class MainComponent {
       permission: ['teacher'],
       modules: ['fleetVehicles'],
       import: () => import('./sections/vehicles/vehicles.component').then(m => m.VehiclesComponent),
-      component: signal(null)
+      component: signal(null),
+      skeletonType: 'list'
     },
     // === SEASONAL WIDGETS ===
     {
@@ -124,7 +135,8 @@ export class MainComponent {
       icon: 'calendar-time',
       import: () => import('./sections/seasonal/countdown/countdown.component').then(m => m.CountdownComponent),
       component: signal(null),
-      seasonal: true
+      seasonal: true,
+      skeletonType: 'countdown'
     }
   ];
 
