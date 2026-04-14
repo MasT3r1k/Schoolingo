@@ -1,11 +1,13 @@
 import { NgClass, NgIf, AsyncPipe } from '@angular/common';
 import { Component, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { HttpClient } from '@angular/common/http';
 import { IconsModule } from '@Schoolingo/icons';
 import { Locale } from '@Schoolingo/locale';
 import { School } from '@Schoolingo/school';
 import { DiaryWeek, Traineeship, StudentTraineeshipStatus } from '@Schoolingo/traineeship';
 import { Utils } from '@Schoolingo/utils';
+import { Config } from '@Schoolingo/config';
 import { CalendarComponent } from '@Components/calendar';
 import moment from 'moment';
 
@@ -19,6 +21,7 @@ export class ManageComponent {
   public l = inject(Locale);
   public school = inject(School);
   public traineeship = inject(Traineeship);
+  private http = inject(HttpClient);
   public Utils = Utils;
   
   public isCreateModalOpen = false;
@@ -89,38 +92,52 @@ export class ManageComponent {
   }
 
   public createTraineeship(): void {
-    if (!this.newTraineeship.name || !this.newTraineeship.start || !this.newTraineeship.end) {
+    if (!this.newTraineeship.name || !this.newTraineeship.start || !this.newTraineeship.end || this.newTraineeship.groups.length === 0) {
       return;
     }
 
     const start = this.newTraineeship.start;
     const end = this.newTraineeship.end;
 
-    const newWeek: DiaryWeek = {
-      companyId: 0,
-      name: this.newTraineeship.name,
-      companyName: this.newTraineeship.name,
-      start: start,
-      end: end,
-      state: 'planned',
-      status: 'planned',
-      ignoredDays: this.newTraineeship.ignoredDays.map(String),
-      zapsaniStudenti: 0,
-      celkemStudentu: 0,
-      instructorId: null,
-      instructor: null,
-      traineeship: Date.now(),
-      activity: 'Traineeship',
-      start_working_hours: '08:00',
-      end_working_hours: '16:00',
-      web: '',
-      rating: null,
-      cityName: ''
-    };
+    this.http.post(
+      Config.API_URL + '/v1/traineeship/new_traineeship',
+      {
+        name: this.newTraineeship.name,
+        start: start.toISOString(),
+        end: end.toISOString(),
+        groups: this.newTraineeship.groups,
+        ignoredDays: this.newTraineeship.ignoredDays
+      },
+      { withCredentials: true }
+    ).subscribe((res: any) => {
+      if (res && res.status === 'success') {
+        const newWeek: DiaryWeek = {
+          companyId: 0,
+          name: this.newTraineeship.name,
+          companyName: this.newTraineeship.name,
+          start: start,
+          end: end,
+          state: 'planned',
+          status: 'planned',
+          ignoredDays: this.newTraineeship.ignoredDays.map(String),
+          zapsaniStudenti: 0,
+          celkemStudentu: 0,
+          instructorId: null,
+          instructor: null,
+          traineeship: Date.now(),
+          activity: 'Traineeship',
+          start_working_hours: '08:00',
+          end_working_hours: '16:00',
+          web: '',
+          rating: null,
+          cityName: ''
+        };
 
-    const currentWeeks = this.traineeship.diaryWeeks.getValue();
-    this.traineeship.diaryWeeks.next([...currentWeeks, newWeek]);
-    
-    this.closeCreateModal();
+        const currentWeeks = this.traineeship.diaryWeeks.getValue();
+        this.traineeship.diaryWeeks.next([newWeek, ...currentWeeks]);
+        
+        this.closeCreateModal();
+      }
+    });
   }
 }

@@ -41,7 +41,7 @@ export class DiaryComponent implements OnInit {
 
     try {
       this.http.post(
-        Config.API_URL + 'contract',
+        Config.API_URL + '/v1/traineeship/contract',
         {
           traineeship: this.traineeship.selectedDairy?.traineeship
         },
@@ -51,7 +51,7 @@ export class DiaryComponent implements OnInit {
         }
       ).subscribe(
         (res: any) => {
-          if (res.error) {
+          if (res && res.error) {
             switch(res.error) {
               case "no_token":
                 // this.schoolingo.userService.logout();
@@ -59,16 +59,16 @@ export class DiaryComponent implements OnInit {
               case "no_traineeship":
                 // this.alert = new Alert("error", "traineeship/alerts/noTraineeship");
                 return;
-                case "no_company":
-                  // this.alert = new Alert("error", "traineeship/alerts/firstSelectCompany", true);
-                  return;
+              case "no_company":
+                // this.alert = new Alert("error", "traineeship/alerts/firstSelectCompany", true);
+                return;
             }
-            return console.error(res.error);;
+            return console.error(res.error);
           }
         }, (err) => {
           if (err.status == 200) {
             this.http.post(
-              Config.API_URL + 'contract',
+              Config.API_URL + '/v1/traineeship/contract',
               {
                 traineeship: this.traineeship.selectedDairy?.traineeship
               },

@@ -1,19 +1,42 @@
 @if (traineeship.selectedDay) {
-    <div class="card">
-        <div class="card-top"></div>
-        <div class="card-header mb">
-            <div class="left">
-                <h2>
-                    <a [routerLink]="['', 'traineeship', 'diary']">{{ l.s('sidebar.traineeship.diary') }}</a>
-                {{
-                    ' / ' +
-                    l.s('traineeship.diary.main')
-                    + ' / ' +
-                    l.s('traineeship.write_diary.main', { day: Utils.formatDateShort(traineeship.selectedDay) })
-                }}</h2>
+    <div class="modal-overlay" (click)="traineeship.selectDay(null)">
+        <div class="modal" (click)="$event.stopPropagation()">
+            <div class="modal__header">
+                <div class="modal__icon">
+                    <i-tabler name="notebook" style="width: 24px; height: 24px;"></i-tabler>
+                </div>
+                <h3 class="modal__title">
+                    {{ l.s('traineeship.write_diary.main', { day: Utils.formatDateShort(traineeship.selectedDay) }) || 'Zápis do deníku' }}
+                </h3>
+                <button class="modal__close" (click)="traineeship.selectDay(null)">
+                    <i-tabler name="x" style="width: 20px; height: 20px;"></i-tabler>
+                </button>
             </div>
-        </div>
-        <div class="card-body">
+            <div class="modal__body">
+                <div class="form-group">
+                    <label class="form-label">Název činnosti</label>
+                    <input type="text" class="form-input" [(ngModel)]="diaryData.title" placeholder="Stručný název">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Odpracované hodiny</label>
+                    <input type="number" class="form-input" [(ngModel)]="diaryData.hours" placeholder="Např. 8">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Popis vykonané činnosti</label>
+                    <textarea class="form-textarea" [(ngModel)]="diaryData.description" rows="4" placeholder="Co jste dnes dělali?"></textarea>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Získané zkušenosti</label>
+                    <textarea class="form-textarea" [(ngModel)]="diaryData.gained" rows="3" placeholder="Co jste se dnes naučili?"></textarea>
+                </div>
+            </div>
+            <div class="modal__footer">
+                <button class="btn btn--ghost" (click)="traineeship.selectDay(null)">{{ l.s('buttons.cancel') || 'Zrušit' }}</button>
+                <button class="btn btn--primary" (click)="saveDiary()">
+                    <i-tabler name="device-floppy" style="width: 18px; height: 18px;"></i-tabler>
+                    {{ l.s('buttons.save') || 'Uložit' }}
+                </button>
+            </div>
         </div>
     </div>
 }
