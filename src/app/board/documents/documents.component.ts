@@ -58,6 +58,12 @@ export class DocumentsComponent implements OnInit {
   Utils = Utils;
   Config = Config;
 
+  public get skeletonItems(): number[] {
+    const count = this.documents.getSelectedFolder()?.files_count ?? 5;
+    return Array(count > 0 ? count : 5).fill(0);
+  }
+
+
   public toggleLayout(): void {
     this.layout = this.layout == 'grid' ? 'list' : 'grid';
   }

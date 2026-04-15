@@ -834,3 +834,76 @@ i-tabler {
     width: 20px;
     height: 20px;
 }
+/* ============================================================
+   SKELETON LOADING
+   ============================================================ */
+
+.file-card.skeleton {
+    pointer-events: none;
+    user-select: none;
+    border-color: transparent !important;
+    background: transparent !important;
+}
+
+.file-card.skeleton .file-card__icon,
+.file-card.skeleton .file-card__icon-sm,
+.file-card.skeleton .skeleton-text {
+    background: var(--surface-2);
+    position: relative;
+    overflow: hidden;
+    border-radius: var(--radius-sm);
+}
+
+.file-card.skeleton .file-card__icon::before,
+.file-card.skeleton .file-card__icon-sm::before,
+.file-card.skeleton .skeleton-text::before {
+    content: " \;
+ animation: shimmer 2s infinite;
+ position: absolute;
+ width: 100%;
+ height: 100%;
+ top: 0;
+ left: 0;
+ transform: translateX(-100%);
+ background-image: linear-gradient(to right, transparent, rgba(255, 255, 255, 0.05), transparent);
+}
+
+.dark .file-card.skeleton .file-card__icon::before,
+.dark .file-card.skeleton .file-card__icon-sm::before,
+.dark .file-card.skeleton .skeleton-text::before {
+ background-image: linear-gradient(to right, transparent, rgba(255, 255, 255, 0.03), transparent);
+}
+
+.skeleton-text {
+ height: 12px;
+ border-radius: var(--radius-xs);
+ display: block;
+}
+
+/* Grid adjustments */
+.explorer-grid .file-card.skeleton .file-card__name {
+ width: 70%;
+ height: 12px;
+ margin-top: 4px;
+}
+
+.explorer-grid .file-card.skeleton .file-card__grid-meta {
+ width: 40%;
+ height: 10px;
+ margin-top: 4px;
+}
+
+/* List adjustments */
+.explorer-list .file-card.skeleton .file-card__list-name {
+ max-width: 200px;
+}
+
+.explorer-list .file-card.skeleton .file-card__list-meta {
+ max-width: 80px;
+ margin-left: 1rem;
+}
+
+@keyframes shimmer {
+ 0% { transform: translateX(-100%); }
+ 100% { transform: translateX(100%); }
+}
