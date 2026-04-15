@@ -4,6 +4,7 @@ import { AlertButton } from "./button";
 export interface Alert {
     type: SweetAlertIcon;
     text: string;
+    args?: any;
     actions: AlertButton[];
     _closeable: boolean;
     visible: boolean;
@@ -11,10 +12,11 @@ export interface Alert {
 }
 
 export class Alert {
-    constructor(type: SweetAlertIcon, text: string, actions: AlertButton[] = []) {
+    constructor(type: SweetAlertIcon, text: string, actions: AlertButton[] = [], args?: any) {
         this.type = type;
         this.text = text;
         this.actions = actions;
+        this.args = args;
         this._closeable = true;
         this.visible = true;
     }

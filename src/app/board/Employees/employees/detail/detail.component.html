@@ -1,5 +1,4 @@
-@let get_employee = selectedEmployee();
-@if (isLoading() || !get_employee) {
+@if (isLoading()) {
 <div class="card detail-view">
     <div class="detail-header">
         <button class="btn-back" (click)="closeDetail()">
@@ -49,7 +48,43 @@
         </main>
     </div>
 </div>
+} @else if (loadError()) {
+<div class="card detail-view detail-error">
+    <div class="detail-header">
+        <button class="btn-back" (click)="closeDetail()">
+            <i-tabler name="arrow-left"></i-tabler>
+            <span>Zpět na seznam zaměstnanců</span>
+        </button>
+    </div>
+    
+    <div class="error-container">
+        <div class="error-illustration">
+            <i-tabler name="user-off"></i-tabler>
+            <div class="error-glow"></div>
+        </div>
+        <h2 class="error-title">Nepodařilo se načíst detail</h2>
+        <p class="error-description">
+            Omlouváme se, ale při získávání informací o zaměstnanci nastala chyba. 
+            Zkuste akci opakovat později nebo kontaktujte správce systému.
+        </p>
+        <div class="error-actions">
+            <button class="btn btn--primary" (click)="ngOnInit()">
+                <i-tabler name="refresh"></i-tabler>
+                <span>Zkusit znovu</span>
+            </button>
+            <button class="btn btn--secondary" (click)="closeDetail()">
+                <span>Zpět na seznam</span>
+            </button>
+        </div>
+        @if (Utils.isDev()) {
+        <div class="error-debug">
+            <code>Error Ident: {{ loadError() }}</code>
+        </div>
+        }
+    </div>
+</div>
 } @else {
+    @if (selectedEmployee(); as get_employee) {
 <div class="card detail-view">
     <!-- Detail Header -->
     <div class="detail-header">
@@ -151,8 +186,13 @@
         <!-- Main Content -->
         <main class="detail-main">
             <!-- Tabs Navigation -->
-            <div class="tabs-wrapper">
-                <nav class="tabs-nav">
+            <div class="tabs-wrapper" [class.has-scroll-left]="showLeftScroll()" [class.has-scroll-right]="showRightScroll()">
+                @if (showLeftScroll()) {
+                <button class="tab-scroll-btn left" (click)="scrollTabs(-1)" aria-label="Scroll left">
+                    <i-tabler name="chevron-left"></i-tabler>
+                </button>
+                }
+                <nav class="tabs-nav" #tabsNav (scroll)="checkScroll()">
                     @for (tab of detailTabOptions; track $index) {
                     <div class="tab-btn" [class.active]="selectedDetailTab.getValue() === $index"
                         (click)="selectedDetailTab.next($index)">
@@ -161,6 +201,11 @@
                     </div>
                     }
                 </nav>
+                @if (showRightScroll()) {
+                <button class="tab-scroll-btn right" (click)="scrollTabs(1)" aria-label="Scroll right">
+                    <i-tabler name="chevron-right"></i-tabler>
+                </button>
+                }
             </div>
 
             <div class="tab-content">
@@ -840,7 +885,7 @@
                                         @for (grp of taughtGroups(); track grp.name) {
                                         <tr>
                                             <td><strong>{{ grp.name }}</strong></td>
-                                            <td>{{ grp.students }}</td>
+                                            <td [title]="grp.studentNames" style="cursor: help;">{{ grp.students }}</td>
                                             <td>{{ grp.average }}</td>
                                             <td>{{ grp.lastClassification }}</td>
                                         </tr>
@@ -855,13 +900,16 @@
                         <div class="card-header">
                             <i-tabler name="calendar-time"></i-tabler>
                             <h3>Rozvrh hodin</h3>
+                            <button class="card-link-btn" (click)="selectedDetailTab.next(12)">
+                                <i-tabler name="external-link"></i-tabler>
+                                Celý rozvrh
+                            </button>
                         </div>
-                        <div class="timetable-placeholder">
-                            <!-- Timetable visualization would go here -->
-                            <div class="no-selection smaller">
-                                <i-tabler name="calendar-stats"></i-tabler>
-                                <p>Zobrazení rozvrhu bude dostupné v příští verzi systému.</p>
-                            </div>
+                        <div class="timetable-content-wrapper" style="padding: 1rem;">
+                            <schoolingo-timetable [isLoading]="isLoadingTimetable" [timetable]="fullTimetable"
+                                [timetableHours]="fullTimetableHours" [selectedWeek]="timetableSelectedWeek.getValue()"
+                                [selectedTab]="timetableSelectedTab.getValue()" type="teacher">
+                            </schoolingo-timetable>
                         </div>
                     </div>
 
@@ -1147,8 +1195,39 @@
                     </div>
                 </div>
                 }
+
+                @if (selectedDetailTab.getValue() === 12) {
+                <!-- Timetable Tab -->
+                <div class="timetable-tab">
+                    <div class="info-card full">
+                        <div class="card-header">
+                            <div class="timetable-subheader" style="flex: 1;">
+                                <schoolingo-tabs [options]="['timetable.actual', 'timetable.permanent']"
+                                    [value]="timetableSelectedTab"></schoolingo-tabs>
+                            </div>
+                            <div class="timetable-controls" *ngIf="timetableSelectedTab.getValue() === 0" style="display: flex; gap: 0.5rem; align-items: center;">
+                                <button class="action-btn small" (click)="previousWeek()">
+                                    <i-tabler name="chevron-left"></i-tabler>
+                                </button>
+                                <span class="week-display" style="font-weight: 600; min-width: 151px; text-align: center;">{{ formatDateDisplay() }}</span>
+                                <button class="action-btn small" (click)="nextWeek()">
+                                    <i-tabler name="chevron-right"></i-tabler>
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="timetable-content-wrapper" style="padding: 1rem;">
+                            <schoolingo-timetable [isLoading]="isLoadingTimetable" [timetable]="fullTimetable"
+                                [timetableHours]="fullTimetableHours" [selectedWeek]="timetableSelectedWeek.getValue()"
+                                [selectedTab]="timetableSelectedTab.getValue()" type="teacher">
+                            </schoolingo-timetable>
+                        </div>
+                    </div>
+                </div>
+                }
             </div>
         </main>
     </div>
 </div>
+    }
 }

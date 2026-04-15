@@ -9,6 +9,7 @@ interface Modal {
     title: string;
     title_placeholders?: Record<string, string>;
     description?: string;
+    description_placeholders?: Record<string, string>;
     icon?: string;
     width?: number;
     forceScrollbar?: boolean;
@@ -29,6 +30,7 @@ export class ModalManager {
         this.modals[name] = {
             ...modal,
             title_placeholders: modal.title_placeholders ?? {},
+            description_placeholders: modal.title_placeholders ?? {},
             children: modal.children || [],
             dropdown: '',
             isOpen: false,
@@ -54,6 +56,24 @@ export class ModalManager {
                 modal.icon = value;
                 break;
         }
+    }
+
+    public addTitlePlaceholders(name: string, key: string, value: string): void {
+        let modal = this.modals[name];
+        if (!modal) return;
+        if (!modal.title_placeholders) {
+            modal.title_placeholders = {};
+        }
+        modal.title_placeholders[key] = value;
+    }
+
+    public addDescriptionPlaceholders(name: string, key: string, value: string): void {
+        let modal = this.modals[name];
+        if (!modal) return;
+        if (!modal.description_placeholders) {
+            modal.description_placeholders = {};
+        }
+        modal.description_placeholders[key] = value;
     }
 
     public openDropdown(name: string, dropdown: string | null): void {

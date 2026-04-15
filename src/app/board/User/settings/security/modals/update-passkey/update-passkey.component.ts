@@ -5,20 +5,21 @@ import { Config } from '@Schoolingo/config';
 import { Locale } from '@Schoolingo/locale';
 import { ModalManager } from '@Schoolingo/modal';
 import { Settings } from '@Schoolingo/settings';
-import Swal from 'sweetalert2';
+import { BoardAlertManager } from '../../../../../../infrastructure/alert/board.alert.manager';
 
 import { IconsModule } from '@Schoolingo/icons';
 
 @Component({
   imports: [FormsModule, ReactiveFormsModule, IconsModule],
   templateUrl: './update-passkey.component.html',
-  styleUrl: './update-passkey.component.css'
+  styleUrls: ['./update-passkey.component.css']
 })
 export class UpdatePasskeyComponent {
   private http = inject(HttpClient);
   public modalManager = inject(ModalManager);
   public settings = inject(Settings);
   public l = inject(Locale);
+  public a = inject(BoardAlertManager);
 
   public updatePasskey(): void {
     if (!this.settings.selectedPasskey) return;
@@ -38,16 +39,7 @@ export class UpdatePasskeyComponent {
           this.settings.refreshSecurityAPI();
           this.modalManager.closeModal('update_passkey');
           this.settings.selectedPasskey = -1;
-          Swal.fire({
-            title: this.l.s('settings.passkeys.edit.success_title'),
-            text: this.l
-              .s('settings.passkeys.edit.success_description', { passkey: data.newName }),
-            icon: 'success',
-            timer: 2500,
-            timerProgressBar: true,
-            showCloseButton: false,
-            showConfirmButton: false,
-          });
+          this.a.alert('success', 'settings.passkeys.edit.success_description', [], undefined, { passkey: data.newName }).closeable(true);
         }
       });
   }

@@ -43,7 +43,7 @@ export const config: SidebarGroup[] = [
                 children: [
                     {
                         item: 'architecture.dashboard',
-                        url: 'admin/architecture',
+                        url: 'admin/architecture/overview',
                         icon: 'dashboard'
                     },
                     {

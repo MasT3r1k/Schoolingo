@@ -63,7 +63,7 @@ export class SetSalaryModalComponent implements OnInit {
     }
 
     this.http.post(
-      `${Config.API_URL}/v1/employees/salaries`,
+      `${Config.API_URL}/v1/employees/${this.newSalary.teacherId}/salaries`,
       {
         ...this.newSalary,
         validFrom: this.newSalary.validFrom.format('YYYY-MM-DD'),

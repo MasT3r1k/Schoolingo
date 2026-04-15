@@ -353,4 +353,8 @@ export namespace Utils {
     link.click();
     document.body.removeChild(link);
   }
+
+  export function isDev(): boolean {
+    return window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+  }
 }

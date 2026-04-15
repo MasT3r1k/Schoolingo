@@ -17,8 +17,7 @@ import { ModalManager } from '@Schoolingo/modal';
         </div>
     </div>
 
-    <div class="modal-actions"
-        style="margin-top: 2rem; padding-top: 1rem; border-top: 1px solid var(--border); display: flex; justify-content: flex-end; gap: 1rem;">
+    <div class="modal-actions">
         <button class="btn btn--secondary" (click)="closeModal()">
             <i-tabler name="x"></i-tabler>
             <span>{{ l.s('cancel') }}</span>

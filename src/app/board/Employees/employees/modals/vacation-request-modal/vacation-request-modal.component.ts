@@ -56,7 +56,7 @@ export class VacationRequestModalComponent {
 
   loadBalance() {
     this.http.get<any>(
-      `${Config.API_URL}/v1/employees/vacations/balance?employeeId=${this.auth.getId()}&year=${new Date().getFullYear()}`,
+      `${Config.API_URL}/v1/employees/${this.auth.getId()}/vacations/balance?year=${new Date().getFullYear()}`,
       { withCredentials: true }
     ).subscribe({
       next: (response) => {
@@ -72,7 +72,7 @@ export class VacationRequestModalComponent {
     if (!this.is_valid) return;
     this.loading = true;
     this.submit_error = null;
-    this.http.post<{success: boolean, message: string}>(Config.API_URL + '/v1/employees/vacations/request', {
+    this.http.post<{success: boolean, message: string}>(`${Config.API_URL}/v1/employees/${this.auth.getId()}/vacations/request`, {
       startDate: this.start_date.format('YYYY-MM-DD'),
       endDate: this.end_date.format('YYYY-MM-DD'),
       type: this.selected_type,

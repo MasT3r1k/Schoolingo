@@ -11,8 +11,8 @@ export class BaseAlertManager {
         this.alerts = this.alerts.filter(a => a != alert);
     }
 
-    public alert(type: SweetAlertIcon, text: string, actions: AlertButton[] = [], timer?: number): Alert {
-        const existing = this.alerts.find((alert) => alert.type == type && alert.text == text);
+    public alert(type: SweetAlertIcon, text: string, actions: AlertButton[] = [], timer?: number, args?: any): Alert {
+        const existing = this.alerts.find((alert) => alert.type == type && alert.text == text && JSON.stringify(alert.args) == JSON.stringify(args));
         if (existing) {
             existing.visible = true;
             if (timer) {
@@ -21,7 +21,7 @@ export class BaseAlertManager {
             return existing;
         }
 
-        const alert = new Alert(type, text, actions);
+        const alert = new Alert(type, text, actions, args);
         this.alerts.push(alert);
         if (timer) {
             this.setAlertTimeout(alert, timer);

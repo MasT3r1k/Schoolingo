@@ -1,12 +1,8 @@
-.badge {
-    right: 2rem !important;
-}
+/* ================================================
+   SECURITY COMPONENT — matches account.component
+   ================================================ */
 
-.item.collapse {
-    align-items: flex-start !important;
-    flex-direction: column !important;
-}
-
+/* Collapse section wrapper */
 .collapse-section {
     border-top: 1px solid var(--border);
     padding: 1rem 0;
@@ -14,36 +10,130 @@
     width: 100%;
 }
 
-.item-info {
-    width: 75%;
+/* ---- Passkey List ---- */
+.passkey-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
 }
 
-.item-info .title {
-    font-size: 1.4rem;
-    font-weight: bold;
+.passkey-item {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem 1.25rem;
+    background: var(--background);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    transition: all 0.3s ease;
 }
 
-.item-info .description {
-    margin-top: .5rem;
+.passkey-item:hover {
+    border-color: var(--primary);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
 }
 
-.images img {
-    width: 48px;
-    height: 48px;
+.passkey-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: var(--radius);
+    background: rgba(var(--primary-rgb), 0.1);
+    color: var(--primary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    transition: all 0.3s ease;
 }
 
-.item {
-    padding: 1rem 2rem !important;
-    justify-content: space-between;
+.passkey-item:hover .passkey-icon {
+    transform: scale(1.1);
 }
 
-.item .btn {
-    padding: .75rem;
-    margin-right: .5rem;
+.passkey-icon i-tabler {
+    width: 1.25rem;
+    height: 1.25rem;
 }
 
-.item .btn i-tabler {
-    margin-right: 0;
-    width: 20px;
-    height: 20px;
+.passkey-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    min-width: 0;
+}
+
+.passkey-name {
+    font-size: 0.9375rem;
+    font-weight: 600;
+    color: var(--text);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.passkey-meta {
+    font-size: 0.8125rem;
+    color: var(--text-muted);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.passkey-actions {
+    display: flex;
+    gap: 0.5rem;
+    flex-shrink: 0;
+}
+
+/* ---- Empty State ---- */
+.passkey-empty {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 2.5rem 2rem;
+    text-align: center;
+    background: var(--surface-2);
+    border: 2px dashed var(--border);
+    border-radius: var(--radius);
+    gap: 1rem;
+}
+
+.passkey-empty__icon {
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    background: var(--surface);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.passkey-empty__icon i-tabler {
+    width: 1.75rem;
+    color: var(--text-muted);
+}
+
+.passkey-empty__content h4 {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--text);
+    margin: 0;
+}
+
+/* ---- Responsive ---- */
+@media (max-width: 600px) {
+    .passkey-item {
+        flex-wrap: wrap;
+    }
+
+    .passkey-actions {
+        width: 100%;
+        justify-content: flex-end;
+    }
+
+    .passkey-meta {
+        white-space: normal;
+    }
 }

@@ -426,12 +426,12 @@ export class EmployeesComponent implements OnInit {
     const today = moment();
     
     this.http.get<{ data: AttendanceRecord[] }>(
-      `${Config.API_URL}/v1/employees/attendance`,
+      `${Config.API_URL}/v1/employees/${personId}/attendance`,
       { 
         withCredentials: true, 
         params: { 
           dateFrom: today.format('YYYY-MM-DD'),
-          employeeId: personId 
+          dateTo: today.format('YYYY-MM-DD')
         } 
       }
     ).subscribe({
@@ -458,8 +458,9 @@ export class EmployeesComponent implements OnInit {
 
   // Check-in
   performCheckIn() {
+    const personId = this.auth.getId();
     this.http.post<{ success: boolean, time: string }>(
-      `${Config.API_URL}/v1/employees/attendance/checkin`,
+      `${Config.API_URL}/v1/employees/${personId}/attendance/checkin`,
       { type: 'regular' },
       { withCredentials: true }
     ).subscribe({
@@ -478,8 +479,9 @@ export class EmployeesComponent implements OnInit {
 
   // Check-out
   performCheckOut(breakMinutes = 0) {
+    const personId = this.auth.getId();
     this.http.post<{ success: boolean, workedMinutes: number }>(
-      `${Config.API_URL}/v1/employees/attendance/checkout`,
+      `${Config.API_URL}/v1/employees/${personId}/attendance/checkout`,
       { breakMinutes },
       { withCredentials: true }
     ).subscribe({
@@ -499,10 +501,8 @@ export class EmployeesComponent implements OnInit {
 
   // Load vacation requests
   loadVacationRequests(employeeId?: number) {
-    let url = `${Config.API_URL}/v1/employees/vacations/requests`;
-    if (employeeId) {
-       url += `?employeeId=${employeeId}`;
-    }
+    const targetId = employeeId || this.auth.getId();
+    let url = `${Config.API_URL}/v1/employees/${targetId}/vacations/requests`;
 
     this.http.get<{ data: VacationRequest[] }>(
       url,
@@ -580,7 +580,7 @@ export class EmployeesComponent implements OnInit {
     }
     
     this.http.get<{ data: AttendanceRecord[] }>(
-      `${Config.API_URL}/v1/employees/attendance`,
+      `${Config.API_URL}/v1/employees/attendance`, // GLOBAL attendance for list view
       { 
         withCredentials: true,
         params: { 
@@ -745,7 +745,7 @@ export class EmployeesComponent implements OnInit {
   // Vacation methods
   loadVacationData(personId: number) {
     this.http.get<any>(
-      `${Config.API_URL}/v1/employees/vacations/balance?employeeId=${personId}&year=${this.currentYear}`,
+      `${Config.API_URL}/v1/employees/${personId}/vacations/balance?year=${this.currentYear}`,
       { withCredentials: true }
     ).subscribe({
        next: (response) => {

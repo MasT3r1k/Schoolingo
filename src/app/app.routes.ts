@@ -467,7 +467,7 @@ export const routes: Routes = [
                         path: 'architecture',
                         children: [
                             {
-                                path: '',
+                                path: 'overview',
                                 component: ArchitectureDashboardComponent
                             },
                             {

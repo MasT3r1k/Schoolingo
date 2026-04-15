@@ -1,134 +1,430 @@
-<div class="reports-page" [class.detail-view]="activeReport">
-    @if (!activeReport) {
-        <!-- Selection Grid (Home) -->
-        <div class="card grid-view">
-            <div class="card-header">
-                <div class="left">
-                    <h2>{{ l.s('reports.title') }}</h2>
-                    <span class="meta muted">{{ l.s('reports.subtitle') }}</span>
-                </div>
-            </div>
-            <div class="card-body">
-                <div class="reports-grid">
-                    <div class="report-card" (click)="selectReport('student_list')">
-                        <div class="icon-box primary">
-                            <i-tabler name="users"></i-tabler>
-                        </div>
-                        <h3>{{ l.s('reports.types.student_list') }}</h3>
-                        <p>{{ l.s('reports.types.student_list_desc') }}</p>
-                    </div>
+<div class="reports-page" [class.editor-open]="activeReport">
 
-                    <div class="report-card" (click)="selectReport('student_marks')">
-                        <div class="icon-box info">
-                            <i-tabler name="star"></i-tabler>
-                        </div>
-                        <h3>{{ l.s('reports.types.student_marks') }}</h3>
-                        <p>{{ l.s('reports.types.student_marks_desc') }}</p>
-                    </div>
-
-                    <div class="report-card" (click)="selectReport('class_marks')">
-                        <div class="icon-box warning">
-                            <i-tabler name="chalkboard"></i-tabler>
-                        </div>
-                        <h3>{{ l.s('reports.types.class_marks') }}</h3>
-                        <p>{{ l.s('reports.types.class_marks_desc') }}</p>
-                    </div>
-
-                    <div class="report-card" (click)="selectReport('grade_overview')">
-                        <div class="icon-box success">
-                            <i-tabler name="report-analytics"></i-tabler>
-                        </div>
-                        <h3>{{ l.s('reports.types.grade_overview') }}</h3>
-                        <p>{{ l.s('reports.types.grade_overview_desc') }}</p>
-                    </div>
-                </div>
-            </div>
+  @if (!activeReport) {
+    <!-- ── Selection Grid (Home) ── -->
+    <div class="card grid-view">
+      <div class="card-header">
+        <div class="left">
+          <h2>{{ l.s('reports.title') }}</h2>
+          <span class="meta muted">{{ l.s('reports.subtitle') }}</span>
         </div>
-    } @else {
-        <!-- Active Report View -->
-        <div class="detail-header no-print">
-            <button class="btn-back" (click)="reset()">
-                <i-tabler name="arrow-left"></i-tabler>
-                <span>{{ l.s('buttons.back') }}</span>
+      </div>
+      <div class="card-body">
+        <div class="reports-grid">
+          <div class="report-card" (click)="selectReport('student_list')">
+            <div class="icon-box primary">
+              <i-tabler name="users"></i-tabler>
+            </div>
+            <h3>{{ l.s('reports.types.student_list') }}</h3>
+            <p>{{ l.s('reports.types.student_list_desc') }}</p>
+          </div>
+          <div class="report-card" (click)="selectReport('student_marks')">
+            <div class="icon-box info">
+              <i-tabler name="star"></i-tabler>
+            </div>
+            <h3>{{ l.s('reports.types.student_marks') }}</h3>
+            <p>{{ l.s('reports.types.student_marks_desc') }}</p>
+          </div>
+          <div class="report-card" (click)="selectReport('class_marks')">
+            <div class="icon-box warning">
+              <i-tabler name="chalkboard"></i-tabler>
+            </div>
+            <h3>{{ l.s('reports.types.class_marks') }}</h3>
+            <p>{{ l.s('reports.types.class_marks_desc') }}</p>
+          </div>
+          <div class="report-card" (click)="selectReport('grade_overview')">
+            <div class="icon-box success">
+              <i-tabler name="report-analytics"></i-tabler>
+            </div>
+            <h3>{{ l.s('reports.types.grade_overview') }}</h3>
+            <p>{{ l.s('reports.types.grade_overview_desc') }}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  } @else {
+    <!-- ── Editor sestavy ── -->
+    <div class="editor-layout">
+
+      <!-- ══ LEFT: Column Selector Panel ══ -->
+      <aside class="columns-panel">
+        <div class="columns-panel-header">
+          <h3>Výběr sloupců sestavy</h3>
+          <button class="icon-btn" title="Přidat speciální sloupec" (click)="addSpecialColumn()">
+            <i-tabler name="plus"></i-tabler>
+          </button>
+        </div>
+        <div class="columns-tree">
+          @for (group of columnGroups; track group.key) {
+            <div class="tree-group">
+              <div class="tree-group-header" (click)="toggleGroup(group.key)">
+                <i-tabler [name]="expandedGroups[group.key] ? 'chevron-down' : 'chevron-right'"></i-tabler>
+                <span>{{ group.label }}</span>
+              </div>
+              @if (expandedGroups[group.key]) {
+                <div class="tree-items">
+                  @for (col of group.columns; track col.key) {
+                    <div class="tree-item" (click)="addColumn(col)">
+                      <span>{{ col.label }}</span>
+                    </div>
+                  }
+                </div>
+              }
+            </div>
+          }
+        </div>
+        <div class="columns-panel-footer">
+          <button class="add-special-btn" (click)="addSpecialColumn()">
+            <i-tabler name="plus"></i-tabler>
+            Přidat speciální sloupec
+          </button>
+        </div>
+      </aside>
+
+      <!-- ══ CENTER: Report Editor ══ -->
+      <main class="editor-main">
+        <!-- Top controls: Title / Subtitle -->
+        <div class="editor-top-bar">
+          <div class="editor-title-row">
+            <label class="field-label">Nadpis</label>
+            <input class="title-input" [(ngModel)]="reportTitle" placeholder="Název sestavy" />
+            <label class="show-titles-toggle">
+              <input type="checkbox" [(ngModel)]="showTitles" />
+              Zobrazovat nadpisy
+            </label>
+          </div>
+          <div class="editor-subtitle-row">
+            <label class="field-label">Podnadpis</label>
+            <input class="title-input" [(ngModel)]="reportSubtitle" placeholder="Prostor pro vlastní upřesnění" />
+          </div>
+        </div>
+
+        <!-- Page controls row -->
+        <div class="editor-page-controls">
+          <div class="page-nav">
+            <button class="icon-btn" (click)="prevPage()" [disabled]="currentPage <= 1">
+              <i-tabler name="chevron-left"></i-tabler>
             </button>
-            <h1 class="detail-title">{{ l.s('reports.types.' + activeReport) }}</h1>
-            
-            <div class="detail-actions">
-                <button class="action-btn" [title]="l.s('reports.preview.download')" (click)="downloadPdf()" *ngIf="pdfUrl">
-                    <i-tabler name="download"></i-tabler>
-                </button>
-                <button class="action-btn" [title]="l.s('reports.preview.print')" (click)="printPdf()" *ngIf="pdfUrl">
-                    <i-tabler name="printer"></i-tabler>
-                </button>
-            </div>
+            <span class="page-indicator">{{ currentPage }} / {{ totalPages }}</span>
+            <button class="icon-btn" (click)="nextPage()" [disabled]="currentPage >= totalPages">
+              <i-tabler name="chevron-right"></i-tabler>
+            </button>
+            <div class="page-divider"></div>
+            <button class="icon-btn" title="Zmenšit" (click)="setZoom(zoom * 100 - 10)">
+              <i-tabler name="minus"></i-tabler>
+            </button>
+            <select class="page-size-select" [(ngModel)]="pageSize" (change)="setZoom(pageSize)">
+              <option value="full">Auto</option>
+              <option value="50">50%</option>
+              <option value="75">75%</option>
+              <option value="100">100% (A4)</option>
+              <option value="150">150%</option>
+            </select>
+            <button class="icon-btn" title="Zvětšit" (click)="setZoom(zoom * 100 + 10)">
+              <i-tabler name="plus"></i-tabler>
+            </button>
+            <div class="page-divider"></div>
+            <button class="icon-btn" title="Stáhnout náhled" (click)="downloadPdf()">
+              <i-tabler name="file-download"></i-tabler>
+            </button>
+            <button class="icon-btn" title="Sdílet / tisknout" (click)="printPdf()">
+              <i-tabler name="share"></i-tabler>
+            </button>
+          </div>
+          <div class="preview-label">
+            Aktuální<br>náhled
+          </div>
         </div>
 
-        <div class="detail-layout">
-            <!-- Sidebar for Parameters -->
-            <aside class="profile-sidebar no-print">
-                <div class="profile-card">
-                    <div class="icon-box" [ngClass]="{
-                        'primary': activeReport === 'student_list',
-                        'info': activeReport === 'student_marks',
-                        'warning': activeReport === 'class_marks',
-                        'success': activeReport === 'grade_overview'
-                    }">
-                        <i-tabler [name]="activeReport === 'student_list' ? 'users' : (activeReport === 'student_marks' ? 'star' : (activeReport === 'class_marks' ? 'chalkboard' : 'report-analytics'))"></i-tabler>
-                    </div>
-                    <h2 class="profile-name">{{ l.s('reports.types.' + activeReport) }}</h2>
-                    <p class="muted center" style="font-size: 0.8rem; margin-top: 4px;">{{ l.s('reports.types.' + activeReport + '_desc') }}</p>
-                </div>
-
-                <!-- Parameters Form -->
-                <div class="quick-contact">
-                    <h3>Nastavení sestavy</h3>
-                    
-                    <div class="form-group" *ngIf="activeReport">
-                        <label class="form-label">{{ l.s('reports.config.select_class') }}</label>
-                        <select [(ngModel)]="selection.classId" (change)="onClassChange()" class="form-input">
-                            <option [ngValue]="null">{{ l.s('reports.config.choose_class') }}</option>
-                            <option *ngFor="let cls of classes" [ngValue]="cls.id || cls.class_id">{{ cls.name || cls.class_name }}</option>
-                        </select>
-                    </div>
-
-                    <div class="form-group" *ngIf="activeReport === 'student_marks' || activeReport === 'grade_overview'">
-                        <label class="form-label">{{ l.s('reports.config.select_student') }}</label>
-                        <select [(ngModel)]="selection.studentId" class="form-input" [disabled]="!selection.classId">
-                            <option [ngValue]="null">{{ l.s('reports.config.choose_student') }}</option>
-                            <option *ngFor="let st of students" [ngValue]="st.id || st.student_id">{{ st.last_name }} {{ st.first_name }}</option>
-                        </select>
-                    </div>
-
-                    <div style="margin-top: 20px;">
-                        <button class="btn btn--primary" style="width: 100%;" [disabled]="isLoading || (activeReport === 'student_marks' && !selection.studentId) || (activeReport === 'student_list' && !selection.classId)" (click)="generateReport()">
-                            <i-tabler name="refresh" [ngClass]="{'fa-spin': isLoading}"></i-tabler>
-                            <span>{{ l.s('reports.config.generate') }}</span>
-                        </button>
-                    </div>
-                </div>
-            </aside>
-
-            <!-- Main Content Area (Preview) -->
-            <main class="detail-main">
-                <div class="tab-content" style="padding: 0; height: 100%;">
-                    @if (isLoading && !pdfUrl) {
-                        <div class="detail-loading">
-                            <div class="loading-spinner"></div>
-                            <p>Generování sestavy...</p>
-                        </div>
-                    } @else if (pdfUrl) {
-                        <div class="report-pdf-viewer">
-                            <iframe [src]="pdfUrl" width="100%" height="100%" frameborder="0"></iframe>
-                        </div>
+        <!-- ── Column Editor Table ── -->
+        <div class="col-editor-wrapper">
+          <table class="col-editor-table">
+            <thead>
+              <tr>
+                <th class="th-drag"></th>
+                <th>Název</th>
+                <th>Zobrazené záhlaví</th>
+                <th>Min. Šířka</th>
+                <th>Šířka</th>
+                <th class="th-actions"></th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (col of activeColumns; track col.id; let i = $index) {
+                <tr [class.active-row]="selectedColumnIndex === i" (click)="selectColumn(i)">
+                  <td class="drag-handle-cell">
+                    <i-tabler name="grip-vertical" class="drag-handle"></i-tabler>
+                  </td>
+                  <td class="col-name-cell">{{ col.label }}</td>
+                  <td class="col-header-cell">
+                    @if (selectedColumnIndex === i) {
+                      <input class="inline-input" [(ngModel)]="col.displayHeader" (click)="$event.stopPropagation()" />
                     } @else {
-                        <div class="no-selection-state">
-                            <i-tabler name="report-search"></i-tabler>
-                            <h3>Vyberte parametry</h3>
-                            <p class="muted">Zvolte třídu a případně studenta v levém panelu a klikněte na "Generovat sestavu".</p>
-                        </div>
+                      {{ col.displayHeader }}
                     }
-                </div>
-            </main>
+                  </td>
+                  <td class="col-width-cell">{{ col.minWidth }}</td>
+                  <td class="col-width-cell">
+                    @if (selectedColumnIndex === i) {
+                      <input class="inline-input width-input" type="number" [(ngModel)]="col.width" (click)="$event.stopPropagation()" />
+                    } @else {
+                      {{ col.width }}
+                    }
+                  </td>
+                  <td class="col-actions-cell">
+                    @if (selectedColumnIndex === i) {
+                      <button class="icon-btn-sm" title="Upravit" (click)="$event.stopPropagation()">
+                        <i-tabler name="pencil"></i-tabler>
+                      </button>
+                      <button class="icon-btn-sm danger" title="Odebrat" (click)="$event.stopPropagation(); removeColumn(i)">
+                        <i-tabler name="trash"></i-tabler>
+                      </button>
+                    }
+                  </td>
+                </tr>
+              } @empty {
+                <tr>
+                  <td colspan="6" class="empty-cols-msg">
+                    <i-tabler name="columns"></i-tabler>
+                    <span>Přidejte sloupce z levého panelu</span>
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
         </div>
-    }
+
+        <!-- ── Bottom Controls: Orientation / Seskupování / Formátování ── -->
+        <div class="editor-bottom-bar">
+          <div class="bottom-section">
+            <label class="section-label">Orientace</label>
+            <div class="orientation-btns">
+              <button class="orient-btn" [class.active]="orientation === 'portrait'" (click)="orientation = 'portrait'">
+                <i-tabler name="layout-list"></i-tabler>
+                Na výšku
+              </button>
+              <button class="orient-btn" [class.active]="orientation === 'landscape'" (click)="orientation = 'landscape'">
+                <i-tabler name="layout-columns"></i-tabler>
+                Na šířku
+              </button>
+            </div>
+          </div>
+
+          <div class="bottom-section">
+            <label class="section-label">Seskupování</label>
+            <div class="grouping-chips">
+              @for (g of groupings; track g.key) {
+                <span class="group-chip">
+                  {{ g.label }}
+                  <button class="chip-remove" (click)="removeGrouping(g.key)">
+                    <i-tabler name="x"></i-tabler>
+                  </button>
+                </span>
+              }
+            </div>
+          </div>
+
+          <div class="bottom-section">
+            <label class="section-label">Formátování</label>
+            <div class="format-controls">
+              <button class="icon-btn-sm format-btn" title="Písmo">
+                <i-tabler name="typography"></i-tabler>
+              </button>
+              <input class="font-size-input" type="number" [(ngModel)]="fontSize" min="6" max="20" />
+              <button class="icon-btn-sm format-btn" title="Řádkování">
+                <i-tabler name="line-height"></i-tabler>
+              </button>
+              <select class="line-height-select" [(ngModel)]="lineHeight">
+                <option value="1.0">1,0</option>
+                <option value="1.2">1,2</option>
+                <option value="1.5">1,5</option>
+                <option value="2.0">2,0</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <!-- ── Width Info / Base layout / Expand ── -->
+        <div class="editor-footer-bar">
+          <div class="footer-left">
+            <button class="layout-btn" (click)="applyBaseLayout()">
+              <i-tabler name="layout-sidebar"></i-tabler>
+              Základní vzhled
+            </button>
+          </div>
+          <div class="width-info">
+            Šířka stránky (bez okrajů): <strong>{{ pageContentWidth }} mm</strong><br>
+            <span [class.over-limit]="usedWidth > pageContentWidth">Ještě zbývá: {{ pageContentWidth - usedWidth }} mm</span>
+          </div>
+          <div class="footer-right">
+            <button class="expand-btn" (click)="autoFitColumns()">
+              <i-tabler name="arrows-horizontal"></i-tabler>
+              Roztáhnout sloupce
+            </button>
+          </div>
+        </div>
+
+        <!-- Class / params selection -->
+        <div class="editor-params-bar">
+          <div class="param-group">
+            <label class="section-label">Třída</label>
+            <select class="param-select" [(ngModel)]="selection.classId" (change)="onClassChange()">
+              <option [ngValue]="null">— Vyberte třídu —</option>
+              @for (cls of classes; track cls.id) {
+                <option [ngValue]="cls.id || cls.class_id">{{ cls.name || cls.class_name }}</option>
+              }
+            </select>
+          </div>
+          @if (activeReport === 'student_marks' || activeReport === 'grade_overview') {
+            <div class="param-group">
+              <label class="section-label">Student</label>
+              <select class="param-select" [(ngModel)]="selection.studentId" [disabled]="!selection.classId">
+                <option [ngValue]="null">— Vyberte studenta —</option>
+                @for (st of students; track st.id) {
+                  <option [ngValue]="st.id || st.student_id">{{ st.last_name }} {{ st.first_name }}</option>
+                }
+              </select>
+            </div>
+          }
+          <!-- Generate button -->
+          <button class="btn-generate" (click)="generateReport()" [disabled]="isLoading || !canGenerate()">
+            <i-tabler [name]="isLoading ? 'loader-2' : 'refresh'"></i-tabler>
+            {{ isLoading ? 'Generuji...' : 'Generovat sestavu' }}
+          </button>
+        </div>
+      </main>
+
+      <!-- ══ RIGHT: Live Paper Preview ══ -->
+      <aside class="preview-panel">
+        <div class="preview-panel-header">
+          <span>Náhled sestavy</span>
+        </div>
+        <div class="preview-paper-wrap" 
+             (wheel)="onWheel($event)" 
+             (mousedown)="onPanStart($event)" 
+             (mousemove)="onPanMove($event)" 
+             (mouseup)="onPanEnd()" 
+             (mouseleave)="onPanEnd()">
+          
+          <div class="preview-tools">
+            <button class="tool-btn" (click)="setZoom(zoom * 100 + 10)" title="Přiblížit">
+              <i-tabler name="plus"></i-tabler>
+            </button>
+            <button class="tool-btn" (click)="setZoom(zoom * 100 - 10)" title="Oddálit">
+              <i-tabler name="minus"></i-tabler>
+            </button>
+            <div class="tool-divider"></div>
+            <button class="tool-btn" (click)="resetZoom()" title="Resetovat zobrazení">
+              <i-tabler name="refresh"></i-tabler>
+            </button>
+          </div>
+
+          <div class="preview-paper-scaler" [style.transform]="getTransform()">
+            <div class="preview-paper" [class.landscape]="orientation === 'landscape'">
+              <!-- Paper header -->
+              @if (showTitles && reportTitle) {
+                <div class="preview-title">{{ reportTitle }}</div>
+              }
+              @if (showTitles && reportSubtitle) {
+                <div class="preview-subtitle">{{ reportSubtitle }}</div>
+              }
+              @if (showTitles && (reportTitle || reportSubtitle)) {
+                <hr style="border: none; border-top: 0.5px solid #ccc; margin: 4px 0 8px;" />
+              }
+  
+              <!-- Loading state -->
+              @if (isLoading) {
+                <div class="preview-loading">
+                  <div class="preview-spinner"></div>
+                </div>
+              } @else if (pagedPreviewGroups.length > 0) {
+                <!-- Real data groups -->
+                @for (group of pagedPreviewGroups; track $index) {
+                  <div class="preview-group">
+                    <div class="preview-group-header">
+                    {{ group.groupLabel ? 'Třída ' + group.groupLabel + ':' : '' }}
+                    Počet žáků: {{ group.rows.length }}
+                  </div>
+                  <table class="preview-table">
+                    <thead>
+                      <tr>
+                        <th style="width: 12px;">#</th>
+                        @for (col of activeColumns; track col.id) {
+                          <th [style.width.mm]="col.width" style="overflow: hidden;">{{ col.displayHeader }}</th>
+                        }
+                      </tr>
+                    </thead>
+                    <tbody>
+                      @for (row of group.rows; track $index) {
+                        <tr>
+                          <td>{{ $index + 1 }}.</td>
+                          @for (col of activeColumns; track col.id) {
+                            <td [style.width.mm]="col.width">
+                              <span [style.font-size]="calculateFontSize(getCellValue(row, col.key), col.width)">
+                                {{ getCellValue(row, col.key) }}
+                              </span>
+                            </td>
+                          }
+                        </tr>
+                      }
+                    </tbody>
+                  </table>
+                </div>
+              }
+            } @else {
+              <!-- Empty placeholder skeleton -->
+              <div class="preview-placeholder">
+                <div class="preview-no-data">
+                  <i-tabler name="table-off"></i-tabler>
+                  <p>Klikněte na tlačítko "Generovat sestavu" pro načtení dat z databáze</p>
+                </div>
+                @for (g of [1,2]; track g) {
+                  <div class="ph-group">
+                    <div class="ph-group-header"></div>
+                    <div class="ph-table">
+                      <div class="ph-thead"></div>
+                      @for (r of [1,2,3,4]; track r) {
+                        <div class="ph-row"></div>
+                      }
+                    </div>
+                  </div>
+                }
+              </div>
+            }
+
+              <!-- Page number -->
+              <div class="preview-page-footer">
+                {{ currentPage }} / {{ totalPages }}
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="preview-page-num">Strana {{ currentPage }} z {{ totalPages }}</div>
+      </aside>
+    </div>
+
+    <!-- ── Bottom Action Bar ── -->
+    <div class="editor-action-bar">
+      <button class="btn-back-action" (click)="reset()">
+        <i-tabler name="arrow-left"></i-tabler>
+        Přehled
+      </button>
+      <div class="action-bar-right">
+        <button class="btn-export" (click)="generateReport()" [disabled]="isLoading">
+          <i-tabler name="file-export"></i-tabler>
+          Export
+        </button>
+        <button class="btn-print" (click)="printPdf()" [disabled]="isLoading">
+          <i-tabler name="printer"></i-tabler>
+          Tisk
+        </button>
+        <button class="btn-save" (click)="saveReport()">
+          <i-tabler name="device-floppy"></i-tabler>
+          Uložit
+        </button>
+      </div>
+    </div>
+  }
+
 </div>

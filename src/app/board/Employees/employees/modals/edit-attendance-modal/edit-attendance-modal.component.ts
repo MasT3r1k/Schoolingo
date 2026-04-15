@@ -84,8 +84,8 @@ export class EditAttendanceModalComponent {
 
     const isNew = !this.attendance.attendance_id || this.attendance.attendance_id === 0;
     const url = isNew 
-      ? `${Config.API_URL}/v1/employees/attendance`
-      : `${Config.API_URL}/v1/employees/attendance/${this.attendance.attendance_id}`;
+      ? `${Config.API_URL}/v1/employees/${this.attendance.teacher_id}/attendance`
+      : `${Config.API_URL}/v1/employees/${this.attendance.teacher_id}/attendance/${this.attendance.attendance_id}`;
     
     const request = isNew
       ? this.http.post(url, this.attendance, { withCredentials: true })

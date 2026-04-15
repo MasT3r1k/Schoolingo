@@ -9,11 +9,10 @@ import moment from 'moment';
 import { AuthConfig } from '../../../../infrastructure/authentication/config';
 import { IconsModule } from '@Schoolingo/icons';
 import { Passkey } from '@Schoolingo/passkey';
-import Swal from 'sweetalert2';
 import { PublicKeyCredentialCreationOptionsJSON, startRegistration } from '@simplewebauthn/browser';
 
 import { Theme } from '@Schoolingo/theme';
-import { BaseAlertManager } from '../../../../infrastructure/alert/alert.manager';
+import { BoardAlertManager } from '../../../../infrastructure/alert/board.alert.manager';
 import { BackupCode } from '../../../../infrastructure/settings/security';
 import { Utils } from '@Schoolingo/utils';
 import { ModalManager } from '@Schoolingo/modal';
@@ -21,6 +20,7 @@ import { AddTFAComponent } from './modals/add-tfa/add-tfa.component';
 import { VerifyCodeComponent } from './modals/verify-code/verify-code.component';
 import { BackupCodesComponent } from './modals/backup-codes/backup-codes.component';
 import { UpdatePasskeyComponent } from './modals/update-passkey/update-passkey.component';
+import { RemovePasskeyComponent } from './modals/remove-passkey/remove-passkey.component';
 
 @Component({
   selector: 'settings-security',
@@ -34,7 +34,7 @@ export class SecurityComponent implements OnInit {
   public moment = moment;
   public modalManager = inject(ModalManager);
 
-  public a = inject(BaseAlertManager);
+  public a = inject(BoardAlertManager);
   public l = inject(Locale);
   public t = inject(Theme);
   public collapses: boolean[] = [];
@@ -89,15 +89,7 @@ export class SecurityComponent implements OnInit {
 
   public async addPasskey(): Promise<void> {
     if (this.isPasskeySupported == false) {
-      Swal.fire({
-        title: this.l.s('settings.passkeys.title'),
-        text: this.l.s('settings.passkeys.alerts.not_supported'),
-        icon: 'error',
-        timer: 2500,
-        timerProgressBar: true,
-        showCloseButton: false,
-        showConfirmButton: false,
-      });
+      this.a.alert('error', 'settings.passkeys.alerts.not_supported').closeable(true);
       return;
     }
 
@@ -148,47 +140,7 @@ export class SecurityComponent implements OnInit {
       ?.passkeys.filter((_) => _.id == keyId);
     if (!passkey?.length) return;
 
-    Swal.fire({
-      title: this.l
-        .s('settings.passkeys.remove.title', { passkey: passkey[0].device_name }),
-      text: this.l.s('settings.passkeys.remove.description'),
-      icon: 'error',
-      showCloseButton: false,
-      showCancelButton: true,
-      showConfirmButton: true,
-      customClass: {
-        confirmButton: 'danger',
-      },
-      reverseButtons: true,
-      cancelButtonText: this.l.s('cancel'),
-      confirmButtonText: this.l.s('delete'),
-    }).then((result) => {
-      if (result.isDismissed) return;
-      this.http
-        .post<{ deleted: boolean; error?: string }>(
-          Config.ELYSIA_URL + '/remove-passkey',
-          { keyId },
-          { withCredentials: true }
-        )
-        .subscribe(
-          (data: { deleted: boolean; error?: string; id?: number }) => {
-            if (data.deleted && data.id == keyId) {
-              Swal.fire({
-                title: this.l.s('settings.passkeys.remove.success_title'),
-                text: this.l
-                  .s('settings.passkeys.remove.success_description', { passkey: passkey[0].device_name }),
-                icon: 'success',
-                timer: 2500,
-                timerProgressBar: true,
-                showCloseButton: false,
-                showConfirmButton: false,
-              });
-
-              this.settings.refreshSecurityAPI();
-            }
-          }
-        );
-    });
+    this.modalManager.openModal('remove_passkey', { passkey: passkey[0] });
   }
 
   public getPasskeyName(keyId: number): string {
@@ -252,12 +204,28 @@ export class SecurityComponent implements OnInit {
       'update_passkey',
       {
         title: 'settings.passkeys.edit.title',
+        description: 'settings.passkeys.edit.description',
         icon: 'fingerprint',
         closeable: true,
         items: [
           {
             type: 'component',
             component: UpdatePasskeyComponent
+          }
+        ]
+      }
+    )
+
+    this.modalManager.addModal(
+      'remove_passkey',
+      {
+        title: 'settings.passkeys.remove.modal_title',
+        icon: 'fingerprint',
+        closeable: true,
+        items: [
+          {
+            type: 'component',
+            component: RemovePasskeyComponent
           }
         ]
       }

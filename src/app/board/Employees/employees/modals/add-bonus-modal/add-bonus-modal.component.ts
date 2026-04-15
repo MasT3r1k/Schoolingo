@@ -54,7 +54,7 @@ export class AddBonusModalComponent implements OnInit {
     }
 
     this.http.post(
-      `${Config.API_URL}/v1/employees/bonuses`,
+      `${Config.API_URL}/v1/employees/${this.newBonus.personId}/bonuses`,
       {
         ...this.newBonus,
         date: this.newBonus.date.format('YYYY-MM-DD')
