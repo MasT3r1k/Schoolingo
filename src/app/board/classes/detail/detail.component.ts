@@ -8,6 +8,8 @@ import { Utils } from '@Schoolingo/utils';
 import { Locale } from '@Schoolingo/locale';
 import { ClassItem } from '../classes.component';
 
+import { AvatarService } from '../../../infrastructure/utils/avatar.service';
+
 @Component({
   selector: 'app-class-detail',
   standalone: true,
@@ -20,6 +22,7 @@ export class DetailComponent implements OnInit {
   private route = inject(ActivatedRoute);
   public Utils = Utils;
   public l = inject(Locale);
+  public avatarService = inject(AvatarService);
 
   classId: number | null = null;
   classData: ClassItem | null = null;

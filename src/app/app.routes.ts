@@ -83,6 +83,8 @@ import { SetupComponent } from './setup/setup.component';
 import { NoPermissionComponent } from './board/error/no-permission/no-permission.component';
 import { DetailComponent as ClassesDetailComponent } from './board/classes/detail/detail.component';
 
+import { DetailComponent as EmployeesDetailComponent } from './board/Employees/employees/detail/detail.component';
+
 export const routes: Routes = [
     {
         path: 'setup',
@@ -140,7 +142,16 @@ export const routes: Routes = [
             },
             {
                 path: 'employees',
-                component: EmployeesComponent
+                children: [
+                    {
+                        path: '',
+                        component: EmployeesComponent
+                    },
+                    {
+                        path: ':id',
+                        component: EmployeesDetailComponent
+                    }
+                ]
             },
             {
                 path: 'schedule',

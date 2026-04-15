@@ -1,0 +1,322 @@
+<div class="employees-page card">
+    @if (isNoPermission()) {
+        <schoolingo-no-permission 
+            title="employees.errors.no_permission_title" 
+            description="employees.errors.no_permission_desc" 
+            (onBack)="goBack()">
+        </schoolingo-no-permission>
+    } @else {
+        @if (!canViewAllEmployees) {
+        <div class="alert alert--danger mb">
+            Nemáte dostatečná oprávnění na vidění ostatních zaměstnanců, zobrazujeme pouze Vás.
+        </div>
+        }
+
+        <!-- Employee List View -->
+        <div class="list-view">
+            <!-- Header -->
+            <div class="card-header">
+                <h2>{{ l.s('sidebar.employees') }}</h2>
+                <div class="header-actions">
+                    <!-- Attendance Quick Actions -->
+                    <div class="attendance-quick">
+                        @if (!isCheckedIn()) {
+                        <button class="btn btn--success btn--sm" (click)="performCheckIn()">
+                            <i-tabler name="login"></i-tabler>
+                            {{ l.s('employees.attendance_status.checkin') }}
+                        </button>
+                        } @else {
+                        <div class="checked-in-info" style="display: flex; align-items: center; gap: 0.75rem;">
+                            <span class="check-time">
+                                <i-tabler name="clock"></i-tabler>
+                                {{ l.s('calendar.from') }} {{ checkInTime() }}
+                            </span>
+                            <button class="btn btn--warning btn--sm" (click)="performCheckOut(30)">
+                                <i-tabler name="logout"></i-tabler>
+                                {{ currentAttendanceRecord()?.check_out ? l.s('employees.attendance_status.early_checkout')
+                                : l.s('employees.attendance_status.checkout') }}
+                            </button>
+                        </div>
+                        }
+                    </div>
+
+                    <button class="btn btn--sm" [class.btn--ghost]="canManage" [class.btn--primary]="!canManage"
+                        (click)="openVacationRequestModal()">
+                        <i-tabler name="beach"></i-tabler>
+                        {{ l.s('employees.request_vacation.title') }}
+                    </button>
+
+                    @if (canManage) {
+                    <button class="btn btn--sm btn--primary" (click)="openAddEmployeeModal()">
+                        <i-tabler name="plus"></i-tabler>
+                        {{ l.s('employees.add_employee.title') }}
+                    </button>
+                    }
+                </div>
+            </div>
+
+            <!-- Tabs -->
+            <schoolingo-tabs 
+                [options]="viewTabOptions" 
+                [icons]="viewTabIcons"
+                [value]="selectedViewTabSubject"
+                class="mt-4">
+            </schoolingo-tabs>
+
+            <div class="tab-content mt-4">
+                <!-- Employees List Tab -->
+                @if (selectedViewTab.getValue() === 0) {
+                    <!-- Filters -->
+                    <div class="list-filters mb-4">
+                        <div class="search-box">
+                            <i-tabler name="search"></i-tabler>
+                            <input type="text" [placeholder]="l.s('employees.list.search_placeholder')"
+                                [ngModel]="filters().search" (ngModelChange)="updateFilter('search', $event); onFilterChange()">
+                        </div>
+                        <div class="filter-group">
+                            <div class="custom-select" id="status-filter"
+                                (click)="$event.stopPropagation(); dropdownManager.selected_dropdown = dropdownManager.selected_dropdown == 'status_filter' ? '' : 'status_filter'">
+                                <div class="selected-value">
+                                    <span>{{ l.s('employees.list.status') }}: {{ getStatusText(filters().status) }}</span>
+                                    <i-tabler name="chevron-down"></i-tabler>
+                                </div>
+                                @if (dropdownManager.selected_dropdown == 'status_filter') {
+                                <div class="options-dropdown">
+                                    <div class="list">
+                                        <div class="option" (click)="$event.stopPropagation(); updateFilter('status', 'all'); onFilterChange(); dropdownManager.selected_dropdown = ''">Všechny</div>
+                                        <div class="option" (click)="$event.stopPropagation(); updateFilter('status', 'active'); onFilterChange(); dropdownManager.selected_dropdown = ''">Aktivní</div>
+                                        <div class="option" (click)="$event.stopPropagation(); updateFilter('status', 'inactive'); onFilterChange(); dropdownManager.selected_dropdown = ''">Neaktivní</div>
+                                        <div class="option" (click)="$event.stopPropagation(); updateFilter('status', 'terminated'); onFilterChange(); dropdownManager.selected_dropdown = ''">Ukončen</div>
+                                    </div>
+                                </div>
+                                }
+                            </div>
+                        </div>
+                    </div>
+
+                    @if (isLoading()) {
+                    <div class="loading-state">
+                        <div class="spinner"></div>
+                        <p>Načítám zaměstnance...</p>
+                    </div>
+                    } @else if (employees().length > 0) {
+                    <div class="table-container">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Zaměstnanec</th>
+                                    <th>Role</th>
+                                    <th>Kontakt</th>
+                                    <th>Status</th>
+                                    <th>Akce</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @for (employee of employees(); track employee.person_id) {
+                                <tr class="clickable-row" (click)="selectEmployee(employee)">
+                                    <td>
+                                        <div class="user-info">
+                                            <div class="user-avatar">
+                                                <img [src]="avatarService.getAvatar(employee.avatar, employee.full_name)" [alt]="employee.full_name">
+                                            </div>
+                                            <div class="user-details">
+                                                <span class="user-name">{{ employee.full_name }}</span>
+                                                <span class="user-id">#{{ employee.employee_number || employee.person_id }}</span>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <span class="role-badge">{{ l.s('roles.' + employee.role) }}</span>
+                                    </td>
+                                    <td>
+                                        <div class="contact-info">
+                                            <span class="email">{{ employee.email || '-' }}</span>
+                                            <span class="phone">{{ employee.phone || '' }}</span>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <span class="status-badge" [class]="getStatusClass(employee.status)">
+                                            {{ getStatusLabel(employee.status) }}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <div class="row-actions">
+                                            <button class="btn-icon" (click)="$event.stopPropagation(); selectEmployee(employee)">
+                                                <i-tabler name="eye"></i-tabler>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Pagination -->
+                    @if (totalPages() > 1) {
+                    <div class="pagination">
+                        <button class="page-btn" [disabled]="currentPage() === 1" (click)="loadEmployees(currentPage() - 1)">
+                            <i-tabler name="chevron-left"></i-tabler>
+                        </button>
+                        
+                        @for (page of getPageList(); track page) {
+                        <button class="page-btn" [class.active]="currentPage() === page" (click)="loadEmployees(page)">
+                            {{ page }}
+                        </button>
+                        }
+
+                        <button class="page-btn" [disabled]="currentPage() === totalPages()" (click)="loadEmployees(currentPage() + 1)">
+                            <i-tabler name="chevron-right"></i-tabler>
+                        </button>
+                    </div>
+                    }
+                    } @else {
+                    <div class="empty-state">
+                        <i-tabler name="users-off"></i-tabler>
+                        <h3>Nenalezeni žádní zaměstnanci</h3>
+                        <p>Zkuste upravit filtry vyhledávání</p>
+                    </div>
+                    }
+                }
+
+                <!-- Overall Attendance Tab -->
+                @if (selectedViewTab.getValue() === 1) {
+                    <div class="attendance-admin-view">
+                        <div class="calendar-toolbar mb-4">
+                            <div class="date-navigator">
+                                <button class="btn-icon" (click)="changeAttendanceDate(-1)">
+                                    <i-tabler name="chevron-left"></i-tabler>
+                                </button>
+                                <div class="current-date" (click)="goToToday()">
+                                    <i-tabler name="calendar"></i-tabler>
+                                    <span>{{ attendanceMoment().format('LL') }}</span>
+                                </div>
+                                <button class="btn-icon" (click)="changeAttendanceDate(1)">
+                                    <i-tabler name="chevron-right"></i-tabler>
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="table-container">
+                            <table class="data-table">
+                                <thead>
+                                    <tr>
+                                        <th>Zaměstnanec</th>
+                                        <th>Status</th>
+                                        <th>Příchod</th>
+                                        <th>Odchod</th>
+                                        <th>Pauza</th>
+                                        <th>Odpracováno</th>
+                                        <th>Akce</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @for (record of allAttendanceRecords(); track $index) {
+                                    <tr [class]="getAttendanceStatus(record)">
+                                        <td>
+                                            <div class="user-info">
+                                                <div class="user-avatar">
+                                                    <img [src]="avatarService.getAvatar(record.avatar, record.full_name)" [alt]="record.full_name">
+                                                </div>
+                                                <div class="user-details">
+                                                    <span class="user-name">{{ record.full_name }}</span>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <span class="status-indicator" [class]="getAttendanceStatus(record)">
+                                                {{ getAttendanceStatus(record) === 'active' ? 'Přítomen' : 'Nepřítomen' }}
+                                            </span>
+                                        </td>
+                                        <td>{{ record.check_in || '-' }}</td>
+                                        <td>{{ record.check_out || (getAttendanceStatus(record) === 'active' ? 'Právě zde' : '-') }}</td>
+                                        <td>{{ record.break_minutes || 0 }} min</td>
+                                        <td><strong>{{ (record.worked_minutes / 60).toFixed(1) }}h</strong></td>
+                                        <td>
+                                            @if (canManage) {
+                                            <button class="btn-icon" (click)="editAttendanceRecord(record)">
+                                                <i-tabler name="edit"></i-tabler>
+                                            </button>
+                                            }
+                                        </td>
+                                    </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                }
+
+                <!-- Vacations Overview Tab -->
+                @if (selectedViewTab.getValue() === 2) {
+                    <div class="vacations-admin-view">
+                        <div class="table-container">
+                            <table class="data-table">
+                                <thead>
+                                    <tr>
+                                        <th>Zaměstnanec</th>
+                                        <th>Typ</th>
+                                        <th>Termín</th>
+                                        <th>Dní</th>
+                                        <th>Status</th>
+                                        <th>Akce</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @for (request of vacationRequests(); track request.request_id) {
+                                    <tr>
+                                        <td>{{ request.full_name }}</td>
+                                        <td>{{ getVacationTypeLabel(request.type) }}</td>
+                                        <td>{{ request.start_date | date:'dd.MM' }} - {{ request.end_date | date:'dd.MM' }}</td>
+                                        <td>{{ request.days }}</td>
+                                        <td>
+                                            <span class="status-badge" [class]="getVacationStatusClass(request.status)">
+                                                {{ getVacationStatusLabel(request.status) }}
+                                            </span>
+                                        </td>
+                                        <td>
+                                            @if (canManage && request.status === 'pending') {
+                                                <div class="row-actions">
+                                                    <button class="btn-icon btn-icon--success" title="Schválit">
+                                                        <i-tabler name="check"></i-tabler>
+                                                    </button>
+                                                    <button class="btn-icon btn-icon--danger" title="Zamítnout">
+                                                        <i-tabler name="x"></i-tabler>
+                                                    </button>
+                                                </div>
+                                            }
+                                        </td>
+                                    </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                }
+
+                <!-- Payroll Export Tab -->
+                @if (selectedViewTab.getValue() === 3) {
+                    <div class="payroll-admin-view">
+                        <div class="export-grid">
+                            <div class="export-card card--premium clickable" (click)="exportPayroll('csv')">
+                                <div class="card-icon"><i-tabler name="file-spreadsheet"></i-tabler></div>
+                                <h3>Export do CSV</h3>
+                                <p>Kompletní přehled hodin a mezd pro Excel</p>
+                            </div>
+                            <div class="export-card card--premium clickable" (click)="exportPayroll('xml')">
+                                <div class="card-icon"><i-tabler name="file-code"></i-tabler></div>
+                                <h3>Export XML (Pohoda/Money)</h3>
+                                <p>Formát pro import do účetních systémů</p>
+                            </div>
+                            <div class="export-card card--premium clickable" (click)="exportPayroll('json')">
+                                <div class="card-icon"><i-tabler name="file-json"></i-tabler></div>
+                                <h3>API JSON Export</h3>
+                                <p>Pro vývojáře a externí integrace</p>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    }
+</div>

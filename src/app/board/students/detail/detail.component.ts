@@ -1,5 +1,5 @@
 import { Component, OnInit, inject, ViewChild, ElementRef, AfterViewInit, HostListener } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { CommonModule, Location } from '@angular/common';
 import { IconsModule } from '@Schoolingo/icons';
 import { FormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
@@ -147,6 +147,7 @@ export class DetailComponent implements OnInit, AfterViewInit {
   private http = inject(HttpClient);
   public router = inject(Router);
   private route = inject(ActivatedRoute);
+  private location = inject(Location);
   private modalManager = inject(ModalManager);
   public Utils = Utils;
   public dropdownManager = inject(DropdownManager);
@@ -548,7 +549,9 @@ export class DetailComponent implements OnInit, AfterViewInit {
   }
 
   public selectStudent(student_id: number): void {
-    this.router.navigate(['/students', student_id]);
+    this.router.navigate(['/students', student_id], {
+      queryParamsHandling: 'preserve'
+    });
     setTimeout(() => {
       this.refreshStudentData();
     }, 100)
@@ -556,7 +559,12 @@ export class DetailComponent implements OnInit, AfterViewInit {
 
   // Close detail view
   closeDetail() {
-    this.router.navigate(['/', 'students'])
+    const returnUrl = this.route.snapshot.queryParamMap.get('returnUrl');
+    if (returnUrl) {
+      this.router.navigateByUrl(returnUrl);
+    } else {
+      this.router.navigate(['/', 'students']);
+    }
   }
 
   // Tab switching

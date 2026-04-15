@@ -18,6 +18,7 @@ export interface ClassItem {
   year: number;
   fieldOfStudy: string;
   headTeacher: string;
+  headTeacherAvatar?: string | null;
   classroom: string;
   studentsCount: number;
 }

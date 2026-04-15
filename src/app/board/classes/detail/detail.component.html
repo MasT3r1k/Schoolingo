@@ -67,8 +67,13 @@
                 </div>
             </div>
             <div class="info-card">
-                <div class="info-card-icon accent">
+                <div class="info-card-icon accent" [class.avatar-icon]="classData.headTeacherAvatar">
+                    @if (classData.headTeacherAvatar) {
+                    <img [src]="avatarService.getAvatar(classData.headTeacherAvatar, classData.headTeacher)"
+                        [alt]="classData.headTeacher" class="teacher-avatar-img">
+                    } @else {
                     <i-tabler name="user-star"></i-tabler>
+                    }
                 </div>
                 <div class="info-card-body">
                     <span class="info-card-label">Třídní učitel</span>
@@ -110,15 +115,11 @@
                     </thead>
                     <tbody>
                         @for (student of students; track student.person_id) {
-                        <tr [routerLink]="['/', 'students', student.person_id]" class="clickable-row">
+                        <tr [routerLink]="['/', 'students', student.person_id]" [queryParams]="{ returnUrl: '/classes/' + classId }" class="clickable-row">
                             <td class="col-student">
                                 <div class="student-cell">
                                     <div class="student-avatar">
-                                        @if (student.photo_url) {
-                                        <img [src]="student.photo_url" [alt]="student.full_name">
-                                        } @else {
-                                        <span>{{ Utils.getInitials(student.full_name) }}</span>
-                                        }
+                                        <img [src]="avatarService.getAvatar(student.avatar, student.full_name)" [alt]="student.full_name">
                                     </div>
                                     <span class="student-name">{{ student.full_name }}</span>
                                 </div>

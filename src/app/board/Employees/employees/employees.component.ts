@@ -26,6 +26,7 @@ import { RequestMoreVacationModalComponent } from './modals/request-more-vacatio
 import { AvatarService } from '../../../infrastructure/utils/avatar.service';
 import { EMPLOYEE_CONFIG } from '../../../infrastructure/employees/const';
 import { NoPermissionComponent } from '@Components/NoPermission/no-permission.component';
+import { ActivatedRoute, Router } from '@angular/router';
 import moment from 'moment';
 
 export interface Employee {
@@ -106,6 +107,7 @@ export class EmployeesComponent implements OnInit {
   public modalManager = inject(ModalManager);
   private alertManager = inject(BoardAlertManager) as BoardAlertManager;
   public avatarService = inject(AvatarService);
+  private router = inject(Router);
   public canViewAllEmployees: boolean = true;
   EMPLOYEE_CONFIG = EMPLOYEE_CONFIG
 
@@ -114,20 +116,12 @@ export class EmployeesComponent implements OnInit {
   loadError = signal<string | null>(null);
   isNoPermission = signal(false);
 
-  // Selected employee for detail view - Signal
-  selectedEmployee = new BehaviorSubject<Employee | null>(null);
-  
   // Wrapper for TabsComponent compatibility (it expects BehaviorSubject)
   selectedViewTabSubject = new BehaviorSubject<number>(0);
   // Main view tabs
   selectedViewTab = new BehaviorSubject<number>(0);
   viewTabOptions = ['employees.list', 'employees.attendance', 'employees.vacations.title', 'employees.salaries', 'employees.bonuses'];
   viewTabIcons = ['users', 'clock', 'beach', 'cash', 'gift'];
-  
-  // Detail tabs
-  selectedDetailTab = new BehaviorSubject<number>(0);
-  detailTabOptions = ['employees.overview', 'employees.attendance', 'employees.vacations.title', 'employees.salary', 'employees.bonuses'];
-  detailTabIcons = ['layout-dashboard', 'clock', 'beach', 'cash', 'gift'];
 
   // Filters - Signals
   filters = signal<EmployeeFilters>({
@@ -146,60 +140,15 @@ export class EmployeesComponent implements OnInit {
   // Data - Signals
   employees = signal<Employee[]>([]);
   vacationRequests = signal<VacationRequest[]>([]);
-  attendanceRecords = signal<AttendanceRecord[]>([]);
   allAttendanceRecords = signal<AttendanceRecord[]>([]);
   currentAttendanceRecord = signal<AttendanceRecord | null>(null);
+  employeeStats = signal<{ total: number; present: number; supposed: number; onVacation: number; absencePercentage: number } | null>(null);
 
   // Check-in/out state - Signals
   isCheckedIn = signal(false);
   checkInTime = signal<string | null>(null);
 
-  // Detail view data - Signals
-  attendanceStats = computed(() => {
-    const records = this.attendanceRecords();
-    let totalMinutes = 0;
-    let daysWithRecords = 0;
-
-    records.forEach(record => {
-      if (record.worked_minutes) {
-        totalMinutes += record.worked_minutes;
-        daysWithRecords++;
-      }
-    });
-
-    return {
-      totalHours: Number((totalMinutes / 60).toFixed(1)),
-      daysPresent: daysWithRecords,
-      avgDaily: daysWithRecords > 0 ? Number((totalMinutes / 60 / daysWithRecords).toFixed(1)) : 0
-    };
-  });
   attendanceFilter = signal<{ period: string; startDate: string; endDate: string }>({ period: 'month', startDate: '', endDate: '' });
-  
-  salaryHistory = signal<any[]>([]);
-  currentSalary = signal<any>(null);
-  
-  bonuses = signal<any[]>([]);
-  bonusFilter = signal<{ status: string; type: string }>({ status: 'all', type: 'all' });
-  
-  // Computed signals for filtered bonuses and totals
-  filteredBonuses = computed(() => {
-    const bonuses = this.bonuses();
-    const filter = this.bonusFilter();
-    return bonuses.filter(bonus => {
-      if (filter.status !== 'all') {
-        const isPaid = bonus.paid;
-        if (filter.status === 'paid' && !isPaid) return false;
-        if (filter.status === 'unpaid' && isPaid) return false;
-      }
-      if (filter.type !== 'all' && bonus.type !== filter.type) {
-        return false;
-      }
-      return true;
-    });
-  });
-  
-  bonusesTotal = computed(() => this.bonuses().reduce((sum, b) => sum + (b.amount || 0), 0));
-  bonusesUnpaid = computed(() => this.bonuses().filter(b => !b.paid).reduce((sum, b) => sum + (b.amount || 0), 0));
   
   vacationBalance = signal<{ total: number; used: number; remaining: number }>({ total: 0, used: 0, remaining: 0 });
   currentYear = new Date().getFullYear();
@@ -243,6 +192,7 @@ export class EmployeesComponent implements OnInit {
   ngOnInit() {
     this.loadEmployees();
     this.checkAttendanceStatus();
+    this.loadEmployeeStats();
     const personId = this.auth.getId();
     if (personId) {
       this.loadVacationData(personId);
@@ -389,26 +339,6 @@ export class EmployeesComponent implements OnInit {
         }
       })
     );
-    this.subscriptions.push(
-      this.selectedDetailTab.subscribe(tab => {
-        const employee = this.selectedEmployee.getValue()
-        if (!employee) return;
-
-        if (tab === 1) { // Attendance
-             this.loadAttendanceForDetail(employee.person_id);
-        }
-        if (tab === 2) { // Vacation
-             this.loadVacationData(employee.person_id);
-             this.loadVacationRequests(employee.person_id);
-        }
-        if (tab === 3) { // Salary
-             this.loadSalaryData(employee.person_id);
-        }
-        if (tab === 4) { // Bonuses
-             this.loadBonusesData(employee.person_id);
-        }
-      })
-    );
 
     // Subscribe to BehaviorSubject changes from TabsComponent and update signal
     this.selectedViewTabSubject.subscribe(tab => {
@@ -469,6 +399,20 @@ export class EmployeesComponent implements OnInit {
           this.alertManager.alert('error', 'employees.errors.load_failed').closeable(true);
         }
         this.isLoading.set(false);
+      }
+    });
+  }
+
+  loadEmployeeStats() {
+    this.http.get<any>(
+      `${Config.API_URL}/v1/employees/summary`,
+      { withCredentials: true }
+    ).subscribe({
+      next: (response) => {
+        this.employeeStats.set(response);
+      },
+      error: (error) => {
+        console.error('Failed to load employee stats:', error);
       }
     });
   }
@@ -584,18 +528,6 @@ export class EmployeesComponent implements OnInit {
     this.filters.set({ ...this.filters(), [key]: value });
   }
 
-  // Attendance filter helpers (template cannot use spread syntax)
-  setAttendanceFilterPeriod(period: string) {
-    this.attendanceFilter.set({ ...this.attendanceFilter(), period });
-    const emp = this.selectedEmployee.getValue();
-    if (emp) this.loadAttendanceForDetail(emp.person_id);
-  }
-  setAttendanceFilterStartDate(startDate: string) {
-    this.attendanceFilter.set({ ...this.attendanceFilter(), startDate });
-  }
-  setAttendanceFilterEndDate(endDate: string) {
-    this.attendanceFilter.set({ ...this.attendanceFilter(), endDate });
-  }
   setAttendanceFilterStartDateAndReload(startDate: string) {
     this.attendanceFilter.set({ ...this.attendanceFilter(), startDate });
     this.loadAllAttendance();
@@ -613,14 +545,6 @@ export class EmployeesComponent implements OnInit {
 
   goBack() {
     window.history.back();
-  }
-
-  // Bonus filter helpers (template cannot use spread syntax)
-  setBonusFilterStatus(status: string) {
-    this.bonusFilter.set({ ...this.bonusFilter(), status });
-  }
-  setBonusFilterType(type: string) {
-    this.bonusFilter.set({ ...this.bonusFilter(), type });
   }
 
   clearFilters() {
@@ -643,36 +567,8 @@ export class EmployeesComponent implements OnInit {
 
   // Employee selection
   selectEmployee(employee: Employee) {
-    this.selectedEmployee.next(employee);
-    this.selectedDetailTab.next(0);
-    this.loadEmployeeDetail(employee.person_id);
-    this.loadAttendanceForDetail(employee.person_id);
-    this.loadVacationData(employee.person_id);
-    this.loadBonusesData(employee.person_id);
+    this.router.navigate(['/employees', employee.person_id]);
   }
-
-  //Load employee detail from API
-  loadEmployeeDetail(employeeId: number) {
-    this.http.get<Employee>(
-      `${Config.API_URL}/v1/employees/${employeeId}`,
-      { withCredentials: true }
-    ).subscribe({
-      next: (response) => {
-        const current = this.selectedEmployee.getValue();
-        if (current) {
-          this.selectedEmployee.next({ ...current, ...response });
-        }
-      },
-      error: (error) => {
-        console.error('Failed to load employee detail:', error);
-        this.alertManager.alert('error', 'employees.errors.load_detail_failed').closeable(true);
-      }
-    });
-  }
-
-
-
-
 
   loadAllAttendance() {
     // Default to today if not set
@@ -710,20 +606,6 @@ export class EmployeesComponent implements OnInit {
 
   closeAddEmployeeModal() {
     this.modalManager.closeModal('add_employee');
-  }
-
-  openEditEmployeeModal() {
-    const employee = this.selectedEmployee.getValue();
-    if (!employee) return;
-    this.modalManager.openModal('edit_employee', {
-      employee: employee,
-      onSave: () => {
-        const current = this.selectedEmployee.getValue();
-        if (current) {
-          this.loadEmployeeDetail(current.person_id);
-        }
-      }
-    });
   }
 
   openVacationRequestModal() {
@@ -860,117 +742,6 @@ export class EmployeesComponent implements OnInit {
     return this.perm.checkPermission(['manager:admin']);
   }
 
-  closeDetail() {
-    this.selectedEmployee.next(null);
-    this.selectedDetailTab.next(0);
-    const personId = this.auth.getId();
-    if (personId) {
-      this.loadVacationData(personId);
-    }
-  }
-
-  loadEmployeeDetailData(personId: number) {
-    this.loadAttendanceForDetail(personId);
-    this.loadVacationData(personId);
-    this.loadSalaryData(personId);
-    this.loadBonusesData(personId);
-  }
-
-  // Attendance methods
-  loadAttendanceForDetail(personId: number) {
-    const filter = this.attendanceFilter();
-    const params: any = { employeeId: personId };
-    
-    if (filter.period === 'week') {
-      const now = new Date();
-      const weekStart = new Date(now.setDate(now.getDate() - now.getDay()));
-      params.startDate = weekStart.toISOString().split('T')[0];
-    } else if (filter.period === 'month') {
-      const now = new Date();
-      params.startDate = new Date(now.getFullYear(), now.getMonth(), 1).toISOString().split('T')[0];
-    } else if (filter.period === 'custom') {
-      params.startDate = filter.startDate;
-      params.endDate = filter.endDate;
-    }
-
-    this.http.get<{ data: any[] }>(
-      `${Config.API_URL}/v1/employees/attendance`,
-      { params, withCredentials: true }
-     ).subscribe({
-       next: (response) => {
-         this.attendanceRecords.set(response.data);
-       },
-      error: (error) => {
-        console.error('Failed to load attendance:', error);
-        this.alertManager.alert('error', 'employees.attendance.load_detail_failed').closeable(true);
-      }
-    });
-  }
-
-
-
-  editAttendanceRecord(record: any) {
-    this.modalManager.openModal('edit_attendance', {
-      record: { ...record }, // Copy to avoid direct mutation
-      onSave: () => {
-        // Refresh data
-        const employee = this.selectedEmployee.getValue();
-        if (employee) {
-          this.loadAttendanceForDetail(employee.person_id);
-        } else if (this.selectedViewTab.getValue() === 1) {
-          this.loadAllAttendance();
-        }
-      }
-    });
-  }
-
-  addAttendanceRecord() {
-    const employee = this.selectedEmployee.getValue();
-    if (!employee) return;
-    
-    this.modalManager.openModal('edit_attendance', {
-      record: { 
-        teacher_id: employee.person_id,
-        date: new Date().toISOString().split('T')[0],
-        check_in: '08:00',
-        check_out: '16:00',
-        break_minutes: 30,
-        type: 'office',
-        approved: true
-      },
-      onSave: () => {
-        this.loadAttendanceForDetail(employee.person_id);
-      }
-    });
-  }
-
-  exportAttendanceCSV() {
-    const headers = ['Datum', 'Příchod', 'Odchod', 'Pauza (min)', 'Odpracováno (h)', 'Typ'];
-    const records = this.attendanceRecords();
-    const employee = this.selectedEmployee.getValue();
-    const rows = records.map(r => [
-      Utils.formatDateShort(r.date),
-      r.check_in || '',
-      r.check_out || '',
-      `${r.break_minutes || 0} minut`,
-      `${r.worked_minutes ? (r.worked_minutes / 60).toFixed(2) : '0.00'} hod`,
-      r.type || 'office'
-    ]);
-
-    let csv = headers.join(';') + '\n';
-    rows.forEach(row => {
-      csv += row.join(';') + '\n';
-    });
-
-    const blob = new Blob([csv], { type: 'text/csv' });
-    const url = window.URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `attendance_${employee?.last_name || 'unknown'}_${new Date().toISOString().split('T')[0]}.csv`;
-    a.click();
-    window.URL.revokeObjectURL(url);
-  }
-
   // Vacation methods
   loadVacationData(personId: number) {
     this.http.get<any>(
@@ -992,204 +763,14 @@ export class EmployeesComponent implements OnInit {
     });
   }
 
-  changeVacationEntitlement() {
-    const employee = this.selectedEmployee.getValue();
-    if (!employee) return;
-    
-    // Use modal instead of prompt for security
-    this.modalManager.openModal('adjust_vacation', {
-      employee: employee,
-      entitlement: this.vacationBalance().total,
-      onConfirm: (amount: number) => {
-        this.http.post(
-          `${Config.API_URL}/v1/employees/vacations/balance/adjust`,
-          { 
-            employeeId: employee.person_id,
-            amount: amount,
-            reason: 'Manual adjustment'
-          },
-          { withCredentials: true }
-        ).subscribe({
-          next: () => {
-            this.loadVacationData(employee.person_id);
-            this.alertManager.alert('success', 'employees.vacations.balance_adjusted').closeable(true);
-          },
-          error: (error) => {
-            console.error('Failed to adjust balance:', error);
-            this.alertManager.alert('error', 'employees.vacations.adjust_failed').closeable(true);
-          }
-        });
-      }
-    });
-  }
-
-  approveVacation(requestId: number) {
-    // Use alert manager for confirmation - show warning alert
-    const confirmAlert = this.alertManager.alert('warning', 'employees.vacations.confirm_approve');
-    confirmAlert.closeable(true);
-    
-    // For now, directly approve - in future, implement proper confirmation modal
-    this.http.put(
-      `${Config.API_URL}/v1/employees/vacations/request/${requestId}/approve`,
-      {},
-      { withCredentials: true }
-    ).subscribe({
-      next: () => {
-        confirmAlert.close();
-        this.alertManager.alert('success', 'employees.vacations.approved').closeable(true);
-        const employee = this.selectedEmployee.getValue();
-        if (employee) {
-          this.loadVacationData(employee.person_id);
-          this.loadVacationRequests();
-        }
-      },
-      error: (error) => {
-        console.error('Failed to approve:', error);
-        confirmAlert.close();
-        this.alertManager.alert('error', 'employees.vacations.approve_failed').closeable(true);
-      }
-    });
-  }
-
-  rejectVacation(requestId: number) {
-    // Use modal instead of prompt for security
-    this.modalManager.openModal('reject_vacation', {
-      requestId: requestId,
-      onConfirm: (reason: string) => {
-        this.http.put(
-          `${Config.API_URL}/v1/employees/vacations/request/${requestId}/reject`,
-          { reason },
-          { withCredentials: true }
-        ).subscribe({
-          next: () => {
-            this.alertManager.alert('success', 'employees.vacations.rejected').closeable(true);
-            const employee = this.selectedEmployee.getValue();
-            if (employee) {
-              this.loadVacationData(employee.person_id);
-              this.loadVacationRequests();
-            }
-          },
-          error: (error) => {
-            console.error('Failed to reject:', error);
-            this.alertManager.alert('error', 'employees.vacations.reject_failed').closeable(true);
-          }
-        });
-      }
-    });
-  }
-
-  // Salary methods
-  loadSalaryData(personId: number) {
-    this.http.get<{ data: any[] }>(
-      `${Config.API_URL}/v1/employees/salaries/history/${personId}`,
-      { withCredentials: true }
-    ).subscribe({
-      next: (response) => {
-        this.salaryHistory.set(response.data);
-        const current = response.data.find(s => 
-          !s.valid_to || new Date(s.valid_to) > new Date()
-        ) || null;
-        this.currentSalary.set(current);
-
-      },
-      error: (error) => {
-        console.error('Failed to load salary:', error);
-        this.alertManager.alert('error', 'employees.salaries.load_failed').closeable(true);
-      }
-    });
-  }
-
-  openSetSalaryModal() {
-    const employee = this.selectedEmployee.getValue();
-    this.modalManager.openModal('set_salary', {
-      personId: employee?.person_id,
+  editAttendanceRecord(record: any) {
+    this.modalManager.openModal('edit_attendance', {
+      record: { ...record }, // Copy to avoid direct mutation
       onSave: () => {
-        if (employee) this.loadSalaryData(employee.person_id);
-      }
-    });
-  }
-
-
-  exportPayrollXML() {
-    this.alertManager.alert('info', 'employees.salaries.xml_export_not_implemented').closeable(true);
-  }
-
-  // Bonus methods
-  loadBonusesData(personId: number) {
-    this.http.get<{ data: any[] }>(
-      `${Config.API_URL}/v1/employees/bonuses?employeeId=${personId}`,
-      { withCredentials: true }
-    ).subscribe({
-      next: (response) => {
-        this.bonuses.set(response.data);
-        // Filtering and totals are now computed signals
-      },
-      error: (error) => {
-        console.error('Failed to load bonuses:', error);
-        this.alertManager.alert('error', 'employees.bonuses.load_failed').closeable(true);
-      }
-    });
-  }
-
-  openAddBonusModal() {
-    this.modalManager.openModal('add_bonus');
-  }
-
-  markBonusAsPaid(bonusId: number) {
-    // Use alert manager for confirmation - show warning alert
-    const confirmAlert = this.alertManager.alert('warning', 'employees.bonuses.confirm_mark_paid');
-    confirmAlert.closeable(true);
-    
-    // For now, directly mark as paid - in future, implement proper confirmation modal
-    this.http.put(
-      `${Config.API_URL}/v1/employees/bonuses/${bonusId}/paid`,
-      {},
-      { withCredentials: true }
-    ).subscribe({
-      next: () => {
-        confirmAlert.close();
-        this.alertManager.alert('success', 'employees.bonuses.marked_paid').closeable(true);
-        const employee = this.selectedEmployee.getValue();
-        if (employee) {
-          this.loadBonusesData(employee.person_id);
+        if (this.selectedViewTab.getValue() === 1) {
+          this.loadAllAttendance();
         }
-      },
-      error: (error) => {
-        console.error('Failed to mark as paid:', error);
-        confirmAlert.close();
-        this.alertManager.alert('error', 'employees.bonuses.mark_paid_failed').closeable(true);
       }
     });
-  }
-
-  deleteBonus(bonusId: number) {
-    // Use alert manager for confirmation - show warning alert
-    const confirmAlert = this.alertManager.alert('warning', 'employees.bonuses.confirm_delete');
-    confirmAlert.closeable(true);
-    
-    // For now, directly delete - in future, implement proper confirmation modal
-    this.http.delete(
-      `${Config.API_URL}/v1/employees/bonuses/${bonusId}`,
-      { withCredentials: true }
-    ).subscribe({
-      next: () => {
-        confirmAlert.close();
-        this.alertManager.alert('success', 'employees.bonuses.deleted').closeable(true);
-        const employee = this.selectedEmployee.getValue();
-        if (employee) {
-          this.loadBonusesData(employee.person_id);
-        }
-      },
-      error: (error) => {
-        console.error('Failed to delete:', error);
-        confirmAlert.close();
-        this.alertManager.alert('error', 'employees.bonuses.delete_failed').closeable(true);
-      }
-    });
-  }
-
-  getBonusTypeLabel(type: string): string {
-    const types: any = { performance: 'Výkon', project: 'Projekt', holiday: 'Svátky', other: 'Ostatní' };
-    return types[type] || type;
   }
 }
