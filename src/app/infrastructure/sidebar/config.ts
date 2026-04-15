@@ -481,6 +481,12 @@ export const config: SidebarGroup[] = [
                         permission: ['manager:system:admin']
                     },
                     {
+                        item: 'sidebar.system.reports',
+                        url: "system/reports",
+                        icon: 'report',
+                        permission: ['manager:system:admin', 'teacher']
+                    },
+                    {
                         item: 'sidebar.system.monitoring',
                         url: "admin/monitoring",
                         icon: 'chart-bar',
