@@ -253,48 +253,48 @@ export const config: SidebarGroup[] = [
             //     ]
             // },
             {
-                item: 'sidebar/payments/main',
+                item: 'sidebar.payments.main',
                 icon: 'wallet',
                 modules: ['payments'],
                 children: [
                 {
-                    item: 'sidebar/payments/classFund',
-                    url: 'payments/classfund',
-                    icon: 'piggy-bank',
+                    item: 'sidebar.payments.class_fund',
+                    url: 'payments/class_fund',
+                    icon: 'cash',
                 }, {
-                    item: 'sidebar/payments/graduateClassFund',
-                    url: 'payments/graduateclassfund',
-                    icon: 'school',
+                    item: 'sidebar.payments.graduate_class_fund',
+                    url: 'payments/graduate_class_fund',
+                    icon: 'building-bank',
                 }, {
-                    item: 'sidebar/payments/listing',
+                    item: 'sidebar.payments.listing',
                     url: 'payments/listing',
                     icon: 'list-details',
                 }, {
-                    item: 'sidebar/payments/unaccountedDocuments',
-                    url: 'payments/unaccounteddocuments',
-                    icon: 'file-alert',
+                    item: 'sidebar.payments.unaccounted_documents',
+                    url: 'payments/unaccounted_documents',
+                    icon: 'credit-card-off',
                 }, {
-                    item: 'sidebar/payments/documents',
+                    item: 'sidebar.payments.documents',
                     url: 'payments/documents',
                     icon: 'files',
                 }, {
-                    item: 'sidebar/payments/regularPayments',
-                    url: 'payments/regularpayments',
-                    icon: 'repeat',
+                    item: 'sidebar.payments.regular_payments',
+                    url: 'payments/regular_payments',
+                    icon: 'cash-banknote-heart',
                 }, {
-                    item: 'sidebar/payments/newPayment',
-                    url: 'payments/newpayment',
-                    icon: 'plus',
+                    item: 'sidebar.payments.new_payment',
+                    url: 'payments/new_payment',
+                    icon: 'cash-move',
                 }, {
-                    item: 'sidebar/payments/newDeposit',
-                    url: 'payments/newdeposit',
-                    icon: 'cash',
+                    item: 'sidebar.payments.new_deposit',
+                    url: 'payments/new_deposit',
+                    icon: 'cash-plus',
                 }, {
-                    item: 'sidebar/payments/accounts',
+                    item: 'sidebar.payments.accounts',
                     url: 'payments/accounts',
-                    icon: 'building-bank',
+                    icon: 'pig-money',
                 }, {
-                    item: 'sidebar/payments/settings',
+                    item: 'sidebar.payments.settings',
                     url: 'payments/settings',
                     icon: 'settings',
                 }]
@@ -375,24 +375,24 @@ export const config: SidebarGroup[] = [
                 }]
             },
             {
-                item: 'sidebar/canteen/main',
+                item: 'sidebar.canteen.main',
                 icon: 'tools-kitchen-2',
                 modules: ['canteen'],
                 permission: ['all'],
                 children: [{
-                    item: 'sidebar/canteen/order',
+                    item: 'sidebar.canteen.order',
                     url: 'canteen/order',
                     icon: 'click',
                 }, {
-                    item: 'sidebar/canteen/dispensing',
+                    item: 'sidebar.canteen.dispensing',
                     url: 'canteen/dispensing',
                     icon: 'chef-hat',
                 }, {
-                    item: 'sidebar/canteen/meals',
+                    item: 'sidebar.canteen.meals',
                     url: 'canteen/meals',
                     icon: 'soup',
                 }, {
-                    item: 'settings',
+                    item: 'sidebar.canteen.settings',
                     url: 'canteen/settings',
                     icon: 'settings',
                 }]
@@ -479,6 +479,12 @@ export const config: SidebarGroup[] = [
                         url: "system/auditlog",
                         icon: 'file-analytics',
                         permission: ['manager:system:admin']
+                    },
+                    {
+                        item: 'sidebar.system.reports',
+                        url: "system/reports",
+                        icon: 'report',
+                        permission: ['manager:system:admin', 'teacher']
                     },
                     {
                         item: 'sidebar.system.monitoring',

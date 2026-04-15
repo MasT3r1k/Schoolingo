@@ -11,7 +11,7 @@
         <div class="detail-header">
             <button class="btn-back" (click)="closeDetail()">
                 <i-tabler name="arrow-left"></i-tabler>
-                <span>Zpět na seznam</span>
+                <span>Zpět na seznam uživatelů</span>
             </button>
             <h1 class="detail-title">Karta uživatele</h1>
             <div class="detail-actions">
@@ -32,14 +32,12 @@
             <aside class="profile-sidebar">
                 <div class="profile-card">
                     <div class="profile-avatar">
-                        <div class="avatar--image avatar--image-large">
-                            <img [src]="avatarService.getAvatar(selectedUser.avatar, selectedUser.full_name)" [alt]="selectedUser.full_name">
-                        </div>
-                        <span class="status-dot" [class]="selectedUser.status"></span>
+                        <img [src]="avatarService.getAvatar(selectedUser.avatar, selectedUser.full_name)" [alt]="selectedUser.full_name">
+                        <div class="status-dot" [class]="selectedUser.status"></div>
                     </div>
                     <h1 class="profile-name">{{ selectedUser.full_name }}</h1>
                     <div class="profile-username">
-                        <i-tabler name="at" style="width: 14px; margin-right: 4px;"></i-tabler>
+                        <i-tabler name="at"></i-tabler>
                         {{ selectedUser.username }}
                     </div>
 
@@ -57,10 +55,9 @@
                     </div>
                     }
 
-                    <div style="margin-top: 1rem;">
+                    <div class="profile-badges">
                         <span class="status-badge" [class]="selectedUser.role">
-                            <i-tabler [name]="getRoleIcon(selectedUser.role)"
-                                style="width: 14px; margin-right: 4px;"></i-tabler>
+                            <i-tabler [name]="getRoleIcon(selectedUser.role)"></i-tabler>
                             {{ getRoleText(selectedUser.role) }}
                         </span>
                     </div>
@@ -204,20 +201,16 @@
                                     <span class="data-value">{{ selectedUser.username }}</span>
                                 </div>
                                 <div class="data-item">
+                                    <span class="data-label">Role</span>
+                                    <span class="data-value">{{ getRoleText(selectedUser.role) }}</span>
+                                </div>
+                                <div class="data-item">
                                     <span class="data-label">Jméno</span>
                                     <span class="data-value">{{ selectedUser.first_name }}</span>
                                 </div>
                                 <div class="data-item">
                                     <span class="data-label">Příjmení</span>
                                     <span class="data-value">{{ selectedUser.last_name }}</span>
-                                </div>
-                                <div class="data-item">
-                                    <span class="data-label">Role</span>
-                                    <span class="data-value">
-                                        <span class="status-badge sm" [class]="selectedUser.role">
-                                            {{ getRoleText(selectedUser.role) }}
-                                        </span>
-                                    </span>
                                 </div>
                                 @if (selectedUser.birthday) {
                                 <div class="data-item">
@@ -239,7 +232,7 @@
                                 </div>
                                 <div class="data-item">
                                     <span class="data-label">Jazyk</span>
-                                    <span class="data-value">{{ selectedUser.locale || 'Výchozí' }}</span>
+                                    <span class="data-value">{{ l.getLanguage(selectedUser.locale ?? 'cs')?.name || 'Výchozí' }}</span>
                                 </div>
                             </div>
                         </div>
@@ -407,7 +400,7 @@
                                 <div class="card-footer"
                                     style="padding: 1.25rem; border-top: 1px solid var(--border); display: flex; justify-content: flex-end; background: var(--surface-2); border-bottom-left-radius: var(--radius-lg); border-bottom-right-radius: var(--radius-lg);">
                                     <button class="btn btn--primary"
-                                        (click)="router.navigate(['/board/students', selectedUser.person_id])"
+                                        (click)="router.navigate(['/students', selectedUser.person_id])"
                                         style="display: flex; align-items: center; gap: 0.5rem;">
                                         <i-tabler name="external-link" style="width: 18px; height: 18px;"></i-tabler>
                                         Přejít na detail studenta
@@ -797,8 +790,7 @@
                                                 [class]="entry.success ? 'badge--success' : 'badge--danger'">
                                                 {{ entry.success ? 'Úspěšné' : 'Neúspěšné' }}
                                             </span>
-                                            <span class="login-entry__time">{{ entry.created | date:'dd.MM.yyyy
-                                                HH:mm:ss' }}</span>
+                                            <span class="login-entry__time">{{ entry.created | date:'dd.MM.yyyy HH:mm:ss' }}</span>
                                         </div>
                                         <div class="login-entry__details">
                                             <span class="login-entry__ip">

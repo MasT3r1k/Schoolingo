@@ -1,0 +1,134 @@
+<div class="reports-page" [class.detail-view]="activeReport">
+    @if (!activeReport) {
+        <!-- Selection Grid (Home) -->
+        <div class="card grid-view">
+            <div class="card-header">
+                <div class="left">
+                    <h2>{{ l.s('reports.title') }}</h2>
+                    <span class="meta muted">{{ l.s('reports.subtitle') }}</span>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="reports-grid">
+                    <div class="report-card" (click)="selectReport('student_list')">
+                        <div class="icon-box primary">
+                            <i-tabler name="users"></i-tabler>
+                        </div>
+                        <h3>{{ l.s('reports.types.student_list') }}</h3>
+                        <p>{{ l.s('reports.types.student_list_desc') }}</p>
+                    </div>
+
+                    <div class="report-card" (click)="selectReport('student_marks')">
+                        <div class="icon-box info">
+                            <i-tabler name="star"></i-tabler>
+                        </div>
+                        <h3>{{ l.s('reports.types.student_marks') }}</h3>
+                        <p>{{ l.s('reports.types.student_marks_desc') }}</p>
+                    </div>
+
+                    <div class="report-card" (click)="selectReport('class_marks')">
+                        <div class="icon-box warning">
+                            <i-tabler name="chalkboard"></i-tabler>
+                        </div>
+                        <h3>{{ l.s('reports.types.class_marks') }}</h3>
+                        <p>{{ l.s('reports.types.class_marks_desc') }}</p>
+                    </div>
+
+                    <div class="report-card" (click)="selectReport('grade_overview')">
+                        <div class="icon-box success">
+                            <i-tabler name="report-analytics"></i-tabler>
+                        </div>
+                        <h3>{{ l.s('reports.types.grade_overview') }}</h3>
+                        <p>{{ l.s('reports.types.grade_overview_desc') }}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    } @else {
+        <!-- Active Report View -->
+        <div class="detail-header no-print">
+            <button class="btn-back" (click)="reset()">
+                <i-tabler name="arrow-left"></i-tabler>
+                <span>{{ l.s('buttons.back') }}</span>
+            </button>
+            <h1 class="detail-title">{{ l.s('reports.types.' + activeReport) }}</h1>
+            
+            <div class="detail-actions">
+                <button class="action-btn" [title]="l.s('reports.preview.download')" (click)="downloadPdf()" *ngIf="pdfUrl">
+                    <i-tabler name="download"></i-tabler>
+                </button>
+                <button class="action-btn" [title]="l.s('reports.preview.print')" (click)="printPdf()" *ngIf="pdfUrl">
+                    <i-tabler name="printer"></i-tabler>
+                </button>
+            </div>
+        </div>
+
+        <div class="detail-layout">
+            <!-- Sidebar for Parameters -->
+            <aside class="profile-sidebar no-print">
+                <div class="profile-card">
+                    <div class="icon-box" [ngClass]="{
+                        'primary': activeReport === 'student_list',
+                        'info': activeReport === 'student_marks',
+                        'warning': activeReport === 'class_marks',
+                        'success': activeReport === 'grade_overview'
+                    }">
+                        <i-tabler [name]="activeReport === 'student_list' ? 'users' : (activeReport === 'student_marks' ? 'star' : (activeReport === 'class_marks' ? 'chalkboard' : 'report-analytics'))"></i-tabler>
+                    </div>
+                    <h2 class="profile-name">{{ l.s('reports.types.' + activeReport) }}</h2>
+                    <p class="muted center" style="font-size: 0.8rem; margin-top: 4px;">{{ l.s('reports.types.' + activeReport + '_desc') }}</p>
+                </div>
+
+                <!-- Parameters Form -->
+                <div class="quick-contact">
+                    <h3>Nastavení sestavy</h3>
+                    
+                    <div class="form-group" *ngIf="activeReport">
+                        <label class="form-label">{{ l.s('reports.config.select_class') }}</label>
+                        <select [(ngModel)]="selection.classId" (change)="onClassChange()" class="form-input">
+                            <option [ngValue]="null">{{ l.s('reports.config.choose_class') }}</option>
+                            <option *ngFor="let cls of classes" [ngValue]="cls.id || cls.class_id">{{ cls.name || cls.class_name }}</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group" *ngIf="activeReport === 'student_marks' || activeReport === 'grade_overview'">
+                        <label class="form-label">{{ l.s('reports.config.select_student') }}</label>
+                        <select [(ngModel)]="selection.studentId" class="form-input" [disabled]="!selection.classId">
+                            <option [ngValue]="null">{{ l.s('reports.config.choose_student') }}</option>
+                            <option *ngFor="let st of students" [ngValue]="st.id || st.student_id">{{ st.last_name }} {{ st.first_name }}</option>
+                        </select>
+                    </div>
+
+                    <div style="margin-top: 20px;">
+                        <button class="btn btn--primary" style="width: 100%;" [disabled]="isLoading || (activeReport === 'student_marks' && !selection.studentId) || (activeReport === 'student_list' && !selection.classId)" (click)="generateReport()">
+                            <i-tabler name="refresh" [ngClass]="{'fa-spin': isLoading}"></i-tabler>
+                            <span>{{ l.s('reports.config.generate') }}</span>
+                        </button>
+                    </div>
+                </div>
+            </aside>
+
+            <!-- Main Content Area (Preview) -->
+            <main class="detail-main">
+                <div class="tab-content" style="padding: 0; height: 100%;">
+                    @if (isLoading && !pdfUrl) {
+                        <div class="detail-loading">
+                            <div class="loading-spinner"></div>
+                            <p>Generování sestavy...</p>
+                        </div>
+                    } @else if (pdfUrl) {
+                        <div class="report-pdf-viewer">
+                            <iframe [src]="pdfUrl" width="100%" height="100%" frameborder="0"></iframe>
+                        </div>
+                    } @else {
+                        <div class="no-selection-state">
+                            <i-tabler name="report-search"></i-tabler>
+                            <h3>Vyberte parametry</h3>
+                            <p class="muted">Zvolte třídu a případně studenta v levém panelu a klikněte na "Generovat sestavu".</p>
+                        </div>
+                    }
+                </div>
+            </main>
+        </div>
+    }
+</div>

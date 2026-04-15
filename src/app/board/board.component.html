@@ -312,7 +312,7 @@
                 @for (item of section.items; track $index) {
                 <li [routerLink]="item.url" (click)="sidebarClickHandler(item, $index)" [routerLinkActive]="'active'"
                     [ngClass]="{ opened: item.children && item.children.length > 0 && sidebar.isToggled($index) }"
-                    [routerLinkActiveOptions]="{ exact: true, queryParams: 'ignored'}">
+                    [routerLinkActiveOptions]="{ exact: false, queryParams: 'ignored', matrixParams: 'ignored'}">
                     <div class="item">
                         @if (item.icon) {
                         <div class="icon">
@@ -349,7 +349,7 @@
                             @for (child of item.children; track $index) {
                             <li (click)="sidebarClickHandler(child, -1)" [routerLink]="child.url"
                                 [routerLinkActive]="'active'"
-                                [routerLinkActiveOptions]="{ exact: true, queryParams: 'ignored'}">
+                                [routerLinkActiveOptions]="{ exact: false, queryParams: 'ignored', matrixParams: 'ignored' }">
                                 <div class="item">
                                     @if (child.icon) {
                                     <div class="icon">

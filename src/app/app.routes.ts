@@ -82,6 +82,7 @@ import { SetupComponent } from './setup/setup.component';
 
 import { NoPermissionComponent } from './board/error/no-permission/no-permission.component';
 import { DetailComponent as ClassesDetailComponent } from './board/classes/detail/detail.component';
+import { ReportsComponent } from './board/system/reports/reports.component';
 
 import { DetailComponent as EmployeesDetailComponent } from './board/Employees/employees/detail/detail.component';
 
@@ -433,6 +434,10 @@ export const routes: Routes = [
                     {
                         path: 'auditlog',
                         component: AuditlogComponent
+                    },
+                    {
+                        path: 'reports',
+                        component: ReportsComponent
                     }
                 ]
             },

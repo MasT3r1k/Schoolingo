@@ -21,7 +21,7 @@
                         <li [ngClass]="[item.type ? item.type : '']"
                             (click)="dropdownManager.selected_dropdown = ''; (item.action ? item.action() : null)">
                             <div class="item">
-                                <div class="row">
+                                <div class="row" style="gap: 8px">
                                     @if (item.icon) {
                                     <div class="icon">
                                         <i-tabler [name]="item.icon"></i-tabler>
@@ -107,47 +107,68 @@
             }
 
             <div class="explorer" [class.explorer-grid]="layout == 'grid'" [class.explorer-list]="layout == 'list'">
-                @for(file of documents.getFiles(search.value ?? '');track $index) {
-                <div class="file-card" [class.selected]="documents.getSelectedFile()?.document_id == file.document_id"
-                    (contextmenu)="$event.stopPropagation();rightClickOnItem(file.document_id, $event)"
-                    (click)="documents.showProperties(file)" (dblclick)="documents.selectFolder(file)">
+                @if (isRefreshing) {
+                    @for (item of skeletonItems; track $index) {
+                        <div class="file-card skeleton">
+                            @if (layout == 'grid') {
+                                <div class="file-card__icon"></div>
+                                <div class="file-card__name skeleton-text"></div>
+                                <div class="file-card__grid-meta skeleton-text"></div>
+                            } @else {
+                                <div class="file-card__icon-sm"></div>
+                                <div class="file-card__list-name">
+                                    <span class="skeleton-text"></span>
+                                </div>
+                                <div class="file-card__list-meta skeleton-text"></div>
+                                <div class="file-card__list-meta skeleton-text"></div>
+                                <div class="file-card__list-meta skeleton-text"></div>
+                            }
+                        </div>
+                    }
+                } @else {
+                    @for(file of documents.getFiles(search.value ?? '');track $index) {
+                    <div class="file-card" [class.selected]="documents.getSelectedFile()?.document_id == file.document_id"
+                        (contextmenu)="$event.stopPropagation();rightClickOnItem(file.document_id, $event)"
+                        (click)="documents.showProperties(file)" (dblclick)="documents.selectFolder(file)">
 
-                    @if (layout == 'grid') {
-                    <!-- Grid karta -->
-                    <div class="file-card__icon" [class.folder]="file.type=='folder'" [class.file]="file.type=='file'">
-                        <i-tabler [name]="documents.getIcon(file.type)"></i-tabler>
+                        @if (layout == 'grid') {
+                        <!-- Grid karta -->
+                        <div class="file-card__icon" [class.folder]="file.type=='folder'" [class.file]="file.type=='file'">
+                            <i-tabler [name]="documents.getIcon(file.type)"></i-tabler>
+                        </div>
+                        <div class="file-card__name" [title]="file.name ?? ''">{{ file.name }}</div>
+                        <div class="file-card__grid-meta">{{ Utils.formatBytes(file.file_size) }}</div>
+                        } @else {
+                        <!-- List řádek -->
+                        <div class="file-card__icon-sm" [class.folder]="file.type=='folder'"
+                            [class.file]="file.type=='file'">
+                            <i-tabler [name]="documents.getIcon(file.type)"></i-tabler>
+                        </div>
+                        <div class="file-card__list-name">
+                            <span [title]="file.name ?? ''">{{ file.name }}</span>
+                        </div>
+                        <div class="file-card__list-meta">{{ Utils.formatDateShort(file.modified_at) }}</div>
+                        <div class="file-card__list-meta">{{ l.s('documents.types.' + file.type) }}</div>
+                        <div class="file-card__list-meta">{{ Utils.formatBytes(file.file_size) }}</div>
+                        }
                     </div>
-                    <div class="file-card__name" [title]="file.name ?? ''">{{ file.name }}</div>
-                    <div class="file-card__grid-meta">{{ Utils.formatBytes(file.file_size) }}</div>
-                    } @else {
-                    <!-- List řádek -->
-                    <div class="file-card__icon-sm" [class.folder]="file.type=='folder'"
-                        [class.file]="file.type=='file'">
-                        <i-tabler [name]="documents.getIcon(file.type)"></i-tabler>
+                    } @empty {
+                    <div class="doc-empty-state">
+                        <div class="doc-empty-state__icon">
+                            <i-tabler name="folder-off"></i-tabler>
+                        </div>
+                        <p class="doc-empty-state__text">{{ l.s('documents.folder_empty') }}</p>
+                        @if (canWrite) {
+                        <button class="btn btn--secondary btn--sm" (click)="openUploadFiles()">
+                            <i-tabler name="cloud-upload"></i-tabler>
+                            {{ l.s('documents.upload') }}
+                        </button>
+                        }
                     </div>
-                    <div class="file-card__list-name">
-                        <span [title]="file.name ?? ''">{{ file.name }}</span>
-                    </div>
-                    <div class="file-card__list-meta">{{ Utils.formatDateShort(file.modified_at) }}</div>
-                    <div class="file-card__list-meta">{{ l.s('documents.types.' + file.type) }}</div>
-                    <div class="file-card__list-meta">{{ Utils.formatBytes(file.file_size) }}</div>
                     }
-                </div>
-                } @empty {
-                <div class="doc-empty-state">
-                    <div class="doc-empty-state__icon">
-                        <i-tabler name="folder-off"></i-tabler>
-                    </div>
-                    <p class="doc-empty-state__text">{{ l.s('documents.folder_empty') }}</p>
-                    @if (canWrite) {
-                    <button class="btn btn--secondary btn--sm" (click)="openUploadFiles()">
-                        <i-tabler name="cloud-upload"></i-tabler>
-                        {{ l.s('documents.upload') }}
-                    </button>
-                    }
-                </div>
                 }
             </div>
+
         </div>
     </div>
 
