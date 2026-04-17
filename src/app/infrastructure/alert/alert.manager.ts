@@ -11,7 +11,7 @@ export class BaseAlertManager {
         this.alerts = this.alerts.filter(a => a != alert);
     }
 
-    public alert(type: SweetAlertIcon, text: string, actions: AlertButton[] = [], timer?: number, args?: any): Alert {
+    public alert(type: SweetAlertIcon, text: string, actions: AlertButton[] = [], timer: number = 10000, args?: any): Alert {
         const existing = this.alerts.find((alert) => alert.type == type && alert.text == text && JSON.stringify(alert.args) == JSON.stringify(args));
         if (existing) {
             existing.visible = true;
@@ -33,6 +33,8 @@ export class BaseAlertManager {
         if (alert.timerHandle) {
             clearTimeout(alert.timerHandle);
         }
+        alert.duration = timer;
+        alert.startTime = Date.now();
         alert.timerHandle = setTimeout(() => {
             alert.close();
             this.removeAlert(alert);

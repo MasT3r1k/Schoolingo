@@ -71,20 +71,22 @@ export const config: SidebarGroup[] = [
                     {
                         item: 'sidebar.schedule.template_timetable',
                         url: 'schedule/template_timetable',
-                        icon: ''
+                        icon: 'table-alias'
                     },
                     {
                         item: 'sidebar.schedule.template_subject',
                         url: 'schedule/template_subject',
-                        icon: ''
+                        icon: 'book-upload'
                     },
                     {
                         item: 'sidebar.schedule.builder',
-                        url: 'schedule/builder'
+                        url: 'schedule/builder',
+                        icon: 'tools'
                     },
                     {
                         item: 'sidebar.schedule.supervision',
-                        url: 'schedule/supervision'
+                        url: 'schedule/supervision',
+                        icon: 'eye'
                     }
                 ]
             },

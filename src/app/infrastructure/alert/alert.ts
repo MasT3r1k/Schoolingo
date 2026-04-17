@@ -9,6 +9,8 @@ export interface Alert {
     _closeable: boolean;
     visible: boolean;
     timerHandle?: any;
+    duration?: number;
+    startTime?: number;
 }
 
 export class Alert {

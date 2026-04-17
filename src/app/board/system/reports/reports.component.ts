@@ -1,4 +1,4 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, inject, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { DomSanitizer } from '@angular/platform-browser';
 import { IconsModule } from '@Schoolingo/icons';
@@ -7,7 +7,15 @@ import { HttpClient } from '@angular/common/http';
 import { Config } from '@Schoolingo/config';
 import { Locale } from '@Schoolingo/locale';
 import { Utils } from '@Schoolingo/utils';
+import { ModalManager } from '@Schoolingo/modal';
+import { NewReportComponent } from './modals/new-report/new-report.component';
+import { EditReportModalComponent } from './modals/edit-report/edit-report.component';
+import { ShareReportModalComponent } from './modals/share-report/share-report.component';
+import { DeleteReportModalComponent } from './modals/delete-report/delete-report.component';
+import html2pdf from 'html2pdf.js';
 import moment from 'moment';
+import { BoardAlertManager } from '../../../infrastructure/alert/board.alert.manager';
+
 
 export type ReportType = 'student_list' | 'student_marks' | 'class_marks' | 'grade_overview' | null;
 
@@ -46,7 +54,7 @@ export interface Grouping {
 @Component({
   selector: 'app-reports',
   standalone: true,
-  imports: [CommonModule, IconsModule, FormsModule],
+  imports: [CommonModule, IconsModule, FormsModule, NewReportComponent, EditReportModalComponent, ShareReportModalComponent, DeleteReportModalComponent],
   templateUrl: './reports.component.html',
   styleUrl: './reports.component.css'
 })
@@ -54,11 +62,21 @@ export class ReportsComponent implements OnInit {
   private http = inject(HttpClient);
   public l = inject(Locale);
   private sanitizer = inject(DomSanitizer);
+  private modalManager = inject(ModalManager);
+  private alertManager = inject(BoardAlertManager);
+  private cdr = inject(ChangeDetectorRef);
+
   public Utils = Utils;
   public moment = moment;
 
   // ── Report selection ──────────────────────────────────────
-  public activeReport: ReportType = null;
+  private _activeReport: ReportType = null;
+  public get activeReport(): ReportType { return this._activeReport; }
+  public set activeReport(v: ReportType) {
+    if (this._activeReport === v) return;
+    this._activeReport = v;
+    this.cdr.detectChanges();
+  }
   public isLoading = false;
 
   // ── API data ──────────────────────────────────────────────
@@ -92,6 +110,12 @@ export class ReportsComponent implements OnInit {
   private isPanning = false;
   private startX = 0;
   private startY = 0;
+  
+  // Resizing state
+  public previewWidth = 420;
+  public isResizing = false;
+  private resizeStartX = 0;
+  private resizeStartWidth = 0;
 
   // Column editor
   public activeColumns: ReportColumn[] = [];
@@ -101,6 +125,23 @@ export class ReportsComponent implements OnInit {
   // Preview data (real)
   public previewGroups: PreviewGroup[] = [];
 
+  // ── Saved reports ─────────────────────────────────────────
+  public myReports: any[] = [];
+  public sharedReports: any[] = [];
+  public isLoadingDashboard = false;
+  public savedReportId: number | null = null;
+  public isSharedReport = false;
+  public availableReportTypes: ReportType[] = ['student_list', 'student_marks', 'class_marks', 'grade_overview'];
+
+  // Modals
+  public showNewReportModal = false;
+  public modalReport: any = null;
+  public modalReportName = '';
+  
+  // Sharing
+
+
+  // ── Paged preview groups ──────────────────────────────────
   public get pagedPreviewGroups(): PreviewGroup[] {
     const rowsPerPage = 35; // Fixed rows per page for preview
     const start = (this.currentPage - 1) * rowsPerPage;
@@ -137,7 +178,7 @@ export class ReportsComponent implements OnInit {
   }
 
   // ── Column tree (left panel) ──────────────────────────────
-  public expandedGroups: Record<string, boolean> = { student: true, subjects: true };
+  public expandedGroups: Record<string, boolean> = {};
 
   public columnGroups: ColumnGroup[] = [
     {
@@ -193,6 +234,71 @@ export class ReportsComponent implements OnInit {
   ngOnInit() {
     this.loadClasses();
     this.loadSubjects();
+    this.loadSavedReports();
+
+    // Load preview width from localStorage
+    const savedWidth = localStorage.getItem('reports_preview_width');
+    if (savedWidth) {
+      this.previewWidth = Number(savedWidth);
+    }
+
+    this.modalManager.addModal('create_report', {
+      icon: 'report-medical',
+      title: 'reports.new_report.title',
+      description: 'reports.new_report.description',
+      closeable: true,
+      width: 700,
+      items: [
+        { type: 'component', component: NewReportComponent }
+      ]
+    });
+
+    this.modalManager.addModal('edit_report', {
+      icon: 'report-analytics',
+      title: 'reports.edit_report.title',
+      closeable: true,
+      width: 500,
+      items: [
+        { type: 'component', component: EditReportModalComponent }
+      ]
+    });
+
+    this.modalManager.addModal('share_report', {
+      icon: 'share',
+      title: 'reports.share_report.title',
+      closeable: true,
+      width: 500,
+      items: [
+        { type: 'component', component: ShareReportModalComponent }
+      ]
+    });
+
+    this.modalManager.addModal('delete_report', {
+      icon: 'trash',
+      title: 'reports.delete_report.title',
+      closeable: true,
+      width: 500,
+      items: [
+        { type: 'component', component: DeleteReportModalComponent }
+      ]
+    });
+  }
+
+  // ── Dashboard API methods ──────────────────────────────────
+  public loadSavedReports() {
+    this.isLoadingDashboard = true;
+    this.http.get<any>(`${Config.API_URL}/v1/system/reports`, { withCredentials: true })
+      .subscribe({
+        next: (res) => {
+          this.myReports = res.data?.myReports || [];
+          this.sharedReports = res.data?.sharedWithMe || [];
+          this.isLoadingDashboard = false;
+        },
+        error: (err) => {
+          console.error('Error loading saved reports:', err);
+          this.isLoadingDashboard = false;
+        }
+      });
   }
 
   // ── API methods ───────────────────────────────────────────
@@ -218,11 +324,11 @@ export class ReportsComponent implements OnInit {
   }
 
   public onClassChange() {
+    this.selection.studentId = null; // Clear stale student
     if (this.selection.classId) {
       this.loadStudents(this.selection.classId);
     } else {
       this.students = [];
-      this.selection.studentId = null;
     }
   }
 
@@ -245,6 +351,8 @@ export class ReportsComponent implements OnInit {
 
   // ── Report type selection ─────────────────────────────────
   public selectReport(type: ReportType) {
+    this.savedReportId = null;
+    this.isSharedReport = false;
     this.activeReport = type;
     this.reportData = null;
     this.pdfUrl = null;
@@ -259,7 +367,44 @@ export class ReportsComponent implements OnInit {
     }
 
     // Apply default columns
-    this.applyDefaultColumns(type);
+    this.applyDefaultColumns(this.activeReport);
+  }
+
+  public openNewReportModal() {
+    this.modalManager.openModal('create_report', {
+      parent: this,
+      onSelect: this.selectReport
+    });
+  }
+
+  public openSavedReport(report: any) {
+    this.savedReportId = report.report_id;
+    this.activeReport = report.type;
+    this.isSharedReport = report.owner_first_name !== undefined; // If it has owner info, it's shared
+    
+    let config: any = {};
+    try {
+      config = typeof report.config === 'string' ? JSON.parse(report.config) : report.config;
+    } catch (e) {
+      console.error('Failed to parse report config', e);
+    }
+
+    this.reportTitle = report.name || config.title || '';
+    this.reportSubtitle = config.subtitle || '';
+    this.showTitles = config.showTitles !== undefined ? config.showTitles : true;
+    this.orientation = config.orientation || 'portrait';
+    this.fontSize = config.fontSize || 10;
+    this.lineHeight = config.lineHeight || '1.0';
+    this.activeColumns = config.columns || [];
+    this.groupings = config.groupings || [];
+    
+    // Clear data
+    this.reportData = null;
+    this.pdfUrl = null;
+    this.rawBlob = null;
+    this.selection.classId = null;
+    this.selection.studentId = null;
+    this.previewGroups = [];
   }
 
   public applyDefaultColumns(type: ReportType) {
@@ -432,12 +577,19 @@ export class ReportsComponent implements OnInit {
 
     let fetchUrl = '';
     let fetchParams: any = {};
+    let fetchType = this.activeReport;
+    const hasSubjects = this.activeColumns.some(c => c.key.startsWith('subject_'));
+    
+    // Auto-switch to marks API if subjects are present in a student list
+    if (hasSubjects && fetchType === 'student_list') {
+      fetchType = 'class_marks';
+    }
 
-    switch (this.activeReport) {
+    switch (fetchType) {
       case 'student_list':
         fetchUrl = `${Config.API_URL}/v1/students`;
         if (this.selection.classId) fetchParams.classId = this.selection.classId;
-        fetchParams.limit = 1000; // Get all students for the report
+        fetchParams.limit = 1000;
         break;
       case 'student_marks':
         fetchUrl = `${Config.API_URL}/v1/marks/midterm`;
@@ -455,12 +607,26 @@ export class ReportsComponent implements OnInit {
 
     if (!fetchUrl) { this.isLoading = false; return; }
 
-    this.http.get<any>(fetchUrl, { params: fetchParams, withCredentials: true })
+      this.http.get<any>(fetchUrl, { params: fetchParams, withCredentials: true })
       .subscribe({
         next: (res) => {
-          if (this.activeReport === 'class_marks') {
+          if (fetchType === 'class_marks') {
             this.reportData = res.data;
-            this.updateColumnsFromSubjects(res.subjects);
+            if (this.activeReport === 'class_marks') {
+              this.updateColumnsFromSubjects(res.subjects);
+            }
+          } else if (fetchType === 'student_marks' || fetchType === 'grade_overview') {
+            // ... (rest of the transformation logic remains as added before)
+            const student = this.students.find(s => (s.id || s.student_id) == this.selection.studentId);
+            const row: any = {
+              full_name: student?.full_name || (student ? `${student.last_name} ${student.first_name}` : 'Student'),
+              class_name: this.getSelectedClassName()
+            };
+            (res.subjects || []).forEach((s: any) => {
+              const grade = res.marks?.find((m: any) => m.subject_id === s.subject_id);
+              row[`subject_${s.subject_id}`] = grade?.grade || '';
+            });
+            this.reportData = [row];
           } else {
             this.reportData = res.data || res;
           }
@@ -475,11 +641,13 @@ export class ReportsComponent implements OnInit {
   }
 
   private updateColumnsFromSubjects(subjects: any[]) {
-    // Keep baseline columns (like order and name)
-    this.activeColumns = [
-      this.makeColumn('class_order', '#', '#', 10, 10),
-      this.makeColumn('full_name', 'Jméno a příjmení', 'Jméno Žáka', 40, 50),
-    ];
+    // If no columns yet, add baseline columns (like order and name)
+    if (this.activeColumns.length === 0) {
+      this.activeColumns = [
+        this.makeColumn('class_order', '#', '#', 10, 10),
+        this.makeColumn('full_name', 'Jméno a příjmení', 'Jméno Žáka', 40, 50),
+      ];
+    }
 
     // Add subject columns (only those not already present)
     subjects.forEach(sub => {
@@ -521,20 +689,114 @@ export class ReportsComponent implements OnInit {
 
   // ── Save / Export / Print ─────────────────────────────────
   public saveReport() {
-    console.log('Save report – to be implemented');
+    const config = {
+      title: this.reportTitle,
+      subtitle: this.reportSubtitle,
+      showTitles: this.showTitles,
+      orientation: this.orientation,
+      fontSize: this.fontSize,
+      lineHeight: this.lineHeight,
+      columns: this.activeColumns,
+      groupings: this.groupings
+    };
+
+    if (this.savedReportId && !this.isSharedReport) {
+      // Update existing
+      this.http.patch<any>(`${Config.API_URL}/v1/system/reports/${this.savedReportId}`, {
+        name: this.reportTitle,
+        type: this.activeReport,
+        config
+      }, { withCredentials: true }).subscribe({
+        next: () => {
+          this.loadSavedReports();
+          this.alertManager.alert('success', 'reports.alerts.saved').closeable(true);
+        }
+      });
+    } else {
+      // Create new
+      this.http.post<any>(`${Config.API_URL}/v1/system/reports`, {
+        name: this.reportTitle || 'Nová sestava',
+        type: this.activeReport,
+        config
+      }, { withCredentials: true }).subscribe({
+        next: (res) => {
+          this.savedReportId = res.report_id;
+          this.isSharedReport = false;
+          this.loadSavedReports();
+          this.alertManager.alert('success', 'reports.alerts.created').closeable(true);
+        }
+      });
+    }
+
   }
 
+  public deleteReport(report: any) {
+    this.modalManager.openModal('delete_report', {
+      report: report,
+      onDelete: (id: number) => {
+        this.http.delete<any>(`${Config.API_URL}/v1/system/reports/${id}`, { withCredentials: true })
+          .subscribe({
+            next: () => {
+              this.loadSavedReports();
+              this.alertManager.alert('success', 'reports.alerts.deleted').closeable(true);
+            }
+          });
+      }
+    });
+  }
+
+  public renameReport(report: any) {
+    this.modalManager.openModal('edit_report', {
+      report: report,
+      onSave: (rep: any, newName: string, newType: string) => {
+        if ((!newName || newName === rep.name) && newType === rep.type) return;
+        this.http.patch<any>(`${Config.API_URL}/v1/system/reports/${rep.report_id}`, {
+          name: newName,
+          type: newType
+        }, { withCredentials: true }).subscribe({
+          next: () => this.loadSavedReports()
+        });
+      }
+    });
+  }
+
+  public shareReport(report: any) {
+    this.modalManager.openModal('share_report', {
+      report: report
+    });
+  }
+
+
   public downloadPdf() {
-    if (!this.rawBlob) return;
-    const url = window.URL.createObjectURL(this.rawBlob);
-    const link = document.createElement('a');
-    link.href = url;
-    link.download = `${this.activeReport}_${this.Utils.formatDateShort(this.moment())}.pdf`;
-    link.click();
-    window.URL.revokeObjectURL(url);
+    if (this.previewGroups.length === 0) {
+      this.alertManager.alert('warning', 'reports.alerts.first_generate_data').closeable(true);
+      return;
+    }
+
+    const originalElement = document.querySelector('.preview-paper') as HTMLElement;
+    if (!originalElement) return;
+
+    this.isLoading = true;
+
+    const opt: any = {
+      margin:       0,
+      filename:     `${this.activeReport}_${this.Utils.formatDateShort(this.moment())}.pdf`,
+      image:        { type: 'jpeg', quality: 0.98 },
+      html2canvas:  { scale: 2, useCORS: true },
+      jsPDF:        { unit: 'mm', format: 'a4', orientation: this.orientation || 'portrait' }
+    };
+
+    html2pdf().set(opt).from(originalElement).save().then(() => {
+      this.isLoading = false;
+      this.cdr.detectChanges();
+    });
   }
 
   public printPdf() {
+    if (this.previewGroups.length === 0) {
+      this.alertManager.alert('warning', 'reports.alerts.first_generate_data').closeable(true);
+      return;
+    }
     window.print();
   }
 
@@ -592,10 +854,39 @@ export class ReportsComponent implements OnInit {
   }
 
   public getTransform(): string {
-    return `scale(${this.zoom}) translate(${this.panX / this.zoom}px, ${this.panY / this.zoom}px)`;
+    return `translate(${this.panX}px, ${this.panY}px) scale(${this.zoom})`;
+  }
+
+  // ── Resizing Sidebar ──────────────────────────────────────
+  public onResizeStart(event: MouseEvent) {
+    this.isResizing = true;
+    this.resizeStartX = event.clientX;
+    this.resizeStartWidth = this.previewWidth;
+    event.preventDefault();
+    
+    // Add temporary global listeners
+    const onMove = (e: MouseEvent) => this.onResizeMove(e);
+    const onEnd = () => {
+      this.isResizing = false;
+      localStorage.setItem('reports_preview_width', this.previewWidth.toString());
+      document.removeEventListener('mousemove', onMove);
+      document.removeEventListener('mouseup', onEnd);
+    };
+    
+    document.addEventListener('mousemove', onMove);
+    document.addEventListener('mouseup', onEnd);
+  }
+
+  private onResizeMove(event: MouseEvent) {
+    if (!this.isResizing) return;
+    const deltaX = this.resizeStartX - event.clientX;
+    this.previewWidth = Math.max(250, Math.min(800, this.resizeStartWidth + deltaX));
+    this.cdr.detectChanges();
   }
 
   public reset() {
+    this.savedReportId = null;
+    this.isSharedReport = false;
     this.pdfUrl = null;
     this.activeReport = null;
     this.reportData = null;

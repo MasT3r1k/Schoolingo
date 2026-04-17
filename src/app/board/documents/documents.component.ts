@@ -1,12 +1,13 @@
 import { CommonModule } from '@angular/common';
 import { Component, HostListener, inject, OnInit } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
 import { Documents, FileItem, FolderItem } from '@Schoolingo/documents';
 import { IconsModule } from '@Schoolingo/icons';
 import { Locale } from '@Schoolingo/locale';
 import { ModalManager } from '@Schoolingo/modal';
 import { Utils } from '@Schoolingo/utils';
 import { CreateFolderComponent } from './modals/create-folder/create-folder.component';
-import { UploadFilesComponent } from './modals/upload-files/upload-files.component';
+import { UploadFilesModalComponent } from '@Components/upload-files-modal/upload-files-modal.component';
 import { ContextMenu, ContextMenuItem } from '@Schoolingo/context-menu';
 import { CreateFileComponent } from './modals/create-file/create-file.component';
 import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
@@ -55,6 +56,7 @@ export class DocumentsComponent implements OnInit {
     return this.documents.isRefreshing$.getValue();
   }
   private modalManager = inject(ModalManager);
+  private http = inject(HttpClient);
   Utils = Utils;
   Config = Config;
 
@@ -206,13 +208,13 @@ export class DocumentsComponent implements OnInit {
     this.modalManager.addModal(
       'upload_files',
       {
+        closeable: true,
         title: 'documents.upload_files',
         icon: 'cloud-upload',
-        closeable: true,
         items: [
           {
             type: 'component',
-            component: UploadFilesComponent
+            component: UploadFilesModalComponent
           }
         ]
       }
@@ -282,7 +284,29 @@ export class DocumentsComponent implements OnInit {
   }
 
   public openUploadFiles(): void {
-    this.modalManager.openModal('upload_files');
+    this.modalManager.openModal('upload_files', {
+        files: [],
+        origin: 'documents',
+        onAssign: (files: any[]) => {
+            const file_ids = files.filter((f) => f.serverId != null).map((f) => Number(f.serverId));
+            if (file_ids.length > 0) {
+                const folderId = this.documents.getSelectedFolder()?.document_id;
+                this.http.post(
+                    `${Config.API_URL}/v1/documents/assignfiles`,
+                    {
+                        file_ids,
+                        parent_id: folderId
+                    },
+                    { withCredentials: true }
+                )
+                .subscribe((data: any) => {
+                    if (data.success) {
+                        this.documents.loadFiles(folderId ?? null)
+                    }
+                });
+            }
+        }
+    });
   }
 
   public renameFile(file: FileItem | FolderItem): void {

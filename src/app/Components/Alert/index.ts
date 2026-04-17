@@ -10,7 +10,7 @@ import { BoardAlertManager } from "../../infrastructure/alert/board.alert.manage
     selector: 'alerts-container',
     templateUrl: './Alert.html',
     standalone: true,
-    imports: [IconsModule],
+    imports: [IconsModule, NgStyle],
     styleUrl: './Alert.css'
 })
 export class AlertComponent {

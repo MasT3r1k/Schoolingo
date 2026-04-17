@@ -6,7 +6,7 @@ interface ModalItem {
 }
 
 interface Modal {
-    title: string;
+    title?: string;
     title_placeholders?: Record<string, string>;
     description?: string;
     description_placeholders?: Record<string, string>;
@@ -28,14 +28,15 @@ export class ModalManager {
     private modals: { [key: string]: Modal } = {};
     public addModal(name: string, modal: ModalSetup): void {
         this.modals[name] = {
+            title: '',
             ...modal,
             title_placeholders: modal.title_placeholders ?? {},
-            description_placeholders: modal.title_placeholders ?? {},
+            description_placeholders: modal.description_placeholders ?? {},
             children: modal.children || [],
             dropdown: '',
             isOpen: false,
             index: modal.index ?? 500
-        }
+        } as Modal
     }
 
     public getModals(): (Modal & {id: string})[] {

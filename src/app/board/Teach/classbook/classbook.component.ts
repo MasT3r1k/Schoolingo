@@ -11,7 +11,7 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { NoteModal } from './modals/add-note/note';
 import { Classbook } from '@Schoolingo/classbook';
 import { ClassbookAbsenceComponent } from './modals/absence/absence.component';
-import { ClassbookUploadFilesComponent } from './modals/upload-files/upload-files.component';
+import { UploadFilesModalComponent } from '@Components/upload-files-modal/upload-files-modal.component';
 import { BehaviorSubject } from 'rxjs';
 import { Authentication } from '@Schoolingo/authentication';
 import { CalendarComponent } from '@Components/calendar';
@@ -79,10 +79,10 @@ export class ClassbookComponent implements OnInit {
 
   public getStatusLabel(type: number): string {
     switch (type) {
-      case 0: return this.l.s('homework.status.todo') || 'Neodevzdáno';
-      case 1: return this.l.s('homework.status.in_progress') || 'Rozpracováno';
-      case 2: return this.l.s('homework.status.done') || 'Odevzdáno';
-      default: return 'Neznámý stav';
+      case 0: return this.l.s('homework.status.todo');
+      case 1: return this.l.s('homework.status.in_progress');
+      case 2: return this.l.s('homework.status.done');
+      default: return this.l.s('unknown');
     }
   }
 
@@ -294,10 +294,11 @@ export class ClassbookComponent implements OnInit {
     this.modalManager.addModal(
       'classbook_files',
       {
-        title: 'messages.attachments',
+        title: 'documents.upload_files',
+        icon: 'cloud-upload',
         closeable: false,
         items: [
-          { type: 'component', component: ClassbookUploadFilesComponent }
+          { type: 'component', component: UploadFilesModalComponent }
         ]
       }
     )

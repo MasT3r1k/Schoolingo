@@ -1,32 +1,56 @@
 import { HttpEventType } from '@angular/common/http';
-import { Component, inject } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { IconsModule } from '@Schoolingo/icons';
 import { Locale } from '@Schoolingo/locale';
-import { MessageManager } from '@Schoolingo/messages';
 import { ModalManager } from '@Schoolingo/modal';
 import { UploadFile, UploadService } from '@Schoolingo/upload';
 import { Utils } from '@Schoolingo/utils';
 import { finalize } from 'rxjs';
 
 @Component({
+  selector: 'app-upload-files-modal',
+  standalone: true,
   imports: [IconsModule],
-  templateUrl: './upload-files.component.html',
-  styleUrls: ['./upload-files.component.css', '../../../../../Styles/upload.css', '../../../../../Components/modal/modal.css']
+  templateUrl: './upload-files-modal.component.html',
+  styleUrls: ['./upload-files-modal.component.css', '../../Styles/upload.css', '../modal/modal.css']
 })
-export class UploadFilesComponent {
+export class UploadFilesModalComponent implements OnInit {
   public Utils = Utils;
   public l = inject(Locale)
   private uploadService = inject(UploadService);
-  public messageManager = inject(MessageManager);
   public modalManager = inject(ModalManager);
 
-  public files: UploadFile[] = this.messageManager.files;
+  public files: UploadFile[] = [];
   public isDragging = false;
+  public modalId: string = '';
+  public origin: string = 'default';
+  
+  public config = {
+    file_max_size_in_mb: 50,
+    files_limit: 10,
+    supported_files: '.jpg,.jpeg,.png,.pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.zip,.rar,.txt'
+  };
 
-  /**
-   * Handle files dropped or selected
-   * @param fileList List of files
-   */
+  ngOnInit(): void {
+    // Find our modal naturally
+    const modal = this.modalManager.getModals().find(m => m.isOpen && m.items.some(i => i.component === UploadFilesModalComponent));
+    if (modal) {
+        this.modalId = modal.id;
+        
+        // Automatically set consistent title and icon
+        this.modalManager.updateModal(this.modalId, 'title', 'documents.upload_files');
+        this.modalManager.updateModal(this.modalId, 'icon', 'cloud-upload');
+
+        if (modal.data) {
+            this.files = modal.data.files || [];
+            this.origin = modal.data.origin || 'default';
+            if (modal.data.config) {
+                this.config = { ...this.config, ...modal.data.config };
+            }
+        }
+    }
+  }
+
   handleFiles(fileList: FileList): void {
     if (!fileList || fileList.length === 0) return;
 
@@ -53,7 +77,7 @@ export class UploadFilesComponent {
 
       uploadFile.status = 'uploading';
 
-      uploadFile.subscription = this.uploadService.uploadFiles([file], 'messages')
+      uploadFile.subscription = this.uploadService.uploadFiles([file], this.origin)
         .pipe(
           finalize(() => {
             if (uploadFile.status === 'uploading') {
@@ -73,7 +97,6 @@ export class UploadFilesComponent {
             if (event.type === HttpEventType.Response) {
               const uploaded = event.body?.files?.[0];
               if (uploaded) {
-                uploadFile.file
                 uploadFile.serverId = uploaded.id;
                 uploadFile.status = 'done';
                 uploadFile.progress = 100;
@@ -101,11 +124,11 @@ export class UploadFilesComponent {
       ? '.' + file.name.split('.').pop() 
       : '.bin';
 
-    if (!this.messageManager.getConfig().supported_files.includes(ext)) {
+    if (!this.config.supported_files.includes(ext.toLowerCase())) {
       return 'format_not_supported';
     }
 
-    const maxSizeBytes = this.messageManager.getConfig().file_max_size_in_mb * 1024 * 1024;
+    const maxSizeBytes = this.config.file_max_size_in_mb * 1024 * 1024;
     if (file.size > maxSizeBytes) {
       return 'file_too_big';
     }
@@ -113,10 +136,7 @@ export class UploadFilesComponent {
   }
 
   public getFileProgress(file: UploadFile): number {
-    if (file.error) {
-      // Error state
-      return 100;
-    }
+    if (file.error) return 100;
     return file.progress;
   }
 
@@ -128,10 +148,6 @@ export class UploadFilesComponent {
     return this.files.filter((file) => file.status == 'error').length;
   }
 
-  /**
-   * Remove file from list and backend
-   * @param index Index of file to remove
-   */
   removeFile(file: UploadFile): void {
     const index = this.files.indexOf(file);
     if (file.status === 'uploading' && file.subscription) {
@@ -146,7 +162,6 @@ export class UploadFilesComponent {
     this.files.splice(index, 1);
   }
 
-  // Drag and Drop Handlers
   onDragOver(event: DragEvent): void {
     event.preventDefault();
     event.stopPropagation();
@@ -170,30 +185,40 @@ export class UploadFilesComponent {
     }
   }
 
+  private shakeModal(): void {
+    if (this.modalId) {
+        const modalEl = document.querySelector(`.modal#${this.modalId}`);
+        modalEl?.classList.add('animate-shake');
+        setTimeout(() => {
+            modalEl?.classList.remove('animate-shake');
+        }, 500);
+    }
+  }
+
   public closeModal(): void {
     if (!this.checkFilesUploaded()) {
-      document.querySelector(".modal#sendMessage_files")?.classList.add('animate-shake');
-      setTimeout(() => {
-        document.querySelector(".modal#sendMessage_files")?.classList.remove('animate-shake');
-      }, 500)
+      this.shakeModal();
       return;
     }
-
-    this.messageManager.files = this.files.filter(file => !file.error || file.error == null);
-
-    this.modalManager.closeModal('sendMessage_files')
+    this.modalManager.closeModal(this.modalId);
   }
 
   public assignFiles(): void {
     if (!this.checkFilesUploaded()) {
-      document.querySelector(".modal#sendMessage_files")?.classList.add('animate-shake');
-      setTimeout(() => {
-        document.querySelector(".modal#sendMessage_files")?.classList.remove('animate-shake');
-      }, 500)
+      this.shakeModal();
       return;
     }
     
-    this.messageManager.files = this.files.filter(file => !file.error || file.error == null);
-    this.modalManager.closeModal('sendMessage_files')
+    const modalData = this.modalManager.getModalData(this.modalId);
+    if (modalData) {
+        const finalFiles = this.files.filter(file => !file.error);
+        if (modalData.onAssign) {
+            modalData.onAssign(finalFiles);
+        } else {
+            modalData.files = finalFiles;
+        }
+    }
+
+    this.modalManager.closeModal(this.modalId);
   }
 }

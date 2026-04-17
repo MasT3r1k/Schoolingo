@@ -56,10 +56,32 @@ export class EditLessonComponent implements OnInit {
   public selectedRoomId: number | null = null;
   public selectedGroupId: number | null = null;
 
+  public unavailable: { teachers: number[], rooms: number[] } = { teachers: [], rooms: [] };
+
   ngOnInit(): void {
     const lesson = this.scheduleBuilder.activeLesson;
     console.log(lesson)
-    
+
+    const currentWeek = this.scheduleBuilder.selectedDate;
+    if (currentWeek && lesson) {
+      const currentDay = Utils.getDayOfWeek(currentWeek, lesson.day + 1);
+      this.http.get<{teachers: number[], rooms: number[]}>(`${Config.API_URL}/v1/timetable/availability?date=${currentDay.format('YYYY-MM-DD')}&hour=${lesson.hour + 1}`)
+        .subscribe((availability) => {
+           this.unavailable = availability;
+           
+           const cls = this.scheduleBuilder.classes.find((c: any) => c.class_id === lesson.classId);
+           const isTeacherForThisLesson = (lesson.teacherId === cls?.teacher_id || lesson.teacher_id === cls?.teacher_id);
+           
+           if (cls && cls.teacher_id && this.unavailable.teachers.includes(cls.teacher_id) && !isTeacherForThisLesson) {
+               this.types = this.types.filter(t => t !== 'classroom_lesson');
+               if (this.selected_type === 'classroom_lesson') {
+                   this.selected_type = this.types.length > 0 ? this.types[0] : '';
+                   this.selectType(this.selected_type);
+               }
+           }
+        });
+    }
+
     // Fetch rooms
     this.http.get<roomAPI[]>(`${Config.API_URL}/v1/timetable/rooms`)
         .subscribe((rooms) => {
@@ -162,8 +184,10 @@ export class EditLessonComponent implements OnInit {
 
   public getFilteredTeachers(): any[] {
     const search = this.searchTeacher.value?.toLowerCase() || '';
+    const activeLesson = this.scheduleBuilder.activeLesson;
     return this.scheduleBuilder.getTeachers().filter((t: any) => 
-      t.teacherId != this.selectedTeacher2Id && (
+      t.teacherId != this.selectedTeacher2Id &&
+      (!this.unavailable.teachers.includes(t.teacherId) || t.teacherId === activeLesson?.teacherId) && (
       t.teacherName.toLowerCase().includes(search) ||
       t.firstName.toLowerCase().includes(search) ||
       t.lastName.toLowerCase().includes(search)
@@ -172,8 +196,10 @@ export class EditLessonComponent implements OnInit {
 
   public getFilteredTeachers2(): any[] {
     const search = this.searchTeacher2.value?.toLowerCase() || '';
+    const activeLesson = this.scheduleBuilder.activeLesson;
     return this.scheduleBuilder.getTeachers().filter((t: any) => 
-      t.teacherId != this.selectedTeacherId && (
+      t.teacherId != this.selectedTeacherId &&
+      (!this.unavailable.teachers.includes(t.teacherId) || t.teacherId === activeLesson?.teacher2Id) && (
       t.teacherName.toLowerCase().includes(search) ||
       t.firstName.toLowerCase().includes(search) ||
       t.lastName.toLowerCase().includes(search)
@@ -182,7 +208,11 @@ export class EditLessonComponent implements OnInit {
 
   public getFilteredRooms(): roomAPI[] {
     const search = this.searchRoom.value?.toLowerCase() || '';
-    return this.rooms.filter((r) => r.name.toLowerCase().includes(search));
+    const activeLesson = this.scheduleBuilder.activeLesson;
+    return this.rooms.filter((r) => 
+      (!this.unavailable.rooms.includes(r.room_id) || r.name === activeLesson?.room) &&
+      r.name.toLowerCase().includes(search)
+    );
   }
 
   public getSubjectName(subject_id: number): string {

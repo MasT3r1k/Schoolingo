@@ -28,7 +28,7 @@ import { DropdownManager } from '@Schoolingo/dropdown';
 import { Utils } from '@Schoolingo/utils';
 import { ModalManager } from '@Schoolingo/modal';
 import { School } from '@Schoolingo/school';
-import { UploadFilesComponent } from './modals/upload-files/upload-files.component';
+import { UploadFilesModalComponent } from '@Components/upload-files-modal/upload-files-modal.component';
 import { SelectReceiverComponent } from './modals/select-receiver/select-receiver.component';
 
 @Component({
@@ -431,10 +431,11 @@ export class SendComponent implements OnInit {
     this.modalManager.addModal(
       'sendMessage_files',
       {
-        title: 'messages.attachments',
+        title: 'documents.upload_files',
+        icon: 'cloud-upload',
         closeable: false,
         items: [
-          { type: 'component', component: UploadFilesComponent }
+          { type: 'component', component: UploadFilesModalComponent }
         ]
       }
     )
@@ -604,7 +605,13 @@ export class SendComponent implements OnInit {
   }
 
   public openFiles(): void {
-    this.modalManager.openModal('sendMessage_files')
+    this.modalManager.openModal('sendMessage_files', {
+        files: this.messageManager.files,
+        origin: 'messages',
+        onAssign: (files: any) => {
+            this.messageManager.files = files;
+        }
+    });
   }
 
   // === Child Handling ===

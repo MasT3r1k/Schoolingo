@@ -3,20 +3,13 @@
 </div>
 
 <div class="tab-content">
-    <div class="alert alert--info mb">
-        <div class="center">
-            <i-tabler class="alert__icon mr-2" name="info-circle"></i-tabler>
-            <span class="alert__content">{{ l.s('messages.upload.note') }}</span>
-        </div>
-    </div>
-
     <div class="upload-area" [class.drag-over]="isDragging" (click)="fileInput.click()" (dragover)="onDragOver($event)"
         (dragleave)="onDragLeave($event)" (drop)="onDrop($event)">
         <i-tabler name="cloud-upload"></i-tabler>
         <span>{{ l.s("buttons.upload_files") }}</span>
         <small>{{ l.s('upload.drag_files_description') }}</small>
         <input #fileInput type="file" multiple (change)="handleFiles($any($event.target).files)"
-            [size]="messageManager.getConfig().files_limit" [accept]="messageManager.getConfig().supported_files"
+            [size]="config.files_limit" [accept]="config.supported_files"
             style="display: none;">
     </div>
 
@@ -66,7 +59,7 @@
     }
 
     <div class="upload-note">{{ l.s('messages.upload.upload_info', { max_size:
-        messageManager.getConfig().file_max_size_in_mb, max_files: messageManager.getConfig().files_limit }) }}</div>
+        config.file_max_size_in_mb, max_files: config.files_limit }) }}</div>
 
     <div class="modal-actions">
         <button type="button" class="btn btn--secondary" (click)="closeModal()">{{ l.s('cancel') }}</button>

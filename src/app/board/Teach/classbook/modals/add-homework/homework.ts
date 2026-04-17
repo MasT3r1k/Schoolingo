@@ -29,7 +29,13 @@ export class HomeworkModal {
     public submit_at = moment().add(7, 'days');
 
     public openFiles(): void {
-        this.modalManager.openModal('classbook_files');
+        this.modalManager.openModal('classbook_files', {
+            files: this.classbook.files,
+            origin: 'classbook',
+            onAssign: (files: any) => {
+                this.classbook.files = files;
+            }
+        });
     }
 
     // Calendar subscriptions are handled via (valueChange) in template

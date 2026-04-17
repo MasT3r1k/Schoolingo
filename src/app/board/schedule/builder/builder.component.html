@@ -12,15 +12,20 @@
             <!-- Stats Card -->
             <div class="sidebar-section stats-section">
                 <div class="section-header">
-                    <h3>{{ l.s('schedule.builder.stats') }}</h3>
+                    <div class="header-title">
+                        <i-tabler name="chart-bar"></i-tabler>
+                        <h3>{{ l.s('schedule.builder.stats') }}</h3>
+                    </div>
                 </div>
                 <div class="stats-grid">
                     <div class="stat-item">
+                        <div class="stat-icon"><i-tabler name="clock"></i-tabler></div>
                         <span class="label">{{ l.s('schedule.builder.week_hours') }}</span>
                         <span class="value" id="weekHours">{{ scheduleBuilder.getTimetableUsedHours() }} / {{
                             scheduleBuilder.getTimetableTotalHours() }}</span>
                     </div>
                     <div class="stat-item warning">
+                        <div class="stat-icon"><i-tabler name="alert-triangle"></i-tabler></div>
                         <span class="label">{{ l.s('schedule.builder.substitution_week') }}</span>
                         <span class="value" id="substitutions">{{ countSubstitutionLesson() }}</span>
                     </div>
@@ -30,7 +35,10 @@
             <!-- Subjects List -->
             <div class="sidebar-section subjects-section">
                 <div class="section-header">
-                    <h3>{{ l.s('schedule.builder.available_subjects') }}</h3>
+                    <div class="header-title">
+                        <i-tabler name="book"></i-tabler>
+                        <h3>{{ l.s('schedule.builder.available_subjects') }}</h3>
+                    </div>
                     <div class="badge">{{ scheduleBuilder.subjects.length }}</div>
                 </div>
 
@@ -50,7 +58,7 @@
                                     subject.hours_per_week }}</span>
                                 @for(teacher of scheduleBuilder.getSubject(subject.subject_id)?.teachers; track $index)
                                 {
-                                <span class="teacher-name">{{ teacher.teacher_name }}</span>
+                                <span class="teacher-name"><i-tabler name="user" style="width: 12px; height: 12px; vertical-align: middle; margin-right: 2px;"></i-tabler> {{ teacher.teacher_name }}</span>
                                 }
                             </div>
                         </div>
