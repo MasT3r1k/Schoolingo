@@ -13,35 +13,24 @@
             [value]="selectedPeriodTab"></schoolingo-tabs>
     </div>
 
-    <!-- Custom period date picker panel -->
     @if (showCustomPeriod) {
     <div class="custom-period-panel">
         <div class="custom-period-panel__inner">
             <div class="custom-period-panel__group">
-                <label class="custom-period-panel__label">
-                    <i-tabler name="calendar" size="14"></i-tabler>
-                    Od
-                </label>
-                <input type="date" class="custom-period-panel__input" [(ngModel)]="customPeriodFrom"
-                    [max]="customPeriodTo">
+                <label class="custom-period-panel__label"><i-tabler name="calendar" size="14"></i-tabler> Od</label>
+                <input type="date" class="custom-period-panel__input" [(ngModel)]="customPeriodFrom" [max]="customPeriodTo">
             </div>
             <div class="custom-period-panel__sep">—</div>
             <div class="custom-period-panel__group">
-                <label class="custom-period-panel__label">
-                    <i-tabler name="calendar-check" size="14"></i-tabler>
-                    Do
-                </label>
-                <input type="date" class="custom-period-panel__input" [(ngModel)]="customPeriodTo"
-                    [min]="customPeriodFrom">
+                <label class="custom-period-panel__label"><i-tabler name="calendar-check" size="14"></i-tabler> Do</label>
+                <input type="date" class="custom-period-panel__input" [(ngModel)]="customPeriodTo" [min]="customPeriodFrom">
             </div>
-            <button class="btn btn--primary btn--sm custom-period-panel__apply" (click)="applyCustomPeriod()">
-                <i-tabler name="chart-bar" size="16"></i-tabler>
-                Zobrazit
+            <button class="btn btn--primary btn--sm" (click)="applyCustomPeriod()">
+                <i-tabler name="chart-area" size="16"></i-tabler> Zobrazit
             </button>
             @if (customPeriodError) {
             <span class="custom-period-panel__error">
-                <i-tabler name="alert-circle" size="14"></i-tabler>
-                {{ customPeriodError }}
+                <i-tabler name="alert-circle" size="14"></i-tabler> {{ customPeriodError }}
             </span>
             }
         </div>
@@ -61,127 +50,149 @@
             <div>
                 <p><strong>{{ l.s(error) }}</strong></p>
                 <button class="btn btn--primary btn--sm" (click)="fetchStats()">
-                    <i-tabler name="refresh"></i-tabler>
-                    {{ l.s('admin.monitoring.retry') }}
+                    <i-tabler name="refresh"></i-tabler> {{ l.s('admin.monitoring.retry') }}
                 </button>
             </div>
         </div>
         } @else if (stats) {
-
-        <!-- KPI Metrics -->
+        <!-- ===== ANALYTICS KPI ===== -->
+        <div class="m-section-label">
+            <i-tabler name="chart-area" size="14"></i-tabler>
+            Analytika návštěvnosti
+        </div>
         <div class="kpi-grid">
             <div class="kpi-card kpi-card--blue">
                 <div class="kpi-card__glow"></div>
-                <div class="kpi-card__icon">
-                    <i-tabler name="users"></i-tabler>
-                </div>
+                <div class="kpi-card__icon"><i-tabler name="users"></i-tabler></div>
                 <div class="kpi-card__body">
                     <span class="kpi-card__label">{{ l.s('admin.monitoring.visits') }}</span>
                     <div class="kpi-card__value">{{ stats.nb_visits || 0 }}</div>
                     <div class="kpi-card__sub">{{ l.s('admin.monitoring.total_sessions') }}</div>
                 </div>
-                <div class="kpi-card__trend kpi-card__trend--up">
-                    <i-tabler name="trending-up"></i-tabler>
-                </div>
+                <div class="kpi-card__trend kpi-card__trend--up"><i-tabler name="trending-up"></i-tabler></div>
             </div>
             <div class="kpi-card kpi-card--green">
                 <div class="kpi-card__glow"></div>
-                <div class="kpi-card__icon">
-                    <i-tabler name="user-check"></i-tabler>
-                </div>
+                <div class="kpi-card__icon"><i-tabler name="user-check"></i-tabler></div>
                 <div class="kpi-card__body">
                     <span class="kpi-card__label">{{ l.s('admin.monitoring.unique_visitors') }}</span>
                     <div class="kpi-card__value">{{ stats.nb_uniq_visitors || 0 }}</div>
                     <div class="kpi-card__sub">{{ l.s('admin.monitoring.individual_users') }}</div>
                 </div>
-                <div class="kpi-card__trend kpi-card__trend--up">
-                    <i-tabler name="trending-up"></i-tabler>
-                </div>
+                <div class="kpi-card__trend kpi-card__trend--up"><i-tabler name="trending-up"></i-tabler></div>
             </div>
             <div class="kpi-card kpi-card--orange">
                 <div class="kpi-card__glow"></div>
-                <div class="kpi-card__icon">
-                    <i-tabler name="eye"></i-tabler>
-                </div>
+                <div class="kpi-card__icon"><i-tabler name="eye"></i-tabler></div>
                 <div class="kpi-card__body">
                     <span class="kpi-card__label">{{ l.s('admin.monitoring.page_views') }}</span>
                     <div class="kpi-card__value">{{ stats.nb_actions || 0 }}</div>
                     <div class="kpi-card__sub">{{ l.s('admin.monitoring.total_interactions') }}</div>
                 </div>
-                <div class="kpi-card__trend kpi-card__trend--neutral">
-                    <i-tabler name="minus"></i-tabler>
-                </div>
+                <div class="kpi-card__trend kpi-card__trend--neutral"><i-tabler name="minus"></i-tabler></div>
             </div>
             <div class="kpi-card kpi-card--purple">
                 <div class="kpi-card__glow"></div>
-                <div class="kpi-card__icon">
-                    <i-tabler name="clock"></i-tabler>
-                </div>
+                <div class="kpi-card__icon"><i-tabler name="clock"></i-tabler></div>
                 <div class="kpi-card__body">
                     <span class="kpi-card__label">{{ l.s('admin.monitoring.avg_duration') }}</span>
                     <div class="kpi-card__value">{{ formatDuration(stats.avg_time_on_site || 0) }}</div>
                     <div class="kpi-card__sub">{{ l.s('admin.monitoring.per_session') }}</div>
                 </div>
-                <div class="kpi-card__trend kpi-card__trend--up">
-                    <i-tabler name="trending-up"></i-tabler>
-                </div>
+                <div class="kpi-card__trend kpi-card__trend--up"><i-tabler name="trending-up"></i-tabler></div>
             </div>
         </div>
 
-        <!-- Two-column row: Visits Chart + Activity Heatmap -->
+        <!-- ===== ROW 1: Visits SVG line chart + Activity heatmap ===== -->
         <div class="m-row">
 
-            <!-- Visits Chart -->
-            <div class="m-section m-section--wide">
+            <!-- VISITS LINE CHART -->
+            <div class="m-section">
                 <div class="m-section__header">
                     <div class="m-section__title-row">
                         <i-tabler name="chart-area"></i-tabler>
                         <div>
-                            <h3>{{ l.s('admin.monitoring.visits_overview') }}</h3>
-                            <span class="meta muted">Návštěvnost v čase</span>
+                            <h3>Návštěvnost v čase</h3>
+                            <span class="meta muted">Počet relací</span>
                         </div>
                     </div>
                 </div>
                 <div class="m-section__body">
-                    <div class="visits-chart">
-                        <div class="visits-chart__y-axis">
-                            @for (tick of yAxisTicks; track tick) {
-                            <div class="visits-chart__y-tick">{{ tick }}</div>
+                    @if (visitPoints.length > 0) {
+                    <div class="svg-chart-wrap">
+                        <!-- Y-axis labels -->
+                        <div class="svg-y-axis">
+                            @for (label of visitYLabels; track label) {
+                            <span class="svg-y-label">{{ label }}</span>
                             }
                         </div>
-                        <div class="visits-chart__area">
-                            <div class="visits-chart__gridlines">
-                                @for (tick of yAxisTicks; track tick) {
-                                <div class="visits-chart__gridline"></div>
+                        <!-- SVG area -->
+                        <div class="svg-area"
+                            (mousemove)="onChartMouseMove($event, visitPoints)"
+                            (mouseleave)="onChartMouseLeave()">
+                            <!-- Custom tooltip bubble -->
+                            @if (chartTooltip.visible) {
+                            <div class="chart-tooltip"
+                                [style.left.px]="chartTooltip.x"
+                                [style.top.px]="chartTooltip.y">
+                                <div class="chart-tooltip__value">{{ chartTooltip.value }}</div>
+                                <div class="chart-tooltip__label">{{ chartTooltip.label }}</div>
+                                @if (chartTooltip.sub) {
+                                <div class="chart-tooltip__sub">{{ chartTooltip.sub }}</div>
                                 }
                             </div>
-                            <div class="visits-chart__bars">
-                                @for (point of chartData; track point.label) {
-                                <div class="v-bar-col" [title]="point.label + ': ' + point.value + ' návštěv'">
-                                    <div class="v-bar-tooltip">
-                                        <strong>{{ point.value }}</strong>
-                                        <span>{{ point.label }}</span>
-                                    </div>
-                                    <div class="v-bar" [style.height.%]="point.height"
-                                        [class.v-bar--peak]="point.isPeak" [class.v-bar--low]="point.isLow">
-                                        <div class="v-bar__shine"></div>
-                                    </div>
-                                    <div class="v-bar-label">{{ point.label }}</div>
-                                </div>
+                            }
+                            <svg [attr.viewBox]="'0 0 ' + SVG_W + ' ' + SVG_H" preserveAspectRatio="none"
+                                class="line-svg">
+                                <defs>
+                                    <linearGradient id="visitGrad" x1="0" y1="0" x2="0" y2="1">
+                                        <stop offset="0%" stop-color="rgba(88,101,242,0.35)" />
+                                        <stop offset="100%" stop-color="rgba(88,101,242,0)" />
+                                    </linearGradient>
+                                    <!-- Gridlines -->
+                                </defs>
+                                <!-- Horizontal gridlines -->
+                                @for (label of visitYLabels; track label; let i = $index) {
+                                <line class="chart-gridline"
+                                    [attr.x1]="SVG_PAD_LEFT" [attr.y1]="SVG_PAD_TOP + ((SVG_H - SVG_PAD_TOP - SVG_PAD_BOTTOM) / 4) * i"
+                                    [attr.x2]="SVG_W - SVG_PAD_RIGHT" [attr.y2]="SVG_PAD_TOP + ((SVG_H - SVG_PAD_TOP - SVG_PAD_BOTTOM) / 4) * i" />
                                 }
-                                @if (chartData.length === 0) {
-                                <div class="m-no-data">
-                                    <i-tabler name="chart-bar-off"></i-tabler>
-                                    <span>{{ l.s('admin.monitoring.no_data') }}</span>
-                                </div>
+                                <!-- Area fill -->
+                                <path class="chart-area-fill" [attr.d]="areaPath(visitPoints)" fill="url(#visitGrad)" />
+                                <!-- Line -->
+                                <polyline class="chart-line chart-line--visits"
+                                    [attr.points]="polylinePoints(visitPoints)" />
+                            <!-- Dots and labels -->
+                                @for (pt of visitPoints; track pt.label; let i = $index) {
+                                @if (i === 0 || i === visitPoints.length - 1 || visitPoints.length <= 31 || (i % Math.max(1, Math.floor(visitPoints.length / 12))) === 0) {
+                                <g class="chart-dot-group" [class.chart-dot-group--peak]="pt.isPeak"
+                                    [class.chart-dot-group--active]="chartTooltip.visible && chartTooltip.label === pt.label">
+                                    <circle class="chart-dot" [class.chart-dot--peak]="pt.isPeak"
+                                        [class.chart-dot--active]="chartTooltip.visible && chartTooltip.label === pt.label"
+                                        [attr.cx]="pt.x" [attr.cy]="pt.y" r="4" />
+                                </g>
+                                <text class="chart-x-label" [attr.x]="pt.x" [attr.y]="SVG_H - 4"
+                                    text-anchor="middle">{{ pt.label }}</text>
                                 }
-                            </div>
+                                }
+                                <!-- Crosshair + highlight dot -->
+                                @if (chartTooltip.visible) {
+                                <line class="chart-crosshair"
+                                    [attr.x1]="chartTooltip.svgX" [attr.x2]="chartTooltip.svgX"
+                                    [attr.y1]="SVG_PAD_TOP" [attr.y2]="SVG_H - SVG_PAD_BOTTOM" />
+                                <circle class="chart-dot chart-dot--highlight"
+                                    [attr.cx]="chartTooltip.svgX" [attr.cy]="chartTooltip.svgY" r="6" />
+                                }
+                            </svg>
                         </div>
                     </div>
+                    } @else {
+                    <div class="m-no-data"><i-tabler name="chart-area"></i-tabler><span>Žádná data</span></div>
+                    }
                 </div>
             </div>
 
-            <!-- Activity Heatmap by Hour -->
+            <!-- ACTIVITY HEATMAP -->
             <div class="m-section m-section--narrow">
                 <div class="m-section__header">
                     <div class="m-section__title-row">
@@ -200,14 +211,14 @@
                     </div>
                     <div class="hourly-chart">
                         @for (point of activityChartData; track point.label) {
-                        <div class="h-bar-col" [title]="point.label + ': ' + point.value + ' aktivit'">
+                        <div class="h-bar-col">
                             <div class="h-bar-outer">
                                 <div class="h-bar-fill" [style.height.%]="point.height"
                                     [class.h-bar-fill--zero]="point.isZero"
                                     [style.background]="point.isZero ? null : getActivityColor(point.height ?? 0)">
                                     <div class="h-bar-tooltip">
                                         <strong>{{ point.value }}</strong>
-                                        <span>{{ point.label }}</span>
+                                        <span>{{ point.label }}:00</span>
                                     </div>
                                 </div>
                             </div>
@@ -215,17 +226,15 @@
                         </div>
                         }
                     </div>
-
-                    <!-- Peak and Low indicators -->
                     <div class="activity-insights">
-                        <div class="activity-insight activity-insight--peak">
+                        <div class="activity-insight">
                             <div class="activity-insight__dot activity-insight__dot--peak"></div>
                             <div class="activity-insight__texts">
                                 <div class="activity-insight__label">Největší aktivita</div>
                                 <div class="activity-insight__value">{{ peakRange }}</div>
                             </div>
                         </div>
-                        <div class="activity-insight activity-insight--low">
+                        <div class="activity-insight">
                             <div class="activity-insight__dot activity-insight__dot--low"></div>
                             <div class="activity-insight__texts">
                                 <div class="activity-insight__label">Nejmenší aktivita</div>
@@ -233,7 +242,7 @@
                                     @if (lowRanges.length === 0) {
                                     <span class="activity-insight__value">—</span>
                                     }
-                                    @for (range of lowRanges; track range; let last = $last) {
+                                    @for (range of lowRanges; track range) {
                                     <span class="activity-insight__range-tag">{{ range }}</span>
                                     }
                                 </div>
@@ -245,10 +254,11 @@
 
         </div>
 
-        <!-- Bottom row: Top Pages + Top Users + Browsers/OS -->
+
+
+        <!-- ===== ROW 2: Top Pages + Top Users + Browsers/OS ===== -->
         <div class="m-row m-row--triple">
 
-            <!-- Top Pages -->
             <div class="m-section">
                 <div class="m-section__header">
                     <div class="m-section__title-row">
@@ -267,8 +277,7 @@
                             <div class="page-item__info">
                                 <div class="page-item__name" [title]="page.label">{{ page.label }}</div>
                                 <div class="page-item__bar">
-                                    <div class="page-item__bar-fill" [style.width.%]="getPageBarWidth(page.nb_visits)">
-                                    </div>
+                                    <div class="page-item__bar-fill" [style.width.%]="getPageBarWidth(page.nb_visits)"></div>
                                 </div>
                             </div>
                             <div class="page-item__stats">
@@ -278,16 +287,12 @@
                         </div>
                         }
                         @if (topPages.length === 0) {
-                        <div class="m-no-data">
-                            <i-tabler name="file-off"></i-tabler>
-                            <span>{{ l.s('admin.monitoring.no_data') }}</span>
-                        </div>
+                        <div class="m-no-data"><i-tabler name="file-off"></i-tabler><span>{{ l.s('admin.monitoring.no_data') }}</span></div>
                         }
                     </div>
                 </div>
             </div>
 
-            <!-- Top Users -->
             <div class="m-section">
                 <div class="m-section__header">
                     <div class="m-section__title-row">
@@ -320,18 +325,13 @@
                         </div>
                         }
                         @if (topUsers.length === 0) {
-                        <div class="m-no-data">
-                            <i-tabler name="user-off"></i-tabler>
-                            <span>Žádní aktivní uživatelé</span>
-                        </div>
+                        <div class="m-no-data"><i-tabler name="user-off"></i-tabler><span>Žádní aktivní uživatelé</span></div>
                         }
                     </div>
                 </div>
             </div>
 
-            <!-- Browsers & OS stacked -->
-            <div class="m-section m-section--tech">
-                <!-- Browsers -->
+            <div class="m-section">
                 <div class="m-section__header">
                     <div class="m-section__title-row">
                         <i-tabler name="devices"></i-tabler>
@@ -342,77 +342,54 @@
                     </div>
                 </div>
                 <div class="m-section__body">
-                    <div class="tech-subsection">
-                        <div class="tech-subsection__label">
-                            <i-tabler name="browser"></i-tabler>
-                            Prohlížeče
-                        </div>
-                        <div class="tech-list">
-                            @for (browser of browserStats; track browser.name) {
-                            <div class="tech-item">
-                                <div class="tech-item__icon" [style.background]="browser.color + '22'"
-                                    [style.color]="browser.color">
-                                    <i-tabler [name]="browser.icon"></i-tabler>
-                                </div>
-                                <div class="tech-item__info">
-                                    <div class="tech-item__name">{{ browser.name }}</div>
-                                    <div class="tech-item__bar">
-                                        <div class="tech-item__bar-fill" [style.width.%]="browser.percentage"
-                                            [style.background]="browser.color"></div>
-                                    </div>
-                                </div>
-                                <span class="tech-item__pct">{{ browser.percentage }}%</span>
+                    <div class="tech-subsection__label"><i-tabler name="browser"></i-tabler> Prohlížeče</div>
+                    <div class="tech-list">
+                        @for (browser of browserStats; track browser.name) {
+                        <div class="tech-item">
+                            <div class="tech-item__icon" [style.background]="browser.color + '22'" [style.color]="browser.color">
+                                <i-tabler [name]="browser.icon"></i-tabler>
                             </div>
-                            }
-                            @if (browserStats.length === 0) {
-                            <div class="m-no-data m-no-data--sm">{{ l.s('admin.monitoring.no_data') }}</div>
-                            }
+                            <div class="tech-item__info">
+                                <div class="tech-item__name">{{ browser.name }}</div>
+                                <div class="tech-item__bar">
+                                    <div class="tech-item__bar-fill" [style.width.%]="browser.percentage" [style.background]="browser.color"></div>
+                                </div>
+                            </div>
+                            <span class="tech-item__pct">{{ browser.percentage }}%</span>
                         </div>
+                        }
                     </div>
-
                     <div class="tech-divider"></div>
-
-                    <div class="tech-subsection">
-                        <div class="tech-subsection__label">
-                            <i-tabler name="device-desktop"></i-tabler>
-                            Operační systémy
-                        </div>
-                        <div class="tech-list">
-                            @for (os of osStats; track os.name) {
-                            <div class="tech-item">
-                                <div class="tech-item__icon" [style.background]="os.color + '22'"
-                                    [style.color]="os.color">
-                                    <i-tabler [name]="os.icon"></i-tabler>
-                                </div>
-                                <div class="tech-item__info">
-                                    <div class="tech-item__name">{{ os.name }}</div>
-                                    <div class="tech-item__bar">
-                                        <div class="tech-item__bar-fill" [style.width.%]="os.percentage"
-                                            [style.background]="os.color"></div>
-                                    </div>
-                                </div>
-                                <span class="tech-item__pct">{{ os.percentage }}%</span>
+                    <div class="tech-subsection__label"><i-tabler name="device-desktop"></i-tabler> OS</div>
+                    <div class="tech-list">
+                        @for (os of osStats; track os.name) {
+                        <div class="tech-item">
+                            <div class="tech-item__icon" [style.background]="os.color + '22'" [style.color]="os.color">
+                                <i-tabler [name]="os.icon"></i-tabler>
                             </div>
-                            }
-                            @if (osStats.length === 0) {
-                            <div class="m-no-data m-no-data--sm">{{ l.s('admin.monitoring.no_data') }}</div>
-                            }
+                            <div class="tech-item__info">
+                                <div class="tech-item__name">{{ os.name }}</div>
+                                <div class="tech-item__bar">
+                                    <div class="tech-item__bar-fill" [style.width.%]="os.percentage" [style.background]="os.color"></div>
+                                </div>
+                            </div>
+                            <span class="tech-item__pct">{{ os.percentage }}%</span>
                         </div>
+                        }
                     </div>
                 </div>
             </div>
+
         </div>
 
-        <!-- =============================================
-             SYSTEM STATUS SECTION
-             ============================================= -->
+        <!-- ===== SYSTEM STATUS ===== -->
         <div class="m-section m-section--full status-section">
             <div class="m-section__header">
                 <div class="m-section__title-row">
                     <i-tabler name="server"></i-tabler>
                     <div>
                         <h3>Stav systému</h3>
-                        <span class="meta muted">Evidence provozu, verzí a aktualizací</span>
+                        <span class="meta muted">Evidence provozu, verzí a výpadků</span>
                     </div>
                 </div>
                 <schoolingo-tabs
@@ -421,51 +398,34 @@
                     [value]="selectedUptimeTab"></schoolingo-tabs>
             </div>
 
-            <!-- Custom uptime date picker -->
             @if (showCustomUptime) {
             <div class="custom-uptime-panel">
                 <div class="custom-period-panel__inner">
                     <div class="custom-period-panel__group">
-                        <label class="custom-period-panel__label">
-                            <i-tabler name="calendar" size="14"></i-tabler>
-                            Od
-                        </label>
-                        <input type="date" class="custom-period-panel__input" [(ngModel)]="customUptimeFrom"
-                            [max]="customUptimeTo">
+                        <label class="custom-period-panel__label"><i-tabler name="calendar" size="14"></i-tabler> Od</label>
+                        <input type="date" class="custom-period-panel__input" [(ngModel)]="customUptimeFrom" [max]="customUptimeTo">
                     </div>
                     <div class="custom-period-panel__sep">—</div>
                     <div class="custom-period-panel__group">
-                        <label class="custom-period-panel__label">
-                            <i-tabler name="calendar-check" size="14"></i-tabler>
-                            Do
-                        </label>
-                        <input type="date" class="custom-period-panel__input" [(ngModel)]="customUptimeTo"
-                            [min]="customUptimeFrom">
+                        <label class="custom-period-panel__label"><i-tabler name="calendar-check" size="14"></i-tabler> Do</label>
+                        <input type="date" class="custom-period-panel__input" [(ngModel)]="customUptimeTo" [min]="customUptimeFrom">
                     </div>
-                    <button class="btn btn--primary btn--sm custom-period-panel__apply" (click)="applyCustomUptime()">
-                        <i-tabler name="server" size="16"></i-tabler>
-                        Načíst
+                    <button class="btn btn--primary btn--sm" (click)="applyCustomUptime()">
+                        <i-tabler name="server" size="16"></i-tabler> Načíst
                     </button>
                     @if (customUptimeError) {
-                    <span class="custom-period-panel__error">
-                        <i-tabler name="alert-circle" size="14"></i-tabler>
-                        {{ customUptimeError }}
-                    </span>
+                    <span class="custom-period-panel__error"><i-tabler name="alert-circle" size="14"></i-tabler> {{ customUptimeError }}</span>
                     }
                 </div>
             </div>
             }
 
             <div class="m-section__body">
-
                 @if (uptimeLoading) {
-                <div class="status-loading">
-                    <div class="m-loading__spinner"></div>
-                    <span>Načítání…</span>
-                </div>
+                <div class="status-loading"><div class="m-loading__spinner"></div><span>Načítání…</span></div>
                 } @else if (uptimeData) {
 
-                <!-- KPI řada: dostupnost + verze + commit + stav -->
+                <!-- KPI row -->
                 <div class="status-kpi-row">
                     <div class="status-kpi status-kpi--uptime">
                         <div class="status-kpi__value">{{ uptimeData.current.uptime_percent }}%</div>
@@ -481,11 +441,11 @@
                     </div>
                     <div class="status-kpi">
                         <div class="status-kpi__icon"><i-tabler name="git-commit"></i-tabler></div>
-                        <div class="status-kpi__value status-kpi__value--mono">{{ uptimeData.current.commit_hash |
-                            slice:0:8 }}</div>
+                        <div class="status-kpi__value status-kpi__value--mono">{{ uptimeData.current.commit_hash | slice:0:8 }}</div>
                         <div class="status-kpi__label">Git commit</div>
                     </div>
-                    <div class="status-kpi" [class.status-kpi--online]="uptimeData.current.status === 'online'"
+                    <div class="status-kpi"
+                        [class.status-kpi--online]="uptimeData.current.status === 'online'"
                         [class.status-kpi--update]="uptimeData.current.status === 'update'"
                         [class.status-kpi--offline]="uptimeData.current.status === 'offline'">
                         <div class="status-indicator-dot"></div>
@@ -495,24 +455,22 @@
                             @if (uptimeData.current.status === 'offline') { Offline }
                         </div>
                         <div class="status-kpi__label">Aktuální stav</div>
-                        @if (uptimeData.current.status === 'update') {
-                        <div class="status-kpi__sub">{{ uptimeData.current.update_progress }}</div>
-                        }
                     </div>
                 </div>
 
-                <!-- Časová osa segmentů -->
+                <!-- Uptime timeline -->
                 <div class="uptime-timeline-wrap">
-                    <div class="uptime-bar-row" title="Časová osa provozu">
+                    <div class="uptime-bar-row">
                         @for (seg of uptimeData.segments; track seg.from) {
-                        <div class="uptime-bar-seg" [class.seg--online]="seg.status === 'online'"
+                        <div class="uptime-bar-seg"
+                            [class.seg--online]="seg.status === 'online'"
                             [class.seg--offline]="seg.status === 'offline'"
                             [class.seg--update]="seg.status === 'update'"
-                            [title]="seg.status + ': ' + (seg.from | date:'d.M. H:mm') + ' – ' + (seg.to | date:'H:mm') + ' (' + seg.duration_minutes + ' min)'">
+                            [title]="seg.status + ': ' + (seg.from | date:'d.M. H:mm') + ' – ' + (isSameDay(seg.from, seg.to) ? (seg.to | date:'H:mm') : (seg.to | date:'d.M. H:mm')) + ' (' + seg.duration_minutes + ' min)'">
                         </div>
                         }
                         @if (uptimeData.segments.length === 0) {
-                        <div class="uptime-no-data">Žádná data — systém zatím nezaznamenal heartbeat</div>
+                        <div class="uptime-no-data">Žádná data</div>
                         }
                     </div>
                     <div class="uptime-legend">
@@ -522,63 +480,109 @@
                     </div>
                 </div>
 
-                <!-- Tabulka segmentů -->
+                <!-- Segment log -->
                 <div class="uptime-log">
                     <div class="uptime-log__header">
-                        <span>{{ l.s('admin.monitoring.uptime.status') }}</span>
-                        <span>{{ l.s('admin.monitoring.uptime.start') }}</span>
-                        <span>{{ l.s('admin.monitoring.uptime.end') }}</span>
-                        <span>{{ l.s('admin.monitoring.uptime.duration') }}</span>
-                        <span>{{ l.s('admin.monitoring.uptime.version') }}</span>
-                        <span>{{ l.s('admin.monitoring.uptime.note') }}</span>
+                        <span>Stav</span>
+                        <span>Začátek</span>
+                        <span>Konec</span>
+                        <span>Trvání</span>
+                        <span>Verze</span>
+                        <span>Poznámka</span>
                     </div>
                     @for (seg of uptimeData.segments; track seg.from) {
-                    <div class="uptime-log__row" [class.row--online]="seg.status === 'online'"
-                        [class.row--offline]="seg.status === 'offline'" [class.row--update]="seg.status === 'update'">
+                    <div class="uptime-log__row"
+                        [class.row--online]="seg.status === 'online'"
+                        [class.row--offline]="seg.status === 'offline'"
+                        [class.row--update]="seg.status === 'update'">
                         <div class="uptime-log__status">
-                            <span class="uptime-dot" [class.dot--online]="seg.status === 'online'"
+                            <span class="uptime-dot"
+                                [class.dot--online]="seg.status === 'online'"
                                 [class.dot--offline]="seg.status === 'offline'"
-                                [class.dot--update]="seg.status === 'update'">
-                            </span>
-                            @if (seg.status === 'online') {
-                            <i-tabler name="circle-check" size="14"></i-tabler>
-                            Online
-                            }
-                            @if (seg.status === 'offline') {
-                            <i-tabler name="circle-x" size="14"></i-tabler>
-                            Offline
-                            }
-                            @if (seg.status === 'update') {
-                            <i-tabler name="refresh" size="14"></i-tabler>
-                            Update
-                            }
+                                [class.dot--update]="seg.status === 'update'"></span>
+                            @if (seg.status === 'online') { <i-tabler name="circle-check" size="14"></i-tabler> Online }
+                            @if (seg.status === 'offline') { <i-tabler name="circle-x" size="14"></i-tabler> Offline }
+                            @if (seg.status === 'update') { <i-tabler name="refresh" size="14"></i-tabler> Update }
                         </div>
                         <span class="uptime-log__time">{{ seg.from | date:'d.M. H:mm' }}</span>
-                        <span class="uptime-log__time">{{ seg.to | date:'d.M. H:mm' }}</span>
+                        <span class="uptime-log__time">
+                            @if (isSameDay(seg.from, seg.to)) {
+                            {{ seg.to | date:'H:mm' }}
+                            } @else {
+                            {{ seg.to | date:'d.M. H:mm' }}
+                            }
+                        </span>
                         <div class="uptime-log__dur">
-                            <i-tabler name="clock-play" size="14"
-                                style="color: var(--text-muted); opacity: 0.6;"></i-tabler>
+                            <i-tabler name="clock-play" size="14" style="color: var(--text-muted); opacity: 0.6;"></i-tabler>
                             {{ seg.duration_minutes }} min
                         </div>
                         <span class="uptime-log__ver">{{ seg.version ? 'v' + seg.version : '—' }}</span>
-                        <span class="uptime-log__note" [title]="seg.note || ''">{{ seg.note || '—' }}</span>
+                        <div class="uptime-log__note-cell">
+                            @if (seg.note) {
+                            <span class="uptime-log__note" [title]="seg.note">{{ seg.note }}</span>
+                            } @else if (seg.status === 'offline') {
+                            <span class="uptime-log__note uptime-log__note--empty">—</span>
+                            } @else {
+                            <span class="uptime-log__note uptime-log__note--empty">—</span>
+                            }
+                            @if (seg.status === 'offline') {
+                            <button class="uptime-note-btn" [title]="seg.note ? 'Upravit poznámku' : 'Přidat poznámku'"
+                                (click)="openNoteModal(seg)">
+                                <i-tabler [name]="seg.note ? 'pencil' : 'plus'" size="13"></i-tabler>
+                            </button>
+                            }
+                        </div>
                     </div>
                     }
                     @if (uptimeData.segments.length === 0) {
-                    <div class="m-no-data"><i-tabler name="clock-off"></i-tabler><span>{{
-                            l.s('admin.monitoring.uptime.no_data') }}</span></div>
+                    <div class="m-no-data"><i-tabler name="clock-off"></i-tabler><span>Žádná data pro toto období</span></div>
                     }
                 </div>
 
-                } @else {
-                <div class="m-no-data"><i-tabler name="server-off"></i-tabler> <span>{{ l.s('admin.monitoring.error')
-                        }}</span></div>
                 }
-
             </div>
         </div>
 
         }
     </div>
-
 </div>
+
+<!-- ===== NOTE MODAL ===== -->
+@if (noteModal.open) {
+<div class="note-modal-backdrop" (click)="closeNoteModal()"></div>
+<div class="note-modal" role="dialog" aria-modal="true">
+    <div class="note-modal__header">
+        <div class="note-modal__title">
+            <div class="uptime-dot dot--offline" style="width:12px;height:12px;"></div>
+            <h3>{{ noteModal.segment?.note ? 'Upravit poznámku výpadku' : 'Přidat poznámku výpadku' }}</h3>
+        </div>
+        <button class="btn btn--ghost btn--icon" (click)="closeNoteModal()"><i-tabler name="x"></i-tabler></button>
+    </div>
+    <div class="note-modal__meta">
+        <i-tabler name="clock" size="14"></i-tabler>
+        @if (isSameDay(noteModal.segment?.from, noteModal.segment?.to)) {
+        <span>Výpadek: {{ noteModal.segment?.from | date:'d.M.yyyy H:mm' }} – {{ noteModal.segment?.to | date:'H:mm' }}</span>
+        } @else {
+        <span>Výpadek: {{ noteModal.segment?.from | date:'d.M.yyyy H:mm' }} – {{ noteModal.segment?.to | date:'d.M.yyyy H:mm' }}</span>
+        }
+        <span class="note-modal__dur">{{ noteModal.segment?.duration_minutes }} minut</span>
+    </div>
+    <div class="note-modal__body">
+        <label class="note-modal__label">Příčina výpadku / poznámka</label>
+        <textarea class="note-modal__textarea" [(ngModel)]="noteModal.text"
+            placeholder="Např. Plánovaná servisní okna, výpadek elektriky, migrace databáze…"
+            rows="4" [disabled]="noteModal.saving"></textarea>
+    </div>
+    <div class="note-modal__footer">
+        <button class="btn btn--ghost" (click)="closeNoteModal()" [disabled]="noteModal.saving">Zrušit</button>
+        <button class="btn btn--primary" (click)="saveNote()" [disabled]="noteModal.saving">
+            @if (noteModal.saving) {
+            <div class="m-loading__spinner" style="width:16px;height:16px;"></div>
+            } @else {
+            <i-tabler name="device-floppy" size="16"></i-tabler>
+            }
+            Uložit
+        </button>
+    </div>
+</div>
+}
