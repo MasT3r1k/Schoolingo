@@ -35,7 +35,7 @@ export class AddEmailComponent implements OnInit {
   public verificationCode = '';
 
   public page: 'main' | '2fa' | 'verify' = 'main';
-  public error = '';
+  public alert: { type: 'success' | 'danger' | 'info', message: string } | null = null;
 
   ngOnInit(): void {
     const data = this.modalManager.getModalData('add_email');
@@ -80,13 +80,17 @@ export class AddEmailComponent implements OnInit {
     request.subscribe({
       next: (response: any) => {
         if (response.success) {
-          this.page = 'verify';
-          this.error = '';
+          if (response.verified || response.skip_verification) {
+            this.modalManager.closeModal('add_email');
+          } else {
+            this.page = 'verify';
+          }
+          this.alert = null;
           this.auth.loadState();
         } else if (response.error && response.error.includes('required_2fa')) {
           this.page = '2fa';
         } else if (response.error && response.error.includes('email_exists')) {
-            this.error = 'Tento e-mail je již přiřazen k jinému účtu.';
+            this.alert = { type: 'danger', message: 'Tento e-mail je již přiřazen k jinému účtu.' };
         }
       },
       error: (error) => {
@@ -94,9 +98,9 @@ export class AddEmailComponent implements OnInit {
             if (error.error?.error?.includes('required_2fa')) {
                 this.page = '2fa';
             } else if (error.error?.error?.includes('email_exists')) {
-                this.error = 'Tento e-mail je již přiřazen k jinému účtu.';
+                this.alert = { type: 'danger', message: 'Tento e-mail je již přiřazen k jinému účtu.' };
             } else if (error.error?.error?.includes('invalid_2fa')) {
-                this.error = 'Neplatný 2FA kód.';
+                this.alert = { type: 'danger', message: 'Neplatný 2FA kód.' };
             }
         }
         console.error('Error saving email', error);
@@ -109,7 +113,7 @@ export class AddEmailComponent implements OnInit {
 
     this.http.post(`${Config.API_URL}/v1/user/email/verify/confirm`, {
       email: this.email,
-      code: this.verificationCode
+      code: this.verificationCode.toUpperCase()
     }, { withCredentials: true }).subscribe({
       next: (response: any) => {
         if (response.success) {
@@ -117,11 +121,17 @@ export class AddEmailComponent implements OnInit {
           this.auth.loadState();
           this.resetForm();
         } else if (response.error) {
-            this.error = 'Neplatný ověřovací kód.';
+            this.alert = { type: 'danger', message: 'Neplatný ověřovací kód.' };
         }
       },
       error: (error) => {
-          this.error = 'Chyba při ověřování. Zkontrolujte kód a zkuste to znovu.';
+          if (error.error?.error === 'invalid_code') {
+              this.alert = { type: 'danger', message: 'Neplatný ověřovací kód.' };
+          } else if (error.error?.error === 'code_expired') {
+              this.alert = { type: 'danger', message: 'Platnost kódu vypršela. Nechte si zaslat nový.' };
+          } else {
+              this.alert = { type: 'danger', message: 'Chyba při ověřování. Zkontrolujte kód a zkuste to znovu.' };
+          }
           console.error('Error verifying email', error);
       }
     });
@@ -133,12 +143,20 @@ export class AddEmailComponent implements OnInit {
     }, { withCredentials: true }).subscribe({
       next: (response: any) => {
         if (response.success) {
-          alert('Kód byl znovu odeslán.');
+          this.alert = { type: 'success', message: 'Kód byl znovu odeslán.' };
           this.auth.loadState();
         }
       },
-      error: (error) => console.error('Error resending code', error)
+      error: (error) => {
+          this.alert = { type: 'danger', message: 'Nepodařilo se znovu odeslat kód.' };
+          console.error('Error resending code', error);
+      }
     });
+  }
+  
+  public removeEmail(): void {
+    this.modalManager.closeModal('add_email');
+    this.modalManager.openModal('delete_email', this.email);
   }
 
   private resetForm() {
@@ -150,6 +168,6 @@ export class AddEmailComponent implements OnInit {
     this.originalEmail = null;
     this.verificationCode = '';
     this.page = 'main';
-    this.error = '';
+    this.alert = null;
   }
 }

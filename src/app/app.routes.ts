@@ -79,12 +79,15 @@ import { ArchitectureBuildingDetailComponent } from './board/Admin/architecture/
 import { ArchitectureRoomsComponent } from './board/Admin/architecture/rooms/rooms.component';
 import { InventoryComponent } from './board/Admin/inventory/inventory.component';
 import { SetupComponent } from './setup/setup.component';
+import { ThematicPlansComponent } from './board/Teach/thematic-plans/thematic-plans.component';
+import { SvpComponent } from './board/Admin/svp/svp.component';
 
 import { NoPermissionComponent } from './board/error/no-permission/no-permission.component';
 import { DetailComponent as ClassesDetailComponent } from './board/classes/detail/detail.component';
 import { ReportsComponent } from './board/system/reports/reports.component';
 
 import { DetailComponent as EmployeesDetailComponent } from './board/Employees/employees/detail/detail.component';
+import { TopicsComponent } from './board/Teach/topics/topics.component';
 
 export const routes: Routes = [
     {
@@ -259,6 +262,10 @@ export const routes: Routes = [
                         component: AbsenceComponent
                     },
                     {
+                        path: 'topics',
+                        component: TopicsComponent
+                    },
+                    {
                         path: 'classbook',
                         component: ClassbookComponent
                     },
@@ -281,6 +288,10 @@ export const routes: Routes = [
                     {
                         path: 'my-class',
                         component: MyClassComponent
+                    },
+                    {
+                        path: 'thematic-plans',
+                        component: ThematicPlansComponent
                     }
                 ]
             },
@@ -369,7 +380,7 @@ export const routes: Routes = [
             {
                 path: 'user', children: [
                     {
-                        path: '',
+                        path: 'main',
                         component: AccountComponent
                     },
                     {
@@ -458,6 +469,10 @@ export const routes: Routes = [
                     {
                         path: 'monitoring',
                         component: MonitoringComponent
+                    },
+                    {
+                        path: 'svp',
+                        component: SvpComponent
                     },
                     {
                         path: 'school-years',

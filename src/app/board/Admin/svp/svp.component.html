@@ -1,0 +1,132 @@
+<div class="card">
+    <div class="card-top"></div>
+    <div class="card-header">
+        <h2>{{ l.s('svp.title') }}</h2>
+        @if (!isEditing) {
+            <div class="btn btn--primary" (click)="createNewSvp()">
+                <i-tabler name="plus"></i-tabler>
+                {{ l.s('svp.create_new') }}
+            </div>
+        } @else {
+            <div class="btn btn--secondary" (click)="isEditing = false; selectedSvp = null">
+                <i-tabler name="arrow-left"></i-tabler>
+                {{ l.s('svp.back_to_list') }}
+            </div>
+        }
+    </div>
+
+    <div class="card-body">
+        @if (!isEditing) {
+            <div class="items-grid">
+                @for (svp of svps; track svp.svp_id) {
+                    <div class="item-card" (click)="selectSvp(svp)">
+                        <div class="item-icon">
+                            <i-tabler name="certificate"></i-tabler>
+                        </div>
+                        <div class="item-info">
+                            <h3>{{ svp.name }}</h3>
+                            <div class="item-meta">
+                                <span>Od: {{ Utils.formatDateShort(svp.valid_from) }}</span>
+                                @if (svp.valid_to) {
+                                    <span class="divider">|</span>
+                                    <span>Do: {{ Utils.formatDateShort(svp.valid_to) }}</span>
+                                }
+                            </div>
+                        </div>
+                        <div class="item-action">
+                            <i-tabler name="edit"></i-tabler>
+                        </div>
+                    </div>
+                } @empty {
+                    <div class="no-selection center">
+                        <div class="illustration">
+                            <i-tabler name="file-off"></i-tabler>
+                        </div>
+                        <h3>{{ l.s('svp.no_svp') }}</h3>
+                        <p>{{ l.s('svp.no_svp_desc') }}</p>
+                    </div>
+                }
+            </div>
+        } @else {
+            <div class="edit-form">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>{{ l.s('svp.name') }}</label>
+                        <input type="text" [(ngModel)]="selectedSvp.name" [placeholder]="l.s('svp.name_placeholder')">
+                    </div>
+                    <div class="form-group">
+                        <label>{{ l.s('svp.valid_from') }}</label>
+                        <input type="date" [(ngModel)]="selectedSvp.valid_from">
+                    </div>
+                    <div class="form-group">
+                        <label>{{ l.s('svp.valid_to') }}</label>
+                        <input type="date" [(ngModel)]="selectedSvp.valid_to">
+                    </div>
+                </div>
+
+                @if (selectedSvp.svp_id) {
+                    <div class="subjects-section">
+                        <div class="section-header">
+                            <h3>{{ l.s('svp.subjects_and_topics') }}</h3>
+                            <div class="btn btn--success btn--sm" (click)="addSubjectToSvp()">
+                                <i-tabler name="plus"></i-tabler>
+                                {{ l.s('svp.add_subject') }}
+                            </div>
+                        </div>
+
+                        <div class="subjects-list">
+                            @for (subject of selectedSvp.subjects; track subject.svp_subject_id) {
+                                <div class="subject-container">
+                                    <div class="subject-header-row">
+                                        <div class="subject-title">
+                                            <strong>{{ subject.subject_name }}</strong>
+                                            <span>{{ subject.grade }}. ročník</span>
+                                        </div>
+                                        <div class="btn btn--success btn--sm" (click)="addTopicToSubject(subject)">
+                                            <i-tabler name="plus"></i-tabler>
+                                            {{ l.s('thematic_plans.add_topic') }}
+                                        </div>
+                                    </div>
+
+                                    <div class="topics-table-container">
+                                        <table class="topics-table">
+                                            <thead>
+                                                <tr>
+                                                    <th>{{ l.s('svp.topic_name') }}</th>
+                                                    <th>{{ l.s('svp.outcomes') }}</th>
+                                                    <th style="width: 80px">{{ l.s('svp.hours') }}</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                @for (topic of subject.topics; track topic.svp_topic_id) {
+                                                    <tr>
+                                                        <td>
+                                                            <input type="text" [(ngModel)]="topic.name">
+                                                        </td>
+                                                        <td>
+                                                            <textarea [(ngModel)]="topic.outcomes"></textarea>
+                                                        </td>
+                                                        <td>
+                                                            <input type="number" [(ngModel)]="topic.hours_allocated">
+                                                        </td>
+                                                    </tr>
+                                                }
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                }
+
+                <div class="form-actions">
+                    <div class="btn btn--primary" (click)="saveSvp()">
+                        <i-tabler name="device-floppy"></i-tabler>
+                        {{ l.s('svp.save_svp') }}
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>

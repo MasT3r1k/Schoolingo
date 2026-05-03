@@ -1,0 +1,233 @@
+<div class="card">
+    <div class="card-top"></div>
+    <div class="card-header">
+        <h2>{{ l.s('sidebar.teach.topics') }}</h2>
+        <div class="flex-items">
+            @if (schoolYears.getValue().length > 1) {
+                <div class="sy-selector">
+                    <select (change)="onSyChange($event)">
+                        @for (sy of schoolYears.getValue(); track sy.sy_id) {
+                            <option [value]="sy.sy_id" [selected]="sy.sy_id === selectedSchoolYear.getValue()">
+                                {{ getSchoolYearLabel(sy) }}
+                            </option>
+                        }
+                    </select>
+                    <i-tabler name="calendar-event" class="sy-icon"></i-tabler>
+                </div>
+            }
+            <schoolingo-tabs [value]="selectedTab" [options]="['topics.tab_chronological', 'topics.tab_by_subject']"></schoolingo-tabs>
+        </div>
+    </div>
+
+    <div class="card-body">
+        @if (loading && getSortedDates().length === 0) {
+            <div class="loading-state">
+                <div class="spinner"></div>
+                <p>{{ l.s('loading') }}...</p>
+            </div>
+        } @else if (getSortedDates().length === 0) {
+            <div class="empty-state">
+                <div class="empty-icon">
+                    <i-tabler name="list-off"></i-tabler>
+                </div>
+                <h2>{{ l.s('topics.empty_title') }}</h2>
+                <p>{{ l.s('topics.empty_desc') }}</p>
+            </div>
+        } @else {
+
+            @if (selectedTab.getValue() === 0) {
+                <div class="table-container">
+                    <table class="topics-table">
+                        <thead>
+                            <tr>
+                                <th class="col-num">#</th>
+                                <th class="col-date">{{ l.s('date') }}</th>
+                                <th class="col-hour">{{ l.s('topics.col_hour') }}</th>
+                                <th class="col-subject">{{ l.s('subject') }}</th>
+                                <th class="col-topic">{{ l.s('topics.col_topic') }}</th>
+                                <th class="col-actions"></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @for (date of getSortedDates(); track date) {
+                                @for (topic of groupedTopics[date]; track topic.classbook_id) {
+                                    <tr class="topic-row" [class.expanded]="expandedTopics.has(topic.classbook_id)" (click)="toggleTopic(topic.classbook_id)">
+                                        <td class="col-num">{{ topic.lesson_number }}.</td>
+                                        <td class="col-date">
+                                            <div class="date-cell">
+                                                <span class="day">{{ getDayName(date) }}</span>
+                                                <span class="full">{{ formatDate(date) }}</span>
+                                            </div>
+                                        </td>
+                                        <td class="col-hour">
+                                            <div class="hour-tag">{{ topic.day_hour + 1 }}.</div>
+                                        </td>
+                                        <td class="col-subject">
+                                            <div class="subject-cell">
+                                                <span class="abbr">{{ topic.subject_shortcut }}</span>
+                                                <span class="full">{{ topic.subject_name }}</span>
+                                            </div>
+                                        </td>
+                                        <td class="col-topic">
+                                            <div class="topic-text" [class.empty]="!topic.topic">
+                                                {{ topic.topic || l.s('topics.no_topic_recorded') }}
+                                            </div>
+                                        </td>
+                                        <td class="col-actions">
+                                            <i-tabler [name]="expandedTopics.has(topic.classbook_id) ? 'chevron-up' : 'chevron-down'"></i-tabler>
+                                        </td>
+                                    </tr>
+                                    @if (expandedTopics.has(topic.classbook_id)) {
+                                        <tr class="details-row">
+                                            <td colspan="6">
+                                                <div class="details-content">
+                                                    <div class="details-grid">
+                                                        <div class="detail-section">
+                                                            <h4><i-tabler name="user"></i-tabler> {{ l.s('roles.teacher') }}</h4>
+                                                            <p>{{ topic.teacher_name || '-' }}</p>
+                                                        </div>
+                                                        @if (topic.note) {
+                                                            <div class="detail-section">
+                                                                <h4><i-tabler name="note"></i-tabler> {{ l.s('education_measures.note') }}</h4>
+                                                                <p>{{ topic.note }}</p>
+                                                            </div>
+                                                        }
+                                                        @if (topic.homework && topic.homework.length > 0) {
+                                                            <div class="detail-section">
+                                                                <h4><i-tabler name="home"></i-tabler> {{ l.s('sidebar.teach.homeworks') }}</h4>
+                                                                <div class="homework-list">
+                                                                    @for (hw of topic.homework; track hw.homework_id) {
+                                                                        <div class="hw-item">
+                                                                            <strong>{{ hw.headline || l.s('homework.no_headline') }}</strong>
+                                                                            <p>{{ hw.content }}</p>
+                                                                            <span class="due">{{ l.s('homework.due_date') }}: {{ formatDate(hw.due_date) }}</span>
+                                                                        </div>
+                                                                    }
+                                                                </div>
+                                                            </div>
+                                                        }
+                                                        @if (topic.absence_type !== null) {
+                                                            <div class="detail-section absence">
+                                                                <h4><i-tabler name="user-off"></i-tabler> {{ l.s('absence.absence') }}</h4>
+                                                                <div class="absence-badge" [ngClass]="absenceConfig[topic.absence_type]?.class">
+                                                                    {{ l.s('absence.' + absenceConfig[topic.absence_type]?.locale) }}
+                                                                    @if (topic.absence_reason) {
+                                                                        <span>({{ topic.absence_reason }})</span>
+                                                                    }
+                                                                </div>
+                                                            </div>
+                                                        }
+                                                    </div>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    }
+                                }
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            } @else {
+                <div class="subject-view">
+                    <div class="filter-header">
+                        <div class="select-wrapper">
+                            <label>{{ l.s('topics.select_subject') }}</label>
+                            <div class="custom-select">
+                                <select (change)="onSubjectChange($event)">
+                                    @for (subject of getSortedSubjects(); track subject) {
+                                        <option [value]="subject" [selected]="subject === selectedSubject.getValue()">{{ subject }}</option>
+                                    }
+                                </select>
+                                <i-tabler name="chevron-down" class="select-icon"></i-tabler>
+                            </div>
+                        </div>
+                        <div class="subject-stats">
+                            @if (selectedSubject.getValue()) {
+                                <span>{{ subjectTopics[selectedSubject.getValue()].length }} {{ l.s('topics.count_suffix') }}</span>
+                            }
+                        </div>
+                    </div>
+
+                    @if (selectedSubject.getValue(); as sub) {
+                        <div class="table-container">
+                            <table class="topics-table">
+                                <thead>
+                                    <tr>
+                                        <th class="col-num">#</th>
+                                        <th class="col-date">{{ l.s('date') }}</th>
+                                        <th class="col-hour">{{ l.s('topics.col_hour_day') }}</th>
+                                        <th class="col-topic">{{ l.s('topics.col_topic') }}</th>
+                                        <th class="col-actions"></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @for (topic of subjectTopics[sub]; track topic.classbook_id) {
+                                        <tr class="topic-row" [class.expanded]="expandedTopics.has(topic.classbook_id)" (click)="toggleTopic(topic.classbook_id)">
+                                            <td class="col-num">{{ topic.lesson_number }}.</td>
+                                            <td class="col-date">{{ formatDate(topic.date) }}</td>
+                                            <td class="col-hour">{{ topic.day_hour + 1 }}. hod.</td>
+                                            <td class="col-topic">
+                                                <div class="topic-text" [class.empty]="!topic.topic">
+                                                    {{ topic.topic || l.s('topics.no_topic_recorded') }}
+                                                </div>
+                                            </td>
+                                            <td class="col-actions">
+                                                <i-tabler [name]="expandedTopics.has(topic.classbook_id) ? 'chevron-up' : 'chevron-down'"></i-tabler>
+                                            </td>
+                                        </tr>
+                                        @if (expandedTopics.has(topic.classbook_id)) {
+                                            <tr class="details-row">
+                                                <td colspan="5">
+                                                    <div class="details-content">
+                                                        <div class="details-grid">
+                                                            <div class="detail-section">
+                                                                <h4><i-tabler name="user"></i-tabler> {{ l.s('roles.teacher') }}</h4>
+                                                                <p>{{ topic.teacher_name || '-' }}</p>
+                                                            </div>
+                                                            @if (topic.note) {
+                                                                <div class="detail-section">
+                                                                    <h4><i-tabler name="note"></i-tabler> {{ l.s('education_measures.note') }}</h4>
+                                                                    <p>{{ topic.note }}</p>
+                                                                </div>
+                                                            }
+                                                            @if (topic.homework && topic.homework.length > 0) {
+                                                                <div class="detail-section">
+                                                                    <h4><i-tabler name="home"></i-tabler> {{ l.s('sidebar.teach.homeworks') }}</h4>
+                                                                    <div class="homework-list">
+                                                                        @for (hw of topic.homework; track hw.homework_id) {
+                                                                            <div class="hw-item">
+                                                                                <strong>{{ hw.headline || l.s('homework.no_headline') }}</strong>
+                                                                                <p>{{ hw.content }}</p>
+                                                                                <span class="due">{{ l.s('homework.due_date') }}: {{ formatDate(hw.due_date) }}</span>
+                                                                            </div>
+                                                                        }
+                                                                    </div>
+                                                                </div>
+                                                            }
+                                                            @if (topic.absence_type !== null) {
+                                                                <div class="detail-section absence">
+                                                                    <h4><i-tabler name="user-off"></i-tabler> {{ l.s('absence.absence') }}</h4>
+                                                                    <div class="absence-badge" [ngClass]="absenceConfig[topic.absence_type]?.class">
+                                                                        {{ l.s('absence.' + absenceConfig[topic.absence_type]?.locale) }}
+                                                                        @if (topic.absence_reason) {
+                                                                            <span>({{ topic.absence_reason }})</span>
+                                                                        }
+                                                                    </div>
+                                                                </div>
+                                                            }
+                                                        </div>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        }
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    }
+                </div>
+            }
+
+        }
+    </div>
+</div>

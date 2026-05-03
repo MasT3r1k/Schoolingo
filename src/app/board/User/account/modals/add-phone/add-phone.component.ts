@@ -7,6 +7,7 @@ import { Locale } from '@Schoolingo/locale';
 import { ModalManager } from '@Schoolingo/modal';
 import { Config } from '@Schoolingo/config';
 import { Authentication } from '@Schoolingo/authentication';
+import { Country } from 'country-state-city';
 
 @Component({
   imports: [IconsModule, FormsModule, ReactiveFormsModule],
@@ -30,6 +31,46 @@ export class AddPhoneComponent implements OnInit {
   public active_action = '';
   public page: 'main' | '2fa' | 'verify' = 'main';
   public error = '';
+
+  public countrySearchQuery = '';
+  private allCountries = Country.getAllCountries()
+    .filter(c => c.phonecode)
+    .sort((a, b) => {
+        if (a.isoCode === 'CZ') return -1;
+        if (b.isoCode === 'CZ') return 1;
+        if (a.isoCode === 'SK') return -1;
+        if (b.isoCode === 'SK') return 1;
+        return a.name.localeCompare(b.name);
+    })
+    .map(c => ({
+        iso: c.isoCode.toLowerCase(),
+        name: c.name,
+        code: parseInt(c.phonecode.replace('+', '').split(' ')[0]),
+        flag: c.flag
+    }));
+
+  public get countries() {
+    if (!this.countrySearchQuery) return this.allCountries;
+    const query = this.countrySearchQuery.toLowerCase().trim();
+    return this.allCountries.filter(c => 
+        c.name.toLowerCase().includes(query) || 
+        c.code.toString().includes(query) ||
+        c.iso.includes(query)
+    );
+  }
+
+  public get selectedCountry() {
+    return this.countries.find(c => c.code === this.code) || { iso: 'unknown', name: 'Neznámý', code: this.code, flag: '' };
+  }
+
+  public selectCountry(country: any): void {
+    this.code = country.code;
+    this.dropdownManager.selected_dropdown = '';
+  }
+
+  public getFlag(iso: string): string {
+    return this.countries.find(c => c.iso === iso)?.flag || '';
+  }
 
   ngOnInit(): void {
     const data = this.modalManager.getModalData('add_phone');

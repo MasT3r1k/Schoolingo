@@ -1,13 +1,20 @@
 @switch(page) {
 @case("main") {
-@if (error) {
-<div class="message message--danger" style="margin-bottom: 1rem;">
-    {{ error }}
+@if (alert) {
+<div class="message message--{{ alert.type }}" style="margin-bottom: 1rem;">
+    {{ alert.message }}
 </div>
 }
 <div class="form-group">
     <label for="email">{{ l.s('user.add_email.email') }}</label>
-    <input type="text" name="email" id="email" [(ngModel)]="email" [placeholder]="l.s('user.add_email.email')">
+    <div class="input-with-action">
+        <input type="text" name="email" id="email" [(ngModel)]="email" [placeholder]="l.s('user.add_email.email')" [disabled]="isEdit">
+    </div>
+    @if (isEdit) {
+    <div class="form-group">
+        <a class="clickable danger" (click)="removeEmail()">{{ l.s('buttons.remove_email') }}</a>
+    </div>
+    }
 </div>
 
 <div class="form-group">
@@ -33,7 +40,7 @@
     </div>
 </div>
 
-<div class="form-group">
+<div class="modal-actions">
     <div class="btn btn--primary" (click)="saveEmail()">
         <i-tabler name="plus"></i-tabler>
         {{ l.s('user.add_email.save_email') }}
@@ -42,9 +49,9 @@
 }
 
 @case ("verify") {
-@if (error) {
-<div class="message message--danger" style="margin-bottom: 1rem;">
-    {{ error }}
+@if (alert) {
+<div class="message message--{{ alert.type }}" style="margin-bottom: 1rem;">
+    {{ alert.message }}
 </div>
 }
 <div class="message message--info">
@@ -58,25 +65,26 @@
 </div>
 
 <div class="form-group">
+    <a class="clickable" (click)="resendCode()">
+        Zaslat kód znovu
+    </a>
+</div>
+
+
+<div class="modal-actions">
+    <div class="btn btn--secondary" (click)="modalManager.closeModal('add_email')">
+        Zavřít
+    </div>
     <div class="btn btn--primary" (click)="verifyEmail()">
         <i-tabler name="circle-check"></i-tabler>
         Ověřit e-mail
     </div>
-
-    <div class="btn btn--secondary" (click)="resendCode()">
-        <i-tabler name="refresh"></i-tabler>
-        Zaslat kód znovu
-    </div>
-
-    <div class="btn btn--ghost" (click)="modalManager.closeModal('add_email')">
-        Zavřít
-    </div>
 </div>
 }
 @case ("2fa") {
-@if (error) {
-<div class="message message--danger" style="margin-bottom: 1rem;">
-    {{ error }}
+@if (alert) {
+<div class="message message--{{ alert.type }}" style="margin-bottom: 1rem;">
+    {{ alert.message }}
 </div>
 }
 <div class="message message--info">

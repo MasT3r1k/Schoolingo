@@ -6,13 +6,39 @@
 </div>
 }
 <div class="form-group">
-    <label for="code">{{ l.s('user.add_phone.code') }}</label>
-    <input type="number" name="code" id="code" [(ngModel)]="code" placeholder="420">
-</div>
+    <label>{{ l.s('user.add_phone.number') }}</label>
+    <div class="phone-input-group">
+        <div class="country-selector" (click)="$event.stopPropagation(); dropdownManager.selected_dropdown = dropdownManager.selected_dropdown == 'phone_prefix' ? '' : 'phone_prefix'; countrySearchQuery = ''">
+            <div class="selected-country">
+                @if (selectedCountry.iso !== 'unknown') {
+                    <span class="flag-icon">{{ selectedCountry.flag }}</span>
+                }
+                <span class="prefix-text">+{{ code }}</span>
+                <i-tabler name="chevron-down"></i-tabler>
+            </div>
 
-<div class="form-group">
-    <label for="number">{{ l.s('user.add_phone.number') }}</label>
-    <input type="text" name="number" id="number" [(ngModel)]="number" [placeholder]="l.s('user.add_phone.number')">
+            @if (dropdownManager.selected_dropdown == 'phone_prefix') {
+            <div class="country-dropdown" (click)="$event.stopPropagation()">
+                <div class="dropdown-search">
+                    <i-tabler name="search"></i-tabler>
+                    <input type="text" [(ngModel)]="countrySearchQuery" [placeholder]="l.s('search')" (click)="$event.stopPropagation()" autocomplete="off">
+                </div>
+                <div class="country-list">
+                    @for (country of countries; track country.iso) {
+                    <div class="country-item" (click)="selectCountry(country)">
+                        <span class="flag-icon">{{ country.flag }}</span>
+                        <span class="country-name">{{ country.name }}</span>
+                        <span class="country-code">+{{ country.code }}</span>
+                    </div>
+                    } @empty {
+                        <div class="empty-results">{{ l.s('no_results') }}</div>
+                    }
+                </div>
+            </div>
+            }
+        </div>
+        <input type="text" name="number" id="number" [(ngModel)]="number" [placeholder]="l.s('user.add_phone.number')" class="phone-number-input">
+    </div>
 </div>
 
 <div class="form-group">
@@ -68,14 +94,13 @@
 </div>
 
 <div class="form-group">
+    <a class="clickable" (click)="resendCode()">Zaslat kód znovu</a>
+</div>
+
+<div class="modal-actions">
     <div class="btn btn--primary" (click)="verifyPhone()">
         <i-tabler name="circle-check"></i-tabler>
         Ověřit číslo
-    </div>
-
-    <div class="btn btn--secondary" (click)="resendCode()">
-        <i-tabler name="refresh"></i-tabler>
-        Zaslat kód znovu
     </div>
 
     <div class="btn btn--ghost" (click)="modalManager.closeModal('add_phone')">

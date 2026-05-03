@@ -43,6 +43,7 @@
             </div>
         </div>
     </div>
+
     <!-- Filter Section -->
     <div class="section filter-section">
         @if (periodOptions[selectedPeriod.getValue()] === 'custom') {
@@ -81,77 +82,97 @@
             </div>
         </div>
         <div class="section-content">
-            <div class="history-list">
-                @for (item of history.getValue();track $index) {
-                <div class="history-item" [class.success]="item.success" [class.failed]="!item.success">
-                    <div class="item-icon" [class.success]="item.success" [class.failed]="!item.success">
-                        <i-tabler [name]="item.success ? 'login' : 'login-2'"></i-tabler>
-                    </div>
 
-                    <div class="item-content">
-                        <div class="item-main">
-                            <div class="device-info">
-                                <span class="browser">
-                                    <i-tabler [name]="Utils.getBrowserIcon(item.user_agent)"
-                                        class="browser-icon"></i-tabler>
-                                    {{ Utils.getBrowser(item.user_agent) }}
-                                </span>
-                                &ndash;
-                                <span class="os">{{ Utils.getOS(item.user_agent) }}</span>
-                            </div>
-                            <div class="item-meta">
-                                <span class="login-type">
-                                    <i-tabler name="key"></i-tabler>
-                                    {{ l.s('login_history.types.' + item.type) }}
-                                </span>
-                                &ndash;
-                                <span class="time">
-                                    <i-tabler name="clock"></i-tabler>
-                                    {{ Utils.formatDate(item.created) }}
-                                </span>
-                            </div>
-                        </div>
-
-                        <div class="item-details">
-                            <div class="ip-address">
-                                <i-tabler name="world"></i-tabler>
-                                <code>{{ item.ip }}</code>
-                            </div>
-
-                            <div class="item-status">
-                                @if (item.success) {
-                                <div class="status-badge success">
-                                    <i-tabler name="circle-check"></i-tabler>
-                                    {{ l.s('login_history.state.success') }}
-                                </div>
-                                } @else {
-                                <div class="status-badge danger">
-                                    <i-tabler name="circle-x"></i-tabler>
-                                    {{ l.s('login_history.state.' + (item.error ? item.error : 'error')) }}
-                                </div>
-                                }
-                            </div>
-
-                            <button class="btn btn--sm btn--ghost" [routerLink]="'./'"
-                                [queryParams]="{ id: item.login_id }">
-                                {{ l.s('login_history.buttons.details') }}
-                                <i-tabler name="chevron-right"></i-tabler>
-                            </button>
-                        </div>
-                    </div>
+            <!-- Table Header -->
+            @if (history.getValue().length > 0) {
+            <div class="history-table">
+                <div class="history-table__head">
+                    <span>Zařízení</span>
+                    <span>Metoda</span>
+                    <span>IP adresa</span>
+                    <span>Čas</span>
+                    <span>Stav</span>
+                    <span></span>
                 </div>
-                }
 
-                @if (history.getValue().length === 0) {
-                <div class="empty-state">
-                    <div class="empty-icon">
-                        <i-tabler name="history"></i-tabler>
+                @for (item of history.getValue(); track $index) {
+                <div class="history-row" [class.success]="item.success" [class.failed]="!item.success">
+
+                    <!-- Device -->
+                    <div class="history-cell cell-device">
+                        <div class="cell-icon" [class.success]="item.success" [class.failed]="!item.success">
+                            <i-tabler [name]="item.success ? 'login' : 'login-2'"></i-tabler>
+                        </div>
+                        <div class="device-info">
+                            <span class="browser">
+                                <i-tabler [name]="Utils.getBrowserIcon(item.user_agent)" class="browser-icon"></i-tabler>
+                                {{ Utils.getBrowser(item.user_agent) }}
+                            </span>
+                            <span class="os muted">{{ Utils.getOS(item.user_agent) }}</span>
+                        </div>
                     </div>
-                    <h4>Žádná historie přihlášení</h4>
-                    <p>Zatím nemáte žádné záznamy o přihlášení.</p>
+
+                    <!-- Method -->
+                    <div class="history-cell cell-method">
+                        <i-tabler name="key"></i-tabler>
+                        <span>{{ l.s('login_history.types.' + item.type) }}</span>
+                    </div>
+
+                    <!-- IP -->
+                    <div class="history-cell cell-ip">
+                        <i-tabler name="world"></i-tabler>
+                        <code class="ip-code" [class.blurred]="!item._showIp">
+                            {{ item.ip ? (item._showIp ? item.ip : Utils.blurIPAddress(item.ip)) : 'Neznámá' }}
+                        </code>
+                        @if (item.ip) {
+                        <button class="ip-toggle" (click)="item._showIp = !item._showIp" [title]="item._showIp ? 'Skrýt IP' : 'Zobrazit IP'">
+                            <i-tabler [name]="item._showIp ? 'eye-off' : 'eye'"></i-tabler>
+                        </button>
+                        }
+                    </div>
+
+                    <!-- Time -->
+                    <div class="history-cell cell-time">
+                        <i-tabler name="clock"></i-tabler>
+                        <span>{{ Utils.formatDate(item.created) }}</span>
+                    </div>
+
+                    <!-- Status -->
+                    <div class="history-cell cell-status">
+                        @if (item.success) {
+                        <div class="status-badge success">
+                            <i-tabler name="circle-check"></i-tabler>
+                            {{ l.s('login_history.state.success') }}
+                        </div>
+                        } @else {
+                        <div class="status-badge danger">
+                            <i-tabler name="circle-x"></i-tabler>
+                            {{ l.s('login_history.state.' + (item.error ? item.error : 'error')) }}
+                        </div>
+                        }
+                    </div>
+
+                    <!-- Actions -->
+                    <div class="history-cell cell-actions">
+                        <button class="btn btn--sm btn--ghost" (click)="showDetails(item)">
+                            {{ l.s('login_history.buttons.details') }}
+                            <i-tabler name="chevron-right"></i-tabler>
+                        </button>
+                    </div>
                 </div>
                 }
             </div>
+            }
+
+            @if (history.getValue().length === 0) {
+            <div class="empty-state">
+                <div class="empty-icon">
+                    <i-tabler name="history"></i-tabler>
+                </div>
+                <h4>Žádná historie přihlášení</h4>
+                <p>Zatím nemáte žádné záznamy o přihlášení.</p>
+            </div>
+            }
 
             <!-- Pagination -->
             @if (getMaxPages() > 1 && history.getValue().length) {
@@ -181,129 +202,4 @@
             }
         </div>
     </div>
-
-    <!-- Security Tips -->
-    <div class="section tips-section">
-        <div class="section-header">
-            <div class="header-content">
-                <i-tabler name="shield-check"></i-tabler>
-                <div>
-                    <h3>Bezpečnostní tipy</h3>
-                    <span class="meta muted">Jak chránit svůj účet</span>
-                </div>
-            </div>
-        </div>
-        <div class="section-content">
-            <div class="tips-grid">
-                <div class="tip-card">
-                    <div class="tip-icon warning">
-                        <i-tabler name="alert-triangle"></i-tabler>
-                    </div>
-                    <div class="tip-content">
-                        <h5>Neznámé přihlášení?</h5>
-                        <p>Pokud vidíte přihlášení, které jste neprovedli, okamžitě změňte heslo.</p>
-                    </div>
-                </div>
-                <div class="tip-card">
-                    <div class="tip-icon info">
-                        <i-tabler name="device-desktop"></i-tabler>
-                    </div>
-                    <div class="tip-content">
-                        <h5>Kontrolujte zařízení</h5>
-                        <p>Pravidelně kontrolujte, ze kterých zařízení přistupujete ke svému účtu.</p>
-                    </div>
-                </div>
-                <div class="tip-card">
-                    <div class="tip-icon success">
-                        <i-tabler name="auth-2fa"></i-tabler>
-                    </div>
-                    <div class="tip-content">
-                        <h5>Zapněte 2FA</h5>
-                        <p>Dvoufaktorové ověření výrazně zvyšuje bezpečnost vašeho účtu.</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    @if (selected_id && getSelectedLogin()) {
-    @let login = getSelectedLogin();
-    <div class="modal-backdrop" [routerLink]="['./']" [queryParams]="{}">
-        <div class="modal-card" (click)="$event.stopPropagation()">
-            <div class="modal-header">
-                <h3>Detail přihlášení</h3>
-                <button class="close-btn" [routerLink]="['./']" [queryParams]="{}">
-                    <i-tabler name="x"></i-tabler>
-                </button>
-            </div>
-            <div class="modal-content">
-
-                <div class="detail-grid">
-                    <div class="info-group">
-                        <span class="info-label">Čas přihlášení</span>
-                        <div class="info-value">
-                            <i-tabler name="clock"></i-tabler>
-                            {{ Utils.formatDate(login.created) }}
-                        </div>
-                    </div>
-
-                    <div class="info-group">
-                        <span class="info-label">Stav</span>
-                        @if (login.success) {
-                        <div class="status-badge success">
-                            <i-tabler name="circle-check"></i-tabler>
-                            {{ l.s('login_history.state.success') }}
-                        </div>
-                        } @else {
-                        <div class="status-badge danger">
-                            <i-tabler name="circle-x"></i-tabler>
-                            {{ l.s('login_history.state.' + (login.error ? login.error : 'error')) }}
-                        </div>
-                        }
-                    </div>
-
-                    <div class="info-group">
-                        <span class="info-label">IP Adresa</span>
-                        <div class="info-value">
-                            <i-tabler name="world"></i-tabler>
-                            {{ login.ip || 'Neznámá' }}
-                        </div>
-                    </div>
-
-                    <div class="info-group">
-                        <span class="info-label">Metoda</span>
-                        <div class="info-value">
-                            <i-tabler name="key"></i-tabler>
-                            {{ l.s('login_history.types.' + login.type) }}
-                        </div>
-                    </div>
-                </div>
-
-                <div class="info-group">
-                    <span class="info-label">Zařízení</span>
-                    <div class="info-value">
-                        <i-tabler [name]="Utils.getBrowserIcon(login.user_agent)"></i-tabler>
-                        {{ Utils.getBrowser(login.user_agent) }} • {{ Utils.getOS(login.user_agent) }}
-                    </div>
-                    <div class="meta muted" style="margin-top: 4px; font-size: 0.8rem; word-break: break-all;">
-                        {{ login.user_agent }}
-                    </div>
-                </div>
-
-                @if (login.city || login.country) {
-                <div class="info-group">
-                    <span class="info-label">Lokace</span>
-                    <div class="info-value">
-                        <i-tabler name="map-pin"></i-tabler>
-                        {{ login.city }} {{ login.zip_code ? '(' + login.zip_code + ')' : '' }}
-                        {{ login.region_name ? ', ' + login.region_name : '' }}
-                        {{ login.country ? ', ' + login.country : '' }}
-                        {{ login.continent ? ' (' + login.continent + ')' : '' }}
-                    </div>
-                </div>
-                }
-            </div>
-        </div>
-    </div>
-    }
 </div>

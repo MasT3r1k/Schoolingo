@@ -105,17 +105,19 @@ a:not([href=""]):hover {
     --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.04);
     --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.06), 0 1px 2px rgba(0, 0, 0, 0.04);
     --shadow-md: 0 4px 8px rgba(0, 0, 0, 0.08), 0 2px 4px rgba(0, 0, 0, 0.04);
-    --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.12), 0 4px 8px rgba(0, 0, 0, 0.06);
+    --shadow-lg: 0 10px 30px rgba(0, 0, 0, 0.1);
     --shadow-xl: 0 16px 48px rgba(0, 0, 0, 0.16), 0 8px 16px rgba(0, 0, 0, 0.08);
     --shadow-2xl: 0 24px 64px rgba(0, 0, 0, 0.20), 0 12px 24px rgba(0, 0, 0, 0.10);
     --shadow-glow: 0 0 20px rgba(156, 137, 253, 0.3);
+    --shadow-premium: 0 10px 30px rgba(0, 0, 0, 0.1);
     --shadow-inner: inset 0 2px 4px rgba(0, 0, 0, 0.06);
 
-    /* --- Transitions (Sajid's smooth interactions) --- */
-    --transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
-    --transition-base: 200ms cubic-bezier(0.4, 0, 0.2, 1);
-    --transition-slow: 300ms cubic-bezier(0.4, 0, 0.2, 1);
-    --transition-slower: 400ms cubic-bezier(0.4, 0, 0.2, 1);
+    /* --- Transitions (Sajid's smooth interactions & DesignMotionHQ) --- */
+    --easing-standard: cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-fast: 150ms var(--easing-standard);
+    --transition-base: 200ms var(--easing-standard);
+    --transition-slow: 300ms var(--easing-standard);
+    --transition-slower: 400ms var(--easing-standard);
     --transition-bounce: 500ms cubic-bezier(0.68, -0.55, 0.265, 1.55);
 
     /* --- Typography Scale (1.25 Major Third - Sajid's recommendation) --- */
@@ -1685,6 +1687,26 @@ select.input-error:focus {
 
 input:not([type='checkbox']):disabled {
     background-color: var(--surface);
+}
+
+/* Clickable links */
+.form-group a.clickable {
+    color: var(--primary);
+    font-size: var(--text-sm);
+    text-decoration: none;
+    transition: color var(--transition-fast);
+}
+
+.form-group a.clickable:hover {
+    color: var(--primary-hover);
+}
+
+.form-group a.clickable.danger {
+    color: var(--danger);
+}
+
+.form-group a.clickable.danger:hover {
+    color: var(--danger-hover);
 }
 
 .note {

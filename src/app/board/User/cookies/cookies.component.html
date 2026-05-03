@@ -10,10 +10,15 @@
             <span class="summary-total">{{ cookies.getTotalCategories() }}</span>
             <span class="summary-label">kategorií povoleno</span>
         </div>
+
+        <button class="btn btn--danger btn--sm" (click)="cookies.clearAllCookies()">
+            <i-tabler name="trash"></i-tabler>
+            Smazat všechny cookies
+        </button>
     </div>
 
     <!-- Quick Actions Section -->
-    <div class="section quick-actions-section">
+    <div class="section">
         <div class="section-header">
             <div class="header-content">
                 <i-tabler name="cookie"></i-tabler>
@@ -22,14 +27,12 @@
                     <span class="meta muted">Přijměte nebo odmítněte všechny cookies najednou</span>
                 </div>
             </div>
-        </div>
-        <div class="section-content">
-            <div class="quick-actions">
-                <button class="btn btn--primary btn--lg" (click)="cookies.acceptAll()" [disabled]="cookies.saving">
+            <div style="display: flex;flex-direction: row;gap: 8px">
+                <button class="btn btn--primary btn--sm" (click)="cookies.acceptAll()" [disabled]="cookies.saving">
                     <i-tabler name="check"></i-tabler>
                     Přijmout vše
                 </button>
-                <button class="btn btn--secondary btn--lg" (click)="cookies.acceptEssentialOnly()"
+                <button class="btn btn--secondary btn--sm" (click)="cookies.acceptEssentialOnly()"
                     [disabled]="cookies.saving">
                     <i-tabler name="shield-check"></i-tabler>
                     Pouze nezbytné
@@ -59,11 +62,10 @@
             <div class="categories-list">
                 @for (category of cookies.cookieCategories; track category.id) {
                 @let pref = cookies.getCategoryPreference(category.id);
-                <div class="category-card" [class.active]="pref?.enabled" [class.required]="category.required"
+                <div class="category-card" [class.required]="category.required"
                     [class.expanded]="cookies.selectedCategory === category.id">
                     <div class="category-main" (click)="cookies.toggleCategoryDetails(category.id)">
-                        <div class="category-icon" [style.background]="category.color + '20'"
-                            [style.color]="category.color">
+                        <div class="category-icon">
                             <i-tabler [name]="category.icon"></i-tabler>
                         </div>
                         <div class="category-content">
@@ -155,7 +157,7 @@
     </div>
 
     <!-- What are Cookies Section -->
-    <div class="section info-section">
+    <div class="section">
         <div class="section-header">
             <div class="header-content">
                 <i-tabler name="info-circle"></i-tabler>
@@ -176,7 +178,7 @@
                         zapamatování informací o vaší návštěvě.</p>
                 </div>
                 <div class="info-card">
-                    <div class="info-icon purple">
+                    <div class="info-icon">
                         <i-tabler name="target"></i-tabler>
                     </div>
                     <h5>Účel</h5>
@@ -184,7 +186,7 @@
                         reklam.</p>
                 </div>
                 <div class="info-card">
-                    <div class="info-icon green">
+                    <div class="info-icon">
                         <i-tabler name="shield"></i-tabler>
                     </div>
                     <h5>Vaše práva</h5>
@@ -192,7 +194,7 @@
                     </p>
                 </div>
                 <div class="info-card">
-                    <div class="info-icon amber">
+                    <div class="info-icon">
                         <i-tabler name="clock"></i-tabler>
                     </div>
                     <h5>Doba uložení</h5>
@@ -200,70 +202,6 @@
                         dobu).</p>
                 </div>
             </div>
-        </div>
-    </div>
-
-    <!-- Browser Settings Section -->
-    <div class="section">
-        <div class="section-header">
-            <div class="header-content">
-                <i-tabler name="browser"></i-tabler>
-                <div>
-                    <h3>Nastavení prohlížeče</h3>
-                    <span class="meta muted">Další možnosti správy cookies v prohlížeči</span>
-                </div>
-            </div>
-        </div>
-        <div class="section-content">
-            <p class="section-text">Kromě nastavení na této stránce můžete cookies spravovat také přímo v nastavení
-                vašeho prohlížeče:</p>
-            <div class="browser-links">
-                <a href="https://support.google.com/chrome/answer/95647" target="_blank" class="browser-link">
-                    <i-tabler name="brand-chrome"></i-tabler>
-                    <span>Google Chrome</span>
-                </a>
-                <a href="https://mzl.la/3vVeO8Y" target="_blank" class="browser-link">
-                    <i-tabler name="brand-firefox"></i-tabler>
-                    <span>Mozilla Firefox</span>
-                </a>
-                <a href="https://support.microsoft.com/cs-cz/microsoft-edge/odstran%C4%9Bn%C3%AD-soubor%C5%AF-cookie-v-aplikaci-microsoft-edge-63947406-40ac-c3b8-57b9-2a946a29ae09"
-                    target="_blank" class="browser-link">
-                    <i-tabler name="brand-edge"></i-tabler>
-                    <span>Microsoft Edge</span>
-                </a>
-                <a href="https://support.apple.com/cs-cz/guide/safari/sfri11471/mac" target="_blank"
-                    class="browser-link">
-                    <i-tabler name="brand-safari"></i-tabler>
-                    <span>Safari</span>
-                </a>
-            </div>
-        </div>
-    </div>
-
-    <!-- Clear All Cookies Section -->
-    <div class="section danger-section">
-        <div class="section-header">
-            <div class="header-content">
-                <i-tabler name="trash"></i-tabler>
-                <div>
-                    <h3>Smazat všechny cookies</h3>
-                    <span class="meta muted">Odstranit všechny cookies uložené tímto webem</span>
-                </div>
-            </div>
-        </div>
-        <div class="section-content">
-            <div class="warning-box">
-                <i-tabler name="alert-triangle"></i-tabler>
-                <div>
-                    <p><strong>Upozornění</strong></p>
-                    <p>Smazáním všech cookies budete odhlášeni a vaše nastavení bude resetováno. Tato akce je nevratná.
-                    </p>
-                </div>
-            </div>
-            <button class="btn btn--danger" (click)="cookies.clearAllCookies()">
-                <i-tabler name="trash"></i-tabler>
-                Smazat všechny cookies
-            </button>
         </div>
     </div>
 

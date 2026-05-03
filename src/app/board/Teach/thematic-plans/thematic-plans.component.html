@@ -1,0 +1,127 @@
+<div class="card">
+    <div class="card-top"></div>
+    <div class="card-header">
+        <h2>{{ l.s('sidebar.teach.thematic_plans') }}</h2>
+        @if (!isEditing) {
+            <div class="btn btn--primary" (click)="createNewPlan()">
+                <i-tabler name="plus"></i-tabler>
+                {{ l.s('thematic_plans.create_new') }}
+            </div>
+        } @else {
+            <div class="btn btn--secondary" (click)="isEditing = false; selectedPlan = null">
+                <i-tabler name="arrow-left"></i-tabler>
+                {{ l.s('common.back') }}
+            </div>
+        }
+    </div>
+
+    <div class="card-body">
+        @if (!isEditing) {
+            <div class="plans-grid">
+                @for (plan of plans; track plan.thematic_plan_id) {
+                    <div class="plan-card" (click)="selectPlan(plan)">
+                        <div class="plan-icon">
+                            <i-tabler name="notebook"></i-tabler>
+                        </div>
+                        <div class="plan-info">
+                            <h3>{{ plan.name }}</h3>
+                            <div class="plan-meta">
+                                <span>{{ plan.subject_name }}</span>
+                                <span class="divider">|</span>
+                                <span>{{ plan.prefix }}{{ plan.suffix }}</span>
+                            </div>
+                        </div>
+                        <div class="plan-action">
+                            <i-tabler name="chevron-right"></i-tabler>
+                        </div>
+                    </div>
+                } @empty {
+                    <div class="no-selection center">
+                        <div class="illustration">
+                            <i-tabler name="book-off"></i-tabler>
+                        </div>
+                        <h3>{{ l.s('thematic_plans.no_plans') }}</h3>
+                        <p>{{ l.s('thematic_plans.no_plans_desc') }}</p>
+                    </div>
+                }
+            </div>
+        } @else {
+            <div class="edit-form">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>{{ l.s('thematic_plans.name') }}</label>
+                        <input type="text" [(ngModel)]="selectedPlan.name" [placeholder]="l.s('thematic_plans.name_placeholder')">
+                    </div>
+                    <div class="form-group">
+                        <label>{{ l.s('common.subject') }}</label>
+                        <select [(ngModel)]="selectedPlan.subject_id">
+                            @for (subject of subjects; track subject.subject_id) {
+                                <option [value]="subject.subject_id">{{ subject.label }}</option>
+                            }
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>{{ l.s('common.group') }}</label>
+                        <select [(ngModel)]="selectedPlan.group_id">
+                            @for (group of groups; track group.group_id) {
+                                <option [value]="group.group_id">{{ group.label }}</option>
+                            }
+                        </select>
+                    </div>
+                </div>
+
+                <div class="items-section">
+                    <div class="section-header">
+                        <h3>{{ l.s('thematic_plans.topics') }}</h3>
+                        <div class="btn btn--success btn--sm" (click)="addItem()">
+                            <i-tabler name="plus"></i-tabler>
+                            {{ l.s('thematic_plans.add_topic') }}
+                        </div>
+                    </div>
+
+                    <div class="items-table-container">
+                        <table class="items-table">
+                            <thead>
+                                <tr>
+                                    <th class="col-order">#</th>
+                                    <th class="col-period">{{ l.s('thematic_plans.period') }}</th>
+                                    <th class="col-topic">{{ l.s('classbook.lesson_topic') }}</th>
+                                    <th class="col-desc">{{ l.s('classbook.placeholder_note') }}</th>
+                                    <th class="col-actions"></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @for (item of selectedPlan.items; track $index) {
+                                    <tr class="item-row">
+                                        <td class="col-order">{{ $index + 1 }}</td>
+                                        <td class="col-period">
+                                            <input type="text" [(ngModel)]="item.period" placeholder="Září">
+                                        </td>
+                                        <td class="col-topic">
+                                            <input type="text" [(ngModel)]="item.topic" [placeholder]="l.s('classbook.placeholder_topic')">
+                                        </td>
+                                        <td class="col-desc">
+                                            <textarea [(ngModel)]="item.description" [placeholder]="l.s('classbook.placeholder_note')"></textarea>
+                                        </td>
+                                        <td class="col-actions">
+                                            <div class="btn btn--danger btn--icon btn--sm" (click)="removeItem($index)">
+                                                <i-tabler name="trash"></i-tabler>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="form-actions">
+                    <div class="btn btn--primary" (click)="savePlan()">
+                        <i-tabler name="device-floppy"></i-tabler>
+                        {{ l.s('common.save') }}
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>

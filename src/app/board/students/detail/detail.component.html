@@ -60,6 +60,40 @@
             <span>Přepnout na seznam žáků</span>
         </button>
         <h1 class="detail-title">Karta žáka</h1>
+        <div class="detail-actions" style="margin-left: auto; display: flex; gap: 0.5rem;">
+            <button class="action-btn-dropdown" (click)="printStudyConfirmation()" title="Tisk potvrzení o studiu">
+                <i-tabler name="printer" style="width: 1.25rem; height: 1.25rem;"></i-tabler>
+                <span style="font-size: 0.875rem; font-weight: 500;">Potvrzení studia</span>
+            </button>
+            <div class="dropdown-wrapper">
+                <button class="action-btn-dropdown" (click)="togglePrintMenu()" title="Možnosti tisku vysvědčení">
+                    <i-tabler name="certificate" style="width: 1.25rem; height: 1.25rem;"></i-tabler>
+                    <span style="font-size: 0.875rem; font-weight: 500;">Vysvědčení</span>
+                    <i-tabler name="chevron-down" style="width: 1rem; height: 1rem; opacity: 0.7;"></i-tabler>
+                </button>
+                <div class="dropdown-menu" *ngIf="showPrintMenu">
+                    <div class="dropdown-header" style="padding: 0.5rem 1rem; font-size: 0.75rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; background: var(--surface-2);">Vysvědčení (Celoroční)</div>
+                    <div class="dropdown-item" (click)="printReportCard('vysvedceni_zs')">
+                        <i-tabler name="school"></i-tabler>
+                        <span>ZŠ (49 830 0)</span>
+                    </div>
+                    <div class="dropdown-item" (click)="printReportCard('vysvedceni_ss')">
+                        <i-tabler name="school-bell"></i-tabler>
+                        <span>SŠ (49 854 1)</span>
+                    </div>
+                    
+                    <div class="dropdown-header" style="padding: 0.5rem 1rem; font-size: 0.75rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; background: var(--surface-2); border-top: 1px solid var(--border);">Výpis (Pololetní)</div>
+                    <div class="dropdown-item" (click)="printReportCard('vypis_vysvedceni_zs')">
+                        <i-tabler name="file-description"></i-tabler>
+                        <span>Výpis ZŠ (1. pol.)</span>
+                    </div>
+                    <div class="dropdown-item" (click)="printReportCard('vypis_vysvedceni_ss')">
+                        <i-tabler name="file-description"></i-tabler>
+                        <span>Výpis SŠ (1. pol.)</span>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 
     <div class="detail-layout">
@@ -432,12 +466,28 @@
                             </div>
                             <div class="data-item">
                                 <span class="data-label">Rodné číslo</span>
-                                <span class="data-value sensitive">{{ selectedStudent.birthnum }}</span>
+                                <span class="data-value sensitive birthnum-data">
+                                    @if (selectedStudent.birthnum) {
+                                        @for(_ of selectedStudent.birthnum.split('');track $index) {
+                                            <span>{{ _ }}</span>
+                                            @if ($index == 5) {
+                                                <span>/</span>
+                                            }
+                                        }
+                                        @let isBirthNumberValid = verifyBirthNumber(selectedStudent.birthnum, selectedStudent.birthday.toString(), selectedStudent.gender);
+                                        @if (isBirthNumberValid != true) {
+                                            {{ isBirthNumberValid }}
+                                        }
+                                    } @else {
+                                        {{ l.s('unknown') }}
+                                    }
+                                </span>
                             </div>
                             <div class="data-item">
                                 <span class="data-label">Pohlaví</span>
-                                <span class="data-value">{{ l.s('genders.' + Utils.getGender(selectedStudent.gender))
-                                    }}</span>
+                                <span class="data-value">
+                                    {{ l.s('genders.' + Utils.getGender(selectedStudent.gender)) }}
+                                </span>
                             </div>
                             <div class="data-item">
                                 <span class="data-label">Místo narození</span>
@@ -452,8 +502,16 @@
                             </div>
                             <div class="data-item">
                                 <span class="data-label">Pojišťovna</span>
-                                <span class="data-value">{{ selectedStudent.insurance_name }} ({{
-                                    selectedStudent.insurance_short }})</span>
+                                <span class="data-value">
+                                    @if (selectedStudent.insurance_name) {
+                                        {{ selectedStudent.insurance_name }}
+                                        @if (selectedStudent.insurance_short) {
+                                            ({{ selectedStudent.insurance_short }}) 
+                                        }
+                                    } @else {
+                                        {{ l.s('unknown') }}
+                                    }
+                                    </span>
                             </div>
                         </div>
                     </div>
@@ -576,9 +634,9 @@
                         </div>
                     </div>
                     <div class="permissions">
-                        <div><i-tabler name="check"></i-tabler> Je nejbližším zák. zástupcem</div>
-                        <div><i-tabler name="check"></i-tabler> Je zák. zástupcem de jure</div>
-                        <div><i-tabler name="check"></i-tabler> Smí dostávat informace o žákovi</div>
+                        <div [class.success]="selectedParent.legal_guardian_de_jure"><i-tabler [name]="selectedParent.legal_guardian_de_jure ? 'check' : 'x'"></i-tabler> Je zák. zástupcem de jure</div>
+                        <div [class.success]="selectedParent.closest_legal_representative"><i-tabler [name]="selectedParent.closest_legal_representative ? 'check' : 'x'"></i-tabler> Je nejbližším zák. zástupcem</div>
+                        <div [class.success]="selectedParent.allowed_to_receive_information"><i-tabler [name]="selectedParent.allowed_to_receive_information ? 'check' : 'x'"></i-tabler> Smí dostávat informace o žákovi</div>
                     </div>
                 </div>
 
@@ -657,24 +715,6 @@
                             <div class="data-item">
                                 <span class="data-label">{{ l.s('address.postcode') }}</span>
                                 <span class="data-value">{{ selectedParent.postcode || '—' }}</span>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Relationship Card -->
-                    <div class="info-card full">
-                        <div class="card-header">
-                            <i-tabler name="link"></i-tabler>
-                            <h3>{{ l.s('students.tabs.relationship') }}</h3>
-                        </div>
-                        <div class="data-grid">
-                            <div class="data-item">
-                                <span class="data-label">Vztah</span>
-                                <span class="data-value">{{ l.s('family.' + selectedParent.relationship) }}</span>
-                            </div>
-                            <div class="data-item">
-                                <span class="data-label">{{ l.s('students.register_number') }}</span>
-                                <span class="data-value">{{ selectedParent.register_number || '—' }}</span>
                             </div>
                         </div>
                     </div>

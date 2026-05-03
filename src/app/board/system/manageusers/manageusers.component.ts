@@ -49,6 +49,10 @@ export interface UserDetail extends User {
   student?: any;
   employee?: any;
   parent?: any;
+  messages?: { id: number; topic: string; message: string; created_at: string; type: number }[];
+  files?: { id: number; uuid: string; name: string; real_file_name: string; size: number; type: string; created_at: string }[];
+  message_count?: number;
+  file_count?: number;
 }
 
 export interface UserFilters {
@@ -100,6 +104,7 @@ export class ManageusersComponent implements OnInit, AfterViewInit {
   public dropdownManager = inject(DropdownManager);
   public school = inject(School);
   public avatarService = inject(AvatarService);
+  public Config = Config;
 
   @ViewChild('tabsNav') tabsNav?: ElementRef;
   public showLeftScroll = false;
@@ -173,7 +178,7 @@ export class ManageusersComponent implements OnInit, AfterViewInit {
   // Selected User
   selectedUser: UserDetail | null = null;
   isDetailLoading = false;
-  activeTab: 'overview' | 'edit' | 'security' | 'activity' | 'student' | 'employee' = 'overview';
+  activeTab: 'overview' | 'edit' | 'security' | 'activity' | 'student' | 'employee' | 'messages' | 'files' = 'overview';
 
   // Edit form
   editForm = {
@@ -445,14 +450,50 @@ export class ManageusersComponent implements OnInit, AfterViewInit {
     this.selectedUser = null;
   }
 
-  setActiveTab(tab: 'overview' | 'edit' | 'security' | 'activity' | 'student' | 'employee') {
+  setActiveTab(tab: 'overview' | 'edit' | 'security' | 'activity' | 'student' | 'employee' | 'messages' | 'files') {
     this.activeTab = tab;
     this.saveSuccess = false;
     this.saveError = null;
     this.resetPasswordSuccess = false;
     this.resetPasswordError = null;
     this.resetPasswordForm.generatedPassword = null;
+    
+    if (tab === 'messages') this.loadUserMessages();
+    if (tab === 'files') this.loadUserFiles();
+
     setTimeout(() => this.checkScroll(), 100);
+  }
+
+  loadUserMessages() {
+    if (!this.selectedUser) return;
+    this.http.get<any>(`${Config.API_URL}/v1/system/users/${this.selectedUser.id}/messages`, { withCredentials: true }).subscribe({
+      next: (res) => {
+        this.selectedUser!.messages = res.data.map((m: any) => ({
+          id: m.message_id,
+          topic: m.topic,
+          message: m.message,
+          created_at: m.created_at,
+          type: m.type
+        }));
+      }
+    });
+  }
+
+  loadUserFiles() {
+    if (!this.selectedUser) return;
+    this.http.get<any>(`${Config.API_URL}/v1/system/users/${this.selectedUser.id}/files`, { withCredentials: true }).subscribe({
+      next: (res) => {
+        this.selectedUser!.files = res.data.map((f: any) => ({
+          id: f.file_id,
+          uuid: f.file_uuid,
+          name: f.name,
+          real_file_name: f.real_file_name,
+          size: f.file_size,
+          type: f.mime_type,
+          created_at: f.created_at
+        }));
+      }
+    });
   }
 
   // Save User

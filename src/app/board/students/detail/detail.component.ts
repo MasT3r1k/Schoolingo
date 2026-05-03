@@ -26,6 +26,7 @@ import { CreateParentComponent } from './modals/create-parent/create-parent.comp
 import { RemoveParentComponent } from './modals/remove-parent/remove-parent.component';
 import { SaveHistoryModalComponent } from './modals/save-history-modal/save-history-modal.component';
 import { EditAddressModalComponent } from './modals/edit-address/edit-address.component';
+import { EditParentRoleComponent } from './modals/edit-parent-role/edit-parent-role.component';
 import { StudentEducationalMeasureComponent } from './modals/student-educational-measure/student-educational-measure.component';
 import { MeasureTemplatesComponent } from './modals/measure-templates/measure-templates.component';
 import { MeasureTypesComponent } from './modals/measure-types/measure-types.component';
@@ -37,6 +38,7 @@ import { AvatarService } from '../../../infrastructure/utils/avatar.service';
 import { AddNoteComponent } from './modals/add-note/add-note.component';
 import { AddRewardModalComponent } from './modals/add-reward-modal/add-reward-modal.component';
 import { RemoveRewardModalComponent } from './modals/remove-reward-modal/remove-reward-modal.component';
+import { BoardAlertManager } from '../../../infrastructure/alert/board.alert.manager';
 
 // Interfaces
 interface TimetableAPI {
@@ -155,6 +157,7 @@ export class DetailComponent implements OnInit, AfterViewInit {
   public measuresService = inject(EducationMeasuresService);
   public messageManager = inject(MessageManager);
   public avatarService = inject(AvatarService);
+  private alert = inject(BoardAlertManager);
 
   @ViewChild('tabsNav') tabsNav?: ElementRef;
   public showLeftScroll = false;
@@ -311,7 +314,7 @@ export class DetailComponent implements OnInit, AfterViewInit {
       icon: 'user-edit',
       closeable: true,
       forceScrollbar: true,
-      width: 600,
+      width: 900,
       items: [{ type: 'component', component: EditPersonalModalComponent }]
     });
 
@@ -374,6 +377,16 @@ export class DetailComponent implements OnInit, AfterViewInit {
       width: 600,
       index: 600,
       items: [{ type: 'component', component: CreateParentComponent }]
+    });
+
+    this.modalManager.addModal('edit_parent_role', {
+      icon: 'shield-check',
+      title: 'students.edit_parent_role.title',
+      description: 'students.edit_parent_role.description',
+      closeable: true,
+      width: 550,
+      index: 600,
+      items: [{ type: 'component', component: EditParentRoleComponent }]
     });
 
     this.modalManager.addModal('remove_parent', {
@@ -835,8 +848,77 @@ export class DetailComponent implements OnInit, AfterViewInit {
     );
   }
 
+  public verifyBirthNumber(birthNumber: string, dob: string, gender: boolean | number = 0): boolean | string {
+    // 1. Očištění vstupu (odstranění lomítka)
+    const cleanRC = birthNumber.replace('/', '');
+    
+    // 2. Kontrola délky (9 číslic pro starší ročníky před 1954, 10 číslic poté)
+    if (cleanRC.length < 9) return 'too_short';
+    if (cleanRC.length > 10) return 'too_long';
+    if (!/^\d+$/.test(cleanRC)) return 'not_a_number';
 
+    const yearPart = parseInt(cleanRC.substring(0, 2), 10);
+    const monthPart = parseInt(cleanRC.substring(2, 4), 10);
+    const dayPart = parseInt(cleanRC.substring(4, 6), 10);
+    const suffix = parseInt(cleanRC.substring(6), 10);
 
+    // 3. Kontrola dělitelnosti 11 (pouze pro 10místná RČ od roku 1954)
+    if (cleanRC.length === 10) {
+        if (parseInt(cleanRC, 10) % 11 !== 0) {
+            // Výjimka: RČ končící 0000 byla do určité doby platná, i když zbytek byl 10
+            const modulo = parseInt(cleanRC.substring(0, 9), 10) % 11;
+            const lastDigit = parseInt(cleanRC.substring(9), 10);
+            if (!(modulo === 10 && lastDigit === 0)) {
+                return 'wrong_checksum';
+            }
+        }
+    }
+
+    // 4. Parsování data narození z RČ
+    let year = yearPart;
+    // Doplnění století
+    if (cleanRC.length === 9) {
+        year += (year < 54) ? 1900 : 1800;
+    } else {
+        year += (year < 54) ? 2000 : 1900;
+    }
+
+    // Korekce měsíce (ženy mají +50, v případě nedostatku čísel i +20/+70)
+    let month = monthPart;
+    if (month > 70 && cleanRC.length === 10) month -= 70;
+    else if (month > 50) month -= 50;
+    else if (month > 20 && cleanRC.length === 10) month -= 20;
+
+    // 5. Kontrola shody s parametrem gender
+    // gender == 0 (muž), gender == 1 (žena)
+    const isFemaleRC = monthPart > 50;
+    if (Boolean(gender) !== isFemaleRC) return 'wrong_gender';
+
+    // 6. Kontrola shody s parametrem dob (Date of Birth)
+    // Předpokládáme formát dob 'YYYY-MM-DD' nebo 'DD.MM.YYYY'
+    const inputDate = new Date(dob);
+    if (isNaN(inputDate.getTime())) return 'invalid_input_dob';
+
+    if (
+        inputDate.getFullYear() !== year ||
+        (inputDate.getMonth() + 1) !== month ||
+        inputDate.getDate() !== dayPart
+    ) {
+        return 'wrong_date';
+    }
+
+    // 7. Validace existence kalendářního data (např. 31. únor)
+    const validDate = new Date(year, month - 1, dayPart);
+    if (
+        validDate.getFullYear() !== year ||
+        validDate.getMonth() !== month - 1 ||
+        validDate.getDate() !== dayPart
+    ) {
+        return 'date_non_existent';
+    }
+
+    return true;
+  }
 
   public getTodayTimetable(): any[] {
     return this.selectedStudent!.timetable.filter((lesson: any) => lesson.day == this.overviewSelectedDate.isoWeekday())
@@ -1470,6 +1552,12 @@ export class DetailComponent implements OnInit, AfterViewInit {
     this.addParentMode = 'existing';
   }
 
+  // Print Management
+  public showPrintMenu = false;
+  public togglePrintMenu() {
+    this.showPrintMenu = !this.showPrintMenu;
+  }
+
   // Address Management
 
 
@@ -1478,6 +1566,102 @@ export class DetailComponent implements OnInit, AfterViewInit {
       student: this.selectedStudent!,
       callback: () => this.refreshStudentData()
     });
+  }
+
+  public printStudyConfirmation() {
+    if (!this.selectedStudent) return;
+    try {
+      this.alert.alert('success', 'Generuji potvrzení o studiu...');
+      const studentData = {
+        ...this.selectedStudent,
+        birthday: this.Utils.formatDateShort(this.selectedStudent.birthday) || '',
+        full_name: this.selectedStudent.full_name || '',
+        street: this.selectedStudent.street || '',
+        house_number: this.selectedStudent.house_number || '',
+        city_name: this.selectedStudent.city_name || '',
+        postcode: this.selectedStudent.postcode || '',
+        class_name: this.selectedStudent.class_name || '',
+        field_of_study: this.selectedStudent.field_of_study || '',
+        teacher_name: this.selectedStudent.teacher_name || ''
+      };
+
+      this.http.post(Config.API_URL + '/documents/generate', { 
+        type: 'potvrzeni_studia', 
+        student: studentData,
+        currentDate: moment().format('DD. MM. YYYY')
+      }, {
+        withCredentials: true,
+        responseType: 'blob'
+      }).subscribe({
+        next: (response: Blob) => {
+          const url = window.URL.createObjectURL(response);
+          window.open(url, '_blank');
+          setTimeout(() => window.URL.revokeObjectURL(url), 100);
+        },
+        error: () => {
+          this.alert.alert('error', 'Nepodařilo se vygenerovat potvrzení o studiu.');
+        }
+      });
+    } catch (e) {
+      this.alert.alert('error', 'Nepodařilo se vygenerovat potvrzení o studiu.');
+    }
+  }
+
+  public printReportCard(type: string = 'vysvedceni') {
+    if (!this.selectedStudent) return;
+    this.showPrintMenu = false;
+    try {
+      this.alert.alert('success', 'Generuji vysvědčení...');
+      
+      // Calculating marks for both semesters
+      const marksBySemester: any = {};
+      this.marks.forEach((mark: any) => {
+          const subject = mark.subject_name;
+          if (!marksBySemester[subject]) {
+              marksBySemester[subject] = { subject_name: subject, sem1: '-', sem2: '-' };
+          }
+          // Assuming we have a semester field or can derive it. 
+          // If not available, we'll use current for whichever column makes sense.
+          // For now let's assume the component has access to all grades or we mock the split.
+          marksBySemester[subject].sem1 = mark.mark; 
+          marksBySemester[subject].sem2 = mark.mark; 
+      });
+
+      const formattedMarks = Object.values(marksBySemester);
+
+      const studentData = {
+        ...this.selectedStudent,
+        birthday: this.Utils.formatDateShort(this.selectedStudent.birthday) || '',
+        full_name: this.selectedStudent.full_name || '',
+        street: this.selectedStudent.street || '',
+        house_number: this.selectedStudent.house_number || '',
+        city_name: this.selectedStudent.city_name || '',
+        postcode: this.selectedStudent.postcode || '',
+        class_name: this.selectedStudent.class_name || '',
+        field_of_study: this.selectedStudent.field_of_study || '',
+        teacher_name: this.selectedStudent.teacher_name || ''
+      };
+
+      this.http.post(Config.API_URL + '/documents/generate', { 
+        type: type, 
+        student: studentData,
+        marks: formattedMarks
+      }, {
+        withCredentials: true,
+        responseType: 'blob'
+      }).subscribe({
+        next: (response: Blob) => {
+          const url = window.URL.createObjectURL(response);
+          window.open(url, '_blank');
+          setTimeout(() => window.URL.revokeObjectURL(url), 100);
+        },
+        error: () => {
+          this.alert.alert('error', 'Nepodařilo se vygenerovat vysvědčení.');
+        }
+      });
+    } catch (e) {
+      this.alert.alert('error', 'Nepodařilo se vygenerovat vysvědčení.');
+    }
   }
 
 

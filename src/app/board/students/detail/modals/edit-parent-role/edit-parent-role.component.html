@@ -1,0 +1,70 @@
+<div class="modal-body" (click)="dropdownManager.selected_dropdown = ''">
+    
+    <div class="info-banner mb-4">
+        Nastavení vztahu a práv pro zástupce: <strong>{{ parent.fullName }}</strong>
+    </div>
+
+    <div class="form-group mb-4">
+        <label>Vztah k žákovi</label>
+        <div class="custom-select"
+            (click)="$event.stopPropagation(); dropdownManager.selected_dropdown = dropdownManager.selected_dropdown == 'edit-parent_role' ? '' : 'edit-parent_role'">
+            <div class="selected-value">
+                {{ l.s('family.' + form.role) }}
+                <i-tabler name="chevron-down"></i-tabler>
+            </div>
+            @if (dropdownManager.selected_dropdown == 'edit-parent_role') {
+            <div class="options-dropdown">
+                <div class="list">
+                    @for(role of roles;track role) {
+                    <div class="option"
+                        (click)="$event.stopPropagation(); dropdownManager.selected_dropdown = ''; form.role = role">
+                        {{ l.s('family.' + role) }}
+                    </div>
+                    }
+                </div>
+            </div>
+            }
+        </div>
+    </div>
+
+    <div class="form-group options-group">
+        <label class="checkbox-container">
+            <input type="checkbox" [(ngModel)]="form.legal_guardian_de_jure">
+            <span class="checkmark"></span>
+            <div class="checkbox-text">
+                <span class="title">Je zák. zástupcem de jure</span>
+                <span class="description">Zákonný zástupce podle práva.</span>
+            </div>
+        </label>
+        
+        <label class="checkbox-container">
+            <input type="checkbox" [(ngModel)]="form.closest_legal_representative">
+            <span class="checkmark"></span>
+            <div class="checkbox-text">
+                <span class="title">Je nejbližším zák. zástupcem</span>
+                <span class="description">Primární kontakt pro školu.</span>
+            </div>
+        </label>
+        
+        <label class="checkbox-container">
+            <input type="checkbox" [(ngModel)]="form.allowed_to_receive_information">
+            <span class="checkmark"></span>
+            <div class="checkbox-text">
+                <span class="title">Smí dostávat informace o žákovi</span>
+                <span class="description">Může nahlížet do hodnocení a zpráv.</span>
+            </div>
+        </label>
+    </div>
+
+</div>
+
+<div class="modal-actions">
+    <button class="btn btn--secondary" (click)="closeModal()">
+        <i-tabler name="x"></i-tabler>
+        <span>Zrušit</span>
+    </button>
+    <button class="btn btn--primary" (click)="save()">
+        <i-tabler name="device-floppy"></i-tabler>
+        <span>Uložit nastavení</span>
+    </button>
+</div>

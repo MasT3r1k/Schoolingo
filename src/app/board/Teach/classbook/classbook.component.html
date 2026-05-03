@@ -146,12 +146,32 @@
                                 [placeholder]="l.s('classbook.placeholder_number')">
                         </div>
 
-                        <div class="form-group">
+                        <div class="form-group" style="position: relative;">
                             <label for="lessonTopic">
                                 {{ l.s('classbook.lesson_topic') }}
                             </label>
                             <input type="text" [(ngModel)]="classbook.classbook.topic"
+                                (focus)="showSuggestions = true"
+                                (blur)="onBlurTopic()"
                                 [placeholder]="l.s('classbook.placeholder_topic')">
+                            
+                            @if (showSuggestions && suggestions.length > 0) {
+                                <div class="suggestions-dropdown">
+                                    @for (suggestion of suggestions; track suggestion.topic) {
+                                        <div class="suggestion-item" (click)="selectSuggestion(suggestion)">
+                                            @if (suggestion.period) {
+                                                <span class="suggestion-period">{{ suggestion.period }}</span>
+                                            }
+                                            <div class="suggestion-content">
+                                                <div class="suggestion-topic">{{ suggestion.topic }}</div>
+                                                @if (suggestion.description) {
+                                                    <div class="suggestion-desc">{{ suggestion.description }}</div>
+                                                }
+                                            </div>
+                                        </div>
+                                    }
+                                </div>
+                            }
                         </div>
                     </div>
 

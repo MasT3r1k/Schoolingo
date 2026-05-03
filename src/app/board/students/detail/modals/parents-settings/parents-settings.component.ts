@@ -41,4 +41,15 @@ export class ParentsSettingsComponent implements OnInit {
       }
     });
   }
+
+  editParentRole(parent: ParentInfo): void {
+    const data = this.modalManager.getModalData('parents_settings');
+    this.modalManager.openModal('edit_parent_role', { 
+      student_id: data.student_id, 
+      parent,
+      callback: () => {
+        if (data.callback) data.callback();
+      }
+    });
+  }
 }

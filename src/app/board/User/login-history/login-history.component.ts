@@ -7,12 +7,14 @@ import { Config } from '@Schoolingo/config';
 import { Utils } from '@Schoolingo/utils';
 import moment from 'moment';
 import { IconsModule } from '@Schoolingo/icons';
-import { ActivatedRoute, RouterLink } from '@angular/router';
+import { ActivatedRoute } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { TabsComponent } from '@Components/Tabs';
+import { ModalManager } from '@Schoolingo/modal';
+import { LoginDetailModalComponent } from './modals/login-detail/login-detail.component';
 
 @Component({
-  imports: [IconsModule, RouterLink, FormsModule, TabsComponent],
+  imports: [IconsModule, FormsModule, TabsComponent],
   templateUrl: './login-history.component.html',
   styleUrl: './login-history.component.css'
 })
@@ -20,10 +22,9 @@ export class LoginHistoryComponent implements OnInit {
   Utils = Utils;
   public l = inject(Locale);
   private http = inject(HttpClient);
-  private route = inject(ActivatedRoute);
+  private modalManager = inject(ModalManager);
   private declare datalist;
   public page = new BehaviorSubject(1);
-  public selected_id = null;
 
   public metadata: DatalistMetadata & { validLogins: number;failedLogins:number; } = {
     rows: 0,
@@ -70,14 +71,20 @@ export class LoginHistoryComponent implements OnInit {
   ngOnInit(): void {
     this.LoadDevices(this.page.getValue());
 
-    this.route.queryParams.subscribe((data) => {
-      if ('id' in data) {
-        this.selected_id = data['id'];
-      } else {
-        this.selected_id = null;
+    this.modalManager.addModal(
+      'login_detail',
+      {
+        icon: 'login',
+        title: 'login_history.buttons.details',
+        closeable: true,
+        items: [
+          {
+            type: 'component',
+            component: LoginDetailModalComponent
+          }
+        ]
       }
-      console.log(data)
-    });
+    );
 
     this.selectedPeriod
     .pipe(distinctUntilChanged())
@@ -167,13 +174,8 @@ export class LoginHistoryComponent implements OnInit {
   public getFailedLogins(): number {
     return this.metadata.failedLogins;
   }
-  public getSelectedLogin(): any {
-    if (!this.selected_id) return null;
-    // ensure type compatibility (string vs number)
-    return this.history.getValue().find(item => item.login_id == this.selected_id);
-  }
 
-  public closeDetail(): void {
-
+  public showDetails(item: any): void {
+    this.modalManager.openModal('login_detail', item);
   }
 }

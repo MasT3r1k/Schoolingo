@@ -124,6 +124,9 @@ export interface ParentInfo {
   occupation?: string;
   register_number?: string;
   siblings?: any[];
+  legal_guardian_de_jure?: boolean;
+  closest_legal_representative?: boolean;
+  allowed_to_receive_information?: boolean;
 }
 
 export interface StudentFilters {

@@ -105,6 +105,8 @@ export class ClassbookComponent implements OnInit {
   public expandedHomework: number | null = null;
   public selected_absence = 0;
   public timetable: any[] = [];
+  public suggestions: any[] = [];
+  public showSuggestions = false;
   public selected_date = moment();
   public hours: TimetableHours[] = [];
 
@@ -262,6 +264,29 @@ export class ClassbookComponent implements OnInit {
     });
   }
 
+  public fetchSuggestions(): void {
+    const lesson = this.timetable[this.selected_lesson.getValue()];
+    if (!lesson) return;
+
+    this.http.get<any[]>(
+      `${Config.API_URL}/v1/teach/thematic-plans/suggestions?groupId=${lesson.group_id}&subjectId=${lesson.subject_id}&date=${lesson.date}`,
+      { withCredentials: true }
+    ).subscribe((data) => {
+      this.suggestions = data;
+    });
+  }
+
+  public selectSuggestion(suggestion: any): void {
+    if (this.classbook.classbook) {
+      this.classbook.classbook.topic = suggestion.topic;
+      this.showSuggestions = false;
+    }
+  }
+
+  public onBlurTopic(): void {
+    Utils.delay(200).then(() => this.showSuggestions = false);
+  }
+
   public getAbsenceConfig(): AbsenceConfig[] {
     let absence: AbsenceConfig[] = [];
     this.absenceConfig.forEach((config, index) => {
@@ -387,6 +412,8 @@ export class ClassbookComponent implements OnInit {
         .subscribe((data: any[]) => {
           this.classbook.notes = data;
         })
+
+      this.fetchSuggestions();
     });
   }
 

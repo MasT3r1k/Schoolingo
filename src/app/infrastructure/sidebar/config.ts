@@ -150,6 +150,11 @@ export const config: SidebarGroup[] = [
                     icon: 'user-check',
                     permission: ['student', 'parent', 'teacher']
                 }, {
+                    item: 'sidebar.teach.thematic_plans',
+                    url: 'teach/thematic-plans',
+                    icon: 'notebook',
+                    permission: ['teacher']
+                }, {
                     item: 'sidebar.teach.classbook',
                     url: 'teach/classbook',
                     icon: 'book-2',
@@ -165,6 +170,11 @@ export const config: SidebarGroup[] = [
                      url: 'teach/rewards',
                      icon: 'trophy',
                      permission: ['student']
+                }, {
+                     item: 'sidebar.teach.topics',
+                     url: 'teach/topics',
+                     icon: 'list',
+                     permission: ['student', 'parent']
                 },// {
                 //     item: 'sidebar.teach.tests',
                 //     url: 'tests',
@@ -417,7 +427,7 @@ export const config: SidebarGroup[] = [
                 permission: ['all'],
                 children: [{
                     item: 'sidebar.account',
-                    url: 'user',
+                    url: 'user/main',
                     icon: 'user',
                 }, {
                     item: 'user.login_history',
@@ -462,6 +472,12 @@ export const config: SidebarGroup[] = [
                         item: 'sidebar.system.manage_users',
                         url: "system/manageusers",
                         icon: 'users-group',
+                        permission: ['manager:system:admin']
+                    },
+                    {
+                        item: 'sidebar.admin.svp',
+                        url: "admin/svp",
+                        icon: 'certificate',
                         permission: ['manager:system:admin']
                     },
                     {

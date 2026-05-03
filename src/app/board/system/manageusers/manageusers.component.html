@@ -177,6 +177,22 @@
                             <i-tabler name="activity"></i-tabler>
                             <span>Aktivita</span>
                         </div>
+                        <div class="tab-btn" [class.active]="activeTab === 'messages'"
+                            (click)="setActiveTab('messages')">
+                            <i-tabler name="message-dots"></i-tabler>
+                            <span>Evidence zpráv</span>
+                            @if (selectedUser.message_count !== undefined && selectedUser.message_count > 0) {
+                            <span class="count-badge" style="margin-left: 0.5rem; font-size: 10px; height: 16px; min-width: 16px; padding: 0 4px; display: inline-flex; align-items: center; justify-content: center; background: var(--border); color: var(--text-muted); border-radius: 4px;">{{ selectedUser.message_count }}</span>
+                            }
+                        </div>
+                        <div class="tab-btn" [class.active]="activeTab === 'files'"
+                            (click)="setActiveTab('files')">
+                            <i-tabler name="files"></i-tabler>
+                            <span>Evidence souborů</span>
+                            @if (selectedUser.file_count !== undefined && selectedUser.file_count > 0) {
+                            <span class="count-badge" style="margin-left: 0.5rem; font-size: 10px; height: 16px; min-width: 16px; padding: 0 4px; display: inline-flex; align-items: center; justify-content: center; background: var(--border); color: var(--text-muted); border-radius: 4px;">{{ selectedUser.file_count }}</span>
+                            }
+                        </div>
                     </nav>
                     <button class="tab-scroll-btn right" *ngIf="showRightScroll" (click)="scrollTabs(1)">
                         <i-tabler name="chevron-right"></i-tabler>
@@ -821,6 +837,104 @@
                         </div>
                     </div>
                     }
+
+                    <!-- ============ MESSAGES TAB ============ -->
+                    @if (activeTab === 'messages') {
+                    <div class="messages-section">
+                        <div class="info-card full">
+                            <div class="card-header">
+                                <i-tabler name="message-dots"></i-tabler>
+                                <h3>Odeslané zprávy</h3>
+                            </div>
+                            @if (selectedUser.messages && selectedUser.messages.length > 0) {
+                            <div class="evidence-list" style="padding: 1rem;">
+                                @for (msg of selectedUser.messages; track msg.id) {
+                                <div class="evidence-item" style="padding: 1rem; border-bottom: 1px solid var(--border);">
+                                    <div style="display: flex; gap: 1rem; align-items: flex-start;">
+                                        <div class="evidence-item__icon message" style="width: 40px; height: 40px; border-radius: 8px; background: var(--bg-secondary); display: flex; align-items: center; justify-content: center; color: var(--primary); flex-shrink: 0;">
+                                            <i-tabler name="message"></i-tabler>
+                                        </div>
+                                        <div class="evidence-item__content" style="flex: 1;">
+                                            <div class="evidence-item__title" style="font-weight: 600; font-size: 0.95rem;">{{ msg.topic || '(Bez předmětu)' }}</div>
+                                            <div class="evidence-item__desc" style="font-size: 0.9rem; color: var(--text-muted); margin-top: 0.25rem;">
+                                                {{ msg.message | slice:0:150 }}{{ msg.message.length > 150 ? '...' : '' }}
+                                            </div>
+                                            <div class="evidence-item__meta" style="display: flex; gap: 1rem; margin-top: 0.5rem; font-size: 11px; color: var(--text-muted);">
+                                                <span style="display: flex; align-items: center; gap: 0.25rem;">
+                                                    <i-tabler name="calendar" style="width: 12px; height: 12px;"></i-tabler> 
+                                                    {{ msg.created_at | date:'dd.MM.yyyy HH:mm' }}
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                }
+                            </div>
+                            } @else if (selectedUser.messages) {
+                            <div class="no-selection" style="padding: 4rem 2rem; text-align: center;">
+                                <div class="illustration" style="font-size: 3rem; color: var(--text-muted); margin-bottom: 1rem;">
+                                    <i-tabler name="message-off"></i-tabler>
+                                </div>
+                                <h3 style="margin-bottom: 0.5rem;">Žádné zprávy</h3>
+                                <p class="muted">Tento uživatel zatím neodeslal žádné zprávy.</p>
+                            </div>
+                            } @else {
+                            <div class="loading-state" style="padding: 4rem; text-align: center;">
+                                <div class="loading-spinner" style="margin: 0 auto;"></div>
+                            </div>
+                            }
+                        </div>
+                    </div>
+                    }
+
+                    <!-- ============ FILES TAB ============ -->
+                    @if (activeTab === 'files') {
+                    <div class="files-section">
+                        <div class="info-card full">
+                            <div class="card-header">
+                                <i-tabler name="files"></i-tabler>
+                                <h3>Nahrané soubory</h3>
+                            </div>
+                            @if (selectedUser.files && selectedUser.files.length > 0) {
+                            <div class="evidence-list" style="padding: 1rem;">
+                                @for (file of selectedUser.files; track file.id) {
+                                <div class="evidence-item" style="display: flex; align-items: center; gap: 1rem; padding: 1rem; border-bottom: 1px solid var(--border);">
+                                    <div class="evidence-item__icon file" style="width: 40px; height: 40px; border-radius: 8px; background: var(--bg-secondary); display: flex; align-items: center; justify-content: center; color: var(--primary); flex-shrink: 0;">
+                                        <i-tabler name="file"></i-tabler>
+                                    </div>
+                                    <div class="evidence-item__content" style="flex: 1;">
+                                        <div class="evidence-item__title" style="font-weight: 600; font-size: 0.95rem;">{{ file.real_file_name || file.name }}</div>
+                                        <div class="evidence-item__meta" style="display: flex; gap: 1rem; margin-top: 0.25rem; font-size: 11px; color: var(--text-muted);">
+                                            <span style="display: flex; align-items: center; gap: 0.25rem;"><i-tabler name="database" style="width: 12px; height: 12px;"></i-tabler> {{ Utils.formatBytes(file.size) }}</span>
+                                            <span style="display: flex; align-items: center; gap: 0.25rem;"><i-tabler name="calendar" style="width: 12px; height: 12px;"></i-tabler> {{ file.created_at | date:'dd.MM.yyyy HH:mm' }}</span>
+                                            <span class="file-type-badge" style="background: var(--surface-2); padding: 2px 6px; border-radius: 4px;">{{ file.type }}</span>
+                                        </div>
+                                    </div>
+                                    <div class="evidence-item__actions">
+                                        <a [href]="Config.API_URL + '/api/download/' + file.uuid" target="_blank" class="action-btn" title="Stáhnout" style="padding: 0.5rem; border-radius: 6px; color: var(--text-muted); transition: all 0.2s;">
+                                            <i-tabler name="download"></i-tabler>
+                                        </a>
+                                    </div>
+                                </div>
+                                }
+                            </div>
+                            } @else if (selectedUser.files) {
+                            <div class="no-selection" style="padding: 4rem 2rem; text-align: center;">
+                                <div class="illustration" style="font-size: 3rem; color: var(--text-muted); margin-bottom: 1rem;">
+                                    <i-tabler name="file-off"></i-tabler>
+                                </div>
+                                <h3 style="margin-bottom: 0.5rem;">Žádné soubory</h3>
+                                <p class="muted">Tento uživatel zatím nenahrál žádné soubory.</p>
+                            </div>
+                            } @else {
+                            <div class="loading-state" style="padding: 4rem; text-align: center;">
+                                <div class="loading-spinner" style="margin: 0 auto;"></div>
+                            </div>
+                            }
+                        </div>
+                    </div>
+                    }
+
                 </div>
             </main>
         </div>
@@ -926,42 +1040,42 @@
 
         <!-- Users Table -->
         @else if (users.length > 0) {
-        <div class="users-table-wrapper">
-            <table class="users-table">
+        <div class="students-table-wrapper">
+            <table class="students-table">
                 <thead>
                     <tr>
-                        <th class="col-user">Uživatel</th>
-                        <th class="col-email">{{ l.s('system.manage_users.login_method.title') }}</th>
+                        <th class="col-student">Uživatel</th>
+                        <th class="col-field">{{ l.s('system.manage_users.login_method.title') }}</th>
                         <th class="col-status">Status</th>
-                        <th class="col-last-login">Poslední přihlášení</th>
+                        <th class="col-average">Poslední přihlášení</th>
                         <th class="col-actions"></th>
                     </tr>
                 </thead>
                 <tbody>
                     @for (user of users; track user.id) {
                     <tr class="clickable-row" (click)="selectUser(user)">
-                        <td class="col-user">
-                            <div class="user-cell">
-                                <div class="user-avatar-sm">
-                                    <div class="avatar--image">
-                                        <img [src]="avatarService.getAvatar(user.avatar, user.full_name)" [alt]="user.full_name">
-                                    </div>
+                        <td class="col-student">
+                            <div class="student-cell">
+                                <div class="student-avatar-sm">
+                                    <img [src]="avatarService.getAvatar(user.avatar, user.full_name)" [alt]="user.full_name">
                                 </div>
-                                <div class="user-name-cell">
+                                <div class="student-name-cell">
                                     <span class="name">{{ user.full_name }}</span>
-                                    <span class="username">{{ user.username }}</span>
+                                    <div class="row" style="gap: 0.5rem; align-items: center;">
+                                        <span class="email">{{ user.username }}</span>
+                                        <span class="badge" [style.background]="'var(--surface-3)'" [style.color]="'var(--text-muted)'" style="font-size: 9px; padding: 1px 4px; border-radius: 3px; font-weight: 600; text-transform: uppercase;">{{ user.role }}</span>
+                                    </div>
                                 </div>
                             </div>
                         </td>
-                        <td class="col-email">{{ l.s('system.manage_users.login_method.' + user.login_type) }}</td>
+                        <td class="col-field">{{ l.s('system.manage_users.login_method.' + user.login_type) }}</td>
                         <td class="col-status">
                             <span class="status-pill" [class]="user.status">
-                                <span class="status-dot"></span>
                                 {{ getStatusText(user.status) }}
                             </span>
                         </td>
-                        <td class="col-last-login">
-                            <span class="timestamp">{{ formatLastLogin(user.last_login) }}</span>
+                        <td class="col-average">
+                            <span class="absence-value">{{ formatLastLogin(user.last_login) }}</span>
                         </td>
                         <td class="col-actions">
                             <button class="row-action"
@@ -1115,10 +1229,8 @@
                                     <div class="list">
                                         @for (p of unlinkedPersons; track p.person_id) {
                                         <div class="option row" style="gap: .75rem" (click)="$event.stopPropagation(); dropdownManager.selected_dropdown = ''; onPersonSelect(p.person_id)">
-                                            <div class="user-avatar-sm" style="width: 28px; height: 28px; font-size: 10px;">
-                                                <div class="avatar--image">
-                                                    <img [src]="avatarService.getAvatar(p.avatar, p.first_name + ' ' + p.last_name)" [alt]="p.first_name">
-                                                </div>
+                                            <div class="student-avatar-sm" style="width: 28px; height: 28px; font-size: 10px;">
+                                                <img [src]="avatarService.getAvatar(p.avatar, p.first_name + ' ' + p.last_name)" [alt]="p.first_name">
                                             </div>
                                             <div class="column">
                                                 {{ p.first_name }} {{ p.last_name }}
