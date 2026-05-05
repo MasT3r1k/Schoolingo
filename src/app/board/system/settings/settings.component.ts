@@ -885,6 +885,7 @@ public school_types = SchoolTypes;
     this.modalManager.addModal(
       'changelog',
       {
+        icon: 'history',
         title: 'system.changelog',
         closeable: true,
         items: [
