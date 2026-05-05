@@ -1,19 +1,18 @@
 <div class="manageusers-page card">
     @if (isDetailLoading) {
-    <div class="detail-loading">
+    <div class="loading-state" style="padding: 5rem;">
         <div class="loading-spinner"></div>
         <p>Načítání detailu uživatele...</p>
     </div>
     } @else if (selectedUser) {
     <!-- User Detail View -->
-    <div class="detail-view list-view">
-        <!-- Detail Header -->
+    <div class="detail-view">
         <div class="detail-header">
             <button class="btn-back" (click)="closeDetail()">
                 <i-tabler name="arrow-left"></i-tabler>
                 <span>Zpět na seznam uživatelů</span>
             </button>
-            <h1 class="detail-title">Karta uživatele</h1>
+            <h2 class="detail-title">Karta uživatele</h2>
             <div class="detail-actions">
                 <button class="action-btn" title="Resetovat heslo" (click)="setActiveTab('security')">
                     <i-tabler name="key"></i-tabler>
@@ -32,31 +31,19 @@
             <aside class="profile-sidebar">
                 <div class="profile-card">
                     <div class="profile-avatar">
-                        <img [src]="avatarService.getAvatar(selectedUser.avatar, selectedUser.full_name)" [alt]="selectedUser.full_name">
-                        <div class="status-dot" [class]="selectedUser.status"></div>
+                        <div class="avatar--image">
+                            <img [src]="avatarService.getAvatar(selectedUser.avatar, selectedUser.full_name)" [alt]="selectedUser.full_name">
+                        </div>
                     </div>
-                    <h1 class="profile-name">{{ selectedUser.full_name }}</h1>
+                    <div class="status-dot" [class]="selectedUser.status"></div>
+                    <h3 class="profile-name">{{ selectedUser.full_name }}</h3>
                     <div class="profile-username">
                         <i-tabler name="at"></i-tabler>
                         {{ selectedUser.username }}
                     </div>
 
-                    @if (selectedUser.birthday) {
-                    <div class="student-birthday">
-                        {{ Utils.formatDateShort(selectedUser.birthday) }}
-                        ({{Utils.getAge(Utils.makeMoment(selectedUser.birthday))}} let,
-                        {{ l.s('genders.' + (selectedUser.gender || 'unknown')) }})
-                    </div>
-                    }
-
-                    @if (selectedUser.role === 'student' && selectedUser.student?.class_name) {
-                    <div class="profile-class">
-                        {{ l.s('students.class') }}: {{ selectedUser.student.class_name }}
-                    </div>
-                    }
-
                     <div class="profile-badges">
-                        <span class="status-badge" [class]="selectedUser.role">
+                        <span class="status-badge">
                             <i-tabler [name]="getRoleIcon(selectedUser.role)"></i-tabler>
                             {{ getRoleText(selectedUser.role) }}
                         </span>
@@ -66,87 +53,60 @@
                 <!-- Quick Stats -->
                 <div class="quick-stats">
                     <div class="stat-card">
-                        <div class="stat-icon">
-                            <i-tabler name="clock"></i-tabler>
-                        </div>
+                        <div class="stat-icon"><i-tabler name="clock"></i-tabler></div>
                         <div class="stat-info">
                             <span class="stat-value">{{ formatLastLogin(selectedUser.last_login) }}</span>
                             <span class="stat-label">Poslední přihlášení</span>
                         </div>
                     </div>
                     <div class="stat-card">
-                        <div class="stat-icon">
-                            <i-tabler name="calendar"></i-tabler>
-                        </div>
+                        <div class="stat-icon"><i-tabler name="calendar"></i-tabler></div>
                         <div class="stat-info">
                             <span class="stat-value">{{ selectedUser.created_at | date:'dd.MM.yyyy' }}</span>
-                            <span class="stat-label">Vytvořen</span>
+                            <span class="stat-label">Datum vytvoření</span>
                         </div>
                     </div>
-                    <div class="stat-card" [class.stat-card--success]="selectedUser.logins_7days > 0">
-                        <div class="stat-icon">
-                            <i-tabler name="login"></i-tabler>
-                        </div>
+                    @if (selectedUser.logins_7days > 0) {
+                    <div class="stat-card">
+                        <div class="stat-icon"><i-tabler name="login"></i-tabler></div>
                         <div class="stat-info">
                             <span class="stat-value">{{ selectedUser.logins_7days }}</span>
                             <span class="stat-label">Přihlášení (7 dní)</span>
                         </div>
                     </div>
-                    @if (selectedUser.failed_logins_7days > 0) {
-                    <div class="stat-card stat-card--danger">
-                        <div class="stat-icon">
-                            <i-tabler name="shield-x"></i-tabler>
-                        </div>
-                        <div class="stat-info">
-                            <span class="stat-value">{{ selectedUser.failed_logins_7days }}</span>
-                            <span class="stat-label">Neúspěšné pokusy</span>
-                        </div>
-                    </div>
                     }
                 </div>
 
-                <!-- Quick Contact -->
-                @if (selectedUser.emails.length > 0) {
-                <div class="quick-contact">
-                    <h3>Kontakty</h3>
-                    @for (email of selectedUser.emails; track $index) {
-                    <a href="mailto:{{email.email}}" class="contact-item">
-                        <i-tabler name="mail"></i-tabler>
-                        <span>{{ email.email }}</span>
-                        @if (email.is_verified) {
-                        <i-tabler name="circle-check"
-                            style="color: var(--success); width: 14px; height: 14px; margin-left: auto;"></i-tabler>
-                        }
-                    </a>
-                    }
-                    @for (phone of selectedUser.phones; track $index) {
-                    <div class="contact-item">
-                        <i-tabler name="phone"></i-tabler>
-                        <span>{{ phone.code }} {{ phone.number }}</span>
+                <!-- Contacts -->
+                @if (selectedUser.emails.length > 0 || selectedUser.phones.length > 0) {
+                <div class="info-card">
+                    <div class="card-header">
+                        <i-tabler name="address-book"></i-tabler>
+                        <h3>Kontakty</h3>
                     </div>
-                    }
+                    <div style="padding: 1rem; display: flex; flex-direction: column; gap: 0.75rem;">
+                        @for (email of selectedUser.emails; track $index) {
+                        <div style="display: flex; align-items: center; gap: 0.5rem; font-size: 0.85rem;">
+                            <i-tabler name="mail" style="width: 14px; color: var(--text-muted);"></i-tabler>
+                            <span style="overflow: hidden; text-overflow: ellipsis;">{{ email.email }}</span>
+                        </div>
+                        }
+                        @for (phone of selectedUser.phones; track $index) {
+                        <div style="display: flex; align-items: center; gap: 0.5rem; font-size: 0.85rem;">
+                            <i-tabler name="phone" style="width: 14px; color: var(--text-muted);"></i-tabler>
+                            <span>{{ phone.code }} {{ phone.number }}</span>
+                        </div>
+                        }
+                    </div>
                 </div>
                 }
-
-                <!-- 2FA status -->
-                <div class="sidebar-security">
-                    <div class="security-flag" [class.active]="selectedUser['2fa']">
-                        <i-tabler [name]="selectedUser['2fa'] ? 'shield-check' : 'shield-off'"></i-tabler>
-                        <span>{{ selectedUser['2fa'] ? '2FA aktivní' : '2FA neaktivní' }}</span>
-                    </div>
-                </div>
             </aside>
 
             <!-- Main Content -->
             <main class="detail-main">
-                <!-- Tabs Navigation -->
                 <div class="tabs-wrapper">
-                    <button class="tab-scroll-btn left" *ngIf="showLeftScroll" (click)="scrollTabs(-1)">
-                        <i-tabler name="chevron-left"></i-tabler>
-                    </button>
-                    <nav class="tabs-nav" #tabsNav (scroll)="checkScroll()">
-                        <div class="tab-btn" [class.active]="activeTab === 'overview'"
-                            (click)="setActiveTab('overview')">
+                    <nav class="tabs-nav">
+                        <div class="tab-btn" [class.active]="activeTab === 'overview'" (click)="setActiveTab('overview')">
                             <i-tabler name="layout-dashboard"></i-tabler>
                             <span>Přehled</span>
                         </div>
@@ -157,8 +117,7 @@
                         </div>
                         }
                         @if (selectedUser.role === 'teacher') {
-                        <div class="tab-btn" [class.active]="activeTab === 'employee'"
-                            (click)="setActiveTab('employee')">
+                        <div class="tab-btn" [class.active]="activeTab === 'employee'" (click)="setActiveTab('employee')">
                             <i-tabler name="user-check"></i-tabler>
                             <span>Zaměstnanec</span>
                         </div>
@@ -167,49 +126,33 @@
                             <i-tabler name="edit"></i-tabler>
                             <span>Upravit</span>
                         </div>
-                        <div class="tab-btn" [class.active]="activeTab === 'security'"
-                            (click)="setActiveTab('security')">
+                        <div class="tab-btn" [class.active]="activeTab === 'security'" (click)="setActiveTab('security')">
                             <i-tabler name="shield-lock"></i-tabler>
                             <span>Bezpečnost</span>
                         </div>
-                        <div class="tab-btn" [class.active]="activeTab === 'activity'"
-                            (click)="setActiveTab('activity')">
+                        <div class="tab-btn" [class.active]="activeTab === 'activity'" (click)="setActiveTab('activity')">
                             <i-tabler name="activity"></i-tabler>
                             <span>Aktivita</span>
                         </div>
-                        <div class="tab-btn" [class.active]="activeTab === 'messages'"
-                            (click)="setActiveTab('messages')">
+                        <div class="tab-btn" [class.active]="activeTab === 'messages'" (click)="setActiveTab('messages')">
                             <i-tabler name="message-dots"></i-tabler>
-                            <span>Evidence zpráv</span>
-                            @if (selectedUser.message_count !== undefined && selectedUser.message_count > 0) {
-                            <span class="count-badge" style="margin-left: 0.5rem; font-size: 10px; height: 16px; min-width: 16px; padding: 0 4px; display: inline-flex; align-items: center; justify-content: center; background: var(--border); color: var(--text-muted); border-radius: 4px;">{{ selectedUser.message_count }}</span>
-                            }
+                            <span>Zprávy</span>
                         </div>
-                        <div class="tab-btn" [class.active]="activeTab === 'files'"
-                            (click)="setActiveTab('files')">
+                        <div class="tab-btn" [class.active]="activeTab === 'files'" (click)="setActiveTab('files')">
                             <i-tabler name="files"></i-tabler>
-                            <span>Evidence souborů</span>
-                            @if (selectedUser.file_count !== undefined && selectedUser.file_count > 0) {
-                            <span class="count-badge" style="margin-left: 0.5rem; font-size: 10px; height: 16px; min-width: 16px; padding: 0 4px; display: inline-flex; align-items: center; justify-content: center; background: var(--border); color: var(--text-muted); border-radius: 4px;">{{ selectedUser.file_count }}</span>
-                            }
+                            <span>Soubory</span>
                         </div>
                     </nav>
-                    <button class="tab-scroll-btn right" *ngIf="showRightScroll" (click)="scrollTabs(1)">
-                        <i-tabler name="chevron-right"></i-tabler>
-                    </button>
                 </div>
 
-                <!-- Tab Content -->
                 <div class="tab-content">
-
                     <!-- ============ OVERVIEW TAB ============ -->
                     @if (activeTab === 'overview') {
                     <div class="overview-grid">
-                        <!-- Personal Info -->
                         <div class="info-card full">
                             <div class="card-header">
                                 <i-tabler name="user"></i-tabler>
-                                <h3>Osobní informace</h3>
+                                <h3>Základní údaje</h3>
                             </div>
                             <div class="data-grid">
                                 <div class="data-item">
@@ -217,11 +160,11 @@
                                     <span class="data-value">{{ selectedUser.username }}</span>
                                 </div>
                                 <div class="data-item">
-                                    <span class="data-label">Role</span>
+                                    <span class="data-label">Role v systému</span>
                                     <span class="data-value">{{ getRoleText(selectedUser.role) }}</span>
                                 </div>
                                 <div class="data-item">
-                                    <span class="data-label">Jméno</span>
+                                    <span class="data-label">Křestní jméno</span>
                                     <span class="data-value">{{ selectedUser.first_name }}</span>
                                 </div>
                                 <div class="data-item">
@@ -234,302 +177,82 @@
                                     <span class="data-value">{{ selectedUser.birthday | date:'dd.MM.yyyy' }}</span>
                                 </div>
                                 }
-                                @if (selectedUser.gender) {
                                 <div class="data-item">
-                                    <span class="data-label">Pohlaví</span>
-                                    <span class="data-value">{{ selectedUser.gender === 'male' ? 'Muž' :
-                                        selectedUser.gender === 'female' ? 'Žena' : selectedUser.gender }}</span>
-                                </div>
-                                }
-                                <div class="data-item">
-                                    <span class="data-label">Způsob přihlášení</span>
-                                    <span class="data-value">{{ l.s('system.manage_users.login_method.' +
-                                        selectedUser.login_type) }}</span>
-                                </div>
-                                <div class="data-item">
-                                    <span class="data-label">Jazyk</span>
-                                    <span class="data-value">{{ l.getLanguage(selectedUser.locale ?? 'cs')?.name || 'Výchozí' }}</span>
+                                    <span class="data-label">Typ účtu</span>
+                                    <span class="data-value">{{ l.s('system.manage_users.login_method.' + selectedUser.login_type) }}</span>
                                 </div>
                             </div>
                         </div>
-
-                        <!-- Emails -->
-                        @if (selectedUser.emails.length > 0) {
-                        <div class="info-card half">
-                            <div class="card-header">
-                                <i-tabler name="mail"></i-tabler>
-                                <h3>E-mailové adresy</h3>
-                            </div>
-                            <div class="contact-list">
-                                @for (email of selectedUser.emails; track $index) {
-                                <div class="contact-row">
-                                    <div class="contact-row__icon email">
-                                        <i-tabler name="mail"></i-tabler>
-                                    </div>
-                                    <div class="contact-row__content">
-                                        <span class="contact-row__value">{{ email.email }}</span>
-                                        @if (email.description) {
-                                        <span class="contact-row__desc">{{ email.description }}</span>
-                                        }
-                                    </div>
-                                    <span class="badge"
-                                        [class]="email.is_verified ? 'badge--success' : 'badge--warning'">
-                                        <i-tabler [name]="email.is_verified ? 'circle-check' : 'clock'"></i-tabler>
-                                        {{ email.is_verified ? 'Ověřený' : 'Čeká' }}
-                                    </span>
-                                </div>
-                                }
-                            </div>
-                        </div>
-                        }
-
-                        <!-- Phones -->
-                        @if (selectedUser.phones.length > 0) {
-                        <div class="info-card half">
-                            <div class="card-header">
-                                <i-tabler name="phone"></i-tabler>
-                                <h3>Telefonní čísla</h3>
-                            </div>
-                            <div class="contact-list">
-                                @for (phone of selectedUser.phones; track $index) {
-                                <div class="contact-row">
-                                    <div class="contact-row__icon phone">
-                                        <i-tabler name="phone"></i-tabler>
-                                    </div>
-                                    <div class="contact-row__content">
-                                        <span class="contact-row__value">{{ phone.code }} {{ phone.number }}</span>
-                                        @if (phone.description) {
-                                        <span class="contact-row__desc">{{ phone.description }}</span>
-                                        }
-                                    </div>
-                                </div>
-                                }
-                            </div>
-                        </div>
-                        }
-
-                        <!-- Parent specific info - showing directly in overview -->
-                        @if (selectedUser.role === 'parent' && selectedUser.parent) {
-                        <div class="info-card full">
-                            <div class="card-header">
-                                <i-tabler name="users-group"></i-tabler>
-                                <h3>Údaje o zákonném zástupci</h3>
-                            </div>
-                            <div class="data-grid">
-                                <div class="data-item">
-                                    <span class="data-label">Zástupce</span>
-                                    <span class="data-value">{{ selectedUser.parent.parent_full_name }}</span>
-                                </div>
-                                <div class="data-item full">
-                                    <span class="data-label">Přiřazené děti (/studenti)</span>
-                                    <div class="children-list"
-                                        style="display: flex; gap: 0.5rem; flex-wrap: wrap; margin-top: 0.5rem;">
-                                        @for (child of selectedUser.parent.children; track child.child_id) {
-                                        <div class="child-chip"
-                                            style="background: var(--bg-secondary); border: 1px solid var(--border); padding: 0.4rem 0.8rem; border-radius: 6px; display: flex; align-items: center; gap: 0.5rem; cursor: pointer;"
-                                            (click)="router.navigate(['/board/students/detail', child.child_id], { queryParams: { returnUrl: '/board/system/manageusers' } })"
-                                            title="Zobrazit detail studenta">
-                                            <i-tabler name="user"
-                                                style="width: 14px; color: var(--text-muted);"></i-tabler>
-                                            <strong>{{ child.child_full_name }}</strong>
-                                            @if (child.child_classname) {
-                                            <span style="font-size: 11px; opacity: 0.7;">({{ child.child_classname
-                                                }})</span>
-                                            }
-                                        </div>
-                                        } @empty {
-                                        <span class="data-value muted">Žádné přiřazené děti</span>
-                                        }
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        }
                     </div>
                     }
 
                     <!-- ============ STUDENT TAB ============ -->
                     @if (activeTab === 'student') {
-                    <div class="student-section">
+                    <div class="overview-grid">
                         @if (selectedUser.student) {
-                        <div class="overview-grid">
-                            <div class="info-card full">
-                                <div class="card-header">
-                                    <i-tabler name="school"></i-tabler>
-                                    <h3>Studijní údaje</h3>
+                        <div class="info-card full">
+                            <div class="card-header">
+                                <i-tabler name="school"></i-tabler>
+                                <h3>Studijní údaje</h3>
+                            </div>
+                            <div class="data-grid">
+                                <div class="data-item">
+                                    <span class="data-label">Třída</span>
+                                    <span class="data-value">{{ selectedUser.student.class_name || 'Neuvedeno' }}</span>
                                 </div>
-                                <div class="data-grid">
-                                    <div class="data-item">
-                                        <span class="data-label">Třída</span>
-                                        <span class="data-value">{{ selectedUser.student.class_name || 'Neuvedeno'
-                                            }}</span>
-                                    </div>
-                                    <div class="data-item">
-                                        <span class="data-label">Obor</span>
-                                        <span class="data-value">{{ selectedUser.student.field_of_study || 'Neuvedeno'
-                                            }}</span>
-                                    </div>
-                                    <div class="data-item">
-                                        <span class="data-label">Ročník</span>
-                                        <span class="data-value">{{ selectedUser.student.year || 'Neuvedeno' }}.
-                                            ročník</span>
-                                    </div>
-                                    <div class="data-item">
-                                        <span class="data-label">Třídní učitel</span>
-                                        <span class="data-value">{{ selectedUser.student.teacher_name || 'Neuvedeno'
-                                            }}</span>
-                                    </div>
-                                    <div class="data-item">
-                                        <span class="data-label">Průměrný prospěch</span>
-                                        <span class="data-value">{{ selectedUser.student.average_grade || 'Neuvedeno'
-                                            }}</span>
-                                    </div>
-                                    <div class="data-item">
-                                        <span class="data-label">Celková absence</span>
-                                        <span class="data-value">{{ selectedUser.student.absence_rate || 'Neuvedeno'
-                                            }}%</span>
-                                    </div>
+                                <div class="data-item">
+                                    <span class="data-label">Obor</span>
+                                    <span class="data-value">{{ selectedUser.student.field_of_study || 'Neuvedeno' }}</span>
+                                </div>
+                                <div class="data-item">
+                                    <span class="data-label">Průměr</span>
+                                    <span class="data-value">{{ selectedUser.student.average_grade || '—' }}</span>
+                                </div>
+                                <div class="data-item">
+                                    <span class="data-label">Absence</span>
+                                    <span class="data-value">{{ selectedUser.student.absence_rate || 0 }}%</span>
                                 </div>
                             </div>
-
-                            <div class="info-card full">
-                                <div class="card-header">
-                                    <i-tabler name="map-pin"></i-tabler>
-                                    <h3>Bydliště a kontakty studenta</h3>
-                                </div>
-                                <div class="data-grid">
-                                    <div class="data-item">
-                                        <span class="data-label">Adresa</span>
-                                        <span class="data-value">{{ selectedUser.student.street }} {{
-                                            selectedUser.student.house_number }}, {{ selectedUser.student.city_name
-                                            }}</span>
-                                    </div>
-                                    <div class="data-item">
-                                        <span class="data-label">Email studenta</span>
-                                        <span class="data-value">{{ selectedUser.student.email || '—' }}</span>
-                                    </div>
-                                    <div class="data-item">
-                                        <span class="data-label">Telefon studenta</span>
-                                        <span class="data-value">{{ selectedUser.student.phone || '—' }}</span>
-                                    </div>
-                                </div>
-                                <div class="card-footer"
-                                    style="padding: 1.25rem; border-top: 1px solid var(--border); display: flex; justify-content: flex-end; background: var(--surface-2); border-bottom-left-radius: var(--radius-lg); border-bottom-right-radius: var(--radius-lg);">
-                                    <button class="btn btn--primary"
-                                        (click)="router.navigate(['/students', selectedUser.person_id], { queryParams: { returnUrl: '/board/system/manageusers' } })"
-                                        style="display: flex; align-items: center; gap: 0.5rem;">
-                                        <i-tabler name="external-link" style="width: 18px; height: 18px;"></i-tabler>
-                                        Přejít na detail studenta
-                                    </button>
-                                </div>
+                            <div class="edit-footer">
+                                <button class="btn btn--primary btn--sm" (click)="router.navigate(['/students', selectedUser.person_id])">Otevřít kartu studenta</button>
                             </div>
                         </div>
                         } @else {
-                        <div class="detail-loading">
-                            <div class="loading-spinner"></div>
-                            <p>Načítání studijních údajů...</p>
-                        </div>
+                        <div class="loading-state"><div class="loading-spinner"></div></div>
                         }
                     </div>
                     }
 
                     <!-- ============ EMPLOYEE TAB ============ -->
                     @if (activeTab === 'employee') {
-                    <div class="employee-section">
+                    <div class="overview-grid">
                         @if (selectedUser.employee) {
-                        <div class="overview-grid">
-                            <div class="info-card full">
-                                <div class="card-header">
-                                    <i-tabler name="briefcase"></i-tabler>
-                                    <h3>Pracovní údaje</h3>
-                                </div>
-                                <div class="data-grid">
-                                    <div class="data-item">
-                                        <span class="data-label">Číslo zaměstnance</span>
-                                        <span class="data-value">{{ selectedUser.employee.employee_number || 'Neuvedeno'
-                                            }}</span>
-                                    </div>
-                                    <div class="data-item">
-                                        <span class="data-label">Typ úvazku</span>
-                                        <span class="data-value">
-                                            @switch (selectedUser.employee.contract_type) {
-                                            @case ('fulltime') { Plný úvazek }
-                                            @case ('parttime') { Částečný úvazek }
-                                            @case ('dpp') { DPP }
-                                            @case ('dpc') { DPČ }
-                                            @default { Neuvedeno }
-                                            }
-                                        </span>
-                                    </div>
-                                    <div class="data-item">
-                                        <span class="data-label">Oddělení</span>
-                                        <span class="data-value">{{ selectedUser.employee.department || 'Neuvedeno'
-                                            }}</span>
-                                    </div>
-                                    <div class="data-item">
-                                        <span class="data-label">Počet hodin/týden</span>
-                                        <span class="data-value">{{ selectedUser.employee.hours_per_week || 'Neuvedeno'
-                                            }}h</span>
-                                    </div>
-                                    <div class="data-item">
-                                        <span class="data-label">Kabinet</span>
-                                        <span class="data-value">m. č. {{ selectedUser.employee.cabinet || 'Neuvedeno'
-                                            }}</span>
-                                    </div>
-                                    <div class="data-item">
-                                        <span class="data-label">Datum nástupu</span>
-                                        <span class="data-value">{{ selectedUser.employee.start_date | date:'dd.MM.yyyy'
-                                            }}</span>
-                                    </div>
-                                </div>
-                                <div class="card-footer"
-                                    style="padding: 1.25rem; border-top: 1px solid var(--border); display: flex; justify-content: flex-end; background: var(--surface-2); border-bottom-left-radius: var(--radius-lg); border-bottom-right-radius: var(--radius-lg);">
-                                    <button class="btn btn--primary" (click)="router.navigate(['/board/employees'])"
-                                        style="display: flex; align-items: center; gap: 0.5rem;">
-                                        <i-tabler name="external-link" style="width: 18px; height: 18px;"></i-tabler>
-                                        Přejít do správy zaměstnanců
-                                    </button>
-                                </div>
+                        <div class="info-card full">
+                            <div class="card-header">
+                                <i-tabler name="briefcase"></i-tabler>
+                                <h3>Pracovní údaje</h3>
                             </div>
-
-                            <div class="info-card full">
-                                <div class="card-header">
-                                    <i-tabler name="beach"></i-tabler>
-                                    <h3>Dovolená a docházka</h3>
+                            <div class="data-grid">
+                                <div class="data-item">
+                                    <span class="data-label">Číslo zaměstnance</span>
+                                    <span class="data-value">{{ selectedUser.employee.employee_number || '—' }}</span>
                                 </div>
-                                <div class="quick-stats" style="grid-template-columns: repeat(3, 1fr); margin-top: 0;">
-                                    <div class="stat-card">
-                                        <div class="stat-icon"><i-tabler name="calendar"></i-tabler></div>
-                                        <div class="stat-info">
-                                            <span class="stat-value">{{ selectedUser.employee.vacation_remaining || 0 }}
-                                                dní</span>
-                                            <span class="stat-label">Zbývající dovolená</span>
-                                        </div>
-                                    </div>
-                                    <div class="stat-card">
-                                        <div class="stat-icon"><i-tabler name="clock"></i-tabler></div>
-                                        <div class="stat-info">
-                                            <span class="stat-value">{{ selectedUser.employee.worked_hours_month || 0 }}
-                                                h</span>
-                                            <span class="stat-label">Odpracováno (měsíc)</span>
-                                        </div>
-                                    </div>
-                                    <div class="stat-card">
-                                        <div class="stat-icon"><i-tabler name="alert-circle"></i-tabler></div>
-                                        <div class="stat-info">
-                                            <span class="stat-value">{{ selectedUser.employee.pending_requests || 0
-                                                }}</span>
-                                            <span class="stat-label">Žádosti ke schválení</span>
-                                        </div>
-                                    </div>
+                                <div class="data-item">
+                                    <span class="data-label">Oddělení</span>
+                                    <span class="data-value">{{ selectedUser.employee.department || '—' }}</span>
+                                </div>
+                                <div class="data-item">
+                                    <span class="data-label">Kabinet</span>
+                                    <span class="data-value">{{ selectedUser.employee.cabinet || '—' }}</span>
+                                </div>
+                                <div class="data-item">
+                                    <span class="data-label">Úvazek</span>
+                                    <span class="data-value">{{ selectedUser.employee.contract_type || '—' }}</span>
                                 </div>
                             </div>
                         </div>
                         } @else {
-                        <div class="detail-loading">
-                            <div class="loading-spinner"></div>
-                            <p>Načítání pracovních údajů...</p>
-                        </div>
+                        <div class="loading-state"><div class="loading-spinner"></div></div>
                         }
                     </div>
                     }
@@ -537,132 +260,43 @@
                     <!-- ============ EDIT TAB ============ -->
                     @if (activeTab === 'edit') {
                     <div class="edit-section">
-                        <!-- Success / Error Banner -->
-                        @if (saveSuccess) {
-                        <div class="alert alert--success">
-                            <i-tabler name="circle-check"></i-tabler>
-                            <span>Změny byly úspěšně uloženy.</span>
-                        </div>
-                        }
-                        @if (saveError) {
-                        <div class="alert alert--danger">
-                            <i-tabler name="alert-circle"></i-tabler>
-                            <span>{{ saveError }}</span>
-                        </div>
-                        }
-
+                        @if (saveSuccess) { <div class="alert alert--success"><i-tabler name="circle-check"></i-tabler> Změny uloženy</div> }
+                        @if (saveError) { <div class="alert alert--danger"><i-tabler name="alert-circle"></i-tabler> {{ saveError }}</div> }
+                        
                         <div class="edit-form-card">
                             <div class="card-header">
                                 <i-tabler name="user-cog"></i-tabler>
-                                <h3>Základní informace</h3>
+                                <h3>Upravit informace</h3>
                             </div>
-
                             <div class="edit-form">
-                                <!-- Username -->
                                 <div class="form-group">
-                                    <label class="form-label" for="edit-username">
-                                        Uživatelské jméno <span class="required">*</span>
-                                    </label>
-                                    <input type="text" id="edit-username" class="form-input"
-                                        [(ngModel)]="editForm.username" name="edit-username" autocomplete="off">
+                                    <label class="form-label">Uživatelské jméno</label>
+                                    <input type="text" class="form-input" [(ngModel)]="editForm.username">
                                 </div>
-
-                                <!-- Name Row -->
                                 <div class="form-row">
                                     <div class="form-group">
-                                        <label class="form-label" for="edit-firstname">
-                                            Jméno <span class="required">*</span>
-                                        </label>
-                                        <input type="text" id="edit-firstname" class="form-input"
-                                            [(ngModel)]="editForm.first_name" name="edit-firstname" autocomplete="off">
+                                        <label class="form-label">Jméno</label>
+                                        <input type="text" class="form-input" [(ngModel)]="editForm.first_name">
                                     </div>
                                     <div class="form-group">
-                                        <label class="form-label" for="edit-lastname">
-                                            Příjmení <span class="required">*</span>
-                                        </label>
-                                        <input type="text" id="edit-lastname" class="form-input"
-                                            [(ngModel)]="editForm.last_name" name="edit-lastname" autocomplete="off">
+                                        <label class="form-label">Příjmení</label>
+                                        <input type="text" class="form-input" [(ngModel)]="editForm.last_name">
                                     </div>
                                 </div>
-
-                                <!-- Role -->
                                 <div class="form-group">
                                     <label class="form-label">Role</label>
-                                    <div class="custom-select" id="edit-role-select" style="width: 100%"
-                                        (click)="$event.stopPropagation(); dropdownManager.selected_dropdown = dropdownManager.selected_dropdown == 'edit_user_role' ? '' : 'edit_user_role'">
-                                        <div class="selected-value">
-                                            <div class="row" style="gap: .5rem">
-                                                {{ getRoleText(editForm.role) }}
-                                            </div>
-                                            <i-tabler name="chevron-down"></i-tabler>
-                                        </div>
-                                        @if (dropdownManager.selected_dropdown == 'edit_user_role') {
-                                        <div class="options-dropdown">
-                                            <div class="list">
-                                                @for (opt of getFilterOptions('role'); track $index) {
-                                                @if (opt.value !== 'all') {
-                                                <div class="option row" style="gap: .5rem"
-                                                    (click)="$event.stopPropagation(); dropdownManager.selected_dropdown = ''; editForm.role = opt.value">
-                                                    {{ opt.label }}
-                                                </div>
-                                                }
-                                                }
-                                            </div>
-                                        </div>
+                                    <select class="form-input" [(ngModel)]="editForm.role">
+                                        @for (opt of getFilterOptions('role'); track $index) {
+                                            @if (opt.value !== 'all') { <option [value]="opt.value">{{ opt.label }}</option> }
                                         }
-                                    </div>
-                                </div>
-
-                                <!-- Birthday & Gender -->
-                                <div class="form-row">
-                                    <div class="form-group">
-                                        <label class="form-label" for="edit-birthday">Datum narození</label>
-                                        <app-calendar id="edit_user_birthday" [value]="editForm.birthday"
-                                            (valueChange)="editForm.birthday = $event" size="full"></app-calendar>
-                                    </div>
-                                    <div class="form-group">
-                                        <label class="form-label">Pohlaví</label>
-                                        <div class="custom-select" id="edit-gender-select" style="width: 100%"
-                                            (click)="$event.stopPropagation(); dropdownManager.selected_dropdown = dropdownManager.selected_dropdown == 'edit_user_gender' ? '' : 'edit_user_gender'">
-                                            <div class="selected-value">
-                                                <div class="row" style="gap: .5rem">
-                                                    {{ editForm.gender === 'male' ? 'Muž' : editForm.gender === 'female'
-                                                    ? 'Žena' : 'Neurčeno' }}
-                                                </div>
-                                                <i-tabler name="chevron-down"></i-tabler>
-                                            </div>
-                                            @if (dropdownManager.selected_dropdown == 'edit_user_gender') {
-                                            <div class="options-dropdown">
-                                                <div class="list">
-                                                    <div class="option"
-                                                        (click)="$event.stopPropagation(); dropdownManager.selected_dropdown = ''; editForm.gender = ''">
-                                                        Neurčeno</div>
-                                                    <div class="option"
-                                                        (click)="$event.stopPropagation(); dropdownManager.selected_dropdown = ''; editForm.gender = 'male'">
-                                                        Muž</div>
-                                                    <div class="option"
-                                                        (click)="$event.stopPropagation(); dropdownManager.selected_dropdown = ''; editForm.gender = 'female'">
-                                                        Žena</div>
-                                                </div>
-                                            </div>
-                                            }
-                                        </div>
-                                    </div>
+                                    </select>
                                 </div>
                             </div>
-                        </div>
-
-                        <div class="edit-footer">
-                            <button class="btn btn--ghost" (click)="fillEditForm()" [disabled]="isSaving">
-                                <i-tabler name="refresh"></i-tabler>
-                                Obnovit
-                            </button>
-                            <button class="btn btn--primary" (click)="saveUser()" [disabled]="isSaving">
-                                @if (isSaving) {
-                                <span class="btn-spinner"></span>
-                                }
-                                {{ isSaving ? 'Ukládám...' : 'Uložit změny' }}
-                            </button>
+                            <div class="edit-footer">
+                                <button class="btn btn--primary" (click)="saveUser()" [disabled]="isSaving">
+                                    {{ isSaving ? 'Ukládám...' : 'Uložit změny' }}
+                                </button>
+                            </div>
                         </div>
                     </div>
                     }
@@ -670,169 +304,55 @@
                     <!-- ============ SECURITY TAB ============ -->
                     @if (activeTab === 'security') {
                     <div class="security-section">
-
-                        <!-- Reset Password Card -->
-                        <div class="security-card-detail">
-                            <div class="security-card-header">
-                                <div class="security-card-icon password-icon">
-                                    <i-tabler name="key"></i-tabler>
-                                </div>
-                                <div>
-                                    <h3>Reset hesla</h3>
-                                    <p class="muted">Nastavte nové heslo pro uživatele {{ selectedUser.full_name }}. Po
-                                        resetu budou odhlášena všechna aktivní zařízení.</p>
-                                </div>
+                        <div class="info-card full">
+                            <div class="card-header">
+                                <i-tabler name="shield-lock"></i-tabler>
+                                <h3>Bezpečnost a přístup</h3>
                             </div>
-
-                            @if (resetPasswordSuccess) {
-                            <div class="alert alert--success">
-                                <i-tabler name="circle-check"></i-tabler>
-                                <span>Heslo bylo úspěšně resetováno. Uživatel byl odhlášen ze všech zařízení.</span>
-                            </div>
-                            }
-                            @if (resetPasswordError) {
-                            <div class="alert alert--danger">
-                                <i-tabler name="alert-circle"></i-tabler>
-                                <span>{{ resetPasswordError }}</span>
-                            </div>
-                            }
-
-                            <div class="security-form"
-                                style="display: flex; flex-direction: column; align-items: center; gap: 1.5rem; padding: 2rem 0;">
-                                <div class="reset-illustration"
-                                    style="background: var(--bg-secondary); padding: 2rem; border-radius: 50%; color: var(--text-muted);">
+                            <div style="padding: 2rem; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 1.5rem;">
+                                <div style="background: var(--surface-2); padding: 1.5rem; border-radius: 50%; color: var(--text-muted);">
                                     <i-tabler name="key" style="width: 48px; height: 48px;"></i-tabler>
                                 </div>
-                                <div style="text-align: center; max-width: 400px;">
-                                    <h3>Resetovat heslo uživatele</h3>
-                                    <p class="muted">Kliknutím na tlačítko níže systém vygeneruje nové náhodné heslo a
-                                        okamžitě jej nastaví uživateli.</p>
+                                <div style="max-width: 400px;">
+                                    <h4 style="margin: 0 0 0.5rem 0;">Resetovat heslo uživatele</h4>
+                                    <p style="font-size: 0.9rem; color: var(--text-muted);">Kliknutím na tlačítko vygenerujete nové dočasné heslo. Uživatel bude odhlášen ze všech zařízení.</p>
                                 </div>
-
+                                
                                 @if (resetPasswordForm.generatedPassword) {
-                                <div class="generated-password-box"
-                                    style="width: 100%; max-width: 400px; background: var(--surface-2); border: 1px solid var(--border); padding: 1.5rem; border-radius: var(--radius-lg); text-align: center; border-left: 4px solid var(--success);">
-                                    <span class="data-label" style="display: block; margin-bottom: 0.5rem;">Nové
-                                        vygenerované heslo:</span>
-                                    <div
-                                        style="display: flex; align-items: center; justify-content: center; gap: 1rem;">
-                                        <code
-                                            style="font-size: 1.5rem; font-weight: bold; letter-spacing: 1px; color: var(--success);">{{ resetPasswordForm.generatedPassword }}</code>
-                                        <button type="button" class="btn btn--ghost btn--sm" [title]="'Kopírovat heslo'"
-                                            (click)="Utils.copyTextToClipboard(resetPasswordForm.generatedPassword)">
-                                            <i-tabler name="copy"></i-tabler>
-                                        </button>
-                                    </div>
-                                    <p class="muted" style="font-size: 0.8rem; margin-top: 1rem;">
-                                        <i-tabler name="info-circle"
-                                            style="width: 14px; height: 14px; display: inline; vertical-align: middle;"></i-tabler>
-                                        Upozornění: Toto heslo již nebude znovu zobrazeno.
-                                    </p>
+                                <div style="background: var(--surface-2); border: 1px solid var(--success); padding: 1rem 2rem; border-radius: var(--radius); width: 100%; max-width: 400px;">
+                                    <span style="display: block; font-size: 0.75rem; text-transform: uppercase; margin-bottom: 0.5rem; color: var(--success);">Nové heslo:</span>
+                                    <code style="font-size: 1.5rem; font-weight: 700; color: var(--success);">{{ resetPasswordForm.generatedPassword }}</code>
                                 </div>
                                 }
-
-                                <button class="btn btn--danger btn--lg" (click)="submitResetPassword()"
-                                    [disabled]="isResettingPassword" style="min-width: 200px;">
-                                    @if (isResettingPassword) {
-                                    <span class="btn-spinner"></span>
-                                    } @else {
-                                    <i-tabler name="refresh" style="margin-right: 0.5rem;"></i-tabler>
-                                    }
+                                
+                                <button class="btn btn--danger btn--lg" (click)="submitResetPassword()" [disabled]="isResettingPassword">
                                     {{ isResettingPassword ? 'Generuji...' : 'Resetovat a generovat heslo' }}
                                 </button>
                             </div>
                         </div>
-
-                        <!-- 2FA Info Card -->
-                        <div class="security-card-detail">
-                            <div class="security-card-header">
-                                <div class="security-card-icon" [class.success-icon]="selectedUser['2fa']"
-                                    [class.warning-icon]="!selectedUser['2fa']">
-                                    <i-tabler [name]="selectedUser['2fa'] ? 'shield-check' : 'shield-off'"></i-tabler>
-                                </div>
-                                <div>
-                                    <h3>Dvoufaktorové ověření (2FA)</h3>
-                                    <p class="muted">
-                                        @if (selectedUser['2fa']) {
-                                        Uživatel má aktivní 2FA.
-                                        } @else {
-                                        Uživatel nemá aktivní 2FA. Doporučujeme aktivaci pro zvýšení bezpečnosti.
-                                        }
-                                    </p>
-                                </div>
-                                <span class="badge ml-auto"
-                                    [class]="selectedUser['2fa'] ? 'badge--success' : 'badge--warning'">
-                                    {{ selectedUser['2fa'] ? 'Aktivní' : 'Neaktivní' }}
-                                </span>
-                            </div>
-                        </div>
-
-                        <!-- Password Changed -->
-                        @if (selectedUser.password_changed) {
-                        <div class="security-card-detail security-card-detail--info">
-                            <div class="security-card-header">
-                                <div class="security-card-icon neutral-icon">
-                                    <i-tabler name="lock"></i-tabler>
-                                </div>
-                                <div>
-                                    <h3>Poslední změna hesla</h3>
-                                    <p class="muted">{{ selectedUser.password_changed | date:'dd.MM.yyyy HH:mm' }}</p>
-                                </div>
-                            </div>
-                        </div>
-                        }
                     </div>
                     }
 
                     <!-- ============ ACTIVITY TAB ============ -->
                     @if (activeTab === 'activity') {
-                    <div class="activity-section">
-                        <div class="info-card full">
-                            <div class="card-header">
-                                <i-tabler name="history"></i-tabler>
-                                <h3>Historie přihlášení (posledních 10)</h3>
-                            </div>
-                            @if (selectedUser.login_history.length > 0) {
-                            <div class="login-history-list">
-                                @for (entry of selectedUser.login_history; track $index) {
-                                <div class="login-entry" [class.login-entry--success]="entry.success"
-                                    [class.login-entry--fail]="!entry.success">
-                                    <div class="login-entry__icon">
-                                        <i-tabler [name]="entry.success ? 'login' : 'shield-x'"></i-tabler>
-                                    </div>
-                                    <div class="login-entry__content">
-                                        <div class="login-entry__top">
-                                            <span class="badge"
-                                                [class]="entry.success ? 'badge--success' : 'badge--danger'">
-                                                {{ entry.success ? 'Úspěšné' : 'Neúspěšné' }}
-                                            </span>
-                                            <span class="login-entry__time">{{ entry.created | date:'dd.MM.yyyy HH:mm:ss' }}</span>
-                                        </div>
-                                        <div class="login-entry__details">
-                                            <span class="login-entry__ip">
-                                                <i-tabler name="map-pin"></i-tabler>
-                                                {{ entry.ip || 'Neznámá IP' }}
-                                            </span>
-                                            @if (entry.user_agent) {
-                                            <span class="login-entry__ua">
-                                                <i-tabler name="device-laptop"></i-tabler>
-                                                {{ entry.user_agent.substring(0, 60) }}{{ entry.user_agent.length > 60 ?
-                                                '...' : '' }}
-                                            </span>
-                                            }
-                                        </div>
-                                    </div>
+                    <div class="info-card full">
+                        <div class="card-header">
+                            <i-tabler name="history"></i-tabler>
+                            <h3>Historie přihlášení</h3>
+                        </div>
+                        <div style="display: flex; flex-direction: column;">
+                            @for (entry of selectedUser.login_history; track $index) {
+                            <div class="evidence-item">
+                                <div style="width: 2.5rem; height: 2.5rem; display: flex; align-items: center; justify-content: center; border-radius: 50%;" [style.background]="entry.success ? 'rgba(34, 197, 94, 0.1)' : 'rgba(239, 68, 68, 0.1)'" [style.color]="entry.success ? 'var(--success)' : 'var(--danger)'">
+                                    <i-tabler [name]="entry.success ? 'login' : 'shield-x'"></i-tabler>
                                 </div>
-                                }
-                            </div>
-                            } @else {
-                            <div class="no-selection">
-                                <div class="illustration">
-                                    <i-tabler name="history"></i-tabler>
+                                <div style="flex: 1;">
+                                    <div style="font-weight: 600;">{{ entry.success ? 'Úspěšné přihlášení' : 'Neúspěšný pokus' }}</div>
+                                    <div style="font-size: 0.8rem; color: var(--text-muted);">{{ entry.created | date:'dd.MM.yyyy HH:mm:ss' }} • IP: {{ entry.ip }}</div>
                                 </div>
-                                <h3>Žádná historie</h3>
-                                <p>Tento uživatel se zatím nepřihlásil.</p>
                             </div>
+                            } @empty {
+                            <div style="padding: 3rem; text-align: center; color: var(--text-muted);">Žádná aktivita nebyla nalezena</div>
                             }
                         </div>
                     </div>
@@ -840,48 +360,25 @@
 
                     <!-- ============ MESSAGES TAB ============ -->
                     @if (activeTab === 'messages') {
-                    <div class="messages-section">
-                        <div class="info-card full">
-                            <div class="card-header">
-                                <i-tabler name="message-dots"></i-tabler>
-                                <h3>Odeslané zprávy</h3>
-                            </div>
-                            @if (selectedUser.messages && selectedUser.messages.length > 0) {
-                            <div class="evidence-list" style="padding: 1rem;">
-                                @for (msg of selectedUser.messages; track msg.id) {
-                                <div class="evidence-item" style="padding: 1rem; border-bottom: 1px solid var(--border);">
-                                    <div style="display: flex; gap: 1rem; align-items: flex-start;">
-                                        <div class="evidence-item__icon message" style="width: 40px; height: 40px; border-radius: 8px; background: var(--bg-secondary); display: flex; align-items: center; justify-content: center; color: var(--primary); flex-shrink: 0;">
-                                            <i-tabler name="message"></i-tabler>
-                                        </div>
-                                        <div class="evidence-item__content" style="flex: 1;">
-                                            <div class="evidence-item__title" style="font-weight: 600; font-size: 0.95rem;">{{ msg.topic || '(Bez předmětu)' }}</div>
-                                            <div class="evidence-item__desc" style="font-size: 0.9rem; color: var(--text-muted); margin-top: 0.25rem;">
-                                                {{ msg.message | slice:0:150 }}{{ msg.message.length > 150 ? '...' : '' }}
-                                            </div>
-                                            <div class="evidence-item__meta" style="display: flex; gap: 1rem; margin-top: 0.5rem; font-size: 11px; color: var(--text-muted);">
-                                                <span style="display: flex; align-items: center; gap: 0.25rem;">
-                                                    <i-tabler name="calendar" style="width: 12px; height: 12px;"></i-tabler> 
-                                                    {{ msg.created_at | date:'dd.MM.yyyy HH:mm' }}
-                                                </span>
-                                            </div>
-                                        </div>
-                                    </div>
+                    <div class="info-card full">
+                        <div class="card-header">
+                            <i-tabler name="message-dots"></i-tabler>
+                            <h3>Poslední zprávy</h3>
+                        </div>
+                        <div style="display: flex; flex-direction: column;">
+                            @for (msg of selectedUser.messages; track msg.id) {
+                            <div class="evidence-item">
+                                <div style="width: 2.5rem; height: 2.5rem; display: flex; align-items: center; justify-content: center; border-radius: 0.75rem; background: rgba(74, 163, 255, 0.1); color: var(--primary);">
+                                    <i-tabler name="message"></i-tabler>
                                 </div>
-                                }
-                            </div>
-                            } @else if (selectedUser.messages) {
-                            <div class="no-selection" style="padding: 4rem 2rem; text-align: center;">
-                                <div class="illustration" style="font-size: 3rem; color: var(--text-muted); margin-bottom: 1rem;">
-                                    <i-tabler name="message-off"></i-tabler>
+                                <div style="flex: 1;">
+                                    <div style="font-weight: 600;">{{ msg.topic }}</div>
+                                    <div style="font-size: 0.85rem; color: var(--text-muted); margin: 0.25rem 0;" [innerHTML]="msg.message"></div>
+                                    <div style="font-size: 0.75rem; color: var(--text-muted);">{{ msg.created_at | date:'dd.MM.yyyy HH:mm' }}</div>
                                 </div>
-                                <h3 style="margin-bottom: 0.5rem;">Žádné zprávy</h3>
-                                <p class="muted">Tento uživatel zatím neodeslal žádné zprávy.</p>
                             </div>
-                            } @else {
-                            <div class="loading-state" style="padding: 4rem; text-align: center;">
-                                <div class="loading-spinner" style="margin: 0 auto;"></div>
-                            </div>
+                            } @empty {
+                            <div style="padding: 3rem; text-align: center; color: var(--text-muted);">Žádné zprávy nenalezeny</div>
                             }
                         </div>
                     </div>
@@ -889,74 +386,47 @@
 
                     <!-- ============ FILES TAB ============ -->
                     @if (activeTab === 'files') {
-                    <div class="files-section">
-                        <div class="info-card full">
-                            <div class="card-header">
-                                <i-tabler name="files"></i-tabler>
-                                <h3>Nahrané soubory</h3>
-                            </div>
-                            @if (selectedUser.files && selectedUser.files.length > 0) {
-                            <div class="evidence-list" style="padding: 1rem;">
-                                @for (file of selectedUser.files; track file.id) {
-                                <div class="evidence-item" style="display: flex; align-items: center; gap: 1rem; padding: 1rem; border-bottom: 1px solid var(--border);">
-                                    <div class="evidence-item__icon file" style="width: 40px; height: 40px; border-radius: 8px; background: var(--bg-secondary); display: flex; align-items: center; justify-content: center; color: var(--primary); flex-shrink: 0;">
-                                        <i-tabler name="file"></i-tabler>
-                                    </div>
-                                    <div class="evidence-item__content" style="flex: 1;">
-                                        <div class="evidence-item__title" style="font-weight: 600; font-size: 0.95rem;">{{ file.real_file_name || file.name }}</div>
-                                        <div class="evidence-item__meta" style="display: flex; gap: 1rem; margin-top: 0.25rem; font-size: 11px; color: var(--text-muted);">
-                                            <span style="display: flex; align-items: center; gap: 0.25rem;"><i-tabler name="database" style="width: 12px; height: 12px;"></i-tabler> {{ Utils.formatBytes(file.size) }}</span>
-                                            <span style="display: flex; align-items: center; gap: 0.25rem;"><i-tabler name="calendar" style="width: 12px; height: 12px;"></i-tabler> {{ file.created_at | date:'dd.MM.yyyy HH:mm' }}</span>
-                                            <span class="file-type-badge" style="background: var(--surface-2); padding: 2px 6px; border-radius: 4px;">{{ file.type }}</span>
-                                        </div>
-                                    </div>
-                                    <div class="evidence-item__actions">
-                                        <a [href]="Config.API_URL + '/api/download/' + file.uuid" target="_blank" class="action-btn" title="Stáhnout" style="padding: 0.5rem; border-radius: 6px; color: var(--text-muted); transition: all 0.2s;">
-                                            <i-tabler name="download"></i-tabler>
-                                        </a>
-                                    </div>
+                    <div class="info-card full">
+                        <div class="card-header">
+                            <i-tabler name="files"></i-tabler>
+                            <h3>Soubory uživatele</h3>
+                        </div>
+                        <div style="display: flex; flex-direction: column;">
+                            @for (file of selectedUser.files; track file.id) {
+                            <div class="evidence-item">
+                                <div style="width: 2.5rem; height: 2.5rem; display: flex; align-items: center; justify-content: center; border-radius: 0.75rem; background: rgba(139, 92, 246, 0.1); color: #8b5cf6;">
+                                    <i-tabler name="file"></i-tabler>
                                 </div>
-                                }
-                            </div>
-                            } @else if (selectedUser.files) {
-                            <div class="no-selection" style="padding: 4rem 2rem; text-align: center;">
-                                <div class="illustration" style="font-size: 3rem; color: var(--text-muted); margin-bottom: 1rem;">
-                                    <i-tabler name="file-off"></i-tabler>
+                                <div style="flex: 1;">
+                                    <div style="font-weight: 600;">{{ file.name }}</div>
+                                    <div style="font-size: 0.75rem; color: var(--text-muted);">{{ Utils.formatBytes(file.size) }} • {{ file.type }} • {{ file.created_at | date:'dd.MM.yyyy HH:mm' }}</div>
                                 </div>
-                                <h3 style="margin-bottom: 0.5rem;">Žádné soubory</h3>
-                                <p class="muted">Tento uživatel zatím nenahrál žádné soubory.</p>
+                                <button class="action-btn" title="Stáhnout"><i-tabler name="download"></i-tabler></button>
                             </div>
-                            } @else {
-                            <div class="loading-state" style="padding: 4rem; text-align: center;">
-                                <div class="loading-spinner" style="margin: 0 auto;"></div>
-                            </div>
+                            } @empty {
+                            <div style="padding: 3rem; text-align: center; color: var(--text-muted);">Žádné soubory nenalezeny</div>
                             }
                         </div>
                     </div>
                     }
-
                 </div>
             </main>
         </div>
     </div>
     } @else {
+    <!-- Users List View -->
     <div class="list-view">
-        <!-- Page Header -->
         <div class="card-header">
             <h2>Správa uživatelů</h2>
-
-            <div class="right">
-                @if (school.config.getValue()?.auth_ldap) {
-                <div class="btn btn--sm btn--secondary" (click)="openImportModal()">
-                    <i-tabler name="user-search"></i-tabler>
-                    Importovat uživatele
-                </div>
-                }
-
-                <div class="btn btn--sm btn--primary" (click)="openAddUserModal()">
+            <div class="header-actions">
+                <button class="btn btn--sm btn--secondary" (click)="openImportModal()">
+                    <i-tabler name="database-import"></i-tabler>
+                    Importovat
+                </button>
+                <button class="btn btn--sm btn--primary" (click)="openAddUserModal()">
                     <i-tabler name="user-plus"></i-tabler>
                     Přidat uživatele
-                </div>
+                </button>
             </div>
         </div>
 
@@ -964,148 +434,83 @@
         <div class="filters-row-container">
             <div class="search-wrapper full-width">
                 <i-tabler name="search"></i-tabler>
-                <input type="search" placeholder="Hledat uživatele..." [(ngModel)]="filters.search"
-                    (ngModelChange)="onFilterChange()">
+                <input type="search" placeholder="Hledat uživatele..." [(ngModel)]="filters.search" (ngModelChange)="onFilterChange()">
             </div>
 
-            <div class="filter-group-inline">
-                <div class="custom-select" id="filter-user-role" style="min-width: 180px;"
-                    (click)="$event.stopPropagation(); dropdownManager.selected_dropdown = dropdownManager.selected_dropdown == 'filter_user_role' ? '' : 'filter_user_role'">
-                    <div class="selected-value">
-                        <div class="row" style="gap: .5rem">
-                            {{ getFilterLabel('role', filters.role) }}
-                        </div>
-                        <i-tabler name="chevron-down"></i-tabler>
-                    </div>
-                    @if (dropdownManager.selected_dropdown == 'filter_user_role') {
-                    <div class="options-dropdown">
-                        <div class="list">
-                            @for (opt of getFilterOptions('role'); track $index) {
-                            <div class="option row" style="gap: .5rem"
-                                (click)="$event.stopPropagation(); dropdownManager.selected_dropdown = ''; filters.role = $any(opt.value); onFilterChange()">
-                                {{ opt.label }}
-                            </div>
-                            }
-                        </div>
-                    </div>
-                    }
-                </div>
-            </div>
+            <div class="filter-dropdown-wrapper">
+                <button class="btn btn--secondary" (click)="$event.stopPropagation(); dropdownManager.selected_dropdown = (dropdownManager.selected_dropdown === 'users_filter' ? '' : 'users_filter')">
+                    <i-tabler name="filter"></i-tabler>
+                    <span>Filtry</span>
+                </button>
 
-            <div class="filter-group-inline">
-                <div class="custom-select" id="filter-user-status" style="min-width: 180px;"
-                    (click)="$event.stopPropagation(); dropdownManager.selected_dropdown = dropdownManager.selected_dropdown == 'filter_user_status' ? '' : 'filter_user_status'">
-                    <div class="selected-value">
-                        <div class="row" style="gap: .5rem">
-                            {{ getFilterLabel('status', filters.status) }}
+                <div class="filters-dropdown" [hidden]="dropdownManager.selected_dropdown !== 'users_filter'" (click)="$event.stopPropagation()">
+                    <h3>Filtrovat uživatele</h3>
+                    <div class="filters-grid">
+                        <div class="filter-group">
+                            <label>Role uživatele</label>
+                            <select class="form-input" [(ngModel)]="filters.role" (change)="onFilterChange()" style="width: 100%;">
+                                @for (opt of getFilterOptions('role'); track $index) {
+                                <option [value]="opt.value">{{ opt.label }}</option>
+                                }
+                            </select>
                         </div>
-                        <i-tabler name="chevron-down"></i-tabler>
-                    </div>
-                    @if (dropdownManager.selected_dropdown == 'filter_user_status') {
-                    <div class="options-dropdown">
-                        <div class="list">
-                            @for (opt of getFilterOptions('status'); track $index) {
-                            <div class="option row" style="gap: .5rem"
-                                (click)="$event.stopPropagation(); dropdownManager.selected_dropdown = ''; filters.status = $any(opt.value); onFilterChange()">
-                                {{ opt.label }}
-                            </div>
-                            }
+                        <div class="filter-group">
+                            <label>Stav účtu</label>
+                            <select class="form-input" [(ngModel)]="filters.status" (change)="onFilterChange()" style="width: 100%;">
+                                @for (opt of getFilterOptions('status'); track $index) {
+                                <option [value]="opt.value">{{ opt.label }}</option>
+                                }
+                            </select>
                         </div>
                     </div>
-                    }
+                    <div class="dropdown-footer">
+                        <button class="btn btn--ghost btn--sm" (click)="clearFilters()">Resetovat</button>
+                        <button class="btn btn--primary btn--sm" (click)="dropdownManager.selected_dropdown = ''">Hotovo</button>
+                    </div>
                 </div>
             </div>
         </div>
 
-        <!-- Loading State -->
         @if (isLoading) {
-        <div class="loading-state">
+        <div class="loading-state" style="padding: 5rem;">
             <div class="loading-spinner"></div>
             <p>Načítání uživatelů...</p>
         </div>
-        }
-
-        <!-- Error State -->
-        @else if (loadError) {
-        <div class="error-state">
-            <i-tabler name="alert-circle"></i-tabler>
-            <h3>Chyba načítání</h3>
-            <p>{{ loadError }}</p>
-            <button class="btn btn--primary" (click)="loadUsers()">
-                <i-tabler name="refresh"></i-tabler>
-                Zkusit znovu
-            </button>
-        </div>
-        }
-
-        <!-- Users Table -->
-        @else if (users.length > 0) {
+        } @else if (users.length > 0) {
         <div class="students-table-wrapper">
             <table class="students-table">
                 <thead>
                     <tr>
                         <th class="col-student">Uživatel</th>
-                        <th class="col-field">{{ l.s('system.manage_users.login_method.title') }}</th>
+                        <th class="col-field">Přihlášení</th>
                         <th class="col-status">Status</th>
-                        <th class="col-average">Poslední přihlášení</th>
+                        <th class="col-average">Poslední aktivita</th>
                         <th class="col-actions"></th>
                     </tr>
                 </thead>
                 <tbody>
                     @for (user of users; track user.id) {
-                    <tr class="clickable-row" (click)="selectUser(user)">
+                    <tr (click)="selectUser(user)">
                         <td class="col-student">
                             <div class="student-cell">
                                 <div class="student-avatar-sm">
-                                    <img [src]="avatarService.getAvatar(user.avatar, user.full_name)" [alt]="user.full_name">
+                                    <div class="avatar--image">
+                                        <img [src]="avatarService.getAvatar(user.avatar, user.full_name)" [alt]="user.full_name">
+                                    </div>
                                 </div>
                                 <div class="student-name-cell">
                                     <span class="name">{{ user.full_name }}</span>
-                                    <div class="row" style="gap: 0.5rem; align-items: center;">
-                                        <span class="email">{{ user.username }}</span>
-                                        <span class="badge" [style.background]="'var(--surface-3)'" [style.color]="'var(--text-muted)'" style="font-size: 9px; padding: 1px 4px; border-radius: 3px; font-weight: 600; text-transform: uppercase;">{{ user.role }}</span>
-                                    </div>
+                                    <span class="email">{{ user.username }} • <span style="text-transform: capitalize;">{{ user.role }}</span></span>
                                 </div>
                             </div>
                         </td>
-                        <td class="col-field">{{ l.s('system.manage_users.login_method.' + user.login_type) }}</td>
-                        <td class="col-status">
-                            <span class="status-pill" [class]="user.status">
-                                {{ getStatusText(user.status) }}
-                            </span>
-                        </td>
-                        <td class="col-average">
-                            <span class="absence-value">{{ formatLastLogin(user.last_login) }}</span>
-                        </td>
+                        <td><span style="font-size: 0.85rem; color: var(--text-muted);">{{ l.s('system.manage_users.login_method.' + user.login_type) }}</span></td>
+                        <td><span class="status-pill" [class]="user.status">{{ getStatusText(user.status) }}</span></td>
+                        <td><span style="font-size: 0.85rem;">{{ formatLastLogin(user.last_login) }}</span></td>
                         <td class="col-actions">
-                            <button class="row-action"
-                                [class.active]="dropdownManager.selected_dropdown === 'user_' + user.id"
-                                (click)="$event.stopPropagation(); dropdownManager.selected_dropdown = (dropdownManager.selected_dropdown === 'user_' + user.id ? '' : 'user_' + user.id)">
-                                <i-tabler name="dots"></i-tabler>
+                            <button class="row-action" (click)="$event.stopPropagation(); editUser(user, $event)">
+                                <i-tabler name="edit"></i-tabler>
                             </button>
-
-                            <!-- Actions Dropdown -->
-                            <div class="dropdown-menu actions-dropdown"
-                                [hidden]="dropdownManager.selected_dropdown !== 'user_' + user.id"
-                                (click)="$event.stopPropagation()">
-                                <button class="dropdown-item" (click)="editUser(user, $event)">
-                                    <i-tabler name="edit"></i-tabler>
-                                    Upravit
-                                </button>
-                                <button class="dropdown-item" (click)="resetPassword(user, $event)">
-                                    <i-tabler name="key"></i-tabler>
-                                    Resetovat heslo
-                                </button>
-                                <button class="dropdown-item" (click)="manageFiles(user, $event)">
-                                    <i-tabler name="folder"></i-tabler>
-                                    Soubory a kvóty
-                                </button>
-                                <div class="dropdown-divider"></div>
-                                <button class="dropdown-item danger" (click)="deleteUser(user, $event)">
-                                    <i-tabler name="trash"></i-tabler>
-                                    Smazat
-                                </button>
-                            </div>
                         </td>
                     </tr>
                     }
@@ -1116,45 +521,33 @@
         <!-- Pagination -->
         @if (totalItems > 0) {
         <div class="bottom">
-            <div class="left">
-                <span class="pagination-info">
-                    Zobrazeno {{ (currentPage - 1) * pageSize + 1 }} - {{ Utils.MathMin([currentPage * pageSize,
-                    totalItems]) }} z {{ totalItems }} uživatelů
-                </span>
+            <div class="pagination-info">
+                Zobrazeno {{ (currentPage - 1) * pageSize + 1 }} - {{ Utils.MathMin([currentPage * pageSize, totalItems]) }} z {{ totalItems }} uživatelů
             </div>
             <div class="right">
                 @if (totalPages > 1) {
-                <div class="page center previous" [class.disabled]="currentPage == 1"
-                    (click)="currentPage > 1 && loadUsers(currentPage - 1)">
-                    <i-tabler name="chevron-left" style="width:18px;height:18px;"></i-tabler>
+                <div class="page" [class.disabled]="currentPage == 1" (click)="currentPage > 1 && loadUsers(currentPage - 1)">
+                    <i-tabler name="chevron-left" style="width: 18px; height: 18px;"></i-tabler>
                 </div>
                 @for (p of getPageList(); track $index) {
-                <div class="page center" [class.active]="currentPage === p" (click)="loadUsers(p)">
-                    {{ p }}
-                </div>
+                <div class="page" [class.active]="currentPage === p" (click)="loadUsers(p)">{{ p }}</div>
                 }
-                <div class="page center next" [class.disabled]="currentPage == totalPages"
-                    (click)="currentPage < totalPages && loadUsers(currentPage + 1)">
-                    <i-tabler name="chevron-right" style="width:18px;height:18px;"></i-tabler>
+                <div class="page" [class.disabled]="currentPage == totalPages" (click)="currentPage < totalPages && loadUsers(currentPage + 1)">
+                    <i-tabler name="chevron-right" style="width: 18px; height: 18px;"></i-tabler>
                 </div>
                 }
             </div>
         </div>
         }
         } @else {
-        <div class="empty-state">
-            <div class="empty-icon">
-                <i-tabler name="user-search"></i-tabler>
-            </div>
+        <div class="empty-state" style="padding: 5rem;">
+            <i-tabler name="user-search" style="width: 48px; height: 48px; color: var(--text-muted); opacity: 0.5; margin-bottom: 1rem;"></i-tabler>
             <h3>Žádní uživatelé nenalezeni</h3>
-            <p>Zkuste upravit filtry nebo hledaný výraz</p>
-            <button class="btn btn--ghost" (click)="clearFilters()">
-                <i-tabler name="filter-off"></i-tabler>
-                Resetovat filtry
-            </button>
+            <p style="color: var(--text-muted);">Zkuste upravit filtry nebo hledaný výraz</p>
         </div>
         }
     </div>
+    }
 
     <!-- Add User Modal -->
     @if (showAddUserModal) {
@@ -1162,250 +555,73 @@
         <div class="modal-container" (click)="$event.stopPropagation()">
             <div class="modal-header">
                 <h2>Přidat nového uživatele</h2>
-                <button class="modal-close" (click)="closeAddUserModal()">
-                    <i-tabler name="x"></i-tabler>
-                </button>
+                <button class="action-btn" (click)="closeAddUserModal()"><i-tabler name="x"></i-tabler></button>
             </div>
-
             <div class="modal-body">
                 @if (formErrors['general']) {
-                <div class="alert alert--danger" style="margin-bottom: 1rem;">
-                    <i-tabler name="alert-circle"></i-tabler>
-                    <span>{{ formErrors['general'] }}</span>
-                </div>
+                <div class="alert alert--danger"><i-tabler name="alert-circle"></i-tabler> {{ formErrors['general'] }}</div>
                 }
 
-                <!-- Step Progress -->
-                <div class="step-progress" style="display: flex; align-items: center; justify-content: center; gap: 2rem; margin-bottom: 2rem;">
-                    <div class="step-item" [class.active]="currentStep === 1" [class.completed]="currentStep > 1" style="display: flex; flex-direction: column; align-items: center; gap: 0.5rem; position: relative;">
-                        <div class="step-circle" style="width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; transition: all 0.3s;"
-                             [style.background]="currentStep >= 1 ? 'var(--primary)' : 'var(--bg-secondary)'"
-                             [style.color]="currentStep >= 1 ? 'white' : 'var(--text-muted)'">
-                            1
-                        </div>
-                        <span style="font-size: 11px; font-weight: 500;">Identita</span>
-                    </div>
-                    <div style="flex: 0 0 50px; height: 2px; background: var(--border); margin-top: -1.25rem;"></div>
-                    <div class="step-item" [class.active]="currentStep === 2" style="display: flex; flex-direction: column; align-items: center; gap: 0.5rem;">
-                        <div class="step-circle" style="width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; transition: all 0.3s;"
-                             [style.background]="currentStep === 2 ? 'var(--primary)' : 'var(--bg-secondary)'"
-                             [style.color]="currentStep === 2 ? 'white' : 'var(--text-muted)'">
-                            2
-                        </div>
-                        <span style="font-size: 11px; font-weight: 500;">Specifika</span>
-                    </div>
-                </div>
-
                 @if (currentStep === 1) {
-                    <!-- STEP 1: Mode and Basic Info -->
-                    <div class="modal-tabs"
-                        style="display: flex; gap: 0.5rem; margin-bottom: 1.5rem; background: var(--surface-2); padding: 0.25rem; border-radius: var(--radius-md);">
-                        <button class="btn btn--sm" style="flex: 1; border: none;"
-                            [class.btn--primary]="newUser.mode === 'new'" [class.btn--ghost]="newUser.mode !== 'new'"
-                            (click)="newUser.mode = 'new'; resetNewUserForm('new')">
-                            Nový uživatel
-                        </button>
-                        <button class="btn btn--sm" style="flex: 1; border: none;"
-                            [class.btn--primary]="newUser.mode === 'import'" [class.btn--ghost]="newUser.mode !== 'import'"
-                            (click)="newUser.mode = 'import'; resetNewUserForm('import')">
-                            Importovat z DB
-                        </button>
-                    </div>
-
-                    <form (submit)="$event.preventDefault(); nextStep()">
-                        @if (newUser.mode === 'import') {
-                        <div class="form-group">
-                            <label class="form-label">Vybrat osobu <span class="required">*</span></label>
-                            <div class="custom-select" style="width: 100%"
-                                (click)="$event.stopPropagation(); dropdownManager.selected_dropdown = dropdownManager.selected_dropdown == 'import_person' ? '' : 'import_person'">
-                                <div class="selected-value">
-                                    <div class="row" style="gap: .5rem">
-                                        {{ newUser.person_id ? newUser.first_name + ' ' + newUser.last_name : 'Vyberte osobu...' }}
-                                    </div>
-                                    <i-tabler name="chevron-down"></i-tabler>
-                                </div>
-                                @if (dropdownManager.selected_dropdown == 'import_person') {
-                                <div class="options-dropdown">
-                                    <div class="list">
-                                        @for (p of unlinkedPersons; track p.person_id) {
-                                        <div class="option row" style="gap: .75rem" (click)="$event.stopPropagation(); dropdownManager.selected_dropdown = ''; onPersonSelect(p.person_id)">
-                                            <div class="student-avatar-sm" style="width: 28px; height: 28px; font-size: 10px;">
-                                                <img [src]="avatarService.getAvatar(p.avatar, p.first_name + ' ' + p.last_name)" [alt]="p.first_name">
-                                            </div>
-                                            <div class="column">
-                                                {{ p.first_name }} {{ p.last_name }}
-                                                <span class="muted" style="font-size: 11px; margin-left: 0.5rem;">({{ getRoleText(p.suggested_role) }})</span>
-                                            </div>
-                                        </div>
-                                        } @empty {
-                                        <div class="option muted">Žádné osoby k importu nenalezeny</div>
-                                        }
-                                    </div>
-                                </div>
-                                }
-                            </div>
-                        </div>
-                        }
-
+                    <div class="edit-form">
                         <div class="form-row">
                             <div class="form-group">
-                                <label class="form-label" for="firstName">Jméno <span class="required">*</span></label>
-                                <input type="text" id="firstName" class="form-input" [(ngModel)]="newUser.first_name" [class.error]="formErrors['first_name']" name="firstName" [disabled]="newUser.mode === 'import'">
+                                <label class="form-label">Jméno</label>
+                                <input type="text" class="form-input" [(ngModel)]="newUser.first_name" placeholder="Jan">
                             </div>
                             <div class="form-group">
-                                <label class="form-label" for="lastName">Příjmení <span class="required">*</span></label>
-                                <input type="text" id="lastName" class="form-input" [(ngModel)]="newUser.last_name" [class.error]="formErrors['last_name']" name="lastName" [disabled]="newUser.mode === 'import'">
+                                <label class="form-label">Příjmení</label>
+                                <input type="text" class="form-input" [(ngModel)]="newUser.last_name" placeholder="Novák">
                             </div>
                         </div>
-
                         <div class="form-group">
-                            <label class="form-label" for="username">Uživatelské jméno <span class="required">*</span></label>
-                            <input type="text" id="username" class="form-input" [(ngModel)]="newUser.username" [class.error]="formErrors['username']" name="username">
+                            <label class="form-label">Uživatelské jméno</label>
+                            <input type="text" class="form-input" [(ngModel)]="newUser.username" placeholder="jnovak">
                         </div>
-
-                        @if (newUser.mode === 'new') {
                         <div class="form-group">
-                            <label class="form-label" for="email">Email <span class="required">*</span></label>
-                            <input type="email" id="email" class="form-input" [(ngModel)]="newUser.email" [class.error]="formErrors['email']" name="email">
+                            <label class="form-label">Email</label>
+                            <input type="email" class="form-input" [(ngModel)]="newUser.email" placeholder="email@priklad.cz">
                         </div>
-                        }
-
                         <div class="form-group">
-                            <label class="form-label" for="password">Dočasné heslo <span class="required">*</span></label>
-                            <div class="password-input-group">
-                                <input type="text" id="password" class="form-input" [(ngModel)]="newUser.password" [class.error]="formErrors['password']" name="password">
-                                <button type="button" class="btn btn--secondary btn--sm" (click)="generatePassword()"><i-tabler name="refresh"></i-tabler></button>
+                            <label class="form-label">Dočasné heslo</label>
+                            <div style="display: flex; gap: 0.5rem;">
+                                <input type="text" class="form-input" style="flex: 1;" [(ngModel)]="newUser.password">
+                                <button class="action-btn" (click)="generatePassword()"><i-tabler name="refresh"></i-tabler></button>
                             </div>
                         </div>
-                    </form>
+                    </div>
                 } @else {
-                    <!-- STEP 2: Role and Role specifics -->
-                    <form (submit)="$event.preventDefault(); submitNewUser()">
+                    <div class="edit-form">
                         <div class="form-group">
-                            <label class="form-label">Role <span class="required">*</span></label>
-                            <div class="custom-select" style="width: 100%"
-                                (click)="$event.stopPropagation(); dropdownManager.selected_dropdown = dropdownManager.selected_dropdown == 'new_user_role' ? '' : 'new_user_role'">
-                                <div class="selected-value">
-                                    <div class="row" style="gap: .5rem">{{ getRoleText(newUser.role) }}</div>
-                                    <i-tabler name="chevron-down"></i-tabler>
-                                </div>
-                                @if (dropdownManager.selected_dropdown == 'new_user_role') {
-                                <div class="options-dropdown">
-                                    <div class="list">
-                                        <div class="option" (click)="$event.stopPropagation(); dropdownManager.selected_dropdown = ''; newUser.role = 'student'">Student</div>
-                                        <div class="option" (click)="$event.stopPropagation(); dropdownManager.selected_dropdown = ''; newUser.role = 'teacher'">Učitel</div>
-                                        <div class="dropdown-divider"></div>
-                                        <div class="option" (click)="$event.stopPropagation(); dropdownManager.selected_dropdown = ''; newUser.role = 'parent'">Rodič</div>
-                                        <div class="option" (click)="$event.stopPropagation(); dropdownManager.selected_dropdown = ''; newUser.role = 'management'">Vedení školy</div>
-                                    </div>
-                                </div>
-                                }
-                            </div>
+                            <label class="form-label">Role uživatele</label>
+                            <select class="form-input" [(ngModel)]="newUser.role">
+                                <option value="student">Student</option>
+                                <option value="teacher">Učitel</option>
+                                <option value="parent">Rodič</option>
+                                <option value="admin">Administrátor</option>
+                            </select>
                         </div>
-
                         @if (newUser.role === 'student') {
-                            <!-- Student Specifics -->
-                            <div class="form-group">
-                                <label class="form-label">Třída <span class="required">*</span></label>
-                                <div class="custom-select" style="width: 100%"
-                                    (click)="$event.stopPropagation(); dropdownManager.selected_dropdown = dropdownManager.selected_dropdown == 'new_user_class' ? '' : 'new_user_class'">
-                                    <div class="selected-value">
-                                        <div class="row" style="gap: .5rem">{{ getClassName(newUser.class_id) }}</div>
-                                        <i-tabler name="chevron-down"></i-tabler>
-                                    </div>
-                                    @if (dropdownManager.selected_dropdown == 'new_user_class') {
-                                    <div class="options-dropdown">
-                                        <div class="list">
-                                            @for (c of availableClasses; track c.class_id) {
-                                            <div class="option" (click)="$event.stopPropagation(); dropdownManager.selected_dropdown = ''; newUser.class_id = c.class_id">
-                                                {{ c.class_name }}
-                                            </div>
-                                            }
-                                        </div>
-                                    </div>
-                                    }
-                                </div>
-                            </div>
-
-                            <div class="form-group" style="display: flex; align-items: center; gap: 0.75rem; margin-top: 1rem;">
-                                <input type="checkbox" id="is_distance" [(ngModel)]="newUser.is_distance" name="is_distance" style="width: 18px; height: 18px; cursor: pointer;">
-                                <label for="is_distance" style="cursor: pointer; font-weight: 500;">Vzdálené studium</label>
-                            </div>
-                        } @else if (newUser.role === 'teacher') {
-                            <!-- Teacher Specifics -->
-                            <div class="form-row">
-                                <div class="form-group">
-                                    <label class="form-label">Číslo zaměstnance</label>
-                                    <input type="text" class="form-input" [(ngModel)]="newUser.employee_number" name="employee_number" placeholder="T-123">
-                                </div>
-                                <div class="form-group">
-                                    <label class="form-label">Typ úvazku</label>
-                                    <div class="custom-select" style="width: 100%"
-                                        (click)="$event.stopPropagation(); dropdownManager.selected_dropdown = dropdownManager.selected_dropdown == 'contract_type' ? '' : 'contract_type'">
-                                        <div class="selected-value">
-                                            {{ newUser.contract_type === 'fulltime' ? 'Plný úvazek' : newUser.contract_type === 'parttime' ? 'Částečný' : newUser.contract_type?.toUpperCase() }}
-                                            <i-tabler name="chevron-down"></i-tabler>
-                                        </div>
-                                        @if (dropdownManager.selected_dropdown == 'contract_type') {
-                                        <div class="options-dropdown">
-                                            <div class="list">
-                                                <div class="option" (click)="$event.stopPropagation(); dropdownManager.selected_dropdown = ''; newUser.contract_type = 'fulltime'">Plný úvazek</div>
-                                                <div class="option" (click)="$event.stopPropagation(); dropdownManager.selected_dropdown = ''; newUser.contract_type = 'parttime'">Částečný úvazek</div>
-                                                <div class="option" (click)="$event.stopPropagation(); dropdownManager.selected_dropdown = ''; newUser.contract_type = 'dpp'">DPP</div>
-                                                <div class="option" (click)="$event.stopPropagation(); dropdownManager.selected_dropdown = ''; newUser.contract_type = 'dpc'">DPČ</div>
-                                            </div>
-                                        </div>
-                                        }
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="form-row">
-                                <div class="form-group">
-                                    <label class="form-label">Kabinet</label>
-                                    <div class="custom-select" style="width: 100%"
-                                        (click)="$event.stopPropagation(); dropdownManager.selected_dropdown = dropdownManager.selected_dropdown == 'cabinet' ? '' : 'cabinet'">
-                                        <div class="selected-value">
-                                            {{ getRoomName(newUser.cabinet_id) }}
-
-                                            <i-tabler name="chevron-down"></i-tabler>
-                                        </div>
-                                        @if (dropdownManager.selected_dropdown == 'cabinet') {
-                                        <div class="options-dropdown">
-                                            <div class="list">
-                                                <div class="option" (click)="$event.stopPropagation(); dropdownManager.selected_dropdown = ''; newUser.cabinet_id = null">Žádný</div>
-                                                @for (room of availableRooms; track room.room_id) {
-                                                <div class="option" (click)="$event.stopPropagation(); dropdownManager.selected_dropdown = ''; newUser.cabinet_id = room.room_id">
-                                                    {{ room.name }} ({{ room.building_name }})
-                                                </div>
-                                                }
-                                            </div>
-                                        </div>
-                                        }
-                                    </div>
-                                </div>
-                                <div class="form-group">
-                                    <label class="form-label">Hodin týdně</label>
-                                    <input type="number" class="form-input" [(ngModel)]="newUser.hours_per_week" name="hours_per_week" min="0" max="100">
-                                </div>
-                            </div>
+                        <div class="form-group">
+                            <label class="form-label">Třída</label>
+                            <select class="form-input" [(ngModel)]="newUser.class_id">
+                                <option [value]="null">Vyberte třídu...</option>
+                                @for (c of availableClasses; track c.class_id) {
+                                <option [value]="c.class_id">{{ c.class_name }}</option>
+                                }
+                            </select>
+                        </div>
                         }
-                    </form>
+                    </div>
                 }
             </div>
-
             <div class="modal-footer">
                 @if (currentStep === 1) {
-                    <button type="button" class="btn btn--ghost" (click)="closeAddUserModal()">Zrušit</button>
-                    <button type="button" class="btn btn--primary" (click)="$event.preventDefault(); nextStep()">
-                        Pokračovat <i-tabler name="arrow-right" style="width: 14px; margin-left: 0.5rem;"></i-tabler>
-                    </button>
+                    <button class="btn btn--ghost" (click)="closeAddUserModal()">Zrušit</button>
+                    <button class="btn btn--primary" (click)="nextStep()">Pokračovat <i-tabler name="arrow-right" style="margin-left: 0.5rem;"></i-tabler></button>
                 } @else {
-                    <button type="button" class="btn btn--ghost" (click)="prevStep()">
-                        <i-tabler name="arrow-left" style="width: 14px; margin-right: 0.5rem;"></i-tabler> Zpět
-                    </button>
-                    <button type="button" class="btn btn--primary" (click)="submitNewUser()" [disabled]="isSubmitting">
-                        @if (isSubmitting) { <span class="btn-spinner"></span> }
+                    <button class="btn btn--ghost" (click)="prevStep()">Zpět</button>
+                    <button class="btn btn--primary" (click)="submitNewUser()" [disabled]="isSubmitting">
                         {{ isSubmitting ? 'Vytvářím...' : 'Vytvořit uživatele' }}
                     </button>
                 }
@@ -1413,6 +629,4 @@
         </div>
     </div>
     }
-    }
-
 </div>

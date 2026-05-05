@@ -195,10 +195,10 @@ export const config: SidebarGroup[] = [
                     item: 'sidebar.messages.received',
                     url: 'messages/received',
                     icon: 'inbox',
-                    badge: (api: any) => {
-                        if (api.unreadMessages == 0) return '';
-                        if (api.unreadMessages >= 10) return '9+';
-                        return api.unreadMessages;
+                    badge: (api: Dashboard) => {
+                        if (api.unreadMessages() == 0) return '';
+                        if (api.unreadMessages() >= 10) return '9+';
+                        return api.unreadMessages();
                     }
                 }, {
                     item: 'sidebar.messages.sent',

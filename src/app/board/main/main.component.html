@@ -1,8 +1,8 @@
 <div class="dashboard">
-    <div class="modules">
-        @for (module of modules; track module.id) {
-        <div class="module">
-            <div class="module-header">
+    <div class="modules" cdkDropList (cdkDropListDropped)="drop($event)" cdkDropListOrientation="mixed">
+        @for (module of modules(); track module.id) {
+        <div class="module" cdkDrag>
+            <div class="module-header" cdkDragHandle>
                 <h2 [class.has-link]="module.titleUrl" [routerLink]="module.titleUrl">
                     @if (module.icon) {
                         <i-tabler [name]="module.icon"></i-tabler>
@@ -100,4 +100,4 @@
         </div>
         }
     </div>
-</div>
+</div>

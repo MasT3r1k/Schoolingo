@@ -665,6 +665,8 @@ export class ManageusersComponent implements OnInit, AfterViewInit {
     return date.toLocaleDateString('cs-CZ');
   }
 
+
+
   // User actions
   editUser(user: User, event: Event) {
     event.stopPropagation();

@@ -1,6 +1,6 @@
 import { NgClass, NgStyle } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
-import { Component, inject, OnInit, OnDestroy } from '@angular/core';
+import { Component, inject, OnInit, OnDestroy, effect } from '@angular/core';
 import { Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { Authentication } from '@Schoolingo/authentication';
 import { Config } from '@Schoolingo/config';
@@ -98,6 +98,12 @@ interface Notification {
   styleUrls: ['./board.component.css', '../styles/sidebar.css']
 })
 export class BoardComponent implements OnInit, OnDestroy {
+  constructor() {
+    // Subscribe to dashboard cookie changes for seasonal service
+    effect(() => {
+      this.seasonalService.setCookiesConsent(this.dashboard.cookies());
+    });
+  }
   public dashboard = inject(Dashboard);
   private cookies = inject(Cookies);
   public dropdownManager = inject(DropdownManager);
@@ -172,7 +178,7 @@ export class BoardComponent implements OnInit, OnDestroy {
 
   public markAllAsRead(): void {
     this.notifications.forEach(n => n.read_at = new Date());
-    this.dashboard.newNotifications = 0;
+    this.dashboard.newNotifications.set(0);
     this.http.post(
       `${Config.API_URL}/v1/notification/-1`,
       {},
@@ -346,15 +352,15 @@ export class BoardComponent implements OnInit, OnDestroy {
             read_at: null,
             created_at: new Date()
           });
-          
+      
           // Update dashboard count
-          this.dashboard.newNotifications++;
+          this.dashboard.newNotifications.update(n => n + 1);
         });
         this.subscriptions.push(notifSubscription);
         
         // Subscribe to unread count updates
         const unreadSubscription = this.wsService.getUnreadCount().subscribe((count) => {
-          this.dashboard.newNotifications = count;
+          this.dashboard.newNotifications.set(count);
         });
         this.subscriptions.push(unreadSubscription);
         
@@ -367,18 +373,7 @@ export class BoardComponent implements OnInit, OnDestroy {
         }
 
         // === Get dashboard stats ===
-        this.http.get(
-          `${Config.API_URL}/v1/dashboard`,
-          { withCredentials: true }
-        )
-        .subscribe((data: any) => {
-          this.dashboard.unreadMessages = data.unreadMessages;
-          this.dashboard.newNotifications = data.newNotifications;
-          this.dashboard.cookies = data.cookies;
-          
-          // Enable localStorage for seasonal preferences if full cookie consent
-          this.seasonalService.setCookiesConsent(data.cookies);
-        })
+        this.dashboard.fetchDashboard();
 
         // === Get traineeship weeks ===
         this.http.get(
@@ -463,7 +458,7 @@ export class BoardComponent implements OnInit, OnDestroy {
         break;
     }
 
-    this.dashboard.cookies = this.cookies.preferencesToDecimal();
+    this.dashboard.cookies.set(this.cookies.preferencesToDecimal());
   }
 
   public getUserRole(): string {

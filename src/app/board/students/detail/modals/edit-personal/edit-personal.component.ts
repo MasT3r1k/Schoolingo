@@ -25,6 +25,8 @@ export class EditPersonalModalComponent implements OnInit {
   public dropdownManager = inject(DropdownManager);
   public Utils = Utils;
 
+  public showMoreFields = false;
+
   public getSelectedClassLabel(): string {
     const cls = this.classes.find(c => c.class_id === this.form.classId);
     return cls ? cls.class_name : 'Vyberte třídu...';
@@ -33,6 +35,46 @@ export class EditPersonalModalComponent implements OnInit {
   public getInsuranceLabel(insturance_id: number | null): string {
     const ins = this.insurances.find(i => i.insurance_id === insturance_id);
     return ins ? (ins.shortcut + ' - ' + ins.insurance_id) : 'Nezadáno';
+  }
+
+  public birthNumError: string | boolean = true;
+
+  public onBirthNumChange(): void {
+    // Remove non-numeric characters
+    let val = this.form.birthNum.replace(/\D/g, '');
+    
+    // Add slash
+    if (val.length > 6) {
+      val = val.substring(0, 6) + '/' + val.substring(6, 10);
+    }
+    
+    this.form.birthNum = val;
+
+    // Try to derive birthday if valid format
+    if (val.length >= 6) {
+      let year = parseInt(val.substring(0, 2));
+      let month = parseInt(val.substring(2, 4));
+      const day = parseInt(val.substring(4, 6));
+
+      // Month for females is +50
+      if (month > 50) month -= 50;
+      // Handle months +20 / +70 if needed (rare but exists for some RC)
+      if (month > 20) month -= 20;
+
+      if (month >= 1 && month <= 12 && day >= 1 && day <= 31) {
+        // Approximate year (this is a bit tricky without knowing the century, but for students we can assume 2000s or late 1900s)
+        const currentYearShort = new Date().getFullYear() % 100;
+        const fullYear = year <= currentYearShort ? 2000 + year : 1900 + year;
+        
+        const birthDate = moment(`${fullYear}-${month.toString().padStart(2, '0')}-${day.toString().padStart(2, '0')}`);
+        if (birthDate.isValid()) {
+          this.form.birthday = birthDate.format('YYYY-MM-DD');
+        }
+      }
+    }
+
+    // Validate
+    this.birthNumError = Utils.verifyBirthNumber(this.form.birthNum, this.form.birthday, this.form.gender);
   }
 
   public getSelectedNationalityLabel(): string {
@@ -130,6 +172,7 @@ export class EditPersonalModalComponent implements OnInit {
     }
 
     this.loadData();
+    this.onBirthNumChange();
   }
 
   private loadData(): void {

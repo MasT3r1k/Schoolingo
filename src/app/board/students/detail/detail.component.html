@@ -474,9 +474,11 @@
                                                 <span>/</span>
                                             }
                                         }
-                                        @let isBirthNumberValid = verifyBirthNumber(selectedStudent.birthnum, selectedStudent.birthday.toString(), selectedStudent.gender);
+                                        @let isBirthNumberValid = Utils.verifyBirthNumber(selectedStudent.birthnum, selectedStudent.birthday.toString(), selectedStudent.gender);
                                         @if (isBirthNumberValid != true) {
-                                            {{ isBirthNumberValid }}
+                                            <span class="birthnum-error" [title]="l.s('birthnum.errors.' + isBirthNumberValid)">
+                                                <i-tabler name="alert-circle"></i-tabler>
+                                            </span>
                                         }
                                     } @else {
                                         {{ l.s('unknown') }}

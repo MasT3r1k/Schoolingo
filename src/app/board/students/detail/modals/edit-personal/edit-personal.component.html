@@ -1,175 +1,165 @@
 <div class="modal-body" (click)="dropdownManager.selected_dropdown = ''">
 
-    <div class="form-grid">
-        <div class="form-group">
-            <label>Jméno</label>
-            <input type="text" class="form-control" [(ngModel)]="form.firstName">
+    <!-- Základní údaje -->
+    <div class="form-section">
+        <div class="section-header">Základní údaje</div>
+        
+        <div class="form-grid">
+            <div class="form-group">
+                <label class="required">Jméno</label>
+                <input type="text" class="form-control" [(ngModel)]="form.firstName" placeholder="Zadejte jméno">
+            </div>
+            <div class="form-group">
+                <label class="required">Příjmení</label>
+                <input type="text" class="form-control" [(ngModel)]="form.lastName" placeholder="Zadejte příjmení">
+            </div>
         </div>
-        <div class="form-group">
-            <label>Příjmení</label>
-            <input type="text" class="form-control" [(ngModel)]="form.lastName">
-        </div>
-    </div>
 
-    <div class="form-grid">
-        <div class="form-group">
-            <label>Tituly před jménem</label>
-            <div class="custom-select"
-                (click)="$event.stopPropagation(); dropdownManager.selected_dropdown = dropdownManager.selected_dropdown == 'edit-personal_prefix' ? '' : 'edit-personal_prefix'">
-                <div class="selected-value">
-                    {{ getSelectedPrefixTitles() }}
-                    <i-tabler name="chevron-down"></i-tabler>
+        <div class="toggle-fields" (click)="showMoreFields = !showMoreFields">
+            <i-tabler [name]="showMoreFields ? 'chevron-up' : 'chevron-down'"></i-tabler>
+            {{ showMoreFields ? 'Skrýt tituly' : 'Zobrazit tituly' }}
+        </div>
+
+        @if (showMoreFields) {
+            <div class="form-grid">
+                <div class="form-group">
+                    <label>Tituly před jménem</label>
+                    <div class="custom-select"
+                        (click)="$event.stopPropagation(); dropdownManager.selected_dropdown = dropdownManager.selected_dropdown == 'edit-personal_prefix' ? '' : 'edit-personal_prefix'">
+                        <div class="selected-value">
+                            {{ getSelectedPrefixTitles() }}
+                            <i-tabler name="chevron-down"></i-tabler>
+                        </div>
+                        @if (dropdownManager.selected_dropdown == 'edit-personal_prefix') {
+                        <div class="options-dropdown">
+                            <div class="list">
+                                @for (degree of prefixDegrees; track degree.degree_id) {
+                                <div class="option" [class.selected]="isPrefixTitleSelected(degree.shortcut)"
+                                    (click)="$event.stopPropagation(); togglePrefixTitle(degree.shortcut)">
+                                    <span>{{ degree.shortcut }}</span>
+                                    @if (isPrefixTitleSelected(degree.shortcut)) {
+                                    <i-tabler name="check"></i-tabler>
+                                    }
+                                </div>
+                                }
+                            </div>
+                        </div>
+                        }
+                    </div>
                 </div>
-                @if (dropdownManager.selected_dropdown == 'edit-personal_prefix') {
-                <div class="options-dropdown">
-                    <div class="list">
-                        @for (degree of prefixDegrees; track degree.degree_id) {
-                        <div class="option" [class.selected]="isPrefixTitleSelected(degree.shortcut)"
-                            (click)="$event.stopPropagation(); togglePrefixTitle(degree.shortcut)">
-                            <span>{{ degree.shortcut }}</span>
-                            @if (isPrefixTitleSelected(degree.shortcut)) {
-                            <i-tabler name="check"></i-tabler>
+                <div class="form-group">
+                    <label>Tituly za jménem</label>
+                    <div class="custom-select"
+                        (click)="$event.stopPropagation(); dropdownManager.selected_dropdown = dropdownManager.selected_dropdown == 'edit-personal_suffix' ? '' : 'edit-personal_suffix'">
+                        <div class="selected-value">
+                            {{ getSelectedSuffixTitles() }}
+                            <i-tabler name="chevron-down"></i-tabler>
+                        </div>
+                        @if (dropdownManager.selected_dropdown == 'edit-personal_suffix') {
+                        <div class="options-dropdown">
+                            <div class="list">
+                                @for (degree of suffixDegrees; track degree.degree_id) {
+                                <div class="option" [class.selected]="isSuffixTitleSelected(degree.shortcut)"
+                                    (click)="$event.stopPropagation(); toggleSuffixTitle(degree.shortcut)">
+                                    <span>{{ degree.shortcut }}</span>
+                                    @if (isSuffixTitleSelected(degree.shortcut)) {
+                                    <i-tabler name="check"></i-tabler>
+                                    }
+                                </div>
+                                }
+                            </div>
+                        </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        }
+
+        <div class="form-grid-3">
+            <div class="form-group">
+                <label class="required">Třída</label>
+                <div class="custom-select"
+                    (click)="$event.stopPropagation(); dropdownManager.selected_dropdown = dropdownManager.selected_dropdown == 'edit-personal_class' ? '' : 'edit-personal_class'">
+                    <div class="selected-value">
+                        {{ getSelectedClassLabel() }}
+                        <i-tabler name="chevron-down"></i-tabler>
+                    </div>
+                    @if (dropdownManager.selected_dropdown == 'edit-personal_class') {
+                    <div class="options-dropdown">
+                        <div class="list">
+                            <div class="option"
+                                (click)="$event.stopPropagation(); dropdownManager.selected_dropdown = ''; form.classId = 0">
+                                Vyberte třídu...
+                            </div>
+                            @for (cls of classes; track cls.class_id) {
+                            <div class="option"
+                                (click)="$event.stopPropagation(); dropdownManager.selected_dropdown = ''; form.classId = cls.class_id">
+                                {{ cls.class_name }}
+                            </div>
                             }
                         </div>
-                        }
-                    </div>
-                </div>
-                }
-            </div>
-        </div>
-        <div class="form-group">
-            <label>Tituly za jménem</label>
-            <div class="custom-select"
-                (click)="$event.stopPropagation(); dropdownManager.selected_dropdown = dropdownManager.selected_dropdown == 'edit-personal_suffix' ? '' : 'edit-personal_suffix'">
-                <div class="selected-value">
-                    {{ getSelectedSuffixTitles() }}
-                    <i-tabler name="chevron-down"></i-tabler>
-                </div>
-                @if (dropdownManager.selected_dropdown == 'edit-personal_suffix') {
-                <div class="options-dropdown">
-                    <div class="list">
-                        @for (degree of suffixDegrees; track degree.degree_id) {
-                        <div class="option" [class.selected]="isSuffixTitleSelected(degree.shortcut)"
-                            (click)="$event.stopPropagation(); toggleSuffixTitle(degree.shortcut)">
-                            <span>{{ degree.shortcut }}</span>
-                            @if (isSuffixTitleSelected(degree.shortcut)) {
-                            <i-tabler name="check"></i-tabler>
-                            }
-                        </div>
-                        }
-                    </div>
-                </div>
-                }
-            </div>
-        </div>
-    </div>
-
-    <div class="form-grid">
-        <div class="form-group">
-            <label>Třída</label>
-            <div class="custom-select"
-                (click)="$event.stopPropagation(); dropdownManager.selected_dropdown = dropdownManager.selected_dropdown == 'edit-personal_class' ? '' : 'edit-personal_class'">
-                <div class="selected-value">
-                    {{ getSelectedClassLabel() }}
-                    <i-tabler name="chevron-down"></i-tabler>
-                </div>
-                @if (dropdownManager.selected_dropdown == 'edit-personal_class') {
-                <div class="options-dropdown">
-                    <div class="list">
-                        <div class="option"
-                            (click)="$event.stopPropagation(); dropdownManager.selected_dropdown = ''; form.classId = 0">
-                            Vyberte třídu...
-                        </div>
-                        @for (cls of classes; track cls.class_id) {
-                        <div class="option"
-                            (click)="$event.stopPropagation(); dropdownManager.selected_dropdown = ''; form.classId = cls.class_id">
-                            {{ cls.class_name }}
-                        </div>
-                        }
-                    </div>
-                </div>
-                }
-            </div>
-        </div>
-
-        <div class="form-group">
-            <label>Pohlaví</label>
-            <div class="custom-select"
-                (click)="$event.stopPropagation(); dropdownManager.selected_dropdown = dropdownManager.selected_dropdown == 'edit-personal_gender' ? '' : 'edit-personal_gender'">
-                <div class="selected-value">
-                    {{ l.s('genders.' + Utils.getGender(form.gender)) }}
-                    <i-tabler name="chevron-down"></i-tabler>
-                </div>
-                @if (dropdownManager.selected_dropdown == 'edit-personal_gender') {
-                <div class="options-dropdown">
-                    <div class="list">
-                        <div class="option"
-                            (click)="$event.stopPropagation(); dropdownManager.selected_dropdown = ''; form.gender = 0">
-                            {{ l.s('genders.male') }}
-                        </div>
-                        <div class="option"
-                            (click)="$event.stopPropagation(); dropdownManager.selected_dropdown = ''; form.gender = 1">
-                            {{ l.s('genders.female') }}
-                        </div>
-                    </div>
-                </div>
-                }
-            </div>
-        </div>
-    </div>
-
-    <div class="form-group">
-        <label>Pojišťovna</label>
-        <div class="custom-select"
-            (click)="$event.stopPropagation(); dropdownManager.selected_dropdown = dropdownManager.selected_dropdown == 'edit-personal_insurance' ? '' : 'edit-personal_insurance'">
-            <div class="selected-value">
-                {{ getInsuranceLabel(form.insuranceId) }}
-                <i-tabler name="chevron-down"></i-tabler>
-            </div>
-            @if (dropdownManager.selected_dropdown == 'edit-personal_insurance') {
-            <div class="options-dropdown">
-                <div class="list">
-                    <div class="option"
-                        (click)="$event.stopPropagation(); dropdownManager.selected_dropdown = ''; form.insuranceId = null">
-                        Nezadáno
-                    </div>
-                    @for (ins of insurances; track ins.insurance_id) {
-                    <div class="option"
-                        (click)="$event.stopPropagation(); dropdownManager.selected_dropdown = ''; form.insuranceId = ins.insurance_id">
-                        {{ getInsuranceLabel(ins.insurance_id) }}
                     </div>
                     }
                 </div>
             </div>
-            }
+
+            <div class="form-group">
+                <label>Pohlaví</label>
+                <div class="custom-select"
+                    (click)="$event.stopPropagation(); dropdownManager.selected_dropdown = dropdownManager.selected_dropdown == 'edit-personal_gender' ? '' : 'edit-personal_gender'">
+                    <div class="selected-value">
+                        {{ l.s('genders.' + Utils.getGender(form.gender)) }}
+                        <i-tabler name="chevron-down"></i-tabler>
+                    </div>
+                    @if (dropdownManager.selected_dropdown == 'edit-personal_gender') {
+                    <div class="options-dropdown">
+                        <div class="list">
+                            <div class="option"
+                                (click)="$event.stopPropagation(); dropdownManager.selected_dropdown = ''; form.gender = 0">
+                                {{ l.s('genders.male') }}
+                            </div>
+                            <div class="option"
+                                (click)="$event.stopPropagation(); dropdownManager.selected_dropdown = ''; form.gender = 1">
+                                {{ l.s('genders.female') }}
+                            </div>
+                        </div>
+                    </div>
+                    }
+                </div>
+            </div>
         </div>
     </div>
 
-
-
-    <div class="form-grid">
-        <div class="form-group">
-            <label>Rodné číslo</label>
-            <input type="text" class="form-control" [(ngModel)]="form.birthNum" placeholder="XXXXXX/XXXX">
+    <!-- Identifikační údaje -->
+    <div class="form-section">
+        <div class="section-header">Identifikační údaje</div>
+        
+        <div class="form-grid">
+            <div class="form-group">
+                <label>Rodné číslo</label>
+                <div class="input-with-icon">
+                    <input type="text" class="form-control" [class.is-invalid]="birthNumError !== true" [(ngModel)]="form.birthNum" (ngModelChange)="onBirthNumChange()" placeholder="XXXXXX/XXXX" maxlength="11">
+                    @if (birthNumError !== true) {
+                        <i-tabler name="alert-circle" class="error-icon" [title]="l.s('birthnum.errors.' + birthNumError)"></i-tabler>
+                    }
+                </div>
+                @if (birthNumError !== true) {
+                    <span class="error-message">{{ l.s('birthnum.errors.' + birthNumError) }}</span>
+                }
+            </div>
+            <div class="form-group">
+                <label>Datum narození</label>
+                <input type="date" class="form-control" [(ngModel)]="form.birthday">
+            </div>
         </div>
-        <div class="form-group">
-            <label>Datum narození</label>
-            <input type="date" class="form-control" [(ngModel)]="form.birthday">
-        </div>
-    </div>
 
-    <div class="form-grid">
-        <div class="form-group">
-            <label>Místo narození</label>
-            <input type="text" class="form-control" [(ngModel)]="form.birthPlace">
-        </div>
         <div class="form-group">
             <label>Státní občanství</label>
             <div class="custom-select"
                 (click)="$event.stopPropagation(); dropdownManager.selected_dropdown = dropdownManager.selected_dropdown == 'edit-personal_nationality' ? '' : 'edit-personal_nationality'">
                 <div class="selected-value">
-                    <div class="row gap-2">
-                        <span>{{ getSelectedNationalityFlag() }}</span>
+                    <div class="row gap-2 align-items-center">
+                        <span style="font-size: 1.1rem; line-height: 1;">{{ getSelectedNationalityFlag() }}</span>
                         <span>{{ getSelectedNationalityLabel() }}</span>
                     </div>
                     <i-tabler name="chevron-down"></i-tabler>
@@ -180,8 +170,8 @@
                         @for (country of countries; track country.country_id) {
                         <div class="option"
                             (click)="$event.stopPropagation(); dropdownManager.selected_dropdown = ''; form.nationalityId = country.country_id">
-                            <div class="row gap-2">
-                                <span>{{ Utils.getFlagFromCountry(country.code2) }}</span>
+                            <div class="row gap-2 align-items-center">
+                                <span style="font-size: 1.1rem; line-height: 1;">{{ Utils.getFlagFromCountry(country.code2) }}</span>
                                 <span>{{ country.nationality }}</span>
                             </div>
                         </div>
@@ -189,7 +179,44 @@
                     </div>
                 </div>
                 }
+            </div>
+        </div>
+    </div>
 
+    <!-- Doplňující údaje -->
+    <div class="form-section">
+        <div class="section-header">Doplňující údaje</div>
+
+        <div class="form-grid">
+            <div class="form-group">
+                <label>Pojišťovna</label>
+                <div class="custom-select"
+                    (click)="$event.stopPropagation(); dropdownManager.selected_dropdown = dropdownManager.selected_dropdown == 'edit-personal_insurance' ? '' : 'edit-personal_insurance'">
+                    <div class="selected-value">
+                        {{ getInsuranceLabel(form.insuranceId) }}
+                        <i-tabler name="chevron-down"></i-tabler>
+                    </div>
+                    @if (dropdownManager.selected_dropdown == 'edit-personal_insurance') {
+                    <div class="options-dropdown">
+                        <div class="list">
+                            <div class="option"
+                                (click)="$event.stopPropagation(); dropdownManager.selected_dropdown = ''; form.insuranceId = null">
+                                Nezadáno
+                            </div>
+                            @for (ins of insurances; track ins.insurance_id) {
+                            <div class="option"
+                                (click)="$event.stopPropagation(); dropdownManager.selected_dropdown = ''; form.insuranceId = ins.insurance_id">
+                                {{ getInsuranceLabel(ins.insurance_id) }}
+                            </div>
+                            }
+                        </div>
+                    </div>
+                    }
+                </div>
+            </div>
+            <div class="form-group">
+                <label>Místo narození</label>
+                <input type="text" class="form-control" [(ngModel)]="form.birthPlace" placeholder="Zadejte místo narození">
             </div>
         </div>
     </div>
@@ -197,6 +224,6 @@
 </div>
 
 <div class="modal-actions">
-    <button class="btn btn--secondary" (click)="closeModal()">Zrušit</button>
+    <button class="btn--text" (click)="closeModal()">Zrušit</button>
     <button class="btn btn--primary" (click)="save()">Uložit změny</button>
 </div>

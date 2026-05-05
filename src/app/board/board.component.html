@@ -99,10 +99,10 @@
                     <div class="icon">
                         <i-tabler name="bell"></i-tabler>
                     </div>
-                    @if (dashboard.newNotifications > 0) {
+                    @if (dashboard.newNotifications() > 0) {
                     <div class="badge"
                         style="position: absolute;bottom: -.5rem;right: -.5rem;background: var(--danger);aspect-ratio: 1;max-width: 14px;">
-                        {{ dashboard.newNotifications }}</div>
+                        {{ dashboard.newNotifications() }}</div>
                     }
                     <div class="dropdown notification-dropdown"
                         [hidden]="dropdownManager.selected_dropdown !== 'notification'"
@@ -397,7 +397,7 @@
     }
 </div>
 
-<div class="notification" [class.hidden]="dashboard.cookies !== 0" id="cookies">
+<div class="notification" [class.hidden]="dashboard.cookies() !== 0" id="cookies">
     <div>
         <div class="heading">
             🍪

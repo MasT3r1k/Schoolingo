@@ -96,7 +96,7 @@ export class AnalyticsService {
   }
 
   public updateDuration() {
-    const cookies = this.dashboard.cookies.toString(2).split('').reverse();
+    const cookies = this.dashboard.cookies().toString(2).split('').reverse();
     const analyticsIndex = this.cookies.cookieCategories.findIndex((cookie) => cookie.id == "analytics");
     if (!cookies[analyticsIndex]) {
         return;
@@ -124,7 +124,7 @@ export class AnalyticsService {
   }
 
   public trackPageView() {
-    const cookies = this.dashboard.cookies.toString(2).split('').reverse();
+    const cookies = this.dashboard.cookies().toString(2).split('').reverse();
     const analyticsIndex = this.cookies.cookieCategories.findIndex((cookie) => cookie.id == "analytics");
     if (!cookies[analyticsIndex]) {
         return;

@@ -1,11 +1,13 @@
 import { NgComponentOutlet } from '@angular/common';
-import { Component, inject, signal, Type, WritableSignal } from '@angular/core';
+import { Component, inject, signal, Type, WritableSignal, OnInit, effect } from '@angular/core';
 import { Locale } from '@Schoolingo/locale';
 import { Permission } from '@Schoolingo/permission';
 import { IconsModule } from '@Schoolingo/icons';
 import { SeasonalService } from '@Schoolingo/seasonal';
 import { RouterLink } from '@angular/router';
 import { modules, Modules } from '@Schoolingo/modules';
+import { DragDropModule, CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
+import { Dashboard } from '@Schoolingo/dashboard';
 
 interface DashboardModule {
   id: string;
@@ -23,17 +25,18 @@ interface DashboardModule {
 @Component({
   selector: 'app-main',
   standalone: true,
-  imports: [NgComponentOutlet, IconsModule, RouterLink],
+  imports: [NgComponentOutlet, IconsModule, RouterLink, DragDropModule],
   templateUrl: './main.component.html',
   styleUrls: ['./main.component.css']
 })
-export class MainComponent {
+export class MainComponent implements OnInit {
   public perm = inject(Permission);
   private modulesService = inject(Modules);
   public l = inject(Locale);
   private seasonalService = inject(SeasonalService);
+  private dashboardService = inject(Dashboard);
 
-  public modules: DashboardModule[] = [
+  private allModules: DashboardModule[] = [
     {
       id: 'attendance',
       titleKey: 'modules.attendance',
@@ -140,34 +143,65 @@ export class MainComponent {
     }
   ];
 
+  public modules = signal<DashboardModule[]>([]);
+
   constructor() {
-    this.loadModules();
+    // Effect to react when modulePositions are loaded
+    effect(() => {
+        const positions = this.dashboardService.modulePositions();
+        this.loadModules(positions);
+    });
   }
 
-  async loadModules() {
-    // Filter modules based on permission and seasonal status
-    this.modules = this.modules.filter((module) => {
-      // Check permission
-      const hasPermission = module.permission ? this.perm.checkPermission(module.permission) : true;
+  ngOnInit() {}
 
-      // Check modules
+  private loadModules(positions: { module_id: string; position: number }[]) {
+    // Filter modules based on permission and seasonal status
+    const filteredModules = this.allModules.filter((module) => {
+      const hasPermission = module.permission ? this.perm.checkPermission(module.permission) : true;
       const isActiveModule = module.modules ? this.modulesService.checkModule(module.modules) : true;
-      
-      // Check seasonal - only show seasonal modules when seasonal is active
       const isSeasonal = module.seasonal || false;
       const seasonalActive = this.seasonalService.isActive();
       const showSeasonal = !isSeasonal || (isSeasonal && seasonalActive);
-      
       return hasPermission && showSeasonal && isActiveModule;
     });
-    // Load all modules in parallel
-    const loadedModules = await Promise.all(
-      this.modules.map(m => m.import())
-    );
 
-    // Set each loaded component to its signal
-    loadedModules.forEach((component, index) => {
-      this.modules[index].component.set(component);
-    });
+    // Sort modules based on saved positions
+    if (positions && positions.length > 0) {
+        filteredModules.sort((a, b) => {
+            const posA = positions.find((p: any) => p.module_id === a.id)?.position ?? 999;
+            const posB = positions.find((p: any) => p.module_id === b.id)?.position ?? 999;
+            return posA - posB;
+        });
+    }
+
+    // Set modules signal immediately (synchronously) to ensure correct order
+    this.modules.set(filteredModules);
+
+    // Load components for these modules
+    this.loadComponents(filteredModules);
   }
-}
+
+  private async loadComponents(modules: DashboardModule[]) {
+    // Load each component and set its individual signal
+    // This allows components to pop in as they load
+    for (const module of modules) {
+        if (!module.component()) {
+            module.import().then(comp => module.component.set(comp));
+        }
+    }
+  }
+
+  drop(event: CdkDragDrop<DashboardModule[]>) {
+    const currentModules = [...this.modules()];
+    moveItemInArray(currentModules, event.previousIndex, event.currentIndex);
+    this.modules.set(currentModules);
+    
+    // Save new positions
+    const newPositions = currentModules.map((m, index) => ({
+        module_id: m.id,
+        position: index
+    }));
+    this.dashboardService.savePositions(newPositions);
+  }
+}
