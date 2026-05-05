@@ -226,12 +226,15 @@ export class Documents {
     }
 
     public getIcon(type: string): string {
+        if (type.includes('pdf')) return 'file-type-pdf';
+        if (type.includes('sheet') || type.includes('excel') || type.includes('ms-excel')) return 'table';
+        if (type.includes('word') || type.includes('officedocument.wordprocessingml')) return 'file-text';
+        if (type.includes('presentation') || type.includes('powerpoint')) return 'presentation';
+        
         switch (type.split('/')[0]) {
             case 'folder': return 'folder-filled';
             case 'image': return 'photo';
             case 'video': return 'movie';
-            case 'pdf': return 'file-type-pdf';
-            case 'sheet': return 'table';
             default: return 'file';
         }
     }

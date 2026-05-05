@@ -1,4 +1,5 @@
 <div class="managefiles-page card">
+    @if (documents.getOpenedFile() == null) {
     <div class="list-view">
         <!-- Page Header -->
         <div class="card-header">
@@ -113,6 +114,9 @@
                                 <button class="btn-icon" title="Otevřít" (click)="viewFile(file)">
                                     <i-tabler name="eye"></i-tabler>
                                 </button>
+                                <button class="btn-icon" title="Přejmenovat" (click)="renameFile(file)">
+                                    <i-tabler name="pencil"></i-tabler>
+                                </button>
                                 <button class="btn-icon" title="Stáhnout" (click)="downloadFile(file)">
                                     <i-tabler name="download"></i-tabler>
                                 </button>
@@ -164,4 +168,44 @@
         </div>
         }
     </div>
-</div>
+    } @else {
+    <!-- Otevřený soubor -->
+    @let open_file = documents.getOpenedFile()!;
+    <div class="preview-area">
+        <div class="doc-toolbar">
+            <div class="doc-toolbar__left">
+                <div class="doc-file-info">
+                    <div class="doc-file-info__icon">
+                        <i-tabler [name]="documents.getIcon(open_file.mime_type)"></i-tabler>
+                    </div>
+                    <div>
+                        <div class="doc-file-info__name">{{ open_file.name }}</div>
+                        @if (documents.fileData != null) {
+                        <div class="doc-file-info__meta">
+                            {{ documents.fileData.lines }} řádků · {{ formatBytes(open_file.file_size) }}
+                        </div>
+                        }
+                    </div>
+                </div>
+            </div>
+            <div class="doc-toolbar__right">
+                <button class="btn btn--secondary btn--sm" (click)="documents.downloadFile(open_file)">
+                    <i-tabler name="download"></i-tabler>
+                    Stáhnout
+                </button>
+                <button class="doc-toolbar__icon-btn" (click)="documents.openFile(null)" [title]="'Zavřít soubor'">
+                    <i-tabler name="x"></i-tabler>
+                </button>
+            </div>
+        </div>
+        <div class="preview-content">
+            @if (['.docx', '.doc', '.pptx', '.pdf'].includes(open_file.file_format ?? '')) {
+            <iframe [src]="documents.preview_url" frameborder="0" height="100%" width="100%"></iframe>
+            } @else {
+            <pre
+                class="code-container">@if (documents.fileData) {<code>@for (line of documents.fileData.content.split('\n'); track $index) {<span class="line"><span class="line-number">{{ $index + 1 }}</span>{{ line }}</span>}</code>}</pre>
+            }
+        </div>
+    </div>
+    }
+</div>

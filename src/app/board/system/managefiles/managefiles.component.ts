@@ -6,10 +6,10 @@ import { Utils } from '@Schoolingo/utils';
 import { HttpClient } from '@angular/common/http';
 import { Config } from '@Schoolingo/config';
 import { Documents } from '@Schoolingo/documents';
-import { DropdownManager } from '@Schoolingo/dropdown';
+import { AvatarService } from '../../../../infrastructure/utils/avatar.service';
 
 interface FileItem {
-  file_id: string;
+  file_id: number;
   file_uuid: string;
   real_file_name: string;
   name: string;
@@ -18,7 +18,10 @@ interface FileItem {
   storage_path: string;
   mime_type: string;
   created_at: Date;
-  owner: string;
+  owner: {
+    name: string;
+    avatar: string | null;
+  };
   owner_id: number;
 }
 
@@ -40,6 +43,8 @@ export class ManagefilesComponent implements OnInit {
     private http = inject(HttpClient);
     public documents = inject(Documents);
     public dropdownManager = inject(DropdownManager);
+    public avatarService = inject(AvatarService);
+    Utils = Utils;
     Math = Math;
 
     // Mock State
@@ -137,20 +142,61 @@ export class ManagefilesComponent implements OnInit {
 
     deleteFile(file: FileItem) {
         if(confirm(`Opravdu smazat ${file.name}?`)) {
-            this.files = this.files.filter(f => f.file_id !== file.file_id);
-            // TODO: API call
+            this.http.delete(
+                `${Config.API_URL}/v1/files/delete`,
+                {
+                    body: { file_id: file.file_id },
+                    withCredentials: true
+                }
+            ).subscribe((data: any) => {
+                if (data.success) {
+                    this.files = this.files.filter(f => f.file_id !== file.file_id);
+                    this.loadStats();
+                }
+            });
         }
     }
 
     viewFile(file: FileItem) {
-        console.log('Viewing', file.name);
+        const file_format = file.real_file_name.substring(file.real_file_name.lastIndexOf('.'));
+        this.documents.openFile({
+            ...file,
+            document_id: null,
+            parent_id: null,
+            file_id: file.file_id,
+            name: file.real_file_name,
+            file_format: file_format,
+            type: 'file',
+            permissions: [],
+            can_manage_permissions: false,
+            modified_at: file.created_at
+        } as any);
     }
 
     downloadFile(file: FileItem) {
-        console.log('Downloading', file.name);
+        this.documents.downloadFile({
+            file_uuid: file.file_uuid,
+            name: file.real_file_name
+        } as any);
+    }
+
+    renameFile(file: FileItem) {
+        const newName = prompt('Zadejte nový název souboru:', file.real_file_name);
+        if (newName && newName !== file.real_file_name) {
+            this.http.post(
+                `${Config.API_URL}/v1/files/rename`,
+                { file_id: file.file_id, name: newName },
+                { withCredentials: true }
+            ).subscribe((data: any) => {
+                if (data.success) {
+                    file.real_file_name = newName;
+                }
+            });
+        }
     }
 
     // Helpers
+
     getPageList(): number[] {
         const list = [];
         for (let i = Math.max(1, this.currentPage - 2); i <= Math.min(this.totalPages, this.currentPage + 2); i++) {
@@ -162,3 +208,4 @@ export class ManagefilesComponent implements OnInit {
     formatBytes = Utils.formatBytes;
     formatDate = Utils.formatDate;
 }
+
