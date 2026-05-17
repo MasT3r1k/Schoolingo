@@ -1,5 +1,5 @@
-<div class="received-container" [class.message-selected]="selectedMessage">
-    <!-- Message List (Sidebar) -->
+@if (false) {
+<!-- <div class="received-container" [class.message-selected]="selectedMessage">
     <div class="message-list-panel">
         <div class="panel-header">
             <h2>{{ l.s("sidebar.messages.received") }}</h2>
@@ -51,7 +51,6 @@
         </div>
     </div>
 
-    <!-- Message Content (Main) -->
     <div class="message-content-panel">
         <div class="message-detail card">
             @if (selectedMessage) {
@@ -75,7 +74,6 @@
                     <div class="date">
                         {{ Utils.formatDate(selectedMessage.sent_at) }}
                     </div>
-                    <!-- Future actions like reply/delete could go here -->
                 </div>
             </div>
 
@@ -118,4 +116,7 @@
         </div>
 
     </div>
-</div>
+</div> -->
+} @else {
+<messages-template [title]="'sidebar.messages.received'" [message_actions]="actions" [settings]="settings" [filters]="{ receiver_id: this.auth.getUser().user_id }"></messages-template>
+}

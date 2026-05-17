@@ -1,4 +1,4 @@
-import { NgComponentOutlet } from "@angular/common";
+import { NgClass, NgComponentOutlet } from "@angular/common";
 import { Component, inject } from "@angular/core";
 import { ContextMenu } from "@Schoolingo/context-menu";
 import { DropdownManager } from "@Schoolingo/dropdown";
@@ -10,7 +10,7 @@ import { ModalManager } from "@Schoolingo/modal";
     selector: 'schoolingo-modals',
     templateUrl: './modal.html',
     standalone: true,
-    imports: [NgComponentOutlet, IconsModule],
+    imports: [NgComponentOutlet, IconsModule, NgClass],
     styleUrl: './modal.css'
 })
 

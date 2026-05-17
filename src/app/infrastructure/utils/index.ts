@@ -49,8 +49,8 @@ export namespace Utils {
     return (moment.isMoment(week) ? week : moment().isoWeek(week)).startOf('isoWeek').add(day - 1, 'd');
   }
 
-  export function formatDate(date: Date | moment.Moment | string): string {
-    return (moment.isMoment(date) ? date : moment(date)).format('H:mm:ss DD. MM. YYYY');
+  export function formatDate(date: Date | moment.Moment | string, format: string = 'H:mm:ss DD. MM. YYYY'): string {
+    return (moment.isMoment(date) ? date : moment(date)).format(format);
   }
 
   export function formatDateShort(date: Date | moment.Moment | string | null | undefined): string {

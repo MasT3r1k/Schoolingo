@@ -1,0 +1,313 @@
+<div class="received-container" [class.message-selected]="selectedMessage">
+    <!-- Draft List (Sidebar) -->
+    <div class="message-list-panel">
+        <div class="panel-header">
+            <div class="row" style="justify-content: space-between;">
+                <h2>{{ l.s(title) }}</h2>
+                <div class="row">
+                <div class="item-btn" [class.active]="isMultiSelect" (click)="toggleMultiSelect()">
+                    <div class="icon">
+                        <i-tabler name="box-multiple"></i-tabler>
+                    </div>
+                </div>
+
+                <div class="item-btn" (click)="$event.stopPropagation();(dropdownManager.selected_dropdown = ['message_filter_order', 'messages_filter'].includes(dropdownManager.selected_dropdown) ? '' : 'messages_filter')">
+                    <div class="icon">
+                        <i-tabler name="filter"></i-tabler>
+                    </div>
+                    <div class="dropdown-menu filters-dropdown" style="width: 350px;max-height: 550px;" [hidden]="['message_filter_order', 'messages_filter'].includes(dropdownManager.selected_dropdown) !== true" (click)="$event.stopPropagation()">
+
+                        <h3>{{ l.s('messages.filter') }}</h3>
+
+                        <div class="filter-group">
+                            <label>{{ l.s('orders.order') }}</label>
+                            <div class="custom-select" id="filter-status" style="width: 100%" (click)="$event.stopPropagation(); dropdownManager.selected_dropdown = dropdownManager.selected_dropdown == 'message_filter_order' ? 'messages_filter' : 'message_filter_order'">
+                                <div class="selected-value">
+                                    <div class="row" style="gap: .5rem">
+                                        {{ l.s('orders.' + internal_filters.order) }}
+                                    </div>
+                                    <i-tabler name="chevron-down"></i-tabler>
+                                </div>
+                                @if (dropdownManager.selected_dropdown == 'message_filter_order') {
+                                <div class="options-dropdown">
+                                    <div class="list">
+                                        @for (type of ['newest_to_oldest', 'oldest_to_newest']; track $index) {
+                                        <div class="option" (click)="internal_filters.order = type">
+                                            {{ l.s('orders.' + type) }}
+                                        </div>
+                                        }
+                                    </div>
+                                </div>
+                                }
+                            </div>
+
+                            <div class="form-group" (click)="internal_filters.show_suppress = !internal_filters.show_suppress">
+                                <div class="row">
+                                    <span>{{ l.s('messages.show_suppress_messages') }}</span>
+                                    <schoolingo-checkbox [checked]="internal_filters.show_suppress"></schoolingo-checkbox>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="dropdown-footer">
+                            <button class="btn btn--ghost btn--sm" (click)="clearFilters()">
+                                {{ l.s('students.clear_filter') }}
+                            </button>
+                            <button class="btn btn--primary btn--sm" (click)="dropdownManager.selected_dropdown = '';loadMessages()">
+                                {{ l.s('buttons.done') }}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                </div>
+            </div>
+            <div class="search-box">
+                <i-tabler name="search"></i-tabler>
+                <input type="text" [(ngModel)]="searchText" [placeholder]="l.s('messages.search_messages')">
+            </div>
+        </div>
+
+        <div class="messages-list">
+            @for (message of filteredMessages(); track message.message_id) {
+                @let index = findIndexReceiverOfMessage(message, this.auth.getUser().person_id);
+            <div class="message-item" [class.active]="isMessageActive(message)" [class.unread]="index != -1 && message.receivers[index]?.read_at == null" (click)="selectMessage(message)">
+
+                <div class="avatar">
+                    @switch (settings.list_message_header) {
+                        @case ("draft") {
+                            <i-tabler name="file-pencil"></i-tabler>
+                        }
+                        @case ("author") {
+                            <img [src]="avatarService.getAvatar(message.author.avatar, message.author.full_name)" [alt]="message.author.full_name">
+                        }
+                        @case("receivers") {
+                            @for (_ of [].constructor(math.min(message.receivers.length, 3)); track $index) {
+                                <img [src]="avatarService.getAvatar(message.receivers[$index].avatar, message.receivers[$index].full_name)" [alt]="message.receivers[$index].full_name">
+                            }
+                        }
+                    }
+                </div>
+
+                <div class="message-preview-info">
+                    <div class="top-row">
+                        <span class="sender-name">
+                            {{ getMessageHeader(message) }}
+                        </span>
+                        <span class="date" style="display: flex; gap: 4px;min-width: fit-content;">
+                            {{ Utils.formatDateShort(message.sent_at) }}
+                            @if (message.files.length) {
+                            <span class="attachment-indicator" [title]="l.s('messages.has_attachments')">
+                                <i-tabler name="paperclip"></i-tabler>
+                            </span>
+                            }
+                        </span>
+                    </div>
+                    <div class="subject">{{ message.topic }}</div>
+                    <div class="preview-text" [innerHTML]="message.message"></div>
+                </div>
+
+                @if (index != -1 && message.receivers[index]?.read_at == null) {
+                <div class="unread-indicator"></div>
+                }
+            </div>
+            } @empty {
+            <div class="empty-state">
+                <i-tabler name="inbox"></i-tabler>
+                <p>{{ l.s(settings.no_items) }}</p>
+            </div>
+            }
+        </div>
+    </div>
+
+    <!-- Draft Content (Main) -->
+    <div class="message-content-panel">
+        <div class="message-detail card">
+            @switch(getMainContent()) {
+                @case ("multi_select") {
+            <div style="max-width: 350px;width:100%;margin: auto;">
+                <div class="no-selection">
+                    <div class="illustration">
+                        <i-tabler name="mail"></i-tabler>
+                    </div>
+                    <h3>{{ 'Vybráno zpráv: ' + multiSelected.length }}</h3>
+                    <div class="splitter horizontal" style="--size: 100%"></div>
+                    <div class="form-group" style="width: 100%;">
+                        <div class="btn btn--secondary">
+                            <i-tabler name="check"></i-tabler>
+                            Označit jako přečtené a potvrdit
+                        </div>
+                    </div>
+
+                    <div class="form-group" style="width: 100%;">
+                        <div class="btn btn--secondary">
+                            <i-tabler name="inbox"></i-tabler>
+                            Označit jako přečtené, nepotvrzovat
+                        </div>
+                    </div>
+
+                    <div class="form-group" style="width: 100%;">
+                        <div class="btn btn--secondary">
+                            <i-tabler name="trash-x"></i-tabler>
+                            Smazat zprávy
+                        </div>
+                    </div>
+
+                    <div class="splitter horizontal" style="--size: 100%"></div>
+
+                    <div class="form-group" style="width: 100%;" (click)="multiSelected = []">
+                        <div class="btn btn--secondary">
+                            <i-tabler name="x"></i-tabler>
+                            Zrušit výběr
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+                }
+                @case("detail") {
+        @if (selectedMessage) {
+            <div class="message-header">
+                <button class="back-button" (click)="selectMessage(null)">
+                    <i-tabler name="chevron-left"></i-tabler>
+                    <span>{{ l.s("messages.back") }}</span>
+                </button>
+                <div class="sender-info">
+                    <div class="avatar large">
+                    @switch (settings.list_message_header) {
+                        @case ("draft") {
+                            <i-tabler name="file-pencil"></i-tabler>
+                        }
+                        @case ("author") {
+                            <img [src]="avatarService.getAvatar(selectedMessage.author.avatar, selectedMessage.author.full_name)" [alt]="selectedMessage.author.full_name">
+                        }
+                        @case ("receivers") {
+                            @for (_ of [].constructor(math.min(selectedMessage.receivers.length, 3)); track $index) {
+                                <img [src]="avatarService.getAvatar(selectedMessage.receivers[$index].avatar, selectedMessage.receivers[$index].full_name)" [alt]="selectedMessage.receivers[$index].full_name">
+                            }
+                        }
+                    }
+                    </div>
+                    <div class="meta">
+                        <div class="name">{{ getMessageHeader(selectedMessage) }}</div>
+                        <div class="role">{{ getMessageHint(selectedMessage) }}</div>
+                    </div>
+                </div>
+                <div>
+                    <div class="status-row">
+                        @if (settings.show_receivers) {
+                        <div class="status-item" (click)="$event.stopPropagation();selectedMessage.receivers.length ? (dropdownManager.selected_dropdown = (dropdownManager.selected_dropdown == 'draft_receivers') ? '' : 'draft_receivers') : ''">
+                            <i-tabler name="users"></i-tabler>
+                            <span>
+                                {{ selectedMessage.receivers.length }}
+                            </span>
+
+                            @if (settings.show_receivers_detailed) {
+                                <div class="splitter vertical" style="--size: 11px;--margin: .5rem;"></div>
+                                <i-tabler name="eye"></i-tabler>
+                                <span>
+                                    {{ getSeenCount(this.selectedMessage) }}
+                                </span>
+                                @if (selectedMessage.require_confirm) {
+                                <div class="splitter vertical" style="--size: 11px;--margin: .5rem;"></div>
+                                <i-tabler name="checkbox"></i-tabler>
+                                <span>
+                                    {{ getConfirmedCount(this.selectedMessage) }}
+                                </span>
+                                }
+                            }
+                            <div class="dropdown" [hidden]="dropdownManager.selected_dropdown !== 'draft_receivers'" (click)="$event.stopPropagation()">
+                                <ul class="disabled">
+                                    @for (receiver of selectedMessage.receivers; track $index) {
+                                    <li>
+                                        <div class="item" style="z-index:1;justify-content: space-between;">
+                                            <div class="row" style="gap: var(--space-2);">
+                                                <div class="icon">
+                                                    <img [src]="avatarService.getAvatar(receiver.avatar, receiver.full_name)" [alt]="receiver.full_name">
+                                                </div>
+                                                <div class="item-label" style="height: 22px;">
+                                                    {{ receiver.full_name }}
+                                                </div>
+                                            </div>
+
+                                            <div class="row" style="gap: var(--space-2);">
+                                                <div class="icon" style="cursor: pointer;">
+                                                    <i-tabler name="eye" [style.color]="receiver.read_at ? 'var(--primary)' : ''"></i-tabler>
+                                                    @if (receiver.read_at) {
+                                                        <div class="tooltip">
+                                                            {{ `${l.s('messages.read_at')}${Utils.formatDate(receiver.read_at, 'H:mm:ss, DD. MM. YYYY')}` }}
+                                                        </div>
+                                                    }
+                                                </div>
+
+                                                @if (selectedMessage.require_confirm) {
+                                                <div class="icon" style="cursor: pointer;">
+                                                    <i-tabler name="checkbox" [style.color]="receiver.confirm_at ? 'var(--primary)' : ''"></i-tabler>
+                                                    @if (receiver.confirm_at) {
+                                                        <div class="tooltip">
+                                                            {{ `${l.s('messages.confirmed_at')}${Utils.formatDate(receiver.confirm_at, 'H:mm:ss, DD. MM. YYYY')}` }}
+                                                        </div>
+                                                    }
+                                                </div>
+                                                }
+                                            </div>
+                                        </div>
+                                    </li>
+                                    }
+                                </ul>
+                            </div>
+                        </div>
+                        }
+
+                        @if (settings.list_message_header != "draft" && settings.show_files) {
+                        <div class="status-item" (click)="$event.stopPropagation();selectedMessage.files.length ? (dropdownManager.selected_dropdown = (dropdownManager.selected_dropdown == 'draft_files') ? '' : 'draft_files') : ''">
+                            <i-tabler name="paperclip"></i-tabler>
+                            <span>{{ selectedMessage.files.length }}</span>
+                            <div class="dropdown" [hidden]="dropdownManager.selected_dropdown !== 'draft_files'" (click)="$event.stopPropagation()">
+                                <ul class="disabled">
+                                    @for (file of selectedMessage.files; track $index) {
+                                    <li>
+                                        <div class="item">
+                                            <div class="item-label">{{ file.file_name }}</div>
+                                        </div>
+                                    </li>
+                                    }
+                                </ul>
+                            </div>
+                        </div>
+                        }
+                    </div>
+                </div>
+            </div>
+
+            <div class="message-subject">{{ selectedMessage.topic }}</div>
+
+            <div class="message-body" [innerHTML]="selectedMessage.message"></div>
+
+            @if (message_actions.length) {
+            <div class="message-actions">
+                @for (button of message_actions; track $index) {
+                    @if (button.isVisible && button.isVisible(selectedMessage, this) == true || !button.isVisible) {
+                <button [ngClass]="['btn', 'btn--' + button.type]" (click)="button.run(selectedMessage, $event)">
+                    <i-tabler [name]="button.icon"></i-tabler>
+                    {{ l.s(button.label) }}
+                </button>
+                    }
+                }
+            </div>
+        }
+        }
+                }
+                @case("default") {
+            <div class="no-selection">
+                <div class="illustration">
+                    <i-tabler name="notes"></i-tabler>
+                </div>
+                <h3>{{ l.s(settings.select_item_title) }}</h3>
+                <p>{{ l.s(settings.select_item_description) }}</p>
+            </div>
+                }
+            }
+        </div>
+
+    </div>
+</div>

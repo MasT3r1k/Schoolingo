@@ -1,4 +1,4 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, HostListener, inject, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { Config } from '@Schoolingo/config';
 import { Locale } from '@Schoolingo/locale';
@@ -17,7 +17,7 @@ interface RecipientGroup {
   expanded?: boolean;
 }
 import { Permission } from '@Schoolingo/permission';
-import { BehaviorSubject, Subscription } from 'rxjs';
+import { BehaviorSubject, Observable, Subscription } from 'rxjs';
 import { Alert } from '../../../infrastructure/alert/alert';
 import { Homeworks } from '@Schoolingo/homeworks';
 import { FormsModule } from '@angular/forms';
@@ -30,6 +30,8 @@ import { ModalManager } from '@Schoolingo/modal';
 import { School } from '@Schoolingo/school';
 import { UploadFilesModalComponent } from '@Components/upload-files-modal/upload-files-modal.component';
 import { SelectReceiverComponent } from './modals/select-receiver/select-receiver.component';
+import { UnsavedChangesComponent } from './modals/unsaved-changes/unsaved-changes.component';
+import { ComponentCanDeactivate } from '../../../Guards/unsaved-changes.guard';
 
 @Component({
   imports: [
@@ -39,7 +41,9 @@ import { SelectReceiverComponent } from './modals/select-receiver/select-receive
   templateUrl: './send.component.html',
   styleUrl: './send.component.css',
 })
-export class SendComponent implements OnInit {
+export class SendComponent implements OnInit, ComponentCanDeactivate {
+  isChanged = false;
+
   AppConfig = Config;
   messageTypes = messageTypes;
   subscribers: Subscription[] = [];
@@ -152,10 +156,6 @@ export class SendComponent implements OnInit {
           });
         }
         
-        // backend hour is 1-indexed in timetable table for many records, 
-        // but let's check timetable.ts (backend). 
-        // Actually in timetable.ts: .where('timetable.hour', '=', hour + 1)
-        // So h is hour number (1-indexed).
         this.calculateHours(max);
       },
       error: () => this.calculateHours(10)
@@ -172,6 +172,7 @@ export class SendComponent implements OnInit {
 
   // === Receiver handling ===
   public toggleReceiverSelection(receiver: messageReceiver): void {
+    this.isChanged = true;
     const index = this.selectedReceivers.findIndex((r) => r.person_id === receiver.person_id);
     if (index > -1) {
       this.selectedReceivers.splice(index, 1);
@@ -227,6 +228,7 @@ export class SendComponent implements OnInit {
   }
 
   public removeSelectedReceiver(id: number): void {
+    this.isChanged = true;
     const idx = this.selectedReceivers.findIndex((r) => r.person_id === id);
     if (idx > -1) this.selectedReceivers.splice(idx, 1);
   }
@@ -258,10 +260,6 @@ export class SendComponent implements OnInit {
           if (this.auth.getUser().role === 'parent' && this.messageManager.messageType.getValue() === messageTypes.EXCUSESTUDENT) {
             const classTeacherGroup = this.availableGroups.find(g => g.group === 'teacher');
             if (classTeacherGroup && classTeacherGroup.users.length > 0) {
-              // The backend for excuses filters to only relevant teachers, 
-              // but we want the class teacher specifically or just all of them.
-              // If it's plural, we take all. If singular, just one.
-              // Usually parents want to excuse student to the class teacher.
               this.messageManager.selectedReceivers$.next([...classTeacherGroup.users]);
             }
           }
@@ -289,6 +287,7 @@ export class SendComponent implements OnInit {
   }
 
   public toggleRecipient(receiver: messageReceiver) {
+    this.isChanged = true;
     const isSingle = !this.selectedCategory?.group?.includes('select') && !this.selectedCategory?.group?.includes('all');
     const newReceivers = [...this.selectedReceivers];
     
@@ -332,6 +331,7 @@ export class SendComponent implements OnInit {
   }
 
   public addAllInCategory() {
+      this.isChanged = true;
       if (!this.selectedCategory) return;
       const newReceivers = [...this.selectedReceivers];
       this.getUsersInCategory().forEach((u: messageReceiver) => {
@@ -347,6 +347,7 @@ export class SendComponent implements OnInit {
   }
 
   public removeAllSelected() {
+      this.isChanged = true;
       this.messageManager.selectedReceivers$.next([]);
   }
 
@@ -387,8 +388,42 @@ export class SendComponent implements OnInit {
     );
   }
 
+  @HostListener('window:beforeunload', ['$event'])
+  unloadNotification($event: any) {
+    if (this.isChanged) {
+      $event.returnValue = true;
+    }
+  }
+
   // === Lifecycle ===
+  onConceptChange() {
+    this.isChanged = true;
+  }
+
+  canDeactivate(): Observable<boolean> | boolean {
+    if (!this.isChanged) {
+      return true;
+    }
+
+    return new Observable<boolean>((observer) => {
+      this.modalManager.openModal('unsaved_changes', {
+        onConfirm: () => {
+          observer.next(true);
+          observer.complete();
+          this.modalManager.closeModal('unsaved_changes');
+        },
+        onCancel: () => {
+          observer.next(false);
+          observer.complete();
+          this.modalManager.closeModal('unsaved_changes');
+        }
+      });
+    });
+  }
+
   ngOnInit(): void {
+    this.isChanged = false;
+
     this.subscribers.push(
       this.messageManager.messageType.subscribe((type) => {
         this.messageManager.selectedReceivers$.next([]);
@@ -453,6 +488,18 @@ export class SendComponent implements OnInit {
       }
     )
 
+    this.modalManager.addModal(
+      'unsaved_changes',
+      {
+        title: 'messages.unsaved_changes.title',
+        closeable: false,
+        width: 500,
+        items: [
+          { type: 'component', component: UnsavedChangesComponent }
+        ]
+      }
+    )
+
   }
 
   // === Sending message ===
@@ -478,6 +525,7 @@ export class SendComponent implements OnInit {
       .subscribe({
         next: (res) => {
           if (res?.success) {
+            this.isChanged = false;
             this.messageManager.draft_id = res.draft_id ?? this.messageManager.draft_id;
             this.alerts['main'] = new Alert('success', 'messages.draft_saved');
             setTimeout(() => { if (this.alerts['main']?.type === 'success') delete this.alerts['main']; }, 3000);
@@ -570,6 +618,7 @@ export class SendComponent implements OnInit {
       .subscribe({
         next: (res) => {
           if (res?.success) {
+            this.isChanged = false;
             this.messageManager.message = '';
             this.messageManager.topic = '';
             this.messageManager.files = [];
@@ -609,6 +658,7 @@ export class SendComponent implements OnInit {
         files: this.messageManager.files,
         origin: 'messages',
         onAssign: (files: any) => {
+            this.isChanged = true;
             this.messageManager.files = files;
         }
     });

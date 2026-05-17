@@ -24,7 +24,9 @@
     <div class="panels-grid">
         <!-- Available Column -->
         <div class="panel-column">
-            <label class="panel-label">Dostupní uživatelé:</label>
+            <label class="panel-label">
+                {{ l.s('messages.select_receivers.available_users') }}
+            </label>
             <div class="list-surface scrollable">
                 @for (user of getFlattenedUsers(); track user.person_id) {
                 <div class="item-row" (click)="toggleRecipient(user)">
@@ -62,13 +64,15 @@
 
         <!-- Selected Column -->
         <div class="panel-column">
-            <label class="panel-label">Vámi vybraní příjemci:</label>
+            <label class="panel-label">
+                {{ l.s('messages.select_receivers.selected_users') }}
+            </label>
             <div class="list-surface scrollable">
                 @for (user of selectedReceivers; track user.person_id) {
                 <div class="item-row item-row--selected" (click)="removeRecipient(user)">
                     <span class="item-name">{{ user.full_name }}</span>
                     <button class="btn-remove" (click)="$event.stopPropagation(); removeRecipient(user)">
-                        <i-tabler name="trash"></i-tabler>
+                        <i-tabler name="x"></i-tabler>
                     </button>
                 </div>
                 } @empty {
@@ -102,9 +106,9 @@
                     (click)="$event.stopPropagation(); dropdownManager.selected_dropdown = dropdownManager.selected_dropdown === 'modal_receiver_category' ? '' : 'modal_receiver_category'">
                     <div class="selected-value">
                         @if (selectedGroup) {
-                        <span>Skupina: {{ selectedGroup.name }}</span>
+                        <span>{{ l.s('messages.select_receivers.group') }}: {{ selectedGroup.name }}</span>
                         } @else {
-                        <span>Rychle přidat skupinu...</span>
+                        <span>{{ l.s('messages.select_receivers.select_group') }}</span>
                         }
                         <i-tabler name="chevron-down"></i-tabler>
                     </div>
@@ -117,7 +121,7 @@
                                 (click)="$event.stopPropagation(); selectUserGroup(group)">
                                 <span class="option-label">{{ group.name }}</span>
                                 <div class="option-actions">
-                                    <button class="btn-icon-danger" title="Smazat skupinu"
+                                    <button class="btn-icon-danger" [title]="l.s('messages.select_receivers.remove_group')"
                                         (click)="$event.stopPropagation(); deleteGroup(group)">
                                         <i-tabler name="trash"></i-tabler>
                                     </button>
@@ -125,7 +129,7 @@
                             </div>
                             }
                             } @else {
-                            <div class="option disabled">Žádné skupiny k dispozici</div>
+                            <div class="option disabled">{{ l.s('messages.select_receivers.no_groups') }}</div>
                             }
                         </div>
                     </div>
@@ -134,7 +138,7 @@
                 <button class="btn-add-group-members" [class.active]="selectedGroup" (click)="addGroupMembers()"
                     [title]="l.s('messages.add_group_members')">
                     <i-tabler name="users-plus"></i-tabler>
-                    <span>Vložit</span>
+                    <span>{{ l.s('messages.select_receivers.insert') }}</span>
                 </button>
             </div>
         </div>
@@ -143,42 +147,51 @@
             <div class="mgmt-action primary" [class.disabled]="selectedReceivers.length === 0"
                 (click)="showGroupSave = !showGroupSave">
                 <i-tabler name="device-floppy"></i-tabler>
-                <span>Uložit aktuální výběr jako skupinu</span>
+                <span>{{ l.s('messages.select_receivers.save_selection_as_group') }}</span>
             </div>
             <div class="mgmt-action danger" [class.disabled]="!selectedGroup" (click)="deleteGroup(selectedGroup)">
                 <i-tabler name="trash"></i-tabler>
-                <span>Smazat skupinu</span>
+                <span>{{ l.s('messages.select_receivers.remove_group') }}</span>
             </div>
         </div>
     </div>
 
     <!-- Footer Actions -->
     <div class="modal-actions">
-        <button class="btn btn--secondary" (click)="closeModal()">Zrušit</button>
-        <button class="btn btn--primary" (click)="confirmSelection()">Vybrat</button>
+        <button class="btn btn--secondary" (click)="closeModal()">
+            {{ l.s('cancel') }}
+        </button>
+        <button class="btn btn--primary" (click)="confirmSelection()">
+            <i-tabler name="user-share"></i-tabler>
+            {{ l.s('messages.select_receivers.select_button') }}
+        </button>
     </div>
 
     <!-- Group Save Input (Popover) -->
     @if (showGroupSave) {
     <div class="group-save-popover">
         <div class="popover-header">
-            <span class="popover-title">Uložit skupinu</span>
+            <span class="popover-title">
+                {{ l.s('messages.select_receivers.save_group') }}
+            </span>
             <button class="btn-close-popover" (click)="showGroupSave = false; newGroupName = ''">
                 <i-tabler name="x"></i-tabler>
             </button>
         </div>
         <div class="popover-body">
             <div class="form-group" style="margin-top: 0;">
-                <label>Název skupiny:</label>
+                <label>{{ l.s('messages.select_receivers.group_name') }}:</label>
                 <div class="input-with-action">
-                    <input type="text" maxlength="15" [(ngModel)]="newGroupName" placeholder="Např. Vedení školy"
+                    <input type="text" maxlength="15" [(ngModel)]="newGroupName" [placeholder]="l.s('messages.select_receivers.group_name_placeholder')"
                         (keyup.enter)="saveAsGroup()" autofocus>
-                    <button class="btn-save-group" (click)="saveAsGroup()" [disabled]="!newGroupName" title="Uložit">
+                    <button class="btn-save-group" (click)="saveAsGroup()" [disabled]="!newGroupName" [title]="l.s('messages.select_receivers.save_group')">
                         <i-tabler name="device-floppy"></i-tabler>
                     </button>
                 </div>
             </div>
-            <p class="popover-hint">Tento výběr uvidíte v seznamu skupin.</p>
+            <p class="popover-hint">
+                {{ l.s('messages.select_receivers.group_create_hint') }}
+            </p>
         </div>
     </div>
     }

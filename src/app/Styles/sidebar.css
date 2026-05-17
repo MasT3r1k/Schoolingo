@@ -153,12 +153,16 @@ ul {
 
 ul li {
     margin: 2px 0;
-    cursor: pointer;
     position: relative;
     color: var(--text-muted);
     font-weight: 500;
     text-overflow: ellipsis;
     white-space: nowrap;
+    cursor: default;
+}
+
+ul:not(.disabled) li {
+    cursor: pointer;
 }
 
 ul li .item {
@@ -172,7 +176,6 @@ ul li .item {
     gap: var(--space-3);
     font-size: var(--text-sm);
     position: relative;
-    overflow: hidden;
 }
 
 /* Modern hover effect */
@@ -189,7 +192,7 @@ ul li .item::before {
     border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
 }
 
-ul li .item:hover::before {
+ul:not(.disabled) li .item:hover::before {
     transform: scaleY(0.45);
 }
 
@@ -203,7 +206,7 @@ ul li .item .item-label {
 }
 
 /* Hover state */
-ul li .item:hover {
+ul:not(.disabled) li .item:hover {
     background-color: var(--hover-bg);
     color: var(--text);
     transform: translateX(2px);
@@ -216,12 +219,13 @@ ul li .icon {
     display: flex;
     align-items: center;
     justify-content: center;
+    position: relative;
     flex-shrink: 0;
     color: var(--muted);
     transition: all var(--transition-fast);
 }
 
-ul li .item:hover .icon {
+ul:not(.disabled) li .item:hover .icon {
     color: var(--primary);
     transform: scale(1.1);
 }
@@ -252,19 +256,11 @@ ul li.opened .dropdown-child {
 
 /* Danger items */
 ul li.danger .item {
-    color: var(--danger);
+    color: var(--danger)!important;
 }
 
 ul li.danger .item .icon {
-    color: var(--danger);
-}
-
-ul li.danger .item:hover {
-    background-color: rgba(var(--danger-rgb), 0.08);
-}
-
-ul li.danger .item:hover::before {
-    background: var(--danger);
+    color: var(--danger)!important;
 }
 
 /* Button items */
@@ -283,12 +279,20 @@ ul li .item.btn::before {
     display: none;
 }
 
-ul li .item.btn:hover {
+ul:not(.disabled) li.danger .item::before {
+    background: var(--danger)!important;
+}
+
+ul:not(.disabled) li .item.btn:hover {
     background: linear-gradient(135deg, var(--primary-hover), var(--primary-700));
     transform: translateY(-1px);
     box-shadow: 0 4px 12px rgba(var(--primary-rgb), 0.35);
 }
 
-ul li .item.btn:active {
+ul:not(.disabled) li .item.btn:active {
     transform: translateY(0);
+}
+
+ul:not(.disabled) li.danger .item:hover {
+    background-color: rgba(var(--danger-rgb), 0.08)!important;
 }

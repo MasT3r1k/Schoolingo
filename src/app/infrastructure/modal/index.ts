@@ -10,6 +10,7 @@ interface Modal {
     title_placeholders?: Record<string, string>;
     description?: string;
     description_placeholders?: Record<string, string>;
+    type?: 'normal' | 'danger';
     icon?: string;
     width?: number;
     forceScrollbar?: boolean;
@@ -30,6 +31,7 @@ export class ModalManager {
         this.modals[name] = {
             title: '',
             ...modal,
+            type: modal.type ?? 'normal',
             title_placeholders: modal.title_placeholders ?? {},
             description_placeholders: modal.description_placeholders ?? {},
             children: modal.children || [],

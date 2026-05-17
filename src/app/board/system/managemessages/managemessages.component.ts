@@ -9,6 +9,7 @@ import { HttpClient } from '@angular/common/http';
 import { Config } from '@Schoolingo/config';
 import { ActivatedRoute } from '@angular/router';
 import { AvatarService } from '../../../infrastructure/utils/avatar.service';
+import { MessageTemplateSettings, TemplateComponent } from '../../messages/template/template.component';
 
 interface Message {
   message_id: number;
@@ -39,53 +40,19 @@ interface Message {
 
 @Component({
   standalone: true,
-  imports: [CommonModule, FormsModule, IconsModule],
+  imports: [CommonModule, FormsModule, IconsModule, TemplateComponent],
   templateUrl: './managemessages.component.html',
   styleUrls: ['./managemessages.component.css', '../../messages/messages.css']
 })
-export class ManagemessagesComponent implements OnInit {
-  Utils = Utils;
-
-  public l = inject(Locale);
-  public auth = inject(Authentication);
-  public avatarService = inject(AvatarService);
-  public Config = Config;
-  private http = inject(HttpClient);
-  private route = inject(ActivatedRoute);
-
-  public messages: Message[] = [];
-  public selectedMessage: Message | null = null;
-  public searchText = '';
-
-  ngOnInit(): void {
-    this.http.get(
-      `${Config.API_URL}/v1/messages/list`,
-      { withCredentials: true }
-    )
-    .subscribe((data: any) => {
-      this.messages = data.messages;
-      console.log(this.route.snapshot.queryParams)
-      const message_id = this.route.snapshot.queryParams['id'];
-      if (message_id) {
-        this.selectedMessage = this.messages.find((message) => message.message_id == message_id) ?? null;
-      }
-      console.log(data);
-    })
-
-    this.route.queryParams.subscribe((data) => {
-      const message_id = data['id'];
-      this.selectMessage(this.messages.find((message) => message.message_id == message_id) ?? null);
-    })
-  }
-
-  public selectMessage(message: Message | null): void {
-    this.selectedMessage = message;
-  }
-
-  public get filteredMessages(): Message[] {
-    return this.messages.filter((m: Message) => 
-      m.topic?.toLowerCase().includes(this.searchText.toLowerCase()) ||
-      m.author.full_name.toLowerCase().includes(this.searchText.toLowerCase())
-    );
-  }
+export class ManagemessagesComponent {
+  public actions = [];
+  public settings: MessageTemplateSettings = {
+    no_items: 'messages.no_messages',
+    list_message_header: 'author',
+    select_item_title: 'messages.select_message',
+    select_item_description: 'messages.select_message_desc',
+    show_receivers: true,
+    show_receivers_detailed: true,
+    show_files: true
+  };
 }

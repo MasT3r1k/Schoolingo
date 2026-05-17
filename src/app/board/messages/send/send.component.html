@@ -311,7 +311,7 @@
         <span>- {{ l.s(alerts["topic"].text) }}</span>
         }
       </label>
-      <input type="text" [(ngModel)]="messageManager.topic" [placeholder]="l.s('messages.topic')"
+      <input type="text" [(ngModel)]="messageManager.topic" (ngModelChange)="onConceptChange()" [placeholder]="l.s('messages.topic')"
         [class.input-error]="alerts['topic']">
     </div>
     }
@@ -323,7 +323,7 @@
         @if (alerts['message']) { <span>- {{ l.s(alerts["message"].text) }}</span> }
       </label>
       <div class="chat-message-group">
-        <textarea style="min-height: 225px;max-height: 225px;" [(ngModel)]="messageManager.message"
+        <textarea style="min-height: 225px;max-height: 225px;" [(ngModel)]="messageManager.message" (ngModelChange)="onConceptChange()"
           [placeholder]="l.s('messages.message_placeholder')" [class.input-error]="alerts['message']"></textarea>
         <div class="chat-message-footer">
           <div>

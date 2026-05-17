@@ -8,7 +8,7 @@ import { DropdownManager } from '@Schoolingo/dropdown';
 import { IconsModule } from '@Schoolingo/icons';
 import { Locale } from '@Schoolingo/locale';
 import { MarksManager } from '@Schoolingo/marks';
-import { Utils } from '@Schoolingo/utils';
+import { AvatarService, Utils } from '@Schoolingo/utils';
 import { ModalManager } from '@Schoolingo/modal';
 import { BehaviorSubject } from 'rxjs';
 import { MarkDetailModalComponent } from '../../../Components/mark-detail-modal/mark-detail-modal.component';
@@ -28,6 +28,7 @@ interface StudentIntermMarkAPI {
   teacher_first_name: string;
   teacher_last_name: string;
   teacher_full_name: string;
+  avatar: string;
   created: Date;
   topic: string;
   weight: number;
@@ -97,6 +98,7 @@ export class IntermComponent implements OnInit {
   public editingIndex: number | null = null;
 
   // === Imports ===
+  public avatarService = inject(AvatarService);
   public utils = Utils;
   public l = inject(Locale);
   private http = inject(HttpClient);

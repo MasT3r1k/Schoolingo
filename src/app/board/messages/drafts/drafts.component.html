@@ -61,17 +61,34 @@
                     </div>
                     <div class="meta">
                         <div class="name">{{ l.s("messages.draft") }}</div>
-                        <div class="role">{{ l.s("messages.draft_hint") }}</div>
+                        <div class="role">
+                            {{ l.s("messages.draft_hint") }}
+                            &ndash;
+                            {{ `${l.s('messages.draft_last_save')}: ${Utils.formatDate(selectedDraft.updated_at)}` }}
+                        </div>
                     </div>
                 </div>
-                <div class="message-actions">
-                    <div class="date">
-                        {{ Utils.formatDate(selectedDraft.updated_at) }}
+                <div>
+                    <div class="status-row">
+                        <div class="status-item" (click)="$event.stopPropagation();selectedDraft.receivers?.length ? (dropdownManager.selected_dropdown = (dropdownManager.selected_dropdown == 'draft_receivers') ? '' : 'draft_receivers') : ''">
+                            <i-tabler name="users"></i-tabler>
+                            <span>{{ selectedDraft.receivers?.length ?? 0 }}</span>
+                            <div class="dropdown" [hidden]="dropdownManager.selected_dropdown !== 'draft_receivers'" (click)="$event.stopPropagation()">
+                                <ul class="disabled">
+                                    @for (receiver of selectedDraft.receivers; track $index) {
+                                    <li>
+                                        <div class="item">
+                                            <div class="icon">
+                                                <img [src]="avatarService.getAvatar(receiver.avatar, receiver.name)" [alt]="receiver.name">
+                                            </div>
+                                            <div class="item-label">{{ receiver.name }}</div>
+                                        </div>
+                                    </li>
+                                    }
+                                </ul>
+                            </div>
+                        </div>
                     </div>
-                    <button class="btn btn-primary ml-2" (click)="continueDraft(selectedDraft)">
-                        <i-tabler name="player-play"></i-tabler>
-                        {{ l.s("messages.continue_writing") }}
-                    </button>
                 </div>
             </div>
 
@@ -80,6 +97,18 @@
             </div>
 
             <div class="message-body" [innerHTML]="selectedDraft.message">
+            </div>
+
+            <div class="message-actions">
+                <button class="btn btn--danger" (click)="deleteDraft(selectedDraft, $event)">
+                    <i-tabler name="trash"></i-tabler>
+                    {{ l.s("messages.drafts_confirm.delete_btn") }}
+                </button>
+
+                <button class="btn btn--primary" (click)="continueDraft(selectedDraft)">
+                    <i-tabler name="player-play"></i-tabler>
+                    {{ l.s("messages.continue_writing") }}
+                </button>
             </div>
             } @else {
             <div class="no-selection">

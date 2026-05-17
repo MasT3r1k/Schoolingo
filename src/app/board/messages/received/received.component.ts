@@ -2,100 +2,62 @@ import { Component, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { IconsModule } from '@Schoolingo/icons';
-import { Locale } from '@Schoolingo/locale';
 import { Authentication } from '@Schoolingo/authentication';
 import { Utils } from '@Schoolingo/utils';
-import { HttpClient } from '@angular/common/http';
-import { Config } from '@Schoolingo/config';
-import { ActivatedRoute } from '@angular/router';
-import { AvatarService } from '../../../infrastructure/utils/avatar.service';
-
-
-interface Message {
-  message_id: number;
-  topic: string | null;
-  message: string;
-  author_id: number;
-  author: {
-    full_name: string;
-    first_name: string;
-    last_name: string;
-    role: string;
-    avatar: string | null;
-  };
-  sent_at: Date;
-  deleted: boolean;
-  require_conform: boolean;
-  read_at: Date | null;
-  confirmed_at: Date | null;
-  files: {
-    file_id: number;
-    file_uuid: string;
-    name: string;
-    file_format: string;
-    file_size: number;
-    mime_type: string;
-  }[];
-}
+import { Message, MessageTemplateSettings, TemplateComponent } from '../template/template.component';
 
 @Component({
   standalone: true,
-  imports: [CommonModule, FormsModule, IconsModule],
+  imports: [CommonModule, FormsModule, IconsModule, TemplateComponent],
   templateUrl: './received.component.html',
   styleUrls: ['./received.component.css', '../messages.css']
 })
+
 export class ReceivedComponent implements OnInit {
   Utils = Utils;
 
-  public l = inject(Locale);
-  public auth = inject(Authentication);
-  public avatarService = inject(AvatarService);
-  public Config = Config;
-  private http = inject(HttpClient);
-  private route = inject(ActivatedRoute);
+  public settings: MessageTemplateSettings = {
+    no_items: 'messages.no_messages',
+    list_message_header: 'author',
+    select_item_title: 'messages.select_message',
+    select_item_description: 'messages.select_message_desc',
+    show_receivers: false,
+    show_files: true
+  }
 
-  public messages: Message[] = [];
-  public selectedMessage: Message | null = null;
-  public searchText = '';
+  public actions = [
+    {
+      label: 'messages.reply',
+      icon: 'arrow-back-up',
+      type: 'secondary',
+      isVisible: (message: Message) => { return true },
+      run: (message: Message, event: any) => { console.log('CLICKED danger button') }
+    },
+    {
+      label: 'messages.suppress',
+      icon: 'circle-off',
+      type: 'secondary',
+      isVisible: (message: Message) => { return true },
+      run: (message: Message, event: any) => { console.log('CLICKED danger button') }
+    },
+    {
+      label: 'messages.confirm_read',
+      icon: 'check',
+      type: 'primary',
+      isVisible: (message: any) => { return message && message.require_confirm && message.confirmed_at == null },
+      run: (message: any, event: any) => { console.log('CLICKED danger button') }
+    },
+    {
+      label: 'messages.forward',
+      icon: 'arrow-forward-up',
+      type: 'secondary',
+      isVisible: (message: any) => { return true },
+      run: (message: any, event: any) => { console.log('CLICKED primary button') }
+    }
+  ];
+
+  public auth = inject(Authentication);
 
   ngOnInit(): void {
-    this.http.get(
-      `${Config.API_URL}/v1/messages/list?receiver_id=${this.auth.getUser().user_id}`,
-      { withCredentials: true }
-    )
-    .subscribe((data: any) => {
-      this.messages = data.messages;
-      console.log(this.route.snapshot.queryParams)
-      const message_id = this.route.snapshot.queryParams['id'];
-      if (message_id) {
-        this.selectedMessage = this.messages.find((message) => message.message_id == message_id) ?? null;
-      }
-      console.log(data);
-    })
-
-    this.route.queryParams.subscribe((data) => {
-      const message_id = data['id'];
-      this.selectMessage(this.messages.find((message) => message.message_id == message_id) ?? null);
-    })
-  }
-
-  public selectMessage(message: Message | null): void {
-    this.selectedMessage = message;
-    if (message != null && !message.read_at) {
-      message.read_at = new Date();
-      this.http.post(
-        `${Config.API_URL}/v1/messages/update`,
-        { message_id: message.message_id, read: true },
-        { withCredentials: true }
-      )
-      .subscribe((data) => console.log(data));
-    }
-  }
-
-  public get filteredMessages(): Message[] {
-    return this.messages.filter((m: Message) => 
-      m.topic?.toLowerCase().includes(this.searchText.toLowerCase()) ||
-      m.author.full_name.toLowerCase().includes(this.searchText.toLowerCase())
-    );
   }
 }

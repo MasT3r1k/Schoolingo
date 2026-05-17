@@ -67,7 +67,11 @@
               }}</span>
             @if (mark.teacher_full_name) {
             <span class="chrono-sep">·</span>
-            <span class="chrono-teacher"><i-tabler name="user"></i-tabler> {{ mark.teacher_full_name }}</span>
+            <span class="chrono-teacher">
+              @if (mark.avatar) {
+              <img class="avatar" [src]="avatarService.getAvatar(mark.avatar, mark.teacher_full_name)" [alt]="mark.teacher_full_name">
+              }
+              {{ mark.teacher_full_name }}</span>
             }
           </div>
         </div>

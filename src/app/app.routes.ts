@@ -88,6 +88,7 @@ import { ReportsComponent } from './board/system/reports/reports.component';
 
 import { DetailComponent as EmployeesDetailComponent } from './board/Employees/employees/detail/detail.component';
 import { TopicsComponent } from './board/Teach/topics/topics.component';
+import { UnsavedChangesGuard } from './Guards/unsaved-changes.guard';
 
 export const routes: Routes = [
     {
@@ -353,7 +354,8 @@ export const routes: Routes = [
                 path: 'messages', children: [
                     {
                         path: 'send',
-                        component: SendComponent
+                        component: SendComponent,
+                        canDeactivate: [UnsavedChangesGuard]
                     },
                     {
                         path: 'received',

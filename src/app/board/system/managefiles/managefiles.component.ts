@@ -6,9 +6,10 @@ import { Utils } from '@Schoolingo/utils';
 import { HttpClient } from '@angular/common/http';
 import { Config } from '@Schoolingo/config';
 import { Documents } from '@Schoolingo/documents';
-import { AvatarService } from '../../../../infrastructure/utils/avatar.service';
+import { DropdownManager } from '@Schoolingo/dropdown';
+import { AvatarService } from '@Schoolingo/utils';
 
-interface FileItem {
+export interface ManageFileItem {
   file_id: number;
   file_uuid: string;
   real_file_name: string;
@@ -49,7 +50,7 @@ export class ManagefilesComponent implements OnInit {
 
     // Mock State
     isLoading = false;
-    files: FileItem[] = [];
+    files: ManageFileItem[] = [];
     
     // Stats
     totalStats = {
@@ -110,7 +111,7 @@ export class ManagefilesComponent implements OnInit {
         this.currentPage = page;
         this.isLoading = true;
 
-        this.http.get<FileItem[]>(
+        this.http.get<ManageFileItem[]>(
             `${Config.API_URL}/v1/files?limit=${this.pageSize}&offset=${this.pageSize * (this.currentPage - 1)}&name=${this.filters.search}&type=${this.filters.type}`,
             { withCredentials: true }
         )
@@ -140,7 +141,7 @@ export class ManagefilesComponent implements OnInit {
         this.loadFiles(1);
     }
 
-    deleteFile(file: FileItem) {
+    deleteFile(file: ManageFileItem) {
         if(confirm(`Opravdu smazat ${file.name}?`)) {
             this.http.delete(
                 `${Config.API_URL}/v1/files/delete`,
@@ -157,7 +158,7 @@ export class ManagefilesComponent implements OnInit {
         }
     }
 
-    viewFile(file: FileItem) {
+    viewFile(file: ManageFileItem) {
         const file_format = file.real_file_name.substring(file.real_file_name.lastIndexOf('.'));
         this.documents.openFile({
             ...file,
@@ -173,14 +174,14 @@ export class ManagefilesComponent implements OnInit {
         } as any);
     }
 
-    downloadFile(file: FileItem) {
+    downloadFile(file: ManageFileItem) {
         this.documents.downloadFile({
             file_uuid: file.file_uuid,
             name: file.real_file_name
         } as any);
     }
 
-    renameFile(file: FileItem) {
+    renameFile(file: ManageFileItem) {
         const newName = prompt('Zadejte nový název souboru:', file.real_file_name);
         if (newName && newName !== file.real_file_name) {
             this.http.post(
@@ -194,6 +195,7 @@ export class ManagefilesComponent implements OnInit {
             });
         }
     }
+
 
     // Helpers
 

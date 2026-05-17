@@ -1,6 +1,6 @@
 <div class="manageusers-page card">
     @if (isDetailLoading) {
-    <div class="loading-state" style="padding: 5rem;">
+    <div class="loading-state">
         <div class="loading-spinner"></div>
         <p>Načítání detailu uživatele...</p>
     </div>
@@ -10,7 +10,7 @@
         <div class="detail-header">
             <button class="btn-back" (click)="closeDetail()">
                 <i-tabler name="arrow-left"></i-tabler>
-                <span>Zpět na seznam uživatelů</span>
+                <span>Zpět na seznam</span>
             </button>
             <h2 class="detail-title">Karta uživatele</h2>
             <div class="detail-actions">
@@ -30,25 +30,54 @@
             <!-- Sidebar Profile -->
             <aside class="profile-sidebar">
                 <div class="profile-card">
-                    <div class="profile-avatar">
-                        <div class="avatar--image">
-                            <img [src]="avatarService.getAvatar(selectedUser.avatar, selectedUser.full_name)" [alt]="selectedUser.full_name">
+                    <div class="profile-card-banner"></div>
+                    <div class="profile-avatar-wrapper">
+                        <div class="profile-avatar">
+                            <div class="avatar--image">
+                                <img [src]="avatarService.getAvatar(selectedUser.avatar, selectedUser.full_name)" [alt]="selectedUser.full_name">
+                            </div>
                         </div>
+                        <div class="status-dot" [class]="selectedUser.status"></div>
                     </div>
-                    <div class="status-dot" [class]="selectedUser.status"></div>
                     <h3 class="profile-name">{{ selectedUser.full_name }}</h3>
                     <div class="profile-username">
                         <i-tabler name="at"></i-tabler>
                         {{ selectedUser.username }}
                     </div>
-
                     <div class="profile-badges">
-                        <span class="status-badge">
+                        <span class="status-badge" [class]="'status-badge--' + selectedUser.role">
                             <i-tabler [name]="getRoleIcon(selectedUser.role)"></i-tabler>
                             {{ getRoleText(selectedUser.role) }}
                         </span>
                     </div>
+                    <div class="profile-status-row">
+                        <span class="status-pill" [class]="selectedUser.status">{{ getStatusText(selectedUser.status) }}</span>
+                    </div>
                 </div>
+
+                <!-- Contacts -->
+                @if (selectedUser.emails.length > 0 || selectedUser.phones.length > 0) {
+                <div class="contacts-card">
+                    <div class="card-header">
+                        <i-tabler name="address-book"></i-tabler>
+                        <h3>Kontakty</h3>
+                    </div>
+                    <div class="contacts-body">
+                        @for (email of selectedUser.emails; track $index) {
+                        <div class="contact-row">
+                            <i-tabler name="mail"></i-tabler>
+                            <span>{{ email.email }}</span>
+                        </div>
+                        }
+                        @for (phone of selectedUser.phones; track $index) {
+                        <div class="contact-row">
+                            <i-tabler name="phone"></i-tabler>
+                            <span>{{ phone.code }} {{ phone.number }}</span>
+                        </div>
+                        }
+                    </div>
+                </div>
+                }
 
                 <!-- Quick Stats -->
                 <div class="quick-stats">
@@ -60,7 +89,7 @@
                         </div>
                     </div>
                     <div class="stat-card">
-                        <div class="stat-icon"><i-tabler name="calendar"></i-tabler></div>
+                        <div class="stat-icon"><i-tabler name="calendar-plus"></i-tabler></div>
                         <div class="stat-info">
                             <span class="stat-value">{{ selectedUser.created_at | date:'dd.MM.yyyy' }}</span>
                             <span class="stat-label">Datum vytvoření</span>
@@ -70,36 +99,12 @@
                     <div class="stat-card">
                         <div class="stat-icon"><i-tabler name="login"></i-tabler></div>
                         <div class="stat-info">
-                            <span class="stat-value">{{ selectedUser.logins_7days }}</span>
+                            <span class="stat-value">{{ selectedUser.logins_7days }}×</span>
                             <span class="stat-label">Přihlášení (7 dní)</span>
                         </div>
                     </div>
                     }
                 </div>
-
-                <!-- Contacts -->
-                @if (selectedUser.emails.length > 0 || selectedUser.phones.length > 0) {
-                <div class="info-card">
-                    <div class="card-header">
-                        <i-tabler name="address-book"></i-tabler>
-                        <h3>Kontakty</h3>
-                    </div>
-                    <div style="padding: 1rem; display: flex; flex-direction: column; gap: 0.75rem;">
-                        @for (email of selectedUser.emails; track $index) {
-                        <div style="display: flex; align-items: center; gap: 0.5rem; font-size: 0.85rem;">
-                            <i-tabler name="mail" style="width: 14px; color: var(--text-muted);"></i-tabler>
-                            <span style="overflow: hidden; text-overflow: ellipsis;">{{ email.email }}</span>
-                        </div>
-                        }
-                        @for (phone of selectedUser.phones; track $index) {
-                        <div style="display: flex; align-items: center; gap: 0.5rem; font-size: 0.85rem;">
-                            <i-tabler name="phone" style="width: 14px; color: var(--text-muted);"></i-tabler>
-                            <span>{{ phone.code }} {{ phone.number }}</span>
-                        </div>
-                        }
-                    </div>
-                </div>
-                }
             </aside>
 
             <!-- Main Content -->
@@ -304,30 +309,53 @@
                     <!-- ============ SECURITY TAB ============ -->
                     @if (activeTab === 'security') {
                     <div class="security-section">
-                        <div class="info-card full">
+                        <div class="info-card">
                             <div class="card-header">
                                 <i-tabler name="shield-lock"></i-tabler>
-                                <h3>Bezpečnost a přístup</h3>
+                                <h3>Reset hesla</h3>
                             </div>
-                            <div style="padding: 2rem; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 1.5rem;">
-                                <div style="background: var(--surface-2); padding: 1.5rem; border-radius: 50%; color: var(--text-muted);">
-                                    <i-tabler name="key" style="width: 48px; height: 48px;"></i-tabler>
+                            <div class="security-hero">
+                                <div class="security-icon-wrap">
+                                    <i-tabler name="key"></i-tabler>
                                 </div>
-                                <div style="max-width: 400px;">
-                                    <h4 style="margin: 0 0 0.5rem 0;">Resetovat heslo uživatele</h4>
-                                    <p style="font-size: 0.9rem; color: var(--text-muted);">Kliknutím na tlačítko vygenerujete nové dočasné heslo. Uživatel bude odhlášen ze všech zařízení.</p>
+                                <div class="security-text">
+                                    <h4>Resetovat heslo uživatele</h4>
+                                    <p>Kliknutím vygenerujete nové dočasné heslo. Uživatel bude odhlášen ze všech zařízení.</p>
                                 </div>
-                                
                                 @if (resetPasswordForm.generatedPassword) {
-                                <div style="background: var(--surface-2); border: 1px solid var(--success); padding: 1rem 2rem; border-radius: var(--radius); width: 100%; max-width: 400px;">
-                                    <span style="display: block; font-size: 0.75rem; text-transform: uppercase; margin-bottom: 0.5rem; color: var(--success);">Nové heslo:</span>
-                                    <code style="font-size: 1.5rem; font-weight: 700; color: var(--success);">{{ resetPasswordForm.generatedPassword }}</code>
+                                <div class="generated-password-box">
+                                    <span class="generated-password-label">Nové heslo</span>
+                                    <code class="generated-password-value">{{ resetPasswordForm.generatedPassword }}</code>
                                 </div>
                                 }
-                                
                                 <button class="btn btn--danger btn--lg" (click)="submitResetPassword()" [disabled]="isResettingPassword">
                                     {{ isResettingPassword ? 'Generuji...' : 'Resetovat a generovat heslo' }}
                                 </button>
+                            </div>
+                        </div>
+
+                        <div class="info-card">
+                            <div class="card-header">
+                                <i-tabler name="info-circle"></i-tabler>
+                                <h3>Přehled zabezpečení</h3>
+                            </div>
+                            <div class="data-grid">
+                                <div class="data-item">
+                                    <span class="data-label">Typ přihlášení</span>
+                                    <span class="data-value">{{ l.s('system.manage_users.login_method.' + selectedUser.login_type) }}</span>
+                                </div>
+                                <div class="data-item">
+                                    <span class="data-label">Dvoufaktorové ověření</span>
+                                    <span class="data-value">{{ selectedUser['2fa'] ? 'Zapnuto' : 'Vypnuto' }}</span>
+                                </div>
+                                <div class="data-item">
+                                    <span class="data-label">Poslední přihlášení</span>
+                                    <span class="data-value">{{ formatLastLogin(selectedUser.last_login) }}</span>
+                                </div>
+                                <div class="data-item">
+                                    <span class="data-label">Neúspěšné pokusy (7 dní)</span>
+                                    <span class="data-value" [style.color]="selectedUser.failed_logins_7days > 3 ? 'var(--danger)' : ''">{{ selectedUser.failed_logins_7days }}</span>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -335,24 +363,24 @@
 
                     <!-- ============ ACTIVITY TAB ============ -->
                     @if (activeTab === 'activity') {
-                    <div class="info-card full">
+                    <div class="info-card">
                         <div class="card-header">
                             <i-tabler name="history"></i-tabler>
                             <h3>Historie přihlášení</h3>
                         </div>
-                        <div style="display: flex; flex-direction: column;">
+                        <div class="evidence-list">
                             @for (entry of selectedUser.login_history; track $index) {
                             <div class="evidence-item">
-                                <div style="width: 2.5rem; height: 2.5rem; display: flex; align-items: center; justify-content: center; border-radius: 50%;" [style.background]="entry.success ? 'rgba(34, 197, 94, 0.1)' : 'rgba(239, 68, 68, 0.1)'" [style.color]="entry.success ? 'var(--success)' : 'var(--danger)'">
+                                <div class="evidence-icon" [class]="entry.success ? 'success' : 'danger'">
                                     <i-tabler [name]="entry.success ? 'login' : 'shield-x'"></i-tabler>
                                 </div>
-                                <div style="flex: 1;">
-                                    <div style="font-weight: 600;">{{ entry.success ? 'Úspěšné přihlášení' : 'Neúspěšný pokus' }}</div>
-                                    <div style="font-size: 0.8rem; color: var(--text-muted);">{{ entry.created | date:'dd.MM.yyyy HH:mm:ss' }} • IP: {{ entry.ip }}</div>
+                                <div class="evidence-content">
+                                    <div class="evidence-title">{{ entry.success ? 'Úspěšné přihlášení' : 'Neúspěšný pokus' }}</div>
+                                    <div class="evidence-meta">{{ entry.created | date:'dd.MM.yyyy HH:mm:ss' }} &bull; IP: {{ entry.ip }}</div>
                                 </div>
                             </div>
                             } @empty {
-                            <div style="padding: 3rem; text-align: center; color: var(--text-muted);">Žádná aktivita nebyla nalezena</div>
+                            <div class="empty-tab">Žádná aktivita nebyla nalezena</div>
                             }
                         </div>
                     </div>
@@ -360,25 +388,25 @@
 
                     <!-- ============ MESSAGES TAB ============ -->
                     @if (activeTab === 'messages') {
-                    <div class="info-card full">
+                    <div class="info-card">
                         <div class="card-header">
                             <i-tabler name="message-dots"></i-tabler>
                             <h3>Poslední zprávy</h3>
                         </div>
-                        <div style="display: flex; flex-direction: column;">
+                        <div class="evidence-list">
                             @for (msg of selectedUser.messages; track msg.id) {
                             <div class="evidence-item">
-                                <div style="width: 2.5rem; height: 2.5rem; display: flex; align-items: center; justify-content: center; border-radius: 0.75rem; background: rgba(74, 163, 255, 0.1); color: var(--primary);">
+                                <div class="evidence-icon message">
                                     <i-tabler name="message"></i-tabler>
                                 </div>
-                                <div style="flex: 1;">
-                                    <div style="font-weight: 600;">{{ msg.topic }}</div>
-                                    <div style="font-size: 0.85rem; color: var(--text-muted); margin: 0.25rem 0;" [innerHTML]="msg.message"></div>
-                                    <div style="font-size: 0.75rem; color: var(--text-muted);">{{ msg.created_at | date:'dd.MM.yyyy HH:mm' }}</div>
+                                <div class="evidence-content">
+                                    <div class="evidence-title">{{ msg.topic }}</div>
+                                    <div class="evidence-body" [innerHTML]="msg.message"></div>
+                                    <div class="evidence-meta">{{ msg.created_at | date:'dd.MM.yyyy HH:mm' }}</div>
                                 </div>
                             </div>
                             } @empty {
-                            <div style="padding: 3rem; text-align: center; color: var(--text-muted);">Žádné zprávy nenalezeny</div>
+                            <div class="empty-tab">Žádné zprávy nenalezeny</div>
                             }
                         </div>
                     </div>
@@ -386,25 +414,25 @@
 
                     <!-- ============ FILES TAB ============ -->
                     @if (activeTab === 'files') {
-                    <div class="info-card full">
+                    <div class="info-card">
                         <div class="card-header">
                             <i-tabler name="files"></i-tabler>
                             <h3>Soubory uživatele</h3>
                         </div>
-                        <div style="display: flex; flex-direction: column;">
+                        <div class="evidence-list">
                             @for (file of selectedUser.files; track file.id) {
                             <div class="evidence-item">
-                                <div style="width: 2.5rem; height: 2.5rem; display: flex; align-items: center; justify-content: center; border-radius: 0.75rem; background: rgba(139, 92, 246, 0.1); color: #8b5cf6;">
+                                <div class="evidence-icon file">
                                     <i-tabler name="file"></i-tabler>
                                 </div>
-                                <div style="flex: 1;">
-                                    <div style="font-weight: 600;">{{ file.name }}</div>
-                                    <div style="font-size: 0.75rem; color: var(--text-muted);">{{ Utils.formatBytes(file.size) }} • {{ file.type }} • {{ file.created_at | date:'dd.MM.yyyy HH:mm' }}</div>
+                                <div class="evidence-content">
+                                    <div class="evidence-title">{{ file.name }}</div>
+                                    <div class="evidence-meta">{{ Utils.formatBytes(file.size) }} &bull; {{ file.type }} &bull; {{ file.created_at | date:'dd.MM.yyyy HH:mm' }}</div>
                                 </div>
-                                <button class="action-btn" title="Stáhnout"><i-tabler name="download"></i-tabler></button>
+                                <button class="row-action" title="Stáhnout"><i-tabler name="download"></i-tabler></button>
                             </div>
                             } @empty {
-                            <div style="padding: 3rem; text-align: center; color: var(--text-muted);">Žádné soubory nenalezeny</div>
+                            <div class="empty-tab">Žádné soubory nenalezeny</div>
                             }
                         </div>
                     </div>
@@ -472,7 +500,7 @@
         </div>
 
         @if (isLoading) {
-        <div class="loading-state" style="padding: 5rem;">
+        <div class="loading-state">
             <div class="loading-spinner"></div>
             <p>Načítání uživatelů...</p>
         </div>
@@ -500,13 +528,13 @@
                                 </div>
                                 <div class="student-name-cell">
                                     <span class="name">{{ user.full_name }}</span>
-                                    <span class="email">{{ user.username }} • <span style="text-transform: capitalize;">{{ user.role }}</span></span>
+                                    <span class="email">{{ user.username }} &bull; {{ getRoleText(user.role) }}</span>
                                 </div>
                             </div>
                         </td>
-                        <td><span style="font-size: 0.85rem; color: var(--text-muted);">{{ l.s('system.manage_users.login_method.' + user.login_type) }}</span></td>
+                        <td><span class="login-type-cell">{{ l.s('system.manage_users.login_method.' + user.login_type) }}</span></td>
                         <td><span class="status-pill" [class]="user.status">{{ getStatusText(user.status) }}</span></td>
-                        <td><span style="font-size: 0.85rem;">{{ formatLastLogin(user.last_login) }}</span></td>
+                        <td><span class="last-login-cell">{{ formatLastLogin(user.last_login) }}</span></td>
                         <td class="col-actions">
                             <button class="row-action" (click)="$event.stopPropagation(); editUser(user, $event)">
                                 <i-tabler name="edit"></i-tabler>
@@ -540,10 +568,10 @@
         </div>
         }
         } @else {
-        <div class="empty-state" style="padding: 5rem;">
-            <i-tabler name="user-search" style="width: 48px; height: 48px; color: var(--text-muted); opacity: 0.5; margin-bottom: 1rem;"></i-tabler>
+        <div class="empty-state">
+            <i-tabler name="user-search" class="empty-icon"></i-tabler>
             <h3>Žádní uživatelé nenalezeni</h3>
-            <p style="color: var(--text-muted);">Zkuste upravit filtry nebo hledaný výraz</p>
+            <p>Zkuste upravit filtry nebo hledaný výraz</p>
         </div>
         }
     </div>
@@ -584,9 +612,9 @@
                         </div>
                         <div class="form-group">
                             <label class="form-label">Dočasné heslo</label>
-                            <div style="display: flex; gap: 0.5rem;">
-                                <input type="text" class="form-input" style="flex: 1;" [(ngModel)]="newUser.password">
-                                <button class="action-btn" (click)="generatePassword()"><i-tabler name="refresh"></i-tabler></button>
+                            <div class="password-field-row">
+                                <input type="text" class="form-input" [(ngModel)]="newUser.password">
+                                <button class="action-btn" title="Vygenerovat" (click)="generatePassword()"><i-tabler name="refresh"></i-tabler></button>
                             </div>
                         </div>
                     </div>

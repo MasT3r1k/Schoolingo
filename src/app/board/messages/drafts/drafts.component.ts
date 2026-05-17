@@ -4,13 +4,14 @@ import { FormsModule } from '@angular/forms';
 import { IconsModule } from '@Schoolingo/icons';
 import { Locale } from '@Schoolingo/locale';
 import { Authentication } from '@Schoolingo/authentication';
-import { Utils } from '@Schoolingo/utils';
+import { AvatarService, Utils } from '@Schoolingo/utils';
 import { HttpClient } from '@angular/common/http';
 import { Config } from '@Schoolingo/config';
 import { ActivatedRoute, Router } from '@angular/router';
 import { MessageManager } from '@Schoolingo/messages';
 import { ModalManager } from '@Schoolingo/modal';
 import { DeleteDraftComponent } from './modals/delete-draft/delete-draft.component';
+import { DropdownManager } from '@Schoolingo/dropdown';
 
 
 interface Draft {
@@ -18,7 +19,8 @@ interface Draft {
   type: number;
   topic: string | null;
   message: string;
-  receivers: string | null;
+  receivers: { person_id: number;name: string;avatar: string; }[] | null;
+  files: { file_id: number;file_name: string;file_size: number; }[] | null;
   require_confirm: boolean;
   updated_at: Date;
 }
@@ -27,7 +29,7 @@ interface Draft {
   standalone: true,
   imports: [CommonModule, FormsModule, IconsModule],
   templateUrl: './drafts.component.html',
-  styleUrls: ['./drafts.component.css', '../messages.css']
+  styleUrls: ['./drafts.component.css', '../messages.css', '../../../Styles/sidebar.css']
 })
 export class DraftsComponent implements OnInit {
   Utils = Utils;
@@ -39,7 +41,8 @@ export class DraftsComponent implements OnInit {
   private router = inject(Router);
   private messageManager = inject(MessageManager);
   private modalManager = inject(ModalManager);
-
+  public dropdownManager = inject(DropdownManager)
+  public avatarService = inject(AvatarService)
 
   public drafts: Draft[] = [];
   public selectedDraft: Draft | null = null;
@@ -58,7 +61,10 @@ export class DraftsComponent implements OnInit {
     this.modalManager.addModal(
       'delete_draft',
       {
-        title: '',
+        icon: 'trash-x',
+        title: 'messages.drafts_confirm.delete_title',
+        description: 'messages.drafts_confirm.delete_desc',
+        type: 'danger',
         closeable: true,
         width: 600,
         items: [{
@@ -91,14 +97,12 @@ export class DraftsComponent implements OnInit {
   }
 
   public continueDraft(draft: Draft): void {
-    // Set data in message manager
     this.messageManager.message = draft.message || '';
     this.messageManager.topic = draft.topic || '';
     this.messageManager.messageType.next(draft.type);
     this.messageManager.draft_id = draft.draft_id;
+    this.messageManager.receivers = draft.receivers?.length ? draft.receivers?.map((receiver) => (receiver.person_id)) : [];
     
-    // In a real scenario we'd also handle receivers if they are stored in draft
-    // For now we just redirect to send page
     this.router.navigate(['/messages/send']);
   }
 
