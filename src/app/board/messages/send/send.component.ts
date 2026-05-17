@@ -32,11 +32,13 @@ import { UploadFilesModalComponent } from '@Components/upload-files-modal/upload
 import { SelectReceiverComponent } from './modals/select-receiver/select-receiver.component';
 import { UnsavedChangesComponent } from './modals/unsaved-changes/unsaved-changes.component';
 import { ComponentCanDeactivate } from '../../../Guards/unsaved-changes.guard';
+import { CheckboxComponent } from '@Components/Checkbox';
 
 @Component({
   imports: [
     FormsModule,
-    IconsModule
+    IconsModule,
+    CheckboxComponent
   ],
   templateUrl: './send.component.html',
   styleUrl: './send.component.css',
@@ -400,6 +402,16 @@ export class SendComponent implements OnInit, ComponentCanDeactivate {
     this.isChanged = true;
   }
 
+  public reset(): void {
+    this.isChanged = false;
+    this.messageManager.message = '';
+    this.messageManager.topic = '';
+    this.messageManager.files = [];
+    this.selectedReceivers = [];
+    this.messageManager.selectedReceivers$.next([]);
+    this.messageManager.draft_id = null;
+  }
+
   canDeactivate(): Observable<boolean> | boolean {
     if (!this.isChanged) {
       return true;
@@ -407,9 +419,16 @@ export class SendComponent implements OnInit, ComponentCanDeactivate {
 
     return new Observable<boolean>((observer) => {
       this.modalManager.openModal('unsaved_changes', {
+        saveConcept: () => {
+          observer.next(true);
+          observer.complete();
+          this.sendMessage(true, false);
+          this.modalManager.closeModal('unsaved_changes');
+        },
         onConfirm: () => {
           observer.next(true);
           observer.complete();
+          this.reset();
           this.modalManager.closeModal('unsaved_changes');
         },
         onCancel: () => {
@@ -503,39 +522,7 @@ export class SendComponent implements OnInit, ComponentCanDeactivate {
   }
 
   // === Sending message ===
-  public saveDraft(): void {
-    const payload: any = {
-      type: this.messageManager.messageType.getValue(),
-      topic: this.messageManager.topic,
-      message: this.messageManager.message,
-      receivers: this.selectedReceivers.flatMap((r) => r.members ? r.members : [r.person_id]),
-      require_confirm: this.messageManager.options.requireConfirmation,
-      copy_to_class_teacher: this.messageManager.options.copyToClassTeacher,
-      copy_to_parents: this.messageManager.options.copyToParents,
-      copy_to_students: this.messageManager.options.copyToStudents
-    };
-    if (this.messageManager.draft_id) payload.draft_id = this.messageManager.draft_id;
-
-    this.http
-      .post<{ success: boolean; draft_id?: number; error?: string }>(
-        `${Config.API_URL}/v1/messages/draft`,
-        payload,
-        { withCredentials: true }
-      )
-      .subscribe({
-        next: (res) => {
-          if (res?.success) {
-            this.isChanged = false;
-            this.messageManager.draft_id = res.draft_id ?? this.messageManager.draft_id;
-            this.alerts['main'] = new Alert('success', 'messages.draft_saved');
-            setTimeout(() => { if (this.alerts['main']?.type === 'success') delete this.alerts['main']; }, 3000);
-            console.log('Draft saved', this.messageManager.draft_id);
-          }
-        }
-      });
-  }
-
-  public sendMessage(): void {
+  public sendMessage(is_draft: boolean = false, redirect: boolean = true): void {
     this.alerts = {};
 
     const type = this.messageManager.messageType.getValue();
@@ -551,7 +538,7 @@ export class SendComponent implements OnInit, ComponentCanDeactivate {
 
     switch (type) {
       case messageTypes.MESSAGE:
-        if (!this.messageManager.topic.trim().length) {
+        if (!this.messageManager.topic.trim().length && !is_draft) {
           this.alerts['topic'] = new Alert('error', 'form.required');
         }
         break;
@@ -567,7 +554,7 @@ export class SendComponent implements OnInit, ComponentCanDeactivate {
 
     if (Object.keys(this.alerts).length > 0) return;
 
-    if (this.selectedReceivers.length === 0) {
+    if (this.selectedReceivers.length === 0 && !is_draft) {
       this.alerts['main'] = new Alert('error', 'messages.no_receivers');
       return;
     }
@@ -588,6 +575,7 @@ export class SendComponent implements OnInit, ComponentCanDeactivate {
       recipients: this.selectedReceivers.flatMap((r) => r.members ? r.members : [r.person_id]),
       files: (this.messageManager.files || []).map(f => f.serverId),
       type: type,
+      is_draft,
       topic: type === messageTypes.RATESTUDENT 
         ? this.l.s(this.messageManager.ratingTypes[this.messageManager.selectedRatingType.getValue()].label)
         : (type === messageTypes.EXCUSESTUDENT && this.auth.getUser().role === 'parent'
@@ -618,16 +606,12 @@ export class SendComponent implements OnInit, ComponentCanDeactivate {
       .subscribe({
         next: (res) => {
           if (res?.success) {
-            this.isChanged = false;
-            this.messageManager.message = '';
-            this.messageManager.topic = '';
-            this.messageManager.files = [];
-            this.selectedReceivers = [];
-            this.messageManager.selectedReceivers$.next([]);
-            this.messageManager.draft_id = null;
+            this.reset();
             this.alerts['main'] = new Alert('success', 'messages.sent');
             setTimeout(() => {
-              this.router.navigate(['/messages/sent'], { queryParams: { id: res.message_id } });
+              if (redirect) {
+                this.router.navigate([is_draft ? '/messages/drafts' : '/messages/sent'], { queryParams: { id: res.message_id } });
+              }
             }, 1000);
           } else {
             this.alerts['main'] = new Alert(

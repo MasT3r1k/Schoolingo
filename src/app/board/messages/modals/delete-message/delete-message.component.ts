@@ -5,7 +5,7 @@ import { IconsModule } from '@Schoolingo/icons';
 import { Locale } from '@Schoolingo/locale';
 import { HttpClient } from '@angular/common/http';
 import { Config } from '@Schoolingo/config';
-import { Message } from '../../../template/template.component';
+import { Message } from '../../template/template.component';
 
 @Component({
   selector: 'app-delete-message',
@@ -32,19 +32,8 @@ export class DeleteMessageComponent implements OnInit {
 
   public confirmDelete(): void {
     if (!this.message) return;
-
-    this.http.delete(
-      `${Config.API_URL}/v1/messages/delete/${this.message.message_id}`,
-      { withCredentials: true }
-    )
-    .subscribe((res: any) => {
-      if (res.success) {
-        const data = this.modalManager.getModalData('delete_message');
-        if (data.onDeleted) {
-          data.onDeleted(this.message.message_id);
-        }
-        this.closeModal();
-      }
-    });
+    const data = this.modalManager.getModalData('delete_message');
+    data.onDelete();
+    this.closeModal();
   }
 }

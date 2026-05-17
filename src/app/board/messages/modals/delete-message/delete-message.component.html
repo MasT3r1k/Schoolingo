@@ -1,11 +1,11 @@
-@if (draft?.topic || draft?.message) {
+@if (message?.topic || message?.message) {
 <div class="draft-preview-container">
     <div class="draft-card">
         <div class="draft-topic">
             <i-tabler name="file-pencil"></i-tabler>
-            {{ draft.topic || l.s('messages.no_subject') }}
+            {{ message.topic || l.s('messages.no_subject') }}
         </div>
-        <div class="draft-snippet" [innerHTML]="draft.message"></div>
+        <div class="draft-snippet" [innerHTML]="message.message"></div>
     </div>
 </div>
 }
@@ -16,6 +16,6 @@
     </button>
     <button class="btn btn--danger" (click)="confirmDelete()">
         <i-tabler name="trash"></i-tabler>
-        {{ l.s('messages.drafts_confirm.delete_btn') }}
+        {{ l.s(message.is_draft ? 'messages.drafts_confirm.delete_btn' : 'messages.message_confirm.delete_btn') }}
     </button>
 </div>

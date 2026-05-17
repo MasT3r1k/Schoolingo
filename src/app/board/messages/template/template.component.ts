@@ -9,7 +9,10 @@ import { Config } from '@Schoolingo/config';
 import { DropdownManager } from '@Schoolingo/dropdown';
 import { IconsModule } from '@Schoolingo/icons';
 import { Locale } from '@Schoolingo/locale';
+import { ModalManager } from '@Schoolingo/modal';
 import { AvatarService, Utils } from '@Schoolingo/utils';
+import { DeleteMessageComponent } from '../modals/delete-message/delete-message.component';
+import { ContextMenu, ContextMenuItem } from '@Schoolingo/context-menu';
 
 export interface Message {
   message_id: number;
@@ -24,6 +27,7 @@ export interface Message {
     avatar: string | null;
   };
   sent_at: Date;
+  is_draft: boolean;
   deleted: boolean;
   require_confirm: boolean;
   files: {
@@ -40,6 +44,7 @@ export interface Message {
     avatar: string;
     read_at: Date | null;
     confirm_at: Date | null;
+    suppress_at: Date | null;
   }[]
 }
 
@@ -84,6 +89,7 @@ export class TemplateComponent implements OnInit {
   }
   @Input() filters = {};
   @Input() message_actions: MessageAction[] = [];
+  @Input() multi_actions: MessageAction[] = [];
 
   public internal_filters = {
     order: 'newest_to_oldest',
@@ -94,6 +100,8 @@ export class TemplateComponent implements OnInit {
   public math = Math;
   public l = inject(Locale);
   public Utils = Utils;
+  private modalManager = inject(ModalManager);
+  public context_menu = inject(ContextMenu);
   public dropdownManager = inject(DropdownManager);
   public avatarService = inject(AvatarService);
   public auth = inject(Authentication);
@@ -108,10 +116,61 @@ export class TemplateComponent implements OnInit {
   public messages: Message[] = [];
 
   // ---===--- Functions
+  public rightClickOnMessage(event: MouseEvent, message: Message): void {
+    event.preventDefault();
+    let items: ContextMenuItem[] = [];
+
+    items.push(
+      {
+        icon: 'click',
+        text: 'messages.select',
+        action: () => { this.context_menu.hideContextMenu();this.selectMessage(message); }
+      }
+    )
+
+    for(let i = 0;i < this.message_actions.length;i++) {
+      if (this.message_actions[i]?.isVisible && !this.message_actions[i]?.isVisible(message, this) || !this.message_actions[i]?.isVisible) continue;
+      items.push(
+        {
+          color: this.message_actions[i].type == 'danger' ? 'danger' : undefined,
+          icon: this.message_actions[i].icon,
+          text: this.message_actions[i].label ?? 'unknown',
+          action: () => { this.context_menu.hideContextMenu();this.message_actions[i].run(message, event, this); }
+        }
+      )
+    }
+    
+    items.push(
+      {
+        type: 'split'
+      }
+    )
+
+    items.push(
+      {
+        icon: 'x',
+        text: 'close',
+        action: () => { this.context_menu.hideContextMenu(); }
+      }
+    )
+
+    this.context_menu.setItems(items);
+    this.context_menu.showContextMenu(event.x, event.y);
+  }
+
   public toggleMultiSelect(): void {
     this.isMultiSelect = !this.isMultiSelect;
     this.multiSelected = [];
     this.selectedMessage = null;
+  }
+
+  public selectAll(): void {
+    const all = this.filteredMessages();
+    all.forEach((msg) => {
+      if (!this.multiSelected.includes(msg)) {
+        this.multiSelected.push(msg);
+      }
+    });
   }
 
   public isMessageActive(message: Message): boolean {
@@ -135,6 +194,43 @@ export class TemplateComponent implements OnInit {
     return message?.receivers.findIndex((receiver) => receiver.person_id == person_id) ?? -1;
   }
 
+  public updateMessage(message: typeof this.selectedMessage, options: { read?: boolean;confirm?: boolean;suppress?: boolean; }): void {
+    if (!message) return;
+
+    this.http.post(
+      `${Config.API_URL}/v1/messages/update`,
+      {
+        message_id: message.message_id,
+        read: options.read ?? false,
+        confirm: options.confirm ?? false,
+        suppress: options.suppress ?? null
+      },
+      { withCredentials: true }
+    )
+    .subscribe((data: any) => {
+      if (data.success == false) return;
+      this.loadMessages();
+    });
+  }
+
+  public deleteMessage(message: typeof this.selectedMessage): void {
+    if (!message) return;
+
+    this.modalManager.openModal('delete_message', {
+      message,
+      onDelete: () => {
+        this.http.delete(
+          `${Config.API_URL}/v1/messages/delete?message_id=${message.message_id}`,
+          { withCredentials: true }
+        )
+        .subscribe((data: any) => {
+          if (data.success == false) return;
+          this.loadMessages();
+        });
+      }
+    });
+  }
+
   public selectMessage(message: typeof this.selectedMessage): void {
     if (this.isMultiSelect && message) {
       if (this.multiSelected.includes(message)) {
@@ -150,12 +246,7 @@ export class TemplateComponent implements OnInit {
 
     if (message != null && person_index != -1 && !message.receivers[person_index].read_at) {
       message.receivers[person_index].read_at = new Date();
-      this.http.post(
-        `${Config.API_URL}/v1/messages/update`,
-        { message_id: message.message_id, read: true },
-        { withCredentials: true }
-      )
-      .subscribe((data) => console.log(data));
+      this.updateMessage(message, { read: true })
     }
   }
 
@@ -167,9 +258,8 @@ export class TemplateComponent implements OnInit {
   }
 
   public loadMessages(): void {
-    const url = this.buildUrl(`${Config.API_URL}/v1/messages/list`,
-      this.filters
-    );
+    const url = this.buildUrl(`${Config.API_URL}/v1/messages/list`, this.filters);
+
     this.http.get(
       url,
       { withCredentials: true }
@@ -177,10 +267,13 @@ export class TemplateComponent implements OnInit {
     .subscribe((data: any) => {
       this.messages = data.messages;
       const message_id = this.route.snapshot.queryParams['id'];
-      if (message_id) {
-        this.selectedMessage = this.messages.find((message) => message.message_id == message_id) ?? null;
+      if (this.selectedMessage) {
+        const index = this.messages.findIndex((msg) => msg.message_id == this.selectedMessage?.message_id);
+        this.selectMessage(index == -1 ? null : this.messages[index]);
       }
-      console.log(data);
+      if (message_id) {
+        this.selectMessage(this.messages.find((message) => message.message_id == message_id) ?? null);
+      }
     })
   }
 
@@ -193,7 +286,7 @@ export class TemplateComponent implements OnInit {
         return this.l.s("messages.draft");
       case 'receivers':
         let names = message.receivers.slice(0,2);
-        return names.map((name) => (name.full_name)).join(', ')
+        return names.map((name) => (name.full_name)).join(', ') + (message.receivers.length > 2 ? ` a ${message.receivers.length - 2} další příjemci` : '')
       default:
         return '';
     }
@@ -206,7 +299,7 @@ export class TemplateComponent implements OnInit {
       case "receivers":
         return `${this.l.s('messages.sent_at')}${Utils.formatDate(message.sent_at)}`;
       case "draft":
-        return `${this.l.s("messages.draft_hint")} &ndash; ${this.l.s('messages.draft_last_save')}: ${Utils.formatDate(message.sent_at)}`;
+        return `${this.l.s("messages.draft_hint")} – ${this.l.s('messages.draft_last_save')}: ${Utils.formatDate(message.sent_at)}`;
       default:
         return '';
     }
@@ -229,6 +322,22 @@ export class TemplateComponent implements OnInit {
 
   // ---===--- Runtime
   public ngOnInit(): void {
-    this.loadMessages()
+    this.loadMessages();
+
+    this.modalManager.addModal(
+      'delete_message',
+      {
+        icon: 'trash-x',
+        title: 'messages.message_confirm.delete_title',
+        description: 'messages.message_confirm.delete_desc',
+        type: 'danger',
+        closeable: true,
+        width: 600,
+        items: [{
+          type: 'component',
+          component: DeleteMessageComponent
+        }]
+      }
+    )
   }
 }

@@ -70,7 +70,7 @@
         <div class="messages-list">
             @for (message of filteredMessages(); track message.message_id) {
                 @let index = findIndexReceiverOfMessage(message, this.auth.getUser().person_id);
-            <div class="message-item" [class.active]="isMessageActive(message)" [class.unread]="index != -1 && message.receivers[index]?.read_at == null" (click)="selectMessage(message)">
+            <div class="message-item" [class.active]="isMessageActive(message)" [class.unread]="index != -1 && message.receivers[index]?.read_at == null" (click)="selectMessage(message)" (contextmenu)="rightClickOnMessage($event, message)">
 
                 <div class="avatar">
                     @switch (settings.list_message_header) {
@@ -93,13 +93,18 @@
                         <span class="sender-name">
                             {{ getMessageHeader(message) }}
                         </span>
-                        <span class="date" style="display: flex; gap: 4px;min-width: fit-content;">
-                            {{ Utils.formatDateShort(message.sent_at) }}
+                        <span class="date" style="display: flex; gap: 4px;min-width: fit-content;align-items: center;">
+                            @if (message.receivers[this.findIndexReceiverOfMessage(message, auth.getUser().person_id)]?.suppress_at != null) {
+                            <span class="attachment-indicator" [title]="l.s('messages.is_suppress')">
+                                <i-tabler name="ban"></i-tabler>
+                            </span>
+                            }
                             @if (message.files.length) {
                             <span class="attachment-indicator" [title]="l.s('messages.has_attachments')">
                                 <i-tabler name="paperclip"></i-tabler>
                             </span>
                             }
+                            {{ Utils.formatDateShort(message.sent_at) }}
                         </span>
                     </div>
                     <div class="subject">{{ message.topic }}</div>
@@ -124,45 +129,90 @@
         <div class="message-detail card">
             @switch(getMainContent()) {
                 @case ("multi_select") {
-            <div style="max-width: 350px;width:100%;margin: auto;">
-                <div class="no-selection">
-                    <div class="illustration">
-                        <i-tabler name="mail"></i-tabler>
-                    </div>
-                    <h3>{{ 'Vybráno zpráv: ' + multiSelected.length }}</h3>
-                    <div class="splitter horizontal" style="--size: 100%"></div>
-                    <div class="form-group" style="width: 100%;">
-                        <div class="btn btn--secondary">
-                            <i-tabler name="check"></i-tabler>
-                            Označit jako přečtené a potvrdit
-                        </div>
-                    </div>
+            <div class="multi-select-panel">
 
-                    <div class="form-group" style="width: 100%;">
-                        <div class="btn btn--secondary">
-                            <i-tabler name="inbox"></i-tabler>
-                            Označit jako přečtené, nepotvrzovat
-                        </div>
+                <!-- Header -->
+                <div class="ms-header">
+                    <div class="ms-header-icon">
+                        <i-tabler name="box-multiple"></i-tabler>
                     </div>
-
-                    <div class="form-group" style="width: 100%;">
-                        <div class="btn btn--secondary">
-                            <i-tabler name="trash-x"></i-tabler>
-                            Smazat zprávy
-                        </div>
+                    <div class="ms-header-info">
+                        <h3>Hromadná akce</h3>
+                        <p>Vyberte zprávy v seznamu a proveďte akci</p>
                     </div>
+                    <div class="ms-count-badge">
+                        <span>{{ multiSelected.length }}</span>
+                        <small>vybráno</small>
+                    </div>
+                </div>
 
-                    <div class="splitter horizontal" style="--size: 100%"></div>
+                <!-- Quick selection -->
+                <div class="ms-section">
+                    <div class="ms-section-label">Výběr</div>
+                    <div class="ms-quick-actions">
+                        <button class="ms-quick-btn" (click)="selectAll()">
+                            <i-tabler name="checks"></i-tabler>
+                            Vybrat vše
+                        </button>
+                        <button class="ms-quick-btn" [disabled]="multiSelected.length === 0" (click)="multiSelected = []">
+                            <i-tabler name="square"></i-tabler>
+                            Odvybrat vše
+                        </button>
+                    </div>
+                </div>
 
-                    <div class="form-group" style="width: 100%;" (click)="multiSelected = []">
-                        <div class="btn btn--secondary">
-                            <i-tabler name="x"></i-tabler>
-                            Zrušit výběr
-                        </div>
+                <!-- Actions -->
+                <div class="ms-section">
+                    <div class="ms-section-label">Akce</div>
+                    <div class="ms-actions-grid">
+                        @for (action of multi_actions; track $index) {
+                        <button [ngClass]="['ms-action-card', 'ms-action-card--' + action.type]" [disabled]="multiSelected.length === 0">
+                            <div [ngClass]="['ms-action-icon', 'ms-action-icon--' + action.type]">
+                                <i-tabler [name]="action.icon"></i-tabler>
+                            </div>
+                            <div class="ms-action-text">
+                                <span>{{ l.s(action.label) }}</span>
+                            </div>
+                            <i-tabler class="ms-action-arrow" name="chevron-right"></i-tabler>
+                        </button>
+                        }
+
+                        <button class="ms-action-card" [disabled]="multiSelected.length === 0">
+                            <div class="ms-action-icon ms-action-icon--primary">
+                                <i-tabler name="mail-opened"></i-tabler>
+                            </div>
+                            <div class="ms-action-text">
+                                <span>Označit jako přečtené</span>
+                                <small>Bez potvrzení</small>
+                            </div>
+                            <i-tabler class="ms-action-arrow" name="chevron-right"></i-tabler>
+                        </button>
+
+                        <button class="ms-action-card ms-action-card--danger" [disabled]="multiSelected.length === 0">
+                            <div class="ms-action-icon ms-action-icon--danger">
+                                <i-tabler name="trash-x"></i-tabler>
+                            </div>
+                            <div class="ms-action-text">
+                                <span>Smazat zprávy</span>
+                                <small>Tato akce je nevratná</small>
+                            </div>
+                            <i-tabler class="ms-action-arrow" name="chevron-right"></i-tabler>
+                        </button>
+
+                        <div class="splitter horizontal" style="--size: 100%"></div>
+
+                        <button class="ms-action-card" (click)="toggleMultiSelect()">
+                            <div class="ms-action-icon">
+                                <i-tabler name="x"></i-tabler>
+                            </div>
+                            <div class="ms-action-text">
+                                <span>Ukončit výběr</span>
+                                <small>Vypne možnost vybírání více zpráv</small>
+                            </div>
+                        </button>
                     </div>
                 </div>
             </div>
-
                 }
                 @case("detail") {
         @if (selectedMessage) {
@@ -229,6 +279,7 @@
                                                 </div>
                                             </div>
 
+                                            @if (settings.show_receivers_detailed) {
                                             <div class="row" style="gap: var(--space-2);">
                                                 <div class="icon" style="cursor: pointer;">
                                                     <i-tabler name="eye" [style.color]="receiver.read_at ? 'var(--primary)' : ''"></i-tabler>
@@ -250,6 +301,7 @@
                                                 </div>
                                                 }
                                             </div>
+                                            }
                                         </div>
                                     </li>
                                     }
@@ -287,7 +339,7 @@
             <div class="message-actions">
                 @for (button of message_actions; track $index) {
                     @if (button.isVisible && button.isVisible(selectedMessage, this) == true || !button.isVisible) {
-                <button [ngClass]="['btn', 'btn--' + button.type]" (click)="button.run(selectedMessage, $event)">
+                <button [ngClass]="['btn', 'btn--' + button.type]" (click)="button.run(selectedMessage, $event, this)">
                     <i-tabler [name]="button.icon"></i-tabler>
                     {{ l.s(button.label) }}
                 </button>

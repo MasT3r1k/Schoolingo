@@ -6,7 +6,6 @@ import { Authentication } from '@Schoolingo/authentication';
 import { Utils } from '@Schoolingo/utils';
 import { Message, MessageTemplateSettings, TemplateComponent } from '../template/template.component';
 import { ModalManager } from '@Schoolingo/modal';
-import { DeleteMessageComponent } from './modals/delete-message/delete-message.component';
 
 @Component({
   imports: [FormsModule, IconsModule, NgClass, TemplateComponent],
@@ -15,8 +14,8 @@ import { DeleteMessageComponent } from './modals/delete-message/delete-message.c
 })
 
 export class SentComponent implements OnInit {
-  private modalManager = inject(ModalManager);
   public auth = inject(Authentication);
+  private modalManager = inject(ModalManager);
 
   Utils = Utils;
   
@@ -36,7 +35,11 @@ export class SentComponent implements OnInit {
       icon: 'trash-x',
       type: 'danger',
       isVisible: (message: Message, self: TemplateComponent) => { return self.getSeenCount(message) == 0 },
-      run: (message: Message, event: any) => { this.deleteMessage(message, event) }
+      run: (message: Message, event: any, self: TemplateComponent) => { 
+        this.modalManager.updateModal('delete_message', 'title', 'messages.message_confirm.delete_title');
+        this.modalManager.updateModal('delete_message', 'description', 'messages.message_confirm.delete_desc');
+        self.deleteMessage(message);
+      }
     },
     {
       label: 'messages.forward',
@@ -47,31 +50,5 @@ export class SentComponent implements OnInit {
     }
   ];
 
-
-  public deleteMessage(message: Message, event: MouseEvent): void {
-    event.stopPropagation();
-    this.modalManager.openModal('delete_message', {
-      message,
-      onDeleted: (message_id: number) => {
-      }
-    });
-  }
-
-  ngOnInit(): void {
-    this.modalManager.addModal(
-      'delete_message',
-      {
-        icon: 'trash-x',
-        title: 'messages.message_confirm.delete_title',
-        description: 'messages.message_confirm.delete_desc',
-        type: 'danger',
-        closeable: true,
-        width: 600,
-        items: [{
-          type: 'component',
-          component: DeleteMessageComponent
-        }]
-      }
-    );
-  }
+  ngOnInit(): void {}
 }

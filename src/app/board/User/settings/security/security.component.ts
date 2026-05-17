@@ -204,7 +204,6 @@ export class SecurityComponent implements OnInit {
       'update_passkey',
       {
         title: 'settings.passkeys.edit.title',
-        description: 'settings.passkeys.edit.description',
         icon: 'fingerprint',
         closeable: true,
         items: [

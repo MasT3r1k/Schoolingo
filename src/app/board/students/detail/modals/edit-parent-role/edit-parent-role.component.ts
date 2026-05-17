@@ -8,11 +8,12 @@ import { DropdownManager } from '@Schoolingo/dropdown';
 import { HttpClient } from '@angular/common/http';
 import { Config } from '@Schoolingo/config';
 import { ParentInfo } from '../../../students.component';
+import { CheckboxComponent } from '@Components/Checkbox';
 
 @Component({
   selector: 'app-edit-parent-role',
   standalone: true,
-  imports: [CommonModule, FormsModule, IconsModule],
+  imports: [CommonModule, FormsModule, IconsModule, CheckboxComponent],
   templateUrl: './edit-parent-role.component.html',
   styleUrl: './edit-parent-role.component.css'
 })

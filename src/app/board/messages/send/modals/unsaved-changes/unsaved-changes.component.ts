@@ -13,6 +13,13 @@ export class UnsavedChangesComponent {
   private modalManager = inject(ModalManager);
   public l = inject(Locale);
 
+  public saveConcept(): void {
+    const data = this.modalManager.getModalData('unsaved_changes');
+    if (data && data.saveConcept) {
+      data.saveConcept();
+    }
+  }
+
   public confirmLeave(): void {
     const data = this.modalManager.getModalData('unsaved_changes');
     if (data && data.onConfirm) {

@@ -52,12 +52,17 @@ export class ModalManager {
             case "title":
                 modal.title = value;
                 break;
+            case "description":
+                modal.description = value;
+                break;
             case "width":
                 modal.width = value;
                 break;
             case "icon":
                 modal.icon = value;
                 break;
+            default:
+                console.error(`Tried edit ${key} with value ${value} in modal ${name}`)
         }
     }
 

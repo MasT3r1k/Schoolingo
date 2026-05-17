@@ -1,7 +1,13 @@
 <div class="modal-body" (click)="dropdownManager.selected_dropdown = ''">
     
-    <div class="info-banner mb-4">
-        Nastavení vztahu a práv pro zástupce: <strong>{{ parent.fullName }}</strong>
+    <div class="message message--info">
+        <div class="row">
+            <i-tabler name="info-circle"></i-tabler>
+            <b>Informace o vztahu</b>
+        </div>
+        <p class="info-text">
+            Nastavení vztahu a práv pro zástupce: <strong>{{ parent.fullName }}</strong>
+        </p>
     </div>
 
     <div class="form-group mb-4">
@@ -28,31 +34,28 @@
     </div>
 
     <div class="form-group options-group">
-        <label class="checkbox-container">
-            <input type="checkbox" [(ngModel)]="form.legal_guardian_de_jure">
-            <span class="checkmark"></span>
+        <label class="checkbox-container" (click)="form.legal_guardian_de_jure = !form.legal_guardian_de_jure">
             <div class="checkbox-text">
                 <span class="title">Je zák. zástupcem de jure</span>
                 <span class="description">Zákonný zástupce podle práva.</span>
             </div>
+            <schoolingo-checkbox [checked]="form.legal_guardian_de_jure"></schoolingo-checkbox>
         </label>
         
-        <label class="checkbox-container">
-            <input type="checkbox" [(ngModel)]="form.closest_legal_representative">
-            <span class="checkmark"></span>
+        <label class="checkbox-container" (click)="form.closest_legal_representative = !form.closest_legal_representative">
             <div class="checkbox-text">
                 <span class="title">Je nejbližším zák. zástupcem</span>
                 <span class="description">Primární kontakt pro školu.</span>
             </div>
+            <schoolingo-checkbox [checked]="form.closest_legal_representative"></schoolingo-checkbox>
         </label>
         
-        <label class="checkbox-container">
-            <input type="checkbox" [(ngModel)]="form.allowed_to_receive_information">
-            <span class="checkmark"></span>
+        <label class="checkbox-container" (click)="form.allowed_to_receive_information = !form.allowed_to_receive_information">
             <div class="checkbox-text">
                 <span class="title">Smí dostávat informace o žákovi</span>
                 <span class="description">Může nahlížet do hodnocení a zpráv.</span>
             </div>
+            <schoolingo-checkbox [checked]="form.allowed_to_receive_information"></schoolingo-checkbox>
         </label>
     </div>
 
@@ -61,10 +64,10 @@
 <div class="modal-actions">
     <button class="btn btn--secondary" (click)="closeModal()">
         <i-tabler name="x"></i-tabler>
-        <span>Zrušit</span>
+        <span>{{ l.s('buttons.cancel') }}</span>
     </button>
     <button class="btn btn--primary" (click)="save()">
         <i-tabler name="device-floppy"></i-tabler>
-        <span>Uložit nastavení</span>
+        <span>{{ l.s('buttons.save') }}</span>
     </button>
 </div>

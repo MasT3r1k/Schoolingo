@@ -165,9 +165,7 @@
               <i-tabler name="calendar-event"></i-tabler>
               <span>Omluvit na celý den</span>
             </div>
-            <div class="modern-toggle" [class.active]="excuseAllDay">
-              <div class="toggle-slider"></div>
-            </div>
+            <schoolingo-checkbox [checked]="excuseAllDay"></schoolingo-checkbox>
           </div>
         </div>
       </div>
@@ -257,9 +255,7 @@
           <i-tabler name="circle-check"></i-tabler>
           <span>{{ l.s("messages.tags.require_confirmation") }}</span>
         </div>
-        <div class="modern-toggle" [class.active]="messageManager.options.requireConfirmation">
-          <div class="toggle-slider"></div>
-        </div>
+        <schoolingo-checkbox [checked]="messageManager.options.requireConfirmation"></schoolingo-checkbox>
       </div>
 
       @if(perms.checkPermission(["teacher"])) {
@@ -270,9 +266,7 @@
           <i-tabler name="user-check"></i-tabler>
           <span>{{ l.s("messages.copy_classteacher") }}</span>
         </div>
-        <div class="modern-toggle" [class.active]="messageManager.options.copyToClassTeacher">
-          <div class="toggle-slider"></div>
-        </div>
+        <schoolingo-checkbox [checked]="messageManager.options.copyToClassTeacher"></schoolingo-checkbox>
       </div>
       }
 
@@ -282,9 +276,7 @@
           <i-tabler name="users-group"></i-tabler>
           <span>{{ l.s("messages.copy_parents") }}</span>
         </div>
-        <div class="modern-toggle" [class.active]="messageManager.options.copyToParents">
-          <div class="toggle-slider"></div>
-        </div>
+        <schoolingo-checkbox [checked]="messageManager.options.copyToParents"></schoolingo-checkbox>
       </div>
       }
 
@@ -294,9 +286,7 @@
           <i-tabler name="school"></i-tabler>
           <span>{{ l.s("messages.copy_student") }}</span>
         </div>
-        <div class="modern-toggle" [class.active]="messageManager.options.copyToStudents">
-          <div class="toggle-slider"></div>
-        </div>
+        <schoolingo-checkbox [checked]="messageManager.options.copyToStudents"></schoolingo-checkbox>
       </div>
       }
       }
@@ -333,12 +323,12 @@
             </div>
           </div>
           <div>
-            <div class="btn btn--sm btn--secondary" (click)="saveDraft()">
+            <div class="btn btn--sm btn--secondary" (click)="sendMessage(true)">
               <i-tabler name="file-pencil"></i-tabler>
-              <span>Uložit koncept</span>
+              <span>{{ l.s('messages.buttons.save_draft') }}</span>
             </div>
 
-            <div class="btn btn--sm btn--primary" (click)="sendMessage()">
+            <div class="btn btn--sm btn--primary" (click)="sendMessage(false)">
               <i-tabler name="send"></i-tabler>
               <span>{{ l.s("messages.buttons.send_message") }}</span>
             </div>

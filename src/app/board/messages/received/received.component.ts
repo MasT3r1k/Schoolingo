@@ -14,6 +14,8 @@ import { Message, MessageTemplateSettings, TemplateComponent } from '../template
 })
 
 export class ReceivedComponent implements OnInit {
+  public auth = inject(Authentication);
+
   Utils = Utils;
 
   public settings: MessageTemplateSettings = {
@@ -35,28 +37,44 @@ export class ReceivedComponent implements OnInit {
     },
     {
       label: 'messages.suppress',
-      icon: 'circle-off',
+      icon: 'ban',
       type: 'secondary',
-      isVisible: (message: Message) => { return true },
-      run: (message: Message, event: any) => { console.log('CLICKED danger button') }
+      isVisible: (message: Message, self: TemplateComponent) => { return message && message.receivers[self.findIndexReceiverOfMessage(message, this.auth.getUser().person_id)].suppress_at == null },
+      run: (message: Message, event: any, self: TemplateComponent) => { self.updateMessage(message, { suppress: true }) }
+    },
+    {
+      label: 'messages.unsuppress',
+      icon: 'ban',
+      type: 'secondary',
+      isVisible: (message: Message, self: TemplateComponent) => { return message && message.receivers[self.findIndexReceiverOfMessage(message, this.auth.getUser().person_id)].suppress_at !== null },
+      run: (message: Message, event: any, self: TemplateComponent) => { self.updateMessage(message, { suppress: false }) }
     },
     {
       label: 'messages.confirm_read',
       icon: 'check',
       type: 'primary',
-      isVisible: (message: any) => { return message && message.require_confirm && message.confirmed_at == null },
-      run: (message: any, event: any) => { console.log('CLICKED danger button') }
+      isVisible: (message: Message, self: TemplateComponent) => { return message && message.require_confirm && message.receivers[self.findIndexReceiverOfMessage(message, this.auth.getUser().person_id)].confirm_at == null },
+      run: (message: Message, event: any, self: TemplateComponent) => { self.updateMessage(message, { confirm: true }) }
     },
     {
       label: 'messages.forward',
       icon: 'arrow-forward-up',
       type: 'secondary',
-      isVisible: (message: any) => { return true },
-      run: (message: any, event: any) => { console.log('CLICKED primary button') }
+      isVisible: (message: Message) => { return true },
+      run: (message: Message, event: any) => { console.log('CLICKED primary button') }
     }
   ];
 
-  public auth = inject(Authentication);
+  public multi_actions = [
+    {
+      label: 'messages.confirm_read',
+      icon: 'check',
+      type: 'success',
+      isVisible: (messages: Message[]) => { return messages },
+      run: (messages: Message[], event: any) => {}
+    }
+  ]
+
 
   ngOnInit(): void {
   }

@@ -388,6 +388,9 @@
     @for(item of context_menu.getItems();track $index) {
     @if (item.text != undefined) {
     <div class="menu-item" [class.danger]="item.color == 'danger'" (click)="(item.action ? item.action() : null); context_menu.hideContextMenu()">
+        @if (item.icon) {
+            <i-tabler [name]="item.icon"></i-tabler>
+        }
         {{ l.s(item.text) }}
     </div>
     }
