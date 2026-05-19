@@ -231,6 +231,11 @@ export const routes: Routes = [
             {
                 path: 'marks', children: [
                     {
+                        path: '',
+                        pathMatch: 'full',
+                        redirectTo: '/marks/interm'
+                    },
+                    {
                         path: 'interm',
                         component: IntermComponent
                     },
@@ -245,11 +250,20 @@ export const routes: Routes = [
                     {
                         path: 'educationmeasures',
                         component: MeasuresComponent
-                    }
+                    },
+                    {
+                        path: '**',
+                        redirectTo: '/marks/interm'
+                    },
                 ]
             },
             {
                 path: 'teach', children: [
+                    {
+                        path: '',
+                        pathMatch: 'full',
+                        redirectTo: '/teach/timetable'
+                    },
                     {
                         path: 'timetable',
                         component: TimetableComponent
@@ -293,12 +307,21 @@ export const routes: Routes = [
                     {
                         path: 'thematic-plans',
                         component: ThematicPlansComponent
-                    }
+                    },
+                    {
+                        path: '**',
+                        redirectTo: '/teach/timetable'
+                    },
                 ]
             },
             {
             path: 'traineeship',
             children: [
+                {
+                    path: '',
+                    pathMatch: 'full',
+                    redirectTo: '/traineeship/overview'
+                },
                 {
                     path: 'overview',
                     component: OverviewComponent
@@ -322,12 +345,21 @@ export const routes: Routes = [
                 {
                     path: 'manage',
                     component: ManageComponent
+                },
+                {
+                    path: '**',
+                    redirectTo: '/traineeship/overview'
                 }
             ]
             },
             {
                 path: 'fleetvehicles',
                 children: [
+                    {
+                        path: '',
+                        pathMatch: 'full',
+                        redirectTo: '/fleetvehicles/overview'
+                    },
                     {
                         path: 'overview',
                         component: FleetVehiclesOverviewComponent
@@ -347,11 +379,20 @@ export const routes: Routes = [
                     {
                         path: 'settings',
                         component: FleetVehiclesSettingsComponent
+                    },
+                    {
+                        path: '**',
+                        redirectTo: '/fleetvehicles/overview'
                     }
                 ]
             },
             {
                 path: 'messages', children: [
+                    {
+                        path: '',
+                        pathMatch: 'full',
+                        redirectTo: '/messages/send'
+                    },
                     {
                         path: 'send',
                         component: SendComponent,
@@ -376,11 +417,20 @@ export const routes: Routes = [
                     {
                         path: 'groups',
                         component: GroupsComponent
+                    },
+                    {
+                        path: '**',
+                        redirectTo: '/messages/send'
                     }
                 ]
             },
             {
                 path: 'user', children: [
+                    {
+                        path: '',
+                        pathMatch: 'full',
+                        redirectTo: '/user/main'
+                    },
                     {
                         path: 'main',
                         component: AccountComponent
@@ -424,10 +474,19 @@ export const routes: Routes = [
                         path: 'cookies',
                         component: CookiesComponent
                     },
+                    {
+                        path: '**',
+                        redirectTo: '/user/main'
+                    }
                 ]
             },
             {
                 path: 'system', children: [
+                    {
+                        path: '',
+                        pathMatch: 'full',
+                        redirectTo: '/system/settings'
+                    },
                     {
                         path: 'settings',
                         component: SystemSettings
@@ -451,7 +510,11 @@ export const routes: Routes = [
                     {
                         path: 'reports',
                         component: ReportsComponent
-                    }
+                    },
+                    {
+                        path: '**',
+                        redirectTo: '/system/settings'
+                    },
                 ]
             },
             {
@@ -460,6 +523,11 @@ export const routes: Routes = [
             },
             {
                 path: 'admin', children: [
+                    {
+                        path: '',
+                        pathMatch: 'full',
+                        redirectTo: '/admin/backup'
+                    },
                     {
                         path: 'backup',
                         component: BackupComponent
@@ -484,6 +552,11 @@ export const routes: Routes = [
                         path: 'architecture',
                         children: [
                             {
+                                path: '',
+                                pathMatch: 'full',
+                                redirectTo: '/admin/architecture/overview'
+                            },
+                            {
                                 path: 'overview',
                                 component: ArchitectureDashboardComponent
                             },
@@ -502,8 +575,16 @@ export const routes: Routes = [
                             {
                                 path: 'inventory',
                                 component: InventoryComponent
+                            },
+                            {
+                                path: '**',
+                                redirectTo: '/admin/architecture/overview'
                             }
                         ]
+                    },
+                    {
+                        path: '**',
+                        redirectTo: '/admin/backup'
                     }
                 ]
             },
@@ -512,12 +593,22 @@ export const routes: Routes = [
                 children: [
                     {
                         path: '',
+                        pathMatch: 'full',
+                        redirectTo: '/library/catalog'
+                    },
+                    {
+                        path: 'catalog',
                         component: CatalogComponent
                     },
                     {
                         path: 'manage',
                         component: ManagerComponent
-                    }
+                    },
+                    {
+                        path: '**',
+                        pathMatch: 'full',
+                        redirectTo: '/library/catalog'
+                    },
                 ]
             },
             {
