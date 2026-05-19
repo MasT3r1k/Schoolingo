@@ -1,0 +1,94 @@
+<div class="dropdown-container">
+    <button
+        class="dropdown-trigger"
+        [class.open]="isOpen"
+        [class.disabled]="disabled"
+        [disabled]="disabled"
+        (click)="toggleDropdown($event)"
+        (keydown)="onKeyDown($event)"
+        type="button"
+        aria-haspopup="listbox"
+        [attr.aria-expanded]="isOpen"
+    >
+        <span class="trigger-content">
+        <span class="selected-label">{{ l.s(selectedLabel) }}</span>
+        </span>
+
+        <div class="trigger-icons">
+            @if (clearable && value !== null && !disabled) {
+            <button
+                class="clear-btn"
+                (click)="clearValue($event)"
+                type="button"
+                aria-label="Vymazat vybranou hodnotu"
+            >
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <line x1="18" y1="6" x2="6" y2="18"></line>
+                <line x1="6" y1="6" x2="18" y2="18"></line>
+                </svg>
+            </button>
+            }
+
+            <div class="chevron-icon" [class.rotated]="isOpen">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                <polyline points="6 9 12 15 18 9"></polyline>
+                </svg>
+            </div>
+        </div>
+    </button>
+
+    @if(isOpen) {
+    <div class="dropdown-panel" [class.open]="isOpen">
+        @if (showSearch) {
+        <div class="search-container">
+            <div class="search-wrapper">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="search-icon">
+                <circle cx="11" cy="11" r="8"></circle>
+                <path d="m21 21-4.35-4.35"></path>
+                </svg>
+                <input
+                #searchInput
+                type="text"
+                class="search-input"
+                placeholder="Hledat..."
+                [value]="searchQuery"
+                (input)="onSearchChange($any($event.target).value )"
+                (keydown)="onKeyDown($event)"
+                />
+            </div>
+        </div>
+        }
+
+        <div class="options-wrapper" #optionsList>
+            @for (option of filteredOptions; track $index) {
+                <button
+                    class="option"
+                    [class.highlighted]="$index === highlightedIndex"
+                    [class.selected]="isOptionSelected(option)"
+                    [class.disabled]="option.disabled"
+                    [disabled]="option.disabled"
+                    (click)="selectOption(option, $event)"
+                    (mouseenter)="onMouseEnter($index)"
+                    (keydown)="onKeyDown($event)"
+                    type="button"
+                    role="option"
+                    [attr.aria-selected]="isOptionSelected(option)"
+                >
+                    <span class="option-label">{{ l.s(option.label) }}</span>
+                    <svg *ngIf="isOptionSelected(option)" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" class="checkmark">
+                    <polyline points="20 6 9 17 4 12"></polyline>
+                    </svg>
+                </button>
+            } @empty {
+            <div class="no-results">
+                Žádné možnosti k dispozici
+            </div>
+            }
+        </div>
+    </div>
+    }
+
+    @if (isOpen) {
+    <div class="dropdown-overlay" (click)="closeDropdown()"></div>
+    }
+</div>

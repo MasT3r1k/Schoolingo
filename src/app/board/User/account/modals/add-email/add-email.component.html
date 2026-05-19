@@ -19,7 +19,9 @@
 
 <div class="form-group">
     <label for="type">{{ l.s('user.add_email.type') }}</label>
-    <div class="custom-select"
+    <schoolingo-dropdown [options]="dropdown_types" [(ngModel)]="email_selected"></schoolingo-dropdown>
+
+    <!-- <div class="custom-select"
         (click)="$event.stopPropagation(); dropdownManager.selected_dropdown = dropdownManager.selected_dropdown == 'add_email_type' ? '' : 'add_email_type'">
         <div class="selected-value">
             {{ l.s('user.add_email.types.' + email_types[email_selected]) }}
@@ -37,7 +39,7 @@
             </div>
         </div>
         }
-    </div>
+    </div> -->
 </div>
 
 <div class="modal-actions">
@@ -98,7 +100,7 @@
     <input type="text" [placeholder]="l.s('auth.2fa.authentication_code')" id="token" autocomplete="off"
         [minlength]="AuthConfig.token_length" [maxlength]="AuthConfig.token_length" [(ngModel)]="token">
 </div>
-<div class="form-group">
+<div class="modal-actions">
     <div class="btn btn--primary" (click)="saveEmail()">
         @if (active_action == 'activating_2fa') {
         <div class="loader"></div>

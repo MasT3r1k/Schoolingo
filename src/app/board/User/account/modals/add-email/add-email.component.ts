@@ -8,9 +8,10 @@ import { ModalManager } from '@Schoolingo/modal';
 import { Config } from '@Schoolingo/config';
 import { Authentication } from '@Schoolingo/authentication';
 import { AuthConfig } from '../../../../../infrastructure/authentication/config';
+import { DropdownComponent, DropdownOption } from '@Components/dropdown/dropdown';
 
 @Component({
-  imports: [IconsModule, FormsModule, ReactiveFormsModule],
+  imports: [IconsModule, FormsModule, ReactiveFormsModule, DropdownComponent],
   templateUrl: './add-email.component.html',
   styleUrl: './add-email.component.css'
 })
@@ -24,6 +25,24 @@ export class AddEmailComponent implements OnInit {
 
   public showSelect: null | 'type' = null;
   public email_types = ['personal', 'school', 'work', 'other'];
+  public dropdown_types: DropdownOption[] = [
+    {
+      label: 'user.add_email.types.personal',
+      value: 'personal'
+    },
+    {
+      label: 'user.add_email.types.school',
+      value: 'school'
+    },
+    {
+      label: 'user.add_email.types.work',
+      value: 'work'
+    },
+    {
+      label: 'user.add_email.types.other',
+      value: 'other'
+    }
+  ]
   public email_selected = 0;
 
   public token = '';
