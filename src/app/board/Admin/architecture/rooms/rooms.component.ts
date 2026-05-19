@@ -16,12 +16,9 @@ import { DeleteRoomModalComponent } from './modals/delete-room-modal/delete-room
   template: `
     <div class="card">
       <div class="card-header">
-        <div class="left">
-          <h2>{{ l.s('architecture.rooms') }}</h2>
-          <span class="meta muted">{{ l.s('architecture.rooms_desc') }}</span>
-        </div>
-        <div class="right">
-          <button class="btn btn--primary" (click)="openRoomModal()">
+        <h2>{{ l.s('architecture.rooms') }}</h2>
+        <div class="header-actions">
+          <button class="btn btn--primary btn--sm" (click)="openRoomModal()">
             <i-tabler name="plus"></i-tabler>
             {{ l.s('architecture.new_room') }}
           </button>
@@ -113,26 +110,6 @@ import { DeleteRoomModalComponent } from './modals/delete-room-modal/delete-room
     </div>
   `,
   styles: [`
-    .card-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-start;
-      padding: 1.25rem 1.5rem;
-      border-bottom: 1px solid var(--border);
-      gap: 1rem;
-    }
-    .card-header .left {
-      flex: 1;
-    }
-    .card-header .left h2 {
-      font-size: 1.5rem;
-      font-weight: 700;
-      margin: 0 0 0.25rem 0;
-      color: var(--text);
-    }
-    .card-header .right {
-      flex-shrink: 0;
-    }
     .card-body {
       padding: 1.5rem;
     }

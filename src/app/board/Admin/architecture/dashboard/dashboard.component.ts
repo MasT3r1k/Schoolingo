@@ -15,8 +15,8 @@ import { AddBuildingModalComponent } from '../modals/add-building-modal/add-buil
     <div class="card">
       <div class="card-header">
         <h2>{{ l.s('architecture.dashboard') }}</h2>
-        <div class="right">
-          <button class="btn btn--primary" (click)="openAddBuildingModal()">
+        <div class="header-actions">
+          <button class="btn btn--primary btn--sm" (click)="openAddBuildingModal()">
             <i-tabler name="plus"></i-tabler>
             {{ l.s('architecture.new_building') }}
           </button>
@@ -99,9 +99,6 @@ import { AddBuildingModalComponent } from '../modals/add-building-modal/add-buil
     </div>
   `,
   styles: [`
-    .card-header .right {
-      flex-shrink: 0;
-    }
     .stats-grid {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));

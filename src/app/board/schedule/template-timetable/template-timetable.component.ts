@@ -9,7 +9,7 @@ import moment from 'moment';
 import { School } from '@Schoolingo/school';
 
 interface ScopeAPI {
-  scopeId: number;
+  scope_id: number;
   scopeName: string;
   scopeShort: string;
   scopeCode: string;
@@ -59,7 +59,7 @@ export class TemplateTimetableComponent implements OnInit {
   public loadScheme(): void {
     if (!this.selected_scope || this.selected_year <= 0) return;
     this.http.get<{ day: number; hour: number; type: string }[]>(
-      `${Config.API_URL}/v1/timetable_scheme/${this.selected_scope?.scopeId ?? -1}/${this.selected_year ?? -1}`,
+      `${Config.API_URL}/v1/timetable_scheme/${this.selected_scope?.scope_id ?? -1}/${this.selected_year ?? -1}`,
       { withCredentials: true }
     )
     .subscribe((data) => {
@@ -94,13 +94,13 @@ export class TemplateTimetableComponent implements OnInit {
   }
 
   public saveScheme(
-    scope_id: number = this.selected_scope?.scopeId ?? -1,
+    scope_id: number = this.selected_scope?.scope_id ?? -1,
     year: number = this.selected_year ?? -1
   ): void {
     if (!scope_id) return;
     if (!year) return;
 
-    if (this.selected_scope?.scopeId == -1 && this.selected_year == -1) {
+    if (this.selected_scope?.scope_id == -1 && this.selected_year == -1) {
       this.default_schema = JSON.parse(JSON.stringify(this.schema));
     }
 

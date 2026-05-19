@@ -2,7 +2,7 @@ import { NgClass } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { Component, inject, Input, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { CheckboxComponent } from '@Components/Checkbox';
 import { Authentication } from '@Schoolingo/authentication';
 import { Config } from '@Schoolingo/config';
@@ -13,6 +13,7 @@ import { ModalManager } from '@Schoolingo/modal';
 import { AvatarService, Utils } from '@Schoolingo/utils';
 import { DeleteMessageComponent } from '../modals/delete-message/delete-message.component';
 import { ContextMenu, ContextMenuItem } from '@Schoolingo/context-menu';
+import { MessageManager } from '@Schoolingo/messages';
 
 export interface Message {
   message_id: number;
@@ -104,8 +105,10 @@ export class TemplateComponent implements OnInit {
   public context_menu = inject(ContextMenu);
   public dropdownManager = inject(DropdownManager);
   public avatarService = inject(AvatarService);
+  private messageManager = inject(MessageManager);
   public auth = inject(Authentication);
   private http = inject(HttpClient);
+  private router = inject(Router);
   private route = inject(ActivatedRoute);
   
   // ---===--- Local Variables
@@ -213,14 +216,16 @@ export class TemplateComponent implements OnInit {
     });
   }
 
-  public deleteMessage(message: typeof this.selectedMessage): void {
-    if (!message) return;
+  public deleteMessage(messages: (typeof this.selectedMessage)[] | (typeof this.selectedMessage)): void {
+    if (!messages) return;
+
+    const message = !Array.isArray(messages) ? [messages] : messages;
 
     this.modalManager.openModal('delete_message', {
       message,
       onDelete: () => {
         this.http.delete(
-          `${Config.API_URL}/v1/messages/delete?message_id=${message.message_id}`,
+          `${Config.API_URL}/v1/messages/delete?message_ids=${message.map((m) => (m?.message_id)).join(',')}`,
           { withCredentials: true }
         )
         .subscribe((data: any) => {
@@ -318,6 +323,44 @@ export class TemplateComponent implements OnInit {
       m.topic?.toLowerCase().includes(this.searchText.toLowerCase()) ||
       m.author.full_name.toLowerCase().includes(this.searchText.toLowerCase())
     );
+  }
+
+  public continueMessage(message: Message, type: 'draft' | 'forward' | 'reply'): void {
+    switch(type) {
+      case "draft":
+        this.messageManager.topic = message.topic || '';
+        this.messageManager.message = message.message || '';
+        this.messageManager.draft_id = message.message_id;
+        this.messageManager.receivers = message.receivers?.length ? message.receivers?.map((receiver) => (receiver.person_id)) : [];
+        this.messageManager.reply_to = null;
+        break;
+      case "reply":
+        this.messageManager.topic = `Re: ${message.topic || ''}`;
+
+        this.messageManager.message = `
+
+--- ${Utils.formatDate(message.sent_at)} - ${message.author.full_name}
+${message.message || ''}`
+        this.messageManager.draft_id = null;
+        this.messageManager.receivers = [message.author_id];
+        this.messageManager.reply_to = message.message_id;
+        break;
+      case "forward":
+        this.messageManager.topic = `Fwd: ${message.topic || ''}`;
+        this.messageManager.message = `
+
+---------- Forwarded message ---------
+From: ${message.author.full_name}
+Date: ${Utils.formatDate(message.sent_at)}
+
+${message.message || ''}`
+        this.messageManager.draft_id = null;
+        this.messageManager.receivers = [];
+        this.messageManager.reply_to = null;
+        break;
+    }
+    
+    this.router.navigate(['/messages/send']);
   }
 
   // ---===--- Runtime

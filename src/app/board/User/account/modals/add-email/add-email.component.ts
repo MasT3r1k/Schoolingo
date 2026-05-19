@@ -25,25 +25,8 @@ export class AddEmailComponent implements OnInit {
 
   public showSelect: null | 'type' = null;
   public email_types = ['personal', 'school', 'work', 'other'];
-  public dropdown_types: DropdownOption[] = [
-    {
-      label: 'user.add_email.types.personal',
-      value: 'personal'
-    },
-    {
-      label: 'user.add_email.types.school',
-      value: 'school'
-    },
-    {
-      label: 'user.add_email.types.work',
-      value: 'work'
-    },
-    {
-      label: 'user.add_email.types.other',
-      value: 'other'
-    }
-  ]
-  public email_selected = 0;
+  public dropdown_types: DropdownOption[] = []
+  public email_selected = this.email_types[0];
 
   public token = '';
   public email = '';
@@ -57,19 +40,24 @@ export class AddEmailComponent implements OnInit {
   public alert: { type: 'success' | 'danger' | 'info', message: string } | null = null;
 
   ngOnInit(): void {
+    this.email_types.forEach((type) => {
+      this.dropdown_types.push({
+      label: 'user.add_email.types.' + type,
+      value: type
+      })
+    })
+
     const data = this.modalManager.getModalData('add_email');
+    console.log(data)
     if (data && data.email) {
       this.email = data.email;
       this.originalEmail = data.email;
+      this.email_selected = data.type ?? this.email_types[0];
       
       if (data.mode === 'verify') {
         this.page = 'verify';
       } else {
         this.isEdit = true;
-        const typeIndex = this.email_types.indexOf(data.type);
-        if (typeIndex !== -1) {
-          this.email_selected = typeIndex;
-        }
       }
     }
     if (data == null) {
@@ -84,7 +72,7 @@ export class AddEmailComponent implements OnInit {
 
     const payload: any = {
       email: this.email,
-      type: this.email_types[this.email_selected],
+      type: this.email_selected,
       token: this.token
     };
 
@@ -182,7 +170,7 @@ export class AddEmailComponent implements OnInit {
     this.token = '';
     this.active_action = '';
     this.email = '';
-    this.email_selected = 0;
+    this.email_selected = this.email_types[0];
     this.isEdit = false;
     this.originalEmail = null;
     this.verificationCode = '';

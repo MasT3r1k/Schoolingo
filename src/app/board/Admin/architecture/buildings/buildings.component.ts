@@ -16,12 +16,9 @@ import { Router } from '@angular/router';
   template: `
     <div class="card">
       <div class="card-header">
-        <div class="left">
-          <h2>{{ l.s('architecture.buildings') }}</h2>
-          <span class="meta muted">Správa budov v areálu školy.</span>
-        </div>
-        <div class="right">
-          <button class="btn btn--primary" (click)="openModal()">
+        <h2>{{ l.s('architecture.buildings') }}</h2>
+        <div class="header-actions">
+          <button class="btn btn--primary btn--sm" (click)="openModal()">
             <i-tabler name="plus"></i-tabler>
             {{ l.s('architecture.new_building') }}
           </button>
@@ -83,29 +80,6 @@ import { Router } from '@angular/router';
     </div>
   `,
   styles: [`
-    .card-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-start;
-      padding: 1.25rem 1.5rem;
-      border-bottom: 1px solid var(--border);
-      gap: 1rem;
-    }
-    .card-header .left {
-      flex: 1;
-    }
-    .card-header .left h2 {
-      font-size: 1.5rem;
-      font-weight: 700;
-      margin: 0 0 0.25rem 0;
-      color: var(--text);
-    }
-    .card-header .right {
-      flex-shrink: 0;
-    }
-    .card-body {
-      padding: 1.5rem;
-    }
     .table-container {
       background: var(--surface);
       border: 1px solid var(--border);

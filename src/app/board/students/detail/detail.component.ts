@@ -2,7 +2,7 @@ import { Component, OnInit, inject, ViewChild, ElementRef, AfterViewInit, HostLi
 import { CommonModule, Location } from '@angular/common';
 import { IconsModule } from '@Schoolingo/icons';
 import { FormsModule } from '@angular/forms';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Config } from '@Schoolingo/config';
 import { Utils } from '@Schoolingo/utils';
 import { DropdownManager } from '@Schoolingo/dropdown';
@@ -262,6 +262,15 @@ export class DetailComponent implements OnInit, AfterViewInit {
   activeTab: 'overview' | 'personal' | 'parents' | 'academic' | 'matrika' | 'medical' | 'history' | 'marks' | 'notes' | 'evaluation' | 'educational_measures' | 'timetable' | 'rewards' = 'overview';
   activeMatrikaSubTab: 'specific_data' | 'exemptions' | 'notes' | 'recommendations' | 'basic' = 'specific_data';
   activeHistorySubTab: 'details' | 'changes' | 'term_status' = 'details';
+
+  // History filtering & pagination
+  public historyLimit = 20;
+  public historyOffset = 0;
+  public historyFilterType: string = '';
+  public historyFilterDateFrom: string = '';
+  public historyFilterDateTo: string = '';
+  public isLoadingHistory = false;
+  public hasMoreHistory = true;
 
   public getTabIcon(tab: typeof this.activeTab): string {
     const iconsMap: Record<string, string> = {
@@ -714,11 +723,69 @@ export class DetailComponent implements OnInit, AfterViewInit {
     });
   }
 
-  public refreshHistory(): void {
-    this.http.get<StudentHistory[]>(`${Config.API_URL}/v1/student/${this.selectedStudent!.person_id}/history`, { withCredentials: true })
-      .subscribe((data) => {
-        this.selectedStudent!.history = data;
+  public setActiveHistorySubTab(tab: 'details' | 'changes' | 'term_status') {
+    this.activeHistorySubTab = tab;
+    this.historyFilterType = '';
+    this.historyFilterDateFrom = '';
+    this.historyFilterDateTo = '';
+    this.refreshHistory(true);
+  }
+
+  public refreshHistory(reset: boolean = true): void {
+    if (reset) {
+      this.historyOffset = 0;
+      this.hasMoreHistory = true;
+      if (this.selectedStudent) {
+          this.selectedStudent.history = [];
+      }
+    }
+    
+    if (!this.selectedStudent || !this.hasMoreHistory || this.isLoadingHistory) return;
+    
+    this.isLoadingHistory = true;
+    
+    let typeFilter = this.historyFilterType;
+    if (this.activeHistorySubTab === 'changes') {
+       if (!typeFilter) {
+           typeFilter = 'updated_student,updated_matrika';
+       }
+    }
+
+    let params = new HttpParams()
+        .set('limit', this.historyLimit.toString())
+        .set('offset', this.historyOffset.toString());
+        
+    if (typeFilter) params = params.set('type', typeFilter);
+    if (this.historyFilterDateFrom) params = params.set('dateFrom', this.historyFilterDateFrom);
+    if (this.historyFilterDateTo) params = params.set('dateTo', this.historyFilterDateTo);
+
+    this.http.get<StudentHistory[]>(`${Config.API_URL}/v1/student/${this.selectedStudent.person_id}/history`, { params, withCredentials: true })
+      .subscribe({
+          next: (data) => {
+            if (reset) {
+              this.selectedStudent!.history = data;
+            } else {
+              this.selectedStudent!.history.push(...data);
+            }
+            this.historyOffset += data.length;
+            if (data.length < this.historyLimit) {
+                this.hasMoreHistory = false;
+            }
+            this.isLoadingHistory = false;
+          },
+          error: () => {
+              this.isLoadingHistory = false;
+          }
       });
+  }
+
+  public onHistoryScroll(event: Event): void {
+    const target = event.target as HTMLElement;
+    if (target.scrollHeight - target.scrollTop <= target.clientHeight + 50) {
+      if (!this.isLoadingHistory && this.hasMoreHistory) {
+        this.refreshHistory(false);
+      }
+    }
   }
 
   public formatHistoryEvent(item: StudentHistory): { title: string, description: string, icon: string, color: string, details: { label: string, value: string }[] } {
@@ -843,9 +910,7 @@ export class DetailComponent implements OnInit, AfterViewInit {
   /** Vrátí záznamy vhodné pro záložku "sledování změn" (updated_student, updated_matrika) */
   public getChangesHistory(): StudentHistory[] {
     if (!this.selectedStudent?.history) return [];
-    return this.selectedStudent.history.filter((h: StudentHistory) =>
-      h.type === 'updated_student' || h.type === 'updated_matrika'
-    );
+    return this.selectedStudent.history;
   }
 
 

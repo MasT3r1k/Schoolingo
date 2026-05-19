@@ -166,38 +166,19 @@
                     <div class="ms-section-label">Akce</div>
                     <div class="ms-actions-grid">
                         @for (action of multi_actions; track $index) {
-                        <button [ngClass]="['ms-action-card', 'ms-action-card--' + action.type]" [disabled]="multiSelected.length === 0">
+                            @if (action.isVisible(multiSelected, this)) {
+                        <button [ngClass]="['ms-action-card', 'ms-action-card--' + action.type]" [disabled]="multiSelected.length === 0" (click)="action.run(multiSelected, $event, this)">
                             <div [ngClass]="['ms-action-icon', 'ms-action-icon--' + action.type]">
                                 <i-tabler [name]="action.icon"></i-tabler>
                             </div>
                             <div class="ms-action-text">
                                 <span>{{ l.s(action.label) }}</span>
+                                <small>{{ action.isVisible(multiSelected, this) < multiSelected.length ? 'Aplikuje se pouze pro specifické itemy' : 'Aplikuje se na všechny vybrané zprávy' }}</small>
                             </div>
-                            <i-tabler class="ms-action-arrow" name="chevron-right"></i-tabler>
+                            <!-- <i-tabler class="ms-action-arrow" name="chevron-right"></i-tabler> -->
                         </button>
+                            }
                         }
-
-                        <button class="ms-action-card" [disabled]="multiSelected.length === 0">
-                            <div class="ms-action-icon ms-action-icon--primary">
-                                <i-tabler name="mail-opened"></i-tabler>
-                            </div>
-                            <div class="ms-action-text">
-                                <span>Označit jako přečtené</span>
-                                <small>Bez potvrzení</small>
-                            </div>
-                            <i-tabler class="ms-action-arrow" name="chevron-right"></i-tabler>
-                        </button>
-
-                        <button class="ms-action-card ms-action-card--danger" [disabled]="multiSelected.length === 0">
-                            <div class="ms-action-icon ms-action-icon--danger">
-                                <i-tabler name="trash-x"></i-tabler>
-                            </div>
-                            <div class="ms-action-text">
-                                <span>Smazat zprávy</span>
-                                <small>Tato akce je nevratná</small>
-                            </div>
-                            <i-tabler class="ms-action-arrow" name="chevron-right"></i-tabler>
-                        </button>
 
                         <div class="splitter horizontal" style="--size: 100%"></div>
 

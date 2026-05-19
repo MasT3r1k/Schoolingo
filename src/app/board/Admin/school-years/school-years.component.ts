@@ -8,7 +8,7 @@ import { ModalManager } from '@Schoolingo/modal';
 import { EditYearComponent } from './modals/edit-year/edit-year.component';
 
 export interface SchoolYear {
-  syId: number;
+  sy_id: number;
   start: string;
   end: string;
   midterm: string;
@@ -87,7 +87,7 @@ export class SchoolYearsComponent implements OnInit {
     if (previousCurrent) previousCurrent.current = false;
     year.current = true;
 
-    this.http.put(`${Config.API_URL}/v1/school/years/${year.syId}`, { 
+    this.http.put(`${Config.API_URL}/v1/school/years/${year.sy_id}`, { 
       start: year.start, 
       end: year.end, 
       midterm: year.midterm, 

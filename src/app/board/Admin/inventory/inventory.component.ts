@@ -16,12 +16,9 @@ import { DeleteItemModalComponent } from './modals/delete-item-modal/delete-item
   template: `
     <div class="card">
       <div class="card-header">
-        <div class="left">
-          <h2>{{ l.s('architecture.inventory') }}</h2>
-          <span class="meta muted">{{ l.s('architecture.inventory_desc') }}</span>
-        </div>
-        <div class="right">
-          <button class="btn btn--primary" (click)="openItemModal()">
+        <h2>{{ l.s('architecture.inventory') }}</h2>
+        <div class="header-actions">
+          <button class="btn btn--primary btn--sm" (click)="openItemModal()">
             <i-tabler name="plus"></i-tabler>
             {{ l.s('architecture.new_item') }}
           </button>
@@ -94,20 +91,6 @@ import { DeleteItemModalComponent } from './modals/delete-item-modal/delete-item
     </div>
   `,
   styles: [`
-    .card-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-start;
-      padding: 1.25rem 1.5rem;
-      border-bottom: 1px solid var(--border);
-      gap: 1rem;
-    }
-    .card-header .left h2 {
-      font-size: 1.5rem;
-      font-weight: 700;
-      margin: 0 0 0.25rem 0;
-      color: var(--text);
-    }
     .card-body {
       padding: 1.5rem;
     }

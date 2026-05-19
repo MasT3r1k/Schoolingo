@@ -518,7 +518,10 @@ export class SendComponent implements OnInit, ComponentCanDeactivate {
         ]
       }
     )
+  }
 
+  ngOnDestroy(): void {
+    this.reset()
   }
 
   // === Sending message ===

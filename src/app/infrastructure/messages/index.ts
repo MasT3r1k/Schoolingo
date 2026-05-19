@@ -137,6 +137,7 @@ export class MessageManager {
   public message = '';
   public topic = '';
   public draft_id: number | null = null;
+  public reply_to: number | null = null;
 
   // Homeworks
   public selectedHomework = new BehaviorSubject(null);

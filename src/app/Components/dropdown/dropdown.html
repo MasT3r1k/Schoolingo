@@ -1,8 +1,8 @@
 <div class="dropdown-container">
     <button
+        #trigger
         class="dropdown-trigger"
-        [class.open]="isOpen"
-        [class.disabled]="disabled"
+        [ngClass]="{ 'open': isOpen, 'down': dropdownPosition === 'down', 'up': dropdownPosition === 'up', 'disabled': disabled }"
         [disabled]="disabled"
         (click)="toggleDropdown($event)"
         (keydown)="onKeyDown($event)"
@@ -11,7 +11,7 @@
         [attr.aria-expanded]="isOpen"
     >
         <span class="trigger-content">
-        <span class="selected-label">{{ l.s(selectedLabel) }}</span>
+            <span class="selected-label">{{ l.s(selectedLabel) }}</span>
         </span>
 
         <div class="trigger-icons">
@@ -38,7 +38,7 @@
     </button>
 
     @if(isOpen) {
-    <div class="dropdown-panel" [class.open]="isOpen">
+    <div class="dropdown-panel" [ngClass]="{'open': isOpen, 'down': dropdownPosition === 'down', 'up': dropdownPosition === 'up'}" [ngStyle]="panelStyles">
         @if (showSearch) {
         <div class="search-container">
             <div class="search-wrapper">

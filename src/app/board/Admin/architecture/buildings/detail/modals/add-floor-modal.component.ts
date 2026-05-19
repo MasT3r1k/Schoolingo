@@ -29,36 +29,7 @@ import { Config } from '@Schoolingo/config';
         <button class="btn btn--primary" (click)="saveFloor()">{{ l.s('buttons.save') || 'Uložit' }}</button>
     </div>
   `,
-  styles: [`
-    .modal-body { padding: 1.5rem; display: flex; flex-direction: column; gap: 1.25rem; }
-    .form-group {
-        display: flex;
-        flex-direction: column;
-        gap: 0.5rem;
-    }
-    .form-label {
-        font-weight: 500;
-        color: var(--text);
-        font-size: 0.875rem;
-    }
-    .form-input {
-        padding: 0.5rem 0.75rem;
-        border: 1px solid var(--border);
-        border-radius: var(--radius-sm);
-        background: var(--surface);
-        color: var(--text);
-        font-size: 0.875rem;
-        transition: border-color 0.2s;
-    }
-    .form-input:focus {
-        outline: none;
-        border-color: var(--primary);
-    }
-    .form-text {
-        font-size: 0.75rem;
-        color: var(--text-muted);
-    }
-  `]
+  styles: [``]
 })
 export class AddFloorModalComponent implements OnInit {
   public l = inject(Locale);

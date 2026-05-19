@@ -36,7 +36,6 @@ import { ModalManager } from '@Schoolingo/modal';
     </div>
   `,
   styles: [`
-    .card__body { padding: 1.5rem; display: flex; flex-direction: column; gap: 1.25rem; }
     .logs-list { display: flex; flex-direction: column; gap: 1rem; }
     .log-item { padding-bottom: 0.75rem; border-bottom: 1px solid var(--border); }
     .log-date { font-size: 0.75rem; color: var(--text-muted); margin-bottom: 0.25rem; }

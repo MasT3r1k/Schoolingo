@@ -44,7 +44,7 @@
     @if (!isLoading && !error) {
     <div class="card-body">
         <div class="years-grid">
-            @for (year of years; track year.syId) {
+            @for (year of years; track year.sy_id) {
             <div class="year-card" [class.current]="year.current">
                 <!-- Current Badge -->
                 @if (year.current) {
@@ -107,7 +107,7 @@
                         Aktivovat
                     </button>
                     }
-                    <button class="btn btn--ghost btn--icon" (click)="deleteYear(year.syId)" title="Smazat">
+                    <button class="btn btn--ghost btn--icon" (click)="deleteYear(year.sy_id)" title="Smazat">
                         <i-tabler name="trash"></i-tabler>
                     </button>
                 </div>
@@ -117,12 +117,11 @@
                 <div class="illustration">
                     <i-tabler name="calendar-off"></i-tabler>
                 </div>
-                <h3>{{ l.s('admin.schoolYears.noYears') || 'Žádné školní roky' }}</h3>
-                <p class="note">{{ l.s('admin.schoolYears.noYearsDesc') || 'Zatím nebyly vytvořeny žádné školní roky.
-                    Klikněte na "Nový školní rok" pro vytvoření prvního roku.' }}</p>
+                <h3>{{ l.s('admin.schoolYears.noYears') }}</h3>
+                <p class="note">{{ l.s('admin.schoolYears.noYearsDesc')  }}</p>
                 <button class="btn btn--primary" (click)="openCreateModal()">
                     <i-tabler name="plus"></i-tabler>
-                    {{ l.s('admin.schoolYears.createFirst') || 'Vytvořit první rok' }}
+                    {{ l.s('admin.schoolYears.createFirst') }}
                 </button>
             </div>
             }

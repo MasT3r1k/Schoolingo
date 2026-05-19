@@ -46,7 +46,7 @@ export class SentComponent implements OnInit {
       icon: 'arrow-forward-up',
       type: 'secondary',
       isVisible: (message: Message) => { return true },
-      run: (message: Message, event: any) => { console.log('CLICKED primary button') }
+      run: (message: Message, event: any, self: TemplateComponent) => { self.continueMessage(message, 'forward') }
     }
   ];
 

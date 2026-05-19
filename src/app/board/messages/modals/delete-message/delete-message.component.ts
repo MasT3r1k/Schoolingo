@@ -23,7 +23,8 @@ export class DeleteMessageComponent implements OnInit {
 
   ngOnInit(): void {
     const data = this.modalManager.getModalData('delete_message');
-    this.message = data.message;
+    this.message = data.message[0];
+    console.log(this.message);
   }
 
   public closeModal(): void {

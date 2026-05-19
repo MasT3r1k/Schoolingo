@@ -54,18 +54,19 @@ export class DraftsComponent implements OnInit {
       icon: 'player-play',
       type: 'primary',
       isVisible: (message: Message) => { return true },
-      run: (message: Message, event: any) => { this.continueDraft(message) }
+      run: (message: Message, event: any, self: TemplateComponent) => { self.continueMessage(message, 'draft') }
     }
   ];
 
-  ngOnInit(): void {}
+  public multi_actions = [
+    {
+      label: 'messages.delete_drafts',
+      icon: 'trash',
+      type: 'danger',
+      isVisible: (messages: Message[]) => { return true },
+      run: (messages: Message[], event: any, self: TemplateComponent) => { self.deleteMessage(messages); }
+    }
+  ]
 
-  public continueDraft(draft: Message): void {
-    this.messageManager.message = draft.message || '';
-    this.messageManager.topic = draft.topic || '';
-    this.messageManager.draft_id = draft.message_id;
-    this.messageManager.receivers = draft.receivers?.length ? draft.receivers?.map((receiver) => (receiver.person_id)) : [];
-    
-    this.router.navigate(['/messages/send']);
-  }
+  ngOnInit(): void {}
 }

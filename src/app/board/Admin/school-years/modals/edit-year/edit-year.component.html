@@ -2,7 +2,7 @@
     <div class="form-group">
         <label>
             <i-tabler name="calendar-event"></i-tabler>
-            {{ l.s('admin.schoolYears.startDate') || 'Datum začátku' }}
+            {{ l.s('admin.schoolYears.startDate') }}
         </label>
         <app-calendar id="schoolYear_start" [value]="form.get('start')?.value"
             (valueChange)="form.get('start')?.setValue($event)" size="full"></app-calendar>
@@ -11,7 +11,7 @@
     <div class="form-group">
         <label>
             <i-tabler name="calendar-check"></i-tabler>
-            {{ l.s('admin.schoolYears.endDate') || 'Datum konce' }}
+            {{ l.s('admin.schoolYears.endDate') }}
         </label>
         <app-calendar id="schoolYear_end" [value]="form.get('end')?.value"
             (valueChange)="form.get('end')?.setValue($event)" size="full"></app-calendar>
@@ -27,27 +27,23 @@
     </div>
 </div>
 
-<div class="form-group toggle-row" [formGroup]="form" style="margin-top: 1rem;">
+<div class="form-group toggle-row" style="margin-top: 1rem;" (click)="current = !current">
     <label class="toggle-label">
         <span class="label-text">
             <i-tabler name="star-filled"></i-tabler>
-            {{ l.s('admin.schoolYears.setAsCurrent') || 'Nastavit jako aktivní školní rok' }}
+            {{ l.s('admin.schoolYears.setAsCurrent') }}
         </span>
-        <span class="label-description">{{ l.s('admin.schoolYears.setAsCurrentDesc') || 'Toto automaticky deaktivuje
-            všechny ostatní školní roky' }}</span>
+        <span class="label-description">{{ l.s('admin.schoolYears.setAsCurrentDesc') }}</span>
     </label>
-    <label class="toggle">
-        <input type="checkbox" formControlName="current">
-        <span class="toggle-slider"></span>
-    </label>
+    <schoolingo-checkbox [checked]="current"></schoolingo-checkbox>
 </div>
 
 <div class="modal-footer">
     <button type="button" class="btn btn--ghost" (click)="close()">
-        {{ l.s('buttons.cancel') || 'Zrušit' }}
+        {{ l.s('buttons.cancel') }}
     </button>
     <button type="button" class="btn btn--primary" [disabled]="form.invalid" (click)="save()">
         <i-tabler [name]="isEditing ? 'check' : 'plus'"></i-tabler>
-        {{ isEditing ? (l.s('buttons.save') || 'Uložit') : (l.s('admin.schoolYears.create') || 'Vytvořit') }}
+        {{ isEditing ? l.s('buttons.save') : l.s('admin.schoolYears.create') }}
     </button>
 </div>

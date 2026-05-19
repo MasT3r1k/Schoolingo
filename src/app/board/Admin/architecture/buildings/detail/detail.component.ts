@@ -16,18 +16,15 @@ import { DeleteFloorModalComponent } from './modals/delete-floor-modal/delete-fl
   template: `
     <div class="card">
       <div class="card-header">
-        <div class="left">
-          <div class="breadcrumb">
-            <a (click)="goBack()" class="back-link">
-              <i-tabler name="arrow-left"></i-tabler>
-              {{ building?.name || l.s('architecture.buildings') }}
-            </a>
+        <div class="row" style="gap: 8px">
+          <div class="btn btn--secondary btn--sm" (click)="goBack()">
+            <i-tabler name="arrow-left"></i-tabler>
+            {{ building?.name || l.s('architecture.buildings') }}
           </div>
           <h2>Správa pater budovy</h2>
-          <span class="meta muted">Spravujte patra a upravujte jejich plánek a úroveň.</span>
         </div>
-        <div class="right">
-          <button class="btn btn--primary" (click)="openAddFloorModal()">
+        <div class="header-actions">
+          <button class="btn btn--primary btn--sm" (click)="openAddFloorModal()">
             <i-tabler name="plus"></i-tabler>
             Přidat patro
           </button>
@@ -96,46 +93,6 @@ import { DeleteFloorModalComponent } from './modals/delete-floor-modal/delete-fl
     </div>
   `,
   styles: [`
-    .card-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-start;
-      padding: 1.25rem 1.5rem;
-      border-bottom: 1px solid var(--border);
-      gap: 1rem;
-    }
-    .card-header .left {
-      flex: 1;
-    }
-    .card-header .left h2 {
-      font-size: 1.5rem;
-      font-weight: 700;
-      margin: 0.5rem 0 0.25rem 0;
-      color: var(--text);
-    }
-    .breadcrumb {
-      margin-bottom: 0.5rem;
-    }
-    .back-link {
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-      font-size: 0.875rem;
-      color: var(--text-muted);
-      cursor: pointer;
-      text-decoration: none;
-      font-weight: 500;
-    }
-    .back-link:hover {
-      color: var(--primary);
-    }
-    .back-link i-tabler {
-      width: 16px;
-      height: 16px;
-    }
-    .card-header .right {
-      flex-shrink: 0;
-    }
     .card-body {
       padding: 1.5rem;
     }

@@ -15,7 +15,7 @@ import moment from 'moment';
   standalone: true,
   imports: [CommonModule, FormsModule, IconsModule, CalendarComponent],
   template: `
-    <div class="card__body">
+    <div class="modal-body">
         <div class="form-group">
             <label class="form-label">{{ l.s('architecture.inventory_fields.name') }}</label>
             <input type="text" class="form-input" [(ngModel)]="itemForm.name" [placeholder]="l.s('architecture.placeholders.item_name')">
@@ -99,12 +99,7 @@ import moment from 'moment';
         <button class="btn btn--primary" (click)="saveItem()">{{ l.s('buttons.save') }}</button>
     </div>
   `,
-  styles: [`
-    .card__body { padding: 1.5rem; display: flex; flex-direction: column; gap: 1.25rem; }
-    @media (max-width: 768px) {
-        .form-row { grid-template-columns: 1fr; }
-    }
-  `]
+  styles: [``]
 })
 export class InventoryItemModalComponent implements OnInit {
   public l = inject(Locale);

@@ -124,13 +124,7 @@ import { Config } from '@Schoolingo/config';
         <button class="btn btn--primary" (click)="saveRoom()">{{ l.s('buttons.save') }}</button>
     </div>
   `,
-  styles: [`
-    .modal-body { padding: 1.5rem; display: flex; flex-direction: column; gap: 1.25rem; }
-    .disabled { opacity: 0.6; pointer-events: none; cursor:not-allowed; }
-    @media (max-width: 768px) {
-        .form-row { grid-template-columns: 1fr; }
-    }
-  `]
+  styles: [``]
 })
 export class RoomModalComponent implements OnInit {
   public l = inject(Locale);

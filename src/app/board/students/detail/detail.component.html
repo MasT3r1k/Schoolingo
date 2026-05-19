@@ -478,6 +478,7 @@
                                         @if (isBirthNumberValid != true) {
                                             <span class="birthnum-error" [title]="l.s('birthnum.errors.' + isBirthNumberValid)">
                                                 <i-tabler name="alert-circle"></i-tabler>
+                                                <span>{{ l.s('birthnum.errors.' + isBirthNumberValid) }}</span>
                                             </span>
                                         }
                                     } @else {
@@ -1464,9 +1465,37 @@
                         </div>
                     </div>
 
+                    <!-- Filter bar -->
+                    @if (activeHistorySubTab === 'details' || activeHistorySubTab === 'changes') {
+                    <div class="history-filters" style="padding: 1rem 1.5rem; border-bottom: 1px solid var(--border); display: flex; gap: 1rem; align-items: flex-end; flex-wrap: wrap;">
+                        <div class="filter-field">
+                            <label style="font-size: 12px; color: var(--text-muted); margin-bottom: 0.25rem; display: block;">Od data</label>
+                            <input type="date" class="matrika-input" [(ngModel)]="historyFilterDateFrom" (change)="refreshHistory(true)">
+                        </div>
+                        <div class="filter-field">
+                            <label style="font-size: 12px; color: var(--text-muted); margin-bottom: 0.25rem; display: block;">Do data</label>
+                            <input type="date" class="matrika-input" [(ngModel)]="historyFilterDateTo" (change)="refreshHistory(true)">
+                        </div>
+                        @if (activeHistorySubTab === 'details') {
+                        <div class="filter-field">
+                            <label style="font-size: 12px; color: var(--text-muted); margin-bottom: 0.25rem; display: block;">Typ změny</label>
+                            <select class="matrika-input" [(ngModel)]="historyFilterType" (change)="refreshHistory(true)">
+                                <option value="">Všechny změny</option>
+                                <option value="updated_student">Osobní údaje</option>
+                                <option value="updated_matrika">Matrika</option>
+                                <option value="added_parent">Přidán zák. zástupce</option>
+                                <option value="removed_parent">Odebrán zák. zástupce</option>
+                                <option value="updated_parent">Úprava zák. zástupce</option>
+                                <option value="moved_to_class">Přesun třídy</option>
+                            </select>
+                        </div>
+                        }
+                    </div>
+                    }
+
                     <!-- Details Sub-tab – Timeline -->
                     @if (activeHistorySubTab === 'details') {
-                    <div class="history-timeline-wrap">
+                    <div class="history-timeline-wrap" (scroll)="onHistoryScroll($event)" style="max-height: 60vh; overflow-y: auto;">
                         @if (selectedStudent.history.length) {
                         <div class="history-timeline">
                             @for (item of selectedStudent.history; track item.created_at) {
@@ -1523,12 +1552,17 @@
                             <p>Pro tohoto studenta zatím nejsou žádné záznamy v historii.</p>
                         </div>
                         }
+                        @if (isLoadingHistory) {
+                        <div style="text-align: center; padding: 1rem; color: var(--text-muted);">
+                            Načítám další historii...
+                        </div>
+                        }
                     </div>
                     }
 
                     <!-- Changes Sub-tab – Structured diff table -->
                     @if (activeHistorySubTab === 'changes') {
-                    <div class="history-changes-wrap">
+                    <div class="history-changes-wrap" (scroll)="onHistoryScroll($event)" style="max-height: 60vh; overflow-y: auto;">
                         @if (getChangesHistory().length > 0) {
                         <div class="changes-list">
                             @for (item of getChangesHistory(); track item.created_at) {
@@ -1582,6 +1616,11 @@
                             </div>
                             <h3>Žádné sledované změny</h3>
                             <p>Dosud nebyly zaznamenány žádné změny osobních nebo studijních údajů.</p>
+                        </div>
+                        }
+                        @if (isLoadingHistory) {
+                        <div style="text-align: center; padding: 1rem; color: var(--text-muted);">
+                            Načítám další historii...
                         </div>
                         }
                     </div>

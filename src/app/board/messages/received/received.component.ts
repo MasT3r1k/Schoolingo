@@ -33,7 +33,7 @@ export class ReceivedComponent implements OnInit {
       icon: 'arrow-back-up',
       type: 'secondary',
       isVisible: (message: Message) => { return true },
-      run: (message: Message, event: any) => { console.log('CLICKED danger button') }
+      run: (message: Message, event: any, self: TemplateComponent) => { self.continueMessage(message, 'reply') }
     },
     {
       label: 'messages.suppress',
@@ -61,17 +61,54 @@ export class ReceivedComponent implements OnInit {
       icon: 'arrow-forward-up',
       type: 'secondary',
       isVisible: (message: Message) => { return true },
-      run: (message: Message, event: any) => { console.log('CLICKED primary button') }
+      run: (message: Message, event: any, self: TemplateComponent) => { self.continueMessage(message, 'forward') }
     }
   ];
 
   public multi_actions = [
     {
-      label: 'messages.confirm_read',
+      label: 'messages.suppress',
+      icon: 'ban',
+      type: 'secondary',
+      isVisible: (messages: Message[], self: TemplateComponent) => { return messages && messages.filter((msg) => msg.receivers[self.findIndexReceiverOfMessage(msg, this.auth.getUser().person_id)].suppress_at == null).length },
+      run: (messages: Message[], event: any, self: TemplateComponent) => {
+        for(let i = 0;i < messages.length;i++) {
+          self.updateMessage(messages[i], { suppress: true });
+        }
+      }
+    },
+    {
+      label: 'messages.unsuppress',
+      icon: 'ban',
+      type: 'secondary',
+      isVisible: (messages: Message[], self: TemplateComponent) => { return messages && messages.filter((msg) => msg.receivers[self.findIndexReceiverOfMessage(msg, this.auth.getUser().person_id)].suppress_at !== null).length },
+      run: (messages: Message[], event: any, self: TemplateComponent) => {
+        for(let i = 0;i < messages.length;i++) {
+          self.updateMessage(messages[i], { suppress: false });
+        }
+      }
+    },
+    {
+      label: 'messages.mark_read_confirm',
       icon: 'check',
       type: 'success',
       isVisible: (messages: Message[]) => { return messages },
-      run: (messages: Message[], event: any) => {}
+      run: (messages: Message[], event: any, self: TemplateComponent) => {
+        for(let i = 0;i < messages.length;i++) {
+          self.updateMessage(messages[i], { read: true, confirm: true })
+        }
+      }
+    },
+    {
+      label: 'messages.mark_read',
+      icon: 'inbox',
+      type: 'primary',
+      isVisible: (messages: Message[]) => { return messages },
+      run: (messages: Message[], event: any, self: TemplateComponent) => {
+        for(let i = 0;i < messages.length;i++) {
+          self.updateMessage(messages[i], { read: true })
+        }
+      }
     }
   ]
 

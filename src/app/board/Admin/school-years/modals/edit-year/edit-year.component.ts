@@ -10,11 +10,12 @@ import { IconsModule } from '@Schoolingo/icons';
 import { CalendarComponent } from '@Components/calendar';
 import { CalendarManager } from '@Components/calendar-dropdown';
 import moment from 'moment';
+import { CheckboxComponent } from '@Components/Checkbox';
 
 @Component({
   selector: 'app-edit-year',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, IconsModule, CalendarComponent],
+  imports: [CommonModule, ReactiveFormsModule, IconsModule, CalendarComponent, CheckboxComponent],
   templateUrl: './edit-year.component.html',
   styleUrls: ['./edit-year.component.css']
 })
@@ -29,8 +30,9 @@ export class EditYearComponent implements OnInit {
     start: [moment(), Validators.required],
     end: [moment().add(10, 'month'), Validators.required],
     midterm: [moment().add(5, 'month'), Validators.required],
-    current: [false]
   });
+
+  public current = false;
 
   public isEditing = false;
   public editingId: number | null = null;
@@ -41,13 +43,13 @@ export class EditYearComponent implements OnInit {
     
     if (this.data?.year) {
       this.isEditing = true;
-      this.editingId = this.data.year.syId;
-      
+      this.editingId = this.data.year.sy_id;
+      this.current = this.data.year.current;
+
       this.form.patchValue({
         start: moment(this.data.year.start),
         end: moment(this.data.year.end),
-        midterm: moment(this.data.year.midterm),
-        current: this.data.year.current
+        midterm: moment(this.data.year.midterm)
       });
     }
   }
@@ -57,6 +59,7 @@ export class EditYearComponent implements OnInit {
 
     const body = {
         ...this.form.value,
+        current: this.current,
         start: this.form.value.start.format('YYYY-MM-DD'),
         end: this.form.value.end.format('YYYY-MM-DD'),
         midterm: this.form.value.midterm.format('YYYY-MM-DD')
