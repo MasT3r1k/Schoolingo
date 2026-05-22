@@ -31,51 +31,16 @@
       <!-- Message Type Selection -->
       <div class="form-group flex-1">
         <label>{{ l.s("messages.type") }}</label>
-        <div class="custom-select"
-          (click)="$event.stopPropagation(); dropdownManager.selected_dropdown = dropdownManager.selected_dropdown == 'messagetype' ? '' : 'messagetype'">
-          <div class="selected-value">
-            <span>{{ l.s('messages.types.' + messageManager.types[messageManager.messageType.getValue()].label)
-              }}</span>
-            <i-tabler name="chevron-down"></i-tabler>
-          </div>
-          @if (dropdownManager.selected_dropdown == 'messagetype') {
-          <div class="options-dropdown">
-            <div class="list">
-              @for (type of getMessageTypes(); track $index) {
-              <div class="option"
-                (click)="$event.stopPropagation();dropdownManager.selected_dropdown = ''; messageManager.messageType.next(messageManager.types.indexOf(type))">
-                {{ l.s("messages.types." + type.label) }}
-              </div>
-              }
-            </div>
-          </div>
-          }
-        </div>
+
+        <schoolingo-dropdown [options]="getMessageTypes()" [(ngModel)]="messageManager.message_type" (valueChange)="refreshPage()"></schoolingo-dropdown>
       </div>
 
       <!-- Rate Type Selection -->
       @if (checkMessageType([messageTypes.RATESTUDENT])) {
       <div class="form-group flex-1">
         <label>{{ l.s("messages.rating_type") }}</label>
-        <div class="custom-select"
-          (click)="$event.stopPropagation(); dropdownManager.selected_dropdown = dropdownManager.selected_dropdown == 'messagerating' ? '' : 'messagerating'">
-          <div class="selected-value">
-            <span>{{ l.s(messageManager.ratingTypes[messageManager.selectedRatingType.getValue()].label) }}</span>
-            <i-tabler name="chevron-down"></i-tabler>
-          </div>
-          @if (dropdownManager.selected_dropdown == 'messagerating') {
-          <div class="options-dropdown">
-            <div class="list">
-              @for (rate of messageManager.ratingTypes; track $index) {
-              <div class="option"
-                (click)="$event.stopPropagation();dropdownManager.selected_dropdown = ''; messageManager.selectedRatingType.next($index)">
-                {{ l.s(rate.label) }}
-              </div>
-              }
-            </div>
-          </div>
-          }
-        </div>
+
+        <schoolingo-dropdown [options]="messageManager.ratingTypes" [(ngModel)]="messageManager.selected_rating_type"></schoolingo-dropdown>
       </div>
       }
 

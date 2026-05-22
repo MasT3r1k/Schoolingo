@@ -24,7 +24,8 @@ export class ReceivedComponent implements OnInit {
     select_item_title: 'messages.select_message',
     select_item_description: 'messages.select_message_desc',
     show_receivers: false,
-    show_files: true
+    show_files: true,
+    add_header_padding: true
   }
 
   public actions = [

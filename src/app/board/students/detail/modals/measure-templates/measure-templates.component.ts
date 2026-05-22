@@ -6,6 +6,8 @@ import { ModalManager } from '@Schoolingo/modal';
 import { EducationMeasuresService } from '../../../../../infrastructure/measures/education-measures.service';
 import { ContextMenu } from '@Schoolingo/context-menu';
 import { Locale } from '@Schoolingo/locale';
+import { Utils } from '@Schoolingo/utils';
+import moment from 'moment';
 
 @Component({
   selector: 'app-measure-templates',
@@ -55,7 +57,7 @@ export class MeasureTemplatesComponent implements OnInit {
   public selectTemplate(): void {
     const template = this.measuresService.templates().find((t: any) => t.id === this.selectedTemplateId);
     if (template && this.data.callback) {
-      this.data.callback(template.content);
+      this.data.callback(template.content.replaceAll('[date]', Utils.formatDateShort(moment())));
     }
     this.closeModal();
   }

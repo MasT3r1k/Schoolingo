@@ -89,6 +89,7 @@ import { ReportsComponent } from './board/system/reports/reports.component';
 import { DetailComponent as EmployeesDetailComponent } from './board/Employees/employees/detail/detail.component';
 import { TopicsComponent } from './board/Teach/topics/topics.component';
 import { UnsavedChangesGuard } from './Guards/unsaved-changes.guard';
+import { ManageUsersDetailComponent } from './board/system/manageusers/detail/detail.component';
 
 export const routes: Routes = [
     {
@@ -493,7 +494,16 @@ export const routes: Routes = [
                     },
                     {
                         path: 'manageusers',
-                        component: ManageusersComponent
+                        children: [
+                            {
+                                path: '',
+                                component: ManageusersComponent
+                            },
+                            {
+                                path: ':id',
+                                component: ManageUsersDetailComponent
+                            }
+                        ]
                     },
                     {
                         path: 'managefiles',

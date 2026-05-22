@@ -1,15 +1,14 @@
-@if (isLoading || !selectedStudent) {
 <div class="card detail-view">
+@if (isLoading || !selectedStudent) {
+    @if (loadError == null) {
     <div class="detail-header">
         <button class="btn-back" (click)="closeDetail()">
             <i-tabler name="arrow-left"></i-tabler>
             <span>Zpět na seznam</span>
         </button>
         <div class="detail-actions">
-            <div class="skeleton" style="width: 40px; height: 40px;"></div>
-            <div class="skeleton" style="width: 40px; height: 40px;"></div>
-            <div class="skeleton" style="width: 40px; height: 40px;"></div>
-            <div class="skeleton" style="width: 40px; height: 40px;"></div>
+            <div class="skeleton" style="width: 160px; height: 40px;"></div>
+            <div class="skeleton" style="width: 160px; height: 40px;"></div>
         </div>
     </div>
 
@@ -50,16 +49,38 @@
             </div>
         </main>
     </div>
+    } @else {
+<div class="error-container">
+    <i-tabler class="error-icon" name="alert-triangle"></i-tabler>
+
+    <div class="error-info">
+        <h3 class="error-title">{{ l.s('students.load_error.title') }}</h3>
+        
+        <p class="error-description">
+            {{ l.s('students.load_error.description') }}
+        </p>
+    </div>
+
+    <div class="error-actions">
+        <button class="btn btn--primary" (click)="refreshStudentData()">
+            {{ l.s('buttons.try_again') }}
+        </button>
+        <button class="btn btn--secondary" (click)="closeDetail()">
+            {{ l.s('buttons.back') }}
+        </button>
+    </div>
 </div>
+    }
 } @else {
-<div class="card detail-view">
     <!-- Detail Header -->
     <div class="detail-header">
         <button class="btn-back" (click)="closeDetail()">
             <i-tabler name="arrow-left"></i-tabler>
             <span>Přepnout na seznam žáků</span>
         </button>
-        <h1 class="detail-title">Karta žáka</h1>
+        <h1 class="detail-title">
+            {{ l.s('sidebar.students') }}
+        </h1>
         <div class="detail-actions" style="margin-left: auto; display: flex; gap: 0.5rem;">
             <button class="action-btn-dropdown" (click)="printStudyConfirmation()" title="Tisk potvrzení o studiu">
                 <i-tabler name="printer" style="width: 1.25rem; height: 1.25rem;"></i-tabler>
@@ -116,9 +137,11 @@
                 </div>
                 <div class="profile-class">
                     {{ l.s('students.class') }}: {{ selectedStudent.class_name }}
+                    @if (selectedStudent.class_rank) {
                     <span class="class-rank" *ngIf="selectedStudent.class_rank" [title]="l.s('students.class_rank')">
-                        ({{ l.s('students.tk_rank', { rank: selectedStudent.class_rank }) }})
+                        {{ l.s('students.tk_rank', { rank: selectedStudent.class_rank }) }}
                     </span>
+                    }
                 </div>
             </div>
 
@@ -135,7 +158,7 @@
                     </div>
                 </div>
                 <div class="stat-card clickable"
-                    [class.warning]="Utils.formatAsNumber(selectedStudent.absence_rate) > 10"
+                    [class.stat--warning]="Utils.formatAsNumber(selectedStudent.absence_rate) > 10" [class.stat--primary]="Utils.formatAsNumber(selectedStudent.absence_rate) <= 10"
                     (click)="showAbsenceModal = true">
                     <div class="stat-icon">
                         <i-tabler name="calendar-off"></i-tabler>
@@ -145,7 +168,7 @@
                         <span class="stat-label">{{ l.s('students.absence') }}</span>
                     </div>
                 </div>
-                <div class="stat-card clickable" [class.danger]="selectedStudent.education_measures_count > 0"
+                <div class="stat-card clickable" [class.stat--danger]="selectedStudent.education_measures_count > 0" [class.stat--primary]="selectedStudent.education_measures_count == 0"
                     (click)="setActiveTab('educational_measures')">
                     <div class="stat-icon">
                         <i-tabler name="alert-triangle"></i-tabler>
@@ -156,7 +179,7 @@
                     </div>
                 </div>
                 <!-- Reward Stats -->
-                <div class="stat-card clickable" [class.success]="studentRewards.length > 0"
+                <div class="stat-card clickable" [class.stat--success]="studentRewards.length > 0" [class.stat--primary]="studentRewards.length == 0"
                     (click)="setActiveTab('rewards')">
                     <div class="stat-icon">
                         <i-tabler name="gift"></i-tabler>
@@ -1329,7 +1352,7 @@
                                 <div class="note-header">
                                     <div class="note-author">
                                         <i-tabler name="user"></i-tabler>
-                                        <strong>{{ eval.teacher_first_name }} {{ eval.teacher_last_name }}</strong>
+                                        <strong>{{ eval.full_name }}</strong>
                                     </div>
                                     @if (getRatingType(eval.message_rating_type); as rate) {
                                         <div class="eval-badge" [class.positive]="rate.type === 'positive'" [class.negative]="rate.type === 'negative'">
@@ -1731,5 +1754,5 @@
             </div>
         </main>
     </div>
-</div>
 }
+</div>

@@ -155,31 +155,7 @@
 
         <div class="form-group">
             <label>Státní občanství</label>
-            <div class="custom-select"
-                (click)="$event.stopPropagation(); dropdownManager.selected_dropdown = dropdownManager.selected_dropdown == 'edit-personal_nationality' ? '' : 'edit-personal_nationality'">
-                <div class="selected-value">
-                    <div class="row gap-2 align-items-center">
-                        <span style="font-size: 1.1rem; line-height: 1;">{{ getSelectedNationalityFlag() }}</span>
-                        <span>{{ getSelectedNationalityLabel() }}</span>
-                    </div>
-                    <i-tabler name="chevron-down"></i-tabler>
-                </div>
-                @if (dropdownManager.selected_dropdown == 'edit-personal_nationality') {
-                <div class="options-dropdown">
-                    <div class="list">
-                        @for (country of countries; track country.country_id) {
-                        <div class="option"
-                            (click)="$event.stopPropagation(); dropdownManager.selected_dropdown = ''; form.nationalityId = country.country_id">
-                            <div class="row gap-2 align-items-center">
-                                <span style="font-size: 1.1rem; line-height: 1;">{{ Utils.getFlagFromCountry(country.code2) }}</span>
-                                <span>{{ country.nationality }}</span>
-                            </div>
-                        </div>
-                        }
-                    </div>
-                </div>
-                }
-            </div>
+            <schoolingo-dropdown [options]="countries" [(ngModel)]="form.nationalityId" [settings]="{ locale: false }"></schoolingo-dropdown>
         </div>
     </div>
 
@@ -224,6 +200,6 @@
 </div>
 
 <div class="modal-actions">
-    <button class="btn--text" (click)="closeModal()">Zrušit</button>
+    <button class="btn btn--secondary" (click)="closeModal()">Zrušit</button>
     <button class="btn btn--primary" (click)="save()">Uložit změny</button>
 </div>

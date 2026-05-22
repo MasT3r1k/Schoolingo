@@ -6,11 +6,12 @@ import { IconsModule } from '@Schoolingo/icons';
 import { ModalManager } from '@Schoolingo/modal';
 import { Locale } from '@Schoolingo/locale';
 import { DropdownManager } from '@Schoolingo/dropdown';
+import { DropdownComponent } from '@Components/dropdown/dropdown';
 
 @Component({
   selector: 'add-building-modal',
   standalone: true,
-  imports: [FormsModule, IconsModule],
+  imports: [FormsModule, IconsModule, DropdownComponent],
   templateUrl: './add-building-modal.component.html',
   styleUrls: ['./add-building-modal.component.css']
 })
@@ -24,10 +25,10 @@ export class AddBuildingModalComponent {
   public selected_type: string = 'school';
 
   public buildingTypes = [
-    { value: 'school', label: 'Škola' },
-    { value: 'canteen', label: 'Jídelna' },
-    { value: 'workshop', label: 'Dílna' },
-    { value: 'other', label: 'Ostatní' }
+    { value: 'school', label: 'architecture.types.school' },
+    { value: 'canteen', label: 'architecture.types.canteen' },
+    { value: 'workshop', label: 'architecture.types.workshop' },
+    { value: 'other', label: 'architecture.types.other' }
   ];
 
   public buildingForm = {

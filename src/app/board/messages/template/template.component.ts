@@ -63,6 +63,7 @@ export type MessageTemplateSettings = {
   select_item_title: string,
   select_item_description: string,
   show_files: boolean
+  add_header_padding: boolean
 } & ({
     show_receivers: true,
     show_receivers_detailed: boolean
@@ -86,7 +87,8 @@ export class TemplateComponent implements OnInit {
     select_item_description: 'messages.select_message_desc',
     show_receivers: true,
     show_receivers_detailed: false,
-    show_files: true
+    show_files: true,
+    add_header_padding: true
   }
   @Input() filters = {};
   @Input() message_actions: MessageAction[] = [];
@@ -166,7 +168,7 @@ export class TemplateComponent implements OnInit {
     this.multiSelected = [];
     this.selectedMessage = null;
   }
-
+  
   public selectAll(): void {
     const all = this.filteredMessages();
     all.forEach((msg) => {

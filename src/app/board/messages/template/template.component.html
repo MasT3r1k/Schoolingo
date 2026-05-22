@@ -1,15 +1,17 @@
 <div class="received-container" [class.message-selected]="selectedMessage">
     <!-- Draft List (Sidebar) -->
     <div class="message-list-panel">
-        <div class="panel-header">
+        <div class="panel-header" [style.padding]="settings.add_header_padding == true ? '1.5rem' : '1.5rem 0'">
             <div class="row" style="justify-content: space-between;">
                 <h2>{{ l.s(title) }}</h2>
                 <div class="row">
+                @if (this.multi_actions.length > 0) {
                 <div class="item-btn" [class.active]="isMultiSelect" (click)="toggleMultiSelect()">
                     <div class="icon">
                         <i-tabler name="box-multiple"></i-tabler>
                     </div>
                 </div>
+                }
 
                 <div class="item-btn" (click)="$event.stopPropagation();(dropdownManager.selected_dropdown = ['message_filter_order', 'messages_filter'].includes(dropdownManager.selected_dropdown) ? '' : 'messages_filter')">
                     <div class="icon">

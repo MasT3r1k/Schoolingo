@@ -1,9 +1,10 @@
 import { Component, inject } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { CheckboxComponent } from '@Components/Checkbox';
 import { Locale } from '@Schoolingo/locale';
 
 @Component({
-  imports: [FormsModule, ReactiveFormsModule],
+  imports: [FormsModule, ReactiveFormsModule, CheckboxComponent],
   templateUrl: './add-note.component.html',
   styleUrl: './add-note.component.css'
 })

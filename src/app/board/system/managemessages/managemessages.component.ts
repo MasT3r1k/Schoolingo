@@ -53,6 +53,7 @@ export class ManagemessagesComponent {
     select_item_description: 'messages.select_message_desc',
     show_receivers: true,
     show_receivers_detailed: true,
-    show_files: true
+    show_files: true,
+    add_header_padding: true
   };
 }

@@ -33,12 +33,14 @@ import { SelectReceiverComponent } from './modals/select-receiver/select-receive
 import { UnsavedChangesComponent } from './modals/unsaved-changes/unsaved-changes.component';
 import { ComponentCanDeactivate } from '../../../Guards/unsaved-changes.guard';
 import { CheckboxComponent } from '@Components/Checkbox';
+import { DropdownComponent } from '@Components/dropdown/dropdown';
 
 @Component({
   imports: [
     FormsModule,
     IconsModule,
-    CheckboxComponent
+    CheckboxComponent,
+    DropdownComponent
   ],
   templateUrl: './send.component.html',
   styleUrl: './send.component.css',
@@ -62,7 +64,6 @@ export class SendComponent implements OnInit, ComponentCanDeactivate {
   public Utils = Utils;
   private router = inject(Router);
   private school = inject(School);
-
 
   // === Alerts ===
   public alerts: Record<string, Alert> = {};
@@ -241,10 +242,10 @@ export class SendComponent implements OnInit, ComponentCanDeactivate {
 
   public loadRecipients() {
     const payload: any = { 
-      message_type: this.messageManager.messageType.getValue() 
+      message_type: this.messageManager.message_type 
     };
 
-    if (this.auth.getUser().role === 'parent' && this.messageManager.messageType.getValue() === messageTypes.EXCUSESTUDENT) {
+    if (this.auth.getUser().role === 'parent' && this.messageManager.message_type === messageTypes.EXCUSESTUDENT) {
       const childIndex = this.auth.selectedChild.getValue();
       const child = this.auth.getUser().children[childIndex];
       if (child) {
@@ -259,7 +260,7 @@ export class SendComponent implements OnInit, ComponentCanDeactivate {
           this.selectCategory(this.availableGroups[0]);
 
           // Automatically select class teacher for parent excuses
-          if (this.auth.getUser().role === 'parent' && this.messageManager.messageType.getValue() === messageTypes.EXCUSESTUDENT) {
+          if (this.auth.getUser().role === 'parent' && this.messageManager.message_type === messageTypes.EXCUSESTUDENT) {
             const classTeacherGroup = this.availableGroups.find(g => g.group === 'teacher');
             if (classTeacherGroup && classTeacherGroup.users.length > 0) {
               this.messageManager.selectedReceivers$.next([...classTeacherGroup.users]);
@@ -404,6 +405,7 @@ export class SendComponent implements OnInit, ComponentCanDeactivate {
 
   public reset(): void {
     this.isChanged = false;
+    this.messageManager.message_type = 0;
     this.messageManager.message = '';
     this.messageManager.topic = '';
     this.messageManager.files = [];
@@ -440,23 +442,20 @@ export class SendComponent implements OnInit, ComponentCanDeactivate {
     });
   }
 
+  public refreshPage(): void {
+    this.messageManager.selectedReceivers$.next([]);
+    this.loadRecipients();
+    if (this.messageManager.message_type === messageTypes.EXCUSESTUDENT && this.auth.getUser().role === 'parent') {
+      this.updateMaxHours();
+    }
+    if (this.messageManager.message_type === messageTypes.RATESTUDENT) {
+      this.messageManager.options.copyToParents = true;
+    }
+    setTimeout(() => this.selectedOptionTab.next(0), 300);
+  }
+
   ngOnInit(): void {
     this.isChanged = false;
-
-    this.subscribers.push(
-      this.messageManager.messageType.subscribe((type) => {
-        this.messageManager.selectedReceivers$.next([]);
-        this.loadRecipients();
-        if (type === messageTypes.EXCUSESTUDENT && this.auth.getUser().role === 'parent') {
-          this.updateMaxHours();
-        }
-        if (type === messageTypes.RATESTUDENT) {
-          this.messageManager.options.copyToParents = true;
-        }
-        setTimeout(() => this.selectedOptionTab.next(0), 300);
-      })
-    );
-
 
     // Subscribe to selected receivers from modal
     this.subscribers.push(
@@ -528,7 +527,7 @@ export class SendComponent implements OnInit, ComponentCanDeactivate {
   public sendMessage(is_draft: boolean = false, redirect: boolean = true): void {
     this.alerts = {};
 
-    const type = this.messageManager.messageType.getValue();
+    const type = this.messageManager.message_type;
     if (!this.perms.checkPermission(this.messageManager.types[type].perms)) {
       this.alerts['main'] = new Alert('error', 'messages.no_type_access');
       return;
@@ -580,7 +579,7 @@ export class SendComponent implements OnInit, ComponentCanDeactivate {
       type: type,
       is_draft,
       topic: type === messageTypes.RATESTUDENT 
-        ? this.l.s(this.messageManager.ratingTypes[this.messageManager.selectedRatingType.getValue()].label)
+        ? this.l.s(this.messageManager.ratingTypes[this.messageManager.selected_rating_type].label)
         : (type === messageTypes.EXCUSESTUDENT && this.auth.getUser().role === 'parent'
           ? 'Omluvenka: ' + this.getSelectedChildName()
           : this.messageManager.topic),
@@ -597,7 +596,7 @@ export class SendComponent implements OnInit, ComponentCanDeactivate {
     };
 
     if (type === messageTypes.RATESTUDENT) {
-      payload.message_rating_type = this.messageManager.selectedRatingType.getValue();
+      payload.message_rating_type = this.messageManager.selected_rating_type;
     }
 
     this.http
@@ -637,7 +636,7 @@ export class SendComponent implements OnInit, ComponentCanDeactivate {
   }
 
   public checkMessageType(types: messageTypes[]): boolean {
-    return types.includes(this.messageManager.messageType.getValue());
+    return types.includes(this.messageManager.message_type);
   }
 
   public openFiles(): void {

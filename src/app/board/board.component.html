@@ -400,6 +400,25 @@
     }
 </div>
 
+<div class="notification" [class.hidden]="!(dashboard.password_recommend_change() == true && dashboard.hide_password_notification() == false)" id="change-password">
+    <div>
+        <div class="heading">
+            Změna přístupového hesla
+        </div>
+        <p style="color: var(--text-muted)">
+            Z bezpečnostních důvodů vám doporučujeme změnit si aktuální heslo. Vaše současné heslo bylo vygenerováno systémem nebo nastaveno správcem. Nastavením vlastního, silného hesla zajistíte nejvyšší možnou ochranu svých osobních údajů.
+        </p>
+    </div>
+    <div style="display: flex;flex-direction: column;gap: .625em;justify-content: center;">
+        <div class="btn btn--primary" style="width: max-content;" [routerLink]="['', 'user', 'settings']" [queryParams]="{ page: 'change_password' }">
+            Změnit heslo
+        </div>
+        <div class="btn btn--secondary" style="width: 100%;border:0;" (click)="dashboard.hide_password_notification.set(true)">
+            Možná později
+        </div>
+    </div>
+</div>
+
 <div class="notification" [class.hidden]="dashboard.cookies() !== 0" id="cookies">
     <div>
         <div class="heading">

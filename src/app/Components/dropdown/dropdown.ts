@@ -27,6 +27,7 @@ export interface DropdownOption {
 })
 export class DropdownComponent implements OnInit, OnDestroy {
     @Input() options: DropdownOption[] = [];
+    @Input() public settings: { locale?: boolean } = { locale: true };
     @Input() value: any = null;
     @Input() placeholder: string = 'buttons.choose';
     @Input() disabled: boolean = false;
@@ -51,7 +52,12 @@ export class DropdownComponent implements OnInit, OnDestroy {
 
     constructor(private cdr: ChangeDetectorRef) {}
 
+    public getLabel(text: string): string {
+        return this.settings.locale ? this.l.s(text) : text;
+    }
+
     ngOnInit() {
+        console.log(this.settings.locale)
         this.filteredOptions = this.options;
         window.addEventListener('scroll', this.updatePosition, true);
         window.addEventListener('resize', this.updatePosition, true);
@@ -71,7 +77,7 @@ export class DropdownComponent implements OnInit, OnDestroy {
 
     get selectedLabel(): string {
         const selected = this.options.find(opt => opt.value === this.value);
-        return selected ? selected.label : this.placeholder;
+        return selected ? this.getLabel(selected.label) : this.l.s(this.placeholder);
     }
 
     get showSearch(): boolean {

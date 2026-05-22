@@ -34,7 +34,8 @@ export class DraftsComponent implements OnInit {
     select_item_description: 'messages.select_message_desc',
     show_receivers: true,
     show_receivers_detailed: false,
-    show_files: false
+    show_files: false,
+    add_header_padding: true
   }
 
   public actions = [

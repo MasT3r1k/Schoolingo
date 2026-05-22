@@ -8,11 +8,12 @@ import { Config } from '@Schoolingo/config';
 import { Locale } from '@Schoolingo/locale';
 import { DropdownManager } from '@Schoolingo/dropdown';
 import { Utils } from '@Schoolingo/utils';
+import { DropdownComponent } from '@Components/dropdown/dropdown';
 
 @Component({
   selector: 'app-edit-address-modal',
   standalone: true,
-  imports: [CommonModule, FormsModule, IconsModule],
+  imports: [CommonModule, FormsModule, IconsModule, DropdownComponent],
   templateUrl: './edit-address.component.html',
   styleUrl: './edit-address.component.css'
 })
@@ -52,18 +53,12 @@ export class EditAddressModalComponent implements OnInit {
   private loadCountries(): void {
     this.http.get(`${Config.API_URL}/v1/system`, { withCredentials: true })
       .subscribe((res: any) => {
-        this.countries = res.countries || [];
+        this.countries = res.countries.map((country: any) => ({
+          ...country,
+          label: `${Utils.getFlagFromCountry(country.code2)} ${country.nationality}`,
+          value: country.country_id
+        })) || [];
       });
-  }
-
-  public getSelectedCountryLabel(): string {
-    const country = this.countries.find(c => c.country_id === this.form.countryId);
-    return country ? country.nationality : '';
-  }
-
-  public getSelectedCountryFlag(): string {
-    const country = this.countries.find(c => c.country_id === this.form.countryId);
-    return country ? Utils.getFlagFromCountry(country.code2) : '';
   }
 
   public save(): void {
@@ -83,8 +78,8 @@ export class EditAddressModalComponent implements OnInit {
       changes.push({ label: 'PSČ', oldValue: s.postcode || 'Nezadáno', newValue: this.form.postcode || 'Nezadáno' });
     }
     if ((s.country_id || 0) !== (this.form.countryId || 0)) {
-      const oldCountry = this.countries.find(c => c.country_id === s.country_id)?.nationality || 'Nezadáno';
-      const newCountry = this.countries.find(c => c.country_id === this.form.countryId)?.nationality || 'Nezadáno';
+      const oldCountry = this.countries.find(c => c.country_id === s.country_id)?.label || 'Nezadáno';
+      const newCountry = this.countries.find(c => c.country_id === this.form.countryId)?.label || 'Nezadáno';
       changes.push({ label: 'Země', oldValue: oldCountry, newValue: newCountry });
     }
 

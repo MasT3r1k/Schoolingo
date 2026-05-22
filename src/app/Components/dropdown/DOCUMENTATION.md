@@ -17,32 +17,6 @@ Plnohodnotná Angular dropdown komponenta s podporou:
 
 ## Instalace a Setup
 
-### 1. Soubory
-Zkopíruj tyto 3 soubory do svého projektu:
-```
-src/
-  components/
-    dropdown/
-      dropdown.component.ts
-      dropdown.html
-      dropdown.css
-```
-
-### 2. Import v modulu/komponentě
-```typescript
-import { DropdownComponent } from './components/dropdown/dropdown.component';
-
-@Component({
-  standalone: true,
-  imports: [DropdownComponent, ...],
-})
-export class MyComponent {}
-```
-
----
-
-## Základní Použití
-
 ### HTML Template
 ```html
 <schoolingo-dropdown
@@ -145,16 +119,6 @@ options: DropdownOption[] = [
 ];
 ```
 
-### 5. Čtení Vybrané Hodnoty
-```typescript
-selectedValue: any = null;
-
-getSelectedLabel(): string {
-  const selected = this.options.find(opt => opt.value === this.selectedValue);
-  return selected?.label || 'Nic vybráno';
-}
-```
-
 ---
 
 ## Keyboard Shortcuts
@@ -169,44 +133,6 @@ getSelectedLabel(): string {
 
 ---
 
-## Design & Styling
-
-### CSS Variables (lze přepsat)
-```css
-/* V dropdown.css jsou definovány tyto hlavní barvy: */
---primary-color: #4a90e2;    /* Modrá */
---background: #fff;            /* Bílá */
---border-color: #e0e0e0;       /* Světle šedá */
---text-color: #1a1a1a;         /* Tmavá */
-```
-
-### Přizpůsobení Stylů
-```css
-/* V parent komponentě */
-::ng-deep .dropdown-trigger {
-  /* Tvoje custom styly */
-}
-
-::ng-deep .option.highlighted {
-  background-color: #your-color;
-}
-```
-
----
-
-## Responsive Design
-
-Komponenta je plně responsive:
-- **Desktop**: Normální velikost
-- **Tablet**: Optimalizované rozestupy
-- **Mobile**: Zmenšená velikost textu, lepší touchability
-
-```css
-/* Mobile breakpoint: max-width: 640px */
-```
-
----
-
 ## Best Practices
 
 ### ✅ Dobré Praktiky
@@ -214,11 +140,6 @@ Komponenta je plně responsive:
 2. Používej `DropdownOption` interface pro správnou typizaci
 3. Debounce API volání v `valueChange` eventu
 4. Validuj selected value na serveru
-
-### ❌ Chyby, Které se Vyhnout
-1. Nenastavuj přímo `value` bez use of `valueChange` emitteru
-2. Neměň `options` array přímě bez Angular change detection
-3. Nepoužívej příliš dlouhé labely (truncate je built-in, ale UX je lepší s krátkými texty)
 
 ---
 
@@ -296,19 +217,3 @@ onSearchChange(query: string): void {
   }
 }
 ```
-
----
-
-## Licencia & Credit
-
-Vytvořeno s ❤️ pro Schoolingo projekt.
-
----
-
-## Verze
-
-- **v1.0** - Inicial release
-  - Keyboard navigation
-  - Search functionality
-  - Accessibility support
-  - Responsive design

@@ -85,20 +85,7 @@ export class EducationMeasuresService {
         return types;
       }),
       catchError(() => {
-        // Fallback to mock data if API fails (mocking based on user image)
-        const mockTypes: MeasureTypeItem[] = [
-          { id: 'Vy', order: 0, shortcut: 'Vy', label_1st: 'vyloučení ze studia', label_4th: 'vyloučení ze studia' },
-          { id: 'pOV', order: 0, shortcut: 'pOV', label_1st: 'pochvala učitele OV', label_4th: 'pochvalu učitele OV' },
-          { id: 'nOV', order: 0, shortcut: 'nOV', label_1st: 'napomenutí učitele OV', label_4th: 'napomenutí učitele OV' },
-          { id: 'dOV', order: 0, shortcut: 'dOV', label_1st: 'důtka učitele OV', label_4th: 'důtku učitele OV' },
-          { id: 'dŘŠ', order: 1, shortcut: 'dŘŠ', label_1st: 'důtka ředitele školy', label_4th: 'důtku ředitele školy' },
-          { id: 'pŘŠ', order: 2, shortcut: 'pŘŠ', label_1st: 'pochvala ředitele školy', label_4th: 'pochvalu ředitele školy' },
-          { id: 'dTU', order: 3, shortcut: 'dTU', label_1st: 'důtka třídního učitele', label_4th: 'důtku třídního učitele' },
-          { id: 'pTU', order: 4, shortcut: 'pTU', label_1st: 'pochvala třídního učitele', label_4th: 'pochvalu třídního učitele' },
-          { id: 'nTU', order: 5, shortcut: 'nTU', label_1st: 'napomenutí třídního učitele', label_4th: 'napomenutí třídního učitele' },
-          { id: '2', order: 6, shortcut: '2', label_1st: '2 z chování', label_4th: '2 z chování' },
-          { id: '3', order: 7, shortcut: '3', label_1st: '3 z chování', label_4th: '3 z chování' }
-        ];
+        const mockTypes: MeasureTypeItem[] = [];
         this.measureTypes.set(mockTypes);
         return of(mockTypes);
       })
@@ -182,16 +169,22 @@ export class EducationMeasuresService {
    */
   loadTemplates(): Observable<any[]> {
     // Mocking for now as requested by UI mockup, normally this would be an API call
-    const mockTemplates = [
-      { id: 1, title: 'DŮTKA ŘŠ', content: 'Dne dd.mm.202r byla udělena důtka ředitele školy za ...' },
-      { id: 2, title: 'DŮTKA TU', content: 'Dne dd.mm.202r byla udělena důtka třídního učitele za ...' },
-      { id: 3, title: 'NAPOM.TU', content: 'Dne dd.mm.202r bylo uděleno napomenutí třídního učitele za .....' },
-      { id: 4, title: 'PODM. VYL.', content: 'Dne dd.mm.202r byl podmínečně vyloučen ze studia do dd.mm.202r za ...' },
-      { id: 5, title: 'POCHV. ŘŠ', content: 'Dne dd.mm.202r byla udělena pochvala ředitele školy za ...' },
-      { id: 6, title: 'POCHV. TU', content: 'Dne dd.mm.202r byla udělena pochvala třídního učitele za ...' }
-    ];
-    this.templates.set(mockTemplates);
-    return of(mockTemplates);
+    return this.http.get<{ types: any[] }>(`${Config.API_URL}/v1/measure/templates`, { withCredentials: true }).pipe(
+      map(response => {
+        const templates = response.types.map(t => ({
+          id: t.template_id,
+          title: t.title,
+          content: t.content
+        }));
+        this.templates.set(templates);
+        return templates;
+      }),
+      catchError(() => {
+        const mockTemplates: any[] = [];
+        this.templates.set(mockTemplates);
+        return of(mockTemplates);
+      })
+    );
   }
 
   /**

@@ -52,7 +52,7 @@ export class SelectReceiverComponent implements OnInit {
 
   loadRecipients() {
     this.http.post<RecipientGroup[]>(`${Config.API_URL}/v1/messages/recipients`, { 
-        message_type: this.messageManager.messageType.getValue() 
+        message_type: this.messageManager.message_type 
     }, { withCredentials: true }).subscribe({
       next: (groups) => {
         const activeCat = this.messageManager.activeCategory$.getValue();

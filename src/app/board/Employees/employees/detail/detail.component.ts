@@ -408,9 +408,13 @@ export class DetailComponent implements OnInit, AfterViewInit {
   }
 
   closeDetail() {
-    this.router.navigate(['/employees']);
+    const returnUrl = this.route.snapshot.queryParamMap.get('returnUrl');
+    if (returnUrl) {
+      this.router.navigateByUrl(returnUrl);
+    } else {
+      this.router.navigate(['/', 'employees']);
+    }
   }
-
   getStatusClass(status: any): string {
     switch (status) {
       case 'active': return 'status-active';

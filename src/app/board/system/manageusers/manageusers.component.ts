@@ -93,9 +93,9 @@ interface UserAPIResponse {
   standalone: true,
   imports: [CommonModule, IconsModule, FormsModule, DatePipe, CalendarComponent],
   templateUrl: './manageusers.component.html',
-  styleUrl: './manageusers.component.css'
+  styleUrls: ['./manageusers.component.css', '../../students/students.component.css']
 })
-export class ManageusersComponent implements OnInit, AfterViewInit {
+export class ManageusersComponent implements OnInit {
   private http = inject(HttpClient);
   public l = inject(Locale);
   public Utils = Utils;
@@ -105,31 +105,6 @@ export class ManageusersComponent implements OnInit, AfterViewInit {
   public school = inject(School);
   public avatarService = inject(AvatarService);
   public Config = Config;
-
-  @ViewChild('tabsNav') tabsNav?: ElementRef;
-  public showLeftScroll = false;
-  public showRightScroll = false;
-
-  ngAfterViewInit(): void {
-    setTimeout(() => this.checkScroll(), 250);
-  }
-
-  @HostListener('window:resize')
-  public onResize() {
-    this.checkScroll();
-  }
-
-  public checkScroll() {
-    const el = this.tabsNav?.nativeElement;
-    if (!el) return;
-    this.showLeftScroll = el.scrollLeft > 5;
-    this.showRightScroll = el.scrollLeft < el.scrollWidth - el.clientWidth - 5;
-  }
-
-  public scrollTabs(dir: number) {
-    const el = this.tabsNav?.nativeElement;
-    if (el) el.scrollBy({ left: dir * 150, behavior: 'smooth' });
-  }
 
   // Loading state
   isLoading = false;
@@ -354,56 +329,58 @@ export class ManageusersComponent implements OnInit, AfterViewInit {
 
   // Detail View
   selectUser(user: User) {
-    this.activeTab = 'overview';
-    this.saveSuccess = false;
-    this.saveError = null;
-    this.resetPasswordSuccess = false;
-    this.resetPasswordError = null;
-    this.isDetailLoading = true;
-    this.selectedUser = null;
+    this.router.navigate(['/system/manageusers/', user.id])
 
-    this.http.get<any>(
-      `${Config.API_URL}/v1/system/users/${user.id}`,
-      { withCredentials: true }
-    ).subscribe({
-      next: (response) => {
-        this.selectedUser = {
-          id: response.user_id,
-          username: response.username,
-          first_name: response.first_name,
-          last_name: response.last_name,
-          full_name: response.full_name,
-          email: response.emails?.[0]?.email || '',
-          login_type: response.login_type,
-          role: this.mapRole(response.role),
-          status: this.mapStatus('active'),
-          photo_url: response.photo_url,
-          avatar: response.avatar,
-          last_login: response.last_login,
-          created_at: response.created_at,
-          updated_at: response.updated_at,
-          person_id: response.person_id,
-          locale: response.locale,
-          theme: response.theme,
-          birthday: response.birthday,
-          gender: response.gender,
-          '2fa': response['2fa'],
-          password_changed: response.password_changed,
-          emails: response.emails || [],
-          phones: response.phones || [],
-          login_history: response.login_history || [],
-          logins_7days: response.logins_7days || 0,
-          failed_logins_7days: response.failed_logins_7days || 0
-        };
-        this.fillEditForm();
-        this.loadSpecificData();
-        this.isDetailLoading = false;
-      },
-      error: (err) => {
-        console.error('Error loading user detail:', err);
-        this.isDetailLoading = false;
-      }
-    });
+    // this.activeTab = 'overview';
+    // this.saveSuccess = false;
+    // this.saveError = null;
+    // this.resetPasswordSuccess = false;
+    // this.resetPasswordError = null;
+    // this.isDetailLoading = true;
+    // this.selectedUser = null;
+
+    // this.http.get<any>(
+    //   `${Config.API_URL}/v1/system/users/${user.id}`,
+    //   { withCredentials: true }
+    // ).subscribe({
+    //   next: (response) => {
+    //     this.selectedUser = {
+    //       id: response.user_id,
+    //       username: response.username,
+    //       first_name: response.first_name,
+    //       last_name: response.last_name,
+    //       full_name: response.full_name,
+    //       email: response.emails?.[0]?.email || '',
+    //       login_type: response.login_type,
+    //       role: this.mapRole(response.role),
+    //       status: this.mapStatus('active'),
+    //       photo_url: response.photo_url,
+    //       avatar: response.avatar,
+    //       last_login: response.last_login,
+    //       created_at: response.created_at,
+    //       updated_at: response.updated_at,
+    //       person_id: response.person_id,
+    //       locale: response.locale,
+    //       theme: response.theme,
+    //       birthday: response.birthday,
+    //       gender: response.gender,
+    //       '2fa': response['2fa'],
+    //       password_changed: response.password_changed,
+    //       emails: response.emails || [],
+    //       phones: response.phones || [],
+    //       login_history: response.login_history || [],
+    //       logins_7days: response.logins_7days || 0,
+    //       failed_logins_7days: response.failed_logins_7days || 0
+    //     };
+    //     this.fillEditForm();
+    //     this.loadSpecificData();
+    //     this.isDetailLoading = false;
+    //   },
+    //   error: (err) => {
+    //     console.error('Error loading user detail:', err);
+    //     this.isDetailLoading = false;
+    //   }
+    // });
   }
 
   loadSpecificData() {
@@ -460,8 +437,6 @@ export class ManageusersComponent implements OnInit, AfterViewInit {
     
     if (tab === 'messages') this.loadUserMessages();
     if (tab === 'files') this.loadUserFiles();
-
-    setTimeout(() => this.checkScroll(), 100);
   }
 
   loadUserMessages() {

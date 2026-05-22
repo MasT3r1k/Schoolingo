@@ -479,6 +479,7 @@ export class DetailComponent implements OnInit, AfterViewInit {
   public refreshStudentData() {
     const id = this.route.snapshot.paramMap.get('id');
     this.isLoading = true;
+    this.loadError = null;
     this.http.get(
       `${Config.API_URL}/v1/student/${id}`,
       { withCredentials: true }
@@ -1470,10 +1471,10 @@ export class DetailComponent implements OnInit, AfterViewInit {
     if (grade === null || grade === '-') return '';
     const g = typeof grade === 'number' ? grade : parseInt(grade);
     if (isNaN(g)) return '';
-    if (g === 1) return 'grade--success';
-    if (g >= 4) return 'grade--danger';
-    if (g === 3) return 'grade--warning';
-    return 'grade--primary';
+    if (g === 1) return 'stat--success';
+    if (g >= 4) return 'stat--danger';
+    if (g === 3) return 'stat--warning';
+    return 'stat--primary';
   }
 
 

@@ -11,7 +11,9 @@
         [attr.aria-expanded]="isOpen"
     >
         <span class="trigger-content">
-            <span class="selected-label">{{ l.s(selectedLabel) }}</span>
+            <span class="selected-label">
+                {{ selectedLabel }}
+            </span>
         </span>
 
         <div class="trigger-icons">
@@ -74,10 +76,14 @@
                     role="option"
                     [attr.aria-selected]="isOptionSelected(option)"
                 >
-                    <span class="option-label">{{ l.s(option.label) }}</span>
-                    <svg *ngIf="isOptionSelected(option)" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" class="checkmark">
-                    <polyline points="20 6 9 17 4 12"></polyline>
+                    <span class="option-label">
+                        {{ getLabel(option.label) }}
+                    </span>
+                    @if (isOptionSelected(option)) {
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" class="checkmark">
+                        <polyline points="20 6 9 17 4 12"></polyline>
                     </svg>
+                    }
                 </button>
             } @empty {
             <div class="no-results">

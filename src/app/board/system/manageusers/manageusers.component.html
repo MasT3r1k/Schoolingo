@@ -447,10 +447,6 @@
         <div class="card-header">
             <h2>Správa uživatelů</h2>
             <div class="header-actions">
-                <button class="btn btn--sm btn--secondary" (click)="openImportModal()">
-                    <i-tabler name="database-import"></i-tabler>
-                    Importovat
-                </button>
                 <button class="btn btn--sm btn--primary" (click)="openAddUserModal()">
                     <i-tabler name="user-plus"></i-tabler>
                     Přidat uživatele
@@ -468,7 +464,7 @@
             <div class="filter-dropdown-wrapper">
                 <button class="btn btn--secondary" (click)="$event.stopPropagation(); dropdownManager.selected_dropdown = (dropdownManager.selected_dropdown === 'users_filter' ? '' : 'users_filter')">
                     <i-tabler name="filter"></i-tabler>
-                    <span>Filtry</span>
+                    <span>{{ l.s('students.filter') }}</span>
                 </button>
 
                 <div class="filters-dropdown" [hidden]="dropdownManager.selected_dropdown !== 'users_filter'" (click)="$event.stopPropagation()">
@@ -492,8 +488,10 @@
                         </div>
                     </div>
                     <div class="dropdown-footer">
-                        <button class="btn btn--ghost btn--sm" (click)="clearFilters()">Resetovat</button>
-                        <button class="btn btn--primary btn--sm" (click)="dropdownManager.selected_dropdown = ''">Hotovo</button>
+                        <button class="btn btn--ghost btn--sm" (click)="clearFilters()">
+                            {{ l.s('buttons.reset') }}
+                        </button>
+                        <button class="btn btn--primary btn--sm" (click)="dropdownManager.selected_dropdown = ''">{{ l.s('buttons.done') }}</button>
                     </div>
                 </div>
             </div>

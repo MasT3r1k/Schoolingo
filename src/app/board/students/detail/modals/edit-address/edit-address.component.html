@@ -21,31 +21,8 @@
     </div>
     <div class="form-group">
         <label>Země</label>
-        <div class="custom-select"
-            (click)="$event.stopPropagation(); dropdownManager.selected_dropdown = dropdownManager.selected_dropdown == 'edit-address_country' ? '' : 'edit-address_country'">
-            <div class="selected-value">
-                <div class="row gap-2" style="display: flex; align-items: center; gap: 0.5rem;">
-                    <span>{{ getSelectedCountryFlag() }}</span>
-                    <span>{{ getSelectedCountryLabel() }}</span>
-                </div>
-                <i-tabler name="chevron-down"></i-tabler>
-            </div>
-            @if (dropdownManager.selected_dropdown == 'edit-address_country') {
-            <div class="options-dropdown">
-                <div class="list">
-                    @for (country of countries; track country.country_id) {
-                    <div class="option"
-                        (click)="$event.stopPropagation(); dropdownManager.selected_dropdown = ''; form.countryId = country.country_id">
-                        <div class="row gap-2" style="display: flex; align-items: center; gap: 0.5rem;">
-                            <span>{{ Utils.getFlagFromCountry(country.code2) }}</span>
-                            <span>{{ country.nationality }}</span>
-                        </div>
-                    </div>
-                    }
-                </div>
-            </div>
-            }
-        </div>
+
+        <schoolingo-dropdown [options]="countries" [(ngModel)]="form.countryId" [settings]="{ locale: false }"></schoolingo-dropdown>
     </div>
 </div>
 

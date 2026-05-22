@@ -13,8 +13,7 @@ export interface MessageConfig {
 
 export interface MessageType {
   label: string;
-  icon?: string;
-  color?: string;
+  value: number;
   perms: permType[];
 }
 
@@ -55,6 +54,7 @@ export type messageReceiver = {
 
 export interface RatingType {
   label: string;
+  value: string;
   type: 'positive' | 'negative';
 }
 
@@ -71,46 +71,42 @@ export class MessageManager {
   public types: MessageType[] = [
     {
       // 0
-      label: 'message',
-      icon: 'mail',
+      label: 'messages.types.message',
+      value: messageTypes.MESSAGE,
       perms: ['all'],
     },
     {
       // 1
-      label: 'homework',
-      icon: 'briefcase-2',
-      color: 'hsl(197, 42%, 49%)',
+      label: 'messages.types.homework',
+      value: messageTypes.HOMEWORK,
       perms: ['student'],
     },
     {
       // 2
-      label: 'excusestudent',
-      icon: 'file-report',
-      color: 'hsl(356, 87%, 41%)',
+      label: 'messages.types.excusestudent',
+      value: messageTypes.EXCUSESTUDENT,
       perms: ['parent', ['older:18', 'student']],
     },
     {
       // 3
-      label: 'ratestudent',
-      icon: 'thumb-up',
-      color: 'hsl(94, 54%, 38%)',
+      label: 'messages.types.ratestudent',
+      value: messageTypes.RATESTUDENT,
       perms: ['teacher', 'principal'],
     },
     {
       // 4
-      label: 'system',
-      icon: 'shield',
-      color: '#608796',
+      label: 'messages.types.system',
+      value: messageTypes.SYSTEM,
       perms: ['system'],
     },
   ];
 
   public ratingTypes: RatingType[] = [
-    { label: 'messages.ratings.activity', type: 'positive' },
-    { label: 'messages.ratings.homework', type: 'positive' },
-    { label: 'messages.ratings.disturbing', type: 'negative' },
-    { label: 'messages.ratings.supplies', type: 'negative' },
-    { label: 'messages.ratings.mobile', type: 'negative' },
+    { label: 'messages.ratings.activity', value: 'activity', type: 'positive' },
+    { label: 'messages.ratings.homework', value: 'homework', type: 'positive' },
+    { label: 'messages.ratings.disturbing', value: 'disturbing', type: 'negative' },
+    { label: 'messages.ratings.supplies', value: 'supplies', type: 'negative' },
+    { label: 'messages.ratings.mobile', value: 'mobile', type: 'negative' },
   ];
 
   public tags: MessageTag[] = [
@@ -133,7 +129,7 @@ export class MessageManager {
 
   public unreadMessage = new BehaviorSubject(12);
   public selectedChild: number | null = null;
-  public messageType = new BehaviorSubject<messageTypes>(messageTypes.MESSAGE);
+  public message_type: messageTypes = messageTypes.MESSAGE;
   public message = '';
   public topic = '';
   public draft_id: number | null = null;
@@ -143,7 +139,7 @@ export class MessageManager {
   public selectedHomework = new BehaviorSubject(null);
 
   // Rate student
-  public selectedRatingType = new BehaviorSubject<number>(0);
+  public selected_rating_type = 0;
 
   // Receivers
   public receivers: number[] = [];

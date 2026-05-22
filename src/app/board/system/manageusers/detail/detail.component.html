@@ -1,0 +1,273 @@
+@if (isLoading || !selectedUser) {
+<div class="card detail-view">
+    <div class="detail-header">
+        <button class="btn-back" (click)="closeDetail()">
+            <i-tabler name="arrow-left"></i-tabler>
+            <span>Zpět na seznam</span>
+        </button>
+    </div>
+
+    <div class="detail-layout">
+        <aside class="profile-sidebar">
+            <div class="profile-card">
+                <div class="skeleton skeleton-avatar"></div>
+                <div class="skeleton skeleton-title" style="margin-top: 1.5rem; width: 150px; height: 24px;"></div>
+                <div class="skeleton skeleton-text" style="width: 120px; margin-top: 0.5rem;"></div>
+                <div class="skeleton skeleton-text" style="width: 100px;"></div>
+            </div>
+
+            <div class="quick-stats">
+                <div class="skeleton skeleton-stat"></div>
+                <div class="skeleton skeleton-stat"></div>
+                <div class="skeleton skeleton-stat"></div>
+                <div class="skeleton skeleton-stat"></div>
+            </div>
+
+
+            <div class="quick-contact">
+                <div class="skeleton skeleton-text short" style="margin-bottom: 1rem;"></div>
+                <div class="skeleton skeleton-text"></div>
+                <div class="skeleton skeleton-text"></div>
+            </div>
+        </aside>
+
+        <main class="detail-main">
+            <div class="tabs-wrapper">
+                <div class="skeleton" style="height: 44px; width: 100%;"></div>
+            </div>
+
+            <div class="overview-grid">
+                <div class="skeleton skeleton-card" style="height: 300px;"></div>
+                <div class="skeleton skeleton-card" style="height: 300px;"></div>
+                <div class="skeleton skeleton-card" style="height: 300px;"></div>
+                <div class="skeleton skeleton-card" style="height: 300px;"></div>
+            </div>
+        </main>
+    </div>
+</div>
+} @else {
+<div class="card detail-view">
+    <!-- Detail Header -->
+    <div class="detail-header">
+        <button class="btn-back" (click)="closeDetail()">
+            <i-tabler name="arrow-left"></i-tabler>
+            <span>Přepnout na seznam uživatelů</span>
+        </button>
+        <h1 class="detail-title">
+            {{ l.s('sidebar.system.manage_users') }}
+        </h1>
+        <div class="detail-actions" style="margin-left: auto; display: flex; gap: 0.5rem;">
+            @if (['student', 'teacher'].includes(selectedUser.role)) {
+                @switch (selectedUser.role) {
+                    @case ("student") {
+            <button class="action-btn-dropdown" [routerLink]="['/', 'students', selectedUser.person_id]" [queryParams]="{ returnUrl: '/system/manageusers/' + selectedUser.user_id }">
+                <i-tabler name="id" style="width: 1.25rem; height: 1.25rem;"></i-tabler>
+                <span style="font-size: 0.875rem; font-weight: 500;">
+                    {{ l.s('system.manage_users.reset_password.jump_student') }}
+                </span>
+            </button>
+                    }
+                    @case ("teacher") {
+            <button class="action-btn-dropdown" [routerLink]="['/', 'employees', selectedUser.user_id]" [queryParams]="{ returnUrl: '/system/manageusers/' + selectedUser.user_id }">
+                <i-tabler name="id" style="width: 1.25rem; height: 1.25rem;"></i-tabler>
+                <span style="font-size: 0.875rem; font-weight: 500;">
+                    {{ l.s('system.manage_users.reset_password.jump_teacher') }}
+                </span>
+            </button>
+                    }
+                }
+            }
+
+            @if (u.getUser().user_id == getTargetId()) {
+            <button class="action-btn-dropdown danger" [title]="l.s('buttons.change_password')" (click)="changePassword()">
+                <i-tabler name="password-user" style="width: 1.25rem; height: 1.25rem;"></i-tabler>
+                <span style="font-size: 0.875rem; font-weight: 500;">
+                    {{ l.s('buttons.change_password') }}
+                </span>
+            </button>
+            } @else {
+            <button class="action-btn-dropdown danger" [title]="l.s('settings.passwords.reset_password')" (click)="resetPassword()">
+                <i-tabler name="password-user" style="width: 1.25rem; height: 1.25rem;"></i-tabler>
+                <span style="font-size: 0.875rem; font-weight: 500;">
+                    {{ l.s('settings.passwords.reset_password') }}
+                </span>
+            </button>
+            }
+        </div>
+    </div>
+
+    <div class="detail-layout">
+        <!-- Sidebar Profile -->
+        <aside class="profile-sidebar">
+            <div class="profile-card">
+                <div class="profile-avatar">
+                    <img [src]="avatarService.getAvatar(selectedUser.avatar, selectedUser.full_name)" [alt]="selectedUser.full_name">
+                    <div class="status-dot" [class]="selectedUser.status"></div>
+                </div>
+                <h1 class="profile-name">
+                    {{ selectedUser.full_name }}
+                </h1>
+
+                <div class="profile-class">
+                    {{ selectedUser.username }}
+                </div>
+
+                <div class="badge badge--neutral">
+                    {{ l.s('roles.' + selectedUser.role) }}
+                </div>
+            </div>
+
+            <!-- Quick Stats -->
+            <div class="quick-stats">
+                <div class="stat-card" [class.stat--success]="selectedUser['2fa']" [class.stat--danger]="!selectedUser['2fa']">
+                    <div class="stat-icon">
+                        <i-tabler name="auth-2fa"></i-tabler>
+                    </div>
+                    <div class="stat-info">
+                        <span class="stat-value">
+                            {{ l.s('settings.2fa.status.' + (selectedUser['2fa'] ? 'activated' : 'deactivated')) }}
+                        </span>
+                        <span class="stat-label">
+                            {{ l.s('settings.2fa.title') }}
+                        </span>
+                    </div>
+                </div>
+
+                <div class="stat-card stat--primary">
+                    <div class="stat-icon">
+                        <i-tabler name="user-key"></i-tabler>
+                    </div>
+                    <div class="stat-info">
+                        <span class="stat-value">
+                            {{ l.s('system.manage_users.login_method.' + selectedUser.login_type) }}
+                        </span>
+                        <span class="stat-label">
+                            {{ l.s('system.manage_users.login_method.title') }}
+                        </span>
+                    </div>
+                </div>
+
+                @if (selectedUser.logins_7days > 0) {
+                    <div class="stat-card stat--info">
+                        <div class="stat-icon">
+                            <i-tabler name="login"></i-tabler>
+                        </div>
+                        <div class="stat-info">
+                            <span class="stat-value">
+                                {{ selectedUser.logins_7days }}×
+                            </span>
+                            <span class="stat-label">
+                                Přihlášení (7 dní)
+                            </span>
+                        </div>
+                    </div>
+                }
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="detail-main">
+            <!-- Tabs Navigation -->
+            <div class="tabs-wrapper">
+                <button class="tab-scroll-btn left" *ngIf="showLeftScroll" (click)="scrollTabs(-1)">
+                    <i-tabler name="chevron-left"></i-tabler>
+                </button>
+                <nav class="tabs-nav" #tabsNav (scroll)="checkScroll()">
+                    @for (tab of tabs;track $index) {
+                    <div class="tab-btn" [class.active]="activeTab === tab" (click)="setActiveTab(tab)">
+                        <i-tabler [name]="getTabIcon(tab)"></i-tabler>
+                        <span>
+                            {{ l.s('system.manage_users.tabs.' + tab) }}
+                        </span>
+                    </div>
+                    }
+                </nav>
+                <button class="tab-scroll-btn right" *ngIf="showRightScroll" (click)="scrollTabs(1)">
+                    <i-tabler name="chevron-right"></i-tabler>
+                </button>
+            </div>
+            <!-- Tab Content -->
+            <div class="tab-content">
+                @if (activeTab == 'overview') {
+                    <div class="overview-grid">
+                        <div class="info-card">
+                            <div class="card-header">
+                                <i-tabler name="info-circle"></i-tabler>
+                                <h3>Základní informace</h3>
+                            </div>
+                            <div class="info-list">
+                                <div class="info-row">
+                                    <div class="info-label"></div>
+                                    <div class="info-value"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+
+                @if (activeTab == 'activity') {
+                    @for (entry of selectedUser.login_history; track $index) {
+                    <div class="evidence-item">
+                        <div class="evidence-icon" [class]="entry.success ? 'success' : 'danger'">
+                            <i-tabler [name]="entry.success ? 'login' : 'shield-x'"></i-tabler>
+                        </div>
+                        <div class="evidence-content">
+                            <div class="evidence-title">{{ entry.success ? 'Úspěšné přihlášení' : 'Neúspěšný pokus' }}</div>
+                            <div class="evidence-meta">{{ entry.created | date:'dd.MM.yyyy HH:mm:ss' }} &bull; IP: {{ entry.ip }}</div>
+                        </div>
+                    </div>
+                    } @empty {
+                    <div class="empty-tab">Žádná aktivita nebyla nalezena</div>
+                    }
+                }
+
+                @if (activeTab == 'messages') {
+<messages-template [title]="'system.manage_users.tabs.messages'" [settings]="settings" [filters]="{ author_ids: selectedUser.user_id }" style="min-height: 500px;display: inline-grid;width:100%;"></messages-template>
+                }
+
+                @if (activeTab == 'files') {
+                    <div class="stats-cards">
+                        <div class="stat-card stat--primary">
+                            <div class="stat-icon">
+                                <i-tabler name="files"></i-tabler>
+                            </div>
+                            <div class="stat-info">
+                                <div class="stat-value">{{ selectedUser.file_count }}</div>
+                                <div class="stat-label">Nahráno souborů</div>
+                            </div>
+                        </div>
+
+                        <div class="stat-card stat--primary">
+                            <div class="stat-icon">
+                                <i-tabler name="database"></i-tabler>
+                            </div>
+                            <div class="stat-info">
+                                <div class="stat-value">
+                                    <span class="bold">{{ Utils.formatBytes(0) }}</span>
+                                    <span class="text-sm muted"> / {{ Utils.formatBytes(storageLimit) }}</span>
+                                </div>
+                                <div class="stat-label">Využití</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    @for (file of selectedUser.files; track file.id) {
+                    <div class="evidence-item">
+                        <div class="evidence-icon file">
+                            <i-tabler name="file"></i-tabler>
+                        </div>
+                        <div class="evidence-content">
+                            <div class="evidence-title">{{ file.name }}</div>
+                            <div class="evidence-meta">{{ Utils.formatBytes(file.size) }} &bull; {{ file.type }} &bull; {{ file.created_at | date:'dd.MM.yyyy HH:mm' }}</div>
+                        </div>
+                        <button class="row-action" title="Stáhnout"><i-tabler name="download"></i-tabler></button>
+                    </div>
+                    } @empty {
+                    <div class="empty-tab">Žádné soubory nenalezeny</div>
+                    }
+                }
+            </div>
+        </main>
+    </div>
+</div>
+}

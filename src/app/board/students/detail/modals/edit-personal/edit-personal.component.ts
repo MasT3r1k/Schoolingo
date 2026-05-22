@@ -9,11 +9,12 @@ import { Locale } from '@Schoolingo/locale';
 import { Utils } from '@Schoolingo/utils';
 import { DropdownManager } from '@Schoolingo/dropdown';
 import moment from 'moment';
+import { DropdownComponent } from '@Components/dropdown/dropdown';
 
 @Component({
   selector: 'app-edit-personal-modal',
   standalone: true,
-  imports: [CommonModule, FormsModule, IconsModule],
+  imports: [CommonModule, FormsModule, IconsModule, DropdownComponent],
   templateUrl: './edit-personal.component.html',
   styleUrl: './edit-personal.component.css'
 })
@@ -49,29 +50,6 @@ export class EditPersonalModalComponent implements OnInit {
     }
     
     this.form.birthNum = val;
-
-    // Try to derive birthday if valid format
-    if (val.length >= 6) {
-      let year = parseInt(val.substring(0, 2));
-      let month = parseInt(val.substring(2, 4));
-      const day = parseInt(val.substring(4, 6));
-
-      // Month for females is +50
-      if (month > 50) month -= 50;
-      // Handle months +20 / +70 if needed (rare but exists for some RC)
-      if (month > 20) month -= 20;
-
-      if (month >= 1 && month <= 12 && day >= 1 && day <= 31) {
-        // Approximate year (this is a bit tricky without knowing the century, but for students we can assume 2000s or late 1900s)
-        const currentYearShort = new Date().getFullYear() % 100;
-        const fullYear = year <= currentYearShort ? 2000 + year : 1900 + year;
-        
-        const birthDate = moment(`${fullYear}-${month.toString().padStart(2, '0')}-${day.toString().padStart(2, '0')}`);
-        if (birthDate.isValid()) {
-          this.form.birthday = birthDate.format('YYYY-MM-DD');
-        }
-      }
-    }
 
     // Validate
     this.birthNumError = Utils.verifyBirthNumber(this.form.birthNum, this.form.birthday, this.form.gender);
@@ -191,7 +169,11 @@ export class EditPersonalModalComponent implements OnInit {
     // Load countries (from system settings or similar)
     this.http.get(`${Config.API_URL}/v1/system`, { withCredentials: true })
       .subscribe((res: any) => {
-        this.countries = res.countries || [];
+        this.countries = res.countries.map((country: any) => ({
+          ...country,
+          label: `${Utils.getFlagFromCountry(country.code2)} ${country.nationality}`,
+          value: country.country_id
+        })) || [];
       });
 
     // Load degrees
@@ -219,7 +201,7 @@ export class EditPersonalModalComponent implements OnInit {
       { key: 'classId', label: 'Třída', oldVal: s.class_id, newVal: this.form.classId },
       { key: 'insuranceId', label: 'Pojišťovna', oldVal: s.insurance_id, newVal: this.form.insuranceId },
       { key: 'gender', label: 'Pohlaví', oldVal: s.gender, newVal: this.form.gender },
-      { key: 'birthNum', label: 'Rodné číslo', oldVal: s.birthnum, newVal: this.form.birthNum },
+      { key: 'birthNum', label: 'Rodné číslo', oldVal: s.birthnum.replace('/', ''), newVal: this.form.birthNum.replace('/', '') },
       { key: 'birthday', label: 'Datum narození', oldVal: s.birthday ? moment(s.birthday).format('YYYY-MM-DD') : '', newVal: this.form.birthday },
       { key: 'birthPlace', label: 'Místo narození', oldVal: s.birth_place, newVal: this.form.birthPlace },
       { key: 'nationalityId', label: 'Státní občanství', oldVal: s.nationality_id, newVal: this.form.nationalityId },
@@ -248,8 +230,8 @@ export class EditPersonalModalComponent implements OnInit {
             displayOld = oldVal ? moment(oldVal).format('D. M. YYYY') : 'Nezadáno';
             displayNew = newVal ? moment(newVal).format('D. M. YYYY') : 'Nezadáno';
         } else if (f.key === 'nationalityId') {
-          displayOld = this.countries.find(c => c.country_id === oldVal)?.nationality || 'Nezadáno';
-          displayNew = this.countries.find(c => c.country_id === newVal)?.nationality || 'Nezadáno';
+          displayOld = this.countries.find(c => c.country_id === oldVal)?.label || 'Nezadáno';
+          displayNew = this.countries.find(c => c.country_id === newVal)?.label || 'Nezadáno';
         }
 
         changes.push({

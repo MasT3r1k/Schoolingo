@@ -60,7 +60,7 @@ export class AddPhoneComponent implements OnInit {
   }
 
   public get selectedCountry() {
-    return this.countries.find(c => c.code === this.code) || { iso: 'unknown', name: 'Neznámý', code: this.code, flag: '' };
+    return this.allCountries.find(c => c.code === this.code) || { iso: 'unknown', name: 'Neznámý', code: this.code, flag: '' };
   }
 
   public selectCountry(country: any): void {
