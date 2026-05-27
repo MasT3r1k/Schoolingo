@@ -28,24 +28,46 @@ export class ClassbookAbsenceComponent {
 
   public lesson = this.classbook.classbook;
   public errors: { [key: string]: string } = {};
+  public hours: any[] = [];
   public showSelect: null | 'reason' = null;
 
   ngOnInit(): void {
     this.classbook.reason = '';
     this.classbook.minutes = 0;
     this.classbook.note = '';
+    let schoolConfig = this.school.config.getValue();
+    let time = moment()
+      .set('hours', schoolConfig?.start_hour!)
+      .set('minutes', schoolConfig?.start_minute!);
+
+    this.hours = [];
+    for (let i = 0; i <= this.classbook.selectedHour; i++) {
+      let startHour = time.clone();
+      time.add(schoolConfig?.lesson_hour, 'minutes');
+      this.hours.push(
+        {
+          startMoment: startHour.clone(),
+          start: startHour.format('HH:mm'),
+          endMoment: time.clone(),
+          end: time.format('HH:mm')
+        }
+      );
+      let customBreak = schoolConfig?.breaks.filter((_) => _.hour == i + 1)[0]?.minutes;
+      time.add(customBreak || schoolConfig?.break_time, 'minutes');
+    }
+
   }
 
   public getTime(type: 'arrival' | 'departure'): moment.Moment {
-    // let hour = this.getTimetableHours()[this.classbook.selectedHour.getValue()!];
+    let hour = this.hours[this.classbook.selectedHour];
     let time = moment();
-    // if (type == 'arrival') {
-    //   time = hour.startMoment.clone().add(this.classbook.minutes, 'minutes')
-    // }
+    if (type == 'arrival') {
+      time = hour.startMoment.clone().add(this.classbook.minutes, 'minutes')
+    }
 
-    // if (type == 'departure') {
-    //   time = hour.endMoment.clone().subtract(this.classbook.minutes, 'minutes');
-    // }
+    if (type == 'departure') {
+      time = hour.endMoment.clone().subtract(this.classbook.minutes, 'minutes');
+    }
     
     return time;
   }
