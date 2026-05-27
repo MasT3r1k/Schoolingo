@@ -102,7 +102,6 @@
             <div class="profile-card">
                 <div class="profile-avatar">
                     <img [src]="avatarService.getAvatar(selectedUser.avatar, selectedUser.full_name)" [alt]="selectedUser.full_name">
-                    <div class="status-dot" [class]="selectedUser.status"></div>
                 </div>
                 <h1 class="profile-name">
                     {{ selectedUser.full_name }}
@@ -203,6 +202,29 @@
                             </div>
                         </div>
                     </div>
+                }
+
+                @if (activeTab == 'security') {
+                <div class="security-section" style="display:flex;flex-direction:column;gap:1.5rem;">
+                    <div class="info-card">
+                        <div class="card-header">
+                            <i-tabler [name]="selectedUser.status === 'active' ? 'user-minus' : 'user-check'"></i-tabler>
+                            <h3>Stav účtu</h3>
+                        </div>
+                        <div class="security-hero" style="padding:2rem;display:flex;align-items:center;gap:1.5rem;background:var(--bg-secondary);border-radius:var(--radius-lg);">
+                            <div class="security-icon-wrap" [style.color]="selectedUser.status === 'active' ? 'var(--danger)' : 'var(--success)'" style="padding:1rem;background:var(--bg-primary);border-radius:50%;display:flex;align-items:center;justify-content:center;">
+                                <i-tabler [name]="selectedUser.status === 'active' ? 'user-off' : 'user-check'" style="width:2rem;height:2rem;"></i-tabler>
+                            </div>
+                            <div class="security-text" style="flex:1;">
+                                <h4 style="margin:0 0 0.5rem 0;font-size:1.125rem;">{{ selectedUser.status === 'active' ? 'Deaktivovat účet' : 'Aktivovat účet' }}</h4>
+                                <p style="margin:0;color:var(--text-secondary);">{{ selectedUser.status === 'active' ? 'Uživatel po deaktivaci ztratí přístup do systému. Lze kdykoliv vrátit.' : 'Po aktivaci bude mít uživatel opět přístup do systému.' }}</p>
+                            </div>
+                            <button class="btn btn--lg" [class.btn--danger]="selectedUser.status === 'active'" [class.btn--success]="selectedUser.status !== 'active'" (click)="toggleStatus($event)">
+                                {{ selectedUser.status === 'active' ? 'Deaktivovat' : 'Aktivovat' }}
+                            </button>
+                        </div>
+                    </div>
+                </div>
                 }
 
                 @if (activeTab == 'activity') {

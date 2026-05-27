@@ -72,7 +72,7 @@
                             <div class="category-header">
                                 <h4>{{ category.name }}</h4>
                                 @if (category.required) {
-                                <span class="required-badge">
+                                <span class="badge badge--success">
                                     <i-tabler name="lock"></i-tabler>
                                     Vždy aktivní
                                 </span>
@@ -82,15 +82,14 @@
                         </div>
                         <div class="category-actions">
                             @if (!category.required) {
-                            <label class="toggle-switch" (click)="$event.stopPropagation()">
+                                <schoolingo-checkbox (click)="$event.stopPropagation();cookies.toggleCategory(category.id)" [checked]="pref?.enabled || false"></schoolingo-checkbox>
+                            <!-- <label class="toggle-switch" (click)="$event.stopPropagation()">
                                 <input type="checkbox" [checked]="pref?.enabled || false"
                                     (change)="cookies.toggleCategory(category.id)">
                                 <span class="slider"></span>
-                            </label>
+                            </label> -->
                             } @else {
-                            <div class="toggle-locked">
-                                <i-tabler name="check"></i-tabler>
-                            </div>
+                                <schoolingo-checkbox (click)="$event.stopPropagation();" [checked]="pref?.enabled || true"></schoolingo-checkbox>
                             }
                             <button class="expand-btn" [class.rotated]="cookies.selectedCategory === category.id">
                                 <i-tabler name="chevron-down"></i-tabler>
@@ -104,7 +103,7 @@
                             <h5>Příklady použití</h5>
                             <ul>
                                 @for (example of category.examples; track example) {
-                                <li>
+                                <li class="badge badge--neutral">
                                     <i-tabler name="check"></i-tabler>
                                     {{ example }}
                                 </li>

@@ -307,6 +307,7 @@ export class ClassbookComponent implements OnInit {
         icon: 'notebook',
         title: 'classbook.add_homework.title',
         closeable: true,
+        hiddenOverflow: false,
         items: [
           {
             type: 'component',

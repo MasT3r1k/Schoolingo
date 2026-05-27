@@ -7,6 +7,7 @@ import { Config } from '@Schoolingo/config';
 import { IconsModule } from '@Schoolingo/icons';
 import { Locale } from '@Schoolingo/locale';
 import { Cookies } from '@Schoolingo/cookies';
+import { CheckboxComponent } from '@Components/Checkbox';
 
 interface CookiePreference {
   category: string;
@@ -25,7 +26,7 @@ interface CookieInfo {
 @Component({
   selector: 'app-cookies',
   standalone: true,
-  imports: [CommonModule, FormsModule, IconsModule, RouterModule],
+  imports: [CommonModule, FormsModule, IconsModule, RouterModule, CheckboxComponent],
   templateUrl: './cookies.component.html',
   styleUrl: './cookies.component.css'
 })

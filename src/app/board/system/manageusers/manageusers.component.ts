@@ -646,7 +646,6 @@ export class ManageusersComponent implements OnInit {
   editUser(user: User, event: Event) {
     event.stopPropagation();
     this.selectUser(user);
-    setTimeout(() => this.setActiveTab('edit'), 600);
   }
 
   deleteUser(user: User, event: Event) {
@@ -657,9 +656,28 @@ export class ManageusersComponent implements OnInit {
 
   resetPassword(user: User, event: Event) {
     event.stopPropagation();
-    this.resetPasswordForm.generatedPassword = null;
     this.selectUser(user);
-    setTimeout(() => this.setActiveTab('security'), 600);
+  }
+
+  toggleStatus(user: User, event?: Event) {
+    if (event) event.stopPropagation();
+    const newStatus = user.status === 'active' ? 'inactive' : 'active';
+    this.http.patch<any>(
+      `${Config.API_URL}/v1/system/users/${user.id}`,
+      { active: newStatus === 'active' ? 1 : 0 },
+      { withCredentials: true }
+    ).subscribe({
+      next: () => {
+        user.status = newStatus;
+        if (this.selectedUser && this.selectedUser.id === user.id) {
+          this.selectedUser.status = newStatus;
+        }
+        this.loadUsers(this.currentPage);
+      },
+      error: (err) => {
+        console.error('Error toggling status:', err);
+      }
+    });
   }
 
   manageFiles(user: User, event: Event) {

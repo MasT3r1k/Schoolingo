@@ -14,6 +14,7 @@ interface Modal {
     icon?: string;
     width?: number;
     forceScrollbar?: boolean;
+    hiddenOverflow?: boolean;
     closeable: boolean;
     items: ModalItem[];
     isOpen: boolean;

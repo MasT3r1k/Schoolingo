@@ -95,9 +95,9 @@ export class ManageUsersDetailComponent implements OnInit {
 
   selectedUser: UserDetail | null = null;
 
-  public tabs: (typeof this.activeTab)[] = ['overview', 'security', 'activity', 'messages', 'files'];
+  public tabs: (typeof this.activeTab)[] = ['security', 'activity', 'messages', 'files'];
 
-  activeTab: 'overview' | 'personal' | 'security' | 'activity' | 'messages' | 'files' = 'overview';
+  activeTab: 'overview' | 'personal' | 'security' | 'activity' | 'messages' | 'files' = this.tabs[0];
 
   public getTabIcon(tab: typeof this.activeTab): string {
     const iconsMap: Record<string, string> = {
@@ -133,6 +133,26 @@ export class ManageUsersDetailComponent implements OnInit {
 
   public getTargetId(): number | null {
     return parseInt(this.route.snapshot.paramMap.get('id') as string);
+  }
+
+  public toggleStatus(event?: Event): void {
+    if (event) event.stopPropagation();
+    if (!this.selectedUser) return;
+    const newStatus = this.selectedUser.status === 'active' ? 'inactive' : 'active';
+    this.http.patch<any>(
+      `${Config.API_URL}/v1/system/users/${this.selectedUser.user_id}`,
+      { active: newStatus === 'active' ? 1 : 0 },
+      { withCredentials: true }
+    ).subscribe({
+      next: () => {
+        if (this.selectedUser) {
+          this.selectedUser.status = newStatus;
+        }
+      },
+      error: (err) => {
+        console.error('Error toggling status:', err);
+      }
+    });
   }
 
   ngOnInit(): void {

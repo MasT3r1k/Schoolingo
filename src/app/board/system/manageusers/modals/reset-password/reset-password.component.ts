@@ -56,28 +56,34 @@ export class ResetPasswordManageUsersComponent implements OnInit {
   isResettingPassword = false;
   resetPasswordSuccess = false;
   resetPasswordError: string | null = null;
+  public generatedPassword = '';
 
 
 submitResetPassword() {
     if (!this.selectedUser) return;
     this.resetPasswordError = null;
     this.resetPasswordSuccess = false;
+    this.generatedPassword = '';
 
     this.isResettingPassword = true;
 
+    const userId = (this.selectedUser as any).user_id || this.selectedUser.id;
     this.http.post<any>(
-      `${Config.API_URL}/v1/system/users/${this.selectedUser.id}/reset-password`,
+      `${Config.API_URL}/v1/system/users/${userId}/reset-password`,
       {},
       { withCredentials: true }
     ).subscribe({
-      next: () => {
+      next: (res) => {
         this.isResettingPassword = false;
         this.resetPasswordSuccess = true;
+        if (res.generated_password) {
+          this.generatedPassword = res.generated_password;
+        }
       },
       error: (err) => {
         console.error('Error resetting password:', err);
         this.isResettingPassword = false;
-        this.resetPasswordError = 'Nepodařilo se resetovat heslo';
+        this.resetPasswordError = this.l.s('settings.passwords.failed_to_reset');
       }
     });
   }

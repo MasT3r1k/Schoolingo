@@ -146,6 +146,12 @@ export class AuthComponent implements OnInit {
           }
 
           if ('error' in data && data.error instanceof Array) {
+            if (data.error?.includes('User not active')) {
+              this.errors['username'] = this.l.s(
+                'auth.errors.user_not_active'
+              )
+            }
+
             if (data.error?.includes('Invalid username')) {
               this.errors['username'] = this.l.s(
                 'auth.errors.invalid_username'
