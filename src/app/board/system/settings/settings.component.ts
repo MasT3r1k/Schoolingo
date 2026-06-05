@@ -12,6 +12,7 @@ import { ChangelogModalComponent } from './modals/changelog/changelog.component'
 import { LicenseModalComponent } from './modals/license/license.component';
 import { Country } from 'country-state-city';
 import { enumSidebar, Sidebar } from './config';
+import { CheckboxComponent } from '@Components/Checkbox';
 
 interface ElysiaVersion {
   current: string;
@@ -208,7 +209,7 @@ type ElysiaSystemAPI = {
 
 
 @Component({
-  imports: [IconsModule, FormsModule, ReactiveFormsModule, CommonModule],
+  imports: [IconsModule, FormsModule, ReactiveFormsModule, CommonModule, CheckboxComponent],
   templateUrl: './settings.component.html',
   styleUrls: ['./settings.component.css', '../../../styles/sidebar.css']
 })

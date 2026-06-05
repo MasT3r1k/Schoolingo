@@ -60,9 +60,7 @@
                     <div class="setting-desc">Aktivuje modul pro správu souhlasů a DPO.</div>
                 </div>
                 <div class="setting-control">
-                    <div class="switch" [class.on]="hasModule('gdpr')" (click)="toggleModule('gdpr')">
-                        <div class="knob"></div>
-                    </div>
+                    <schoolingo-checkbox [checked]="hasModule('gdpr')" (click)="toggleModule('gdpr')"></schoolingo-checkbox>
                 </div>
             </div>
         </div>
@@ -132,10 +130,7 @@
                     <div class="setting-desc">Povolit posílání soukromých zpráv mezi uživateli.</div>
                 </div>
                 <div class="setting-control">
-                    <div class="switch" [class.on]="system.settings.msg_type_private_active"
-                        (click)="system.settings.msg_type_private_active = !system.settings.msg_type_private_active">
-                        <div class="knob"></div>
-                    </div>
+                    <schoolingo-checkbox [checked]="system.settings.msg_type_private_active" (click)="system.settings.msg_type_private_active = !system.settings.msg_type_private_active"></schoolingo-checkbox>
                 </div>
             </div>
 
@@ -145,10 +140,7 @@
                     <div class="setting-desc">Povolit posílání oficiálních / ředitelských zpráv.</div>
                 </div>
                 <div class="setting-control">
-                    <div class="switch" [class.on]="system.settings.msg_type_official_active"
-                        (click)="system.settings.msg_type_official_active = !system.settings.msg_type_official_active">
-                        <div class="knob"></div>
-                    </div>
+                    <schoolingo-checkbox [checked]="system.settings.msg_type_official_active" (click)="system.settings.msg_type_official_active = !system.settings.msg_type_official_active"></schoolingo-checkbox>
                 </div>
             </div>
 
@@ -158,10 +150,7 @@
                     <div class="setting-desc">Povolit modul nástěnky pro hromadná oznámení.</div>
                 </div>
                 <div class="setting-control">
-                    <div class="switch" [class.on]="system.settings.msg_type_noticeboard_active"
-                        (click)="system.settings.msg_type_noticeboard_active = !system.settings.msg_type_noticeboard_active">
-                        <div class="knob"></div>
-                    </div>
+                    <schoolingo-checkbox [checked]="system.settings.msg_type_noticeboard_active" (click)="system.settings.msg_type_noticeboard_active = !system.settings.msg_type_noticeboard_active"></schoolingo-checkbox>
                 </div>
             </div>
         </div>
@@ -202,13 +191,7 @@
                             <td class="source-role-name">{{ sourceRole.role_name }}</td>
                             @for (targetRole of system.roles; track targetRole.role_key) {
                             <td class="perm-cell">
-                                <div class="checkbox"
-                                    [class.checked]="has_comm_permission(sourceRole.role_key, targetRole.role_key)"
-                                    (click)="toggle_comm_permission(sourceRole.role_key, targetRole.role_key)">
-                                    @if (has_comm_permission(sourceRole.role_key, targetRole.role_key)) {
-                                    <i-tabler name="check"></i-tabler>
-                                    }
-                                </div>
+                                <schoolingo-checkbox [checked]="has_comm_permission(sourceRole.role_key, targetRole.role_key)" (click)="toggle_comm_permission(sourceRole.role_key, targetRole.role_key)"></schoolingo-checkbox>
                             </td>
                             }
                         </tr>
@@ -264,10 +247,7 @@
                         </div>
                         <div class="form-group" style="display: flex; flex-direction: column; align-items: center;">
                             <label>{{ l.s('system.evaluation_for_everyone') }}</label>
-                            <div class="switch" [class.on]="template.is_public"
-                                (click)="template.is_public = !template.is_public; save_evaluation_template(template)">
-                                <div class="knob"></div>
-                            </div>
+                            <schoolingo-checkbox [checked]="template.is_public" (click)="template.is_public = !template.is_public; save_evaluation_template(template)"></schoolingo-checkbox>
                         </div>
                         <div class="form-group actions" style="display: flex; align-items: flex-end;">
                             <button class="btn btn--danger btn--icon" (click)="delete_evaluation_template(template)">
@@ -429,8 +409,10 @@
                 } @else {
                 <div class="empty-state-container">
                     <div class="empty-state">
-                        <i-tabler name="license"></i-tabler>
-                        <p>Vyberte roli ze seznamu nebo vytvořte novou pro správu jejích oprávnění.</p>
+                        <div class="empty-state__icon">
+                            <i-tabler name="license"></i-tabler>
+                        </div>
+                        <p class="empty-state__description">Vyberte roli ze seznamu nebo vytvořte novou pro správu jejích oprávnění.</p>
                     </div>
                 </div>
                 }
@@ -454,10 +436,7 @@
                     <div class="setting-desc">Povolení/vypnutí celého modulu Dokumenty.</div>
                 </div>
                 <div class="setting-control">
-                    <div class="switch" [class.on]="system.settings.documents_enabled"
-                        (click)="system.settings.documents_enabled = !system.settings.documents_enabled">
-                        <div class="knob"></div>
-                    </div>
+                    <schoolingo-checkbox [checked]="system.settings.documents_enabled" (click)="system.settings.documents_enabled = !system.settings.documents_enabled"></schoolingo-checkbox>
                 </div>
             </div>
         </div>
@@ -485,10 +464,7 @@
                     <div class="setting-desc">Povolení/vypnutí celého modulu Praxe.</div>
                 </div>
                 <div class="setting-control">
-                    <div class="switch" [class.on]="system.settings.traineeship_enabled"
-                        (click)="system.settings.traineeship_enabled = !system.settings.traineeship_enabled">
-                        <div class="knob"></div>
-                    </div>
+                    <schoolingo-checkbox [checked]="system.settings.traineeship_enabled" (click)="system.settings.traineeship_enabled = !system.settings.traineeship_enabled"></schoolingo-checkbox>
                 </div>
             </div>
         </div>
@@ -516,10 +492,7 @@
                     <div class="setting-desc">Povolení/vypnutí celého modulu Online Výuka.</div>
                 </div>
                 <div class="setting-control">
-                    <div class="switch" [class.on]="system.settings.online_enabled"
-                        (click)="system.settings.online_enabled = !system.settings.online_enabled">
-                        <div class="knob"></div>
-                    </div>
+                    <schoolingo-checkbox [checked]="system.settings.online_enabled" (click)="system.settings.online_enabled = !system.settings.online_enabled"></schoolingo-checkbox>
                 </div>
             </div>
         </div>
@@ -548,10 +521,7 @@
                     <div class="setting-desc">Povolení nástěnky určené pro studenty.</div>
                 </div>
                 <div class="setting-control">
-                    <div class="switch" [class.on]="system.settings.noticeboard_student_enabled"
-                        (click)="system.settings.noticeboard_student_enabled = !system.settings.noticeboard_student_enabled">
-                        <div class="knob"></div>
-                    </div>
+                    <schoolingo-checkbox [checked]="system.settings.noticeboard_student_enabled" (click)="system.settings.noticeboard_student_enabled = !system.settings.noticeboard_student_enabled"></schoolingo-checkbox>
                 </div>
             </div>
 
@@ -561,10 +531,7 @@
                     <div class="setting-desc">Povolení nástěnky určené pouze pro učitele.</div>
                 </div>
                 <div class="setting-control">
-                    <div class="switch" [class.on]="system.settings.noticeboard_teacher_enabled"
-                        (click)="system.settings.noticeboard_teacher_enabled = !system.settings.noticeboard_teacher_enabled">
-                        <div class="knob"></div>
-                    </div>
+                    <schoolingo-checkbox [checked]="system.settings.noticeboard_teacher_enabled" (click)="system.settings.noticeboard_teacher_enabled = !system.settings.noticeboard_teacher_enabled"></schoolingo-checkbox>
                 </div>
             </div>
         </div>
@@ -593,10 +560,7 @@
                     <div class="setting-desc">Povolení/vypnutí celého modulu Testy.</div>
                 </div>
                 <div class="setting-control">
-                    <div class="switch" [class.on]="system.settings.tests_enabled"
-                        (click)="system.settings.tests_enabled = !system.settings.tests_enabled">
-                        <div class="knob"></div>
-                    </div>
+                    <schoolingo-checkbox [checked]="system.settings.tests_enabled" (click)="system.settings.tests_enabled = !system.settings.tests_enabled"></schoolingo-checkbox>
                 </div>
             </div>
         </div>
@@ -625,10 +589,7 @@
                     <div class="setting-desc">Povolení/vypnutí celého modulu Odměny a pochvaly.</div>
                 </div>
                 <div class="setting-control">
-                    <div class="switch" [class.on]="system.settings.rewards_enabled"
-                        (click)="system.settings.rewards_enabled = !system.settings.rewards_enabled">
-                        <div class="knob"></div>
-                    </div>
+                    <schoolingo-checkbox [checked]="system.settings.rewards_enabled" (click)="system.settings.rewards_enabled = !system.settings.rewards_enabled"></schoolingo-checkbox>
                 </div>
             </div>
         </div>
@@ -721,10 +682,7 @@
                     <div class="setting-desc">Omezí funkce systému pouze na rozvrh, známky a zprávy (ukázkový režim).</div>
                 </div>
                 <div class="setting-control">
-                    <div class="switch" [class.on]="system.settings.demo_enabled"
-                        (click)="system.settings.demo_enabled = !system.settings.demo_enabled; update_school()">
-                        <div class="knob"></div>
-                    </div>
+                    <schoolingo-checkbox [checked]="system.settings.demo_enabled" (click)="system.settings.demo_enabled = !system.settings.demo_enabled; update_school()"></schoolingo-checkbox>
                 </div>
             </div>
         </div>
@@ -738,10 +696,7 @@
                     <div class="setting-desc">Zapne automatické stahování a instalaci menších aktualizací.</div>
                 </div>
                 <div class="setting-control">
-                    <div class="switch" [class.on]="options.auto_updates"
-                        (click)="options.auto_updates = !options.auto_updates; saveUpdateConfig()">
-                        <div class="knob"></div>
-                    </div>
+                    <schoolingo-checkbox [checked]="options.auto_updates" (click)="options.auto_updates = !options.auto_updates; saveUpdateConfig()"></schoolingo-checkbox>
                 </div>
             </div>
 
@@ -1110,10 +1065,7 @@
                     <p>Přihlášení pomocí uživatelského jména a hesla</p>
                 </div>
                 <div class="auth-card__toggle">
-                    <div class="switch" [class.on]="system.settings.auth_classic"
-                        (click)="system.settings.auth_classic = !system.settings.auth_classic;update_login()">
-                        <div class="knob"></div>
-                    </div>
+                    <schoolingo-checkbox [checked]="system.settings.auth_classic" (click)="system.settings.auth_classic = !system.settings.auth_classic;update_login()"></schoolingo-checkbox>
                 </div>
             </div>
 
@@ -1126,10 +1078,7 @@
                     <p>Přihlášení pomocí firemního LDAP serveru</p>
                 </div>
                 <div class="auth-card__toggle">
-                    <div class="switch" [class.on]="system.settings.auth_ldap"
-                        (click)="system.settings.auth_ldap = !system.settings.auth_ldap;update_login()">
-                        <div class="knob"></div>
-                    </div>
+                    <schoolingo-checkbox [checked]="system.settings.auth_ldap" (click)="system.settings.auth_ldap = !system.settings.auth_ldap;update_login()"></schoolingo-checkbox>
                 </div>
             </div>
 
@@ -1142,10 +1091,7 @@
                     <p>Rychlé přihlášení skenováním QR kódu mobilem</p>
                 </div>
                 <div class="auth-card__toggle">
-                    <div class="switch" [class.on]="system.settings.fastlogin"
-                        (click)="system.settings.fastlogin = !system.settings.fastlogin;update_login()">
-                        <div class="knob"></div>
-                    </div>
+                    <schoolingo-checkbox [checked]="system.settings.fastlogin" (click)="system.settings.fastlogin = !system.settings.fastlogin;update_login()"></schoolingo-checkbox>
                 </div>
             </div>
 
@@ -1158,10 +1104,7 @@
                     <p>Moderní přihlášení pomocí biometrie nebo bezpečnostních klíčů</p>
                 </div>
                 <div class="auth-card__toggle">
-                    <div class="switch" [class.on]="system.settings.auth_passkeys"
-                        (click)="system.settings.auth_passkeys = !system.settings.auth_passkeys;update_login()">
-                        <div class="knob"></div>
-                    </div>
+                    <schoolingo-checkbox [checked]="system.settings.auth_passkeys" (click)="system.settings.auth_passkeys = !system.settings.auth_passkeys;update_login()"></schoolingo-checkbox>
                 </div>
             </div>
 
@@ -1174,10 +1117,7 @@
                     <p>Umožní uživatelům resetovat zapomenuté heslo přes email</p>
                 </div>
                 <div class="auth-card__toggle">
-                    <div class="switch" [class.on]="system.settings.reset_password_with_email"
-                        (click)="system.settings.reset_password_with_email = !system.settings.reset_password_with_email;update_login()">
-                        <div class="knob"></div>
-                    </div>
+                    <schoolingo-checkbox [checked]="system.settings.reset_password_with_email" (click)="system.settings.reset_password_with_email = !system.settings.reset_password_with_email;update_login()"></schoolingo-checkbox>
                 </div>
             </div>
         </div>
@@ -1338,7 +1278,9 @@
         @if (!system.email_config) {
         <div class="empty-state">
             <div class="empty-state-icon">
-                <i-tabler name="mail-off"></i-tabler>
+                <div class="empty-state__icon">
+                    <i-tabler name="mail-off"></i-tabler>
+                </div>
             </div>
             <h3>E-mail není nastaven</h3>
             <p>Pro odesílání e-mailů je nutné nakonfigurovat SMTP server.</p>

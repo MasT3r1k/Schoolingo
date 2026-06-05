@@ -41,8 +41,10 @@
         } @else if (showMyBooks()) {
         @if (myLoans().length === 0) {
         <div class="empty-state">
-            <i-tabler name="book-2"></i-tabler>
-            <h3>{{ l.s('library.no_active_loans') }}</h3>
+            <div class="empty-state__icon">
+                            <i-tabler name="book-2"></i-tabler>
+                        </div>
+            <h3 class="empty-state__title">{{ l.s('library.no_active_loans') }}</h3>
         </div>
         } @else {
         @for (loan of myLoans(); track loan.loanId) {
@@ -63,9 +65,11 @@
         }
         } @else if (filteredBooks().length === 0) {
         <div class="empty-state">
-            <i-tabler name="books-off"></i-tabler>
-            <h3>{{ l.s('library.no_books_found') }}</h3>
-            <p>{{ l.s('library.try_adjusting_filters') }}</p>
+            <div class="empty-state__icon">
+                            <i-tabler name="books-off"></i-tabler>
+                        </div>
+            <h3 class="empty-state__title">{{ l.s('library.no_books_found') }}</h3>
+            <p class="empty-state__description">{{ l.s('library.try_adjusting_filters') }}</p>
         </div>
         } @else {
         @for (book of filteredBooks(); track book.bookId) {

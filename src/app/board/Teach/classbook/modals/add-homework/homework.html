@@ -1,3 +1,17 @@
+<div class="modal receivers-side-panel" style="padding: 1.5rem; overflow: hidden; height: 100%;">
+    <div class="modal-header">
+        <div class="modal-header__icon normal">
+            <i-tabler name="users"></i-tabler>
+        </div>
+        <div class="content">
+            <h2>Příjemci</h2>
+        </div>
+    </div>
+
+    <div class="modal-body-external invisible-scrollbar" style="flex: 1; display: flex; flex-direction: column; margin: 0; width: 100%; border: none; padding: 0; background: transparent; height: auto;">
+    </div>
+</div>
+
 <div class="form-group">
     <label for="title">{{ l.s('classbook.add_homework.homework_title') }}</label>
     <input type="text" name="title" id="title">
@@ -5,8 +19,10 @@
 
 <div class="form-group search">
     <div class="row" style="justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
-        <label for="assignment" style="margin-bottom: 0;">{{ l.s('classbook.add_homework.assignment') }}</label>
-        <div class="btn btn--sm btn--ghost" (click)="toggleAiAssistant()" [ngClass]="{'btn--primary': showAiAssistant}" style="padding: 0.25rem 0.5rem; gap: 0.25rem; font-size: 0.8rem; height: auto;">
+        <label for="assignment" style="margin-bottom: 0;">
+            {{ l.s('classbook.add_homework.assignment') }}
+         </label>
+        <div class="btn btn--sm btn--ghost" (click)="toggleAiAssistant()" [class.btn--primary]="showAiAssistant" style="padding: 0.25rem 0.5rem;">
             <i-tabler name="sparkles" style="width: 16px; height: 16px;"></i-tabler>
             <span>{{ showAiAssistant ? 'Zavřít AI' : 'AI Asistent' }}</span>
         </div>
@@ -32,7 +48,9 @@
                 @if (aiChat.length === 0) {
                     <div class="empty-state">
                         <div class="empty-icon">
+                            <div class="empty-state__icon">
                             <i-tabler name="sparkles"></i-tabler>
+                        </div>
                         </div>
                         <p>Napište, o čem má domácí úkol být, a AI vám pomůže s jeho zněním.</p>
                     </div>
@@ -73,7 +91,7 @@
                             <i-tabler name="refresh"></i-tabler>
                         </div>
                     }
-                    <div class="btn btn--sm btn--primary" (click)="sendAiPrompt()" [class.disabled]="!aiPrompt.trim() || isGeneratingAi" style="padding: 0.25rem 0.5rem;">
+                    <div class="btn btn--sm" [class.btn--primary]="!(!aiPrompt.trim() || isGeneratingAi)" (click)="sendAiPrompt()" [class.disabled]="!aiPrompt.trim() || isGeneratingAi" style="padding: 0.25rem 0.5rem;">
                         <i-tabler name="send"></i-tabler>
                     </div>
                 </div>
@@ -90,14 +108,12 @@
 <div class="row" style="justify-content: space-between;gap: 16px">
     <div class="form-group" style="width: 100%;">
         <label for="assign_at">{{ l.s('classbook.add_homework.assign_at') }}</label>
-        <app-calendar id="homework_assign_at" [value]="assign_at" (valueChange)="assign_at = $event"
-            size="full"></app-calendar>
+        <app-calendar id="homework_assign_at" [value]="assign_at" (valueChange)="assign_at = $event" size="full"></app-calendar>
     </div>
 
     <div class="form-group" style="width: 100%;">
         <label for="submit_at">{{ l.s('classbook.add_homework.submit_at') }}</label>
-        <app-calendar id="homework_submit_at" [value]="submit_at" (valueChange)="submit_at = $event"
-            size="full"></app-calendar>
+        <app-calendar id="homework_submit_at" [value]="submit_at" (valueChange)="submit_at = $event" size="full"></app-calendar>
     </div>
 </div>
 

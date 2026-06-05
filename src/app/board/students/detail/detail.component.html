@@ -805,12 +805,27 @@
                     </div>
                 </div>
                 } @else {
-                <div class="no-selection">
-                    <div class="illustration">
-                        <i-tabler name="user-x"></i-tabler>
+                    <div class="empty-state">
+                        <div class="empty-icon-wrap">
+                        <div class="empty-icon-bg">
+                            <i-tabler name="users"></i-tabler>
+                        </div>
+                        </div>
+                    
+                        <p class="empty-title">Žádní zákonní zástupci</p>
+                    
+                        <p class="empty-desc">
+                        K tomuto žákovi zatím nebyl přiřazen žádný zákonný zástupce.
+                        Přidejte rodiče nebo opatrovníka pro správu kontaktů.
+                        </p>
+                    
+                        <div class="empty-divider"></div>
+                    
+                        <button class="btn btn--primary" type="button" (click)="openAddParentModal()">
+                            <i-tabler name="plus"></i-tabler>
+                            <span>{{ l.s('students.add_parent.open_btn') }}</span>
+                        </button>
                     </div>
-                    <p>Žádní zákonní zástupci</p>
-                </div>
                 }
                 }
 
@@ -1193,8 +1208,8 @@
                                 </div>
                             </div>
                             } @empty {
-                            <div class="empty-state-mini">
-                                <p>Žádné obecné záznamy</p>
+                            <div class="empty-state empty-state--sm">
+                                <p class="empty-state__description">Žádné obecné záznamy</p>
                             </div>
                             }
                         </div>
@@ -1245,8 +1260,8 @@
                                 </div>
                             </div>
                             } @empty {
-                            <div class="empty-state-mini">
-                                <p>Žádné potravinové alergie</p>
+                            <div class="empty-state empty-state--sm">
+                                <p class="empty-state__description">Žádné potravinové alergie</p>
                             </div>
                             }
                         </div>
@@ -1289,8 +1304,10 @@
                             </div>
                             } @empty {
                             <div class="empty-state">
-                                <i-tabler name="mood-empty"></i-tabler>
-                                <p>{{ l.s('marks.no_subjects') }}</p>
+                                <div class="empty-state__icon">
+                            <i-tabler name="mood-empty"></i-tabler>
+                        </div>
+                                <p class="empty-state__description">{{ l.s('marks.no_subjects') }}</p>
                             </div>
                             }
                         </div>
@@ -1326,8 +1343,10 @@
                             </div>
                             } @empty {
                             <div class="empty-state">
-                                <i-tabler name="mood-empty"></i-tabler>
-                                <p>Žádné známky k zobrazení</p>
+                                <div class="empty-state__icon">
+                            <i-tabler name="mood-empty"></i-tabler>
+                        </div>
+                                <p class="empty-state__description">Žádné známky k zobrazení</p>
                             </div>
                             }
                         </div>

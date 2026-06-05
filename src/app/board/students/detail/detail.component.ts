@@ -516,6 +516,8 @@ export class DetailComponent implements OnInit, AfterViewInit {
   }
 
   public openParentSettings(): void {
+    if (!this.selectedStudent!.parents.length) return;
+
     this.modalManager.openModal('parents_settings', { 
       student_id: this.selectedStudent!.person_id, 
       student: this.selectedStudent!, 
