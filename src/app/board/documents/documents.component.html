@@ -287,6 +287,8 @@
                     <p>Your browser does not support PDFs. [Download the PDF](document.pdf)</p>
                 </iframe>
             </object>
+            } @else if (['.png', '.jpg', '.webp'].includes(open_file.file_format ?? '')) {
+                <img [src]="Config.API_URL + '/file/' + open_file.file_uuid" alt="">
             } @else {
             <pre
                 class="code-container">@if (documents.fileData) {<code>@for (line of documents.fileData.content.split('\n'); track $index) {<span class="line"><span class="line-number">{{ $index + 1 }}</span>{{ line }}</span>}</code>}</pre>
