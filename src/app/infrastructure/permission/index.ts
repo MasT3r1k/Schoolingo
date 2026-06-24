@@ -63,14 +63,16 @@ export class Permission {
                             permCount++;
                         }
                     }
-                } else if (permission == "classteacher" && this.user.getUser().role == "teacher" && this.user.getUser().classes.length) {
+                } else if (permission == "principal" && user.principal == true) {
                     permCount++;
-                } else if (permission.startsWith("classteacher:") && this.user.getUser().role == "teacher" && this.user.getUser().classes.length) {
+                } else if (permission == "classteacher" && user.role == "teacher" && user.classes.length) {
+                    permCount++;
+                } else if (permission.startsWith("classteacher:") && user.role == "teacher" && user.classes.length) {
                     let className = permission.slice(13);
                     if (className == '') {
                         className = class_name;
                     }
-                    const hasClass = this.user.getUser().classes.find((cl) => cl.class_name == className);
+                    const hasClass = user.classes.find((cl) => cl.class_name == className);
                     if (hasClass) {
                         permCount++;
                     }

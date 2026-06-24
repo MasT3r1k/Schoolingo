@@ -22,6 +22,7 @@ import { School } from '@Schoolingo/school';
 import { Utils } from '@Schoolingo/utils';
 import { Permission } from '@Schoolingo/permission';
 import { AlertManager } from '@Schoolingo/alert';
+import { StatCardComponent } from "@Components/stat-card/stat-card.component";
 
 interface ClassbookLesson {
   subject_name: string;
@@ -35,7 +36,7 @@ interface ClassbookLesson {
 
 @Component({
   selector: 'app-classbook',
-  imports: [IconsModule, NgClass, FormsModule, ReactiveFormsModule, CalendarComponent],
+  imports: [IconsModule, NgClass, FormsModule, ReactiveFormsModule, CalendarComponent, StatCardComponent],
   templateUrl: './classbook.component.html',
   styleUrl: './classbook.component.css'
 })

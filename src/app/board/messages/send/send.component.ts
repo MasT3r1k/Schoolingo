@@ -472,6 +472,7 @@ export class SendComponent implements OnInit, ComponentCanDeactivate {
       .subscribe((data) => {
         if (!('error' in data)) {
           this.config = data;
+          this.refreshPage()
         }
       });
 

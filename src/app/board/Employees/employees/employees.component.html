@@ -65,43 +65,13 @@
         
         <!-- Stats Section -->
         <div class="stats-cards" *ngIf="employeeStats()">
-            <div class="stat-card stat--primary">
-                <div class="stat-icon">
-                    <i-tabler name="users"></i-tabler>
-                </div>
-                <div class="stat-info">
-                    <span class="stat-value">{{ employeeStats()?.total }}</span>
-                    <span class="stat-label">Celkem zaměstnanců</span>
-                </div>
-            </div>
-            <div class="stat-card stat--success">
-                <div class="stat-icon">
-                    <i-tabler name="user-check"></i-tabler>
-                </div>
-                <div class="stat-info">
-                    <span class="stat-value">{{ employeeStats()?.present }} <small>/ {{ employeeStats()?.total }}</small></span>
-                    <span class="stat-label">Aktuálně přítomno</span>
-                </div>
-            </div>
-            <div class="stat-card stat--warning">
-                <div class="stat-icon">
-                    <i-tabler name="calendar-event"></i-tabler>
-                </div>
-                <div class="stat-info">
-                    <span class="stat-value">{{ employeeStats()?.supposed }}</span>
-                    <span class="stat-label">Má být přítomno</span>
-                </div>
-            </div>
-            <div class="stat-card stat--info">
-                <div class="stat-icon">
-                    <i-tabler name="beach"></i-tabler>
-                </div>
-                <div class="stat-info">
-                    <span class="stat-value">{{ employeeStats()?.onVacation }}</span>
-                    <span class="stat-label">Na dovolené</span>
-                </div>
-            </div>
-            <div class="stat-card stat--danger">
+            <stat-card type="primary" icon="users" [value]="employeeStats()?.total" label="Celkem zaměstnanců"></stat-card>
+            <stat-card type="success" icon="user-check" [value]="`${employeeStats()?.present} / ${employeeStats()?.total}`" label="Aktuálně přítomno"></stat-card>
+            <stat-card type="warning" icon="calendar-event" [value]="employeeStats()?.supposed" label="Má být přítomno"></stat-card>
+            <stat-card type="info" icon="beach" [value]="employeeStats()?.onVacation" label="Na dovolené"></stat-card>
+            <stat-card type="danger" icon="chart-bar" [value]="employeeStats()?.absencePercentage" label="Absence"></stat-card>
+
+            <!-- <div class="stat-card stat--danger">
                 <div class="stat-icon">
                     <i-tabler name="chart-bar"></i-tabler>
                 </div>
@@ -112,7 +82,7 @@
                 <div class="stat-trend" [class.negative]="(employeeStats()?.absencePercentage || 0) > 15">
                     <i-tabler [name]="(employeeStats()?.absencePercentage || 0) > 15 ? 'trending-up' : 'trending-down'"></i-tabler>
                 </div>
-            </div>
+            </div> -->
         </div>
 
         <div class="filters-card">

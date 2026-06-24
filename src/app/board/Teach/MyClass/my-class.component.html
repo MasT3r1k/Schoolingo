@@ -41,49 +41,13 @@
 
         <div *ngIf="!loading && !error && classInfo">
             <!-- Overview Section -->
-            <div class="stat-cards"
-                style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 25px;">
-                <div class="stat-card stat--primary">
-                    <div class="stat-icon">
-                        <i-tabler name="users"></i-tabler>
-                    </div>
-                    <div class="stat-info">
-                        <span class="stat-value">{{ students.length }}</span>
-                        <span class="stat-label">Počet žáků</span>
-                    </div>
-                </div>
-
-                <div class="stat-card" [class.stat--success]="todayStats?.active"
-                    [class.stat--warning]="!todayStats?.active">
-                    <div class="stat-icon">
-                        <i-tabler name="calendar-event"></i-tabler>
-                    </div>
-                    <div class="stat-info">
-                        <span class="stat-value">{{ todayStats?.active ? 'Ano' : 'Ne' }}</span>
-                        <span class="stat-label">Výuka dnes</span>
-                    </div>
-                </div>
+            <div class="stats-cards">
+                <stat-card type="primary" icon="users" [value]="students.length" label="Počet žáků"></stat-card>
+                <stat-card [type]="todayStats?.active ? 'success' : 'warning'" icon="calendar-event" [value]="todayStats?.active" label="Výuka dnes"></stat-card>
 
                 @if (todayStats?.active) {
-                <div class="stat-card stat--success">
-                    <div class="stat-icon">
-                        <i-tabler name="user-check"></i-tabler>
-                    </div>
-                    <div class="stat-info">
-                        <span class="stat-value">{{ todayStats.present }}</span>
-                        <span class="stat-label">Přítomno</span>
-                    </div>
-                </div>
-
-                <div class="stat-card stat--danger">
-                    <div class="stat-icon">
-                        <i-tabler name="user-x"></i-tabler>
-                    </div>
-                    <div class="stat-info">
-                        <span class="stat-value">{{ todayStats.absent }}</span>
-                        <span class="stat-label">Chybí</span>
-                    </div>
-                </div>
+                <stat-card type="success" icon="user-check" [value]="todayStats.present" label="Přítomno"></stat-card>
+                <stat-card type="danger" icon="user-x" [value]="todayStats.absent" label="Chybí"></stat-card>
                 }
             </div>
 

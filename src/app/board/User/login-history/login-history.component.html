@@ -12,35 +12,9 @@
     <!-- Stats Section -->
     <div class="section stats-section">
         <div class="stats-grid">
-            <div class="stat-card stat--primary">
-                <div class="stat-icon">
-                    <i-tabler name="login"></i-tabler>
-                </div>
-                <div class="stat-info">
-                    <span class="stat-value">{{ metadata.rows }}</span>
-                    <span class="stat-label">Celkem přihlášení</span>
-                </div>
-            </div>
-            <div class="stat-card stat--success">
-                <div class="stat-icon">
-                    <i-tabler name="circle-check"></i-tabler>
-                </div>
-                <div class="stat-info">
-                    <span class="stat-value">{{ getSuccessfulLogins() }}</span>
-                    <span class="stat-label">{{ (dateFrom || dateTo) ? 'Úspěšných za období' : 'Úspěšných za 30 dní'
-                        }}</span>
-                </div>
-            </div>
-            <div class="stat-card stat--danger">
-                <div class="stat-icon">
-                    <i-tabler name="circle-x"></i-tabler>
-                </div>
-                <div class="stat-info">
-                    <span class="stat-value">{{ getFailedLogins() }}</span>
-                    <span class="stat-label">{{ (dateFrom || dateTo) ? 'Neúspěšných za období' : 'Neúspěšných za 30 dní'
-                        }}</span>
-                </div>
-            </div>
+            <stat-card type="primary" icon="login" [value]="metadata.rows" label="Celkem přihlášení"></stat-card>
+            <stat-card type="success" icon="circle-check" [value]="getSuccessfulLogins()" [label]="(dateFrom || dateTo) ? 'Úspěšných za období' : 'Úspěšných za 30 dní'"></stat-card>
+            <stat-card type="danger" icon="circle-x" [value]="getFailedLogins()" [label]="(dateFrom || dateTo) ? 'Neúspěšných za období' : 'Neúspěšných za 30 dní'"></stat-card>
         </div>
     </div>
 

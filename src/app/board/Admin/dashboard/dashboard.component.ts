@@ -8,6 +8,7 @@ import { Utils } from '@Schoolingo/utils';
 import { TabsComponent } from '@Components/Tabs';
 import { BehaviorSubject } from 'rxjs';
 import { AvatarService } from '../../../infrastructure/utils/avatar.service';
+import { StatCardComponent } from "@Components/stat-card/stat-card.component";
 
 enum ViewSelector {
   overview,
@@ -83,7 +84,7 @@ interface ClassInfo {
 
 @Component({
   standalone: true,
-  imports: [CommonModule, IconsModule, TabsComponent],
+  imports: [CommonModule, IconsModule, TabsComponent, StatCardComponent],
   templateUrl: './dashboard.component.html',
   styleUrl: './dashboard.component.css'
 })

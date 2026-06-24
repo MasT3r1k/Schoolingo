@@ -8,6 +8,7 @@ import { Config } from '@Schoolingo/config';
 import { Documents } from '@Schoolingo/documents';
 import { DropdownManager } from '@Schoolingo/dropdown';
 import { AvatarService } from '@Schoolingo/utils';
+import { StatCardComponent } from "@Components/stat-card/stat-card.component";
 
 export interface ManageFileItem {
   file_id: number;
@@ -36,7 +37,7 @@ interface StatsAPI {
 @Component({
   selector: 'app-managefiles',
   standalone: true,
-  imports: [CommonModule, IconsModule, FormsModule],
+  imports: [CommonModule, IconsModule, FormsModule, StatCardComponent],
   templateUrl: './managefiles.component.html',
   styleUrl: './managefiles.component.css'
 })

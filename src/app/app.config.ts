@@ -1,5 +1,5 @@
 import { APP_INITIALIZER, ApplicationConfig, provideZoneChangeDetection } from '@angular/core';
-import { provideRouter, RouterModule, RouterState, RouterStateSnapshot, withRouterConfig } from '@angular/router';
+import { provideRouter } from '@angular/router';
 
 import { routes } from './app.routes';
 import { provideHttpClient, withInterceptors } from '@angular/common/http';
@@ -35,6 +35,8 @@ import { SessionExpiredService } from './infrastructure/session/session-expired.
 import { AlertManager } from '@Schoolingo/alert';
 import { Cookies } from '@Schoolingo/cookies';
 import { Timetable } from './infrastructure/timetable/timetable';
+import { Payments } from '@Schoolingo/payments';
+import { MoneyPipe } from './pipes/money/money.pipe';
 
 export function initAuth(auth: Authentication): () => void {
   return () => auth.loadState(); // např. HTTP požadavek + setAuthState()
@@ -81,6 +83,8 @@ export const appConfig: ApplicationConfig = {
     SessionExpiredService,
     AlertManager,
     Cookies,
-    Timetable
+    Timetable,
+    Payments,
+    MoneyPipe
   ]
 };

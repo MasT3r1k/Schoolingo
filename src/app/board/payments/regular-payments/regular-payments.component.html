@@ -1,0 +1,58 @@
+<div class="payments-page">
+  <div class="card">
+    <div class="card-header">
+      <h2>{{ l.s('sidebar.payments.regular_payments') }}</h2>
+      @if (hasAccess.canCreate) {
+      <button class="btn btn--primary btn--sm" (click)="newRegularPayment()">
+        <i-tabler name="plus"></i-tabler> {{ l.s('payments.regular_payments.new_payment.button') }}
+      </button>
+      }
+    </div>
+    <div class="table-container" style="border: none; border-radius: 0;">
+      <table>
+        <thead>
+          <tr>
+            <th>
+              {{ l.s('payments.regular_payments.list.name') }}
+            </th>
+            <th>
+              {{ l.s('payments.regular_payments.list.frequency') }}
+            </th>
+            <th>
+              {{ l.s('payments.regular_payments.list.amount') }}
+            </th>
+            <th>
+              {{ l.s('payments.regular_payments.list.recipients') }}
+            </th>
+            <th>
+              {{ l.s('payments.regular_payments.list.state') }}
+            </th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (p of regularPayments; track p.id) {
+          <tr>
+            <td><strong>{{ p.name }}</strong></td>
+            <td><span class="badge badge--neutral">{{ p.frequency }}</span></td>
+            <td class="mono">{{ p.amount | money }}</td>
+            <td>
+              {{ l.s('payments.regular_payments.list.recipients_list', { count: p.recipients }) }}
+            </td>
+            <td>
+              <schoolingo-checkbox [checked]="p.active"></schoolingo-checkbox>
+            </td>
+            <td style="text-align: right;">
+              @if(hasAccess.canEdit) {
+              <button class="btn btn--ghost btn--sm btn--icon">
+                <i-tabler name="edit"></i-tabler>
+              </button>
+              }
+            </td>
+          </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

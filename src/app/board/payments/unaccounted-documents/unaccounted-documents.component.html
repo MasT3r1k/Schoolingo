@@ -1,0 +1,51 @@
+<div class="payments-page">
+  <div class="alert alert--warning">
+    <i-tabler name="alert-triangle" class="alert__icon"></i-tabler>
+    <div class="alert__content">
+      <strong>Pozor:</strong> Máte {{ unaccountedDocs.length }} nezaúčtovaných dokladů. Prosím, zaúčtujte je co nejdříve k odpovídajícím platbám.
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-header">
+      <h2>Nezaúčtované doklady</h2>
+    </div>
+    <div class="table-container" style="border: none; border-radius: 0;">
+      <table>
+        <thead>
+          <tr>
+            <th>Doklad</th>
+            <th>Částka</th>
+            <th>Datum</th>
+            <th>Popis</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (doc of unaccountedDocs; track doc.id) {
+          <tr>
+            <td class="mono"><strong>{{ doc.number }}</strong></td>
+            <td class="mono">{{ doc.amount }} Kč</td>
+            <td class="text--muted">{{ doc.date }}</td>
+            <td>{{ doc.description }}</td>
+            <td style="text-align: right;">
+              <button class="btn btn--primary btn--sm">
+                <i-tabler name="link"></i-tabler> Zaúčtovat
+              </button>
+            </td>
+          </tr>
+          } @empty {
+          <tr>
+            <td colspan="5">
+              <div class="empty-state empty-state--sm">
+                <div class="empty-state__icon"><i-tabler name="circle-check"></i-tabler></div>
+                <p class="text--muted">Všechny doklady jsou zaúčtovány</p>
+              </div>
+            </td>
+          </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

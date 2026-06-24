@@ -23,7 +23,8 @@ export class TabsComponent {
     @Input() prefix: string = '';
     @Input() no_bottom_radius = false;
     @Input() option_width!: string;
-
+    @Input() theme: 'custom' | 'default' = 'default';
+    
     public getWidth(): string {
         if (this.option_width) {
             if (this.option_width == 'fit') {

@@ -249,45 +249,9 @@
 
                 @if (selected_tab == 1) {
                 <div class="stats-cards">
-                    <div class="stat-card stat--primary">
-                        <div class="stat-icon">
-                            <i-tabler name="users"></i-tabler>
-                        </div>
-                        <div class="stat-info">
-                            <div class="stat-value">
-                                {{ get_total_students() }}
-                            </div>
-                            <div class="stat-label">
-                                {{ l.s('classbook.total_students') }}
-                            </div>
-                        </div>
-                    </div>
-                    <div class="stat-card stat--success">
-                        <div class="stat-icon">
-                            <i-tabler name="user-check"></i-tabler>
-                        </div>
-                        <div class="stat-info">
-                            <div class="stat-value">
-                                {{ get_present_students() }}
-                            </div>
-                            <div class="stat-label">
-                                {{ l.s('classbook.present_students') }}
-                            </div>
-                        </div>
-                    </div>
-                    <div class="stat-card stat--danger">
-                        <div class="stat-icon">
-                            <i-tabler name="user-x"></i-tabler>
-                        </div>
-                        <div class="stat-info">
-                            <div class="stat-value">
-                                {{ get_missing_students() }}
-                            </div>
-                            <div class="stat-label">
-                                {{ l.s('classbook.missing_students') }}
-                            </div>
-                        </div>
-                    </div>
+                    <stat-card type="primary" icon="users" [value]="get_total_students()" label="classbook.total_students"></stat-card>
+                    <stat-card type="success" icon="user-check" [value]="get_present_students()" label="classbook.present_students"></stat-card>
+                    <stat-card type="danger" icon="user-x" [value]="get_missing_students()" label="classbook.missing_students"></stat-card>
                 </div>
 
                 <div class="absence-selector">
@@ -300,14 +264,14 @@
                     }
 
                     @for (absence of getAbsenceConfig(); track $index) {
-                    @if (absence) {
-                    <div [ngClass]="['absence-type', 'ab-' + absence.locale]"
-                        [class.active]="selected_absence == $index" (click)="selected_absence = $index">
-                        @if (absence.icon) {
-                        <i-tabler [name]="absence.icon"></i-tabler>
+                        @if (absence) {
+                        <div [ngClass]="['absence-type', 'ab-' + absence.locale]"
+                            [class.active]="selected_absence == $index" (click)="selected_absence = $index">
+                            @if (absence.icon) {
+                            <i-tabler [name]="absence.icon"></i-tabler>
+                            }
+                        </div>
                         }
-                    </div>
-                    }
                     }
 
                     <div class="absence-type empty" [class.danger]="this.selected_absence == -1"
@@ -344,7 +308,9 @@
                                 @if (student.absence[$index] != undefined) {
                                 <div
                                     [ngClass]="['absence-type', 'ab-' + absenceConfig[student.absence[$index]].locale]">
-                                    <i-tabler [name]="absenceConfig[student.absence[$index]].icon!"></i-tabler>
+                                    @if (absenceConfig[student.absence[$index]].icon) {
+                                        <i-tabler [name]="absenceConfig[student.absence[$index]].icon!"></i-tabler>
+                                    }
                                 </div>
                                 }
                             </div>

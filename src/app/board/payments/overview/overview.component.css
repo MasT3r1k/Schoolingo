@@ -1,0 +1,393 @@
+/* ── Page wrapper ── */
+.payments-page {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+/* ── 2-col grid ── */
+.two-col-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+}
+
+.two-col-grid--account {
+    grid-template-columns: 300px 1fr;
+}
+
+@media (max-width: 900px) {
+    .two-col-grid,
+    .two-col-grid--account { grid-template-columns: 1fr; }
+}
+
+/* ── Fee list ── */
+.fee-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.fee-item {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+.fee-item__row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+}
+
+.fee-item__name {
+    font-size: 0.9375rem;
+    font-weight: 500;
+    color: var(--text);
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.fee-item__right {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex-shrink: 0;
+}
+
+.fee-item__count {
+    font-size: 0.8125rem;
+}
+
+.fee-item__meta {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.8125rem;
+}
+
+/* ── Progress bar ── */
+.progress-bar {
+    background: var(--surface-2);
+    border-radius: 999px;
+    height: 6px;
+    overflow: hidden;
+}
+
+.progress-bar--sm { height: 4px; }
+
+.progress-bar__fill {
+    height: 100%;
+    border-radius: 999px;
+    background: var(--primary);
+    transition: width .4s ease;
+}
+
+.progress-bar__fill--success { background: var(--success); }
+.progress-bar__fill--danger  { background: var(--danger); }
+
+/* ── Class row ── */
+.class-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.875rem 1.5rem;
+    border-bottom: 1px solid var(--border);
+    transition: background .15s;
+}
+
+.class-row:last-child { border-bottom: none; }
+.class-row:hover { background: var(--hover-bg); }
+
+.class-row__left {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.class-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 36px;
+    height: 36px;
+    padding: 0 0.5rem;
+    border-radius: var(--radius);
+    background: rgba(var(--primary-rgb), 0.12);
+    color: var(--primary);
+    font-size: 0.75rem;
+    font-weight: 700;
+    flex-shrink: 0;
+}
+
+.class-badge--sm {
+    min-width: 28px;
+    height: 22px;
+    font-size: 0.75rem;
+}
+
+.class-row__teacher {
+    font-size: 0.9375rem;
+    font-weight: 500;
+    color: var(--text);
+}
+
+.class-row__meta { font-size: 0.8125rem; }
+
+.class-row__right { text-align: right; }
+
+.class-row__balance {
+    font-size: 0.9375rem;
+    font-weight: 600;
+    color: var(--text);
+}
+
+.class-row__status { font-size: 0.8125rem; }
+
+/* ── mono ── */
+.mono { font-family: var(--font-mono, monospace); font-size: 0.875rem; }
+
+/* ── table action cell ── */
+.td-actions { text-align: right; white-space: nowrap; }
+
+/* ── Account card (parent / student) ── */
+.account-card {
+    background: linear-gradient(135deg, #1e1b4b 0%, #3730a3 55%, #4f46e5 100%);
+    color: #fff;
+    border-radius: 12px;
+    padding: 1.75rem;
+    position: relative;
+    overflow: hidden;
+    box-shadow: var(--shadow-md);
+}
+
+.account-card--student {
+    background: linear-gradient(135deg, #14532d 0%, #166534 50%, #15803d 100%);
+}
+
+.account-card::after {
+    content: '';
+    position: absolute;
+    top: -40px; right: -40px;
+    width: 140px; height: 140px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.06);
+    pointer-events: none;
+}
+
+.account-card__label {
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    opacity: 0.7;
+    margin-bottom: 0.5rem;
+}
+
+.account-card__amount {
+    font-size: 2.25rem;
+    font-weight: 600;
+    letter-spacing: -0.02em;
+    line-height: 1;
+    margin-bottom: 0.5rem;
+}
+
+.account-card__sub {
+    font-size: 0.8125rem;
+    opacity: 0.6;
+    margin-bottom: 1rem;
+}
+
+.account-card__chips {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+}
+
+.account-card__chips .badge {
+    background: rgba(255, 255, 255, 0.2);
+    color: #fff;
+    backdrop-filter: blur(4px);
+}
+
+/* ── Payment item ── */
+.payment-item {
+    display: flex;
+    align-items: center;
+    gap: 0.875rem;
+    padding: 0.875rem 1.5rem;
+    border-bottom: 1px solid var(--border);
+    transition: background .15s;
+}
+
+.payment-item:last-child { border-bottom: none; }
+.payment-item:hover { background: var(--hover-bg); }
+
+.payment-item--compact { padding: 0.625rem 0; }
+
+.payment-item__icon {
+    width: 40px;
+    height: 40px;
+    border-radius: var(--radius);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.payment-item__icon i-tabler { width: 18px; height: 18px; }
+
+.payment-item__icon--primary {
+    background: rgba(var(--primary-rgb), 0.12);
+    color: var(--primary);
+}
+
+.payment-item__icon--success {
+    background: rgba(var(--success-rgb), 0.12);
+    color: var(--success);
+}
+
+.payment-item__info { flex: 1; min-width: 0; }
+
+.payment-item__name {
+    font-size: 0.9375rem;
+    font-weight: 500;
+    color: var(--text);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.payment-item__meta { font-size: 0.8125rem; margin-top: 2px; }
+
+.payment-item__actions {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 0.375rem;
+    flex-shrink: 0;
+}
+
+.payment-item__amount {
+    font-weight: 600;
+    font-size: 0.9375rem;
+}
+
+/* ── Student row (teacher view) ── */
+.student-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 0.75rem 1.5rem;
+    border-bottom: 1px solid var(--border);
+    transition: background .15s;
+}
+
+.student-row:last-child { border-bottom: none; }
+.student-row:hover { background: var(--hover-bg); }
+
+.student-row--overdue {
+    background: rgba(var(--danger-rgb, 239, 68, 68), 0.04);
+}
+
+.student-row__left {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+/* Reuse .student-avatar-sm from global student styles */
+.student-avatar-sm {
+    width: 2rem;
+    height: 2rem;
+    border-radius: 50%;
+    background: rgba(var(--primary-rgb), 0.15);
+    color: var(--primary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.75rem;
+    font-weight: 700;
+    flex-shrink: 0;
+}
+
+.student-avatar-sm--danger {
+    background: rgba(var(--danger-rgb), 0.15);
+    color: var(--danger);
+}
+
+.student-row__name {
+    font-size: 0.9375rem;
+    font-weight: 500;
+    color: var(--text);
+}
+
+.student-row__meta { font-size: 0.8125rem; }
+
+.student-row__right {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.student-row__right .progress-bar {
+    width: 80px;
+}
+
+/* ── History row (parent) ── */
+.history-row {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.875rem 1.5rem;
+    border-bottom: 1px solid var(--border);
+    transition: background .15s;
+}
+
+.history-row:last-child { border-bottom: none; }
+.history-row:hover { background: var(--hover-bg); }
+
+.history-row__dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--border);
+    flex-shrink: 0;
+}
+
+.history-row__dot--income { background: var(--success); }
+
+.history-row__info { flex: 1; min-width: 0; }
+
+.history-row__title {
+    font-size: 0.9375rem;
+    font-weight: 500;
+    color: var(--text);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.history-row__meta { font-size: 0.8125rem; margin-top: 2px; }
+
+.history-row__amount {
+    font-weight: 600;
+    font-size: 0.9375rem;
+    flex-shrink: 0;
+}
+
+/* ── Responsive ── */
+@media (max-width: 768px) {
+    .payments-page { gap: 1rem; }
+
+    .payment-item { flex-wrap: wrap; }
+    .payment-item__actions { flex-direction: row; align-items: center; }
+
+    .student-row { flex-direction: column; align-items: flex-start; gap: 0.5rem; }
+    .student-row__right { width: 100%; }
+    .student-row__right .progress-bar { flex: 1; }
+}

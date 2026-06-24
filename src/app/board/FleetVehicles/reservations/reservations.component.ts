@@ -14,10 +14,11 @@ import { ModalManager } from '@Schoolingo/modal';
 import { TabsComponent } from '@Components/Tabs';
 import moment from 'moment';
 import { NewReservationComponent } from '../modals/new-reservation/new-reservation.component';
+import { StatCardComponent } from "@Components/stat-card/stat-card.component";
 
 @Component({
   standalone: true,
-  imports: [IconsModule, FormsModule, TabsComponent],
+  imports: [IconsModule, FormsModule, TabsComponent, StatCardComponent],
   templateUrl: './reservations.component.html',
   styleUrls: ['./reservations.component.css']
 })

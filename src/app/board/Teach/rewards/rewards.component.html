@@ -25,24 +25,8 @@
 
         <!-- Stats -->
         <div class="stats-cards mb">
-            <div class="stat-card stat--warning">
-                <div class="stat-icon">
-                    <i-tabler name="clock-hour-4"></i-tabler>
-                </div>
-                <div class="stat-info">
-                    <span class="stat-value">{{ pendingCount }}</span>
-                    <span class="stat-label">{{ l.s('rewards.stats.pending') }}</span>
-                </div>
-            </div>
-            <div class="stat-card stat--success">
-                <div class="stat-icon">
-                    <i-tabler name="cash"></i-tabler>
-                </div>
-                <div class="stat-info">
-                    <span class="stat-value">{{ totalPendingAmount | number }} Kč</span>
-                    <span class="stat-label">{{ l.s('rewards.stats.total_amount') }}</span>
-                </div>
-            </div>
+            <stat-card type="warning" icon="clock-hour-4" [value]="pendingCount" label="rewards.stats.pending"></stat-card>
+            <stat-card type="success" icon="cash" [value]="totalPendingAmount | money" label="rewards.stats.total_amount"></stat-card>
         </div>
 
         <!-- Loading State -->

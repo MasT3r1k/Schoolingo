@@ -296,33 +296,9 @@
             </div>
             <div class="section-content">
                 <div class="summary-grid">
-                    <div class="stat-card stat--primary">
-                        <div class="stat-icon">
-                            <i-tabler name="list-check"></i-tabler>
-                        </div>
-                        <div class="stat-info">
-                            <span class="stat-value">{{ questions.length }}</span>
-                            <span class="stat-label">Otázek</span>
-                        </div>
-                    </div>
-                    <div class="stat-card stat--warning">
-                        <div class="stat-icon points">
-                            <i-tabler name="star"></i-tabler>
-                        </div>
-                        <div class="stat-info">
-                            <span class="stat-value">{{ getTotalPoints() }}</span>
-                            <span class="stat-label">Bodů celkem</span>
-                        </div>
-                    </div>
-                    <div class="stat-card stat--info">
-                        <div class="stat-icon time">
-                            <i-tabler name="clock"></i-tabler>
-                        </div>
-                        <div class="stat-info">
-                            <span class="stat-value">{{ pollForm.get('time_limit')?.value || '∞' }}</span>
-                            <span class="stat-label">Minut</span>
-                        </div>
-                    </div>
+                    <stat-card type="primary" icon="list-check" [value]="questions.length" label="Otázek"></stat-card>
+                    <stat-card type="warning" icon="star" [value]="getTotalPoints()" label="Bodů celkem"></stat-card>
+                    <stat-card type="info" icon="clock" [value]="pollForm.get('time_limit')?.value || '∞'" label="Minut"></stat-card>
                 </div>
             </div>
         </div>

@@ -1,5 +1,5 @@
 import { NgClass, NgComponentOutlet } from "@angular/common";
-import { Component, inject } from "@angular/core";
+import { Component, inject, ModelOptions } from "@angular/core";
 import { ContextMenu } from "@Schoolingo/context-menu";
 import { DropdownManager } from "@Schoolingo/dropdown";
 import { IconsModule } from "@Schoolingo/icons";
@@ -25,5 +25,15 @@ export class ModalComponent {
         if (hiddenOverflow == false) return 'visible';
         if (this.dropdownManager.selected_dropdown !== '') return 'visible';
         return 'hidden';
+    }
+
+    public getWidth(modal: any): string {
+        if (!modal.width) {
+            return '500px';
+        }
+        if (Number.isNaN(modal.width)) {
+            return modal.width;
+        }
+        return `${modal.width}px`;
     }
 }

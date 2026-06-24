@@ -1,0 +1,522 @@
+<div class="payments-page">
+
+  @if (perm.checkPermission(['principal', 'admin'])) {
+    <!-- Stat Cards -->
+    <div class="stats-cards">
+      <stat-card type="success" icon="wallet" label="Celkem vybráno" [value]="89340 | money"></stat-card>
+      <stat-card type="warning" icon="clock" label="Čeká na platbu" [value]="13420 | money" sub="Celkem aktivní pohledávky"></stat-card>
+      <stat-card type="danger" icon="alert-triangle" label="Po splatnosti" [value]="3590 | money" sub="10 rodin má dluh" sub_type="danger"></stat-card>
+      <stat-card type="primary" icon="receipt" label="Aktivní poplatky" [value]="5" sub="Ve 4 třídách"></stat-card>
+    </div>
+
+    <!-- Two-col grid: active fees + class overview -->
+    <div class="two-col-grid">
+
+      <!-- Aktivní poplatky -->
+      <div class="card">
+        <div class="card-header">
+          <h2>Aktivní poplatky</h2>
+          @if (activeFees.length) {
+          <button class="btn btn--primary btn--sm" (click)="newPaymentModal()">
+            <i-tabler name="plus"></i-tabler> Přidat
+          </button>
+          }
+        </div>
+        <div class="card-body fee-list">
+          @for (fee of activeFees; track fee.id) {
+          <div class="fee-item">
+            <div class="fee-item__row">
+              <span class="fee-item__name">{{ fee.name }}</span>
+              <div class="fee-item__right">
+                <span class="fee-item__count text--muted">{{ fee.paid }}/{{ fee.total }}</span>
+                <span class="badge" [class.badge--success]="fee.paid === fee.total" [class.badge--warning]="fee.paid !== fee.total">
+                  {{ fee.paid === fee.total ? 'Hotovo' : 'Probíhá' }}
+                </span>
+              </div>
+            </div>
+            <div class="progress-bar">
+              <div class="progress-bar__fill"
+                [class.progress-bar__fill--success]="fee.paid / fee.total > 0.8"
+                [style.width.%]="(fee.paid / fee.total) * 100"></div>
+            </div>
+            <div class="fee-item__meta text--muted">
+              <span>{{ fee.class }} · splatnost {{ Utils.formatDateShort(fee.deadline) }}</span>
+              <span>{{ (fee.paid / fee.total * 100) | number:'1.0-0' }} %</span>
+            </div>
+          </div>
+          } @empty {
+            <div class="empty-state">
+                <div class="empty-icon">
+                    <div class="empty-state__icon">
+                        <i-tabler name="receipt-off"></i-tabler>
+                    </div>
+                </div>
+                <div class="text">
+                  <p class="empty-state__title">
+                    {{ "Nejsou žádné aktivní platby" }}
+                  </p>
+                  <p class="empty-state__description">
+                    Potřebujete vytvořit platbu, aby se zde něco objevilo.
+                  </p>
+                </div>
+                <div class="btn btn--primary btn--sm" (click)="newPaymentModal()">
+                  <i-tabler name="plus"></i-tabler>
+                  {{ l.s('payments.new_payment.title') }}
+                </div>
+            </div>
+          }
+        </div>
+      </div>
+
+      <!-- Stav tříd -->
+      <div class="card">
+        <div class="card-header">
+          <h2>Stav tříd</h2>
+        </div>
+        <div class="card-body" style="padding: 0;">
+          @for (cls of classes; track cls.name) {
+          <div class="class-row">
+            <div class="class-row__left">
+              <div class="class-badge">{{ cls.name }}</div>
+              <div>
+                <div class="class-row__teacher">{{ cls.ucitel }}</div>
+                <div class="class-row__meta text--muted">{{ cls.students }} žáků</div>
+              </div>
+            </div>
+            <div class="class-row__right">
+              <div class="class-row__balance">{{ cls.balance | money }}</div>
+              @if (cls.overdue > 0) {
+                <div class="class-row__status text--danger">{{ cls.overdue }} po splatnosti</div>
+              } @else {
+                <div class="class-row__status text--success">Vše v pořádku</div>
+              }
+            </div>
+          </div>
+          }
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Payments table -->
+    <div class="card">
+      <div class="card-header">
+        <h2>Všechny platby</h2>
+        <div class="header-actions">
+          <!-- Search -->
+          <div class="search-wrapper">
+            <i-tabler name="search"></i-tabler>
+            <input type="search" placeholder="Hledat žáka…" [(ngModel)]="searchQuery">
+          </div>
+          <select class="form-input" [(ngModel)]="filterClass" style="width:auto;min-width:130px">
+            <option value="">Všechny třídy</option>
+            @for (cls of classes; track cls.name) {
+              <option [value]="cls.name">{{ cls.name }}</option>
+            }
+          </select>
+          <select class="form-input" [(ngModel)]="filterStatus" style="width:auto;min-width:130px">
+            <option value="">Všechny stavy</option>
+            <option value="confirmed">Potvrzeno</option>
+            <option value="pending">Čeká</option>
+          </select>
+          <button class="btn btn--secondary btn--sm">
+            <i-tabler name="download"></i-tabler> Export
+          </button>
+          <button class="btn btn--primary btn--sm" (click)="newPaymentModal()">
+            <i-tabler name="plus"></i-tabler> {{ l.s('payments.new_payment.title') }}
+          </button>
+        </div>
+      </div>
+      <div class="table-container" style="border:none;border-radius:0;">
+        <table>
+          <thead>
+            <tr>
+              <th>Žák</th>
+              <th>Třída</th>
+              <th>Rodič</th>
+              <th>Poplatek</th>
+              <th>Částka</th>
+              <th>Datum</th>
+              <th>Způsob</th>
+              <th>Stav</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (p of payments; track p.id) {
+            <tr>
+              <td><strong>{{ p.student }}</strong></td>
+              <td><span class="class-badge class-badge--sm">{{ p.class }}</span></td>
+              <td class="text--muted">{{ p.parent }}</td>
+              <td>{{ p.fee }}</td>
+              <td class="mono">{{ p.amount | money }}</td>
+              <td class="text--muted">{{ Utils.formatDateShort(p.date) }}</td>
+              <td class="text--muted">{{ p.method }}</td>
+              <td>
+                <span class="badge"
+                  [class.badge--success]="p.status === 'confirmed'"
+                  [class.badge--warning]="p.status === 'pending'">
+                  {{ p.status === 'confirmed' ? 'Potvrzeno' : 'Čeká' }}
+                </span>
+              </td>
+              <td class="td-actions">
+                @if (p.status === 'pending') {
+                <button class="btn btn--success btn--xs" (click)="confirmPayment(p.id)">
+                  <i-tabler name="check"></i-tabler> Potvrdit
+                </button>
+                }
+              </td>
+            </tr>
+            } @empty {
+            <tr>
+              <td colspan="9">
+                <div class="empty-state empty-state--sm">
+                  <div class="empty-state__icon"><i-tabler name="file-off"></i-tabler></div>
+                  <p class="text--muted">Žádné platby k zobrazení</p>
+                </div>
+              </td>
+            </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+      <div class="card-footer">
+        <div class="message message--info row" style="margin:0;flex:1;">
+          <i-tabler name="info-circle"></i-tabler>
+          <span>Platby označené jako <strong>Čeká</strong> jsou přijaté, ale čekají na ruční potvrzení.</span>
+        </div>
+      </div>
+    </div>
+
+  }
+  <!-- END vedení -->
+
+
+  <!-- ════════════════════════════════════════════
+       UČITEL (teacher)
+       ════════════════════════════════════════════ -->
+  @else if (perm.checkPermission(['teacher'])) {
+
+    <!-- Stats 3-col -->
+    <div class="stats-cards">
+      <stat-card type="success" icon="class" label="Vybráno (třída)" [value]="22100 | money"></stat-card>
+      <stat-card type="warning" icon="cash" label="Čeká na platbu" [value]="5340 | money" sub="6 rodin nezaplatilo" sub_type="danger"></stat-card>
+      <stat-card type="danger" icon="cash-off" label="Po splatnosti" [value]="1780 | money" sub="2 žáci v prodlení" sub_type="danger"></stat-card>
+    </div>
+
+    <!-- Warning for overdue students -->
+    <div class="danger-notice" style="margin: 0;">
+      <i-tabler name="alert-triangle"></i-tabler>
+      <p>
+        <strong>Upozornění:</strong> Šimánek Radek a Krejčí Ondřej nemají uhrazeny žádné poplatky.
+        Doporučujeme kontaktovat rodiče. Splatnost výletu: 15. 3. 2025.
+      </p>
+    </div>
+
+    <!-- Student payment overview -->
+    <div class="card">
+      <div class="card-header">
+        <h2>Přehled žáků — stav plateb</h2>
+        <div class="flex-items header-actions">
+          <span class="badge badge--success">{{ studentsPaid }} zaplaceno</span>
+          <span class="badge badge--danger">{{ studentsOverdue }} v prodlení</span>
+        </div>
+      </div>
+      <div class="card-body" style="padding:0;">
+        @for (s of students7A; track s.name) {
+        <div class="student-row" [class.student-row--overdue]="s.status === 'overdue'">
+          <div class="student-row__left">
+            <div class="student-avatar-sm" [class.student-avatar-sm--danger]="s.status === 'overdue'">
+              {{ s.initials }}
+            </div>
+            <div>
+              <div class="student-row__name">{{ s.name }}</div>
+              <div class="student-row__meta text--muted">{{ s.paid }}/{{ s.total }} poplatků uhrazeno</div>
+            </div>
+          </div>
+          <div class="student-row__right">
+            <div class="progress-bar progress-bar--sm">
+              <div class="progress-bar__fill"
+                [class.progress-bar__fill--success]="s.status === 'ok'"
+                [class.progress-bar__fill--danger]="s.status === 'overdue'"
+                [style.width.%]="(s.paid / s.total) * 100"></div>
+            </div>
+            <span class="badge"
+              [class.badge--success]="s.status === 'ok'"
+              [class.badge--danger]="s.status === 'overdue'">
+              {{ s.status === 'ok' ? 'OK' : 'Dluh' }}
+            </span>
+          </div>
+        </div>
+        }
+      </div>
+    </div>
+
+    <!-- Payments table for teacher's class -->
+    <div class="card">
+      <div class="card-header">
+        <h2>Platby třídy</h2>
+        <div class="search-wrapper">
+            <i-tabler name="search"></i-tabler>
+            <input type="search" placeholder="Hledat žáka…" [(ngModel)]="searchQuery">
+        </div>
+        <div class="header-actions">
+          <button class="btn btn--primary btn--sm">
+            <i-tabler name="plus"></i-tabler> Nový poplatek
+          </button>
+        </div>
+      </div>
+      <div class="table-container" style="border:none;border-radius:0;">
+        <table>
+          <thead>
+            <tr>
+              <th>Žák</th>
+              <th>Poplatek</th>
+              <th>Částka</th>
+              <th>Datum</th>
+              <th>Způsob</th>
+              <th>Stav</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (p of payments; track p.id) {
+            <tr>
+              <td><strong>{{ p.student }}</strong></td>
+              <td>{{ p.fee }}</td>
+              <td class="mono">{{ p.amount | money }}</td>
+              <td class="text--muted">{{ Utils.formatDateShort(p.date) }}</td>
+              <td class="text--muted">{{ p.method }}</td>
+              <td>
+                <span class="badge badge--with-dot"
+                  [class.badge--success]="p.status === 'confirmed'"
+                  [class.badge--warning]="p.status === 'pending'">
+                  <span class="badge-dot"
+                    [class.badge-dot--success]="p.status === 'confirmed'"
+                    [class.badge-dot--warning]="p.status === 'pending'"></span>
+                  {{ p.status === 'confirmed' ? 'Potvrzeno' : 'Čeká' }}
+                </span>
+              </td>
+              <td class="td-actions">
+                @if (p.status === 'pending') {
+                <button class="btn btn--success btn--sm" (click)="confirmPayment(p.id)">
+                  <i-tabler name="check"></i-tabler> Potvrdit
+                </button>
+                }
+              </td>
+            </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+  }
+  <!-- END učitel -->
+
+
+  <!-- ════════════════════════════════════════════
+       RODIČ (parent)
+       ════════════════════════════════════════════ -->
+  @else if (perm.checkPermission(['parent'])) {
+
+    <!-- Parent account card + two cols -->
+    <div class="two-col-grid two-col-grid--account">
+
+      <!-- Account card -->
+      <div class="account-card">
+        <div class="account-card__label">Váš zůstatek</div>
+        <div class="account-card__amount">+{{ 1200 | money }}</div>
+        <div class="account-card__sub">Poslední transakce: 25. 1. 2025 · Učebnice ČJ {{ 245 | money }}</div>
+        <div class="account-card__chips">
+          <span class="badge badge--success">
+            <i-tabler name="check"></i-tabler> Účet aktivní
+          </span>
+          <span class="badge badge--neutral">VS: 202504117</span>
+        </div>
+      </div>
+
+      <!-- Pending fees -->
+      <div class="card">
+        <div class="card-header">
+          <h2>Čeká na uhrazení</h2>
+        </div>
+        <div class="card-body" style="padding:0;">
+          @for (f of pendingFees; track f.id) {
+          <div class="payment-item">
+            <div class="payment-item__icon payment-item__icon--primary">
+              <i-tabler name="map-pin"></i-tabler>
+            </div>
+            <div class="payment-item__info">
+              <div class="payment-item__name">{{ f.name }}</div>
+              <div class="payment-item__meta text--muted">Splatnost: {{ Utils.formatDateShort(f.deadline) }} · {{ f.category }}</div>
+            </div>
+            <div class="payment-item__actions">
+              <span class="payment-item__amount text--danger">−{{ f.amount | money }}</span>
+              <button class="btn btn--primary btn--sm" (click)="openPayModal(f.id)">
+                <i-tabler name="credit-card"></i-tabler> Zaplatit
+              </button>
+            </div>
+          </div>
+          } @empty {
+          <div class="empty-state empty-state--sm">
+            <div class="empty-state__icon"><i-tabler name="circle-check"></i-tabler></div>
+            <p class="text--muted">Vše uhrazeno 🎉</p>
+          </div>
+          }
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Bank info -->
+    <div class="alert alert--info">
+      <i-tabler name="info-circle" class="alert__icon"></i-tabler>
+      <div class="alert__content">
+        Platby lze provést bankovním převodem na účet <strong>1234567890/0800</strong>.
+        Jako variabilní symbol použijte <strong>202504117</strong>.
+        Po připsání vás systém automaticky informuje e-mailem.
+      </div>
+    </div>
+
+    <!-- Two-col: paid + history -->
+    <div class="two-col-grid">
+
+      <!-- Uhrazené platby -->
+      <div class="card">
+        <div class="card-header">
+          <h2>Uhrazené platby</h2>
+        </div>
+        <div class="card-body" style="padding:0;">
+          @for (f of paidFees; track f.id) {
+          <div class="payment-item">
+            <div class="payment-item__icon payment-item__icon--success">
+              <i-tabler name="book"></i-tabler>
+            </div>
+            <div class="payment-item__info">
+              <div class="payment-item__name">{{ f.name }}</div>
+              <div class="payment-item__meta text--muted">Zaplaceno: {{ Utils.formatDateShort(f.paidDate) }} · {{ f.category }}</div>
+            </div>
+            <div class="payment-item__actions">
+              <span class="payment-item__amount text--success">−{{ f.amount | money }}</span>
+              <span class="badge badge--success">Potvrzeno</span>
+            </div>
+          </div>
+          } @empty {
+          <div class="empty-state empty-state--sm">
+            <div class="empty-state__icon"><i-tabler name="receipt-off"></i-tabler></div>
+            <p class="text--muted">Žádné zaplacené platby</p>
+          </div>
+          }
+        </div>
+      </div>
+
+      <!-- Historie transakcí -->
+      <div class="card">
+        <div class="card-header">
+          <h2>Historie transakcí</h2>
+          <button class="btn btn--ghost btn--sm">Zobrazit vše</button>
+        </div>
+        <div class="card-body" style="padding:0;">
+          @for (h of payHistory; track h.title) {
+          <div class="history-row">
+            <div class="history-row__dot" [class.history-row__dot--income]="h.type === 'income'"></div>
+            <div class="history-row__info">
+              <div class="history-row__title">{{ h.title }}</div>
+              <div class="history-row__meta text--muted">{{ Utils.formatDateShort(h.date) }} · {{ h.method }}</div>
+            </div>
+            <div class="history-row__amount"
+              [class.text--success]="h.type === 'income'">
+              {{ h.amount | money }}
+            </div>
+          </div>
+          }
+        </div>
+      </div>
+
+    </div>
+
+  }
+  <!-- END rodič -->
+
+
+  <!-- ════════════════════════════════════════════
+       ŽÁK (student)
+       ════════════════════════════════════════════ -->
+  @else if (perm.checkPermission(['student'])) {
+
+    <!-- Account + pending grid -->
+    <div class="two-col-grid two-col-grid--account">
+
+      <!-- Account card (student variant) -->
+      <div class="account-card account-card--student">
+        <div class="account-card__label">Stav tvého účtu</div>
+        <div class="account-card__amount">+{{ 1200 | money }}</div>
+        <div class="account-card__sub">Poslední pohyb: 25. 1. 2025</div>
+        <div class="account-card__chips">
+          <span class="badge badge--success">
+            <i-tabler name="check"></i-tabler> Bez dluhů
+          </span>
+        </div>
+      </div>
+
+      <!-- Pending fees for student -->
+      <div class="card">
+        <div class="card-header">
+          <h2>Co ještě nezaplatit</h2>
+        </div>
+        <div class="card-body">
+          @for (f of pendingFees; track f.id) {
+          <div class="payment-item payment-item--compact">
+            <div class="payment-item__info">
+              <div class="payment-item__name">{{ f.name }}</div>
+              <div class="payment-item__meta text--muted">Do: {{ Utils.formatDateShort(f.deadline) }}</div>
+            </div>
+            <span class="payment-item__amount text--danger">{{ f.amount | money }}</span>
+          </div>
+          } @empty {
+          <div class="empty-state empty-state--sm">
+            <div class="empty-state__icon"><i-tabler name="circle-check"></i-tabler></div>
+            <p class="text--muted">Vše zaplaceno! 🎉</p>
+          </div>
+          }
+          <div class="alert alert--info" style="margin-top:1rem">
+            <i-tabler name="info-circle" class="alert__icon"></i-tabler>
+            <div class="alert__content">Požádej rodiče, aby zkontrolovali aplikaci a provedli platbu.</div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Paid fees list -->
+    <div class="card">
+      <div class="card-header">
+        <h2>Zaplacené poplatky</h2>
+      </div>
+      <div class="card-body" style="padding:0;">
+        @for (f of paidFees; track f.id) {
+        <div class="history-row">
+          <div class="history-row__dot history-row__dot--income"></div>
+          <div class="history-row__info">
+            <div class="history-row__title">{{ f.name }}</div>
+            <div class="history-row__meta text--muted">Zaplaceno: {{ Utils.formatDateShort(f.paidDate) }}</div>
+          </div>
+          <span class="badge badge--success">
+            <i-tabler name="check"></i-tabler>
+            Zaplaceno
+          </span>
+        </div>
+        } @empty {
+        <div class="empty-state empty-state--sm">
+          <div class="empty-state__icon"><i-tabler name="receipt-off"></i-tabler></div>
+          <p class="text--muted">Žádné zaplacené poplatky</p>
+        </div>
+        }
+      </div>
+    </div>
+
+  }
+  <!-- END žák -->
+
+</div>

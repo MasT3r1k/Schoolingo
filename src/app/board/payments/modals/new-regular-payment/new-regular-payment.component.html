@@ -1,0 +1,45 @@
+<div class="form-group">
+    <schoolingo-label id="name" text="payments.regular_payments.new_payment.name" [error]="errors.name" error_prefix="payments.errors."></schoolingo-label>
+    <input type="text" name="name" [(ngModel)]="name">
+</div>
+
+<div class="form-group">
+    <schoolingo-label id="amount" text="payments.regular_payments.new_payment.amount" [error]="errors.amount" error_prefix="payments.errors."></schoolingo-label>
+
+    @let text = getMoneyText();
+    @let left = text[0].trim();
+    @let right = text[1].trim();
+    <div class="input-icon-wrap" [class.left]="left != ''" [class.right]="right != ''">
+        @if (left != '') {
+        <div class="item left">
+            {{ left }}
+        </div>
+        }
+        <input type="text" name="amount" [class.left]="left != ''" [class.right]="right != ''" [(ngModel)]="amount">
+        @if (right != '') {
+        <div class="item right">
+            {{ right }}
+        </div>
+        }
+    </div>
+</div>
+
+<div class="form-group">
+    <schoolingo-label id="frequency" text="payments.regular_payments.new_payment.frequency" [error]="errors.frequency" error_prefix="payments.errors."></schoolingo-label>
+
+    <schoolingo-dropdown [options]="frequencies" [value]="selected_frequency" (valueChange)="selected_frequency = $event" [clearable]="false"></schoolingo-dropdown>
+</div>
+
+<div class="form-group">
+    <schoolingo-label id="class" text="payments.regular_payments.new_payment.recipients" [error]="errors.recipients" error_prefix="payments.errors."></schoolingo-label>
+
+    <schoolingo-dropdown [options]="classes" [value]="selected_class" (valueChange)="selected_class = $event" [clearable]="false" [settings]="{ locale: false }"></schoolingo-dropdown>
+</div>
+
+
+<div class="modal-actions">
+    <div class="btn btn--primary" (click)="createRegularPayment()">
+        <i-tabler name="plus"></i-tabler>
+        {{ l.s('payments.regular_payments.new_payment.button') }}
+    </div>
+</div>

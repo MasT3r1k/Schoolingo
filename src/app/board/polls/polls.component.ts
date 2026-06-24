@@ -5,11 +5,12 @@ import { PollsService, Poll } from './polls.service';
 import { Router, RouterModule } from '@angular/router';
 import { Locale } from '@Schoolingo/locale';
 import { Permission } from '@Schoolingo/permission';
+import { StatCardComponent } from "@Components/stat-card/stat-card.component";
 
 @Component({
   selector: 'app-polls',
   standalone: true,
-  imports: [CommonModule, IconsModule, RouterModule],
+  imports: [CommonModule, IconsModule, RouterModule, StatCardComponent],
   templateUrl: './polls.component.html',
   styleUrl: './polls.component.css'
 })

@@ -1,0 +1,101 @@
+<div class="card">
+    <div class="card-header">
+        <h2>{{ l.s('sidebar.payments.class_fund') }}</h2>
+    </div>
+</div>
+
+<div class="content-wrapper" *ngIf="!loading && data">
+    <!-- TEACHER VIEW -->
+    <ng-container *ngIf="data.type === 'teacher'">
+        <div class="row">
+            <!-- Classes overview -->
+            <div class="col-12 col-md-6" *ngFor="let cls of data.classes">
+                <div class="card">
+                    <div class="card-header">
+                        <h2>Třída {{ cls.class_name }}</h2>
+                        <span class="badge" [class.badge-success]="cls.balance >= 0" [class.badge-danger]="cls.balance < 0">
+                            {{ cls.balance }} Kč
+                        </span>
+                    </div>
+                    <div class="card-body">
+                        <p>Zůstatek třídního fondu.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card mt-4">
+            <div class="card-header" style="display: flex; justify-content: space-between; align-items: center;">
+                <h2>Naplánované výlety a platby</h2>
+            </div>
+            <div class="card-body">
+                <div class="form-container" style="background: var(--bg-alt); padding: 1rem; border-radius: 8px; margin-bottom: 1rem;">
+                    <h3>Vytvořit novou platbu (výlet)</h3>
+                    <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
+                        <input type="text" [(ngModel)]="newTrip.name" placeholder="Název výletu" class="input">
+                        <input type="number" [(ngModel)]="newTrip.amount" placeholder="Částka (Kč)" class="input">
+                        <button class="btn btn-primary" (click)="createTrip()">Vytvořit</button>
+                    </div>
+                </div>
+
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Název</th>
+                            <th>Částka</th>
+                            <th>Datum</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngFor="let trip of data.trips">
+                            <td>{{ trip.name }}</td>
+                            <td>{{ trip.amount }} Kč</td>
+                            <td>{{ trip.date | date }}</td>
+                        </tr>
+                        <tr *ngIf="data.trips.length === 0">
+                            <td colspan="3">Zatím žádné naplánované platby.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </ng-container>
+
+    <!-- PARENT/STUDENT VIEW -->
+    <ng-container *ngIf="data.type === 'parent'">
+        <div class="card">
+            <div class="card-header">
+                <h2>Přehled plateb a výletů</h2>
+            </div>
+            <div class="card-body">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Název</th>
+                            <th>Částka</th>
+                            <th>Akce</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngFor="let trip of data.trips">
+                            <td>{{ trip.name }}</td>
+                            <td>{{ trip.amount }} Kč</td>
+                            <td>
+                                <!-- Zde by se kontrolovalo, jestli už je schváleno (approved). Nyní mockujeme tlačítkem. -->
+                                <button class="btn btn-success btn-sm" (click)="approvePayment(trip.payment_column_id, 1)">Schválit</button>
+                            </td>
+                        </tr>
+                        <tr *ngIf="data.trips.length === 0">
+                            <td colspan="3">Žádné čekající platby.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </ng-container>
+</div>
+
+<div class="center" *ngIf="loading" style="padding: 2rem;">
+    <!-- Simple spinner -->
+    <div>Načítám data pokladny...</div>
+</div>

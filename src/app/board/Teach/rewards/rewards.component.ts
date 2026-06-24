@@ -11,6 +11,8 @@ import { FormsModule } from '@angular/forms';
 import { TabsComponent } from '@Components/Tabs';
 import { AddRewardModalComponent } from '../../students/detail/modals/add-reward-modal/add-reward-modal.component';
 import { BehaviorSubject } from 'rxjs';
+import { StatCardComponent } from "@Components/stat-card/stat-card.component";
+import { MoneyPipe } from "../../../pipes/money/money.pipe";
 
 
 interface Reward {
@@ -35,7 +37,7 @@ interface Student {
 @Component({
   selector: 'app-rewards',
   standalone: true,
-  imports: [CommonModule, IconsModule, RouterModule, FormsModule, TabsComponent],
+  imports: [CommonModule, IconsModule, RouterModule, FormsModule, TabsComponent, StatCardComponent, MoneyPipe],
   templateUrl: './rewards.component.html',
   styleUrl: './rewards.component.css'
 })

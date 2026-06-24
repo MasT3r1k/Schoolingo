@@ -8,6 +8,7 @@ export interface User {
     person_id: number;
     gender: number;
     role: 'student' | 'teacher' | 'parent';
+    principal: boolean;
     roles: string[];
     permissions: string[];
 

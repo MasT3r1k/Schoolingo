@@ -8,6 +8,7 @@ import { Permission } from '@Schoolingo/permission';
 import { Utils } from '@Schoolingo/utils';
 import { BehaviorSubject } from 'rxjs';
 import { TabsComponent } from '../../../Components/Tabs';
+import { StatCardComponent } from "@Components/stat-card/stat-card.component";
 
 export enum SubstitutionPage {
   ALL,
@@ -23,8 +24,9 @@ export enum SubstitutionPage {
     CommonModule,
     FormsModule,
     IconsModule,
-    TabsComponent
-  ],
+    TabsComponent,
+    StatCardComponent
+],
   templateUrl: './substitution.component.html',
   styleUrl: './substitution.component.css'
 })

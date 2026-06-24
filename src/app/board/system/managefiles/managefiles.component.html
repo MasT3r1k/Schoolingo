@@ -8,33 +8,9 @@
 
         <!-- Global Stats Row -->
         <div class="stats-cards">
-            <div class="stat-card stat--primary">
-                <div class="stat-icon">
-                    <i-tabler name="database"></i-tabler>
-                </div>
-                <div class="stat-info">
-                    <span class="stat-value">{{ formatBytes(totalStats.usedSpace) }}</span>
-                    <span class="stat-label">Celkové využití ({{ totalStats.usagePercent }}%)</span>
-                </div>
-            </div>
-            <div class="stat-card stat--primary">
-                <div class="stat-icon">
-                    <i-tabler name="files"></i-tabler>
-                </div>
-                <div class="stat-info">
-                    <span class="stat-value">{{ totalStats.filesCount }}</span>
-                    <span class="stat-label">Počet souborů</span>
-                </div>
-            </div>
-            <div class="stat-card stat--primary">
-                <div class="stat-icon">
-                    <i-tabler name="users"></i-tabler>
-                </div>
-                <div class="stat-info">
-                    <span class="stat-value">{{ totalStats.usersCount }}</span>
-                    <span class="stat-label">Uživatelé se soubory</span>
-                </div>
-            </div>
+            <stat-card type="primary" icon="database" label="Celkové využití ({{ totalStats.usagePercent }}%)" [value]="formatBytes(totalStats.usedSpace)"></stat-card>
+            <stat-card type="primary" icon="files" label="Počet souborů" [value]="totalStats.filesCount"></stat-card>
+            <stat-card type="primary" icon="users" label="Uživatelé se soubory" [value]="totalStats.usersCount"></stat-card>
         </div>
 
         <!-- Filter Row -->
@@ -211,4 +187,4 @@
         </div>
     </div>
     }
-</div>
+</div>

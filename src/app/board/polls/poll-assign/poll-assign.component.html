@@ -212,35 +212,12 @@
             </div>
             <div class="section-content">
                 <div class="preview-grid">
-                    <div class="stat-card stat--primary">
-                        <div class="stat-icon">
-                            <i-tabler name="users-group"></i-tabler>
-                        </div>
-                        <div class="stat-info">
-                            <span class="stat-label">Počet tříd</span>
-                            <span class="stat-value">{{ selectedClasses.length }}</span>
-                        </div>
-                    </div>
-                    <div class="stat-card stat--primary">
-                        <div class="stat-icon">
-                            <i-tabler name="user"></i-tabler>
-                        </div>
-                        <div class="stat-info">
-                            <span class="stat-label">Celkem studentů</span>
-                            <span class="stat-value">{{ getTotalStudents() }}</span>
-                        </div>
-                    </div>
-                    <div class="stat-card stat--primary">
-                        <div class="stat-icon time">
-                            <i-tabler name="clock"></i-tabler>
-                        </div>
-                        <div class="stat-info">
-                            <span class="stat-label">Časový limit</span>
-                            <span class="stat-value">{{ assignForm.get('time_limit')?.value > 0 ?
+                    <stat-card type="primary" icon="users-group" [value]="selectedClasses.length" label="Počet tříd"></stat-card>
+                    <stat-card type="primary" icon="user" [value]="getTotalStudents()" label="Celkem studentů"></stat-card>
+                    <stat-card type="primary" icon="clock" [value]="assignForm.get('time_limit')?.value > 0 ?
                                 `${assignForm.get('time_limit')?.value} ${l.s(assignForm.get('time_limit')?.value > 1 ?
-                                'time.minutes' : 'time.minute')}` : 'Neomezený' }}</span>
-                        </div>
-                    </div>
+                                'time.minutes' : 'time.minute')}` : 'Neomezený'" label="Časový limit"></stat-card>
+
                 </div>
             </div>
         </div>

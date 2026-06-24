@@ -85,11 +85,21 @@ import { SvpComponent } from './board/Admin/svp/svp.component';
 import { NoPermissionComponent } from './board/error/no-permission/no-permission.component';
 import { DetailComponent as ClassesDetailComponent } from './board/classes/detail/detail.component';
 import { ReportsComponent } from './board/system/reports/reports.component';
-
+import { ClassFundComponent } from './board/payments/class-fund/class-fund.component';
 import { DetailComponent as EmployeesDetailComponent } from './board/Employees/employees/detail/detail.component';
 import { TopicsComponent } from './board/Teach/topics/topics.component';
 import { UnsavedChangesGuard } from './Guards/unsaved-changes.guard';
 import { ManageUsersDetailComponent } from './board/system/manageusers/detail/detail.component';
+import { PaymentOverviewComponent } from './board/payments/overview/overview.component';
+import { GraduateClassFundComponent } from './board/payments/graduate-class-fund/graduate-class-fund.component';
+import { ListingComponent } from './board/payments/listing/listing.component';
+import { UnaccountedDocumentsComponent } from './board/payments/unaccounted-documents/unaccounted-documents.component';
+import { DocumentsComponent as PaymentDocumentsComponent } from './board/payments/documents/documents.component';
+import { RegularPaymentsComponent } from './board/payments/regular-payments/regular-payments.component';
+import { NewPaymentComponent } from './board/payments/new-payment/new-payment.component';
+import { NewDepositComponent } from './board/payments/new-deposit/new-deposit.component';
+import { AccountsComponent } from './board/payments/accounts/accounts.component';
+import { SettingsComponent as PaymentSettingsComponent } from './board/payments/settings/settings.component';
 
 export const routes: Routes = [
     {
@@ -384,6 +394,63 @@ export const routes: Routes = [
                     {
                         path: '**',
                         redirectTo: '/fleetvehicles/overview'
+                    }
+                ]
+            },
+            {
+                path: 'payments', children: [
+                    {
+                        path: '',
+                        pathMatch: 'full',
+                        redirectTo: '/payments/overview'
+                    },
+                    {
+                        path: 'overview',
+                        component: PaymentOverviewComponent
+                    },
+                    {
+                        path: 'class_fund',
+                        component: ClassFundComponent
+                    },
+                    {
+                        path: 'graduate_class_fund',
+                        component: GraduateClassFundComponent
+                    },
+                    {
+                        path: 'listing',
+                        component: ListingComponent
+                    },
+                    {
+                        path: 'unaccounted_documents',
+                        component: UnaccountedDocumentsComponent
+                    },
+                    {
+                        path: 'documents',
+                        component: PaymentDocumentsComponent
+                    },
+                    {
+                        path: 'regular_payments',
+                        component: RegularPaymentsComponent
+                    },
+                    {
+                        path: 'new_payment',
+                        component: NewPaymentComponent
+                    },
+                    {
+                        path: 'new_deposit',
+                        component: NewDepositComponent
+                    },
+                    {
+                        path: 'accounts',
+                        component: AccountsComponent
+                    },
+                    {
+                        path: 'settings',
+                        component: PaymentSettingsComponent
+                    },
+                    {
+                        path: '**',
+                        redirectTo: '/payments/overview'
                     }
                 ]
             },

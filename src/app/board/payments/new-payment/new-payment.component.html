@@ -1,0 +1,73 @@
+<div class="payments-page new-payment-layout">
+  
+  <div class="card">
+    <div class="card-header">
+      <h2>Nový výdaj (Platba)</h2>
+    </div>
+    <div class="card-body">
+      <div class="form-group">
+        <label class="form-label">Příjemce / Dodavatel</label>
+        <input type="text" class="form-input" [(ngModel)]="form.recipient" placeholder="Např. Nakladatelství ABC">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Účel platby</label>
+        <input type="text" class="form-input" [(ngModel)]="form.purpose" placeholder="Např. Faktura za učebnice">
+      </div>
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+        <div class="form-group">
+          <label class="form-label">Částka (Kč)</label>
+          <input type="number" class="form-input" [(ngModel)]="form.amount" placeholder="0">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Datum platby</label>
+          <input type="date" class="form-input" [(ngModel)]="form.date">
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Způsob platby</label>
+        <schoolingo-dropdown [options]="pay_methods_dropdown" [value]="form.method" (valueChange)="form.method = $event" [clearable]="false"></schoolingo-dropdown>
+      </div>
+      <div class="form-group" style="margin-bottom: 0;">
+        <label class="form-label">Poznámka (nepovinné)</label>
+        <textarea class="form-input" rows="3" [(ngModel)]="form.note" placeholder="Doplňující informace..."></textarea>
+      </div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn--ghost">Storno</button>
+      <button class="btn btn--primary" (click)="submitPayment()">
+        <i-tabler name="check"></i-tabler> Zadat platbu
+      </button>
+    </div>
+  </div>
+
+  <div class="card" style="height: fit-content;">
+    <div class="card-header">
+      <h2>Shrnutí platby</h2>
+    </div>
+    <div class="card-body">
+      @if (!form.amount || form.amount <= 0) {
+        <div class="alert alert--warning" style="margin-bottom: 0;">
+          <i-tabler name="alert-triangle" class="alert__icon"></i-tabler>
+          <div class="alert__content">Zadejte částku větší než 0 pro zadání platby.</div>
+        </div>
+      } @else {
+        <div class="summary-row">
+          <span class="summary-label">Příjemce:</span>
+          <span class="summary-value">{{ form.recipient || '—' }}</span>
+        </div>
+        <div class="summary-row">
+          <span class="summary-label">Účel:</span>
+          <span class="summary-value">{{ form.purpose || '—' }}</span>
+        </div>
+        <div class="summary-row">
+          <span class="summary-label">Způsob:</span>
+          <span class="summary-value">{{ l.s('payments.methods.' + form.method) }}</span>
+        </div>
+        <div class="summary-row" style="border-bottom: none; margin-top: 1rem; padding-bottom: 0;">
+          <span class="summary-label" style="font-size: 1rem;">Celkem:</span>
+          <span class="summary-value text--danger" style="font-size: 1.5rem;">−{{ form.amount }} Kč</span>
+        </div>
+      }
+    </div>
+  </div>
+</div>

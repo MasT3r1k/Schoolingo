@@ -1,0 +1,75 @@
+<div class="payments-page">
+
+  <div class="stats-cards">
+    <stat-card type="success" icon="cash-plus" [value]="17600 | money" label="Celkem příjmy"></stat-card>
+    <stat-card type="danger" icon="cash-minus" [value]="-14500 | money" label="Celkem výdaje"></stat-card>
+  </div>
+
+  <div class="card">
+    <div class="card-header">
+      <h2>Doklady</h2>
+      <div class="header-actions">
+        <div class="search-wrapper">
+          <i-tabler name="search"></i-tabler>
+          <input type="search" placeholder="Hledat číslo nebo popis..." [(ngModel)]="searchQuery">
+        </div>
+        <select class="form-input" style="width: auto;" [(ngModel)]="filterType">
+          <option value="">Všechny typy</option>
+          <option value="income">Příjem</option>
+          <option value="expense">Výdaj</option>
+        </select>
+        <button class="btn btn--primary btn--sm">
+          <i-tabler name="upload"></i-tabler> Nahrát doklad
+        </button>
+      </div>
+    </div>
+    <div class="table-container" style="border: none; border-radius: 0;">
+      <table>
+        <thead>
+          <tr>
+            <th>Číslo dokladu</th>
+            <th>Typ</th>
+            <th>Popis</th>
+            <th>Částka</th>
+            <th>Datum</th>
+            <th>Vystavil</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (doc of documents; track doc.id) {
+          <tr>
+            <td class="mono"><strong>{{ doc.number }}</strong></td>
+            <td>
+              <span class="badge" [class.badge--success]="doc.type === 'income'" [class.badge--danger]="doc.type === 'expense'">
+                {{ doc.type === 'income' ? 'Příjem' : 'Výdaj' }}
+              </span>
+            </td>
+            <td>{{ doc.description }}</td>
+            <td class="mono" [class.text--success]="doc.type === 'income'" [class.text--danger]="doc.type === 'expense'">
+              {{ doc.type === 'income' ? '+' : '−' }}{{ doc.amount | money }}
+            </td>
+            <td class="text--muted">{{ doc.date }}</td>
+            <td class="text--muted">{{ doc.issuedBy }}</td>
+            <td style="text-align: right;">
+              <button class="btn btn--ghost btn--sm btn--icon"><i-tabler name="download"></i-tabler></button>
+            </td>
+          </tr>
+          } @empty {
+          <tr>
+            <td colspan="7">
+              <div class="empty-state empty-state--sm">
+                <div class="empty-state__icon"><i-tabler name="file-off"></i-tabler></div>
+                <p class="text--muted">Nebyly nalezeny žádné doklady</p>
+              </div>
+            </td>
+          </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+    <div class="card-footer" style="justify-content: space-between; align-items: center;">
+      <span class="text--muted">Zobrazeno {{ documents.length }} dokladů</span>
+    </div>
+  </div>
+</div>

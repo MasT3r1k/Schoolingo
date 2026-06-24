@@ -6,11 +6,12 @@ import { PollsService } from '../polls.service';
 import { Router, RouterLink } from '@angular/router';
 import { DropdownManager } from '@Schoolingo/dropdown';
 import { Locale } from '@Schoolingo/locale';
+import { StatCardComponent } from "@Components/stat-card/stat-card.component";
 
 @Component({
   selector: 'app-poll-create',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, IconsModule, RouterLink],
+  imports: [CommonModule, ReactiveFormsModule, IconsModule, RouterLink, StatCardComponent],
   templateUrl: './poll-create.component.html',
   styleUrl: './poll-create.component.css'
 })

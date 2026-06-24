@@ -12,9 +12,10 @@ import { FormsModule } from '@angular/forms';
 import { TabsComponent } from '@Components/Tabs';
 import { ModalManager } from '@Schoolingo/modal';
 import { LoginDetailModalComponent } from './modals/login-detail/login-detail.component';
+import { StatCardComponent } from "@Components/stat-card/stat-card.component";
 
 @Component({
-  imports: [IconsModule, FormsModule, TabsComponent],
+  imports: [IconsModule, FormsModule, TabsComponent, StatCardComponent],
   templateUrl: './login-history.component.html',
   styleUrl: './login-history.component.css'
 })

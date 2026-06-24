@@ -57,7 +57,6 @@ export class DropdownComponent implements OnInit, OnDestroy {
     }
 
     ngOnInit() {
-        console.log(this.settings.locale)
         this.filteredOptions = this.options;
         window.addEventListener('scroll', this.updatePosition, true);
         window.addEventListener('resize', this.updatePosition, true);

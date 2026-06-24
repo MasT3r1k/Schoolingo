@@ -118,33 +118,8 @@
 
             <!-- Quick Stats -->
             <div class="quick-stats">
-                <div class="stat-card" [class.stat--success]="selectedUser['2fa']" [class.stat--danger]="!selectedUser['2fa']">
-                    <div class="stat-icon">
-                        <i-tabler name="auth-2fa"></i-tabler>
-                    </div>
-                    <div class="stat-info">
-                        <span class="stat-value">
-                            {{ l.s('settings.2fa.status.' + (selectedUser['2fa'] ? 'activated' : 'deactivated')) }}
-                        </span>
-                        <span class="stat-label">
-                            {{ l.s('settings.2fa.title') }}
-                        </span>
-                    </div>
-                </div>
-
-                <div class="stat-card stat--primary">
-                    <div class="stat-icon">
-                        <i-tabler name="user-key"></i-tabler>
-                    </div>
-                    <div class="stat-info">
-                        <span class="stat-value">
-                            {{ l.s('system.manage_users.login_method.' + selectedUser.login_type) }}
-                        </span>
-                        <span class="stat-label">
-                            {{ l.s('system.manage_users.login_method.title') }}
-                        </span>
-                    </div>
-                </div>
+                <stat-card [type]="selectedUser['2fa'] ? 'success' : 'danger'" icon="auth-2fa" [value]="l.s('settings.2fa.status.' + (selectedUser['2fa'] ? 'activated' : 'deactivated'))" label="settings.2fa.title"></stat-card>
+                <stat-card type="primary" icon="user-key" [value]="l.s('system.manage_users.login_method.' + selectedUser.login_type)" label="system.manage_users.login_method.title"></stat-card>
 
                 @if (selectedUser.logins_7days > 0) {
                     <div class="stat-card stat--info">
@@ -249,28 +224,8 @@
 
                 @if (activeTab == 'files') {
                     <div class="stats-cards">
-                        <div class="stat-card stat--primary">
-                            <div class="stat-icon">
-                                <i-tabler name="files"></i-tabler>
-                            </div>
-                            <div class="stat-info">
-                                <div class="stat-value">{{ selectedUser.file_count }}</div>
-                                <div class="stat-label">Nahráno souborů</div>
-                            </div>
-                        </div>
-
-                        <div class="stat-card stat--primary">
-                            <div class="stat-icon">
-                                <i-tabler name="database"></i-tabler>
-                            </div>
-                            <div class="stat-info">
-                                <div class="stat-value">
-                                    <span class="bold">{{ Utils.formatBytes(0) }}</span>
-                                    <span class="text-sm muted"> / {{ Utils.formatBytes(storageLimit) }}</span>
-                                </div>
-                                <div class="stat-label">Využití</div>
-                            </div>
-                        </div>
+                        <stat-card type="primary" icon="files" [value]="selectedUser.file_count" label="Nahráno souborů"></stat-card>
+                        <stat-card type="primary" icon="database" [value]="`${Utils.formatBytes(0)} / ${Utils.formatBytes(storageLimit)}`" label="Využití"></stat-card>
                     </div>
 
                     @for (file of selectedUser.files; track file.id) {

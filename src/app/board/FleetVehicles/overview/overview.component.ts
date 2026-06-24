@@ -9,10 +9,11 @@ import { Config } from '@Schoolingo/config';
 import { FleetVehicles } from '@Schoolingo/fleetvehicles';
 import { Vehicle, Reservation, VehicleDocument, FleetStats } from '../../../infrastructure/fleetvehicles/types';
 import moment from 'moment';
+import { StatCardComponent } from "@Components/stat-card/stat-card.component";
 
 @Component({
   standalone: true,
-  imports: [RouterLink, IconsModule, NgClass],
+  imports: [RouterLink, IconsModule, NgClass, StatCardComponent],
   templateUrl: './overview.component.html',
   styleUrls: ['./overview.component.css']
 })

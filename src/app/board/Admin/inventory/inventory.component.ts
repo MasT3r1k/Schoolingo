@@ -104,21 +104,6 @@ import { DeleteItemModalComponent } from './modals/delete-item-modal/delete-item
         display: flex;
         gap: 0.5rem;
     }
-    .empty-state {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        padding: 4rem 2rem;
-        text-align: center;
-    }
-    .empty-state__icon {
-        width: 64px;
-        height: 64px;
-        color: var(--text-muted);
-        opacity: 0.5;
-        margin-bottom: 1rem;
-    }
   `]
 })
 export class InventoryComponent implements OnInit {

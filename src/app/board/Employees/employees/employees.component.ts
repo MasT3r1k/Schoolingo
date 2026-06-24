@@ -28,6 +28,7 @@ import { EMPLOYEE_CONFIG } from '../../../infrastructure/employees/const';
 import { NoPermissionComponent } from '@Components/NoPermission/no-permission.component';
 import { ActivatedRoute, Router } from '@angular/router';
 import moment from 'moment';
+import { StatCardComponent } from "@Components/stat-card/stat-card.component";
 
 export interface Employee {
   person_id: number;
@@ -92,7 +93,7 @@ export interface EmployeeFilters {
 @Component({
   selector: 'app-employees',
   standalone: true,
-  imports: [CommonModule, IconsModule, FormsModule, TabsComponent, CalendarComponent, NoPermissionComponent],
+  imports: [CommonModule, IconsModule, FormsModule, TabsComponent, CalendarComponent, NoPermissionComponent, StatCardComponent],
   templateUrl: './employees.component.html',
   styleUrl: './employees.component.css'
 })

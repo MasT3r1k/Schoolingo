@@ -270,6 +270,11 @@ export const config: SidebarGroup[] = [
                 modules: ['payments'],
                 children: [
                 {
+                    item: 'sidebar.payments.overview',
+                    url: 'payments/overview',
+                    icon: 'dashboard',
+                },
+                {
                     item: 'sidebar.payments.class_fund',
                     url: 'payments/class_fund',
                     icon: 'cash',

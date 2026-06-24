@@ -7,6 +7,7 @@ import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { Locale } from '@Schoolingo/locale';
 import { HttpClient } from '@angular/common/http';
 import { Config } from '@Schoolingo/config';
+import { StatCardComponent } from "@Components/stat-card/stat-card.component";
 
 interface ClassGroup {
   groupId: number;
@@ -28,7 +29,7 @@ interface PollOption {
 @Component({
   selector: 'app-poll-assign',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, IconsModule, RouterLink],
+  imports: [CommonModule, ReactiveFormsModule, IconsModule, RouterLink, StatCardComponent],
   templateUrl: './poll-assign.component.html',
   styleUrl: './poll-assign.component.css'
 })

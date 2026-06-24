@@ -7,10 +7,11 @@ import { Config } from '@Schoolingo/config';
 import { RouterLink } from '@angular/router';
 import { ModalManager } from '@Schoolingo/modal';
 import { AddBuildingModalComponent } from '../modals/add-building-modal/add-building-modal.component';
+import { StatCardComponent } from "@Components/stat-card/stat-card.component";
 
 @Component({
   standalone: true,
-  imports: [CommonModule, IconsModule, RouterLink],
+  imports: [CommonModule, IconsModule, RouterLink, StatCardComponent],
   template: `
     <div class="card">
       <div class="card-header">
@@ -25,41 +26,10 @@ import { AddBuildingModalComponent } from '../modals/add-building-modal/add-buil
 
       <div class="card-body">
         <div class="stats-grid">
-      <div class="stat-card stat--primary">
-        <div class="stat-icon">
-          <i-tabler name="building-community"></i-tabler>
-        </div>
-        <div class="stat-info">
-          <span class="stat-value">{{ stats.buildings }}</span>
-          <span class="stat-label">{{ l.s('architecture.total_buildings') }}</span>
-        </div>
-      </div>
-      <div class="stat-card stat--success">
-        <div class="stat-icon">
-          <i-tabler name="door-enter"></i-tabler>
-        </div>
-        <div class="stat-info">
-          <span class="stat-value">{{ stats.rooms }}</span>
-          <span class="stat-label">{{ l.s('architecture.total_rooms') }}</span>
-        </div>
-      </div>
-      <div class="stat-card stat--info">
-        <div class="stat-icon">
-          <i-tabler name="route-2"></i-tabler>
-        </div>
-        <div class="stat-info">
-          <span class="stat-value">{{ stats.hallways }}</span>
-          <span class="stat-label">{{ l.s('architecture.total_hallways') }}</span>
-        </div>
-      </div>
-      <div class="stat-card stat--warning" [routerLink]="['/admin/architecture/inventory']" style="cursor: pointer">
-        <div class="stat-icon">
-          <i-tabler name="package"></i-tabler>
-        </div>
-        <div class="stat-info">
-          <span class="stat-value">{{ stats.inventory || 0 }}</span>
-          <span class="stat-label">{{ l.s('architecture.inventory') }}</span>
-        </div>
+          <stat-card type="primary" icon="building-community" [value]="stats.buildings" label="architecture.total_buildings"></stat-card>
+          <stat-card type="success" icon="door-enter" [value]="stats.rooms" label="architecture.total_rooms"></stat-card>
+          <stat-card type="info" icon="route-2" [value]="stats.hallways" label="architecture.total_hallways"></stat-card>
+          <stat-card type="warning" icon="package" class="clickable" [value]="stats.inventory || 0" label="architecture.inventory" [routerLink]="['/admin/architecture/inventory']"></stat-card>
       </div>
     </div>
 

@@ -1,0 +1,30 @@
+<div class="form-group">
+    <schoolingo-label id="name" text="payments.add_account.account_name" [error]="errors.name"></schoolingo-label>
+    <input type="text" name="name" id="name" [(ngModel)]="name">
+</div>
+
+<div class="form-group">
+    <schoolingo-label id="type" text="payments.add_account.account_type" [error]="errors.type"></schoolingo-label>
+
+    <schoolingo-dropdown [options]="types" [value]="selectedType" (valueChange)="selectedType = $event" [clearable]="false"></schoolingo-dropdown>
+</div>
+
+@if (selectedType == 'bank') {
+<div class="form-group">
+    <schoolingo-label id="iban" text="payments.add_account.iban" [error]="errors.iban"></schoolingo-label>
+    <input type="text" appIbanFormatter name="iban" id="iban" [(ngModel)]="iban" [maxlength]="iban_max_len" (input)="checkifwantmore($any($event))">
+    @if (want_bigger_iban) {
+    <p class="note" (click)="iban_max_len = 49;want_bigger_iban=false">Snažíte se napsat jiný než český IBAN? Kliknutím povolíte napsat více znaků</p>
+    }
+</div>
+}
+
+<div class="modal-actions">
+    <div class="btn btn--secondary" (click)="closeModal()">
+        {{ l.s('close') }}
+    </div>
+    <div class="btn btn--primary" (click)="createAccount()">
+        <i-tabler name="plus"></i-tabler>    
+        {{ l.s('payments.add_account.action') }}
+    </div>
+</div>

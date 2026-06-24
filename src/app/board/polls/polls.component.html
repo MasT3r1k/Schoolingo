@@ -17,33 +17,9 @@
     <!-- Stats Section -->
     <div class="section stats-section">
         <div class="stats-grid">
-            <div class="stat-card stat--primary">
-                <div class="stat-icon">
-                    <i-tabler name="clipboard-list"></i-tabler>
-                </div>
-                <div class="stat-info">
-                    <span class="stat-value">{{ tests.length }}</span>
-                    <span class="stat-label">Aktivních testů</span>
-                </div>
-            </div>
-            <div class="stat-card stat--success">
-                <div class="stat-icon">
-                    <i-tabler name="circle-check"></i-tabler>
-                </div>
-                <div class="stat-info">
-                    <span class="stat-value">{{ getCompletedCount() }}</span>
-                    <span class="stat-label">Vyplněných</span>
-                </div>
-            </div>
-            <div class="stat-card stat--warning">
-                <div class="stat-icon">
-                    <i-tabler name="clock"></i-tabler>
-                </div>
-                <div class="stat-info">
-                    <span class="stat-value">{{ getPendingCount() }}</span>
-                    <span class="stat-label">K vyplnění</span>
-                </div>
-            </div>
+            <stat-card type="primary" icon="clipboard-list" [value]="tests.length" label="Aktivních testů"></stat-card>
+            <stat-card type="success" icon="circle-check" [value]="getCompletedCount()" label="Vyplněných"></stat-card>
+            <stat-card type="warning" icon="clock" [value]="getPendingCount()" label="K vyplnění"></stat-card>
         </div>
     </div>
 

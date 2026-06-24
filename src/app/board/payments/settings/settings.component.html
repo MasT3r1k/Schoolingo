@@ -1,0 +1,59 @@
+<div class="payments-page">
+  <div class="card">
+    <div class="card-header">
+      <h2>Obecné nastavení plateb</h2>
+    </div>
+    <div class="card-body">
+      <div class="form-group" style="max-width: 400px;">
+        <label class="form-label">Hlavní bankovní účet školy</label>
+        <input type="text" class="form-input" [(ngModel)]="settings.bankAccount">
+      </div>
+      <div class="form-group" style="max-width: 400px;">
+        <label class="form-label">Prefix variabilního symbolu (rok)</label>
+        <input type="text" class="form-input" [(ngModel)]="settings.vsPrefix">
+      </div>
+      <div class="form-group" style="max-width: 400px;">
+        <label class="form-label">Počet dnů po splatnosti pro varování</label>
+        <input type="number" class="form-input" [(ngModel)]="settings.warningDays">
+      </div>
+      <div class="form-group" style="display: flex; align-items: center; gap: 1rem; margin-top: 1.5rem;">
+        <schoolingo-checkbox [checked]="settings.emailNotifications" (click)="settings.emailNotifications = !settings.emailNotifications"></schoolingo-checkbox>
+        <span class="form-label" style="margin: 0;">Posílat automatická upozornění na e-mail při platbě</span>
+      </div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn--primary" (click)="saveSettings()">
+        <i-tabler name="device-floppy"></i-tabler> Uložit nastavení
+      </button>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-header">
+      <h2>Oprávnění pro potvrzování plateb</h2>
+    </div>
+    <div class="card-body">
+      <div style="display: flex; flex-direction: column; gap: 1rem;">
+        <div style="display: flex; justify-content: space-between; padding: 1rem; border: 1px solid var(--border); border-radius: var(--radius);">
+          <div>
+            <div style="font-weight: 600;">Vedení školy</div>
+            <div class="text--muted" style="font-size: 0.875rem;">Může potvrdit libovolnou platbu a spravovat účty</div>
+          </div>
+          <span class="badge badge--success">Povoleno</span>
+        </div>
+        <div style="display: flex; justify-content: space-between; padding: 1rem; border: 1px solid var(--border); border-radius: var(--radius);">
+          <div>
+            <div style="font-weight: 600;">Třídní učitelé</div>
+            <div class="text--muted" style="font-size: 0.875rem;">Mohou potvrzovat platby pro svou vlastní třídu</div>
+          </div>
+          <schoolingo-checkbox [checked]="true"></schoolingo-checkbox>
+        </div>
+      </div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn--primary">
+        <i-tabler name="device-floppy"></i-tabler> Uložit oprávnění
+      </button>
+    </div>
+  </div>
+</div>

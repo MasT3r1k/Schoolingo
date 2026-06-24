@@ -107,39 +107,6 @@ import { DeleteFloorModalComponent } from './modals/delete-floor-modal/delete-fl
         display: flex;
         gap: 0.5rem;
     }
-    .empty-state {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        padding: 4rem 2rem;
-        text-align: center;
-    }
-    .empty-state__icon {
-        width: 64px;
-        height: 64px;
-        color: var(--text-muted);
-        opacity: 0.5;
-        margin-bottom: 1rem;
-    }
-    .empty-state__title {
-        font-size: 1.125rem;
-        font-weight: 600;
-        color: var(--text);
-        margin: 0 0 0.5rem 0;
-    }
-    .empty-state__description {
-        font-size: 0.9375rem;
-        color: var(--text-muted);
-        margin: 0;
-        max-width: 400px;
-    }
-    .empty-state__description {
-        font-size: 0.9375rem;
-        color: var(--text-muted);
-        margin: 0;
-        max-width: 400px;
-    }
   `]
 })
 export class ArchitectureBuildingDetailComponent implements OnInit {

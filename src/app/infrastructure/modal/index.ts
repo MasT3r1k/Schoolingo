@@ -12,7 +12,7 @@ interface Modal {
     description_placeholders?: Record<string, string>;
     type?: 'normal' | 'danger';
     icon?: string;
-    width?: number;
+    width?: number | string;
     forceScrollbar?: boolean;
     hiddenOverflow?: boolean;
     closeable: boolean;
@@ -107,8 +107,6 @@ export class ModalManager {
     public closeModal(name: string): void { 
         if (!this.modals[name]) return
         this.modals[name].isOpen = false
-        // Optional: clear data on close? Maybe not if we want to preserve state?
-        // this.modals[name].data = undefined;
     }
     
     public closeAllModals(): void {

@@ -1,0 +1,67 @@
+<div class="payments-page">
+  
+  <div class="stats-cards">
+    <stat-card type="primary" icon="pig-money" [value]="totalBalance | money" label="payments.accounts.total_balance" [sub]="l.s('payments.accounts.total_balance_sub')"></stat-card>
+    <stat-card type="warning" icon="building-bank" [value]="accounts.length" label="payments.accounts.active_accounts" [sub]="l.s('payments.accounts.active_accounts_sub', { bank: getAccountsByType('bank', true).length, cash: getAccountsByType('cash', true).length})"></stat-card>
+  </div>
+
+  <div class="card">
+    <div class="card-header">
+      <h2>{{ l.s('sidebar.payments.accounts') }}</h2>
+      @if (accounts.length) {
+      <button class="btn btn--primary btn--sm" (click)="addAcount()">
+        <i-tabler name="plus"></i-tabler>
+        {{  l.s('payments.accounts.add_another_account') }}
+      </button>
+      }
+    </div>
+    <div class="card-body" style="padding: 0;">
+      <div class="accounts-list">
+        @for (acc of accounts; track acc.payment_account_id) {
+        <div class="account-item" (click)="showAccountDetail(acc)">
+          <div class="account-item__icon" [class.account-item__icon--bank]="acc.type === 'bank'" [class.account-item__icon--cash]="acc.type === 'cash'">
+            <i-tabler [name]="acc.type === 'bank' ? 'building-bank' : 'cash'"></i-tabler>
+          </div>
+          <div class="account-item__info">
+            <div class="account-item__name">
+              <span>{{ acc.name }}</span>
+              @if (acc.is_active) {
+                <span class="badge badge--success">
+                  {{ l.s('payments.accounts.account_status.active') }}
+                </span>
+              } @else {
+                <span class="badge badge--neutral">
+                  {{ l.s('payments.accounts.account_status.inactive') }}
+                </span>
+              }
+            </div>
+            <div class="account-item__iban text--muted">
+              {{ acc.type === 'bank' && acc.iban ? `${l.s('payments.add_account.iban')}: ` + acc.iban : l.s('payments.add_account.types.cash') }}
+            </div>
+          </div>
+          <div class="account-item__right">
+            <div class="account-item__balance">
+              {{ acc.balance | money }}
+            </div>
+          </div>
+        </div>
+        } @empty {
+          <div class="empty-state">
+            <div class="empty-state__icon">
+              <i-tabler name="id-off"></i-tabler>
+            </div>
+            <div class="empty-state__title">
+              {{ l.s('payments.accounts.empty_title') }}
+            </div>
+            <div class="empty-state__description">
+              {{ l.s('payments.accounts.empty_description') }}
+            </div>
+            <div class="btn btn--primary" (click)="addAcount()">
+              {{ l.s('payments.add_account.action') }}
+            </div>
+          </div>
+        }
+      </div>
+    </div>
+  </div>
+</div>

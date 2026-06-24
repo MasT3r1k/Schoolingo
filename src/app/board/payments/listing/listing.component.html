@@ -1,0 +1,75 @@
+<div class="payments-page">
+  <div class="card">
+    <div class="card-header">
+      <h2>Platební položky</h2>
+      <div class="header-actions">
+        <div class="search-wrapper">
+          <i-tabler name="search"></i-tabler>
+          <input type="search" placeholder="Hledat..." [(ngModel)]="searchQuery">
+        </div>
+        <select class="form-input" style="width: auto;" [(ngModel)]="filterClass">
+          <option value="">Všechny třídy</option>
+          <option value="1.A">1.A</option>
+          <option value="3.B">3.B</option>
+        </select>
+        <button class="btn btn--primary btn--sm">
+          <i-tabler name="plus"></i-tabler> Nová položka
+        </button>
+      </div>
+    </div>
+    <div class="table-container" style="border: none; border-radius: 0;">
+      <table>
+        <thead>
+          <tr>
+            <th>Název</th>
+            <th>Třída</th>
+            <th>Částka</th>
+            <th>Vytvořeno</th>
+            <th>Splatnost</th>
+            <th>Uhrazeno</th>
+            <th>Stav</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (item of items; track item.id) {
+          <tr>
+            <td><strong>{{ item.name }}</strong></td>
+            <td><span class="badge badge--neutral">{{ item.class_name }}</span></td>
+            <td class="mono">{{ item.amount }} Kč</td>
+            <td class="text--muted">{{ item.created }}</td>
+            <td class="text--muted">{{ item.deadline }}</td>
+            <td>
+              <div style="display: flex; align-items: center; gap: 0.5rem;">
+                <span style="font-size: 0.8125rem;">{{ item.paid }} / {{ item.total }}</span>
+                <div style="width: 60px; height: 4px; background: var(--surface-2); border-radius: 4px; overflow: hidden;">
+                  <div style="height: 100%; background: var(--primary);" [style.width.%]="(item.paid/item.total)*100"></div>
+                </div>
+              </div>
+            </td>
+            <td>
+              <span class="badge badge--with-dot" [class.badge--success]="item.status === 'closed'" [class.badge--warning]="item.status === 'active'">
+                <span class="badge-dot" [class.badge-dot--success]="item.status === 'closed'" [class.badge-dot--warning]="item.status === 'active'"></span>
+                {{ item.status === 'active' ? 'Aktivní' : 'Uzavřeno' }}
+              </span>
+            </td>
+            <td style="text-align: right;">
+              <button class="btn btn--ghost btn--sm btn--icon"><i-tabler name="edit"></i-tabler></button>
+              <button class="btn btn--ghost btn--sm btn--icon text--danger"><i-tabler name="trash"></i-tabler></button>
+            </td>
+          </tr>
+          } @empty {
+          <tr>
+            <td colspan="8">
+              <div class="empty-state empty-state--sm">
+                <div class="empty-state__icon"><i-tabler name="file-off"></i-tabler></div>
+                <p class="text--muted">Nebyly nalezeny žádné platební položky</p>
+              </div>
+            </td>
+          </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

@@ -1,27 +1,15 @@
 <div class="attendance-widget">
     <div class="content">
         <!-- Status Card -->
-        <div class="status-card">
-            @if (isCheckedIn) {
-            <div class="status-indicator active">
-                <i-tabler name="clock-check"></i-tabler>
-            </div>
-            <div class="status-info">
-                <span class="status-label">Přihlášen</span>
-                <span class="status-time">{{ checkInTime }}</span>
-            </div>
-            } @else {
-            <div class="status-indicator inactive">
-                <i-tabler name="clock-x"></i-tabler>
-            </div>
-            <div class="status-info">
-                <span class="status-label">Nepřihlášen</span>
-            </div>
-            }
-        </div>
+        @if (isCheckedIn) {
+            <stat-card type="success" icon="clock-check" label="Přihlášen" [value]="checkInTime"></stat-card>
+        } @else {
+            <stat-card type="danger" icon="clock-x" value="Nepřihlášen"></stat-card>
+        }
 
         <!-- Stats Card -->
-        <div class="stats-card">
+        <stat-card type="primary" icon="clock-hour-3" label="Dnes odpracováno" [value]="formattedTotalWorked"></stat-card>
+        <!-- <div class="stats-card">
             <div class="stats-icon">
                 <i-tabler name="clock-hour-3"></i-tabler>
             </div>
@@ -29,7 +17,7 @@
                 <span class="stats-label">Dnes odpracováno</span>
                 <span class="stats-value">{{ formattedTotalWorked }}</span>
             </div>
-        </div>
+        </div> -->
     </div>
 
     <!-- Actions -->

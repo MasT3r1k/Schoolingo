@@ -10,10 +10,11 @@ import { Utils } from '@Schoolingo/utils';
 import { Config } from '@Schoolingo/config';
 import { CalendarComponent } from '@Components/calendar';
 import moment from 'moment';
+import { StatCardComponent } from "@Components/stat-card/stat-card.component";
 
 @Component({
   standalone: true,
-  imports: [FormsModule, AsyncPipe, IconsModule, CalendarComponent],
+  imports: [FormsModule, AsyncPipe, IconsModule, CalendarComponent, StatCardComponent],
   templateUrl: './manage.component.html',
   styleUrls: ['./manage.component.css']
 })

@@ -8,11 +8,12 @@ import { Locale } from '@Schoolingo/locale';
 import { Utils } from '@Schoolingo/utils';
 import { Permission } from '@Schoolingo/permission';
 import { Authentication } from '@Schoolingo/authentication';
+import { StatCardComponent } from "@Components/stat-card/stat-card.component";
 
 @Component({
   selector: 'app-attendance-widget',
   standalone: true,
-  imports: [CommonModule, IconsModule, RouterLink],
+  imports: [CommonModule, IconsModule, RouterLink, StatCardComponent],
   templateUrl: './attendance.component.html',
   styleUrl: './attendance.component.css'
 })

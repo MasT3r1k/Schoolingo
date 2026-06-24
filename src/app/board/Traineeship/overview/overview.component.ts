@@ -9,6 +9,7 @@ import { writeDairyComponent } from '../writeDairy/writeDairy.component';
 import { DiaryWeek, Traineeship, TraineeshipData, StudentTraineeshipStatus } from '@Schoolingo/traineeship';
 import { Locale } from '@Schoolingo/locale';
 import { NgClass } from '@angular/common';
+import { StatCardComponent } from "@Components/stat-card/stat-card.component";
 
 type Box = {
   icon: string;
@@ -16,7 +17,7 @@ type Box = {
 
 @Component({
   standalone: true,
-  imports: [RouterLink, writeDairyComponent, IconsModule],
+  imports: [RouterLink, writeDairyComponent, IconsModule, StatCardComponent],
   templateUrl: './overview.component.html',
   styleUrls: ['./overview.component.css']
 })

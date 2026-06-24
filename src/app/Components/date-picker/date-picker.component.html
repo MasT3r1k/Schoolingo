@@ -1,0 +1,87 @@
+<div class="dp-wrapper" id="dp1-wrapper" #trigger>
+    <input type="text" class="dp-input" id="dp1-input" [placeholder]="type === 'range' ? 'Začátek → Konec' : 'Vyberte datum'" readonly="" (click)="toggleCalendar($event)" [value]="getInputValue()">
+    <button class="dp-clear" [class.visible]="!!dates[0]" id="dp1-clear" aria-label="Smazat" (click)="clearSelection($event)">
+        <i-tabler name="x"></i-tabler>
+    </button>
+    <span class="dp-icon">
+        <i-tabler name="calendar"></i-tabler>
+    </span>
+    <div class="dp-calendar" [class.closing]="!is_open" [ngStyle]="panelStyles" [ngClass]="dropdownPosition">
+        <div class="dp-header">
+            <button class="dp-nav-btn" (click)="moveCalendar(-1)">
+                <i-tabler name="chevron-left"></i-tabler>
+            </button>
+            <button class="dp-month-year-btn" (click)="toggleVisibleType()">
+                {{ getHeader() }}
+            </button>
+            <button class="dp-nav-btn" (click)="moveCalendar(1)">
+                <i-tabler name="chevron-right"></i-tabler>
+            </button>
+        </div>
+        @if (type == 'range') {
+            <div class="dp-range-display" style="margin-bottom: var(--space-3)">
+                <div class="dp-range-val" [class.active]="choose_date_index == 0">
+                    {{ dates[0] ? (dates[0] | date : 'dd. MM. YYYY') : 'Začátek' }}
+                </div>
+                <span class="dp-range-sep center">
+                    <i-tabler name="arrow-narrow-right"></i-tabler>
+                </span>
+                <div class="dp-range-val" [class.active]="choose_date_index == 1">
+                    {{ dates[1] ? (dates[1] | date : 'dd. MM. YYYY') : 'Konec' }}
+                </div>
+            </div>
+        }
+        @if (visible_type == 'day') {
+        <div class="dp-weekdays">
+            @for(_ of [].constructor(7);track $index) {
+            <div class="dp-weekday">
+            {{ l.s('short_days.' + ($index == 6 ? 0 : $index + 1).toString()) }}
+            </div>
+            }
+        </div>
+        <div class="dp-days">
+            @for (d of daysGrid; track $index) {
+                <button class="dp-day" 
+                        [class.outside]="d.outside" 
+                        [class.today]="isTodayDay(d.date)"
+                        [class.selected]="isSelected(d.date)"
+                        [class.range-start]="isRangeStart(d.date)"
+                        [class.range-end]="isRangeEnd(d.date)"
+                        [class.in-range]="isInRange(d.date)"
+                        [disabled]="d.disabled"
+                        (click)="selectDay(d)"
+                        (mouseenter)="onHoverDay(d)"
+                        (mouseleave)="onLeaveDay()">
+                    {{ d.day }}
+                </button>
+            }
+        </div>
+        } @else if (visible_type == 'month') {
+            <div class="dp-month-grid">
+                @for (month of [].constructor(12); track $index) {
+                    <button class="dp-month-item" 
+                            [class.current]="isCurrentMonth($index)"
+                            [class.selected]="isSelectedMonth($index)" 
+                            (click)="selectMonth($index)">
+                        {{ l.s('months.' + $index).slice(0, 3) }}
+                    </button>
+                }
+            </div>
+        } @else if (visible_type == 'year') {
+            <div class="dp-year-grid">
+                @for (y of getYearsGrid(); track $index) {
+                <button class="dp-year-item" 
+                        [class.current]="y == todayYear" 
+                        [class.selected]="y == selectedYear"
+                        (click)="selectYear(y)">
+                    {{ y }}
+                </button>
+                }
+            </div>
+        }
+        <div class="dp-footer">
+            <button class="btn btn--primary-ghost btn--xs" (click)="setToday()">Dnes</button>
+            <button class="btn btn--primary btn--xs" (click)="closeCalendar()">Potvrdit</button>
+        </div>
+    </div>
+</div>

@@ -14,6 +14,7 @@ import { ModalManager } from '@Schoolingo/modal';
 import { ResetPasswordManageUsersComponent } from '../modals/reset-password/reset-password.component';
 import { Authentication } from '@Schoolingo/authentication';
 import { MessageTemplateSettings, TemplateComponent } from '../../../messages/template/template.component';
+import { StatCardComponent } from "@Components/stat-card/stat-card.component";
 
 export interface UserDetail extends User {
   user_id: number | null;
@@ -39,7 +40,7 @@ export interface UserDetail extends User {
 }
 
 @Component({
-  imports: [CommonModule, IconsModule, FormsModule, TabsComponent, TemplateComponent, RouterLink],
+  imports: [CommonModule, IconsModule, FormsModule, TabsComponent, TemplateComponent, RouterLink, StatCardComponent],
   templateUrl: './detail.component.html',
   styleUrls: ['./detail.component.css', '../../../students/detail/detail.component.css']
 })

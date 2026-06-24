@@ -17,6 +17,7 @@ export class QrCodeComponent {
   @Input() errorCorrectionLevel: 'L' | 'M' | 'Q' | 'H' = 'L';
   @Input() margin: number = 2;
   @Input() showScanner: boolean = true;
+  @Input() showBox: boolean = true;
   @Input() colorDark: string = '#000000';
   @Input() colorLight: string = '#ffffff';
 }

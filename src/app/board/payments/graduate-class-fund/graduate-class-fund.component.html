@@ -1,0 +1,59 @@
+<div class="payments-page">
+  <div class="card">
+    <div class="card-header">
+      <h2><i-tabler name="building-bank"></i-tabler> Maturitní fond</h2>
+    </div>
+    <div class="card-body">
+      <div style="display: flex; flex-direction: column; gap: 1rem; align-items: center; padding: 2rem 0;">
+        <div class="text--muted" style="text-transform: uppercase; font-weight: 600; font-size: 0.875rem;">Vybráno celkem</div>
+        <div style="font-size: 3rem; font-weight: 700; line-height: 1;">{{ fund.collected | money }}</div>
+        <div class="text--muted">Cílová částka: {{ fund.target | money }}</div>
+        
+        <div style="width: 100%; max-width: 500px; height: 12px; background: var(--surface-2); border-radius: 6px; overflow: hidden; margin-top: 1rem;">
+          <div style="height: 100%; background: var(--primary); transition: width 0.5s;" [style.width.%]="(fund.collected / fund.target) * 100"></div>
+        </div>
+        <div style="width: 100%; max-width: 500px; display: flex; justify-content: space-between; font-size: 0.875rem;" class="text--muted">
+          <span>0 Kč</span>
+          <span>{{ (fund.collected / fund.target) * 100 | number:'1.0-0' }} %</span>
+          <span>{{ fund.target | money }}</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  @if (perm.checkPermission(['principal', 'admin', 'teacher'])) {
+    <div class="card">
+      <div class="card-header">
+        <h2><i-tabler name="users"></i-tabler> Příspěvky žáků</h2>
+      </div>
+      <div class="table-container" style="border: none; border-radius: 0;">
+        <table>
+          <thead>
+            <tr>
+              <th>Žák</th>
+              <th>Příspěvek (Zaplaceno)</th>
+              <th>Cílová částka na žáka</th>
+              <th>Stav</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (s of fund.students; track s.id) {
+            <tr>
+              <td><strong>{{ s.name }}</strong></td>
+              <td class="mono" [class.text--success]="s.status === 'ok'" [class.text--warning]="s.status === 'behind'">
+                {{ s.amount_paid | money }}
+              </td>
+              <td class="mono text--muted">{{ s.target | money }}</td>
+              <td>
+                <span class="badge" [class.badge--success]="s.status === 'ok'" [class.badge--warning]="s.status === 'behind'">
+                  {{ s.status === 'ok' ? 'V pořádku' : 'V prodlení' }}
+                </span>
+              </td>
+            </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    </div>
+  }
+</div>

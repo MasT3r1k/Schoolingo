@@ -14,11 +14,12 @@ import { CalendarManager } from '@Components/calendar-dropdown';
 import { absence, AbsenceType } from '@Schoolingo/absence';
 import moment from 'moment';
 import { RouterLink } from '@angular/router';
+import { StatCardComponent } from "@Components/stat-card/stat-card.component";
 
 @Component({
   selector: 'app-my-class',
   standalone: true,
-  imports: [CommonModule, FormsModule, TabsComponent, IconsModule, CalendarComponent, RouterLink],
+  imports: [CommonModule, FormsModule, TabsComponent, IconsModule, CalendarComponent, RouterLink, StatCardComponent],
   templateUrl: './my-class.component.html',
   styleUrls: ['./my-class.component.css']
 })

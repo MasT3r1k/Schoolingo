@@ -1,0 +1,80 @@
+<div class="payments-page new-payment-layout">
+  
+  <div class="card">
+    <div class="card-header">
+      <h2>Nový příjem (Vklad)</h2>
+    </div>
+    <div class="card-body">
+      @if (justSaved) {
+        <div class="alert alert--success" style="margin-bottom: 1.5rem;">
+          <i-tabler name="check" class="alert__icon"></i-tabler>
+          <div class="alert__content">Vklad byl úspěšně zaevidován a zaúčtován.</div>
+        </div>
+      }
+
+      <div class="form-group">
+        <label class="form-label">Žák</label>
+        <div class="search-wrapper" style="max-width: 100%;">
+          <i-tabler name="user"></i-tabler>
+          <input type="text" [(ngModel)]="form.student" placeholder="Hledat žáka...">
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Položka (Účel platby)</label>
+        <select class="form-input" [(ngModel)]="form.fee">
+          <option value="">Vyberte položku...</option>
+          <option value="1">Pracovní sešity (450 Kč)</option>
+          <option value="2">Výlet ZOO (200 Kč)</option>
+          <option value="3">SRPŠ (500 Kč)</option>
+        </select>
+      </div>
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+        <div class="form-group">
+          <label class="form-label">Částka (Kč)</label>
+          <input type="number" class="form-input" [(ngModel)]="form.amount" placeholder="0">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Datum přijetí</label>
+          <input type="date" class="form-input" [(ngModel)]="form.date">
+        </div>
+      </div>
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+        <div class="form-group">
+          <label class="form-label">Způsob platby</label>
+          <schoolingo-dropdown [options]="pay_methods_dropdown" [value]="form.method" (valueChange)="form.method = $event" [clearable]="false"></schoolingo-dropdown>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Variabilní symbol</label>
+          <input type="text" class="form-input" [(ngModel)]="form.vs">
+        </div>
+      </div>
+      <div class="form-group" style="margin-bottom: 0;">
+        <label class="form-label">Poznámka (nepovinné)</label>
+        <textarea class="form-input" rows="3" [(ngModel)]="form.note" placeholder="Doplňující informace..."></textarea>
+      </div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn--ghost">Vyčistit</button>
+      <button class="btn btn--primary" (click)="submitDeposit()">
+        <i-tabler name="device-floppy"></i-tabler> Zaevidovat vklad
+      </button>
+    </div>
+  </div>
+
+  <div class="card" style="height: fit-content;">
+    <div class="card-header">
+      <h2>Nedávné vklady</h2>
+    </div>
+    <div class="card-body" style="padding: 0;">
+      @for (d of recentDeposits; track d.id) {
+        <div style="padding: 1rem 1.5rem; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center;">
+          <div>
+            <div style="font-weight: 500;">{{ d.student }}</div>
+            <div class="text--muted" style="font-size: 0.8125rem;">{{ d.date }}</div>
+          </div>
+          <div class="text--success" style="font-weight: 600;">+{{ d.amount }} Kč</div>
+        </div>
+      }
+    </div>
+  </div>
+</div>
