@@ -1,0 +1,59 @@
+<div class="card">
+  <div class="card-header">
+    <h2>Přehled transakcí</h2>
+    <div class="header-actions">
+      <select class="input" style="max-width:200px;">
+        <option>Všechny transakce</option>
+        <option>Pouze stržené obědy</option>
+        <option>Pouze refundace</option>
+      </select>
+    </div>
+  </div>
+  <div class="card-body">
+    <div class="table-container">
+      <table class="table">
+        <thead class="table__head">
+          <tr>
+            <th class="table__th">Datum</th>
+            <th class="table__th">Popis</th>
+            <th class="table__th">Typ</th>
+            <th class="table__th">Částka</th>
+            <th class="table__th">Stav</th>
+            <th class="table__th">Doklad</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (item of history; track item.desc) {
+            <tr class="table__row">
+              <td class="table__td">{{ item.date }}</td>
+              <td class="table__td"><strong>{{ item.desc }}</strong></td>
+              <td class="table__td">
+                @if (item.type === 'payment') {
+                  <span class="badge badge--neutral">Platba</span>
+                } @else {
+                  <span class="badge badge--success">Refundace</span>
+                }
+              </td>
+              <td class="table__td"><span [style.color]="item.amount.startsWith('-') ? '#ef4444' : '#22c55e'"><strong>{{ item.amount }}</strong></span></td>
+              <td class="table__td">
+                @if (item.status === 'paid') { <span class="badge badge--success">Zaplaceno</span> }
+                @if (item.status === 'refunded') { <span class="badge badge--primary">Vráceno</span> }
+                @if (item.status === 'pending') { <span class="badge badge--neutral">Čeká</span> }
+                @if (item.status === 'rejected') { <span class="badge badge--danger">Zamítnuto</span> }
+              </td>
+              <td class="table__td">
+                @if (item.doc) {
+                  <button class="btn btn--ghost btn--sm btn--icon" title="Stáhnout PDF">
+                    <i-tabler name="file-download"></i-tabler>
+                  </button>
+                } @else {
+                  <span style="color: var(--text-muted);">-</span>
+                }
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

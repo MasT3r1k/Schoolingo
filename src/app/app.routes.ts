@@ -455,6 +455,37 @@ export const routes: Routes = [
                 ]
             },
             {
+                path: 'canteen',
+                loadComponent: () => import('./board/canteen/canteen.component').then(m => m.CanteenComponent),
+                children: [
+                    {
+                        path: '',
+                        pathMatch: 'full',
+                        redirectTo: 'orders'
+                    },
+                    {
+                        path: 'orders',
+                        loadComponent: () => import('./board/canteen/orders/orders.component').then(m => m.OrdersComponent)
+                    },
+                    {
+                        path: 'meals',
+                        loadComponent: () => import('./board/canteen/meals/meals.component').then(m => m.MealsComponent)
+                    },
+                    {
+                        path: 'history',
+                        loadComponent: () => import('./board/canteen/history/history.component').then(m => m.HistoryComponent)
+                    },
+                    {
+                        path: 'issues',
+                        loadComponent: () => import('./board/canteen/issues/issues.component').then(m => m.IssuesComponent)
+                    },
+                    {
+                        path: 'settings',
+                        loadComponent: () => import('./board/canteen/settings/settings.component').then(m => m.SettingsComponent)
+                    }
+                ]
+            },
+            {
                 path: 'messages', children: [
                     {
                         path: '',

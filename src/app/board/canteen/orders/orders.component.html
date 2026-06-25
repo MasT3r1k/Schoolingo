@@ -1,0 +1,127 @@
+<style>
+  .orders-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 1.5rem;
+  }
+  @media (max-width: 1200px) {
+    .orders-grid {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+  @media (max-width: 768px) {
+    .orders-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>
+
+<div class="card" style="margin-bottom: 6rem;">
+  <div class="card-header" style="flex-direction: column; align-items: stretch; gap: 1rem;">
+    <!-- Upozornění na uzávěrku -->
+    <div class="message message--danger">
+      <div class="row">
+      <i-tabler name="clock"></i-tabler>
+      Uzávěrka objednávek na týden 30. 6. – 4. 7. 2026 je v neděli 29. 6. ve 20:00. Po uzávěrce nelze obědy měnit.
+      </div>
+    </div>
+    <!-- <div style="background: var(--surface-hover); padding: 1rem; border-radius: var(--radius); border-left: 4px solid var(--primary); display: flex; gap: 1rem; align-items: center;">
+      <i-tabler name="clock"></i-tabler>
+      <div>
+        Uzávěrka objednávek na týden <strong>30. 6. – 4. 7. 2026</strong> je v neděli <strong>29. 6. ve 20:00</strong>. Po uzávěrce nelze obědy měnit.
+      </div>
+    </div> -->
+
+    <!-- Týden a navigace -->
+    <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
+      <div style="display: flex; flex-direction: column;">
+        <h2 style="margin: 0;">{{ weekName }}</h2>
+        <div style="font-size: 0.875rem; color: var(--text-muted);">Vyberte jednu variantu oběda pro každý den, nebo den vynechejte.</div>
+      </div>
+      <div class="header-actions">
+        <button class="btn btn--ghost btn--sm">
+          <i-tabler name="chevron-left"></i-tabler> Tento týden
+        </button>
+        <button class="btn btn--ghost btn--sm">
+          Příští týden <i-tabler name="chevron-right"></i-tabler>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div class="card-body">
+    <div class="orders-grid">
+      @for (day of days; track day.code) {
+        <div style="display: flex; flex-direction: column; gap: 0.75rem; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 1rem;">
+          <div style="display: flex; flex-direction: column; border-bottom: 1px solid var(--border); padding-bottom: 0.75rem; margin-bottom: 0.25rem;">
+            <h3 style="margin: 0;">{{ day.name }}</h3>
+            <span style="font-size: 0.875rem; color: var(--text-muted);">{{ day.date }}</span>
+          </div>
+          
+          @for (opt of day.options; track opt.id) {
+            <div (click)="selectOption(day.code, opt)" 
+                 [style.border]="selections[day.code]?.id === opt.id ? '2px solid var(--primary)' : '1px solid var(--border)'"
+                 [style.background]="selections[day.code]?.id === opt.id ? 'var(--primary-light, rgba(0,100,255,0.05))' : 'transparent'"
+                 style="border-radius: var(--radius); padding: 1rem; cursor: pointer; transition: all 0.2s;">
+              <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
+                <div>
+                  <span class="badge badge--neutral">{{ opt.num }}</span>
+                  <span style="margin-left: 0.5rem; font-weight: bold;">{{ opt.price }} Kč</span>
+                </div>
+                @if (selections[day.code]?.id === opt.id) {
+                  <i-tabler name="circle-check" style="color: var(--primary);"></i-tabler>
+                } @else {
+                  <i-tabler name="circle" style="color: var(--border);"></i-tabler>
+                }
+              </div>
+              <div style="font-weight: 500; margin-bottom: 0.5rem; font-size: 0.9rem;">{{ opt.label }}</div>
+              <div style="display: flex; gap: 0.25rem; flex-wrap: wrap;">
+                <span class="badge badge--neutral">{{ opt.kcal }} kcal</span>
+                @for (tag of opt.tags; track tag) {
+                  <span class="badge badge--neutral">{{ tag }}</span>
+                }
+              </div>
+            </div>
+          }
+          
+          <div (click)="selectOption(day.code, null)"
+               [style.border]="selections[day.code] === null ? '2px solid var(--primary)' : '1px solid var(--border)'"
+               [style.background]="selections[day.code] === null ? 'var(--primary-light, rgba(0,100,255,0.05))' : 'transparent'"
+               style="border-radius: var(--radius); padding: 1rem; cursor: pointer; display: flex; justify-content: space-between; transition: all 0.2s;">
+            <span style="font-weight: 500; font-size: 0.9rem;">Bez oběda tento den</span>
+            @if (selections[day.code] === null) {
+              <i-tabler name="circle-check" style="color: var(--primary);"></i-tabler>
+            } @else {
+              <i-tabler name="circle" style="color: var(--border);"></i-tabler>
+            }
+          </div>
+        </div>
+      }
+    </div>
+  </div>
+</div>
+
+<!-- Plovoucí lišta s objednávkou (kapsle) -->
+<div style="position: fixed; bottom: 2rem; left: 50%; transform: translateX(-50%); background: var(--surface, #fff); border: 1px solid var(--border); box-shadow: 0 10px 25px rgba(0,0,0,0.15); border-radius: 50px; padding: 0.75rem 1.5rem; display: flex; align-items: center; gap: 2rem; z-index: 100;">
+  <div style="display: flex; flex-direction: column;">
+    <span style="font-weight: 500; white-space: nowrap;">Tento týden oběd vychází na <strong style="color: var(--primary);">{{ summary.total }} Kč</strong></span>
+    @if (submitSuccess) {
+      <span style="font-size: 0.75rem; color: var(--success, #22c55e);">Objednávky jsou uloženy</span>
+    } @else {
+      <span style="font-size: 0.75rem; color: var(--text-muted);">Zatím nemáme uložené objednávky</span>
+    }
+  </div>
+  
+  <div style="display: flex; gap: 0.5rem; align-items: center;">
+    <button class="btn btn--ghost btn--sm" style="border-radius: 20px; white-space: nowrap;" (click)="selections = {'Po': null, 'Út': null, 'St': null, 'Čt': null, 'Pá': null}">
+      Vrátit zpět
+    </button>
+    <button class="btn btn--primary" style="border-radius: 20px; padding-left: 1.5rem; padding-right: 1.5rem; white-space: nowrap;" [disabled]="submitting" (click)="submitOrder()">
+      @if (submitSuccess) {
+        <i-tabler name="check"></i-tabler> Uloženo
+      } @else {
+        Uložit
+      }
+    </button>
+  </div>
+</div>

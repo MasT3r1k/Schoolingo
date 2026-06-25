@@ -1,84 +1,108 @@
-<div class="modal-amount">{{ modal_data.amount }} Kč</div>
+<div class="modal-amount">{{ modal_data.amount | money }}</div>
 
-@if (show_qrcode) {
+@if (confirmed) {
+  <div class="message message--success" style="text-align: center; padding: 1.5rem;">
+    <i-tabler name="circle-check"></i-tabler>
+    <span>Platba byla úspěšně potvrzena</span>
+  </div>
+} @else {
+
+  @if (show_qrcode) {
     <div class="center">
         <qr-payment [account_number]="modal_data.bank_account.split('/')[0]" [bank_code]="modal_data.bank_account.split('/')[1]" [amount]="modal_data.amount"></qr-payment>
     </div>
-} @else {
-<div class="modal-detail">
-    <div class="modal-detail-row">
-        <span>
-            <i-tabler name="map-pin"></i-tabler>
-            Akce
-        </span>
-        <span>{{ modal_data.name }}</span>
+  } @else {
+    <div class="modal-detail">
+        <div class="modal-detail-row">
+            <span>
+                <i-tabler name="map-pin"></i-tabler>
+                Akce
+            </span>
+            <span>{{ modal_data.name }}</span>
+        </div>
+        <div class="modal-detail-row">
+            <span>
+                <i-tabler name="credit-card"></i-tabler>
+                Číslo účtu
+            </span>
+            <span>{{ modal_data.bank_account }}</span>
+        </div>
+        @if (modal_data.variable_symbol) {
+        <div class="modal-detail-row">
+            <span>
+                <i-tabler name="file-description"></i-tabler>
+                Variabilní symbol
+            </span>
+            <span>{{ modal_data.variable_symbol }}</span>
+        </div>
+        }
+        <div class="modal-detail-row">
+            <span>
+                <i-tabler name="clock"></i-tabler>
+                Splatnost
+            </span>
+            <span>{{ Utils.formatDateShort(modal_data.deadline) }}</span>
+        </div>
     </div>
-    <div class="modal-detail-row">
-        <span>
-            <i-tabler name="credit-card"></i-tabler>
-            Číslo účtu
-        </span>
-        <span>{{ modal_data.bank_account }}</span>
+  }
+
+  <a class="clickable" style="margin-top: var(--space-5);" (click)="show_qrcode = !show_qrcode">
+    {{ show_qrcode ? 'Zobrazit podrobnosti o platbě' : 'Zobrazit QR kód platby' }}
+  </a>
+
+  <div class="form-group">
+      <label class="form-label">Způsob potvrzení platby</label>
+      <schoolingo-dropdown [options]="pay_methods_dropdown" [value]="pay_method" (valueChange)="pay_method = $event" [clearable]="false"></schoolingo-dropdown>
+  </div>
+
+  @if (pay_method == 'account') {
+    @if (payments_accounts.length) {
+      <schoolingo-dropdown [options]="payments_accounts" [value]="selected_account" (valueChange)="selected_account = $event" [settings]="{ locale: false }" [clearable]="false"></schoolingo-dropdown>
+
+      <div class="modal-detail" style="margin-block: 8px;">
+          <div class="modal-detail-row">
+              <span>
+                  <i-tabler name="credit-card"></i-tabler>
+                  Zůstatek
+              </span>
+              <span>{{ selectedAccountBalance | money }}</span>
+          </div>
+          <div class="modal-detail-row">
+              <span>
+                  <i-tabler name="credit-card-pay"></i-tabler>
+                  Zůstatek po platbě
+              </span>
+              <span [class.text--danger]="selectedAccountBalance - modal_data.amount < 0">
+                {{ selectedAccountBalance - modal_data.amount | money }}
+              </span>
+          </div>
+      </div>
+    } @else {
+      <div class="message message--warning">
+        <i-tabler name="alert-triangle"></i-tabler>
+        <span>Nemáte žádný aktivní účet. Nejdříve si vytvořte účet v sekci Účty.</span>
+      </div>
+    }
+  }
+
+  @if (error) {
+    <div class="message message--danger" style="margin-top: 0.5rem;">
+      <span>{{ error }}</span>
     </div>
-    <div class="modal-detail-row">
-        <span>
-            <i-tabler name="file-description"></i-tabler>
-            Variabilní symbol
-        </span>
-        <span>202504117</span>
-    </div>
-    <div class="modal-detail-row">
-        <span>
-            <i-tabler name="clock"></i-tabler>
-            Splatnost
-        </span>
-        <span>{{ Utils.formatDateShort(modal_data.deadline) }}</span>
-    </div>
-    <div class="modal-detail-row">
-        <span>
-            <i-tabler name="user-pentagon"></i-tabler>
-            Žák
-        </span>
-        <span>Novák Adam, 7.A</span>
-    </div>
-</div>
+  }
+
+  <div class="modal-actions">
+      <button class="btn btn--secondary" (click)="closeModal()">
+          {{ l.s('cancel') }}
+      </button>
+      <button class="btn btn--primary" (click)="confirmPay()" [disabled]="loading">
+          @if (loading) {
+            <i-tabler name="loader-2" class="spin"></i-tabler>
+          } @else {
+            <i-tabler name="check"></i-tabler>
+          }
+          Potvrdit platbu
+      </button>
+  </div>
+
 }
-
-<a class="clickable" style="margin-top: var(--space-5);" (click)="show_qrcode = !show_qrcode">{{ show_qrcode ? 'Zobrazit podrobnosti o platbě' : 'Zobrazit QR kód platby' }}</a>
-
-<div class="form-group">
-    <label class="form-label">Způsob potvrzení platby</label>
-    <schoolingo-dropdown [options]="pay_methods_dropdown" [value]="pay_method" (valueChange)="pay_method = $event" [clearable]="false"></schoolingo-dropdown>
-</div>
-
-@if (pay_method == 'account') {
-    <schoolingo-dropdown [options]="payments_accounts" [value]="payments_accounts[0].value" [settings]="{ locale: false }" [clearable]="false"></schoolingo-dropdown>
-
-<div class="modal-detail" style="margin-block: 8px;">
-    <div class="modal-detail-row">
-        <span>
-            <i-tabler name="credit-card"></i-tabler>
-            Zůstatek
-        </span>
-        <span>{{ payments_accounts[0].balance | money }}</span>
-    </div>
-
-    <div class="modal-detail-row">
-        <span>
-            <i-tabler name="credit-card-pay"></i-tabler>
-            Zůstatek po platbě
-        </span>
-        <span>{{ payments_accounts[0].balance - modal_data.amount | money }}</span>
-    </div>
-</div>
-}
-
-<div class="modal-actions">
-    <button class="btn btn--secondary" (click)="closeModal()">
-        {{ l.s('cancel') }}
-    </button>
-    <button class="btn btn--primary" onclick="confirmPay(1)">
-        <i-tabler name="check"></i-tabler>
-        Potvrdit platbu
-    </button>
-</div>

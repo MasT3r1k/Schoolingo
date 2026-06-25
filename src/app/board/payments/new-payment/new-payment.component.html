@@ -5,6 +5,30 @@
       <h2>Nový výdaj (Platba)</h2>
     </div>
     <div class="card-body">
+      @if (success) {
+        <div class="alert alert--success" style="margin-bottom: 1.5rem;">
+          <i-tabler name="check" class="alert__icon"></i-tabler>
+          <div class="alert__content">Výdaj byl úspěšně zaznamenán.</div>
+        </div>
+      }
+
+      @if (error) {
+        <div class="message message--danger" style="margin-bottom: 1rem;">
+          <span>{{ error }}</span>
+        </div>
+      }
+
+      <div class="form-group">
+        <label class="form-label">Zdrojový účet</label>
+        @if (accounts.length) {
+          <schoolingo-dropdown [options]="accounts" [value]="selected_account" (valueChange)="selected_account = $event" [clearable]="false" [settings]="{ locale: false }"></schoolingo-dropdown>
+        } @else {
+          <div class="message message--warning">
+            <span>Nemáte žádný aktivní účet pro platbu. Nejdříve si ho vytvořte.</span>
+          </div>
+        }
+      </div>
+
       <div class="form-group">
         <label class="form-label">Příjemce / Dodavatel</label>
         <input type="text" class="form-input" [(ngModel)]="form.recipient" placeholder="Např. Nakladatelství ABC">
@@ -16,7 +40,7 @@
       <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
         <div class="form-group">
           <label class="form-label">Částka (Kč)</label>
-          <input type="number" class="form-input" [(ngModel)]="form.amount" placeholder="0">
+          <input type="number" class="form-input" [(ngModel)]="form.amount" placeholder="0" min="1">
         </div>
         <div class="form-group">
           <label class="form-label">Datum platby</label>
@@ -25,7 +49,7 @@
       </div>
       <div class="form-group">
         <label class="form-label">Způsob platby</label>
-        <schoolingo-dropdown [options]="pay_methods_dropdown" [value]="form.method" (valueChange)="form.method = $event" [clearable]="false"></schoolingo-dropdown>
+        <schoolingo-dropdown [options]="pay_methods_dropdown" [value]="pay_method" (valueChange)="pay_method = $event" [clearable]="false"></schoolingo-dropdown>
       </div>
       <div class="form-group" style="margin-bottom: 0;">
         <label class="form-label">Poznámka (nepovinné)</label>
@@ -33,9 +57,14 @@
       </div>
     </div>
     <div class="modal-actions">
-      <button class="btn btn--ghost">Storno</button>
-      <button class="btn btn--primary" (click)="submitPayment()">
-        <i-tabler name="check"></i-tabler> Zadat platbu
+      <button class="btn btn--ghost" (click)="form = { recipient: '', purpose: '', amount: null, date: '', note: '' }">Vyčistit</button>
+      <button class="btn btn--primary" (click)="submitPayment()" [disabled]="loading">
+        @if (loading) {
+          <i-tabler name="loader-2" class="spin"></i-tabler>
+        } @else {
+          <i-tabler name="check"></i-tabler>
+        }
+        Zadat platbu
       </button>
     </div>
   </div>
@@ -61,7 +90,7 @@
         </div>
         <div class="summary-row">
           <span class="summary-label">Způsob:</span>
-          <span class="summary-value">{{ l.s('payments.methods.' + form.method) }}</span>
+          <span class="summary-value">{{ l.s('payments.methods.' + pay_method) }}</span>
         </div>
         <div class="summary-row" style="border-bottom: none; margin-top: 1rem; padding-bottom: 0;">
           <span class="summary-label" style="font-size: 1rem;">Celkem:</span>

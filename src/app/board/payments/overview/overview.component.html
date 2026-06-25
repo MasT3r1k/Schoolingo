@@ -3,10 +3,10 @@
   @if (perm.checkPermission(['principal', 'admin'])) {
     <!-- Stat Cards -->
     <div class="stats-cards">
-      <stat-card type="success" icon="wallet" label="Celkem vybráno" [value]="89340 | money"></stat-card>
-      <stat-card type="warning" icon="clock" label="Čeká na platbu" [value]="13420 | money" sub="Celkem aktivní pohledávky"></stat-card>
-      <stat-card type="danger" icon="alert-triangle" label="Po splatnosti" [value]="3590 | money" sub="10 rodin má dluh" sub_type="danger"></stat-card>
-      <stat-card type="primary" icon="receipt" label="Aktivní poplatky" [value]="5" sub="Ve 4 třídách"></stat-card>
+      <stat-card type="success" icon="wallet" label="Celkem vybráno" [value]="stats.total_collected | money"></stat-card>
+      <stat-card type="warning" icon="clock" label="Čeká na platbu" [value]="stats.pending_amount | money" sub="Celkem aktivní pohledávky"></stat-card>
+      <stat-card type="danger" icon="alert-triangle" label="Po splatnosti" [value]="stats.overdue_amount | money" [sub]="stats.overdue_count + ' rodin má dluh'" sub_type="danger"></stat-card>
+      <stat-card type="primary" icon="receipt" label="Aktivní poplatky" [value]="stats.active_fees_count"></stat-card>
     </div>
 
     <!-- Two-col grid: active fees + class overview -->
@@ -353,7 +353,7 @@
             </div>
             <div class="payment-item__actions">
               <span class="payment-item__amount text--danger">−{{ f.amount | money }}</span>
-              <button class="btn btn--primary btn--sm" (click)="openPayModal(f.id)">
+              <button class="btn btn--primary btn--sm" (click)="openPayModal(f)">
                 <i-tabler name="credit-card"></i-tabler> Zaplatit
               </button>
             </div>

@@ -6,7 +6,7 @@
       <div class="acct-name">
         {{ data.name }}
       </div>
-      <div class="acct-sub">Lucie Nováková · č. ú. 3B-0142</div>
+      <div class="acct-sub">{{ data.type === 'bank' && data.iban ? data.iban : l.s('payments.add_account.types.cash') }}</div>
  
       <div class="balance-block">
         <div class="balance-label">Aktuální zůstatek</div>
@@ -36,11 +36,11 @@
         </div>
         <div class="stat">
           <div class="stat-label">Poslední pohyb</div>
-          <div class="stat-value">{{ Utils.formatDateShort(accountDetail.last_payment.created_at) }}</div>
+            <div class="stat-sub">{{ accountDetail.last_payment ? Utils.formatDateShort(accountDetail.last_payment.created_at) : '—' }}</div>
         </div>
         <div class="stat">
           <div class="stat-label">Poslední platba</div>
-          <div class="stat-value">{{ accountDetail.last_payment.amount | money }}</div>
+            <div class="stat-value">{{ accountDetail.last_payment ? (accountDetail.last_payment.amount | money) : '—' }}</div>
         </div>
       </div>
     </div>
@@ -78,22 +78,42 @@
         </div>
 
         <div class="tx-list scrollable">
-            @for (transaction of transactions; track $index) {
+            @if (loading) {
+              <div style="text-align:center;padding:2rem;">
+                <i-tabler name="loader-2" class="spin"></i-tabler>
+              </div>
+            }
+            @for (transaction of filteredTransactions; track transaction.transaction_id) {
                 <div class="tx-row">
                     <div class="tx-icon" [class]="transaction.type">
                         <i-tabler [name]="transaction.type == 'in' ? 'arrow-narrow-down' : 'arrow-narrow-up'"></i-tabler>
                     </div>
                     <div>
-                    <div class="tx-desc">Vklad – {{ transaction.description }}</div>
-                    <div class="tx-meta">{{ Utils.formatDateShort(transaction.created_at) }} · od Jana Nováková</div>
+                    <div class="tx-desc">{{ transaction.type == 'in' ? 'Příchodí' : 'Odchozí' }} – {{ transaction.description ?? '—' }}</div>
+                    <div class="tx-meta">{{ Utils.formatDateShort(transaction.created_at) }}</div>
                     </div>
                     <div>
                     <div class="tx-amount" [class]="transaction.type">
-                        {{ (transaction.type == 'in' ? '+' : '-') + transaction.amount | money }}
+                        {{ (transaction.type == 'in' ? '+' : '-') }}{{ transaction.amount | money }}
                     </div>
                     <div class="tx-balance">zůstatek {{ transaction.new_balance | money }}</div>
                     </div>
                 </div>
+            } @empty {
+              @if (!loading) {
+                <div style="text-align:center;padding:2rem;color:var(--text-muted)">
+                  <i-tabler name="receipt-off"></i-tabler>
+                  <p>Zatím žádné transakce</p>
+                </div>
+              }
+            }
+            @if (!allLoaded && filteredTransactions.length > 0) {
+              <div style="text-align:center;padding:1rem;">
+                <button class="btn btn--ghost btn--sm" (click)="moreTransactions()" [disabled]="loadingMore">
+                  @if (loadingMore) { <i-tabler name="loader-2" class="spin"></i-tabler> }
+                  Načíst další
+                </button>
+              </div>
             }
           <!-- <div class="tx-row">
             <div class="tx-icon in">↓</div>
@@ -213,30 +233,39 @@
  
         <div class="balance-note">Dostupný zůstatek k převodu: <b>{{ data.balance | money }}</b></div>
  
-        <div class="field-group">
-        <label class="field-label" for="cilovy">Cílový účet</label>
-        <select id="cilovy">
-            <option>Pokladna 3.B – školní výlety</option>
-            <option>Pokladna sourozence – Tomáš Novák, 1.A</option>
-            <option>Jiný účet podle čísla…</option>
-        </select>
-        </div>
+        @if (otherAccounts.length) {
+          <div class="field-group">
+          <label class="field-label" for="cilovy">Cílový účet</label>
+          <schoolingo-dropdown [options]="otherAccounts" [value]="transfer.target_account_id" (valueChange)="transfer.target_account_id = $event" [clearable]="false" [settings]="{ locale: false }"></schoolingo-dropdown>
+          </div>
+        } @else {
+          <div class="message message--info">
+            <span>Nemáte jiný aktivní účet pro převod.</span>
+          </div>
+        }
         <div class="field-group">
         <label class="field-label" for="castka">Částka</label>
-        <input type="number" id="castka" placeholder="0 Kč">
+        <input type="number" id="castka" placeholder="0 Kč" [(ngModel)]="transfer.amount" min="1">
         </div>
  
         <div class="field-group">
-          <label class="field-label" for="zprava">Zpráva pro třídní učitelku (nepovinné)</label>
-          <textarea id="zprava" rows="3" placeholder="Např. důvod přeposlání platby…"></textarea>
+          <label class="field-label" for="zprava">Zpráva (nepovinné)</label>
+          <textarea id="zprava" rows="3" placeholder="Např. důvod přeposlaní platby…" [(ngModel)]="transfer.description"></textarea>
         </div>
+
+        @if (transferError) {
+          <div class="message message--danger">{{ transferError }}</div>
+        }
+        @if (transferSuccess) {
+          <div class="message message--success">Převod byl úspěšně proveden!</div>
+        }
  
         <div class="actions-row">
-            <button class="btn btn--primary">
-            <i-tabler name="user-share"></i-tabler>
+            <button class="btn btn--primary" (click)="submitTransfer()" [disabled]="transferLoading || !otherAccounts.length">
+            @if (transferLoading) { <i-tabler name="loader-2" class="spin"></i-tabler> } @else { <i-tabler name="user-share"></i-tabler> }
             Odeslat platbu
             </button>
-          <button class="btn btn--ghost">Zrušit</button>
+          <button class="btn btn--ghost" (click)="selectedTab.next(0)">Zrušit</button>
         </div>
       </div>
     </div>

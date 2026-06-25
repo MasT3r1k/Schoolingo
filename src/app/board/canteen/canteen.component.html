@@ -1,0 +1,13 @@
+<!-- Hlavní obsah modulu jídelny -->
+<router-outlet (activate)="onActivate($event)"></router-outlet>
+
+<!-- Plovoucí informace o kreditu (ve stylu toastu v pravém dolním rohu) -->
+@if (credit !== null) {
+<div style="position: fixed; bottom: 2rem; right: 2rem; z-index: 90; background: var(--surface, #fff); border: 1px solid var(--border); box-shadow: 0 10px 25px rgba(0,0,0,0.15); border-radius: 50px; padding: 0.5rem 1.25rem; display: flex; align-items: center; gap: 0.5rem;">
+  <div style="width: 28px; height: 28px; border-radius: 50%; background: rgba(var(--primary-rgb),0.1); display: flex; align-items: center; justify-content: center; color: var(--primary);">
+    <i-tabler name="coin" style="width: 16px; height: 16px;"></i-tabler>
+  </div>
+  <span style="font-weight: 500; color: var(--text-muted); font-size: 0.875rem;">{{ l.s('canteen.credit') }}:</span>
+  <strong style="font-size: 1rem; color: var(--text-color);">{{ credit | money }}</strong>
+</div>
+}

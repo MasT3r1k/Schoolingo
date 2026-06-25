@@ -20,7 +20,7 @@
             {{ left }}
         </div>
         }
-        <input type="text" name="amount" [class.left]="left != ''" [class.right]="right != ''" [(ngModel)]="amount">
+        <input type="number" name="amount" [class.left]="left != ''" [class.right]="right != ''" [(ngModel)]="amount" min="0" step="1">
         @if (right != '') {
         <div class="item right">
             {{ right }}
@@ -31,13 +31,34 @@
 
 <div class="form-group">
     <schoolingo-label id="date_due" text="payments.new_payment.date_due" [error]="errors.date_due"></schoolingo-label>
-    
     <date-picker type="single" [value]="date_due" (valueChange)="date_due = $event"></date-picker>
 </div>
 
+@if (categories.length) {
+<div class="form-group">
+    <schoolingo-label id="category" text="payments.new_payment.category" [error]="errors.category"></schoolingo-label>
+    <schoolingo-dropdown [options]="categories" [value]="selected_category" (valueChange)="selected_category = $event" [clearable]="false" [settings]="{ locale: false }"></schoolingo-dropdown>
+</div>
+}
+
+<div class="form-group">
+    <schoolingo-label id="class" text="payments.new_payment.class"></schoolingo-label>
+    <schoolingo-dropdown [options]="classes" [value]="selected_class" (valueChange)="selected_class = $event" [clearable]="false" [settings]="{ locale: false }"></schoolingo-dropdown>
+</div>
+
+@if (errors.server) {
+<div class="message message--danger">
+    <span>{{ errors.server }}</span>
+</div>
+}
+
 <div class="modal-actions">
-    <div class="btn btn--primary" (click)="newPayment()">
-        <i-tabler name="plus"></i-tabler>
+    <div class="btn" [class.btn--primary]="!loading" [class.btn--ghost]="loading" (click)="!loading && newPayment()">
+        @if (loading) {
+            <i-tabler name="loader-2" class="spin"></i-tabler>
+        } @else {
+            <i-tabler name="plus"></i-tabler>
+        }
         {{ l.s('payments.new_payment.button') }}
     </div>
 </div>

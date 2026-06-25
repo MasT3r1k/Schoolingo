@@ -398,20 +398,26 @@ export const config: SidebarGroup[] = [
                 permission: ['all'],
                 children: [{
                     item: 'sidebar.canteen.order',
-                    url: 'canteen/order',
+                    url: 'canteen/orders',
                     icon: 'click',
-                }, {
-                    item: 'sidebar.canteen.dispensing',
-                    url: 'canteen/dispensing',
-                    icon: 'chef-hat',
                 }, {
                     item: 'sidebar.canteen.meals',
                     url: 'canteen/meals',
                     icon: 'soup',
                 }, {
+                    item: 'canteen.payment_history',
+                    url: 'canteen/history',
+                    icon: 'history'
+                }, {
+                    item: 'sidebar.canteen.dispensing',
+                    url: 'canteen/issues',
+                    icon: 'chef-hat',
+                    permission: ['admin_staff', 'principal']
+                }, {
                     item: 'sidebar.canteen.settings',
                     url: 'canteen/settings',
                     icon: 'settings',
+                    permission: ['admin_staff', 'principal']
                 }]
             },
             {

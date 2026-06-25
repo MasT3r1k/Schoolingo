@@ -14,6 +14,7 @@ import { MoneyPipe } from "../../../pipes/money/money.pipe";
 import { StatCardComponent } from "@Components/stat-card/stat-card.component";
 import { Utils } from '@Schoolingo/utils';
 import { NewPaymentComponent } from '../modals/new-payment/new-payment.component';
+import { Config } from '@Schoolingo/config';
 
 @Component({
   standalone: true,
@@ -39,68 +40,38 @@ export class PaymentOverviewComponent implements OnInit {
   public filterClass = '';
   public filterStatus = '';
 
-  // ── Mock data: active fees (vedení) ──
-  public activeFees: any[] = [
-    // { id: 1, name: 'Školní výlet - Praha',        class: '7.A', deadline: '2025-03-15', paid: 18, total: 28 },
-    // { id: 2, name: 'Učebnice ČJ 7. ročník',        class: '7.A', deadline: '2025-02-28', paid: 26, total: 28 },
-    // { id: 3, name: 'Školní výlet - ZOO',            class: '6.B', deadline: '2025-03-20', paid: 24, total: 30 },
-    // { id: 5, name: 'Plavání - pololetní poplatek',  class: '5.A', deadline: '2025-04-01', paid: 12, total: 26 },
-    // { id: 6, name: 'Pracovní sešit MAT',            class: '9.D', deadline: '2025-02-10', paid: 28, total: 30 },
-  ];
+  // ── Admin data ──
+  public stats = {
+    total_collected: 0,
+    pending_amount: 0,
+    overdue_amount: 0,
+    active_fees_count: 0,
+    overdue_count: 0,
+  };
+  public activeFees: any[] = [];
+  public classes: any[] = [];
+  public payments: any[] = [];
 
-  // ── Mock data: classes (vedení + učitel) ──
-  public classes = [
-    { name: '5.A', ucitel: 'Mgr. Karásková',  students: 26, balance: 12450, outstanding: 3200, overdue: 2 },
-    { name: '6.B', ucitel: 'Mgr. Pospíšilová', students: 30, balance: 18700, outstanding: 1890, overdue: 1 },
-    { name: '7.A', ucitel: 'Mgr. Dvořák',      students: 28, balance: 22100, outstanding: 5340, overdue: 4 },
-    { name: '8.C', ucitel: 'Mgr. Tomášková',   students: 32, balance: 19800, outstanding: 890,  overdue: 0 },
-    { name: '9.D', ucitel: 'Mgr. Váňa',        students: 30, balance: 16200, outstanding: 2100, overdue: 3 },
-  ];
+  // ── Teacher data ──
+  public students7A: any[] = [];
 
-  // ── Mock data: all payments (vedení + učitel) ──
-  public payments = [
-    { id: 1, student: 'Novák Adam',        class: '7.A', parent: 'Novák Martin',    fee: 'Školní výlet - Praha',  amount: 890, date: '2025-01-28', method: 'Bankovní převod', status: 'confirmed' },
-    { id: 2, student: 'Horáčková Eliška', class: '7.A', parent: 'Horáčková Jana',  fee: 'Školní výlet - Praha',  amount: 890, date: '2025-01-30', method: 'Hotovost',        status: 'confirmed' },
-    { id: 3, student: 'Procházka Jakub',  class: '7.A', parent: 'Procházka Tomáš', fee: 'Učebnice ČJ',          amount: 245, date: '2025-01-25', method: 'Bankovní převod', status: 'confirmed' },
-    { id: 4, student: 'Blažková Tereza',  class: '6.B', parent: 'Blažková Petra',  fee: 'Školní výlet - ZOO',   amount: 420, date: '2025-02-01', method: 'Bankovní převod', status: 'pending'   },
-    { id: 5, student: 'Krejčí Ondřej',   class: '7.A', parent: 'Krejčí Pavel',    fee: 'Školní výlet - Praha',  amount: 890, date: '2025-01-20', method: 'Hotovost',        status: 'confirmed' },
-    { id: 6, student: 'Marková Karolína', class: '8.C', parent: 'Marková Lenka',   fee: 'Divadelní představení', amount: 150, date: '2025-01-15', method: 'Bankovní převod', status: 'confirmed' },
-  ];
-
-  // ── Mock data: students in teacher's class ──
-  public students7A = [
-    { name: 'Novák Adam',        initials: 'NA', balance: 1200, status: 'ok',      paid: 2, total: 3 },
-    { name: 'Horáčková Eliška', initials: 'HE', balance: 890,  status: 'ok',      paid: 3, total: 3 },
-    { name: 'Procházka Jakub',  initials: 'PJ', balance: 500,  status: 'ok',      paid: 2, total: 3 },
-    { name: 'Krejčí Ondřej',   initials: 'KO', balance: 0,    status: 'overdue',  paid: 1, total: 3 },
-    { name: 'Blažková Tereza',  initials: 'BT', balance: 200,  status: 'ok',      paid: 2, total: 3 },
-    { name: 'Marková Karolína', initials: 'MK', balance: 1500, status: 'ok',      paid: 3, total: 3 },
-    { name: 'Šimánek Radek',    initials: 'ŠR', balance: 0,    status: 'overdue',  paid: 0, total: 3 },
-  ];
-
-  // ── Mock data: parent/student fees ──
-  public myFees: { id: number; name: string; category: string; amount: number; deadline: string; status: string; paidDate?: string }[] = [
-    { id: 1, name: 'Školní výlet - Praha',    category: 'Výlet',    amount: 890, deadline: '2025-03-15', status: 'pending' },
-    { id: 2, name: 'Učebnice ČJ 7. ročník',  category: 'Učebnice', amount: 245, deadline: '2025-02-28', status: 'paid',    paidDate: '2025-01-25' },
-    { id: 3, name: 'Třídní fond - únor',      category: 'Fond',     amount: 100, deadline: '2025-02-15', status: 'pending' },
-  ];
-
-  // ── Mock data: payment history (parent) ──
-  public payHistory = [
-    { title: 'Učebnice ČJ 7. ročník',   date: '25. 1. 2025', amount: '−245', type: 'expense', method: 'Bankovní převod' },
-    { title: 'Třídní fond - prosinec',   date: '3. 12. 2024', amount: '−100', type: 'expense', method: 'Hotovost' },
-    { title: 'Plavecký kurz - podzim',   date: '10. 10. 2024', amount: '−600', type: 'expense', method: 'Bankovní převod' },
-    { title: 'Divadelní představení',    date: '5. 9. 2024',  amount: '−150', type: 'expense', method: 'Hotovost' },
-    { title: 'Přeplatek - vrácení',      date: '30. 6. 2024', amount: '+200', type: 'income',  method: 'Bankovní převod' },
-  ];
+  // ── Parent/Student data ──
+  public pendingFees: any[] = [];
+  public paidFees: any[] = [];
+  public payHistory: any[] = [];
+  public myBalance = 0;
+  public lastTransaction: any = null;
 
   // ── Computed getters ──
-  public get pendingFees() {
-    return this.myFees.filter(f => f.status === 'pending');
-  }
-
-  public get paidFees() {
-    return this.myFees.filter(f => f.status === 'paid');
+  public get filteredPayments() {
+    return this.payments.filter((p) => {
+      const matchSearch = !this.searchQuery ||
+        p.student?.toLowerCase().includes(this.searchQuery.toLowerCase()) ||
+        p.fee?.toLowerCase().includes(this.searchQuery.toLowerCase());
+      const matchClass = !this.filterClass || p.class === this.filterClass;
+      const matchStatus = !this.filterStatus || p.status === this.filterStatus;
+      return matchSearch && matchClass && matchStatus;
+    });
   }
 
   public get studentsPaid(): number {
@@ -124,7 +95,7 @@ export class PaymentOverviewComponent implements OnInit {
           { type: 'component', component: NewPaymentComponent }
         ]
       }
-    )
+    );
 
     this.modalManager.addModal(
       'payments_paytrip',
@@ -136,15 +107,42 @@ export class PaymentOverviewComponent implements OnInit {
           { type: 'component', component: PayModalComponent }
         ]
       }
-    )
+    );
   }
 
   loadData() {
-    // TODO: fetch from API based on role
-    // if (this.perm.checkPermission(['principal', 'admin'])) { ... }
-    // else if (this.perm.checkPermission(['teacher'])) { ... }
-    // else if (this.perm.checkPermission(['parent'])) { ... }
-    // else if (this.perm.checkPermission(['student'])) { ... }
+    this.loading = true;
+
+    // Admin / vedení
+    if (this.perm.checkPermission(['principal', 'admin'])) {
+      this.http.get<any>(`${Config.API_URL}/v1/payments/overview`, { withCredentials: true })
+        .subscribe({
+          next: (data) => {
+            this.loading = false;
+            if (data?.stats) this.stats = data.stats;
+            if (data?.active_fees) this.activeFees = data.active_fees;
+          },
+          error: () => { this.loading = false; }
+        });
+    }
+    // Rodič / žák
+    else if (this.perm.checkPermission(['parent', 'student'])) {
+      this.http.get<any>(`${Config.API_URL}/v1/payments/my_fees`, { withCredentials: true })
+        .subscribe({
+          next: (data) => {
+            this.loading = false;
+            if (Array.isArray(data)) {
+              this.pendingFees = data.filter((f) => f.status === 'pending' || f.status === 'partially_paid');
+              this.paidFees = data.filter((f) => f.status === 'paid');
+            }
+          },
+          error: () => { this.loading = false; }
+        });
+    }
+    // Učitel — zatím mock data (needs teacher-specific endpoint)
+    else {
+      this.loading = false;
+    }
   }
 
   confirmPayment(id: number) {
@@ -156,10 +154,15 @@ export class PaymentOverviewComponent implements OnInit {
     this.modalManager.openModal('payments_new_payment');
   }
 
-  openPayModal(feeId: number) {
-    const fee = this.myFees.find(f => f.id === feeId);
-    if (!fee) return;
-
-    this.modalManager.openModal('payments_paytrip', fee);
+  openPayModal(fee: any) {
+    this.modalManager.openModal('payments_paytrip', {
+      id: fee.payment_assign_id,
+      amount: parseFloat(fee.amount),
+      name: fee.name,
+      category: fee.category,
+      deadline: fee.due_date,
+      status: fee.status,
+      variable_symbol: fee.variable_symbol
+    });
   }
 }

@@ -1,0 +1,95 @@
+<div class="card" style="margin-bottom: 1.5rem;">
+  <div class="card-body" style="display: flex; gap: 1rem; align-items: center; flex-wrap: wrap;">
+    <input type="text" class="input" placeholder="Hledat jídlo…" style="max-width: 250px;">
+    
+    <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+      <button class="badge" [class.badge--neutral]="filter !== 'all'" [class.badge--primary]="filter === 'all'" (click)="setFilter('all')" style="border:none; cursor:pointer;">Vše</button>
+      <button class="badge" [class.badge--neutral]="filter !== 'meat'" [class.badge--primary]="filter === 'meat'" (click)="setFilter('meat')" style="border:none; cursor:pointer;">Masité</button>
+      <button class="badge" [class.badge--neutral]="filter !== 'veg'" [class.badge--primary]="filter === 'veg'" (click)="setFilter('veg')" style="border:none; cursor:pointer;">Vegetariánské</button>
+      <button class="badge" [class.badge--neutral]="filter !== 'sweet'" [class.badge--primary]="filter === 'sweet'" (click)="setFilter('sweet')" style="border:none; cursor:pointer;">Sladké</button>
+    </div>
+    
+    <div style="flex: 1;"></div>
+    
+    <select class="input" style="max-width: 200px;">
+      <option>Týden 27 (30.6.–4.7.)</option>
+      <option>Týden 28 (7.7.–11.7.)</option>
+    </select>
+    
+    <button class="btn btn--primary btn--sm role-admin-only">
+      <i-tabler name="plus"></i-tabler> Nové jídlo
+    </button>
+  </div>
+</div>
+
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem; margin-bottom: 2rem;">
+  @for (meal of meals; track meal.id) {
+    <div class="card">
+      <div class="card-body" style="display: flex; gap: 1rem;">
+        <div style="width: 60px; height: 60px; border-radius: var(--radius); background: var(--surface-hover); display: flex; align-items: center; justify-content: center;">
+          <i-tabler name="soup" style="color: var(--primary); width: 32px; height: 32px;"></i-tabler>
+        </div>
+        <div style="flex: 1;">
+          <div style="font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase;">{{ meal.cat }}</div>
+          <h3 style="margin: 0.25rem 0 0.5rem 0;">{{ meal.name }}</h3>
+          <div style="display: flex; gap: 1rem; font-size: 0.875rem; color: var(--text-muted); margin-bottom: 0.5rem;">
+            <span>{{ meal.kcal }} kcal</span>
+            <span style="font-weight: bold; color: var(--text-color);">{{ meal.price }} Kč</span>
+          </div>
+          <div style="display: flex; gap: 0.25rem; flex-wrap: wrap; margin-bottom: 0.75rem;">
+            @for (tag of meal.tags; track tag) {
+              <span class="badge badge--neutral">{{ tag }}</span>
+            }
+          </div>
+          <div class="role-admin-only" style="display: flex; gap: 0.5rem;">
+            <button class="btn btn--ghost btn--sm">Upravit</button>
+            <button class="btn btn--ghost btn--danger btn--sm">Smazat</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  }
+</div>
+
+<div class="card">
+  <div class="card-header">
+    <div style="display: flex; flex-direction: column;">
+      <h2>Jídelníček — týden 27</h2>
+      <span class="role-admin-only" style="font-size: 0.875rem; color: var(--text-muted);">Klikněte na buňku pro úpravu přiřazeného jídla</span>
+    </div>
+  </div>
+  <div class="card-body">
+    <div class="table-container">
+      <table class="table">
+        <thead class="table__head">
+          <tr>
+            <th class="table__th">Varianta</th>
+            <th class="table__th">Po 30.6.</th>
+            <th class="table__th">Út 1.7.</th>
+            <th class="table__th">St 2.7.</th>
+            <th class="table__th">Čt 3.7.</th>
+            <th class="table__th">Pá 4.7.</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr class="table__row">
+            <td class="table__td"><strong>Oběd 1</strong></td>
+            <td class="table__td"><div>Svíčková na smetaně<br><small style="color: var(--text-muted);">89 Kč</small></div></td>
+            <td class="table__td"><div>Špagety boloňské<br><small style="color: var(--text-muted);">79 Kč</small></div></td>
+            <td class="table__td"><div>Rybí filé, brambory<br><small style="color: var(--text-muted);">82 Kč</small></div></td>
+            <td class="table__td"><div>Kuřecí nudličky kari<br><small style="color: var(--text-muted);">75 Kč</small></div></td>
+            <td class="table__td"><div>Smažený sýr<br><small style="color: var(--text-muted);">79 Kč</small></div></td>
+          </tr>
+          <tr class="table__row">
+            <td class="table__td"><strong>Oběd 2</strong></td>
+            <td class="table__td"><div>Kuřecí řízek<br><small style="color: var(--text-muted);">79 Kč</small></div></td>
+            <td class="table__td"><div>Hovězí guláš<br><small style="color: var(--text-muted);">85 Kč</small></div></td>
+            <td class="table__td"><div>Zapečené brambory<br><small style="color: var(--text-muted);">79 Kč</small></div></td>
+            <td class="table__td"><div>Vepřová pečeně<br><small style="color: var(--text-muted);">85 Kč</small></div></td>
+            <td class="table__td"><div>Kuřecí steak<br><small style="color: var(--text-muted);">89 Kč</small></div></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

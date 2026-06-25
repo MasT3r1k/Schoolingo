@@ -9,8 +9,9 @@
         </div>
         <select class="form-input" style="width: auto;" [(ngModel)]="filterClass">
           <option value="">Všechny třídy</option>
-          <option value="1.A">1.A</option>
-          <option value="3.B">3.B</option>
+          @for (cls of classes; track cls.class_id) {
+            <option [value]="cls.class_id">{{ cls.name }}</option>
+          }
         </select>
         <button class="btn btn--primary btn--sm">
           <i-tabler name="plus"></i-tabler> Nová položka
@@ -32,30 +33,31 @@
           </tr>
         </thead>
         <tbody>
-          @for (item of items; track item.id) {
+          @for (item of filteredItems; track item.payment_fee_id) {
           <tr>
             <td><strong>{{ item.name }}</strong></td>
-            <td><span class="badge badge--neutral">{{ item.class_name }}</span></td>
-            <td class="mono">{{ item.amount }} Kč</td>
-            <td class="text--muted">{{ item.created }}</td>
-            <td class="text--muted">{{ item.deadline }}</td>
+            <td><span class="badge badge--neutral">{{ item.class_name ?? 'Všechny' }}</span></td>
+            <td class="mono">{{ item.amount | money }}</td>
+            <td class="text--muted">{{ Utils.formatDateShort(item.created_at) }}</td>
+            <td class="text--muted">{{ Utils.formatDateShort(item.due_date) }}</td>
             <td>
               <div style="display: flex; align-items: center; gap: 0.5rem;">
-                <span style="font-size: 0.8125rem;">{{ item.paid }} / {{ item.total }}</span>
+                <span style="font-size: 0.8125rem;">{{ item.paid ?? 0 }} / {{ item.total_assigned ?? 0 }}</span>
                 <div style="width: 60px; height: 4px; background: var(--surface-2); border-radius: 4px; overflow: hidden;">
-                  <div style="height: 100%; background: var(--primary);" [style.width.%]="(item.paid/item.total)*100"></div>
+                  <div style="height: 100%; background: var(--primary);" [style.width.%]="item.total_assigned > 0 ? (item.paid / item.total_assigned) * 100 : 0"></div>
                 </div>
               </div>
             </td>
             <td>
-              <span class="badge badge--with-dot" [class.badge--success]="item.status === 'closed'" [class.badge--warning]="item.status === 'active'">
-                <span class="badge-dot" [class.badge-dot--success]="item.status === 'closed'" [class.badge-dot--warning]="item.status === 'active'"></span>
-                {{ item.status === 'active' ? 'Aktivní' : 'Uzavřeno' }}
+              <span class="badge badge--with-dot" [class.badge--success]="isClosed(item)" [class.badge--warning]="!isClosed(item)">
+                <span class="badge-dot" [class.badge-dot--success]="isClosed(item)" [class.badge-dot--warning]="!isClosed(item)"></span>
+                {{ isClosed(item) ? 'Uzavřeno' : 'Aktivní' }}
               </span>
             </td>
             <td style="text-align: right;">
-              <button class="btn btn--ghost btn--sm btn--icon"><i-tabler name="edit"></i-tabler></button>
-              <button class="btn btn--ghost btn--sm btn--icon text--danger"><i-tabler name="trash"></i-tabler></button>
+              <button class="btn btn--ghost btn--sm btn--icon" title="Smazat" (click)="deleteFee(item.payment_fee_id)">
+                <i-tabler name="trash" class="text--danger"></i-tabler>
+              </button>
             </td>
           </tr>
           } @empty {
