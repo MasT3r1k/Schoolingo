@@ -1,76 +1,194 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { IconsModule } from '@Schoolingo/icons';
+import { HttpClient } from '@angular/common/http';
+import { Config } from '../../../infrastructure/config';
+import { MoneyPipe } from "../../../pipes/money/money.pipe";
+import { Locale } from '@Schoolingo/locale';
+import { Router } from '@angular/router';
+import moment from 'moment';
+import { Authentication } from '@Schoolingo/authentication';
+
+interface MedicalAPI {
+  record_id: number,
+  student_id: number,
+  type: string,
+  title: string,
+  description: string | null,
+  severity: string, 
+  is_food_allergy: boolean,
+  allergen_codes: string,
+  created_at: Date
+}
 
 @Component({
-  selector: 'app-canteen-orders',
   standalone: true,
-  imports: [CommonModule, IconsModule],
+  imports: [CommonModule, IconsModule, MoneyPipe],
   templateUrl: './orders.component.html',
   styleUrls: ['./orders.component.css']
 })
 export class OrdersComponent implements OnInit {
-  // Hardcoded fake data based on HTML mock
-  weekName = 'Týden 27 · 30. 6. – 4. 7. 2026';
+  private user = inject(Authentication)
+  public l = inject(Locale);
+  private http = inject(HttpClient);
+  credit: number | null = null;
+
+  public showSaveCard(): boolean {
+    return this.hasChanges || this.submitting || this.submitSuccess;
+  }
+
+  weekStart = moment(); // moment
+  weekName = '';
+  days: any[] = [];
+  allergens: string[] = [];
+  selections: { [day: string]: any } = {};
+  initialSelections: { [day: string]: any } = {};
   
-  days = [
-    {
-      code: 'Po', name: 'Pondělí', date: '30. 6.',
-      options: [
-        { id: 1, label: 'Svíčková na smetaně, houskový knedlík', num: 'Oběd 1', price: 89, kcal: 640, tags: ['Lepek', 'Mléko'] },
-        { id: 2, label: 'Kuřecí řízek, bramborová kaše', num: 'Oběd 2', price: 79, kcal: 710, tags: ['Lepek', 'Vejce'] },
-        { id: 3, label: 'Zeleninové rizoto s parmazánem', num: 'Oběd 3 · vege', price: 69, kcal: 520, tags: ['Mléko', 'Celer'] }
-      ]
-    },
-    {
-      code: 'Út', name: 'Úterý', date: '1. 7.',
-      options: [
-        { id: 4, label: 'Špagety boloňské, parmazán', num: 'Oběd 1', price: 79, kcal: 680, tags: ['Lepek', 'Mléko'] },
-        { id: 5, label: 'Hovězí guláš, houskový knedlík', num: 'Oběd 2', price: 85, kcal: 750, tags: ['Lepek'] },
-        { id: 6, label: 'Čočka na kyselo, vejce, chléb', num: 'Oběd 3 · vege', price: 65, kcal: 480, tags: ['Lepek', 'Vejce'] }
-      ]
-    },
-    {
-      code: 'St', name: 'Středa', date: '2. 7.',
-      options: [
-        { id: 7, label: 'Rybí filé, vařené brambory, tatarka', num: 'Oběd 1', price: 82, kcal: 590, tags: ['Ryby', 'Vejce'] },
-        { id: 8, label: 'Zapečené brambory se zelím a klobásou', num: 'Oběd 2', price: 79, kcal: 670, tags: ['Mléko'] },
-        { id: 9, label: 'Houbový guláš, knedlík', num: 'Oběd 3 · vege', price: 69, kcal: 540, tags: ['Lepek'] }
-      ]
-    },
-    {
-      code: 'Čt', name: 'Čtvrtek', date: '3. 7.',
-      options: [
-        { id: 10, label: 'Kuřecí nudličky na kari s rýží', num: 'Oběd 1', price: 75, kcal: 620, tags: ['Sója'] },
-        { id: 11, label: 'Vepřová pečeně, zelí, knedlík', num: 'Oběd 2', price: 85, kcal: 730, tags: ['Lepek'] },
-        { id: 12, label: 'Palačinky s tvarohem a ovocem', num: 'Oběd 3 · sladký', price: 62, kcal: 450, tags: ['Lepek', 'Mléko', 'Vejce'] }
-      ]
-    },
-    {
-      code: 'Pá', name: 'Pátek', date: '4. 7.',
-      options: [
-        { id: 13, label: 'Smažený sýr, brambory, tatarka', num: 'Oběd 1', price: 79, kcal: 700, tags: ['Lepek', 'Mléko', 'Vejce'] },
-        { id: 14, label: 'Kuřecí steak, grilovaná zelenina', num: 'Oběd 2', price: 89, kcal: 560, tags: [] },
-        { id: 15, label: 'Zelný salát s tofu a quinoou', num: 'Oběd 3 · vege', price: 59, kcal: 390, tags: ['Sója'] }
-      ]
-    }
-  ];
-
-  selections: { [day: string]: any } = {
-    'Po': this.days[0].options[0], // Svíčková
-    'Út': this.days[1].options[1], // Guláš
-    'St': null, // Bez oběda
-    'Čt': this.days[3].options[0], // Kari
-    'Pá': this.days[4].options[1]  // Steak
-  };
-
-  title = 'Objednávky';
-  subtitle = 'Výběr obědů na následující týden';
-
   submitting = false;
   submitSuccess = false;
+  accountId: number | null = null;
 
-  ngOnInit() {}
+  public refreshCredit(): void {
+    this.http.get<{credit: number | null, account_id: number | null}>(Config.API_URL + '/v1/canteen/credit', { withCredentials: true })
+      .subscribe((res) => {
+        console.log(res)
+        this.credit = res.credit;
+        this.accountId = res.account_id;
+      });
+      
+  }
+
+  ngOnInit() {
+    this.weekStart = moment().startOf('isoWeek');
+    this.refreshCredit()
+
+    if (['student', 'parent'].includes(this.user.getRole())) {      
+      this.http.get<MedicalAPI[]>(
+        Config.API_URL + `/v1/student/${this.user.getId()}/medical`,
+        { withCredentials: true }
+      )
+      .subscribe((data) => {
+        data.forEach((medical: MedicalAPI) => {
+          if (medical.is_food_allergy) {
+            this.allergens.push(...medical.allergen_codes.split(','))
+          }
+        })
+        this.loadWeek();
+      });
+    } else {
+      this.loadWeek();
+    }
+  }
+
+  public checkAllergens(allergens: any): boolean {
+    if (!allergens) return false
+    const optAllergens = allergens.split(',');
+    for(let i = 0;i < optAllergens.length;i++) {
+      if (this.allergens.includes(optAllergens[i])) {
+        return true
+      }
+    }
+    return false
+  }
+
+  loadWeek() {
+    const week_start = this.weekStart.clone().startOf('isoWeek')
+    const week_end = this.weekStart.clone().endOf('isoWeek')
+    this.weekName = `${this.l.s('time.week')}: ${week_start.format('D. M.')} – ${week_end.format('D. M. YYYY')}`;
+
+    this.http.get<{ menu: any[], orders: any[] }>(
+      Config.API_URL + `/v1/canteen/menu?start_date=${week_start.format('YYYY-MM-DD')}&end_date=${week_end.format('YYYY-MM-DD')}`,
+      { withCredentials: true }
+    )
+    .subscribe((data) => {
+      this.buildDays(data.menu, data.orders)
+    }, (err) => {
+      this.buildDays([], [])
+    })
+  }
+
+  buildDays(menuItems: any[], orders: any[]) {
+    this.days = [];
+    this.selections = {};
+    this.initialSelections = {};
+
+    for (let i = 0; i < 5; i++) {
+      const d = this.weekStart.clone().add(i, 'days');
+      const dateStr = d.format('YYYY-MM-DD');
+      
+      const dayMeals = menuItems.filter((m: any) => moment(m.date).format('YYYY-MM-DD') === dateStr);
+      
+      const options = dayMeals.map((m: any) => {
+        // limit_count check
+        let available = true;
+        if (m.limit_count !== null && m.ordered_count >= m.limit_count) {
+          available = false;
+        }
+
+        return {
+          id: m.menu_id,
+          label: m.name,
+          num: `Oběd ${m.variant_index}`,
+          price: parseFloat(m.price),
+          kcal: m.calories,
+          allergens: m.allergens,
+          is_allergic: this.checkAllergens(m.allergens),
+          tags: m.allergens ? m.allergens.split(',') : [],
+          available: available
+        };
+      });
+
+      const dayCode = d.format('dd');
+      this.days.push({
+        code: dayCode,
+        index: d.day(),
+        date: d.format('D. M.'),
+        dateStr: dateStr,
+        options: options
+      });
+
+      const order = orders.find((o: any) => moment(o.date).format('YYYY-MM-DD') === dateStr);
+      if (order) {
+        const selectedOpt = options.find(o => o.id === order.menu_id);
+        this.selections[dayCode] = selectedOpt || null;
+      } else {
+        this.selections[dayCode] = null;
+      }
+    }
+
+    for (const key in this.selections) {
+      this.initialSelections[key] = this.selections[key];
+    }
+  }
+
+  prevWeek() {
+    this.weekStart = this.weekStart.clone().subtract(1, 'week');
+    this.loadWeek();
+  }
+
+  nextWeek() {
+    this.weekStart = this.weekStart.clone().add(1, 'week');
+    this.loadWeek();
+  }
+
+  currentWeek() {
+    this.weekStart = moment().startOf('isoWeek');
+    this.loadWeek();
+  }
+
+  get hasChanges(): boolean {
+    return this.days.some(d => {
+      const initId = this.initialSelections[d.code]?.id || null;
+      const currId = this.selections[d.code]?.id || null;
+      return initId !== currId;
+    });
+  }
+
+  revertChanges() {
+    for (const key in this.initialSelections) {
+      this.selections[key] = this.initialSelections[key];
+    }
+  }
 
   selectOption(dayCode: string, option: any) {
     this.selections[dayCode] = option;
@@ -79,9 +197,16 @@ export class OrdersComponent implements OnInit {
   get summary() {
     let total = 0;
     const items = this.days.map(d => {
+      const initId = this.initialSelections[d.code]?.id || null;
+      const currId = this.selections[d.code]?.id || null;
+      
       const sel = this.selections[d.code];
-      if (sel) {
+      
+      if (sel && initId !== currId) {
         total += sel.price;
+      }
+
+      if (sel) {
         return { day: d.code, name: sel.label, price: sel.price, none: false };
       } else {
         return { day: d.code, name: 'Bez oběda', price: 0, none: true };
@@ -92,10 +217,38 @@ export class OrdersComponent implements OnInit {
 
   submitOrder() {
     this.submitting = true;
-    setTimeout(() => {
-      this.submitting = false;
-      this.submitSuccess = true;
-      setTimeout(() => this.submitSuccess = false, 3000);
-    }, 1500);
+    
+    const payloadSelections = this.days.map(d => {
+      return {
+        date: d.dateStr,
+        menu_id: this.selections[d.code]?.id || null
+      };
+    });
+
+    this.http.post(`${Config.API_URL}/v1/canteen/order`, {
+      selections: payloadSelections,
+      account_id: this.accountId
+    }, { withCredentials: true }).subscribe({
+      next: () => {
+        this.submitting = false;
+        this.submitSuccess = true;
+        
+        for (const key in this.selections) {
+          this.initialSelections[key] = this.selections[key];
+        }
+
+        setTimeout(() => this.submitSuccess = false, 3000);
+      },
+      error: (err) => {
+        console.error('Submit error', err);
+        this.submitting = false;
+      }
+    });
+  }
+
+  private router = inject(Router);
+
+  addCreditModal() {
+    this.router.navigate(['/payments/overview']);
   }
 }

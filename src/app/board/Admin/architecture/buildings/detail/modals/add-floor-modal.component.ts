@@ -25,7 +25,7 @@ import { Config } from '@Schoolingo/config';
         </div>
     </div>
     <div class="modal-actions">
-        <button class="btn btn--secondary" (click)="closeModal()">{{ l.s('cancel') }}</button>
+        <button class="btn btn--secondary" (click)="closeModal()">{{ l.s('buttons.cancel') }}</button>
         <button class="btn btn--primary" (click)="saveFloor()">{{ l.s('buttons.save') || 'Uložit' }}</button>
     </div>
   `,

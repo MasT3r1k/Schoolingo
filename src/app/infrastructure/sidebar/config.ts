@@ -311,6 +311,11 @@ export const config: SidebarGroup[] = [
                     url: 'payments/accounts',
                     icon: 'pig-money',
                 }, {
+                    item: 'sidebar.payments.manage',
+                    url: 'payments/manage',
+                    icon: 'settings',
+                    permission: ['admin_staff', 'principal']
+                }, {
                     item: 'sidebar.payments.settings',
                     url: 'payments/settings',
                     icon: 'settings',

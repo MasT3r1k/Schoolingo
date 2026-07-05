@@ -1,1 +1,314 @@
-/* Custom styles removed. UI depends completely on global styles. */
+/* ═══════════════════════════════════════════
+   DATE BADGE IN HEADER
+   ═══════════════════════════════════════════ */
+.issues-date-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--text-muted);
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-full);
+    padding: 0.3rem 0.85rem;
+    text-transform: capitalize;
+}
+
+.issues-date-badge i-tabler {
+    width: 14px;
+    height: 14px;
+    color: var(--primary);
+}
+
+/* ═══════════════════════════════════════════
+   STATS GRID
+   ═══════════════════════════════════════════ */
+.issues-stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.stat-card {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1.1rem 1.25rem;
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-sm);
+    transition: transform 0.15s, box-shadow 0.15s;
+}
+
+.stat-card:hover {
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-md, var(--shadow));
+}
+
+.stat-card__icon {
+    width: 40px;
+    height: 40px;
+    border-radius: var(--radius-md);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.stat-card__icon i-tabler {
+    width: 20px;
+    height: 20px;
+}
+
+.stat-card--primary .stat-card__icon {
+    background: rgba(var(--primary-rgb), 0.12);
+    color: var(--primary);
+}
+
+.stat-card--success .stat-card__icon {
+    background: var(--success-muted);
+    color: var(--success);
+}
+
+.stat-card--warning .stat-card__icon {
+    background: var(--warning-muted);
+    color: var(--warning);
+}
+
+.stat-card--danger .stat-card__icon {
+    background: var(--danger-muted);
+    color: var(--danger);
+}
+
+.stat-card__body {
+    display: flex;
+    flex-direction: column;
+    gap: 0.1rem;
+    min-width: 0;
+}
+
+.stat-card__label {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    white-space: nowrap;
+}
+
+.stat-card__value {
+    font-size: 1.85rem;
+    font-weight: 800;
+    color: var(--text);
+    line-height: 1;
+}
+
+.stat-card__sub {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+}
+
+.stat-card__sub--success { color: var(--success); font-weight: 600; }
+.stat-card__sub--danger  { color: var(--danger);  font-weight: 600; }
+
+/* ═══════════════════════════════════════════
+   PROGRESS BAR
+   ═══════════════════════════════════════════ */
+.issues-progress-row {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 1.75rem;
+}
+
+.issues-progress-bar-wrap {
+    flex: 1;
+    height: 8px;
+    background: var(--surface-3);
+    border-radius: var(--radius-full);
+    overflow: visible;
+    position: relative;
+}
+
+.issues-progress-bar__issued {
+    position: absolute;
+    left: 0;
+    top: 0;
+    height: 100%;
+    background: var(--success);
+    border-radius: var(--radius-full);
+    transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.issues-progress-bar__cancelled {
+    position: absolute;
+    top: 0;
+    height: 100%;
+    background: var(--danger);
+    border-radius: var(--radius-full);
+    opacity: 0.6;
+    transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1), left 0.5s;
+}
+
+.issues-progress-label {
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: var(--text-muted);
+    min-width: 38px;
+    text-align: right;
+}
+
+/* ═══════════════════════════════════════════
+   ISSUES TABLE SECTION
+   ═══════════════════════════════════════════ */
+.issues-section {
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+}
+
+.issues-section__toolbar {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 0.875rem 1.25rem;
+    border-bottom: 1px solid var(--border);
+    background: var(--surface-3);
+    flex-wrap: wrap;
+}
+
+.issues-count {
+    margin-left: auto;
+    flex-shrink: 0;
+}
+
+/* ═══════════════════════════════════════════
+   LOADING & EMPTY STATES
+   ═══════════════════════════════════════════ */
+.issues-loading {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem;
+    padding: 3rem;
+    color: var(--text-muted);
+    font-size: 0.9rem;
+}
+
+.issues-empty {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 3rem;
+    gap: 0.5rem;
+    color: var(--text-muted);
+    font-size: 0.9rem;
+}
+
+.issues-empty i-tabler {
+    width: 48px;
+    height: 48px;
+    opacity: 0.25;
+}
+
+.issues-empty p {
+    margin: 0;
+}
+
+/* ═══════════════════════════════════════════
+   MODERN TABLE ROWS — OVERRIDES
+   ═══════════════════════════════════════════ */
+.row--issued {
+    opacity: 0.65;
+}
+
+.row--cancelled {
+    opacity: 0.45;
+}
+
+/* ═══════════════════════════════════════════
+   PERSON CELL
+   ═══════════════════════════════════════════ */
+.issue-person {
+    display: flex;
+    align-items: center;
+    gap: 0.625rem;
+}
+
+.issue-person__avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: var(--radius-full);
+    background: rgba(var(--primary-rgb), 0.15);
+    color: var(--primary);
+    font-size: 0.7rem;
+    font-weight: 800;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+}
+
+.issue-person__name {
+    font-weight: 600;
+    font-size: 0.875rem;
+    color: var(--text);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* ═══════════════════════════════════════════
+   MEAL NAME CELL
+   ═══════════════════════════════════════════ */
+.issue-meal-name {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 180px;
+    display: block;
+}
+
+/* ═══════════════════════════════════════════
+   BADGE ICONS
+   ═══════════════════════════════════════════ */
+.badge i-tabler {
+    width: 12px;
+    height: 12px;
+    vertical-align: -1px;
+    margin-right: 2px;
+}
+
+.issue-done-label {
+    color: var(--text-muted);
+    font-size: 0.85rem;
+}
+
+/* ═══════════════════════════════════════════
+   SKELETON LOADER
+   ═══════════════════════════════════════════ */
+.skeleton-line {
+    background: linear-gradient(
+        90deg,
+        var(--surface-3) 25%,
+        var(--surface-2) 50%,
+        var(--surface-3) 75%
+    );
+    background-size: 200% 100%;
+    animation: skeleton-shimmer 1.4s infinite linear;
+}
+
+@keyframes skeleton-shimmer {
+    0%   { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
+}

@@ -1,0 +1,216 @@
+.generator-loading-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem 0.5rem;
+  text-align: center;
+}
+
+.magic-wand-wrap {
+  position: relative;
+  width: 70px;
+  height: 70px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 1.25rem;
+}
+
+.wand-icon {
+  width: 44px;
+  height: 44px;
+  color: var(--primary, #4f46e5);
+  animation: tiltAndWiggle 2s infinite ease-in-out;
+}
+
+@keyframes tiltAndWiggle {
+  0%, 100% { transform: rotate(0deg) scale(1); }
+  25% { transform: rotate(-15deg) scale(1.1); }
+  50% { transform: rotate(15deg) scale(1); }
+  75% { transform: rotate(-5deg) scale(1.05); }
+}
+
+.sparkle {
+  position: absolute;
+  font-size: 1rem;
+  color: var(--accent, #fbbf24);
+  opacity: 0;
+  pointer-events: none;
+}
+
+.sp-1 { top: 10px; left: 10px; animation: sparkleAnim 1.4s infinite 0.1s; --dx: -15px; --dy: -15px; }
+.sp-2 { top: 5px; right: 15px; animation: sparkleAnim 1.6s infinite 0.5s; --dx: 15px; --dy: -20px; }
+.sp-3 { bottom: 15px; left: 15px; animation: sparkleAnim 1.5s infinite 0.9s; --dx: -20px; --dy: 10px; }
+.sp-4 { bottom: 10px; right: 10px; animation: sparkleAnim 1.3s infinite 0.3s; --dx: 20px; --dy: 15px; }
+
+@keyframes sparkleAnim {
+  0% { transform: translate(0, 0) scale(0); opacity: 0; }
+  50% { opacity: 1; }
+  100% { transform: translate(var(--dx), var(--dy)) scale(1.2); opacity: 0; }
+}
+
+.generator-loading-title {
+  font-size: 1.15rem;
+  font-weight: 600;
+  margin: 0 0 1rem 0;
+  color: var(--text, #1f2937);
+}
+
+.food-evaluator {
+  background: var(--surface-2, #f3f4f6);
+  border: 1px solid var(--border, #e5e7eb);
+  border-radius: 8px;
+  padding: 0.5rem 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 1.5rem;
+  width: 100%;
+  box-sizing: border-box;
+  justify-content: center;
+  box-shadow: var(--shadow-sm);
+}
+
+.eval-label {
+  font-size: 0.75rem;
+  color: var(--text-muted, #6b7280);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.eval-value {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--primary, #4f46e5);
+  animation: pulse 1s infinite alternate;
+}
+
+.generation-steps {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  text-align: left;
+  margin-bottom: 1.5rem;
+  padding: 0 0.5rem;
+  box-sizing: border-box;
+}
+
+.step-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  opacity: 0.35;
+  transition: opacity 0.3s ease;
+}
+
+.step-item.active {
+  opacity: 1;
+}
+
+.step-item.done {
+  opacity: 1;
+}
+
+.step-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+}
+
+.step-text {
+  font-size: 0.875rem;
+  color: var(--text, #374151);
+}
+
+.check-success {
+  color: var(--success, #10b981);
+  width: 20px;
+  height: 20px;
+}
+
+.circle-muted {
+  color: var(--text-muted, #d1d5db);
+  width: 18px;
+  height: 18px;
+}
+
+.spinner-mini {
+  width: 14px;
+  height: 14px;
+  border: 2px solid var(--border);
+  border-top-color: var(--primary, #4f46e5);
+  border-radius: 50%;
+  animation: spin 0.8s infinite linear;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.generator-result-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem 0.5rem;
+  text-align: center;
+}
+
+.result-icon-wrap {
+  width: 56px;
+  height: 56px;
+  margin-bottom: 1.25rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.res-icon {
+  width: 56px;
+  height: 56px;
+}
+
+.success-color {
+  color: var(--success, #10b981);
+}
+
+.error-color {
+  color: var(--danger, #ef4444);
+}
+
+.result-title {
+  font-size: 1.2rem;
+  font-weight: 700;
+  margin: 0 0 0.5rem 0;
+  color: var(--text);
+}
+
+.result-desc {
+  font-size: 0.9rem;
+  color: var(--text-muted);
+  max-width: 320px;
+  margin: 0;
+  line-height: 1.4;
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.3s ease-out both;
+}
+
+.animate-pop-in {
+  animation: popIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) both;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes popIn {
+  from { transform: scale(0.85); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}

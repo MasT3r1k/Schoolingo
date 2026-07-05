@@ -1,59 +1,205 @@
-<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); gap: 1.5rem; margin-bottom: 2rem;">
-  <div class="card">
-    <div class="card-header">
-      <h2>Základní nastavení</h2>
+<div class="settings-container">
+  <!-- Success & Error Banners -->
+  @if (successMsg) {
+    <div class="alert alert--success">
+      <i-tabler name="check"></i-tabler>
+      <span>{{ successMsg }}</span>
     </div>
-    <div class="card-body">
-      <div style="display: flex; flex-direction: column; gap: 1.5rem;">
-        <div>
-          <label style="display: flex; justify-content: space-between; align-items: center; font-weight: 500; cursor: pointer;">
-            Povolit modul jídelny
-            <input type="checkbox" checked style="width: 1.25rem; height: 1.25rem;">
-          </label>
+  }
+  @if (errorMsg) {
+    <div class="alert alert--danger">
+      <i-tabler name="alert-circle"></i-tabler>
+      <span>{{ errorMsg }}</span>
+    </div>
+  }
+
+  <div class="settings-grid">
+    <!-- Left Column: General Configuration -->
+    <div class="card">
+      <div class="card-top"></div>
+      <div class="card-header">
+        <h2>
+          <i-tabler name="settings"></i-tabler>
+          <span>{{ l.s('canteen.settings_general_title') || 'Základní nastavení' }}</span>
+        </h2>
+      </div>
+      <div class="card-body">
+        <div class="form-group flex-row-align">
+          <span class="form-label-bold">{{ l.s('canteen.settings_enable_canteen') || 'Povolit modul jídelny' }}</span>
+          <schoolingo-checkbox 
+            [checked]="settings.canteen_enabled === '1'" 
+            (click)="settings.canteen_enabled = (settings.canteen_enabled === '1' ? '0' : '1')">
+          </schoolingo-checkbox>
         </div>
         
-        <div>
-          <label style="font-weight: 500; display: block; margin-bottom: 0.5rem;">Uzávěrka objednávek na další týden</label>
-          <div style="display:flex; gap: 0.5rem;">
-            <select class="input" style="flex: 1;">
-              <option>Pátek</option>
-              <option>Sobota</option>
-              <option selected>Neděle</option>
-            </select>
-            <input type="time" class="input" value="20:00" style="width: 120px;">
+        <div class="form-group flex-row-align border-top">
+          <span class="form-label-bold">{{ l.s('canteen.settings_enable_breakfast') || 'Povolit snídaně (střední školy, domovy mládeže)' }}</span>
+          <schoolingo-checkbox 
+            [checked]="settings.canteen_breakfast_enabled === '1'" 
+            (click)="settings.canteen_breakfast_enabled = (settings.canteen_breakfast_enabled === '1' ? '0' : '1')">
+          </schoolingo-checkbox>
+        </div>
+
+        <div class="form-group flex-row-align border-top">
+          <span class="form-label-bold">{{ l.s('canteen.settings_enable_dinner') || 'Povolit večeře (střední školy, domovy mládeže)' }}</span>
+          <schoolingo-checkbox 
+            [checked]="settings.canteen_dinner_enabled === '1'" 
+            (click)="settings.canteen_dinner_enabled = (settings.canteen_dinner_enabled === '1' ? '0' : '1')">
+          </schoolingo-checkbox>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">{{ l.s('canteen.settings_deadline') || 'Uzávěrka objednávek na další týden' }}</label>
+          <div class="deadline-inputs">
+            <schoolingo-dropdown 
+              [options]="getDeadlineDays()" 
+              [(ngModel)]="settings.canteen_deadline_day"
+              [settings]="{ locale: false }"
+              [clearable]="false"
+              class="flex-1">
+            </schoolingo-dropdown>
+            <input 
+              type="time" 
+              class="form-input time-input" 
+              [(ngModel)]="settings.canteen_deadline_time">
           </div>
-          <div style="font-size: 0.875rem; color: var(--text-muted); margin-top: 0.5rem;">Po tomto čase nebude možné měnit objednávky na následující týden.</div>
+          <span class="form-help">{{ l.s('canteen.settings_deadline_help') || 'Po tomto dni a času již nebude možné měnit objednávky na nadcházející týden.' }}</span>
+        </div>
+
+        <div class="form-group border-top">
+          <div class="flex-row-align margin-bottom-sm">
+            <span class="form-label-bold">{{ l.s('canteen.settings_flat_price_enabled') || 'Jednotná cena pro všechna jídla' }}</span>
+            <schoolingo-checkbox 
+              [checked]="settings.canteen_flat_price_enabled === '1'" 
+              (click)="settings.canteen_flat_price_enabled = (settings.canteen_flat_price_enabled === '1' ? '0' : '1')">
+            </schoolingo-checkbox>
+          </div>
+          @if (settings.canteen_flat_price_enabled === '1') {
+            <div class="flat-price-input-container">
+              <label class="form-label">{{ l.s('canteen.settings_flat_price_val') || 'Hodnota jednotné ceny (Kč)' }}</label>
+              <input 
+                type="number" 
+                class="form-input" 
+                [(ngModel)]="settings.canteen_flat_price"
+                placeholder="0">
+            </div>
+          }
+        </div>
+      </div>
+    </div>
+
+    <!-- Right Column: Payments & Account Binding -->
+    <div class="card">
+      <div class="card-top"></div>
+      <div class="card-header">
+        <h2>
+          <i-tabler name="wallet"></i-tabler>
+          <span>{{ l.s('canteen.settings_payments_title') || 'Propojení s platbami' }}</span>
+        </h2>
+      </div>
+      <div class="card-body">
+        <div class="form-group">
+          <label class="form-label">{{ l.s('canteen.settings_payment_account') || 'Účet pro strhávání plateb za obědy' }}</label>
+          <schoolingo-dropdown 
+            [options]="getPaymentAccounts()" 
+            [(ngModel)]="settings.canteen_payment_account"
+            [settings]="{ locale: false }"
+            [clearable]="false">
+          </schoolingo-dropdown>
+          <span class="form-help">{{ l.s('canteen.settings_payment_account_help') || 'Studentům bude oběd strháván z tohoto zůstatku. Při nedostatku prostředků nebude možné oběd objednat.' }}</span>
+        </div>
+
+        <div class="form-group flex-row-align border-top">
+          <span class="form-label-bold">{{ l.s('canteen.settings_auto_refund') || 'Automatická refundace při nemoci' }}</span>
+          <schoolingo-checkbox 
+            [checked]="settings.canteen_auto_refund === '1'" 
+            (click)="settings.canteen_auto_refund = (settings.canteen_auto_refund === '1' ? '0' : '1')">
+          </schoolingo-checkbox>
         </div>
       </div>
     </div>
   </div>
 
-  <div class="card">
+  <!-- Bottom Card: Managers & Cooks Selection -->
+  <div class="card staff-card">
+    <div class="card-top"></div>
     <div class="card-header">
-      <h2>Propojení s platbami</h2>
+      <h2>
+        <i-tabler name="users"></i-tabler>
+        <span>{{ l.s('canteen.settings_staff_title') || 'Správci a kuchaři jídelny' }}</span>
+      </h2>
+      <div class="search-toolbar">
+        <div class="search-input-wrapper">
+          <i-tabler name="search" class="search-icon"></i-tabler>
+          <input 
+            type="text" 
+            class="form-input search-input" 
+            [(ngModel)]="searchQuery" 
+            [placeholder]="l.s('canteen.settings_search_staff') || 'Vyhledat zaměstnance...'">
+        </div>
+      </div>
     </div>
     <div class="card-body">
-      <div style="display: flex; flex-direction: column; gap: 1.5rem;">
-        <div>
-          <label style="font-weight: 500; display: block; margin-bottom: 0.5rem;">Účet pro strhávání plateb za obědy</label>
-          <select class="input" style="width: 100%;">
-            <option>Kreditní účet (ID: 1)</option>
-            <option>Třídní fond (ID: 2)</option>
-          </select>
-          <div style="font-size: 0.875rem; color: var(--text-muted); margin-top: 0.5rem;">Studentům bude oběd strháván z tohoto zůstatku. Při nedostatku prostředků nebude možné oběd objednat.</div>
-        </div>
-        
-        <div>
-          <label style="display: flex; justify-content: space-between; align-items: center; font-weight: 500; cursor: pointer;">
-            Automatická refundace při nemoci
-            <input type="checkbox" checked style="width: 1.25rem; height: 1.25rem;">
-          </label>
-        </div>
+      <div class="table-container">
+        <table class="table">
+          <thead class="table__head">
+            <tr>
+              <th class="table__th">{{ l.s('canteen.col_name') || 'Jméno' }}</th>
+              <th class="table__th text-center">{{ l.s('canteen.role_manager') || 'Správce' }}</th>
+              <th class="table__th text-center">{{ l.s('canteen.role_cook') || 'Kuchař' }}</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (member of getFilteredStaff(); track member.user_id) {
+              <tr class="table__row">
+                <td class="table__td">
+                  <div class="staff-info">
+                    <div class="avatar-initials">
+                      {{ member.name.substring(0, 2).toUpperCase() }}
+                    </div>
+                    <strong>{{ member.name }}</strong>
+                  </div>
+                </td>
+                <td class="table__td text-center">
+                  <div class="flex-center">
+                    <schoolingo-checkbox 
+                      [checked]="isManager(member.user_id)" 
+                      (click)="toggleManager(member.user_id)">
+                    </schoolingo-checkbox>
+                  </div>
+                </td>
+                <td class="table__td text-center">
+                  <div class="flex-center">
+                    <schoolingo-checkbox 
+                      [checked]="isCook(member.user_id)" 
+                      (click)="toggleCook(member.user_id)">
+                    </schoolingo-checkbox>
+                  </div>
+                </td>
+              </tr>
+            }
+            @if (getFilteredStaff().length === 0) {
+              <tr>
+                <td colspan="3" class="table__td text-center text-muted">
+                  {{ l.s('canteen.settings_no_staff') || 'Nebyly nalezeny žádné výsledky.' }}
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
       </div>
     </div>
   </div>
-</div>
 
-<div>
-  <button class="btn btn--primary" (click)="save()">Uložit nastavení</button>
+  <!-- Actions -->
+  <div class="settings-actions">
+    <button class="btn btn--primary btn-large" [disabled]="saving" (click)="save()">
+      @if (saving) {
+        <span class="btn-spinner"></span>
+      } @else {
+        <i-tabler name="device-floppy"></i-tabler>
+      }
+      {{ l.s('canteen.settings_save_btn') || 'Uložit nastavení' }}
+    </button>
+  </div>
 </div>

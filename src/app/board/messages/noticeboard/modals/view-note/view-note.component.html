@@ -10,58 +10,65 @@
     </div>
     } @else if (note) {
     <div class="note-content-wrapper">
-        <div class="note-header-visual">
-            <div class="pattern-overlay"></div>
-        </div>
 
-        <div class="note-header-content">
-            <div class="author-badge">
-                <div class="avatar-placeholder">
-                    <img [src]="avatarService.getAvatar(note.author.avatar, note.author.full_name)" [alt]="note.author.full_name">
-                </div>
-                <div class="info">
-                    <span class="name">{{ note.author.full_name }}</span>
-                    <span class="date">{{ Utils.formatDate(note.sent_at) }}</span>
-                </div>
+        <!-- Author strip -->
+        <div class="note-author-strip">
+            <div class="author-avatar">
+                <img [src]="avatarService.getAvatar(note.author.avatar, note.author.full_name)" [alt]="note.author.full_name">
+            </div>
+            <div class="author-info">
+                <span class="author-name">{{ note.author.full_name }}</span>
+                <span class="author-date">{{ Utils.formatDate(note.sent_at) }}</span>
             </div>
         </div>
 
+        <!-- Topic -->
         <h1 class="topic">{{ note.topic }}</h1>
 
-            <div class="note-body">
-                {{ note.message }}
+        <!-- Divider -->
+        <div class="topic-divider"></div>
+
+        <!-- Body -->
+        <div class="note-body">{{ note.message }}</div>
+
+        <!-- Attachments -->
+        @if (note.files?.length) {
+        <div class="attachments-section">
+            <div class="attachments-label">
+                <i-tabler name="paperclip"></i-tabler>
+                {{ l.s("messages.attachments") }}
+                <span class="attachments-count">{{ note.files?.length }}</span>
             </div>
-
-            @if (note.files?.length) {
-                <div class="attachments-section">
-                    <h4>{{ l.s("messages.attachments") }} ({{ note.files?.length }})</h4>
-                    <div class="attachments-list">
-                        @for (file of note.files; track file.file_id) {
-                            <a [href]="Config.API_URL + '/download/' + file.file_uuid" download [title]="file.name" class="attachment-item"
-                                (click)="Utils.downloadFile(Config.API_URL + '/download/' + file.file_uuid, file.name); $event.preventDefault(); $event.stopPropagation()">
-                                <i-tabler name="file"></i-tabler>
-                                <div class="attachment-info">
-                                    <span class="attachment-name" [title]="file.name">{{ file.name }}</span>
-                                    <span class="attachment-size">{{ Utils.formatBytes(file.file_size) }}</span>
-                                </div>
-                            </a>
-                        }
+            <div class="attachments-list">
+                @for (file of note.files; track file.file_id) {
+                <a [href]="Config.API_URL + '/download/' + file.file_uuid" download [title]="file.name"
+                    class="attachment-item"
+                    (click)="Utils.downloadFile(Config.API_URL + '/download/' + file.file_uuid, file.name); $event.preventDefault(); $event.stopPropagation()">
+                    <div class="attachment-icon">
+                        <i-tabler name="file"></i-tabler>
                     </div>
-                </div>
-            }
+                    <div class="attachment-info">
+                        <span class="attachment-name" [title]="file.name">{{ file.name }}</span>
+                        <span class="attachment-size">{{ Utils.formatBytes(file.file_size) }}</span>
+                    </div>
+                    <i-tabler name="download" class="attachment-dl"></i-tabler>
+                </a>
+                }
+            </div>
+        </div>
+        }
 
-            @if (note.target_groups.length) {
+        <!-- Target groups -->
+        @if (note.target_groups.length) {
         <div class="note-footer">
-            <div class="footer-section">
-                <div class="section-title">
-                    <i-tabler name="users"></i-tabler>
-                    {{ l.s('messages.target_groups') }}
-                </div>
-                <div class="groups-list">
-                    @for (group of note.target_groups; track $index) {
-                    <div class="group-chip">{{ group }}</div>
-                    }
-                </div>
+            <div class="section-title">
+                <i-tabler name="users"></i-tabler>
+                {{ l.s('messages.target_groups') }}
+            </div>
+            <div class="groups-list">
+                @for (group of note.target_groups; track $index) {
+                <div class="group-chip">{{ group }}</div>
+                }
             </div>
         </div>
         }

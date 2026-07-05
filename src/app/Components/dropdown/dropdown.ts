@@ -7,6 +7,7 @@ import { Locale } from "@Schoolingo/locale";
 export interface DropdownOption {
     label: string;
     value: any;
+    icon?: string;
     disabled?: boolean;
 }
 
@@ -74,8 +75,12 @@ export class DropdownComponent implements OnInit, OnDestroy {
         }
     };
 
+    get selectedOption(): DropdownOption | undefined {
+        return this.options.find(opt => opt.value === this.value);
+    }
+
     get selectedLabel(): string {
-        const selected = this.options.find(opt => opt.value === this.value);
+        const selected = this.selectedOption;
         return selected ? this.getLabel(selected.label) : this.l.s(this.placeholder);
     }
 

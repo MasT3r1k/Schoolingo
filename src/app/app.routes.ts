@@ -4,102 +4,8 @@ import { NotUserGuard, UserGuard } from './Guards/Auth.guard';
 import { DemoGuard } from './Guards/Demo.guard';
 import { BoardComponent } from './board/board.component';
 import { MainComponent } from './board/main/main.component';
-import { MyClassComponent } from './board/Teach/MyClass/my-class.component';
-import { SettingsComponent } from './board/User/settings/settings.component';
-import { AccountComponent } from './board/User/account/account.component';
-import { PersonalInformationComponent } from './board/User/personal-information/personal-information.component';
-import { ParentsComponent } from './board/User/parents/parents.component';
-import { DevicesComponent } from './board/User/devices/devices.component';
-import { LoginHistoryComponent } from './board/User/login-history/login-history.component';
-import { ConnectionsComponent } from './board/User/connections/connections.component';
-import { GdprComponent } from './board/User/gdpr/gdpr.component';
-import { CookiesComponent } from './board/User/cookies/cookies.component';
-import { NotificationsComponent } from './board/User/notifications/notifications.component';
-import { TimetableComponent } from './board/Teach/timetable/timetable.component';
-import { HomeworkComponent } from './board/Teach/homework/homework.component';
-import { SendComponent } from './board/messages/send/send.component';
-import { ReceivedComponent } from './board/messages/received/received.component';
-import { AbsenceComponent } from './board/Teach/absence/absence.component';
-import { IntermComponent } from './board/marks/interm/interm.component';
-import { IntermRecordComponent } from './board/marks/interm-record/interm-record.component';
-import { ManageComponent } from './board/Traineeship/manage/manage.component';
-import { CompaniesComponent } from './board/Traineeship/companies/companies.component';
-import { DiaryComponent } from './board/Traineeship/diary/diary.component';
-import { OverviewComponent } from './board/Traineeship/overview/overview.component';
-import { BuilderComponent } from './board/schedule/builder/builder.component';
-import { CalendarComponent } from './board/calendar/calendar.component';
-import { ClassbookComponent } from './board/Teach/classbook/classbook.component';
-import { NoticeboardComponent } from './board/messages/noticeboard/noticeboard.component';
-import { GroupsComponent } from './board/messages/groups/groups.component';
-import { SettingsComponent as SystemSettings } from './board/system/settings/settings.component';
-import { DocumentsComponent } from './board/documents/documents.component';
-import { MidtermComponent } from './board/marks/midterm/midterm.component';
-import { StudentsComponent } from './board/students/students.component';
-import { ClassesComponent } from './board/classes/classes.component';
-import { DashboardComponent } from './board/Admin/dashboard/dashboard.component';
-import { PollsComponent } from './board/polls/polls.component';
-import { FleetVehiclesComponent } from './board/FleetVehicles/vehicles/vehicles.component';
-import { FleetVehiclesReservationsComponent } from './board/FleetVehicles/reservations/reservations.component';
-import { FleetVehiclesOverviewComponent } from './board/FleetVehicles/overview/overview.component';
-import { FleetVehiclesSettingsComponent } from './board/FleetVehicles/settings/settings.component';
-import { TutoringComponent } from './board/Teach/tutoring/tutoring.component';
-import { SubstitutionComponent } from './board/Teach/substitution/substitution.component';
-import { SubjectsComponent } from './board/Teach/subjects/subjects.component';
-import { RewardsComponent } from './board/Teach/rewards/rewards.component';
-import { MeasuresComponent } from './board/Teach/measures/measures.component';
-import { SentComponent } from './board/messages/sent/sent.component';
-import { DraftsComponent } from './board/messages/drafts/drafts.component';
-import { ArchiveComponent } from './board/Admin/archive/archive.component';
-import { BackupComponent } from './board/Admin/backup/backup.component';
-import { CatalogComponent } from './board/library/pages/catalog/catalog.component';
-import { ManagerComponent } from './board/library/pages/manager/manager.component';
-import { PollCreateComponent } from './board/polls/poll-create/poll-create.component';
-import { PollVoteComponent } from './board/polls/poll-vote/poll-vote.component';
-import { PollResultsComponent } from './board/polls/poll-results/poll-results.component';
-import { EmployeesComponent } from './board/Employees/employees/employees.component';
-import { ManageusersComponent } from './board/system/manageusers/manageusers.component';
-import { AuditlogComponent } from './board/system/auditlog/auditlog.component';
-import { ManagefilesComponent } from './board/system/managefiles/managefiles.component';
-import { ManagemessagesComponent } from './board/system/managemessages/managemessages.component';
-import { PollAssignComponent } from './board/polls/poll-assign/poll-assign.component';
-import { PollEditComponent } from './board/polls/poll-edit/poll-edit.component';
-import { DetailComponent as StudentsDetailComponent } from './board/students/detail/detail.component';
-import { TemplateSubjectComponent } from './board/schedule/template-subject/template-subject.component';
-import { TemplateTimetableComponent } from './board/schedule/template-timetable/template-timetable.component';
-import { SupervisionBuilderComponent } from './board/schedule/supervision-builder/supervision-builder.component';
-import { MonitoringComponent } from './board/Admin/monitoring/monitoring.component';
-import { SeasonalAdminComponent } from './board/Admin/seasonal/seasonal.component';
-import { PollManageComponent } from './board/polls/poll-manage/poll-manage.component';
-import { SchoolYearsComponent } from './board/Admin/school-years/school-years.component';
-import { OnlineComponent } from './board/online/online.component';
-import { PollSharesComponent } from './board/polls/poll-shares/poll-shares.component';
-import { ArchitectureDashboardComponent } from './board/Admin/architecture/dashboard/dashboard.component';
-import { ArchitectureBuildingsComponent } from './board/Admin/architecture/buildings/buildings.component';
-import { ArchitectureBuildingDetailComponent } from './board/Admin/architecture/buildings/detail/detail.component';
-import { ArchitectureRoomsComponent } from './board/Admin/architecture/rooms/rooms.component';
-import { InventoryComponent } from './board/Admin/inventory/inventory.component';
 import { SetupComponent } from './setup/setup.component';
-import { ThematicPlansComponent } from './board/Teach/thematic-plans/thematic-plans.component';
-import { SvpComponent } from './board/Admin/svp/svp.component';
-
-import { NoPermissionComponent } from './board/error/no-permission/no-permission.component';
-import { DetailComponent as ClassesDetailComponent } from './board/classes/detail/detail.component';
-import { ReportsComponent } from './board/system/reports/reports.component';
-import { ClassFundComponent } from './board/payments/class-fund/class-fund.component';
-import { DetailComponent as EmployeesDetailComponent } from './board/Employees/employees/detail/detail.component';
-import { TopicsComponent } from './board/Teach/topics/topics.component';
 import { UnsavedChangesGuard } from './Guards/unsaved-changes.guard';
-import { ManageUsersDetailComponent } from './board/system/manageusers/detail/detail.component';
-import { PaymentOverviewComponent } from './board/payments/overview/overview.component';
-import { GraduateClassFundComponent } from './board/payments/graduate-class-fund/graduate-class-fund.component';
-import { ListingComponent } from './board/payments/listing/listing.component';
-import { UnaccountedDocumentsComponent } from './board/payments/unaccounted-documents/unaccounted-documents.component';
-import { DocumentsComponent as PaymentDocumentsComponent } from './board/payments/documents/documents.component';
-import { RegularPaymentsComponent } from './board/payments/regular-payments/regular-payments.component';
-import { NewPaymentComponent } from './board/payments/new-payment/new-payment.component';
-import { NewDepositComponent } from './board/payments/new-deposit/new-deposit.component';
-import { AccountsComponent } from './board/payments/accounts/accounts.component';
-import { SettingsComponent as PaymentSettingsComponent } from './board/payments/settings/settings.component';
 
 export const routes: Routes = [
     {
@@ -128,18 +34,18 @@ export const routes: Routes = [
             },
             {
                 path: 'dashboard',
-                component: DashboardComponent
+                loadComponent: () => import('./board/Admin/dashboard/dashboard.component').then(m => m.DashboardComponent)
             },
             {
                 path: 'students',
                 children: [
                     {
                         path: '',
-                        component: StudentsComponent
+                        loadComponent: () => import('./board/students/students.component').then(m => m.StudentsComponent)
                     },
                     {
                         path: ':id',
-                        component: StudentsDetailComponent
+                        loadComponent: () => import('./board/students/detail/detail.component').then(m => m.DetailComponent)
                     }
                 ]
             },
@@ -148,11 +54,11 @@ export const routes: Routes = [
                 children: [
                     {
                         path: '',
-                        component: ClassesComponent
+                        loadComponent: () => import('./board/classes/classes.component').then(m => m.ClassesComponent)
                     },
                     {
                         path: ':id',
-                        component: ClassesDetailComponent
+                        loadComponent: () => import('./board/classes/detail/detail.component').then(m => m.DetailComponent)
                     }
                 ]
             },
@@ -161,11 +67,11 @@ export const routes: Routes = [
                 children: [
                     {
                         path: '',
-                        component: EmployeesComponent
+                        loadComponent: () => import('./board/Employees/employees/employees.component').then(m => m.EmployeesComponent)
                     },
                     {
                         path: ':id',
-                        component: EmployeesDetailComponent
+                        loadComponent: () => import('./board/Employees/employees/detail/detail.component').then(m => m.DetailComponent)
                     }
                 ]
             },
@@ -174,68 +80,68 @@ export const routes: Routes = [
                 children: [
                     {
                         path: 'builder',
-                        component: BuilderComponent
+                        loadComponent: () => import('./board/schedule/builder/builder.component').then(m => m.BuilderComponent)
                     },
                     {
                         path: 'template_timetable',
-                        component: TemplateTimetableComponent
+                        loadComponent: () => import('./board/schedule/template-timetable/template-timetable.component').then(m => m.TemplateTimetableComponent)
                     },
                     {
                         path: 'template_subject',
-                        component: TemplateSubjectComponent
+                        loadComponent: () => import('./board/schedule/template-subject/template-subject.component').then(m => m.TemplateSubjectComponent)
                     },
                     {
                         path: 'supervision',
-                        component: SupervisionBuilderComponent
+                        loadComponent: () => import('./board/schedule/supervision-builder/supervision-builder.component').then(m => m.SupervisionBuilderComponent)
                     }
                 ]
             },
             {
                 path: 'calendar',
-                component: CalendarComponent
+                loadComponent: () => import('./board/calendar/calendar.component').then(m => m.CalendarComponent)
             },
             {
                 path: 'online',
-                component: OnlineComponent
+                loadComponent: () => import('./board/online/online.component').then(m => m.OnlineComponent)
             },
             {
                 path: 'documents',
-                component: DocumentsComponent
+                loadComponent: () => import('./board/documents/documents.component').then(m => m.DocumentsComponent)
             },
             {
                 path: 'tests',
                 children: [
                     {
                         path: '',
-                        component: PollsComponent
+                        loadComponent: () => import('./board/polls/polls.component').then(m => m.PollsComponent)
                     },
                     {
                         path: 'create',
-                        component: PollCreateComponent
+                        loadComponent: () => import('./board/polls/poll-create/poll-create.component').then(m => m.PollCreateComponent)
                     },
                     {
                         path: ':id/assign',
-                        component: PollAssignComponent
+                        loadComponent: () => import('./board/polls/poll-assign/poll-assign.component').then(m => m.PollAssignComponent)
                     },
                     {
                         path: ':id/edit',
-                        component: PollEditComponent
+                        loadComponent: () => import('./board/polls/poll-edit/poll-edit.component').then(m => m.PollEditComponent)
                     },
                     {
                         path: ':id/vote',
-                        component: PollVoteComponent
+                        loadComponent: () => import('./board/polls/poll-vote/poll-vote.component').then(m => m.PollVoteComponent)
                     },
                     {
                         path: ':id/manage',
-                        component: PollManageComponent
+                        loadComponent: () => import('./board/polls/poll-manage/poll-manage.component').then(m => m.PollManageComponent)
                     },
                     {
                         path: ':id/results',
-                        component: PollResultsComponent
+                        loadComponent: () => import('./board/polls/poll-results/poll-results.component').then(m => m.PollResultsComponent)
                     },
                     {
                         path: ':id/shares',
-                        component: PollSharesComponent
+                        loadComponent: () => import('./board/polls/poll-shares/poll-shares.component').then(m => m.PollSharesComponent)
                     }
                 ]
             },
@@ -248,19 +154,19 @@ export const routes: Routes = [
                     },
                     {
                         path: 'interm',
-                        component: IntermComponent
+                        loadComponent: () => import('./board/marks/interm/interm.component').then(m => m.IntermComponent)
                     },
                     {
                         path: 'intermrecord',
-                        component: IntermRecordComponent
+                        loadComponent: () => import('./board/marks/interm-record/interm-record.component').then(m => m.IntermRecordComponent)
                     },
                     {
                         path: 'midterm',
-                        component: MidtermComponent
+                        loadComponent: () => import('./board/marks/midterm/midterm.component').then(m => m.MidtermComponent)
                     },
                     {
                         path: 'educationmeasures',
-                        component: MeasuresComponent
+                        loadComponent: () => import('./board/Teach/measures/measures.component').then(m => m.MeasuresComponent)
                     },
                     {
                         path: '**',
@@ -277,47 +183,47 @@ export const routes: Routes = [
                     },
                     {
                         path: 'timetable',
-                        component: TimetableComponent
+                        loadComponent: () => import('./board/Teach/timetable/timetable.component').then(m => m.TimetableComponent)
                     },
                     {
                         path: 'homeworks',
-                        component: HomeworkComponent
+                        loadComponent: () => import('./board/Teach/homework/homework.component').then(m => m.HomeworkComponent)
                     },
                     {
                         path: 'absence',
-                        component: AbsenceComponent
+                        loadComponent: () => import('./board/Teach/absence/absence.component').then(m => m.AbsenceComponent)
                     },
                     {
                         path: 'topics',
-                        component: TopicsComponent
+                        loadComponent: () => import('./board/Teach/topics/topics.component').then(m => m.TopicsComponent)
                     },
                     {
                         path: 'classbook',
-                        component: ClassbookComponent
+                        loadComponent: () => import('./board/Teach/classbook/classbook.component').then(m => m.ClassbookComponent)
                     },
                     {
                         path: 'rewards',
-                        component: RewardsComponent
+                        loadComponent: () => import('./board/Teach/rewards/rewards.component').then(m => m.RewardsComponent)
                     },
                     {
                         path: 'subjects',
-                        component: SubjectsComponent
+                        loadComponent: () => import('./board/Teach/subjects/subjects.component').then(m => m.SubjectsComponent)
                     },
                     {
                         path: 'substitution',
-                        component: SubstitutionComponent
+                        loadComponent: () => import('./board/Teach/substitution/substitution.component').then(m => m.SubstitutionComponent)
                     },
                     {
                         path: 'tutoring',
-                        component: TutoringComponent
+                        loadComponent: () => import('./board/Teach/tutoring/tutoring.component').then(m => m.TutoringComponent)
                     },
                     {
                         path: 'my-class',
-                        component: MyClassComponent
+                        loadComponent: () => import('./board/Teach/MyClass/my-class.component').then(m => m.MyClassComponent)
                     },
                     {
                         path: 'thematic-plans',
-                        component: ThematicPlansComponent
+                        loadComponent: () => import('./board/Teach/thematic-plans/thematic-plans.component').then(m => m.ThematicPlansComponent)
                     },
                     {
                         path: '**',
@@ -326,42 +232,42 @@ export const routes: Routes = [
                 ]
             },
             {
-            path: 'traineeship',
-            children: [
-                {
-                    path: '',
-                    pathMatch: 'full',
-                    redirectTo: '/traineeship/overview'
-                },
-                {
-                    path: 'overview',
-                    component: OverviewComponent
-                },
-                {
-                    path: 'diary',
-                    component: DiaryComponent
-                },
-                {
-                    path: 'diary/:id',
-                    component: DiaryComponent
-                },
-                {
-                    path: 'companies',
-                    component: CompaniesComponent
-                },
-                {
-                    path: 'companies/:id',
-                    component: CompaniesComponent
-                },
-                {
-                    path: 'manage',
-                    component: ManageComponent
-                },
-                {
-                    path: '**',
-                    redirectTo: '/traineeship/overview'
-                }
-            ]
+                path: 'traineeship',
+                children: [
+                    {
+                        path: '',
+                        pathMatch: 'full',
+                        redirectTo: '/traineeship/overview'
+                    },
+                    {
+                        path: 'overview',
+                        loadComponent: () => import('./board/Traineeship/overview/overview.component').then(m => m.OverviewComponent)
+                    },
+                    {
+                        path: 'diary',
+                        loadComponent: () => import('./board/Traineeship/diary/diary.component').then(m => m.DiaryComponent)
+                    },
+                    {
+                        path: 'diary/:id',
+                        loadComponent: () => import('./board/Traineeship/diary/diary.component').then(m => m.DiaryComponent)
+                    },
+                    {
+                        path: 'companies',
+                        loadComponent: () => import('./board/Traineeship/companies/companies.component').then(m => m.CompaniesComponent)
+                    },
+                    {
+                        path: 'companies/:id',
+                        loadComponent: () => import('./board/Traineeship/companies/companies.component').then(m => m.CompaniesComponent)
+                    },
+                    {
+                        path: 'manage',
+                        loadComponent: () => import('./board/Traineeship/manage/manage.component').then(m => m.ManageComponent)
+                    },
+                    {
+                        path: '**',
+                        redirectTo: '/traineeship/overview'
+                    }
+                ]
             },
             {
                 path: 'fleetvehicles',
@@ -373,23 +279,23 @@ export const routes: Routes = [
                     },
                     {
                         path: 'overview',
-                        component: FleetVehiclesOverviewComponent
+                        loadComponent: () => import('./board/FleetVehicles/overview/overview.component').then(m => m.FleetVehiclesOverviewComponent)
                     },
                     {
                         path: 'vehicles',
-                        component: FleetVehiclesComponent
+                        loadComponent: () => import('./board/FleetVehicles/vehicles/vehicles.component').then(m => m.FleetVehiclesComponent)
                     },
                     {
                         path: 'vehicles/:id',
-                        component: FleetVehiclesComponent
+                        loadComponent: () => import('./board/FleetVehicles/vehicles/vehicles.component').then(m => m.FleetVehiclesComponent)
                     },
                     {
                         path: 'reservations',
-                        component: FleetVehiclesReservationsComponent
+                        loadComponent: () => import('./board/FleetVehicles/reservations/reservations.component').then(m => m.FleetVehiclesReservationsComponent)
                     },
                     {
                         path: 'settings',
-                        component: FleetVehiclesSettingsComponent
+                        loadComponent: () => import('./board/FleetVehicles/settings/settings.component').then(m => m.FleetVehiclesSettingsComponent)
                     },
                     {
                         path: '**',
@@ -406,47 +312,51 @@ export const routes: Routes = [
                     },
                     {
                         path: 'overview',
-                        component: PaymentOverviewComponent
+                        loadComponent: () => import('./board/payments/overview/overview.component').then(m => m.PaymentOverviewComponent)
                     },
                     {
                         path: 'class_fund',
-                        component: ClassFundComponent
+                        loadComponent: () => import('./board/payments/class-fund/class-fund.component').then(m => m.ClassFundComponent)
                     },
                     {
                         path: 'graduate_class_fund',
-                        component: GraduateClassFundComponent
+                        loadComponent: () => import('./board/payments/graduate-class-fund/graduate-class-fund.component').then(m => m.GraduateClassFundComponent)
                     },
                     {
                         path: 'listing',
-                        component: ListingComponent
+                        loadComponent: () => import('./board/payments/listing/listing.component').then(m => m.ListingComponent)
                     },
                     {
                         path: 'unaccounted_documents',
-                        component: UnaccountedDocumentsComponent
+                        loadComponent: () => import('./board/payments/unaccounted-documents/unaccounted-documents.component').then(m => m.UnaccountedDocumentsComponent)
                     },
                     {
                         path: 'documents',
-                        component: PaymentDocumentsComponent
+                        loadComponent: () => import('./board/payments/documents/documents.component').then(m => m.DocumentsComponent)
                     },
                     {
                         path: 'regular_payments',
-                        component: RegularPaymentsComponent
+                        loadComponent: () => import('./board/payments/regular-payments/regular-payments.component').then(m => m.RegularPaymentsComponent)
                     },
                     {
                         path: 'new_payment',
-                        component: NewPaymentComponent
+                        loadComponent: () => import('./board/payments/new-payment/new-payment.component').then(m => m.NewPaymentComponent)
                     },
                     {
                         path: 'new_deposit',
-                        component: NewDepositComponent
+                        loadComponent: () => import('./board/payments/new-deposit/new-deposit.component').then(m => m.NewDepositComponent)
                     },
                     {
                         path: 'accounts',
-                        component: AccountsComponent
+                        loadComponent: () => import('./board/payments/accounts/accounts.component').then(m => m.AccountsComponent)
                     },
                     {
                         path: 'settings',
-                        component: PaymentSettingsComponent
+                        loadComponent: () => import('./board/payments/settings/settings.component').then(m => m.SettingsComponent)
+                    },
+                    {
+                        path: 'manage',
+                        loadComponent: () => import('./board/payments/manage/manage.component').then(m => m.ManageComponent)
                     },
                     {
                         path: '**',
@@ -494,28 +404,28 @@ export const routes: Routes = [
                     },
                     {
                         path: 'send',
-                        component: SendComponent,
+                        loadComponent: () => import('./board/messages/send/send.component').then(m => m.SendComponent),
                         canDeactivate: [UnsavedChangesGuard]
                     },
                     {
                         path: 'received',
-                        component: ReceivedComponent
+                        loadComponent: () => import('./board/messages/received/received.component').then(m => m.ReceivedComponent)
                     },
                     {
                         path: 'sent',
-                        component: SentComponent
+                        loadComponent: () => import('./board/messages/sent/sent.component').then(m => m.SentComponent)
                     },
                     {
                         path: 'drafts',
-                        component: DraftsComponent
+                        loadComponent: () => import('./board/messages/drafts/drafts.component').then(m => m.DraftsComponent)
                     },
                     {
                         path: 'noticeboard',
-                        component: NoticeboardComponent
+                        loadComponent: () => import('./board/messages/noticeboard/noticeboard.component').then(m => m.NoticeboardComponent)
                     },
                     {
                         path: 'groups',
-                        component: GroupsComponent
+                        loadComponent: () => import('./board/messages/groups/groups.component').then(m => m.GroupsComponent)
                     },
                     {
                         path: '**',
@@ -532,46 +442,52 @@ export const routes: Routes = [
                     },
                     {
                         path: 'main',
-                        component: AccountComponent
+                        loadComponent: () => import('./board/User/account/account.component').then(m => m.AccountComponent)
                     },
                     {
                         path: 'settings',
-                        component: SettingsComponent
+                        loadComponent: () => import('./board/User/settings/settings.component').then(m => m.SettingsComponent)
                     },
                     {
                         path: 'personal',
-                        component: PersonalInformationComponent
+                        loadComponent: () => import('./board/User/personal-information/personal-information.component').then(m => m.PersonalInformationComponent)
                     },
                     {
                         path: 'parents',
-                        component: ParentsComponent
+                        loadComponent: () => import('./board/User/parents/parents.component').then(m => m.ParentsComponent)
                     },
                     {
                         path: 'devices',
-                        component: DevicesComponent
+                        loadComponent: () => import('./board/User/devices/devices.component').then(m => m.DevicesComponent)
                     },
                     {
                         path: 'logins',
-                        component: LoginHistoryComponent
+                        loadComponent: () => import('./board/User/login-history/login-history.component').then(m => m.LoginHistoryComponent)
                     },
                     {
                         path: 'connections',
-                        component: ConnectionsComponent
+                        loadComponent: () => import('./board/User/connections/connections.component').then(m => m.ConnectionsComponent)
                     },
                     {
                         path: 'gdpr',
                         children: [
-                            { path: '', component: GdprComponent },
-                            { path: ':tab', component: GdprComponent }
+                            {
+                                path: '',
+                                loadComponent: () => import('./board/User/gdpr/gdpr.component').then(m => m.GdprComponent)
+                            },
+                            {
+                                path: ':tab',
+                                loadComponent: () => import('./board/User/gdpr/gdpr.component').then(m => m.GdprComponent)
+                            }
                         ]
                     },
                     {
                         path: 'notifications',
-                        component: NotificationsComponent
+                        loadComponent: () => import('./board/User/notifications/notifications.component').then(m => m.NotificationsComponent)
                     },
                     {
                         path: 'cookies',
-                        component: CookiesComponent
+                        loadComponent: () => import('./board/User/cookies/cookies.component').then(m => m.CookiesComponent)
                     },
                     {
                         path: '**',
@@ -588,36 +504,36 @@ export const routes: Routes = [
                     },
                     {
                         path: 'settings',
-                        component: SystemSettings
+                        loadComponent: () => import('./board/system/settings/settings.component').then(m => m.SettingsComponent)
                     },
                     {
                         path: 'manageusers',
                         children: [
                             {
                                 path: '',
-                                component: ManageusersComponent
+                                loadComponent: () => import('./board/system/manageusers/manageusers.component').then(m => m.ManageusersComponent)
                             },
                             {
                                 path: ':id',
-                                component: ManageUsersDetailComponent
+                                loadComponent: () => import('./board/system/manageusers/detail/detail.component').then(m => m.ManageUsersDetailComponent)
                             }
                         ]
                     },
                     {
                         path: 'managefiles',
-                        component: ManagefilesComponent
+                        loadComponent: () => import('./board/system/managefiles/managefiles.component').then(m => m.ManagefilesComponent)
                     },
                     {
                         path: 'managemessages',
-                        component: ManagemessagesComponent
+                        loadComponent: () => import('./board/system/managemessages/managemessages.component').then(m => m.ManagemessagesComponent)
                     },
                     {
                         path: 'auditlog',
-                        component: AuditlogComponent
+                        loadComponent: () => import('./board/system/auditlog/auditlog.component').then(m => m.AuditlogComponent)
                     },
                     {
                         path: 'reports',
-                        component: ReportsComponent
+                        loadComponent: () => import('./board/system/reports/reports.component').then(m => m.ReportsComponent)
                     },
                     {
                         path: '**',
@@ -627,7 +543,7 @@ export const routes: Routes = [
             },
             {
                 path: 'archive',
-                component: ArchiveComponent
+                loadComponent: () => import('./board/Admin/archive/archive.component').then(m => m.ArchiveComponent)
             },
             {
                 path: 'admin', children: [
@@ -638,23 +554,23 @@ export const routes: Routes = [
                     },
                     {
                         path: 'backup',
-                        component: BackupComponent
+                        loadComponent: () => import('./board/Admin/backup/backup.component').then(m => m.BackupComponent)
                     },
                     {
                         path: 'seasonal',
-                        component: SeasonalAdminComponent
+                        loadComponent: () => import('./board/Admin/seasonal/seasonal.component').then(m => m.SeasonalAdminComponent)
                     },
                     {
                         path: 'monitoring',
-                        component: MonitoringComponent
+                        loadComponent: () => import('./board/Admin/monitoring/monitoring.component').then(m => m.MonitoringComponent)
                     },
                     {
                         path: 'svp',
-                        component: SvpComponent
+                        loadComponent: () => import('./board/Admin/svp/svp.component').then(m => m.SvpComponent)
                     },
                     {
                         path: 'school-years',
-                        component: SchoolYearsComponent
+                        loadComponent: () => import('./board/Admin/school-years/school-years.component').then(m => m.SchoolYearsComponent)
                     },
                     {
                         path: 'architecture',
@@ -666,23 +582,23 @@ export const routes: Routes = [
                             },
                             {
                                 path: 'overview',
-                                component: ArchitectureDashboardComponent
+                                loadComponent: () => import('./board/Admin/architecture/dashboard/dashboard.component').then(m => m.ArchitectureDashboardComponent)
                             },
                             {
                                 path: 'buildings',
-                                component: ArchitectureBuildingsComponent
+                                loadComponent: () => import('./board/Admin/architecture/buildings/buildings.component').then(m => m.ArchitectureBuildingsComponent)
                             },
                             {
                                 path: 'buildings/:id',
-                                component: ArchitectureBuildingDetailComponent
+                                loadComponent: () => import('./board/Admin/architecture/buildings/detail/detail.component').then(m => m.ArchitectureBuildingDetailComponent)
                             },
                             {
                                 path: 'rooms',
-                                component: ArchitectureRoomsComponent
+                                loadComponent: () => import('./board/Admin/architecture/rooms/rooms.component').then(m => m.ArchitectureRoomsComponent)
                             },
                             {
                                 path: 'inventory',
-                                component: InventoryComponent
+                                loadComponent: () => import('./board/Admin/inventory/inventory.component').then(m => m.InventoryComponent)
                             },
                             {
                                 path: '**',
@@ -706,11 +622,11 @@ export const routes: Routes = [
                     },
                     {
                         path: 'catalog',
-                        component: CatalogComponent
+                        loadComponent: () => import('./board/library/pages/catalog/catalog.component').then(m => m.CatalogComponent)
                     },
                     {
                         path: 'manage',
-                        component: ManagerComponent
+                        loadComponent: () => import('./board/library/pages/manager/manager.component').then(m => m.ManagerComponent)
                     },
                     {
                         path: '**',
@@ -721,7 +637,7 @@ export const routes: Routes = [
             },
             {
                 path: 'no-permission',
-                component: NoPermissionComponent
+                loadComponent: () => import('./board/error/no-permission/no-permission.component').then(m => m.NoPermissionComponent)
             }
         ]
     }

@@ -1,50 +1,78 @@
 <div class="booklet">
     <div class="left">
-      <div class="acct-label">
-        {{ l.s('payments.add_account.account_name') }}
+
+      <div class="acct-label">{{ l.s('payments.add_account.account_name') }}</div>
+      <div class="acct-name-row">
+        <div class="acct-name">{{ data.name }}</div>
+        <button class="rename-btn" (click)="focusSettingsName()" [title]="l.s('payments.detail_account.rename_account')">
+          <i-tabler name="pencil"></i-tabler>
+        </button>
       </div>
-      <div class="acct-name">
-        {{ data.name }}
-      </div>
+
       <div class="acct-sub">{{ data.type === 'bank' && data.iban ? data.iban : l.s('payments.add_account.types.cash') }}</div>
- 
+
       <div class="balance-block">
-        <div class="balance-label">Aktuální zůstatek</div>
+        <div class="balance-label">{{ l.s('payments.detail_account.current_balance') }}</div>
         <div class="balance-amount">
             {{ data.balance | money }}
         </div>
         <div class="balance-delta" [class.in]="accountDetail.total_in > accountDetail.total_out" [class.out]="accountDetail.total_in < accountDetail.total_out">
           {{ accountDetail.total_in != accountDetail.total_out ? (accountDetail.total_in > accountDetail.total_out ? '▲' : '▼' ): '' }}
-          {{ (accountDetail.total_in - accountDetail.total_out) | money }} za posledních 30 dní
+          {{ (accountDetail.total_in - accountDetail.total_out) | money }} {{ l.s('payments.detail_account.last_30_days') }}
         </div>
- 
-        <svg class="sparkline" width="220" height="48" viewBox="0 0 220 48" fill="none">
-          <polyline points="0,38 35,32 70,34 105,22 140,26 175,12 220,8"
-            stroke="#B98B3E" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
-          <circle cx="220" cy="8" r="3.5" fill="#B98B3E"/>
-        </svg>
+
+        <div class="sparkline-wrapper">
+          <svg class="sparkline" width="220" height="48" viewBox="0 0 220 48" fill="none">
+            <polyline [attr.points]="sparklinePoints" stroke="#B98B3E" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+            @if (sparklineHoverPoints) {
+              @for (pt of sparklineHoverPoints; track $index) {
+                <rect 
+                  [attr.x]="pt.x - 10" 
+                  [attr.y]="0" 
+                  width="20" 
+                  height="48" 
+                  fill="transparent" 
+                  style="cursor:crosshair"
+                  (mouseenter)="hoverPointIndex = $index"
+                  (mouseleave)="hoverPointIndex = null"
+                ></rect>
+                @if (hoverPointIndex === $index) {
+                  <circle [attr.cx]="pt.x" [attr.cy]="pt.y" r="3.5" fill="#B98B3E"/>
+                }
+              }
+            } @else {
+              <circle cx="220" cy="24" r="3.5" fill="#B98B3E"/>
+            }
+          </svg>
+          @if (hoverPointIndex !== null && sparklineHoverPoints && sparklineHoverPoints[hoverPointIndex]) {
+            <div class="sparkline-tooltip" [style.left.px]="sparklineHoverPoints[hoverPointIndex].x">
+              <div class="st-date">{{ sparklineHoverPoints[hoverPointIndex].date ? Utils.formatDateShort(sparklineHoverPoints[hoverPointIndex].date) : '' }}</div>
+              <div class="st-bal">{{ sparklineHoverPoints[hoverPointIndex].balance | money }}</div>
+            </div>
+          }
+        </div>
       </div>
- 
+
       <div class="stats-grid">
         <div class="stat">
-          <div class="stat-label">Vloženo (30 dní)</div>
+          <div class="stat-label">{{ l.s('payments.detail_account.deposited_30d') }}</div>
           <div class="stat-value in">+{{ accountDetail.total_in | money }}</div>
         </div>
         <div class="stat">
-          <div class="stat-label">Vyplaceno (30 dní)</div>
+          <div class="stat-label">{{ l.s('payments.detail_account.paid_out_30d') }}</div>
           <div class="stat-value out">−{{ accountDetail.total_out | money }}</div>
         </div>
         <div class="stat">
-          <div class="stat-label">Poslední pohyb</div>
+          <div class="stat-label">{{ l.s('payments.detail_account.last_movement') }}</div>
             <div class="stat-sub">{{ accountDetail.last_payment ? Utils.formatDateShort(accountDetail.last_payment.created_at) : '—' }}</div>
         </div>
         <div class="stat">
-          <div class="stat-label">Poslední platba</div>
+          <div class="stat-label">{{ l.s('payments.detail_account.last_amount') }}</div>
             <div class="stat-value">{{ accountDetail.last_payment ? (accountDetail.last_payment.amount | money) : '—' }}</div>
         </div>
       </div>
     </div>
- 
+
     <!-- SPINE -->
     <div class="spine">
       <div class="hole" style="top:34px;"></div>
@@ -52,17 +80,19 @@
       <div class="hole" style="top:66%;"></div>
       <div class="hole" style="bottom:34px;"></div>
     </div>
- 
+
     <!-- RIGHT: tabs -->
     <div class="right">
+      <div class="tabs-header">
         <schoolingo-tabs [options]="['payments.detail_account.transaction_history', 'payments.detail_account.account_settings', 'payments.detail_account.transfer_payment']" [value]="selectedTab" theme="custom" class="tabs"></schoolingo-tabs>
- 
+      </div>
+
       <!-- HISTORIE -->
-      <div class="tab-panel" id="panel-history" [hidden]="selectedTab.getValue() != 0">
+      <div class="tab-panel fade-in" id="panel-history" [hidden]="selectedTab.getValue() != 0">
         <div class="panel-head">
           <div class="panel-title">
             {{ l.s('payments.detail_account.transaction_history') }}
-        </div>
+          </div>
           <div class="filter-pills">
             @for (type of types;track $index) {
               <button class="pill" [class.active]="filters.type == type" (click)="filters.type = type">
@@ -72,9 +102,12 @@
           </div>
         </div>
         
-        <div class="search-wrapper full-width">
-            <i-tabler name="search"></i-tabler>
-            <input type="search" [placeholder]="l.s('payments.detail_account.search_transfer')" [(ngModel)]="filters.search">
+        <div class="search-wrapper full-width" style="display:flex; gap:8px; align-items:center; background: transparent; padding:0; border:none; box-shadow:none;">
+            <div class="search-wrapper" style="flex:1;">
+              <i-tabler name="search"></i-tabler>
+              <input type="search" [placeholder]="l.s('payments.detail_account.search_transfer')" [(ngModel)]="filters.search">
+            </div>
+            <schoolingo-dropdown [options]="categoryFilterOptions" [(ngModel)]="filters.category" style="width: 180px;" [clearable]="false" [settings]="{ locale: false }"></schoolingo-dropdown>
         </div>
 
         <div class="tx-list scrollable">
@@ -84,26 +117,70 @@
               </div>
             }
             @for (transaction of filteredTransactions; track transaction.transaction_id) {
-                <div class="tx-row">
-                    <div class="tx-icon" [class]="transaction.type">
-                        <i-tabler [name]="transaction.type == 'in' ? 'arrow-narrow-down' : 'arrow-narrow-up'"></i-tabler>
-                    </div>
-                    <div>
-                    <div class="tx-desc">{{ transaction.type == 'in' ? 'Příchodí' : 'Odchozí' }} – {{ transaction.description ?? '—' }}</div>
-                    <div class="tx-meta">{{ Utils.formatDateShort(transaction.created_at) }}</div>
-                    </div>
-                    <div>
-                    <div class="tx-amount" [class]="transaction.type">
-                        {{ (transaction.type == 'in' ? '+' : '-') }}{{ transaction.amount | money }}
-                    </div>
-                    <div class="tx-balance">zůstatek {{ transaction.new_balance | money }}</div>
-                    </div>
+                <div class="tx-row" [class.editing]="editingTx === transaction.transaction_id">
+                    @if (editingTx === transaction.transaction_id) {
+                      <div class="tx-icon" [class]="transaction.type">
+                          <i-tabler [name]="transaction.type == 'in' ? 'arrow-narrow-down' : 'arrow-narrow-up'"></i-tabler>
+                      </div>
+                      <div class="tx-edit-form">
+                        <div class="tx-edit-input-wrapper">
+                           <input type="text" class="tx-edit-input" [placeholder]="l.s('payments.detail_account.tx_description_placeholder')" [(ngModel)]="txEditDesc" (keyup.enter)="saveEditTx(transaction)" (keyup.escape)="cancelEditTx()" autofocus>
+                        </div>
+                        <div class="tx-edit-categories">
+                           @for (cat of availableCategories; track cat.id) {
+                             <button class="tx-cat-pill" [class.active]="txEditCategory === cat.id" (click)="setTxCategory(cat.id)">
+                               <i-tabler [name]="cat.icon"></i-tabler>
+                               {{ cat.label }}
+                             </button>
+                           }
+                        </div>
+                      </div>
+                      <div class="tx-edit-actions">
+                        <button class="btn btn--primary btn--sm" (click)="saveEditTx(transaction)" [disabled]="txEditSaving">
+                           @if (txEditSaving) { <i-tabler name="loader-2" class="spin"></i-tabler> } @else { <i-tabler name="check"></i-tabler> }
+                        </button>
+                        <button class="btn btn--ghost btn--sm" (click)="cancelEditTx()" [disabled]="txEditSaving">
+                           <i-tabler name="x"></i-tabler>
+                        </button>
+                      </div>
+                    } @else {
+                      <div class="tx-icon" [class]="transaction.type">
+                          <i-tabler [name]="transaction.type == 'in' ? 'arrow-narrow-down' : 'arrow-narrow-up'"></i-tabler>
+                      </div>
+                      <div class="tx-info-col">
+                        <div class="tx-desc">
+                           {{ transaction.type == 'in' ? l.s('payments.detail_account.tx_incoming') : l.s('payments.detail_account.tx_outgoing') }} – {{ transaction.description ?? '—' }}
+                           @if (transaction.category) {
+                              <span class="badge" [class]="'badge--' + getCategoryColor(transaction.category)" style="margin-left: 8px;">
+                                @if (getCategoryIcon(transaction.category)) {
+                                  <i-tabler [name]="getCategoryIcon(transaction.category)!"></i-tabler>
+                                }
+                                {{ getCategoryLabel(transaction.category) }}
+                              </span>
+                           }
+                        </div>
+                        <div class="tx-meta">{{ Utils.formatDateShort(transaction.created_at) }}</div>
+                      </div>
+                      <div class="tx-right-col">
+                        <div class="tx-amount" [class]="transaction.type">
+                            {{ (transaction.type == 'in' ? '+' : '-') }}{{ transaction.amount | money }}
+                        </div>
+                        <div class="tx-balance">{{ l.s('payments.detail_account.tx_balance') }} {{ transaction.new_balance | money }}</div>
+                      </div>
+                      <div class="tx-actions">
+                        <button class="btn btn--ghost tx-edit-btn" (click)="startEditTx(transaction)" [title]="l.s('global.edit')">
+                          <i-tabler name="pencil"></i-tabler>
+                        </button>
+                      </div>
+                    }
                 </div>
             } @empty {
               @if (!loading) {
-                <div style="text-align:center;padding:2rem;color:var(--text-muted)">
-                  <i-tabler name="receipt-off"></i-tabler>
-                  <p>Zatím žádné transakce</p>
+                <div class="empty-state">
+                  <div class="empty-state__icon">
+                    <i-tabler name="receipt-off"></i-tabler>
+                  </div>
+                  <div class="empty-state__title">{{ l.s('payments.detail_account.no_transactions') }}</div>
                 </div>
               }
             }
@@ -111,161 +188,125 @@
               <div style="text-align:center;padding:1rem;">
                 <button class="btn btn--ghost btn--sm" (click)="moreTransactions()" [disabled]="loadingMore">
                   @if (loadingMore) { <i-tabler name="loader-2" class="spin"></i-tabler> }
-                  Načíst další
+                  {{ l.s('payments.detail_account.load_more') }}
                 </button>
               </div>
             }
-          <!-- <div class="tx-row">
-            <div class="tx-icon in">↓</div>
-            <div>
-              <div class="tx-desc">Vklad – školní výlet ZOO</div>
-              <div class="tx-meta">18. 6. 2026 · od Jana Nováková</div>
-            </div>
-            <div>
-              <div class="tx-amount in">+300 Kč</div>
-              <div class="tx-balance">zůstatek 1 240 Kč</div>
-            </div>
-          </div>
-          <div class="tx-row">
-            <div class="tx-icon out">↑</div>
-            <div>
-              <div class="tx-desc">Platba – pracovní sešity</div>
-              <div class="tx-meta">12. 6. 2026 · třídní učitelka</div>
-            </div>
-            <div>
-              <div class="tx-amount out">−150 Kč</div>
-              <div class="tx-balance">zůstatek 940 Kč</div>
-            </div>
-          </div>
-          <div class="tx-row">
-            <div class="tx-icon out">↑</div>
-            <div>
-              <div class="tx-desc">Platba – vstupné, divadlo</div>
-              <div class="tx-meta">2. 6. 2026 · třídní učitelka</div>
-            </div>
-            <div>
-              <div class="tx-amount out">−120 Kč</div>
-              <div class="tx-balance">zůstatek 1 090 Kč</div>
-            </div>
-          </div>
-          <div class="tx-row">
-            <div class="tx-icon in">↓</div>
-            <div>
-              <div class="tx-desc">Vklad – měsíční příspěvek</div>
-              <div class="tx-meta">28. 5. 2026 · od Jana Nováková</div>
-            </div>
-            <div>
-              <div class="tx-amount in">+150 Kč</div>
-              <div class="tx-balance">zůstatek 1 210 Kč</div>
-            </div>
-          </div>
-          <div class="tx-row">
-            <div class="tx-icon out">↑</div>
-            <div>
-              <div class="tx-desc">Platba – pastelky a papíry</div>
-              <div class="tx-meta">14. 5. 2026 · třídní učitelka</div>
-            </div>
-            <div>
-              <div class="tx-amount out">−85 Kč</div>
-              <div class="tx-balance">zůstatek 1 060 Kč</div>
-            </div>
-          </div> -->
         </div>
       </div>
- 
+
       <!-- NASTAVENI -->
-      <div class="tab-panel scrollable" id="panel-nastaveni" [hidden]="selectedTab.getValue() != 1">
+      <div class="tab-panel scrollable fade-in" id="panel-nastaveni" [hidden]="selectedTab.getValue() != 1">
         <div class="panel-head">
           <div class="panel-title">
             {{ l.s('payments.detail_account.account_settings') }}
           </div>
         </div>
- 
+
         <div class="field-group">
-          <label class="field-label" for="nazev">
-            {{ l.s('payments.add_account.account_name') }}
-          </label>
-          <input type="text" id="nazev" value="Třídní pokladna 3.B">
-          <div class="field-hint">Tento název vidí všichni rodiče ve třídě.</div>
+          <label class="field-label" for="nazev">{{ l.s('payments.add_account.account_name') }}</label>
+          <input type="text" id="nazev" #settingsNameInput [(ngModel)]="data.name" class="form-input">
+          <div class="field-hint">{{ l.s('payments.detail_account.settings_name_hint') }}</div>
         </div>
- 
+
         <div class="field-group">
-          <label class="field-label" for="limit">Upozornit při nízkém zůstatku pod</label>
-          <input type="number" id="limit" value="200">
-          <div class="field-hint">Kč — dostanete e-mail, klesne-li zůstatek pod tuto hranici.</div>
+          <label class="field-label" for="limit">{{ l.s('payments.detail_account.settings_low_balance_label') }}</label>
+          <div class="input-unit-row">
+            <input type="number" id="limit" [(ngModel)]="settings.low_balance_threshold" min="0" class="form-input" [placeholder]="l.s('payments.detail_account.settings_low_balance_placeholder')">
+            <span class="unit-badge">Kč</span>
+          </div>
+          <div class="field-hint">{{ l.s('payments.detail_account.settings_low_balance_hint') }}</div>
         </div>
- 
+
+        <div class="settings-section-title">{{ l.s('payments.detail_account.settings_notifications') }}</div>
+
         <div class="toggle-row">
           <div>
-            <div class="t-title">Upozornění na každou transakci</div>
-            <div class="t-desc">E-mail při každém vkladu nebo výdaji z pokladny.</div>
+            <div class="t-title">{{ l.s('payments.detail_account.settings_notify_transaction') }}</div>
+            <div class="t-desc">{{ l.s('payments.detail_account.settings_notify_transaction_desc') }}</div>
           </div>
-          <schoolingo-checkbox [checked]="true"></schoolingo-checkbox>
+          <schoolingo-checkbox [checked]="settings.notify_every_transaction" (click)="settings.notify_every_transaction = !settings.notify_every_transaction"></schoolingo-checkbox>
         </div>
         <div class="toggle-row">
           <div>
-            <div class="t-title">Měsíční přehled e-mailem</div>
-            <div class="t-desc">Souhrn pohybů a zůstatku na konci měsíce.</div>
+            <div class="t-title">{{ l.s('payments.detail_account.settings_monthly_summary') }}</div>
+            <div class="t-desc">{{ l.s('payments.detail_account.settings_monthly_summary_desc') }}</div>
           </div>
-          <schoolingo-checkbox [checked]="true"></schoolingo-checkbox>
+          <schoolingo-checkbox [checked]="settings.notify_monthly_summary" (click)="settings.notify_monthly_summary = !settings.notify_monthly_summary"></schoolingo-checkbox>
         </div>
         <div class="toggle-row">
           <div>
-            <div class="t-title">Sdílet náhled s druhým rodičem</div>
-            <div class="t-desc">Umožní zobrazit pokladnu i druhému zákonnému zástupci.</div>
+            <div class="t-title">{{ l.s('payments.detail_account.settings_share_guardians') }}</div>
+            <div class="t-desc">{{ l.s('payments.detail_account.settings_share_guardians_desc') }}</div>
           </div>
-          <schoolingo-checkbox [checked]="false"></schoolingo-checkbox>
+          <schoolingo-checkbox [checked]="settings.share_with_guardians" (click)="settings.share_with_guardians = !settings.share_with_guardians"></schoolingo-checkbox>
         </div>
- 
-        <div class="actions-row" style="margin-top:22px;">
-          <button class="btn btn--primary">Uložit změny</button>
-          <button class="btn btn--ghost">Zrušit</button>
+
+        <div class="settings-actions">
+          @if (settingsError) {
+            <div class="error-text" style="color:var(--danger); font-size:14px; margin-right:auto;">{{ settingsError }}</div>
+          }
+          @if (settingsSaved) {
+            <span class="saved-text" style="color:var(--success); font-size:14px;"><i-tabler name="check"></i-tabler> {{ l.s('payments.detail_account.settings_saved') }}</span>
+          }
+          <button class="btn btn--primary" (click)="saveSettings()" [disabled]="settingsSaving">
+            @if (settingsSaving) { <i-tabler name="loader-2" class="spin"></i-tabler> } @else { <i-tabler name="device-floppy"></i-tabler> }
+            {{ l.s('payments.detail_account.settings_save') }}
+          </button>
         </div>
       </div>
- 
+
       <!-- PREVOD -->
-      <div class="tab-panel scrollable" id="panel-prevod" [hidden]="selectedTab.getValue() != 2">
+      <div class="tab-panel scrollable fade-in" id="panel-prevod" [hidden]="selectedTab.getValue() != 2">
         <div class="panel-head">
           <div class="panel-title">
             {{ l.s('payments.detail_account.transfer_payment') }}
           </div>
         </div>
- 
-        <div class="balance-note">Dostupný zůstatek k převodu: <b>{{ data.balance | money }}</b></div>
- 
-        @if (otherAccounts.length) {
-          <div class="field-group">
-          <label class="field-label" for="cilovy">Cílový účet</label>
-          <schoolingo-dropdown [options]="otherAccounts" [value]="transfer.target_account_id" (valueChange)="transfer.target_account_id = $event" [clearable]="false" [settings]="{ locale: false }"></schoolingo-dropdown>
-          </div>
-        } @else {
-          <div class="message message--info">
-            <span>Nemáte jiný aktivní účet pro převod.</span>
-          </div>
-        }
-        <div class="field-group">
-        <label class="field-label" for="castka">Částka</label>
-        <input type="number" id="castka" placeholder="0 Kč" [(ngModel)]="transfer.amount" min="1">
-        </div>
- 
-        <div class="field-group">
-          <label class="field-label" for="zprava">Zpráva (nepovinné)</label>
-          <textarea id="zprava" rows="3" placeholder="Např. důvod přeposlaní platby…" [(ngModel)]="transfer.description"></textarea>
-        </div>
 
-        @if (transferError) {
-          <div class="message message--danger">{{ transferError }}</div>
-        }
-        @if (transferSuccess) {
-          <div class="message message--success">Převod byl úspěšně proveden!</div>
-        }
- 
-        <div class="actions-row">
-            <button class="btn btn--primary" (click)="submitTransfer()" [disabled]="transferLoading || !otherAccounts.length">
-            @if (transferLoading) { <i-tabler name="loader-2" class="spin"></i-tabler> } @else { <i-tabler name="user-share"></i-tabler> }
-            Odeslat platbu
+        <div class="transfer-form" style="padding-top:10px;">
+          @if (transferSuccess) {
+            <div class="success-message">
+              <i-tabler name="check"></i-tabler>
+              {{ l.s('payments.detail_account.transfer_success') }}
+            </div>
+          } @else {
+            <div class="field-group">
+              <label class="field-label">{{ l.s('payments.detail_account.transfer_available_balance') }}</label>
+              <div class="available-balance">{{ data.balance | money }}</div>
+            </div>
+
+            <div class="field-group">
+              <label class="field-label">{{ l.s('payments.detail_account.transfer_target_account') }}</label>
+              @if (otherAccounts.length > 0) {
+                <schoolingo-dropdown [options]="otherAccounts" [(ngModel)]="transfer.target_account_id"></schoolingo-dropdown>
+              } @else {
+                <div class="field-hint" style="color:var(--rust)">{{ l.s('payments.detail_account.transfer_no_accounts') }}</div>
+              }
+            </div>
+
+            <div class="field-group">
+              <label class="field-label">{{ l.s('payments.detail_account.transfer_amount') }}</label>
+              <div class="input-unit-row">
+                <input type="number" [(ngModel)]="transfer.amount" class="form-input" min="1" [max]="data.balance">
+                <span class="unit-badge">Kč</span>
+              </div>
+            </div>
+
+            <div class="field-group">
+              <label class="field-label">{{ l.s('payments.detail_account.transfer_note') }}</label>
+              <input type="text" [(ngModel)]="transfer.description" class="form-input" [placeholder]="l.s('payments.detail_account.transfer_note_placeholder')">
+            </div>
+
+            @if (transferError) {
+              <div class="error-text" style="color:var(--danger); font-size:14px; margin-bottom:1rem;">{{ transferError }}</div>
+            }
+
+            <button class="btn btn--primary full-width" (click)="submitTransfer()" [disabled]="transferLoading || !transfer.target_account_id || !transfer.amount || transfer.amount <= 0">
+              @if (transferLoading) { <i-tabler name="loader-2" class="spin"></i-tabler> } @else { <i-tabler name="send"></i-tabler> }
+              {{ l.s('payments.detail_account.transfer_submit') }}
             </button>
-          <button class="btn btn--ghost" (click)="selectedTab.next(0)">Zrušit</button>
+          }
         </div>
       </div>
     </div>

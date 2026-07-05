@@ -1,0 +1,28 @@
+.route-loading-bar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 3px;
+  background: var(--primary-gradient);
+  z-index: 999999;
+  width: 0;
+  opacity: 0;
+  transition: width 0.15s cubic-bezier(0.1, 0.8, 0.1, 1), opacity 0.3s ease;
+  box-shadow: 0 0 8px rgba(88, 101, 242, 0.6), 0 0 4px rgba(88, 101, 242, 0.4);
+  pointer-events: none;
+}
+
+.route-loading-bar.loading {
+  opacity: 1;
+}
+
+.route-loading-bar::after {
+  content: '';
+  position: absolute;
+  right: 0;
+  width: 100px;
+  height: 100%;
+  box-shadow: 0 0 10px var(--primary), 0 0 5px var(--primary);
+  opacity: 1;
+  transform: rotate(3deg) translate(0px, -4px);
+}

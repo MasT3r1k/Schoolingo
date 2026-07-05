@@ -23,6 +23,7 @@ import { editCompanyModalComponent } from './editCompanyModal/editCompanyModal';
 import { selectCompanyModalComponent } from './selectCompanyModal/selectCompanyModal';
 import { instructorDetailModalComponent } from './instructorDetailModal/instructorDetailModal';
 import { removeCompanyModalComponent } from './removeCompanyModal/removeCompanyModal';
+import { CheckboxComponent } from '@Components/Checkbox';
 
 type Scope = {
   scope_id: number;
@@ -33,7 +34,7 @@ type Scope = {
 
 @Component({
   standalone: true,
-  imports: [FormsModule, ReactiveFormsModule, DatalistComponent, TabsComponent, NgClass, NgStyle, IconsModule, NgIf],
+  imports: [FormsModule, ReactiveFormsModule, DatalistComponent, TabsComponent, NgClass, NgStyle, IconsModule, NgIf, CheckboxComponent],
   templateUrl: './companies.component.html',
   styleUrls: ['./companies.component.css']
 })
@@ -58,6 +59,7 @@ export class CompaniesComponent implements OnInit {
   public alert: 'success_selected_company' | 'success_updated_instructor' | 'too_many_students_in_company' | null = null;
   public requestDataForAlert: any = {};
   public selectedTab = new BehaviorSubject<number>(0);
+  public requestStep = new BehaviorSubject<number>(0);
 
   onClick = (id: { id: number }[]) => {
     this.http.get<companyInfoAPI>(
@@ -174,6 +176,7 @@ export class CompaniesComponent implements OnInit {
       status: "approved"
     };
     this.scopeSupported = [];
+    this.requestStep.next(0);
     this.router.navigate(['/traineeship/companies/new']);
   }
 

@@ -146,48 +146,37 @@
 
             <!-- Quick Stats -->
             <div class="quick-stats">
-                <div class="stat-card clickable" [class]="getGradeClass(selectedStudent.average_grade)"
-                    (click)="setActiveTab('marks')">
-                    <div class="stat-icon">
-                        <i-tabler name="award"></i-tabler>
-                    </div>
-                    <div class="stat-info">
-                        <span class="stat-value">{{ selectedStudent.average_grade ?? '---' }}</span>
-                        <span class="stat-label">{{ l.s('students.average') }}</span>
-                    </div>
-                </div>
-                <div class="stat-card clickable"
-                    [class.stat--warning]="Utils.formatAsNumber(selectedStudent.absence_rate) > 10" [class.stat--primary]="Utils.formatAsNumber(selectedStudent.absence_rate) <= 10"
-                    (click)="showAbsenceModal = true">
-                    <div class="stat-icon">
-                        <i-tabler name="calendar-off"></i-tabler>
-                    </div>
-                    <div class="stat-info">
-                        <span class="stat-value">{{ selectedStudent.absence_rate }}%</span>
-                        <span class="stat-label">{{ l.s('students.absence') }}</span>
-                    </div>
-                </div>
-                <div class="stat-card clickable" [class.stat--danger]="selectedStudent.education_measures_count > 0" [class.stat--primary]="selectedStudent.education_measures_count == 0"
-                    (click)="setActiveTab('educational_measures')">
-                    <div class="stat-icon">
-                        <i-tabler name="alert-triangle"></i-tabler>
-                    </div>
-                    <div class="stat-info">
-                        <span class="stat-value">{{ selectedStudent.education_measures_count || 0 }}</span>
-                        <span class="stat-label">{{ l.s('students.measure_educations') }}</span>
-                    </div>
-                </div>
-                <!-- Reward Stats -->
-                <div class="stat-card clickable" [class.stat--success]="studentRewards.length > 0" [class.stat--primary]="studentRewards.length == 0"
-                    (click)="setActiveTab('rewards')">
-                    <div class="stat-icon">
-                        <i-tabler name="gift"></i-tabler>
-                    </div>
-                    <div class="stat-info">
-                        <span class="stat-value">{{ studentRewards.length }}</span>
-                        <span class="stat-label">{{ l.s('students.tabs.rewards') }}</span>
-                    </div>
-                </div>
+                <stat-card
+                icon="award"
+                [value]="selectedStudent.average_grade ?? '---'"
+                label="students.average"
+                (click)="setActiveTab('marks')"
+                [type]="getGradeClass(selectedStudent.average_grade)"
+                ></stat-card>
+                
+                <stat-card
+                icon="calendar-off"
+                label="students.absence"
+                [type]="getAbsenceClass(Utils.formatAsNumber(selectedStudent.absence_rate))"
+                [value]="selectedStudent.absence_rate + '%'"
+                (click)="showAbsenceModal = true"
+                ></stat-card>
+
+                <stat-card
+                [type]="selectedStudent.education_measures_count ? 'danger' : 'success'"
+                icon="alert-triangle"
+                label="students.measure_educations"
+                [value]="selectedStudent.education_measures_count || 0"
+                (click)="setActiveTab('educational_measures')"
+                ></stat-card>
+
+                <stat-card
+                [type]="studentRewards.length ? 'success' : 'primary'"
+                icon="gift"
+                label="students.tabs.rewards"
+                [value]="studentRewards.length"
+                (click)="setActiveTab('rewards')"
+                ></stat-card>
             </div>
 
 

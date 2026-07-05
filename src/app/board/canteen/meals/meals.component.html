@@ -1,95 +1,232 @@
-<div class="card" style="margin-bottom: 1.5rem;">
-  <div class="card-body" style="display: flex; gap: 1rem; align-items: center; flex-wrap: wrap;">
-    <input type="text" class="input" placeholder="Hledat jídlo…" style="max-width: 250px;">
-    
-    <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
-      <button class="badge" [class.badge--neutral]="filter !== 'all'" [class.badge--primary]="filter === 'all'" (click)="setFilter('all')" style="border:none; cursor:pointer;">Vše</button>
-      <button class="badge" [class.badge--neutral]="filter !== 'meat'" [class.badge--primary]="filter === 'meat'" (click)="setFilter('meat')" style="border:none; cursor:pointer;">Masité</button>
-      <button class="badge" [class.badge--neutral]="filter !== 'veg'" [class.badge--primary]="filter === 'veg'" (click)="setFilter('veg')" style="border:none; cursor:pointer;">Vegetariánské</button>
-      <button class="badge" [class.badge--neutral]="filter !== 'sweet'" [class.badge--primary]="filter === 'sweet'" (click)="setFilter('sweet')" style="border:none; cursor:pointer;">Sladké</button>
-    </div>
-    
-    <div style="flex: 1;"></div>
-    
-    <select class="input" style="max-width: 200px;">
-      <option>Týden 27 (30.6.–4.7.)</option>
-      <option>Týden 28 (7.7.–11.7.)</option>
-    </select>
-    
-    <button class="btn btn--primary btn--sm role-admin-only">
-      <i-tabler name="plus"></i-tabler> Nové jídlo
-    </button>
-  </div>
-</div>
+<div class="card">
+  <div class="card-top"></div>
 
-<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem; margin-bottom: 2rem;">
-  @for (meal of meals; track meal.id) {
-    <div class="card">
-      <div class="card-body" style="display: flex; gap: 1rem;">
-        <div style="width: 60px; height: 60px; border-radius: var(--radius); background: var(--surface-hover); display: flex; align-items: center; justify-content: center;">
-          <i-tabler name="soup" style="color: var(--primary); width: 32px; height: 32px;"></i-tabler>
+  <!-- ═══ HEADER ═══ -->
+  <div class="card-header">
+    <h2>
+      <span>{{ l.s('canteen.meals_and_menus') }}</span>
+    </h2>
+    <div class="flex-items" style="gap: 0.75rem;">
+      <div class="meals-toolbar__right">
+        <span class="meals-toolbar__week-label">{{ l.s('canteen.weekly_menu_title') }}</span>
+        <schoolingo-dropdown
+          [options]="weekOptions"
+          [settings]="{ locale: false }"
+          [clearable]="false"
+          [(ngModel)]="selectedWeekStart"
+          (ngModelChange)="onWeekChange()"
+          style="width: 240px;">
+        </schoolingo-dropdown>
+      </div>
+
+      <button class="btn btn--secondary btn--sm" (click)="openGenerator()">
+        <i-tabler name="wand"></i-tabler>
+        {{ l.s('canteen.generate_menu') }}
+      </button>
+      <button class="btn btn--primary btn--sm" (click)="openAddMeal()">
+        <i-tabler name="plus"></i-tabler>
+        {{ l.s('canteen.new_meal') }}
+      </button>
+    </div>
+  </div>
+
+  <div class="card-body">
+    <!-- ═══ SECTION 1: WEEKLY MENU GRID ═══ -->
+    <div class="meals-section">
+      <div class="meals-section__header">
+        <div class="meals-section__title">
+          <span>{{ l.s('canteen.weekly_menu_title') }}</span>
         </div>
-        <div style="flex: 1;">
-          <div style="font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase;">{{ meal.cat }}</div>
-          <h3 style="margin: 0.25rem 0 0.5rem 0;">{{ meal.name }}</h3>
-          <div style="display: flex; gap: 1rem; font-size: 0.875rem; color: var(--text-muted); margin-bottom: 0.5rem;">
-            <span>{{ meal.kcal }} kcal</span>
-            <span style="font-weight: bold; color: var(--text-color);">{{ meal.price }} Kč</span>
-          </div>
-          <div style="display: flex; gap: 0.25rem; flex-wrap: wrap; margin-bottom: 0.75rem;">
-            @for (tag of meal.tags; track tag) {
-              <span class="badge badge--neutral">{{ tag }}</span>
+      </div>
+
+      <div class="menu-grid-wrapper">
+        <table class="menu-grid-table">
+          <thead>
+            <tr>
+              <th class="menu-grid-table__variant-col">
+                {{ l.s('canteen.weekly_menu_td') }}
+              </th>
+              @for (day of weekDays; track day.date) {
+                <th class="menu-grid-table__day-col">
+                  {{ day.label }}
+                </th>
+              }
+            </tr>
+          </thead>
+          <tbody>
+            @for (row of menuGrid; track row.variant) {
+              <tr>
+                <td class="menu-grid-table__variant-cell">
+                  <span class="menu-variant-badge">
+                    {{ l.s('canteen.weekly_menu_td') }}
+                    {{ row.variant }}
+                  </span>
+                </td>
+                @for (day of row.days; track day.date) {
+                  <td class="menu-cell clickable-cell" (click)="openAssignMenu(day.date, row.variant, day.meal_id)">
+                    @if (day.meal_id) {
+                      <div class="menu-cell__filled">
+                        <div class="menu-cell__name" [title]="day.name">
+                          {{ day.name }}
+                        </div>
+
+                        <div class="menu-cell__meta">
+                          <span class="menu-cell__kcal">{{ day.calories ? day.calories : '-' }} kcal</span>
+                          <span class="menu-cell__price">
+                            {{ day.price | money }}
+                          </span>
+                        </div>
+
+                        <button class="clear-assign-btn" (click)="removeAssignMenu(day.date, row.variant, $event)">
+                          <i-tabler name="x"></i-tabler>
+                        </button>
+                      </div>
+                    } @else {
+                      <div class="menu-cell__empty">
+                        <i-tabler name="plus"></i-tabler>
+                        <span>{{ l.s('canteen.assign_meal') }}</span>
+                      </div>
+                    }
+                  </td>
+                }
+              </tr>
             }
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Nutrition summary -->
+      <div class="nutrition-summary">
+        <div class="nutrition-summary__label">
+          <i-tabler name="flame"></i-tabler>
+          <span>{{ l.s('canteen.nutritional_summary') }}</span>
+        </div>
+        <div class="nutrition-summary__items">
+          @for (row of menuGrid; track row.variant) {
+            <div class="nutrition-item">
+              <span class="nutrition-item__name">{{ l.s('canteen.weekly_menu_td') }} {{ row.variant }}</span>
+              <span class="nutrition-item__value">{{ getVariantKcalSum(row.variant) }} kcal</span>
+              <div class="mt-progress nutrition-item__bar">
+                <div class="mt-progress__bar"
+                     [class.mt-progress__bar--low]="getVariantKcalSum(row.variant) <= genForm_kcal * 0.8"
+                     [class.mt-progress__bar--mid]="getVariantKcalSum(row.variant) > genForm_kcal * 0.8 && getVariantKcalSum(row.variant) <= genForm_kcal"
+                     [class.mt-progress__bar--high]="getVariantKcalSum(row.variant) > genForm_kcal"
+                     [style.width.%]="Math.min(100, getVariantKcalSum(row.variant) / genForm_kcal * 100)">
+                </div>
+              </div>
+            </div>
+          }
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ SECTION 2: MEAL CATALOG ═══ -->
+    <div class="meals-section">
+      <div class="meals-section__header">
+        <div class="meals-section__title">
+          <span>{{ l.s('canteen.catalog_title') }}</span>
+        </div>
+
+        <div class="row" style="gap: 1rem;">
+        <div class="search-wrapper" style="max-width: 280px; width: 280px;">
+          <i-tabler name="search"></i-tabler>
+          <input type="text" [placeholder]="l.s('canteen.search_placeholder')" [(ngModel)]="searchQuery" (input)="onSearchChange()">
+        </div>
+
+        <schoolingo-tabs
+          [options]="['filter_all', 'filter_meat', 'filter_veg', 'filter_sweet']"
+          [icons]="['list', 'meat', 'leaf', 'cookie']"
+          [value]="tabValue"
+          prefix="canteen.">
+        </schoolingo-tabs>
+        </div>
+      </div>
+
+      <div class="meals-grid">
+        @for (meal of filteredMeals; track meal.meal_id) {
+          <div class="meal-catalog-card">
+            <div class="meal-catalog-card__icon meal-icon-badge"
+                  [class.badge-meat]="meal.category === 'meat'"
+                  [class.badge-veg]="meal.category === 'veg'"
+                  [class.badge-sweet]="meal.category === 'sweet'"
+                  [class.badge-other]="meal.category === 'other'">
+              <i-tabler [name]="meal.category === 'veg' ? 'leaf' : meal.category === 'sweet' ? 'cookie' : 'meat'"></i-tabler>
+            </div>
+
+            <div class="meal-catalog-card__body">
+              <span class="meal-catalog-card__category"
+                    [class.text--danger]="meal.category === 'meat'"
+                    [class.text--success]="meal.category === 'veg'"
+                    [class.text--warning]="meal.category === 'sweet'"
+                    [class.text--muted]="meal.category === 'other'">
+                {{ getCategoryLabel(meal.category) }}
+              </span>
+
+              <h4 class="meal-catalog-card__name" [title]="meal.name">
+                {{ meal.name }}
+              </h4>
+
+              <div class="meal-catalog-card__stats">
+                <span class="meal-stat">
+                  <i-tabler name="flame"></i-tabler>
+                  {{ meal.calories || '—' }} kcal
+                </span>
+                <span class="meal-stat meal-stat--price">{{ meal.price | money }}</span>
+              </div>
+
+              @if (meal.allergens) {
+                <div class="badges">
+                  @for (tag of meal.allergens.split(','); track tag) {
+                    <div class="badge badge--primary" style="font-size: 0.65rem; padding: 0.1rem 0.4rem;color:#fff">
+                      {{ l.s('canteen.allergen_label') }} {{ tag.trim() }}
+                    </div>
+                  }
+                </div>
+              }
+            </div>
+
+            <!-- Actions -->
+            <div class="meal-catalog-card__actions">
+              <button class="btn btn--secondary btn--sm" (click)="openEditMeal(meal, $event)">
+                <i-tabler name="pencil"></i-tabler>
+                {{ l.s('canteen.edit_meal') }}
+              </button>
+              <button class="btn btn--danger btn--sm" (click)="deleteMeal(meal, $event)">
+                <i-tabler name="trash"></i-tabler>
+                {{ l.s('canteen.delete_meal_btn') }}
+              </button>
+            </div>
           </div>
-          <div class="role-admin-only" style="display: flex; gap: 0.5rem;">
-            <button class="btn btn--ghost btn--sm">Upravit</button>
-            <button class="btn btn--ghost btn--danger btn--sm">Smazat</button>
+        } @empty {
+          <div class="meals-empty-state">
+            <i-tabler name="soup-off"></i-tabler>
+            <p>{{ l.s('canteen.no_meals') }}</p>
+          </div>
+        }
+
+        <div class="meal-catalog-card new-card">
+          <!-- Category icon -->
+          <div class="meal-catalog-card__icon meal-icon-badge">
+            <i-tabler name="soup"></i-tabler>
+          </div>
+
+          <!-- Content -->
+          <div class="meal-catalog-card__body">
+            <h4 class="meal-catalog-card__name" [title]="''">
+              {{ "Chcete přidat nový jídlo?" }}
+            </h4>
+          </div>
+
+          <!-- Actions -->
+          <div class="meal-catalog-card__actions" style="width: 100%">
+            <button class="btn btn--success btn--sm" style="width: 100%" (click)="openAddMeal()">
+              <i-tabler name="plus"></i-tabler>
+              {{ l.s('canteen.new_meal') }}
+            </button>
           </div>
         </div>
       </div>
     </div>
-  }
-</div>
 
-<div class="card">
-  <div class="card-header">
-    <div style="display: flex; flex-direction: column;">
-      <h2>Jídelníček — týden 27</h2>
-      <span class="role-admin-only" style="font-size: 0.875rem; color: var(--text-muted);">Klikněte na buňku pro úpravu přiřazeného jídla</span>
-    </div>
-  </div>
-  <div class="card-body">
-    <div class="table-container">
-      <table class="table">
-        <thead class="table__head">
-          <tr>
-            <th class="table__th">Varianta</th>
-            <th class="table__th">Po 30.6.</th>
-            <th class="table__th">Út 1.7.</th>
-            <th class="table__th">St 2.7.</th>
-            <th class="table__th">Čt 3.7.</th>
-            <th class="table__th">Pá 4.7.</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr class="table__row">
-            <td class="table__td"><strong>Oběd 1</strong></td>
-            <td class="table__td"><div>Svíčková na smetaně<br><small style="color: var(--text-muted);">89 Kč</small></div></td>
-            <td class="table__td"><div>Špagety boloňské<br><small style="color: var(--text-muted);">79 Kč</small></div></td>
-            <td class="table__td"><div>Rybí filé, brambory<br><small style="color: var(--text-muted);">82 Kč</small></div></td>
-            <td class="table__td"><div>Kuřecí nudličky kari<br><small style="color: var(--text-muted);">75 Kč</small></div></td>
-            <td class="table__td"><div>Smažený sýr<br><small style="color: var(--text-muted);">79 Kč</small></div></td>
-          </tr>
-          <tr class="table__row">
-            <td class="table__td"><strong>Oběd 2</strong></td>
-            <td class="table__td"><div>Kuřecí řízek<br><small style="color: var(--text-muted);">79 Kč</small></div></td>
-            <td class="table__td"><div>Hovězí guláš<br><small style="color: var(--text-muted);">85 Kč</small></div></td>
-            <td class="table__td"><div>Zapečené brambory<br><small style="color: var(--text-muted);">79 Kč</small></div></td>
-            <td class="table__td"><div>Vepřová pečeně<br><small style="color: var(--text-muted);">85 Kč</small></div></td>
-            <td class="table__td"><div>Kuřecí steak<br><small style="color: var(--text-muted);">89 Kč</small></div></td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
   </div>
 </div>

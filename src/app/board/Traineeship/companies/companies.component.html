@@ -496,13 +496,25 @@
       </div>
       <div class="banner-text">
         <strong>Tip</strong>
-        <p>Doporučujeme řešit alespoň měsíc před začátkem praxe</p>
+        <p>Doporučujeme řešit alespoň měsíc před začátkem praxe. Vaše žádost bude předána ke schválení (stav "Čeká na schválení").</p>
       </div>
     </div>
   </div>
 
+  <!-- Stepper Tabs -->
+  <div class="tabs-container" style="padding: 0 20px; border-bottom: 1px solid var(--border);">
+    <schoolingo-tabs [options]="[
+      'Základní údaje',
+      'Adresa',
+      'Obory',
+      'Odpovědná osoba',
+      'Doplňující informace'
+    ]" [value]="requestStep" [icons]="['building', 'map-pin', 'category', 'user', 'file-text']" [option_width]="'fit'"></schoolingo-tabs>
+  </div>
+
   <!-- Basic Info Section -->
-  <div class="section">
+  @if (requestStep.getValue() === 0) {
+  <div class="section fade-in">
     <div class="section-header">
       <div class="header-content">
         <i-tabler name="building"></i-tabler>
@@ -599,9 +611,11 @@
       </div>
     </div>
   </div>
+  }
 
   <!-- Address Section -->
-  <div class="section">
+  @if (requestStep.getValue() === 1) {
+  <div class="section fade-in">
     <div class="section-header">
       <div class="header-content">
         <i-tabler name="map-pin"></i-tabler>
@@ -648,9 +662,11 @@
       </div>
     </div>
   </div>
+  }
 
   <!-- Scopes Section -->
-  <div class="section">
+  @if (requestStep.getValue() === 2) {
+  <div class="section fade-in">
     <div class="section-header">
       <div class="header-content">
         <i-tabler name="category"></i-tabler>
@@ -668,18 +684,18 @@
           <span class="scope-name">{{ scope.scope_name }}</span>
           <div class="scope-toggle">
             <span class="toggle-label">{{ scopeSupported.includes(scope.scope_id) ? l.s("yes") : l.s("no") }}</span>
-            <div class="toggle-switch" [class.active]="scopeSupported.includes(scope.scope_id)">
-              <span class="toggle-knob"></span>
-            </div>
+            <schoolingo-checkbox [checked]="scopeSupported.includes(scope.scope_id)"></schoolingo-checkbox>
           </div>
         </div>
         }
       </div>
     </div>
   </div>
+  }
 
   <!-- Contact & Person Section -->
-  <div class="section">
+  @if (requestStep.getValue() === 3) {
+  <div class="section fade-in">
     <div class="section-header">
       <div class="header-content">
         <i-tabler name="user"></i-tabler>
@@ -714,9 +730,11 @@
       </div>
     </div>
   </div>
+  }
 
   <!-- Additional Info Section -->
-  <div class="section">
+  @if (requestStep.getValue() === 4) {
+  <div class="section fade-in">
     <div class="section-header">
       <div class="header-content">
         <i-tabler name="file-text"></i-tabler>
@@ -754,15 +772,31 @@
       </div>
     </div>
   </div>
+  }
 
   <!-- Submit Section -->
   <div class="form-actions">
-    <button class="btn btn--ghost" (click)="goToList()">Zrušit</button>
-    <button class="btn btn--primary btn--lg" (click)="submitForm()">
-      <i-tabler name="send" style="width: 18px; height: 18px;"></i-tabler>
-      {{ l.s(permissions.checkPermission(["manager:traineeship:manage"]) ? "traineeship.add_company" :
-      "traineeship.request_add_company") }}
-    </button>
+    @if (requestStep.getValue() > 0) {
+      <button class="btn btn--ghost" (click)="requestStep.next(requestStep.getValue() - 1)">
+        <i-tabler name="chevron-left" style="width: 18px; height: 18px;"></i-tabler>
+        {{ l.s("buttons.back") }}
+      </button>
+    } @else {
+      <button class="btn btn--ghost" (click)="goToList()">Zrušit</button>
+    }
+
+    @if (requestStep.getValue() < 4) {
+      <button class="btn btn--primary btn--lg" (click)="requestStep.next(requestStep.getValue() + 1)">
+        {{ l.s("buttons.next") || 'Další' }}
+        <i-tabler name="chevron-right" style="width: 18px; height: 18px;"></i-tabler>
+      </button>
+    } @else {
+      <button class="btn btn--primary btn--lg" (click)="submitForm()">
+        <i-tabler name="send" style="width: 18px; height: 18px;"></i-tabler>
+        {{ l.s(permissions.checkPermission(["manager:traineeship:manage"]) ? "traineeship.add_company" :
+        "traineeship.request_add_company") }}
+      </button>
+    }
   </div>
 </div>
 } }

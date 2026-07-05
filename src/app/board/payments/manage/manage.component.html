@@ -1,0 +1,59 @@
+<div class="payments-page">
+  <div class="card">
+    <div class="card-header">
+      <h2>{{ l.s('sidebar.payments.manage') }}</h2>
+    </div>
+    <div class="card-body" style="padding: 0;">
+      <div class="accounts-list">
+        @for (acc of accounts; track acc.payment_account_id) {
+        <div class="account-item" (click)="showAccountDetail(acc)">
+          <div class="account-item__icon" [class.account-item__icon--bank]="acc.type === 'bank'" [class.account-item__icon--cash]="acc.type === 'cash'">
+            <i-tabler [name]="acc.type === 'bank' ? 'building-bank' : 'cash'"></i-tabler>
+          </div>
+          <div class="account-item__info">
+            <div class="account-item__name">
+              <span>{{ acc.name }}</span>
+              <span class="badge badge--neutral">
+                <i-tabler name="user" style="width: 14px; height: 14px; margin-right: 4px; vertical-align: middle;"></i-tabler>
+                {{ acc.first_name }} {{ acc.last_name }}
+              </span>
+              @if (acc.is_active) {
+                <span class="badge badge--success">
+                  {{ l.s('payments.accounts.account_status.active') }}
+                </span>
+              } @else {
+                <span class="badge badge--neutral">
+                  {{ l.s('payments.accounts.account_status.inactive') }}
+                </span>
+              }
+            </div>
+            <div class="account-item__iban text--muted">
+              {{ acc.type === 'bank' && acc.iban ? `${l.s('payments.add_account.iban')}: ` + acc.iban : l.s('payments.add_account.types.cash') }}
+            </div>
+          </div>
+          <div class="account-item__right" style="flex-direction: row; align-items: center; gap: 1rem;">
+            <div class="account-item__balance">
+              {{ acc.balance | money }}
+            </div>
+            <button class="btn btn--primary btn--sm" (click)="openDeposit(acc, $event)" title="Vložit finanční prostředky">
+              <i-tabler name="cash-plus"></i-tabler>
+            </button>
+          </div>
+        </div>
+        } @empty {
+          <div class="empty-state">
+            <div class="empty-state__icon">
+              <i-tabler name="id-off"></i-tabler>
+            </div>
+            <div class="empty-state__title">
+              {{ l.s('payments.manage.empty_title') }}
+            </div>
+            <div class="empty-state__description">
+              {{ l.s('payments.manage.empty_description') }}
+            </div>
+          </div>
+        }
+      </div>
+    </div>
+  </div>
+</div>

@@ -20,7 +20,7 @@ import { ModalManager } from '@Schoolingo/modal';
     <div class="modal-actions">
         <button class="btn btn--secondary" (click)="closeModal()">
             <i-tabler name="x"></i-tabler>
-            <span>{{ l.s('cancel') }}</span>
+            <span>{{ l.s('buttons.cancel') }}</span>
         </button>
         <button class="btn btn--danger" (click)="confirm()">
             <i-tabler name="trash"></i-tabler>

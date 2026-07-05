@@ -1,1 +1,161 @@
-/* Custom styles removed. UI depends completely on global styles. */
+.orders-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 1rem;
+}
+
+.orders-grid .orders-day {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1rem;
+}
+
+.orders-grid .orders-day .orders-header {
+    display: flex;
+    flex-direction: column;
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 0.75rem;
+    margin-bottom: 0.25rem;
+}
+
+.orders-grid .orders-day span {
+    font-size: 0.875rem;
+    color: var(--text-muted);
+}
+
+.orders-grid .orders-day .badges {
+    display: flex;
+    gap: 0.25rem;
+    flex-wrap: wrap;
+}
+
+.orders-grid .orders-day .price {
+    font-weight: bold;
+    white-space: nowrap;
+    margin-left: 0.5rem;
+}
+
+@media (max-width: 1200px) {
+    .orders-grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+@media (max-width: 768px) {
+    .orders-grid {
+        grid-template-columns: 1fr;
+    }
+    .credit-breakdown {
+        flex-direction: column !important;
+        align-items: flex-start !important;
+        gap: 1rem !important;
+    }
+}
+
+@keyframes spin { 100% { transform: rotate(360deg); } }
+
+.spin { animation: spin 1s linear infinite; display: inline-block; }
+
+.credit {
+    /* position: fixed;
+    bottom: 2rem;
+    right: 2rem; */
+    z-index: 90;
+    /* background: var(--elevated); */
+    /* border: 1px solid var(--border); */
+    /* box-shadow: 0 10px 25px rgba(0,0,0,0.15); */
+    /* border-radius: var(--radius-full); */
+    /* padding: 0.5rem 1.25rem; */
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.credit .icon {
+    width: 28px;
+    height: 28px;
+    border-radius: var(--radius-full);
+    background-color: rgba(var(--primary-rgb),0.1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--primary);
+}
+
+.credit .icon i-tabler {
+    width: 16px;
+    height: 16px;
+    line-height: 1;
+}
+
+.credit .text {
+    font-weight: 500;
+    color: var(--text-muted);
+    font-size: 0.875rem;
+}
+
+.credit .value {
+    font-size: 1rem;
+    color: var(--text-color);
+    font-weight: bold;
+}
+
+.meal-opt {
+    border-radius: var(--radius);
+    padding: 1rem;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.floating-bottom {
+    position: fixed;
+    bottom: 1.5rem;
+    left: 50%;
+    transform: translateX(-50%);
+    gap: 1rem;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+
+.floating-card {
+    border: 1px solid var(--border);
+    background: var(--elevated);
+    box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+    border-radius: var(--radius-full);
+    padding: 0.75rem 1.5rem;
+    display: flex;
+    align-items: center;
+    z-index: 100;
+}
+
+.floating-card:not(.credit) {
+    gap: 2rem;
+}
+
+.floating-save-panel {
+    max-width: 0;
+    opacity: 0;
+    overflow: hidden;
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+    border-width: 0 !important;
+    margin-right: -1rem; /* Pomáhá vyrušit gap flexboxu při skrytí */
+    transform: translateX(30px);
+    pointer-events: none;
+    transition: all 0.4s cubic-bezier(0.25, 1, 0.5, 1);
+}
+.floating-save-panel.show {
+    max-width: 800px; /* Dostatečně velká hodnota pro roztáhnutí */
+    opacity: 1;
+    padding-left: 1.5rem !important;
+    padding-right: 1.5rem !important;
+    border-width: 1px !important;
+    margin-right: 0;
+    transform: translateX(0);
+    pointer-events: auto;
+}

@@ -116,6 +116,20 @@ export class CreateParentComponent implements OnInit {
     this.form.suffixTitle = titles.join(', ');
   }
 
+  public gotoparentSetting(): void {
+    this.modalManager.closeModal('create_parent');
+    const parent_data = this.modalManager.getModalData('create_parent');
+    const data = this.modalManager.getModalData('parents_settings');
+    console.log(parent_data, data)
+    this.modalManager.openModal('edit_parent_role', { 
+      student_id: data.student_id, 
+      parent:parent_data.parent,
+      callback: () => {
+        if (data.callback) data.callback();
+      }
+    });
+  }
+
   public closeModal(): void {
     this.modalManager.closeModal('create_parent');
   }
@@ -149,7 +163,6 @@ export class CreateParentComponent implements OnInit {
           const callback = modalData.callback;
           if (callback) callback();
           this.closeModal();
-          // Also close the add_parent modal if it was open
           this.modalManager.closeModal('add_parent');
         }
       });

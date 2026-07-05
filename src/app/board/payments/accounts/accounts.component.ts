@@ -82,7 +82,7 @@ export class AccountsComponent implements OnInit {
       {
         title: 'payments.detail_account.title',
         icon: 'cash-banknote',
-        width: 'unset',
+        width: 1000,
         closeable: true,
         items: [
           { type: 'component', component: DetailAccountComponent }

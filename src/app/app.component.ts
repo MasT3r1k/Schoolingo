@@ -1,5 +1,5 @@
 import { Component, inject, OnInit } from '@angular/core';
-import { RouterOutlet } from '@angular/router';
+import { RouterOutlet, Router, NavigationStart, NavigationEnd, NavigationCancel, NavigationError } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { Config } from '@Schoolingo/config';
 import { Authentication } from './infrastructure/authentication';
@@ -32,6 +32,11 @@ export class AppComponent implements OnInit {
   public seasonalService = inject(SeasonalService);
   private analyticsService = inject(AnalyticsService);
   public monitoringService = inject(MonitoringService);
+  private router = inject(Router);
+
+  public isLoading = false;
+  public loadingProgress = 0;
+  private progressInterval: any;
   
   ngOnInit(): void {
     try {
@@ -68,6 +73,64 @@ export class AppComponent implements OnInit {
     // Set User ID for Matomo if logged in
     // This is optional and depends on Authentication service exposing user info
     // For now, we rely on basic page tracking
+    this.router.events.subscribe((event) => {
+      if (event instanceof NavigationStart) {
+        this.startLoading();
+      } else if (
+        event instanceof NavigationEnd ||
+        event instanceof NavigationCancel ||
+        event instanceof NavigationError
+      ) {
+        this.stopLoading();
+      }
+    });
+  }
+
+  private startLoading(): void {
+    this.isLoading = true;
+    this.loadingProgress = 0;
+    
+    if (this.progressInterval) {
+      clearInterval(this.progressInterval);
+    }
+    
+    this.loadingProgress = 5;
+    
+    this.progressInterval = setInterval(() => {
+      if (this.loadingProgress < 30) {
+        this.loadingProgress += Math.random() * 15 + 10;
+      } else if (this.loadingProgress < 60) {
+        this.loadingProgress += Math.random() * 5 + 2;
+      } else if (this.loadingProgress < 85) {
+        this.loadingProgress += Math.random() * 2 + 0.5;
+      } else if (this.loadingProgress < 95) {
+        this.loadingProgress += Math.random() * 0.5 + 0.1;
+      } else if (this.loadingProgress < 98) {
+        this.loadingProgress += 0.05;
+      }
+      
+      if (this.loadingProgress >= 99) {
+        this.loadingProgress = 99;
+        clearInterval(this.progressInterval);
+      }
+    }, 150);
+  }
+
+  private stopLoading(): void {
+    if (this.progressInterval) {
+      clearInterval(this.progressInterval);
+    }
+    
+    this.loadingProgress = 100;
+    
+    setTimeout(() => {
+      this.isLoading = false;
+      setTimeout(() => {
+        if (!this.isLoading) {
+          this.loadingProgress = 0;
+        }
+      }, 300);
+    }, 200);
   }
 
   public getError(): string | null {

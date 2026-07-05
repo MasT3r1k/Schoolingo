@@ -39,6 +39,7 @@ import { AddNoteComponent } from './modals/add-note/add-note.component';
 import { AddRewardModalComponent } from './modals/add-reward-modal/add-reward-modal.component';
 import { RemoveRewardModalComponent } from './modals/remove-reward-modal/remove-reward-modal.component';
 import { BoardAlertManager } from '../../../infrastructure/alert/board.alert.manager';
+import { StatCardComponent } from '@Components/stat-card/stat-card.component';
 
 // Interfaces
 interface TimetableAPI {
@@ -141,7 +142,7 @@ interface Reward {
 
 @Component({
   standalone: true,
-  imports: [CommonModule, IconsModule, FormsModule, SharedTimetableComponent, TabsComponent],
+  imports: [CommonModule, IconsModule, FormsModule, SharedTimetableComponent, TabsComponent, StatCardComponent],
   templateUrl: './detail.component.html',
   styleUrl: './detail.component.css'
 })
@@ -1469,16 +1470,21 @@ export class DetailComponent implements OnInit, AfterViewInit {
   }
 
   // Get grade color class
-  public getGradeClass(grade: any): string {
-    if (grade === null || grade === '-') return '';
+  public getGradeClass(grade: any): "warning" | "primary" | "success" | "info" | "danger" {
+    if (grade === null || grade === '-') return 'primary';
     const g = typeof grade === 'number' ? grade : parseInt(grade);
-    if (isNaN(g)) return '';
-    if (g === 1) return 'stat--success';
-    if (g >= 4) return 'stat--danger';
-    if (g === 3) return 'stat--warning';
-    return 'stat--primary';
+    if (isNaN(g)) return 'primary';
+    if (g === 1) return 'success';
+    if (g >= 4) return 'danger';
+    if (g === 3) return 'warning';
+    return 'primary';
   }
 
+  public getAbsenceClass(absence: number): "warning" | "primary" | "success" | "info" | "danger" {
+    if (absence > 25) return 'danger';
+    if (absence > 10) return 'warning';
+    return 'success'
+  }
 
   // Parent Management
   showAddParentModal = false;

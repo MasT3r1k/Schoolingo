@@ -10,7 +10,10 @@
         aria-haspopup="listbox"
         [attr.aria-expanded]="isOpen"
     >
-        <span class="trigger-content">
+        <span class="trigger-content" style="display:flex; align-items:center; gap:8px;">
+            @if (selectedOption?.icon) {
+                <i-tabler [name]="selectedOption!.icon!" style="width:16px; height:16px;"></i-tabler>
+            }
             <span class="selected-label">
                 {{ selectedLabel }}
             </span>
@@ -76,7 +79,10 @@
                     role="option"
                     [attr.aria-selected]="isOptionSelected(option)"
                 >
-                    <span class="option-label">
+                    <span class="option-label" style="display:flex; align-items:center; gap:8px;">
+                        @if (option.icon) {
+                            <i-tabler [name]="option.icon!" style="width:16px; height:16px;"></i-tabler>
+                        }
                         {{ getLabel(option.label) }}
                     </span>
                     @if (isOptionSelected(option)) {

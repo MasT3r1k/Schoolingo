@@ -577,6 +577,31 @@ a:not([href=""]):hover {
     overflow-y: auto;
 }
 
+.btn--loading {
+    position: relative;
+    pointer-events: none;
+}
+
+.btn-spinner {
+    width: 18px;
+    height: 18px;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-top-color: white;
+    border-radius: var(--radius-full);
+    animation: btn-spin 0.6s linear infinite;
+    position: absolute;
+}
+
+.btn-text-hidden {
+    opacity: 0;
+}
+
+@keyframes btn-spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
 .pattern-bg {
     position: fixed;
     top: 0;
@@ -1654,6 +1679,33 @@ label,
 
 label.error-color {
     color: var(--danger)
+}
+
+/* Input with currency unit */
+.input-unit-row {
+    display: flex;
+    align-items: stretch;
+    gap: 0;
+}
+
+.input-unit-row input {
+    border-radius: var(--radius) 0 0 var(--radius)!important;
+    border-right: none;
+    flex: 1;
+}
+
+.unit-badge {
+    display: flex;
+    align-items: center;
+    padding: 0 12px;
+    background-color: var(--elevated-2);
+    border: 1px solid var(--border);
+    border-left: none;
+    border-radius: 0 var(--radius) var(--radius) 0;
+    font-size: 13px;
+    color: var(--text-muted);
+    font-weight: 600;
+    white-space: nowrap;
 }
 
 /* Legacy inputs (for backward compatibility) */
