@@ -60,7 +60,6 @@ export class TokenWarningModalComponent implements OnInit, OnDestroy {
       { withCredentials: true }
     ).subscribe({
       next: (response) => {
-        console.log('[TokenWarning] Session extended successfully');
         this.tokenExpiration.setTokenExpiration(response.expires);
         this.modalManager.closeModal('token-warning');
         this.isRefreshing = false;

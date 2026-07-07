@@ -18,7 +18,8 @@ export enum enumSidebar {
   MODULE_ONLINE,
   MODULE_NOTICEBOARD,
   MODULE_TESTS,
-  MODULE_REWARDS
+  MODULE_REWARDS,
+  MODULE_CANTEEN
 }
 
 export const Sidebar = {
@@ -114,6 +115,11 @@ export const Sidebar = {
             item: "system.rewards_settings",
             id: enumSidebar.MODULE_REWARDS,
             icon: "award"
+        },
+        {
+            item: "sidebar.canteen.settings",
+            id: enumSidebar.MODULE_CANTEEN,
+            icon: "tools-kitchen-2"
         }
     ]
 }

@@ -1,0 +1,30 @@
+<div class="modal-body">
+  <small class="muted">
+    {{ l.s('canteen.choose_allergen') }}
+  </small>
+  <div class="allergens-list">
+    @for (_ of [].constructor(14); track $index) {
+      @let i = ($index + 1).toString();
+
+      <div class="form-group allergen-item" (click)="toggleAllergen(i)">
+        <schoolingo-checkbox 
+          [checked]="selectedAllergens.includes(i.toString())" >
+        </schoolingo-checkbox>
+        <div class="form-label">{{ l.s('allergens.' + i) }}</div>
+      </div>
+    }
+  </div>
+</div>
+<div class="modal-actions">
+  <button class="btn btn--secondary" (click)="close()">
+    {{ l.s('buttons.close') }}
+  </button>
+  <button class="btn btn--primary" (click)="save()" [disabled]="submitting" [class.btn--loading]="submitting">
+    @if (submitting) {
+      <span class="btn-spinner"></span>
+    }
+    <span [class.btn-text-hidden]="submitting">
+      {{ l.s('canteen.save_allergens') }}
+    </span>
+  </button>
+</div>

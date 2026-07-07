@@ -418,11 +418,6 @@ export const config: SidebarGroup[] = [
                     url: 'canteen/issues',
                     icon: 'chef-hat',
                     permission: ['admin_staff', 'principal']
-                }, {
-                    item: 'sidebar.canteen.settings',
-                    url: 'canteen/settings',
-                    icon: 'settings',
-                    permission: ['admin_staff', 'principal']
                 }]
             },
             {

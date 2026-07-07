@@ -5,7 +5,7 @@
   <div class="card-header">
     <h2>
       <i-tabler name="bowl-spoon"></i-tabler>
-      <span>{{ l.s('canteen.issues_title') || 'Výdej obědů' }}</span>
+      <span>{{ l.s('canteen.issues_title') }}</span>
     </h2>
     <div class="flex-items" style="gap: 0.75rem;">
       <span class="issues-date-badge">
@@ -14,11 +14,11 @@
       </span>
       <button class="btn btn--secondary btn--sm" (click)="loadIssues()">
         <i-tabler name="refresh"></i-tabler>
-        {{ l.s('canteen.issues_refresh') || 'Obnovit' }}
+        {{ l.s('canteen.issues_refresh') }}
       </button>
       <button class="btn btn--primary btn--sm" (click)="openIssueModal()">
         <i-tabler name="scan"></i-tabler>
-        {{ l.s('canteen.btn_issue') || 'Vydat jídlo' }}
+        {{ l.s('canteen.btn_issue') }}
       </button>
     </div>
   </div>
@@ -32,7 +32,7 @@
         icon="calendar-event"
         label="canteen.stat_total"
         [value]="isLoading ? '-' : stats.total_ordered"
-        sub="canteen.stat_total_sub">
+        [sub]="l.s('canteen.stat_total_sub')">
       </stat-card>
 
       <stat-card
@@ -40,7 +40,7 @@
         icon="check"
         label="canteen.stat_issued"
         [value]="isLoading ? '-' : stats.issued"
-        [sub]="issuedPercent + ' % ' + (l.s('canteen.stat_issued_percent') || 'vydáno')"
+        [sub]="issuedPercent + ' % ' + l.s('canteen.stat_issued_percent')"
         sub_type="success">
       </stat-card>
 
@@ -49,7 +49,7 @@
         icon="clock"
         label="canteen.stat_waiting"
         [value]="isLoading ? '-' : waitingCount"
-        sub="canteen.stat_waiting_sub">
+        [sub]="l.s('canteen.stat_waiting_sub')">
       </stat-card>
 
       <stat-card
@@ -57,7 +57,7 @@
         icon="x"
         label="canteen.stat_cancelled"
         [value]="isLoading ? '-' : stats.cancelled"
-        sub="canteen.stat_cancelled_sub"
+        [sub]="l.s('canteen.stat_cancelled_sub')"
         sub_type="danger">
       </stat-card>
     </div>
@@ -85,7 +85,7 @@
             type="text"
             [(ngModel)]="searchQuery"
             (input)="applyFilter()"
-            [placeholder]="l.s('canteen.issues_search_placeholder') || 'Hledat dle jména nebo jídla…'">
+            [placeholder]="l.s('canteen.issues_search_placeholder')">
         </div>
         <span class="issues-count badge badge--neutral">
           {{ filteredIssues.length }} / {{ issues.length }} záznamů
@@ -95,22 +95,22 @@
       @if (isLoading) {
         <div class="issues-loading">
           <div class="btn-spinner"></div>
-          <span>{{ l.s('canteen.issues_loading') || 'Načítám výdeje…' }}</span>
+          <span>{{ l.s('canteen.issues_loading') }}</span>
         </div>
       } @else if (issues.length === 0) {
         <div class="issues-empty">
           <i-tabler name="bowl-spoon"></i-tabler>
-          <p>{{ l.s('canteen.issues_empty') || 'Na dnešní den nejsou žádné objednávky.' }}</p>
+          <p>{{ l.s('canteen.issues_empty') }}</p>
         </div>
       } @else {
         <div class="modern-table">
 
           <div class="modern-table__head">
-            <div class="mt-col mt-col--stretch">{{ l.s('canteen.col_name') || 'Jméno' }}</div>
-            <div class="mt-col mt-col--wide">{{ l.s('canteen.col_meal') || 'Jídlo' }}</div>
-            <div class="mt-col mt-col--center">{{ l.s('canteen.col_variant') || 'Varianta' }}</div>
-            <div class="mt-col mt-col--center">{{ l.s('canteen.col_status') || 'Stav' }}</div>
-            <div class="mt-col mt-col--center">{{ l.s('canteen.col_action') || 'Akce' }}</div>
+            <div class="mt-col mt-col--stretch">{{ l.s('canteen.col_name') }}</div>
+            <div class="mt-col mt-col--wide">{{ l.s('canteen.col_meal') }}</div>
+            <div class="mt-col mt-col--center">{{ l.s('canteen.col_variant') }}</div>
+            <div class="mt-col mt-col--center">{{ l.s('canteen.col_status') }}</div>
+            <div class="mt-col mt-col--center">{{ l.s('canteen.col_action') }}</div>
           </div>
 
           @for (order of filteredIssues; track order.order_id) {
@@ -133,7 +133,7 @@
 
               <!-- Varianta -->
               <div class="mt-col mt-col--center">
-                <span class="badge badge--primary">{{ l.s('canteen.weekly_menu_td') || 'Oběd' }} {{ order.variant_index }}</span>
+                {{ l.s('canteen.weekly_menu_td') }} {{ order.variant_index }}
               </div>
 
               <!-- Stav -->
@@ -141,17 +141,17 @@
                 @if (order.status === 'issued') {
                   <span class="badge badge--success">
                     <i-tabler name="check"></i-tabler>
-                    {{ l.s('canteen.status_issued') || 'Vydáno' }}
+                    {{ l.s('canteen.status_issued') }}
                   </span>
                 } @else if (order.status === 'cancelled') {
                   <span class="badge badge--danger">
                     <i-tabler name="x"></i-tabler>
-                    {{ l.s('canteen.status_cancelled') || 'Zrušeno' }}
+                    {{ l.s('canteen.status_cancelled') }}
                   </span>
                 } @else {
                   <span class="badge badge--warning">
                     <i-tabler name="clock"></i-tabler>
-                    {{ l.s('canteen.status_ordered') || 'Čeká' }}
+                    {{ l.s('canteen.status_ordered') }}
                   </span>
                 }
               </div>
@@ -161,7 +161,7 @@
                 @if (order.status === 'ordered') {
                   <button class="btn btn--primary btn--sm" (click)="issueMeal(order)">
                     <i-tabler name="check"></i-tabler>
-                    {{ l.s('canteen.btn_issue') || 'Vydat' }}
+                    {{ l.s('canteen.btn_issue') }}
                   </button>
                 } @else {
                   <span class="issue-done-label">—</span>

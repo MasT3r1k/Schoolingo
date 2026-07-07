@@ -41,8 +41,6 @@ export class TokenExpirationService {
     const expirationDate = typeof expires === 'string' ? new Date(expires) : expires;
     this.expiresAt$.next(expirationDate);
     this.warningTriggered = false;
-    
-    console.log('[TokenExpiration] Token expires at:', expirationDate);
   }
 
   public getExpirationListener(): typeof this.expiresAt$ {
@@ -115,13 +113,11 @@ export class TokenExpirationService {
       if (state.isWarning && !this.warningTriggered) {
         this.warningTriggered = true;
         this.warningThreshold$.next();
-        console.log('[TokenExpiration] Warning threshold reached - 2 minutes remaining');
       }
       
       // Trigger expired event
       if (state.isExpired && this.expiresAt$.getValue() !== null) {
         this.expired$.next();
-        console.log('[TokenExpiration] Token expired');
         this.clearExpiration();
       }
     }, 1000);

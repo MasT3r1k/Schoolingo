@@ -1,0 +1,34 @@
+<div class="modal-body">
+  @if (loading) {
+    <div style="display: flex; justify-content: center; padding: 2rem;">
+      <span class="btn-spinner" style="border-color: var(--primary) transparent var(--primary) transparent; width: 24px; height: 24px;"></span>
+    </div>
+  } @else {
+    <div style="margin-bottom: 1rem; color: var(--text-muted); font-size: 0.875rem;">
+      Vyberte platební účet, ze kterého se budou strhávat peníze za obědy.
+    </div>
+
+    <div class="form-group">
+      <div class="form-label">Platební účet</div>
+      <schoolingo-dropdown 
+        [options]="accountOptions" 
+        [(ngModel)]="selectedAccountId"
+        [settings]="{ locale: false }"
+        [clearable]="false">
+      </schoolingo-dropdown>
+    </div>
+  }
+</div>
+<div class="modal-actions">
+  <button class="btn btn--secondary" (click)="close()">
+    {{ l.s('buttons.cancel') }}
+  </button>
+  <button class="btn btn--primary" (click)="save()" [disabled]="submitting || loading" [class.btn--loading]="submitting">
+    @if (submitting) {
+      <span class="btn-spinner"></span>
+    }
+    <span [class.btn-text-hidden]="submitting">
+      {{ l.s('buttons.save') }}
+    </span>
+  </button>
+</div>

@@ -12,39 +12,53 @@ import { DropdownComponent } from '@Components/dropdown/dropdown';
   standalone: true,
   imports: [CommonModule, FormsModule, DropdownComponent],
   template: `
-    <div class="modal-body" style="display: flex; flex-direction: column; gap: 1rem;">
-      <div class="form-group" style="display: flex; flex-direction: column; gap: 0.375rem;">
-        <label class="form-label" style="font-weight: 500;">{{ l.s('canteen.meal_name') }}</label>
+    <div class="modal-body">
+      <div class="form-group">
+        <label class="form-label">
+          {{ l.s('canteen.meal_name') }}
+        </label>
         <input type="text" class="form-input" [placeholder]="l.s('canteen.meal_name_placeholder')" [(ngModel)]="mealForm.name">
       </div>
       
-      <div class="form-group" style="display: flex; flex-direction: column; gap: 0.375rem;">
-        <label class="form-label" style="font-weight: 500;">{{ l.s('canteen.category') }}</label>
-        <schoolingo-dropdown [options]="categoryOptions" [(ngModel)]="mealForm.category" [settings]="{ locale: false }" style="width: 100%;"></schoolingo-dropdown>
+      <div class="form-group">
+        <label class="form-label">
+          {{ l.s('canteen.category') }}
+        </label>
+        <schoolingo-dropdown [options]="categoryOptions" [(ngModel)]="mealForm.category" [settings]="{ locale: false }" [clearable]="false" style="width: 100%;"></schoolingo-dropdown>
       </div>
 
       <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
-        <div class="form-group" style="display: flex; flex-direction: column; gap: 0.375rem;">
-          <label class="form-label" style="font-weight: 500;">{{ l.s('canteen.price') }}</label>
+        <div class="form-group">
+          <label class="form-label">
+            {{ l.s('canteen.price') }}
+          </label>
           <input type="number" class="form-input" min="0" [(ngModel)]="mealForm.price">
         </div>
-        <div class="form-group" style="display: flex; flex-direction: column; gap: 0.375rem;">
-          <label class="form-label" style="font-weight: 500;">{{ l.s('canteen.calories') }}</label>
+        <div class="form-group">
+          <label class="form-label">
+            {{ l.s('canteen.calories') }}
+          </label>
           <input type="number" class="form-input" min="0" [placeholder]="l.s('canteen.calories_placeholder')" [(ngModel)]="mealForm.calories">
         </div>
       </div>
 
-      <div class="form-group" style="display: flex; flex-direction: column; gap: 0.375rem;">
-        <label class="form-label" style="font-weight: 500;">{{ l.s('canteen.allergens') }}</label>
+      <div class="form-group">
+        <label class="form-label">
+          {{ l.s('canteen.allergens') }}
+        </label>
         <input type="text" class="form-input" placeholder="Např. 1, 3, 7" [(ngModel)]="mealForm.allergens">
         <small style="color: var(--text-muted); font-size: 0.75rem;">
           {{ l.s('canteen.allergens_hint') }}
         </small>
       </div>
     </div>
-    <div class="modal-actions" style="display: flex; justify-content: flex-end; gap: 0.75rem; margin-top: 1.5rem;">
-      <button class="btn btn--secondary" (click)="closeModal()">{{ l.s('buttons.cancel') || 'Zrušit' }}</button>
-      <button class="btn btn--primary" (click)="saveMeal()" [disabled]="!mealForm.name.trim()">{{ l.s('canteen.save_meal') }}</button>
+    <div class="modal-actions">
+      <button class="btn btn--secondary" (click)="closeModal()">
+        {{ l.s('buttons.cancel') }}
+      </button>
+      <button class="btn btn--primary" (click)="saveMeal()" [disabled]="!mealForm.name.trim()">
+        {{ l.s('canteen.save_meal') }}
+      </button>
     </div>
   `
 })

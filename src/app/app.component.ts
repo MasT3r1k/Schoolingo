@@ -63,8 +63,8 @@ export class AppComponent implements OnInit {
     this.auth.getAuthState()
     .subscribe((data) => {
       this.appState = data == "offline" ? false : true;
-      if (this.appState === true) {
-        this.analyticsService.setUserId(this.auth.getId());
+      if (this.appState === true && this.auth.getUser()) {
+        this.analyticsService.setUserId(this.auth.getUser().user_id);
       } else {
         this.analyticsService.setUserId(null);
       }

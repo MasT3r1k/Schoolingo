@@ -601,6 +601,141 @@
         </div>
     </div>
     }
+
+    @case(enumSidebar.MODULE_CANTEEN) {
+    <div class="container-content">
+        <div class="settings-header">
+            <h1>{{ l.s('sidebar.canteen.settings') || 'Nastavení jídelny' }}</h1>
+            <p class="settings-subtitle">Nastavení modulu jídelny, plateb, kuchařů a správců.</p>
+        </div>
+
+        <div class="form-section">
+            <h3 class="section-title">{{ l.s('canteen.settings_general_title') || 'Základní nastavení' }}</h3>
+            
+            <div class="setting-row">
+                <div class="setting-info">
+                    <div class="setting-title">{{ l.s('canteen.settings_enable_canteen') || 'Povolit modul jídelny' }}</div>
+                    <div class="setting-desc">Povolení/vypnutí celého modulu Jídelna.</div>
+                </div>
+                <div class="setting-control">
+                    <schoolingo-checkbox [checked]="canteen_settings.canteen_enabled === '1'" (click)="canteen_settings.canteen_enabled = (canteen_settings.canteen_enabled === '1' ? '0' : '1')"></schoolingo-checkbox>
+                </div>
+            </div>
+
+            <div class="setting-row">
+                <div class="setting-info">
+                    <div class="setting-title">{{ l.s('canteen.settings_enable_breakfast') || 'Povolit snídaně (střední školy, domovy mládeže)' }}</div>
+                </div>
+                <div class="setting-control">
+                    <schoolingo-checkbox [checked]="canteen_settings.canteen_breakfast_enabled === '1'" (click)="canteen_settings.canteen_breakfast_enabled = (canteen_settings.canteen_breakfast_enabled === '1' ? '0' : '1')"></schoolingo-checkbox>
+                </div>
+            </div>
+
+            <div class="setting-row">
+                <div class="setting-info">
+                    <div class="setting-title">{{ l.s('canteen.settings_enable_dinner') || 'Povolit večeře (střední školy, domovy mládeže)' }}</div>
+                </div>
+                <div class="setting-control">
+                    <schoolingo-checkbox [checked]="canteen_settings.canteen_dinner_enabled === '1'" (click)="canteen_settings.canteen_dinner_enabled = (canteen_settings.canteen_dinner_enabled === '1' ? '0' : '1')"></schoolingo-checkbox>
+                </div>
+            </div>
+
+            <div class="setting-row">
+                <div class="setting-info">
+                    <div class="setting-title">{{ l.s('canteen.settings_flat_price_enabled') || 'Jednotná cena pro všechna jídla' }}</div>
+                </div>
+                <div class="setting-control">
+                    <schoolingo-checkbox [checked]="canteen_settings.canteen_flat_price_enabled === '1'" (click)="canteen_settings.canteen_flat_price_enabled = (canteen_settings.canteen_flat_price_enabled === '1' ? '0' : '1')"></schoolingo-checkbox>
+                </div>
+            </div>
+
+            @if (canteen_settings.canteen_flat_price_enabled === '1') {
+            <div class="form-grid">
+                <div class="form-group">
+                    <label>{{ l.s('canteen.settings_flat_price_val') || 'Hodnota jednotné ceny (Kč)' }}</label>
+                    <input type="number" [(ngModel)]="canteen_settings.canteen_flat_price" placeholder="0">
+                </div>
+            </div>
+            }
+        </div>
+
+        <div class="form-section">
+            <h3 class="section-title">{{ l.s('canteen.settings_payments_title') || 'Propojení s platbami' }}</h3>
+            
+            <div class="form-grid">
+                <div class="form-group">
+                    <label>{{ l.s('canteen.settings_payment_account') || 'Účet pro strhávání plateb za obědy' }}</label>
+                    <schoolingo-dropdown [options]="getCanteenPaymentAccounts()" [(ngModel)]="canteen_settings.canteen_payment_account" [settings]="{ locale: false }" [clearable]="false"></schoolingo-dropdown>
+                    <small class="note">{{ l.s('canteen.settings_payment_account_help') || 'Studentům bude oběd strháván z tohoto zůstatku. Při nedostatku prostředků nebude možné oběd objednat.' }}</small>
+                </div>
+            </div>
+
+            <div class="setting-row">
+                <div class="setting-info">
+                    <div class="setting-title">{{ l.s('canteen.settings_auto_refund') || 'Automatická refundace při nemoci' }}</div>
+                </div>
+                <div class="setting-control">
+                    <schoolingo-checkbox [checked]="canteen_settings.canteen_auto_refund === '1'" (click)="canteen_settings.canteen_auto_refund = (canteen_settings.canteen_auto_refund === '1' ? '0' : '1')"></schoolingo-checkbox>
+                </div>
+            </div>
+        </div>
+
+        <div class="form-section">
+            <h3 class="section-title">{{ l.s('canteen.settings_staff_title') || 'Správci a kuchaři jídelny' }}</h3>
+            
+            <div class="form-grid">
+                <div class="form-group">
+                    <input type="text" [(ngModel)]="canteen_searchQuery" [placeholder]="l.s('canteen.settings_search_staff') || 'Vyhledat zaměstnance...'">
+                </div>
+            </div>
+
+            <div class="table-container">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>{{ l.s('canteen.col_name') || 'Jméno' }}</th>
+                            <th class="text-center">{{ l.s('canteen.role_manager') || 'Správce' }}</th>
+                            <th class="text-center">{{ l.s('canteen.role_cook') || 'Kuchař' }}</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @for (member of getFilteredCanteenStaff(); track member.user_id) {
+                        <tr>
+                            <td>
+                                <strong>{{ member.name }}</strong>
+                            </td>
+                            <td class="text-center">
+                                <div style="display: flex; justify-content: center;">
+                                    <schoolingo-checkbox [checked]="isCanteenManager(member.user_id)" (click)="toggleCanteenManager(member.user_id)"></schoolingo-checkbox>
+                                </div>
+                            </td>
+                            <td class="text-center">
+                                <div style="display: flex; justify-content: center;">
+                                    <schoolingo-checkbox [checked]="isCanteenCook(member.user_id)" (click)="toggleCanteenCook(member.user_id)"></schoolingo-checkbox>
+                                </div>
+                            </td>
+                        </tr>
+                        }
+                        @if (getFilteredCanteenStaff().length === 0) {
+                        <tr>
+                            <td colspan="3" class="text-center" style="color: var(--text-muted); padding: 1rem;">
+                                {{ l.s('canteen.settings_no_staff') || 'Nebyly nalezeny žádné výsledky.' }}
+                            </td>
+                        </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="form-actions">
+            <button class="btn btn--primary" (click)="saveCanteenSettings()">
+                <i-tabler name="device-floppy"></i-tabler>
+                {{ l.s('canteen.settings_save_btn') || 'Uložit nastavení jídelny' }}
+            </button>
+        </div>
+    </div>
+    }
     @case(enumSidebar.SYSTEM) {
     @if (this.system) {
     <div class="container-content">

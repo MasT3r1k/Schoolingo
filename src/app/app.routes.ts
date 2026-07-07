@@ -388,10 +388,6 @@ export const routes: Routes = [
                     {
                         path: 'issues',
                         loadComponent: () => import('./board/canteen/issues/issues.component').then(m => m.IssuesComponent)
-                    },
-                    {
-                        path: 'settings',
-                        loadComponent: () => import('./board/canteen/settings/settings.component').then(m => m.SettingsComponent)
                     }
                 ]
             },

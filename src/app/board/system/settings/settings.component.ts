@@ -13,6 +13,7 @@ import { LicenseModalComponent } from './modals/license/license.component';
 import { Country } from 'country-state-city';
 import { enumSidebar, Sidebar } from './config';
 import { CheckboxComponent } from '@Components/Checkbox';
+import { DropdownComponent } from '@Components/dropdown/dropdown';
 
 interface ElysiaVersion {
   current: string;
@@ -209,7 +210,7 @@ type ElysiaSystemAPI = {
 
 
 @Component({
-  imports: [IconsModule, FormsModule, ReactiveFormsModule, CommonModule, CheckboxComponent],
+  imports: [IconsModule, FormsModule, ReactiveFormsModule, CommonModule, CheckboxComponent, DropdownComponent],
   templateUrl: './settings.component.html',
   styleUrls: ['./settings.component.css', '../../../styles/sidebar.css']
 })
@@ -233,6 +234,20 @@ export class SettingsComponent implements OnInit {
   public returnZero() {
     return 0;
   }
+
+  public canteen_settings: any = {
+    canteen_enabled: '1',
+    canteen_flat_price_enabled: '0',
+    canteen_flat_price: '0',
+    canteen_payment_account: '1',
+    canteen_auto_refund: '1',
+    canteen_breakfast_enabled: '0',
+    canteen_dinner_enabled: '0'
+  };
+  public canteen_staff: any[] = [];
+  public canteen_managers: number[] = [];
+  public canteen_cooks: number[] = [];
+  public canteen_searchQuery = '';
 
   public input_errors: { [key: string]: string } = {};
 
@@ -867,6 +882,7 @@ public school_types = SchoolTypes;
   ngOnInit(): void {
     this.loadSystemSettings();
     this.load_roles();
+    this.loadCanteenSettings();
 
     this.http.get<ElysiaVersion>(
       `${Config.API_URL}/v1/version`,
@@ -1185,5 +1201,67 @@ public school_types = SchoolTypes;
     }).subscribe(() => {
       this.system.evaluation_templates = this.system.evaluation_templates.filter(t => t.template_id !== template.template_id);
     });
+  }
+
+  public loadCanteenSettings(): void {
+    this.http.get<any>(`${Config.API_URL}/v1/canteen/settings`, { withCredentials: true }).subscribe({
+      next: (data) => {
+        if (data.settings) {
+          this.canteen_settings = { ...this.canteen_settings, ...data.settings };
+        }
+        this.canteen_staff = data.staff || [];
+        this.canteen_managers = data.managers || [];
+        this.canteen_cooks = data.cooks || [];
+      }
+    });
+  }
+
+  public getFilteredCanteenStaff() {
+    if (!this.canteen_searchQuery) return this.canteen_staff;
+    const q = this.canteen_searchQuery.toLowerCase();
+    return this.canteen_staff.filter(s => s.name.toLowerCase().includes(q));
+  }
+
+  public isCanteenManager(userId: number): boolean {
+    return this.canteen_managers.includes(userId);
+  }
+
+  public isCanteenCook(userId: number): boolean {
+    return this.canteen_cooks.includes(userId);
+  }
+
+  public toggleCanteenManager(userId: number) {
+    const idx = this.canteen_managers.indexOf(userId);
+    if (idx > -1) {
+      this.canteen_managers.splice(idx, 1);
+    } else {
+      this.canteen_managers.push(userId);
+    }
+  }
+
+  public toggleCanteenCook(userId: number) {
+    const idx = this.canteen_cooks.indexOf(userId);
+    if (idx > -1) {
+      this.canteen_cooks.splice(idx, 1);
+    } else {
+      this.canteen_cooks.push(userId);
+    }
+  }
+
+  public getCanteenPaymentAccounts() {
+    return [
+      { label: (this.l.s('canteen.credit_account') || 'Kreditní účet') + ' (ID: 1)', value: '1' },
+      { label: (this.l.s('canteen.class_fund_account') || 'Třídní fond') + ' (ID: 2)', value: '2' }
+    ];
+  }
+
+  public saveCanteenSettings() {
+    const payload = {
+      settings: this.canteen_settings,
+      managers: this.canteen_managers,
+      cooks: this.canteen_cooks
+    };
+
+    this.http.post<any>(`${Config.API_URL}/v1/canteen/settings`, payload, { withCredentials: true }).subscribe();
   }
 }

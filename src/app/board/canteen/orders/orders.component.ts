@@ -8,17 +8,13 @@ import { Locale } from '@Schoolingo/locale';
 import { Router } from '@angular/router';
 import moment from 'moment';
 import { Authentication } from '@Schoolingo/authentication';
+import { ModalManager } from '@Schoolingo/modal';
+import { AllergensModalComponent } from './modals/allergens/allergens-modal.component';
+import { PaymentAccountModalComponent } from './modals/payment-account/payment-account-modal.component';
 
-interface MedicalAPI {
-  record_id: number,
-  student_id: number,
-  type: string,
-  title: string,
-  description: string | null,
-  severity: string, 
-  is_food_allergy: boolean,
-  allergen_codes: string,
-  created_at: Date
+interface CreditAPI {
+  credit: number,
+  account_id: number | number[]
 }
 
 @Component({
@@ -31,6 +27,7 @@ export class OrdersComponent implements OnInit {
   private user = inject(Authentication)
   public l = inject(Locale);
   private http = inject(HttpClient);
+  private modalManager = inject(ModalManager);
   credit: number | null = null;
 
   public showSaveCard(): boolean {
@@ -46,12 +43,11 @@ export class OrdersComponent implements OnInit {
   
   submitting = false;
   submitSuccess = false;
-  accountId: number | null = null;
+  accountId: number | number[] = [];
 
   public refreshCredit(): void {
-    this.http.get<{credit: number | null, account_id: number | null}>(Config.API_URL + '/v1/canteen/credit', { withCredentials: true })
-      .subscribe((res) => {
-        console.log(res)
+    this.http.get<CreditAPI>(Config.API_URL + '/v1/canteen/credit', { withCredentials: true })
+      .subscribe((res: CreditAPI) => {
         this.credit = res.credit;
         this.accountId = res.account_id;
       });
@@ -59,25 +55,37 @@ export class OrdersComponent implements OnInit {
   }
 
   ngOnInit() {
+    this.modalManager.addModal('allergens-modal', {
+      title: 'canteen.change_allergens',
+      icon: 'tools-kitchen-2',
+      width: 600,
+      closeable: true,
+      items: [
+        { type: 'component', component: AllergensModalComponent }
+      ]
+    });
+
+    this.modalManager.addModal('payment-account-modal', {
+      title: 'Upravit platební účet',
+      icon: 'credit-card',
+      width: 500,
+      closeable: true,
+      items: [
+        { type: 'component', component: PaymentAccountModalComponent }
+      ]
+    });
+
     this.weekStart = moment().startOf('isoWeek');
     this.refreshCredit()
 
-    if (['student', 'parent'].includes(this.user.getRole())) {      
-      this.http.get<MedicalAPI[]>(
-        Config.API_URL + `/v1/student/${this.user.getId()}/medical`,
-        { withCredentials: true }
-      )
-      .subscribe((data) => {
-        data.forEach((medical: MedicalAPI) => {
-          if (medical.is_food_allergy) {
-            this.allergens.push(...medical.allergen_codes.split(','))
-          }
-        })
-        this.loadWeek();
-      });
-    } else {
+    this.http.get<string[]>(
+      Config.API_URL + `/v1/canteen/allergens`,
+      { withCredentials: true }
+    )
+    .subscribe((allergens) => {
+      this.allergens = allergens
       this.loadWeek();
-    }
+    });
   }
 
   public checkAllergens(allergens: any): boolean {
@@ -127,14 +135,14 @@ export class OrdersComponent implements OnInit {
 
         return {
           id: m.menu_id,
-          label: m.name,
+          food: m.name,
           num: `Oběd ${m.variant_index}`,
           price: parseFloat(m.price),
           kcal: m.calories,
           allergens: m.allergens,
           is_allergic: this.checkAllergens(m.allergens),
           tags: m.allergens ? m.allergens.split(',') : [],
-          available: available
+          available
         };
       });
 
@@ -161,14 +169,9 @@ export class OrdersComponent implements OnInit {
     }
   }
 
-  prevWeek() {
-    this.weekStart = this.weekStart.clone().subtract(1, 'week');
-    this.loadWeek();
-  }
-
-  nextWeek() {
-    this.weekStart = this.weekStart.clone().add(1, 'week');
-    this.loadWeek();
+  selectWeek(num: number): void {
+    this.weekStart = this.weekStart.clone().add(num, 'week');
+    this.loadWeek()
   }
 
   currentWeek() {
@@ -190,22 +193,27 @@ export class OrdersComponent implements OnInit {
     }
   }
 
-  selectOption(dayCode: string, option: any) {
-    this.selections[dayCode] = option;
+  selectOption(day: any, option: any) {
+    if (
+      this.selections[day.code] && option && this.selections[day.code]?.id == option?.id
+      || 
+      this.selections[day.code] == null && option == null
+    ) return
+    if (option && !option.available) return;
+    if (moment(day.dateStr).isSameOrBefore(moment(), 'day')) {
+      return
+    }
+    this.selections[day.code] = option;
   }
 
   get summary() {
     let total = 0;
+
+    Object.values(this.selections).filter((select) => select != null).forEach((d) => total += d.price)
+
     const items = this.days.map(d => {
-      const initId = this.initialSelections[d.code]?.id || null;
-      const currId = this.selections[d.code]?.id || null;
-      
       const sel = this.selections[d.code];
       
-      if (sel && initId !== currId) {
-        total += sel.price;
-      }
-
       if (sel) {
         return { day: d.code, name: sel.label, price: sel.price, none: false };
       } else {
@@ -250,5 +258,27 @@ export class OrdersComponent implements OnInit {
 
   addCreditModal() {
     this.router.navigate(['/payments/overview']);
+  }
+
+  openAllergensModal() {
+    this.modalManager.openModal('allergens-modal', {
+      allergens: this.allergens,
+      refreshCallback: (newAllergens: string[]) => {
+        this.allergens = newAllergens;
+        this.loadWeek();
+      }
+    });
+  }
+
+  openPaymentAccountModal() {
+    this.modalManager.openModal('payment-account-modal', {
+      accountId: this.accountId,
+      refreshCallback: (newAccountId: number) => {
+        if (newAccountId) {
+          this.accountId = newAccountId;
+          this.refreshCredit();
+        }
+      }
+    });
   }
 }

@@ -93,7 +93,6 @@ export class MealsComponent implements OnInit {
     this.loadMeals();
     this.loadMenu();
 
-    // Subscribe to filter tab changes
     this.tabValue.subscribe((index) => {
       const filters = ['all', 'meat', 'veg', 'sweet'];
       if (filters[index] !== this.filter) {
@@ -101,7 +100,6 @@ export class MealsComponent implements OnInit {
       }
     });
 
-    // Register modals through ModalManager
     this.modalManager.addModal('canteen-meal-modal', {
       title: 'canteen.canteen_meal_modal_title',
       icon: 'soup',
@@ -162,7 +160,7 @@ export class MealsComponent implements OnInit {
       const mon = currentMonday.clone().add(i, 'weeks');
       const fri = mon.clone().add(4, 'days');
       
-      const label = `Týden ${mon.isoWeek()} (${mon.format('D.M.')}–${fri.format('D.M.')})`;
+      const label = `${this.l.s('time.week')} ${mon.isoWeek()} (${mon.format('D.M.')}–${fri.format('D.M.')})`;
       this.weekOptions.push({
         label,
         value: mon.format('YYYY-MM-DD')
@@ -175,16 +173,14 @@ export class MealsComponent implements OnInit {
 
   updateWeekDays() {
     const start = moment(this.selectedWeekStart);
-    const dayNames = ['Po', 'Út', 'St', 'Čt', 'Pá'];
-    const czNames = ['Pondělí', 'Úterý', 'Středa', 'Čtvrtek', 'Pátek'];
     
     this.weekDays = [];
-    for (let i = 0; i < 5; i++) {
-      const d = start.clone().add(i, 'days');
+    for (let i = 1; i < 6; i++) {
+      const d = start.clone().add(i - 1, 'days');
       this.weekDays.push({
-        label: `${dayNames[i]} ${d.format('D.M.')}`,
+        label: `${this.l.s('short_days.' + i)} ${d.format('D.M.')}`,
         date: d.format('YYYY-MM-DD'),
-        nameCz: czNames[i]
+        nameCz: this.l.s('days.' + i)
       });
     }
   }
