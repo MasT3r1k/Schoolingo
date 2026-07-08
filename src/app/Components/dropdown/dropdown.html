@@ -46,11 +46,8 @@
     <div class="dropdown-panel" [ngClass]="{'open': isOpen, 'down': dropdownPosition === 'down', 'up': dropdownPosition === 'up'}" [ngStyle]="panelStyles">
         @if (showSearch) {
         <div class="search-container">
-            <div class="search-wrapper">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="search-icon">
-                <circle cx="11" cy="11" r="8"></circle>
-                <path d="m21 21-4.35-4.35"></path>
-                </svg>
+            <div class="search-wrapper" style="max-width: 100%">
+                <i-tabler name="search"></i-tabler>
                 <input
                 #searchInput
                 type="text"
@@ -93,7 +90,7 @@
                 </button>
             } @empty {
             <div class="no-results">
-                Žádné možnosti k dispozici
+                {{ l.s('dropdown.default.no_options') }}
             </div>
             }
         </div>

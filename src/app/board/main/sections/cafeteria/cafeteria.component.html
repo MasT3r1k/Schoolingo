@@ -20,8 +20,8 @@
     <div class="section-content">
         <div class="balance-card">
             <div class="balance-info">
-                <span class="balance-label">Kredit</span>
-                <span class="balance-value">{{ formatPrice(balance) }}</span>
+                <span class="balance-label">{{ l.s('canteen.credit') }}</span>
+                <span class="balance-value">{{ balance | money }}</span>
             </div>
             <i-tabler name="wallet"></i-tabler>
         </div>
@@ -34,10 +34,10 @@
                 <div class="item-content">
                     <span class="item-title">{{ day.meal_name }}</span>
                     @if (day.allergens) {
-                    <span class="menu-allergens">Alergeny: {{ day.allergens }}</span>
+                    <span class="menu-allergens">{{ l.s('canteen.allergens') }}: {{ day.allergens }}</span>
                     }
                 </div>
-                <div class="menu-action" [ngClass]="getOrderStatusClass(day)">
+                <div class="menu-action" [ngClass]="getOrderStatusClass(day)" (click)="openOrderModal(day)" [style.cursor]="(day.available && day.dayMeals) ? 'pointer' : 'default'">
                     <i-tabler [name]="getOrderStatusIcon(day)"></i-tabler>
                 </div>
             </div>
@@ -45,4 +45,16 @@
         </div>
     </div>
     }
+    <div class="shadow"></div>
+    <div class="bottom">
+        <div class="icon" (click)="prevWeek()">
+            <i-tabler name="chevron-left"></i-tabler>
+        </div>
+        <div class="date-info">
+            {{ weekStart.format('D. M.') }} - {{ weekStart.clone().add(4, 'days').format('D. M.') }}
+        </div>
+        <div class="icon" (click)="nextWeek()">
+            <i-tabler name="chevron-right"></i-tabler>
+        </div>
+    </div>
 </div>

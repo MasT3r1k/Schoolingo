@@ -23,12 +23,26 @@ interface CookieInfo {
   provider: string;
 }
 
+import { trigger, transition, style, animate } from '@angular/animations';
+
 @Component({
   selector: 'app-cookies',
   standalone: true,
   imports: [CommonModule, FormsModule, IconsModule, RouterModule, CheckboxComponent],
   templateUrl: './cookies.component.html',
-  styleUrl: './cookies.component.css'
+  styleUrl: './cookies.component.css',
+  animations: [
+    trigger('fadeInOut', [
+      transition(':enter', [
+        style({ opacity: 0, height: 0, overflow: 'hidden' }),
+        animate('200ms ease-out', style({ opacity: 1, height: '*' }))
+      ]),
+      transition(':leave', [
+        style({ overflow: 'hidden' }),
+        animate('200ms ease-in', style({ opacity: 0, height: 0 }))
+      ])
+    ])
+  ]
 })
 export class CookiesComponent implements OnInit {
   public cookies = inject(Cookies);

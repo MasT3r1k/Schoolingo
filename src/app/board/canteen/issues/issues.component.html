@@ -78,18 +78,36 @@
 
     <!-- ═══ ISSUES TABLE ═══ -->
     <div class="issues-section">
-      <div class="issues-section__toolbar">
-        <div class="search-wrapper" style="max-width: 280px; width: 280px;">
-          <i-tabler name="search"></i-tabler>
-          <input
-            type="text"
-            [(ngModel)]="searchQuery"
-            (input)="applyFilter()"
-            [placeholder]="l.s('canteen.issues_search_placeholder')">
+      <div class="issues-section__toolbar" style="display: flex; justify-content: space-between; align-items: center; gap: 1rem;">
+        <div style="display: flex; gap: 1rem;">
+          <div class="search-wrapper" style="max-width: 280px; width: 280px;">
+            <i-tabler name="search"></i-tabler>
+            <input
+              type="text"
+              [(ngModel)]="searchQuery"
+              (input)="applyFilter()"
+              [placeholder]="l.s('canteen.issues_search_placeholder')">
+          </div>
+
+          <schoolingo-tabs
+            [options]="['filter_all', 'filter_ordered', 'filter_issued', 'filter_cancelled']"
+            [icons]="['list', 'clock', 'check', 'x']"
+            [value]="tabValue"
+            prefix="canteen.">
+          </schoolingo-tabs>
         </div>
-        <span class="issues-count badge badge--neutral">
-          {{ filteredIssues.length }} / {{ issues.length }} záznamů
-        </span>
+
+        <div style="display: flex; align-items: center; gap: 1rem;">
+          @if (filteredWaitingCount > 0) {
+            <button class="btn btn--primary btn--sm" (click)="issueFilteredMeals()">
+              <i-tabler name="checks"></i-tabler>
+              {{ l.s('canteen.issue_all_filtered') || 'Vydat zobrazené' }} ({{ filteredWaitingCount }})
+            </button>
+          }
+          <span class="issues-count badge badge--neutral">
+            {{ filteredIssues.length }} / {{ issues.length }} záznamů
+          </span>
+        </div>
       </div>
 
       @if (isLoading) {
@@ -114,7 +132,11 @@
           </div>
 
           @for (order of filteredIssues; track order.order_id) {
-            <div class="modern-table__row" [class.row--issued]="order.status === 'issued'" [class.row--cancelled]="order.status === 'cancelled'">
+            <div class="modern-table__row" 
+                 [class.row--issued]="order.status === 'issued'" 
+                 [class.row--cancelled]="order.status === 'cancelled'"
+                 [class.row--clickable]="order.status === 'ordered'"
+                 (click)="order.status === 'ordered' ? issueMeal(order) : null">
 
               <!-- Jméno -->
               <div class="mt-col mt-col--stretch">

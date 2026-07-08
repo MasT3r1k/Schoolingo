@@ -12,8 +12,10 @@ import { ChangelogModalComponent } from './modals/changelog/changelog.component'
 import { LicenseModalComponent } from './modals/license/license.component';
 import { Country } from 'country-state-city';
 import { enumSidebar, Sidebar } from './config';
+import { SettingsPages, SettingsPageConfig } from './settings.pages';
 import { CheckboxComponent } from '@Components/Checkbox';
 import { DropdownComponent } from '@Components/dropdown/dropdown';
+import { BoardAlertManager } from '../../../infrastructure/alert/board.alert.manager';
 
 interface ElysiaVersion {
   current: string;
@@ -222,6 +224,7 @@ export class SettingsComponent implements OnInit {
   public l = inject(Locale);
   public dropdownManager = inject(DropdownManager);
   public modalManager = inject(ModalManager);
+  private alertManager = inject(BoardAlertManager);
   public countryManager = Country;
   public selected_interval_backup = 0;
   public interval_backups = ['daily', 'weekly', 'monthly']
@@ -252,8 +255,40 @@ export class SettingsComponent implements OnInit {
   public input_errors: { [key: string]: string } = {};
 
   public sidebar: enumSidebar = 0;
+  public settingsPages = SettingsPages;
   
   public system_loading_error = false;
+
+  public getCurrentConfig(): SettingsPageConfig | undefined {
+    return this.settingsPages.find(p => p.id === this.sidebar);
+  }
+
+  public executeAction(actionName: string): void {
+    if (actionName === 'update_school') {
+      this.update_school();
+    }
+  }
+
+  public getOptions(options: any): any[] {
+    if (typeof options === 'string') {
+      return (this as any)[options] || [];
+    }
+    return options || [];
+  }
+
+  public getBackupOptions(): { label: string, value: string }[] {
+    return this.backups ? this.backups.map(b => ({
+      label: `${b.filename} (${(b.size / 1024 / 1024).toFixed(2)} MB)`,
+      value: b.filename
+    })) : [];
+  }
+
+  public getIntervalBackupOptions(): { label: string, value: number }[] {
+    return this.interval_backups ? this.interval_backups.map((type, idx) => ({
+      label: 'time.' + type,
+      value: idx
+    })) : [];
+  }
   
   public reload(): void {
     this.system_loading_error = false;
@@ -1019,6 +1054,7 @@ public school_types = SchoolTypes;
       { withCredentials: true }
     )
     .subscribe((data) => {
+      this.alertManager.alert('success', this.l.s('system.settings_saved') || 'Nastavení bylo úspěšně uloženo.');
       console.log(data);
     })
 
@@ -1041,6 +1077,7 @@ public school_types = SchoolTypes;
       { withCredentials: true }
     )
     .subscribe((data) => {
+      this.alertManager.alert('success', this.l.s('system.settings_saved') || 'Nastavení bylo úspěšně uloženo.');
       console.log('Login settings updated', data);
     });
   }
@@ -1101,7 +1138,7 @@ public school_types = SchoolTypes;
       { withCredentials: true }
     )
     .subscribe((data) => {
-      alert('Nastavení LDAP úspěšně uloženo.');
+      this.alertManager.alert('success', this.l.s('system.settings_saved') || 'Nastavení bylo úspěšně uloženo.');
       console.log('LDAP settings updated', data);
     });
   }
@@ -1132,6 +1169,7 @@ public school_types = SchoolTypes;
       { withCredentials: true }
     )
     .subscribe((data) => {
+      this.alertManager.alert('success', this.l.s('system.settings_saved') || 'Nastavení bylo úspěšně uloženo.');
       console.log('Email settings updated', data);
     });
   }
@@ -1143,6 +1181,7 @@ public school_types = SchoolTypes;
       { interval: index },
       { withCredentials: true }
     ).subscribe((data) => {
+      this.alertManager.alert('success', this.l.s('system.settings_saved') || 'Nastavení bylo úspěšně uloženo.');
       console.log('Backup interval updated', data);
     });
   }
@@ -1183,6 +1222,7 @@ public school_types = SchoolTypes;
     ).subscribe((res) => {
       if (res.success) {
         template.template_id = res.templateId;
+        this.alertManager.alert('success', this.l.s('system.settings_saved') || 'Nastavení bylo úspěšně uloženo.');
       }
     });
   }
@@ -1262,6 +1302,8 @@ public school_types = SchoolTypes;
       cooks: this.canteen_cooks
     };
 
-    this.http.post<any>(`${Config.API_URL}/v1/canteen/settings`, payload, { withCredentials: true }).subscribe();
+    this.http.post<any>(`${Config.API_URL}/v1/canteen/settings`, payload, { withCredentials: true }).subscribe(() => {
+        this.alertManager.alert('success', this.l.s('system.settings_saved') || 'Nastavení bylo úspěšně uloženo.');
+    });
   }
 }

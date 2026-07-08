@@ -231,12 +231,14 @@ export class MealsComponent implements OnInit {
     
     this.menuGrid = [
       { variant: 1, days: [] },
-      { variant: 2, days: [] }
+      { variant: 2, days: [] },
+      { variant: 3, days: [] }
     ];
 
     for (const wd of this.weekDays) {
       this.menuGrid[0].days.push({ date: wd.date, menu_id: null, meal_id: null, name: null, price: null, calories: null });
       this.menuGrid[1].days.push({ date: wd.date, menu_id: null, meal_id: null, name: null, price: null, calories: null });
+      this.menuGrid[2].days.push({ date: wd.date, menu_id: null, meal_id: null, name: null, price: null, calories: null });
     }
 
     this.http.get<{ menu: any[] }>(`${Config.API_URL}/v1/canteen/menu?start_date=${this.selectedWeekStart}&end_date=${end_date}`, { withCredentials: true })

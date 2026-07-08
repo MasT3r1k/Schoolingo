@@ -44,62 +44,86 @@
     </div>
     } @else {
 
+    @if (getCurrentConfig()) {
+        <div class="container-content">
+            <div class="settings-header">
+                <h1>{{ l.s(getCurrentConfig()!.title) }}</h1>
+                <p class="settings-subtitle">{{ l.s(getCurrentConfig()!.subtitle) }}</p>
+            </div>
+
+            @for (group of getCurrentConfig()!.groups; track group.title) {
+                <div class="form-section">
+                    <h3 class="section-title">{{ l.s(group.title) }}</h3>
+                    
+                    @if (group.style === 'rows') {
+                        @for (field of group.fields; track field.id) {
+                            <div class="setting-row">
+                                <div class="setting-info">
+                                    <div class="setting-title">{{ l.s(field.label) }}</div>
+                                    @if (field.description) {
+                                        <div class="setting-desc">{{ l.s(field.description) }}</div>
+                                    }
+                                </div>
+                                <div class="setting-control">
+                                    @if (field.type === 'module_toggle') {
+                                        <schoolingo-checkbox [checked]="hasModule(field.moduleName!)" (click)="toggleModule(field.moduleName!)"></schoolingo-checkbox>
+                                    } @else if (field.type === 'checkbox') {
+                                        <schoolingo-checkbox [checked]="$any(system.settings)[field.bind!]" (click)="$any(system.settings)[field.bind!] = !$any(system.settings)[field.bind!]"></schoolingo-checkbox>
+                                    } @else if (field.type === 'dropdown') {
+                                        <schoolingo-dropdown [options]="getOptions(field.options)" [(ngModel)]="$any(system.settings)[field.bind!]" [settings]="field.dropdownSettings || {}" (ngModelChange)="executeAction(getCurrentConfig()!.saveAction)"></schoolingo-dropdown>
+                                    }
+                                </div>
+                            </div>
+                        }
+                    } @else if (group.style === 'grid') {
+                        <div class="form-grid">
+                            @for (field of group.fields; track field.id) {
+                                @if (field.type === 'text') {
+                                    <div class="form-group">
+                                        <label>{{ l.s(field.label) }}</label>
+                                        <input type="text" [(ngModel)]="$any(system.settings)[field.bind!]" (change)="executeAction(getCurrentConfig()!.saveAction)">
+                                        @if (field.note) {
+                                            <small class="note">{{ field.note }}</small>
+                                        }
+                                    </div>
+                                } @else if (field.type === 'number') {
+                                    <div class="form-group">
+                                        <label>{{ l.s(field.label) }}</label>
+                                        <input type="number" [(ngModel)]="$any(system.settings)[field.bind!]" [placeholder]="field.placeholder || ''" (change)="executeAction(getCurrentConfig()!.saveAction)">
+                                        @if (field.note) {
+                                            <small class="note">{{ field.note }}</small>
+                                        }
+                                    </div>
+                                } @else if (field.type === 'checkbox') {
+                                    <div class="form-group checkbox">
+                                        <input type="checkbox" [(ngModel)]="$any(system.settings)[field.bind!]" [id]="field.id">
+                                        <label [for]="field.id">{{ l.s(field.label) }}</label>
+                                    </div>
+                                } @else if (field.type === 'dropdown') {
+                                    <div class="form-group">
+                                        <label>{{ l.s(field.label) }}</label>
+                                        <schoolingo-dropdown [options]="getOptions(field.options)" [(ngModel)]="$any(system.settings)[field.bind!]" [settings]="field.dropdownSettings || {}" (ngModelChange)="executeAction(getCurrentConfig()!.saveAction)"></schoolingo-dropdown>
+                                        @if (field.note) {
+                                            <small class="note">{{ field.note }}</small>
+                                        }
+                                    </div>
+                                }
+                            }
+                        </div>
+                    }
+                </div>
+            }
+
+            <div class="form-actions">
+                <button class="btn btn--primary" (click)="executeAction(getCurrentConfig()!.saveAction)">
+                    <i-tabler name="device-floppy"></i-tabler>
+                    {{ l.s(getCurrentConfig()!.saveLabel) }}
+                </button>
+            </div>
+        </div>
+    } @else {
+
     @switch (sidebar) {
-
-    @case(enumSidebar.GDPR_SETTINGS) {
-    <div class="container-content">
-        <div class="settings-header">
-            <h1>{{ l.s('system.gdpr_settings') }}</h1>
-            <p class="settings-subtitle">Nastavení ochrany osobních údajů a kontaktní osoby.</p>
-        </div>
-
-        <div class="form-section">
-            <div class="setting-row">
-                <div class="setting-info">
-                    <div class="setting-title">Povolit GDPR modul</div>
-                    <div class="setting-desc">Aktivuje modul pro správu souhlasů a DPO.</div>
-                </div>
-                <div class="setting-control">
-                    <schoolingo-checkbox [checked]="hasModule('gdpr')" (click)="toggleModule('gdpr')"></schoolingo-checkbox>
-                </div>
-            </div>
-        </div>
-
-        <div class="form-section">
-            <h3 class="section-title">Kontaktní osoba (DPO)</h3>
-            <div class="form-grid">
-                <div class="form-group">
-                    <label>Jméno</label>
-                    <input type="text" [(ngModel)]="system.settings.gdpr_first_name" (change)="update_school()">
-                </div>
-                <div class="form-group">
-                    <label>Příjmení</label>
-                    <input type="text" [(ngModel)]="system.settings.gdpr_last_name" (change)="update_school()">
-                </div>
-                <div class="form-group">
-                    <label>Telefon</label>
-                    <input type="text" [(ngModel)]="system.settings.gdpr_phone" (change)="update_school()">
-                </div>
-                <div class="form-group">
-                    <label>Email</label>
-                    <input type="text" [(ngModel)]="system.settings.gdpr_email" (change)="update_school()">
-                </div>
-                <div class="form-group">
-                    <label>Mobil</label>
-                    <input type="text" [(ngModel)]="system.settings.gdpr_mobile" (change)="update_school()">
-                </div>
-                <div class="form-group">
-                    <label>Datová schránka</label>
-                    <input type="text" [(ngModel)]="system.settings.gdpr_databox" (change)="update_school()">
-                </div>
-                <div class="form-group">
-                    <label>Web</label>
-                    <input type="text" [(ngModel)]="system.settings.gdpr_web" (change)="update_school()">
-                </div>
-            </div>
-        </div>
-    </div>
-    }
 
     @case(enumSidebar.MODULE_MESSAGES) {
     <div class="container-content">
@@ -269,53 +293,6 @@
     </div>
     }
 
-    @case(enumSidebar.MODULE_EMPLOYEES) {
-    <div class="container-content">
-        <div class="settings-header">
-            <h1>{{ l.s('system.employees_settings') }}</h1>
-            <p class="settings-subtitle">Správa nastavení pro zaměstnance a učitele.</p>
-        </div>
-
-        <div class="form-section">
-            <h3 class="section-title">{{ l.s('system.employee_vacation_settings') }}</h3>
-            <div class="form-grid">
-                <div class="form-group">
-                    <label>{{ l.s('system.employee_vacation_days_default') }}</label>
-                    <input type="number" [(ngModel)]="system.settings.employee_vacation_days_default"
-                        placeholder="např. 25">
-                    <small class="note">Počet dní, který bude automaticky nastaven novým zaměstnancům.</small>
-                </div>
-            </div>
-        </div>
-
-        <div class="form-section">
-            <h3 class="section-title">{{ l.s('system.module_features') }}</h3>
-            <div class="form-grid">
-                <div class="form-group checkbox">
-                    <input type="checkbox" [(ngModel)]="system.settings.employee_vacation_requests_enabled"
-                        id="vac_req">
-                    <label for="vac_req">{{ l.s('system.employee_vacation_requests_enabled') }}</label>
-                </div>
-                <div class="form-group checkbox">
-                    <input type="checkbox" [(ngModel)]="system.settings.employee_attendance_enabled" id="emp_att">
-                    <label for="emp_att">{{ l.s('system.employee_attendance_enabled') }}</label>
-                </div>
-                <div class="form-group checkbox">
-                    <input type="checkbox" [(ngModel)]="system.settings.employee_salaries_enabled" id="emp_sal">
-                    <label for="emp_sal">{{ l.s('system.employee_salaries_enabled') }}</label>
-                </div>
-            </div>
-        </div>
-
-        <div class="form-actions">
-            <button class="btn btn--primary" (click)="update_school()">
-                <i-tabler name="device-floppy"></i-tabler>
-                {{ l.s('system.save_employees_settings') }}
-            </button>
-        </div>
-    </div>
-    }
-
     @case(enumSidebar.MODULE_ROLES) {
     <div class="container-content">
         <div class="settings-header">
@@ -421,192 +398,11 @@
     </div>
     }
 
-    @case(enumSidebar.MODULE_DOCUMENTS) {
-    <div class="container-content">
-        <div class="settings-header">
-            <h1>{{ l.s('system.documents_settings') }}</h1>
-            <p class="settings-subtitle">Nastavení modulu dokumentů a správy souborů.</p>
-        </div>
-
-        <div class="form-section">
-            <h3 class="section-title">{{ l.s('system.module_features') }}</h3>
-            <div class="setting-row">
-                <div class="setting-info">
-                    <div class="setting-title">Povolit modul dokumentů</div>
-                    <div class="setting-desc">Povolení/vypnutí celého modulu Dokumenty.</div>
-                </div>
-                <div class="setting-control">
-                    <schoolingo-checkbox [checked]="system.settings.documents_enabled" (click)="system.settings.documents_enabled = !system.settings.documents_enabled"></schoolingo-checkbox>
-                </div>
-            </div>
-        </div>
-        <div class="form-actions">
-            <button class="btn btn--primary" (click)="update_school()">
-                <i-tabler name="device-floppy"></i-tabler>
-                Uložit nastavení dokumentů
-            </button>
-        </div>
-    </div>
-    }
-
-    @case(enumSidebar.MODULE_TRAINEESHIP) {
-    <div class="container-content">
-        <div class="settings-header">
-            <h1>{{ l.s('system.traineeship_settings') }}</h1>
-            <p class="settings-subtitle">Nastavení modulu praxí a studentských stáží.</p>
-        </div>
-
-        <div class="form-section">
-            <h3 class="section-title">{{ l.s('system.module_features') }}</h3>
-            <div class="setting-row">
-                <div class="setting-info">
-                    <div class="setting-title">Povolit modul praxí</div>
-                    <div class="setting-desc">Povolení/vypnutí celého modulu Praxe.</div>
-                </div>
-                <div class="setting-control">
-                    <schoolingo-checkbox [checked]="system.settings.traineeship_enabled" (click)="system.settings.traineeship_enabled = !system.settings.traineeship_enabled"></schoolingo-checkbox>
-                </div>
-            </div>
-        </div>
-        <div class="form-actions">
-            <button class="btn btn--primary" (click)="update_school()">
-                <i-tabler name="device-floppy"></i-tabler>
-                Uložit nastavení praxí
-            </button>
-        </div>
-    </div>
-    }
-
-    @case(enumSidebar.MODULE_ONLINE) {
-    <div class="container-content">
-        <div class="settings-header">
-            <h1>{{ l.s('system.online_settings') }}</h1>
-            <p class="settings-subtitle">Nastavení modulu online výuky.</p>
-        </div>
-
-        <div class="form-section">
-            <h3 class="section-title">{{ l.s('system.module_features') }}</h3>
-            <div class="setting-row">
-                <div class="setting-info">
-                    <div class="setting-title">Povolit modul online výuky</div>
-                    <div class="setting-desc">Povolení/vypnutí celého modulu Online Výuka.</div>
-                </div>
-                <div class="setting-control">
-                    <schoolingo-checkbox [checked]="system.settings.online_enabled" (click)="system.settings.online_enabled = !system.settings.online_enabled"></schoolingo-checkbox>
-                </div>
-            </div>
-        </div>
-        <div class="form-actions">
-            <button class="btn btn--primary" (click)="update_school()">
-                <i-tabler name="device-floppy"></i-tabler>
-                Uložit nastavení online výuky
-            </button>
-        </div>
-    </div>
-    }
-
-    @case(enumSidebar.MODULE_NOTICEBOARD) {
-    <div class="container-content">
-        <div class="settings-header">
-            <h1>{{ l.s('system.noticeboard_settings') }}</h1>
-            <p class="settings-subtitle">Nastavení studentské, učitelské a školní nástěnky.</p>
-        </div>
-
-        <div class="form-section">
-            <h3 class="section-title">{{ l.s('system.module_features') }}</h3>
-            
-            <div class="setting-row">
-                <div class="setting-info">
-                    <div class="setting-title">Studentská nástěnka</div>
-                    <div class="setting-desc">Povolení nástěnky určené pro studenty.</div>
-                </div>
-                <div class="setting-control">
-                    <schoolingo-checkbox [checked]="system.settings.noticeboard_student_enabled" (click)="system.settings.noticeboard_student_enabled = !system.settings.noticeboard_student_enabled"></schoolingo-checkbox>
-                </div>
-            </div>
-
-            <div class="setting-row">
-                <div class="setting-info">
-                    <div class="setting-title">Učitelská nástěnka</div>
-                    <div class="setting-desc">Povolení nástěnky určené pouze pro učitele.</div>
-                </div>
-                <div class="setting-control">
-                    <schoolingo-checkbox [checked]="system.settings.noticeboard_teacher_enabled" (click)="system.settings.noticeboard_teacher_enabled = !system.settings.noticeboard_teacher_enabled"></schoolingo-checkbox>
-                </div>
-            </div>
-        </div>
-        <div class="form-actions">
-            <button class="btn btn--primary" (click)="update_school()">
-                <i-tabler name="device-floppy"></i-tabler>
-                Uložit nastavení nástěnek
-            </button>
-        </div>
-    </div>
-    }
-
-    @case(enumSidebar.MODULE_TESTS) {
-    <div class="container-content">
-        <div class="settings-header">
-            <h1>{{ l.s('system.tests_settings') }}</h1>
-            <p class="settings-subtitle">Nastavení modulu pro testy a zkoušení.</p>
-        </div>
-
-        <div class="form-section">
-            <h3 class="section-title">{{ l.s('system.module_features') }}</h3>
-            
-            <div class="setting-row">
-                <div class="setting-info">
-                    <div class="setting-title">Povolit modul testů</div>
-                    <div class="setting-desc">Povolení/vypnutí celého modulu Testy.</div>
-                </div>
-                <div class="setting-control">
-                    <schoolingo-checkbox [checked]="system.settings.tests_enabled" (click)="system.settings.tests_enabled = !system.settings.tests_enabled"></schoolingo-checkbox>
-                </div>
-            </div>
-        </div>
-        <div class="form-actions">
-            <button class="btn btn--primary" (click)="update_school()">
-                <i-tabler name="device-floppy"></i-tabler>
-                Uložit nastavení testů
-            </button>
-        </div>
-    </div>
-    }
-
-    @case(enumSidebar.MODULE_REWARDS) {
-    <div class="container-content">
-        <div class="settings-header">
-            <h1>{{ l.s('system.rewards_settings') }}</h1>
-            <p class="settings-subtitle">Nastavení odměn, pochval a bodování žáků.</p>
-        </div>
-
-        <div class="form-section">
-            <h3 class="section-title">{{ l.s('system.module_features') }}</h3>
-            
-            <div class="setting-row">
-                <div class="setting-info">
-                    <div class="setting-title">Povolit modul odměn</div>
-                    <div class="setting-desc">Povolení/vypnutí celého modulu Odměny a pochvaly.</div>
-                </div>
-                <div class="setting-control">
-                    <schoolingo-checkbox [checked]="system.settings.rewards_enabled" (click)="system.settings.rewards_enabled = !system.settings.rewards_enabled"></schoolingo-checkbox>
-                </div>
-            </div>
-        </div>
-        <div class="form-actions">
-            <button class="btn btn--primary" (click)="update_school()">
-                <i-tabler name="device-floppy"></i-tabler>
-                Uložit nastavení odměn
-            </button>
-        </div>
-    </div>
-    }
-
     @case(enumSidebar.MODULE_CANTEEN) {
     <div class="container-content">
         <div class="settings-header">
-            <h1>{{ l.s('sidebar.canteen.settings') || 'Nastavení jídelny' }}</h1>
-            <p class="settings-subtitle">Nastavení modulu jídelny, plateb, kuchařů a správců.</p>
+            <h1>{{ l.s('system.canteen_settings') }}</h1>
+            <p class="settings-subtitle">Nastavení jídelny a provozu stravování.</p>
         </div>
 
         <div class="form-section">
@@ -615,7 +411,6 @@
             <div class="setting-row">
                 <div class="setting-info">
                     <div class="setting-title">{{ l.s('canteen.settings_enable_canteen') || 'Povolit modul jídelny' }}</div>
-                    <div class="setting-desc">Povolení/vypnutí celého modulu Jídelna.</div>
                 </div>
                 <div class="setting-control">
                     <schoolingo-checkbox [checked]="canteen_settings.canteen_enabled === '1'" (click)="canteen_settings.canteen_enabled = (canteen_settings.canteen_enabled === '1' ? '0' : '1')"></schoolingo-checkbox>
@@ -624,7 +419,7 @@
 
             <div class="setting-row">
                 <div class="setting-info">
-                    <div class="setting-title">{{ l.s('canteen.settings_enable_breakfast') || 'Povolit snídaně (střední školy, domovy mládeže)' }}</div>
+                    <div class="setting-title">{{ l.s('canteen.settings_enable_breakfast') || 'Povolit snídaně' }}</div>
                 </div>
                 <div class="setting-control">
                     <schoolingo-checkbox [checked]="canteen_settings.canteen_breakfast_enabled === '1'" (click)="canteen_settings.canteen_breakfast_enabled = (canteen_settings.canteen_breakfast_enabled === '1' ? '0' : '1')"></schoolingo-checkbox>
@@ -633,7 +428,7 @@
 
             <div class="setting-row">
                 <div class="setting-info">
-                    <div class="setting-title">{{ l.s('canteen.settings_enable_dinner') || 'Povolit večeře (střední školy, domovy mládeže)' }}</div>
+                    <div class="setting-title">{{ l.s('canteen.settings_enable_dinner') || 'Povolit večeře' }}</div>
                 </div>
                 <div class="setting-control">
                     <schoolingo-checkbox [checked]="canteen_settings.canteen_dinner_enabled === '1'" (click)="canteen_settings.canteen_dinner_enabled = (canteen_settings.canteen_dinner_enabled === '1' ? '0' : '1')"></schoolingo-checkbox>
@@ -650,7 +445,7 @@
             </div>
 
             @if (canteen_settings.canteen_flat_price_enabled === '1') {
-            <div class="form-grid">
+            <div class="form-grid" style="margin-top: 1rem;">
                 <div class="form-group">
                     <label>{{ l.s('canteen.settings_flat_price_val') || 'Hodnota jednotné ceny (Kč)' }}</label>
                     <input type="number" [(ngModel)]="canteen_settings.canteen_flat_price" placeholder="0">
@@ -666,11 +461,10 @@
                 <div class="form-group">
                     <label>{{ l.s('canteen.settings_payment_account') || 'Účet pro strhávání plateb za obědy' }}</label>
                     <schoolingo-dropdown [options]="getCanteenPaymentAccounts()" [(ngModel)]="canteen_settings.canteen_payment_account" [settings]="{ locale: false }" [clearable]="false"></schoolingo-dropdown>
-                    <small class="note">{{ l.s('canteen.settings_payment_account_help') || 'Studentům bude oběd strháván z tohoto zůstatku. Při nedostatku prostředků nebude možné oběd objednat.' }}</small>
                 </div>
             </div>
 
-            <div class="setting-row">
+            <div class="setting-row" style="margin-top: 1rem;">
                 <div class="setting-info">
                     <div class="setting-title">{{ l.s('canteen.settings_auto_refund') || 'Automatická refundace při nemoci' }}</div>
                 </div>
@@ -682,50 +476,40 @@
 
         <div class="form-section">
             <h3 class="section-title">{{ l.s('canteen.settings_staff_title') || 'Správci a kuchaři jídelny' }}</h3>
-            
             <div class="form-grid">
                 <div class="form-group">
                     <input type="text" [(ngModel)]="canteen_searchQuery" [placeholder]="l.s('canteen.settings_search_staff') || 'Vyhledat zaměstnance...'">
                 </div>
             </div>
 
-            <div class="table-container">
-                <table class="table">
-                    <thead>
-                        <tr>
-                            <th>{{ l.s('canteen.col_name') || 'Jméno' }}</th>
-                            <th class="text-center">{{ l.s('canteen.role_manager') || 'Správce' }}</th>
-                            <th class="text-center">{{ l.s('canteen.role_cook') || 'Kuchař' }}</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @for (member of getFilteredCanteenStaff(); track member.user_id) {
-                        <tr>
-                            <td>
-                                <strong>{{ member.name }}</strong>
-                            </td>
-                            <td class="text-center">
-                                <div style="display: flex; justify-content: center;">
-                                    <schoolingo-checkbox [checked]="isCanteenManager(member.user_id)" (click)="toggleCanteenManager(member.user_id)"></schoolingo-checkbox>
-                                </div>
-                            </td>
-                            <td class="text-center">
-                                <div style="display: flex; justify-content: center;">
-                                    <schoolingo-checkbox [checked]="isCanteenCook(member.user_id)" (click)="toggleCanteenCook(member.user_id)"></schoolingo-checkbox>
-                                </div>
-                            </td>
-                        </tr>
+            <table class="table" style="margin-top: 1rem;">
+                <thead class="table__head">
+                    <tr>
+                        <th class="table__th">{{ l.s('canteen.col_name') || 'Jméno' }}</th>
+                        <th class="table__th text-center">{{ l.s('canteen.role_manager') || 'Správce' }}</th>
+                        <th class="table__th text-center">{{ l.s('canteen.role_cook') || 'Kuchař' }}</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @for (member of canteen_staff; track member.user_id) {
+                        @if (canteen_searchQuery === '' || member.name.toLowerCase().includes(canteen_searchQuery.toLowerCase())) {
+                            <tr class="table__row">
+                                <td class="table__td"><strong>{{ member.name }}</strong></td>
+                                <td class="table__td text-center">
+                                    <div class="flex-center">
+                                        <schoolingo-checkbox [checked]="canteen_managers.includes(member.user_id)" (click)="toggleCanteenManager(member.user_id)"></schoolingo-checkbox>
+                                    </div>
+                                </td>
+                                <td class="table__td text-center">
+                                    <div class="flex-center">
+                                        <schoolingo-checkbox [checked]="canteen_cooks.includes(member.user_id)" (click)="toggleCanteenCook(member.user_id)"></schoolingo-checkbox>
+                                    </div>
+                                </td>
+                            </tr>
                         }
-                        @if (getFilteredCanteenStaff().length === 0) {
-                        <tr>
-                            <td colspan="3" class="text-center" style="color: var(--text-muted); padding: 1rem;">
-                                {{ l.s('canteen.settings_no_staff') || 'Nebyly nalezeny žádné výsledky.' }}
-                            </td>
-                        </tr>
-                        }
-                    </tbody>
-                </table>
-            </div>
+                    }
+                </tbody>
+            </table>
         </div>
 
         <div class="form-actions">
@@ -861,26 +645,11 @@
 
                 <div class="rollback-container">
                     <div class="form-group" style="margin-bottom: 0; flex: 1;">
-                        <div class="custom-select" style="width: 100%"
-                            (click)="$event.stopPropagation(); dropdownManager.selected_dropdown = dropdownManager.selected_dropdown == 'rollbackBackup' ? '' : 'rollbackBackup'">
-                            <div class="selected-value">
-                                {{ selected_backup_to_rollback ? selected_backup_to_rollback : 'Vyberte zálohu pro
-                                návrat...' }}
-                                <i-tabler name="chevron-down"></i-tabler>
-                            </div>
-                            @if (dropdownManager.selected_dropdown == 'rollbackBackup') {
-                            <div class="options-dropdown">
-                                <div class="list">
-                                    @for (backup of backups; track backup.filename) {
-                                    <div class="option"
-                                        (click)="$event.stopPropagation();dropdownManager.selected_dropdown = '';selected_backup_to_rollback = backup.filename">
-                                        {{ backup.filename }} ({{ (backup.size / 1024 / 1024).toFixed(2) }} MB)
-                                    </div>
-                                    }
-                                </div>
-                            </div>
-                            }
-                        </div>
+                        <schoolingo-dropdown 
+                            [options]="getBackupOptions()" 
+                            [(ngModel)]="selected_backup_to_rollback"
+                            [settings]="{ locale: false }">
+                        </schoolingo-dropdown>
                     </div>
                     <button class="btn btn--danger" [disabled]="!selected_backup_to_rollback || updateStatus.isUpdating"
                         (click)="rollbackToBackup()">
@@ -896,25 +665,11 @@
                     <div class="setting-desc">Jak často se budou automaticky vytvářet zálohy dat.</div>
                 </div>
                 <div class="setting-control" style="min-width: 200px;">
-                    <div class="custom-select"
-                        (click)="$event.stopPropagation(); dropdownManager.selected_dropdown= dropdownManager.selected_dropdown == 'intervalBackup' ? '' : 'intervalBackup'">
-                        <div class="selected-value">
-                            {{ l.s('time.' + interval_backups[selected_interval_backup]) }}
-                            <i-tabler name="chevron-down"></i-tabler>
-                        </div>
-                        @if (dropdownManager.selected_dropdown == 'intervalBackup') {
-                        <div class="options-dropdown">
-                            <div class="list">
-                                @for (type of interval_backups; track $index) {
-                                <div class="option"
-                                    (click)="$event.stopPropagation();dropdownManager.selected_dropdown = '';update_backup_interval($index)">
-                                    {{ l.s('time.' + type) }}
-                                </div>
-                                }
-                            </div>
-                        </div>
-                        }
-                    </div>
+                    <schoolingo-dropdown 
+                        [options]="getIntervalBackupOptions()" 
+                        [(ngModel)]="selected_interval_backup"
+                        (ngModelChange)="update_backup_interval($event)">
+                    </schoolingo-dropdown>
                 </div>
             </div>
 
@@ -1923,6 +1678,7 @@
             </section>
         </div>
     </main>
+    }
     }
     }
     }

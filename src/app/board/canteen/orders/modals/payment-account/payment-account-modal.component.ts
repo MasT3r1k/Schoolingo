@@ -29,6 +29,10 @@ export class PaymentAccountModalComponent implements OnInit {
   selectedAccountId: number | null = null;
   loading = true;
 
+  get selectedAccount() {
+    return this.accounts.find(a => a.payment_account_id === this.selectedAccountId) || null;
+  }
+
   ngOnInit() {
     const data = this.modalManager.getModalData('payment-account-modal');
     if (data && data.accountId) {
@@ -40,7 +44,7 @@ export class PaymentAccountModalComponent implements OnInit {
         next: (res) => {
           this.accounts = res;
           this.accountOptions = res.map(acc => ({
-            label: acc.name + (acc.balance !== undefined ? ' (' + acc.balance + ' Kč)' : ''),
+            label: acc.name,
             value: acc.payment_account_id
           }));
           this.loading = false;

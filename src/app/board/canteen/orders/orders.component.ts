@@ -11,6 +11,8 @@ import { Authentication } from '@Schoolingo/authentication';
 import { ModalManager } from '@Schoolingo/modal';
 import { AllergensModalComponent } from './modals/allergens/allergens-modal.component';
 import { PaymentAccountModalComponent } from './modals/payment-account/payment-account-modal.component';
+import { AddCreditModalComponent } from './modals/add-credit/add-credit-modal.component';
+import { BoardAlertManager } from '../../../infrastructure/alert/board.alert.manager';
 
 interface CreditAPI {
   credit: number,
@@ -28,6 +30,7 @@ export class OrdersComponent implements OnInit {
   public l = inject(Locale);
   private http = inject(HttpClient);
   private modalManager = inject(ModalManager);
+  private alertManager = inject(BoardAlertManager);
   credit: number | null = null;
 
   public showSaveCard(): boolean {
@@ -66,12 +69,22 @@ export class OrdersComponent implements OnInit {
     });
 
     this.modalManager.addModal('payment-account-modal', {
-      title: 'Upravit platební účet',
+      title: 'canteen.payment_account.title',
       icon: 'credit-card',
       width: 500,
       closeable: true,
       items: [
         { type: 'component', component: PaymentAccountModalComponent }
+      ]
+    });
+
+    this.modalManager.addModal('add-credit-modal', {
+      title: 'canteen.add-credit.title',
+      icon: 'coin',
+      width: 500,
+      closeable: true,
+      items: [
+        { type: 'component', component: AddCreditModalComponent }
       ]
     });
 
@@ -136,7 +149,7 @@ export class OrdersComponent implements OnInit {
         return {
           id: m.menu_id,
           food: m.name,
-          num: `Oběd ${m.variant_index}`,
+          num: `${this.l.s('canteen.weekly_menu_td')} ${m.variant_index}`,
           price: parseFloat(m.price),
           kcal: m.calories,
           allergens: m.allergens,
@@ -198,11 +211,18 @@ export class OrdersComponent implements OnInit {
       this.selections[day.code] && option && this.selections[day.code]?.id == option?.id
       || 
       this.selections[day.code] == null && option == null
-    ) return
-    if (option && !option.available) return;
-    if (moment(day.dateStr).isSameOrBefore(moment(), 'day')) {
-      return
+    ) return;
+    
+    if (option && !option.available) {
+      this.alertManager.alert('error', 'canteen.meal_soldout');
+      return;
     }
+    
+    if (moment(day.dateStr).isSameOrBefore(moment(), 'day')) {
+      this.alertManager.alert('error', 'canteen.meal_pastdue');
+      return;
+    }
+
     this.selections[day.code] = option;
   }
 
@@ -217,7 +237,7 @@ export class OrdersComponent implements OnInit {
       if (sel) {
         return { day: d.code, name: sel.label, price: sel.price, none: false };
       } else {
-        return { day: d.code, name: 'Bez oběda', price: 0, none: true };
+        return { day: d.code, name: this.l.s('canteen.no_lunch'), price: 0, none: true };
       }
     });
     return { items, total };
@@ -257,7 +277,16 @@ export class OrdersComponent implements OnInit {
   private router = inject(Router);
 
   addCreditModal() {
-    this.router.navigate(['/payments/overview']);
+    this.modalManager.openModal('add-credit-modal', {
+      targetAccountId: this.accountId,
+      refreshCallback: () => {
+        this.refreshCredit();
+      },
+      openPaymentAccount: () => {
+        this.modalManager.closeModal('add-credit-modal');
+        this.openPaymentAccountModal();
+      }
+    });
   }
 
   openAllergensModal() {

@@ -27,104 +27,139 @@ interface IssueStats {
   cancelled: number;
 }
 
-@Component({
-  selector: 'app-canteen-issues',
-  standalone: true,
-  imports: [CommonModule, FormsModule, IconsModule, StatCardComponent],
-  templateUrl: './issues.component.html',
-  styleUrl: './issues.component.css'
-})
-export class IssuesComponent implements OnInit {
-  l = inject(Locale);
-  http = inject(HttpClient);
-  modalManager = inject(ModalManager);
-
-  today = moment().format('YYYY-MM-DD');
-  todayLabel = moment().format('D. M. YYYY');
-
-  issues: IssueOrder[] = [];
-  filteredIssues: IssueOrder[] = [];
-  stats: IssueStats = { total_ordered: 0, issued: 0, cancelled: 0 };
-
-  searchQuery = '';
-  isLoading = true;
-
-  ngOnInit() {
-    this.modalManager.addModal('issue_meal', {
-      title: 'Vydat jídlo',
-      icon: 'scan',
-      width: 600,
-      closeable: true,
-      items: [
-        { type: 'component', component: IssueMealModalComponent }
-      ]
-    });
-    this.loadIssues();
-  }
-
-  openIssueModal() {
-    this.modalManager.openModal('issue_meal', {
-      date: this.today,
-      refreshCallback: () => {
-        this.loadIssues();
-      }
-    });
-  }
-
-  loadIssues() {
-    this.isLoading = true;
-    this.http
-      .get<{ issues: IssueOrder[]; stats: IssueStats }>(
-        `${Config.API_URL}/v1/canteen/issues?date=${this.today}`,
-        { withCredentials: true }
-      )
-      .subscribe({
-        next: (res) => {
-          this.issues = res.issues || [];
-          this.stats = res.stats || { total_ordered: 0, issued: 0, cancelled: 0 };
-          this.applyFilter();
-          this.isLoading = false;
-        },
-        error: (err) => {
-          console.error('Chyba při načítání výdeje', err);
-          this.isLoading = false;
+  import { BehaviorSubject } from 'rxjs';
+  import { TabsComponent } from '@Components/Tabs';
+  
+  @Component({
+    selector: 'app-canteen-issues',
+    standalone: true,
+    imports: [CommonModule, FormsModule, IconsModule, StatCardComponent, TabsComponent],
+    templateUrl: './issues.component.html',
+    styleUrl: './issues.component.css'
+  })
+  export class IssuesComponent implements OnInit {
+    l = inject(Locale);
+    http = inject(HttpClient);
+    modalManager = inject(ModalManager);
+  
+    today = moment().format('YYYY-MM-DD');
+    todayLabel = moment().format('D. M. YYYY');
+  
+    issues: IssueOrder[] = [];
+    filteredIssues: IssueOrder[] = [];
+    stats: IssueStats = { total_ordered: 0, issued: 0, cancelled: 0 };
+  
+    searchQuery = '';
+    isLoading = true;
+    public tabValue = new BehaviorSubject<number>(0);
+  
+    ngOnInit() {
+      this.modalManager.addModal('issue_meal', {
+        title: 'Vydat jídlo',
+        icon: 'scan',
+        width: 600,
+        closeable: true,
+        items: [
+          { type: 'component', component: IssueMealModalComponent }
+        ]
+      });
+      this.loadIssues();
+      this.tabValue.subscribe(() => {
+        this.applyFilter();
+      });
+    }
+  
+    openIssueModal() {
+      this.modalManager.openModal('issue_meal', {
+        date: this.today,
+        refreshCallback: () => {
+          this.loadIssues();
         }
       });
-  }
-
-  applyFilter() {
-    const q = this.searchQuery.toLowerCase().trim();
-    this.filteredIssues = this.issues.filter(i => {
-      if (!q) return true;
-      const fullName = `${i.first_name} ${i.last_name}`.toLowerCase();
-      return fullName.includes(q) || i.meal_name.toLowerCase().includes(q);
-    });
-  }
-
-  issueMeal(order: IssueOrder) {
-    this.http
-      .post(`${Config.API_URL}/v1/canteen/issue/${order.order_id}`, {}, { withCredentials: true })
-      .subscribe({
-        next: () => {
-          order.status = 'issued';
-          this.stats.issued++;
-          // Re-apply filter to reflect change
-          this.applyFilter();
-        },
-        error: (err) => console.error('Chyba při vydávání oběda', err)
+    }
+  
+    loadIssues() {
+      this.isLoading = true;
+      this.http
+        .get<{ issues: IssueOrder[]; stats: IssueStats }>(
+          `${Config.API_URL}/v1/canteen/issues?date=${this.today}`,
+          { withCredentials: true }
+        )
+        .subscribe({
+          next: (res) => {
+            this.issues = res.issues || [];
+            this.stats = res.stats || { total_ordered: 0, issued: 0, cancelled: 0 };
+            this.applyFilter();
+            this.isLoading = false;
+          },
+          error: (err) => {
+            console.error('Chyba při načítání výdeje', err);
+            this.isLoading = false;
+          }
+        });
+    }
+  
+    applyFilter() {
+      const q = this.searchQuery.toLowerCase().trim();
+      const tabIdx = this.tabValue.getValue();
+      const statusFilter = tabIdx === 1 ? 'ordered' : (tabIdx === 2 ? 'issued' : (tabIdx === 3 ? 'cancelled' : null));
+  
+      this.filteredIssues = this.issues.filter(i => {
+        if (statusFilter && i.status !== statusFilter) return false;
+        if (!q) return true;
+        const fullName = `${i.first_name} ${i.last_name}`.toLowerCase();
+        return fullName.includes(q) || i.meal_name.toLowerCase().includes(q);
       });
-  }
+    }
+  
+    issueMeal(order: IssueOrder) {
+      this.http
+        .post(`${Config.API_URL}/v1/canteen/issue/${order.order_id}`, {}, { withCredentials: true })
+        .subscribe({
+          next: () => {
+            order.status = 'issued';
+            this.stats.issued++;
+            // Re-apply filter to reflect change
+            this.applyFilter();
+          },
+          error: (err) => console.error('Chyba při vydávání oběda', err)
+        });
+    }
 
-  get waitingCount(): number {
-    return this.stats.total_ordered - this.stats.issued - this.stats.cancelled;
-  }
+    issueFilteredMeals() {
+      const waitingOrders = this.filteredIssues.filter(o => o.status === 'ordered');
+      if (waitingOrders.length === 0) return;
 
-  get issuedPercent(): number {
-    if (!this.stats.total_ordered) return 0;
-    return Math.round((this.stats.issued / this.stats.total_ordered) * 100);
-  }
+      const orderIds = waitingOrders.map(o => o.order_id);
 
-  getFullName(order: IssueOrder): string {
-    return `${order.first_name} ${order.last_name}`;
+      this.http
+        .post(`${Config.API_URL}/v1/canteen/issue/bulk`, { order_ids: orderIds }, { withCredentials: true })
+        .subscribe({
+          next: () => {
+            waitingOrders.forEach(o => {
+              o.status = 'issued';
+            });
+            this.stats.issued += waitingOrders.length;
+            this.applyFilter();
+          },
+          error: (err) => console.error('Chyba při hromadném vydávání', err)
+        });
+    }
+  
+    get waitingCount(): number {
+      return this.stats.total_ordered - this.stats.issued - this.stats.cancelled;
+    }
+  
+    get filteredWaitingCount(): number {
+      return this.filteredIssues.filter(o => o.status === 'ordered').length;
+    }
+  
+    get issuedPercent(): number {
+      if (!this.stats.total_ordered) return 0;
+      return Math.round((this.stats.issued / this.stats.total_ordered) * 100);
+    }
+  
+    getFullName(order: IssueOrder): string {
+      return `${order.first_name} ${order.last_name}`;
+    }
   }
-}

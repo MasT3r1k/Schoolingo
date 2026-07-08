@@ -226,6 +226,7 @@ export class Documents {
     }
 
     public getIcon(type: string): string {
+        if (!type) return 'file'
         if (type.includes('pdf')) return 'file-type-pdf';
         if (type.includes('sheet') || type.includes('excel') || type.includes('ms-excel')) return 'table';
         if (type.includes('word') || type.includes('officedocument.wordprocessingml')) return 'file-text';

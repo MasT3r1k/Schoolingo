@@ -115,6 +115,7 @@ export class MainComponent implements OnInit {
     {
       id: 'cafeteria',
       titleKey: 'modules.cafeteria',
+      titleUrl: '/canteen/orders',
       icon: 'tools-kitchen-2',
       modules: ['canteen'],
       import: () => import('./sections/cafeteria/cafeteria.component').then(m => m.CafeteriaComponent),
@@ -204,4 +205,4 @@ export class MainComponent implements OnInit {
     }));
     this.dashboardService.savePositions(newPositions);
   }
-}
+}

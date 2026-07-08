@@ -141,7 +141,8 @@ export class CanteenGenerateModalComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.variantOptions = [
       { label: this.l.s('canteen.variant_option_1'), value: 1 },
-      { label: this.l.s('canteen.variant_option_2'), value: 2 }
+      { label: this.l.s('canteen.variant_option_2'), value: 2 },
+      { label: this.l.s('canteen.variant_option_3') || '3 varianty', value: 3 }
     ];
 
     const data = this.modalManager.getModalData('canteen-generate-modal');

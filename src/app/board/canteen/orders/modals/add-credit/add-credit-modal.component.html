@@ -1,0 +1,55 @@
+<div class="modal-body">
+  @if (loading) {
+    <div style="display: flex; justify-content: center; padding: 2rem;">
+      <span class="btn-spinner" style="border-color: var(--primary) transparent var(--primary) transparent; width: 24px; height: 24px;"></span>
+    </div>
+  } @else {
+    <div style="margin-bottom: 1rem; color: var(--text-muted); font-size: 0.875rem;">
+      Převeďte si peníze na účet jídelny pro dobítí kreditů.
+    </div>
+
+    @if (error) {
+      <div style="margin-bottom: 1rem; color: var(--danger); font-size: 0.875rem;">
+        {{ error }}
+      </div>
+    }
+
+    <div class="form-group">
+      <div class="form-label">Z účtu</div>
+      <schoolingo-dropdown 
+        [options]="sourceAccountOptions" 
+        [(ngModel)]="sourceAccountId"
+        [settings]="{ locale: false }"
+        [clearable]="false">
+      </schoolingo-dropdown>
+    </div>
+
+    <div class="form-group" style="margin-bottom: 0.5rem;">
+      <div class="form-label">Cílový účet</div>
+      <div class="dropdown-trigger">
+        {{ getTargetAccountName() }}
+      </div>
+      <div style="margin-top: 0.5rem; font-size: 0.8rem; color: var(--text-muted);">
+        Chcete platit obědy z jiného účtu? <a href="javascript:void(0)" (click)="openPaymentAccount()" style="color: var(--primary); text-decoration: underline;">Změnit účet</a>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <div class="form-label">Částka (Kč)</div>
+      <input type="number" class="form-input" [(ngModel)]="amount" min="1" placeholder="Např. 500">
+    </div>
+  }
+</div>
+<div class="modal-actions">
+  <button class="btn btn--secondary" (click)="close()">
+    {{ l.s('buttons.cancel') }}
+  </button>
+  <button class="btn btn--primary" (click)="save()" [disabled]="submitting || loading" [class.btn--loading]="submitting">
+    @if (submitting) {
+      <span class="btn-spinner"></span>
+    }
+    <span [class.btn-text-hidden]="submitting">
+      Převést
+    </span>
+  </button>
+</div>

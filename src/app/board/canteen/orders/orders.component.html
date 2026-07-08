@@ -106,15 +106,19 @@
     <div style="display: flex; flex-direction: column; white-space: nowrap;">
       <span style="font-weight: 500;">Tento týden oběd vychází na <strong style="color: var(--primary);">{{ summary.total | money }}</strong></span>
       @if (submitSuccess) {
-        <span style="font-size: 0.75rem; color: var(--success, #22c55e);">Objednávky jsou uloženy</span>
+        <span style="font-size: 0.75rem; color: var(--success, #22c55e);">
+          {{ l.s('canteen.order_saved') }}
+        </span>
       } @else {
-        <span style="font-size: 0.75rem; color: var(--text-muted);">Máte neuložené změny v objednávkách</span>
+        <span style="font-size: 0.75rem; color: var(--text-muted);">
+          {{ l.s('canteen.not_order_saved') }}
+        </span>
       }
     </div>
     
     <div style="display: flex; gap: 0.5rem; align-items: center; white-space: nowrap;">
       <button class="btn btn--ghost btn--sm" style="border-radius: 20px;" (click)="revertChanges()">
-        Vrátit zpět
+        {{ l.s('buttons.go_back') }}
       </button>
       <button class="btn btn--primary" style="border-radius: 20px; padding-left: 1.5rem; padding-right: 1.5rem;" [disabled]="submitting" (click)="submitOrder()" [class.btn--loading]="submitting">
         @if (submitting) {
@@ -123,7 +127,7 @@
           <i-tabler name="check" style="position: absolute;"></i-tabler>
         }
         <span [class.btn-text-hidden]="submitting || submitSuccess">
-          Uložit
+          {{ l.s('buttons.save') }}
         </span>
       </button>
     </div>
@@ -143,11 +147,11 @@
         </span>
         }
       </div>
-      @if ((credit || 0) < 0) {
-        <button class="btn btn--sm btn--danger" style="margin-top: 0.5rem; width: fit-content;" (click)="addCreditModal()">
-          <i-tabler name="plus"></i-tabler> Dobít kredit
-        </button>
-      }
     </div>
+    @if (true) {
+      <button class="btn btn--sm btn--danger" style="margin-left: 1rem;border-radius: var(--radius-full);padding-right: var(--space-4);" (click)="addCreditModal()">
+        <i-tabler name="plus"></i-tabler> Dobít kredit
+      </button>
+    }
   </div>
 </div>
