@@ -25,6 +25,8 @@ export class CanteenAssignModalComponent implements OnInit {
   public variantIndex = 1;
   public selectedMealId: number | null = null;
   public limitCount = 0
+  public menuId: number | null = null;
+  public users: any[] = [];
   public meals: any[] = [];
   public dropdownOptions: { label: string, value: any }[] = [];
 
@@ -34,6 +36,7 @@ export class CanteenAssignModalComponent implements OnInit {
       this.date = data.date;
       this.variantIndex = data.variant_index;
       this.selectedMealId = data.meal_id;
+      this.limitCount = data.limit_count || 0;
       this.meals = data.meals || [];
       
       this.dropdownOptions = [
@@ -43,6 +46,14 @@ export class CanteenAssignModalComponent implements OnInit {
           value: m.meal_id
         }))
       ];
+
+      this.menuId = data.menu_id;
+      if (this.menuId) {
+        this.http.get<any[]>(`${Config.API_URL}/v1/canteen/menu/${this.menuId}/users`, { withCredentials: true })
+          .subscribe((users) => {
+            this.users = users;
+          });
+      }
     }
   }
 
@@ -56,8 +67,9 @@ export class CanteenAssignModalComponent implements OnInit {
   saveAssign() {
     const payload = {
       date: this.date,
-      variant_index: this.variantIndex,
-      meal_id: this.selectedMealId
+      variant_index: Number(this.variantIndex),
+      meal_id: this.selectedMealId ? Number(this.selectedMealId) : null,
+      limit_count: this.limitCount > 0 ? Number(this.limitCount) : null
     };
 
     this.http.post(`${Config.API_URL}/v1/canteen/menu`, payload, { withCredentials: true })

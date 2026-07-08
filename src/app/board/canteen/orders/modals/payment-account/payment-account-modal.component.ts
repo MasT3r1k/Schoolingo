@@ -36,7 +36,7 @@ export class PaymentAccountModalComponent implements OnInit {
   ngOnInit() {
     const data = this.modalManager.getModalData('payment-account-modal');
     if (data && data.accountId) {
-      this.selectedAccountId = data.accountId;
+      this.selectedAccountId = Array.isArray(data.accountId) ? null : data.accountId;
     }
 
     this.http.get<any[]>(Config.API_URL + '/v1/payments/accounts', { withCredentials: true })
@@ -60,10 +60,21 @@ export class PaymentAccountModalComponent implements OnInit {
   }
 
   save() {
-    const data = this.modalManager.getModalData('payment-account-modal');
-    if (data && data.refreshCallback) {
-      data.refreshCallback(this.selectedAccountId);
-    }
-    this.close();
+    this.submitting = true;
+    this.http.post(Config.API_URL + '/v1/canteen/account', { account_id: this.selectedAccountId }, { withCredentials: true })
+      .subscribe({
+        next: () => {
+          this.submitting = false;
+          const data = this.modalManager.getModalData('payment-account-modal');
+          if (data && data.refreshCallback) {
+            data.refreshCallback(this.selectedAccountId);
+          }
+          this.close();
+        },
+        error: () => {
+          this.submitting = false;
+          // Handle error if needed
+        }
+      });
   }
 }

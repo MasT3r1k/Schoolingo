@@ -12,7 +12,7 @@
         <i-tabler name="calendar"></i-tabler>
         {{ todayLabel }}
       </span>
-      <button class="btn btn--secondary btn--sm" (click)="loadIssues()">
+      <button class="btn btn--ghost btn--sm" (click)="loadIssues()">
         <i-tabler name="refresh"></i-tabler>
         {{ l.s('canteen.issues_refresh') }}
       </button>
@@ -62,9 +62,13 @@
       </stat-card>
     </div>
 
-    <!-- ═══ PROGRESS BAR ═══ -->
+    <!-- ═══ PROGRESS ROW ═══ -->
     @if (!isLoading && stats.total_ordered > 0) {
       <div class="issues-progress-row">
+        <div class="issues-progress-meta">
+          <span class="issues-progress-meta__label">{{ l.s('canteen.stat_issued') }}</span>
+          <span class="issues-progress-meta__val">{{ issuedPercent }} %</span>
+        </div>
         <div class="issues-progress-bar-wrap">
           <div class="issues-progress-bar__issued" [style.width.%]="issuedPercent"></div>
           <div class="issues-progress-bar__cancelled"
@@ -72,15 +76,22 @@
                [style.left.%]="issuedPercent">
           </div>
         </div>
-        <span class="issues-progress-label">{{ issuedPercent }} %</span>
+        <div class="issues-progress-legend">
+          <span class="legend-dot legend-dot--issued"></span>
+          <span class="legend-label">{{ l.s('canteen.stat_issued') }}</span>
+          <span class="legend-dot legend-dot--cancelled"></span>
+          <span class="legend-label">{{ l.s('canteen.stat_cancelled') }}</span>
+          <span class="legend-dot legend-dot--waiting"></span>
+          <span class="legend-label">{{ l.s('canteen.stat_waiting') }}</span>
+        </div>
       </div>
     }
 
     <!-- ═══ ISSUES TABLE ═══ -->
     <div class="issues-section">
-      <div class="issues-section__toolbar" style="display: flex; justify-content: space-between; align-items: center; gap: 1rem;">
-        <div style="display: flex; gap: 1rem;">
-          <div class="search-wrapper" style="max-width: 280px; width: 280px;">
+      <div class="issues-section__toolbar">
+        <div class="toolbar-left">
+          <div class="search-wrapper">
             <i-tabler name="search"></i-tabler>
             <input
               type="text"
@@ -88,7 +99,16 @@
               (input)="applyFilter()"
               [placeholder]="l.s('canteen.issues_search_placeholder')">
           </div>
+        </div>
 
+        <div class="toolbar-right">
+          @if (filteredWaitingCount > 0) {
+            <button class="bulk-issue-btn" (click)="issueFilteredMeals()">
+              <i-tabler name="checks"></i-tabler>
+              {{ l.s('canteen.issue_all_filtered') || 'Vydat zobrazené' }}
+              <span class="bulk-issue-btn__count">{{ filteredWaitingCount }}</span>
+            </button>
+          }
           <schoolingo-tabs
             [options]="['filter_all', 'filter_ordered', 'filter_issued', 'filter_cancelled']"
             [icons]="['list', 'clock', 'check', 'x']"
@@ -96,102 +116,114 @@
             prefix="canteen.">
           </schoolingo-tabs>
         </div>
-
-        <div style="display: flex; align-items: center; gap: 1rem;">
-          @if (filteredWaitingCount > 0) {
-            <button class="btn btn--primary btn--sm" (click)="issueFilteredMeals()">
-              <i-tabler name="checks"></i-tabler>
-              {{ l.s('canteen.issue_all_filtered') || 'Vydat zobrazené' }} ({{ filteredWaitingCount }})
-            </button>
-          }
-          <span class="issues-count badge badge--neutral">
-            {{ filteredIssues.length }} / {{ issues.length }} záznamů
-          </span>
-        </div>
       </div>
 
+      <!-- Loading -->
       @if (isLoading) {
-        <div class="issues-loading">
-          <div class="btn-spinner"></div>
+        <div class="issues-state issues-state--loading">
+          <div class="issues-state__spinner">
+            <div class="btn-spinner"></div>
+          </div>
           <span>{{ l.s('canteen.issues_loading') }}</span>
         </div>
-      } @else if (issues.length === 0) {
-        <div class="issues-empty">
-          <i-tabler name="bowl-spoon"></i-tabler>
+      }
+
+      <!-- Empty -->
+      @else if (issues.length === 0) {
+        <div class="issues-state issues-state--empty">
+          <div class="issues-state__icon">
+            <i-tabler name="bowl-spoon"></i-tabler>
+          </div>
           <p>{{ l.s('canteen.issues_empty') }}</p>
         </div>
-      } @else {
-        <div class="modern-table">
+      }
 
-          <div class="modern-table__head">
-            <div class="mt-col mt-col--stretch">{{ l.s('canteen.col_name') }}</div>
-            <div class="mt-col mt-col--wide">{{ l.s('canteen.col_meal') }}</div>
-            <div class="mt-col mt-col--center">{{ l.s('canteen.col_variant') }}</div>
-            <div class="mt-col mt-col--center">{{ l.s('canteen.col_status') }}</div>
-            <div class="mt-col mt-col--center">{{ l.s('canteen.col_action') }}</div>
+      <!-- Table -->
+      @else {
+        <div class="issues-table">
+
+          <div class="issues-table__head">
+            <div class="it-col it-col--avatar"></div>
+            <div class="it-col it-col--stretch">{{ l.s('canteen.col_name') }}</div>
+            <div class="it-col it-col--meal">{{ l.s('canteen.col_meal') }}</div>
+            <div class="it-col it-col--center">{{ l.s('canteen.col_variant') }}</div>
+            <div class="it-col it-col--center">{{ l.s('canteen.col_status') }}</div>
+            <div class="it-col it-col--action">{{ l.s('canteen.col_action') }}</div>
           </div>
 
-          @for (order of filteredIssues; track order.order_id) {
-            <div class="modern-table__row" 
-                 [class.row--issued]="order.status === 'issued'" 
-                 [class.row--cancelled]="order.status === 'cancelled'"
-                 [class.row--clickable]="order.status === 'ordered'"
-                 (click)="order.status === 'ordered' ? issueMeal(order) : null">
+          <div class="issues-table__body">
+            @for (order of filteredIssues; track order.order_id) {
+              <div class="issues-row"
+                   [class.issues-row--issued]="order.status === 'issued'"
+                   [class.issues-row--cancelled]="order.status === 'cancelled'"
+                   [class.issues-row--clickable]="order.status === 'ordered'"
+                   (click)="order.status === 'ordered' ? issueMeal(order) : null">
 
-              <!-- Jméno -->
-              <div class="mt-col mt-col--stretch">
-                <div class="issue-person">
-                  <div class="issue-person__avatar">
+                <!-- Avatar -->
+                <div class="it-col it-col--avatar">
+                  <div class="it-avatar"
+                       [class.it-avatar--issued]="order.status === 'issued'"
+                       [class.it-avatar--cancelled]="order.status === 'cancelled'">
                     {{ order.first_name[0] }}{{ order.last_name[0] }}
                   </div>
-                  <span class="issue-person__name">{{ getFullName(order) }}</span>
                 </div>
-              </div>
 
-              <!-- Jídlo -->
-              <div class="mt-col mt-col--wide">
-                <span class="issue-meal-name" [title]="order.meal_name">{{ order.meal_name }}</span>
-              </div>
+                <!-- Jméno -->
+                <div class="it-col it-col--stretch">
+                  <span class="it-name">{{ getFullName(order) }}</span>
+                </div>
 
-              <!-- Varianta -->
-              <div class="mt-col mt-col--center">
-                {{ l.s('canteen.weekly_menu_td') }} {{ order.variant_index }}
-              </div>
+                <!-- Jídlo -->
+                <div class="it-col it-col--meal">
+                  <span class="it-meal" [title]="order.meal_name">{{ order.meal_name }}</span>
+                </div>
 
-              <!-- Stav -->
-              <div class="mt-col mt-col--center">
-                @if (order.status === 'issued') {
-                  <span class="badge badge--success">
-                    <i-tabler name="check"></i-tabler>
-                    {{ l.s('canteen.status_issued') }}
+                <!-- Varianta -->
+                <div class="it-col it-col--center">
+                  <span class="it-variant">
+                    {{ l.s('canteen.weekly_menu_td') }} {{ order.variant_index }}
                   </span>
-                } @else if (order.status === 'cancelled') {
-                  <span class="badge badge--danger">
-                    <i-tabler name="x"></i-tabler>
-                    {{ l.s('canteen.status_cancelled') }}
-                  </span>
-                } @else {
-                  <span class="badge badge--warning">
-                    <i-tabler name="clock"></i-tabler>
-                    {{ l.s('canteen.status_ordered') }}
-                  </span>
-                }
-              </div>
+                </div>
 
-              <!-- Akce -->
-              <div class="mt-col mt-col--center">
-                @if (order.status === 'ordered') {
-                  <button class="btn btn--primary btn--sm" (click)="issueMeal(order)">
-                    <i-tabler name="check"></i-tabler>
-                    {{ l.s('canteen.btn_issue') }}
-                  </button>
-                } @else {
-                  <span class="issue-done-label">—</span>
-                }
-              </div>
+                <!-- Stav -->
+                <div class="it-col it-col--center">
+                  @if (order.status === 'issued') {
+                    <span class="it-status it-status--issued">
+                      <i-tabler name="check"></i-tabler>
+                      {{ l.s('canteen.status_issued') }}
+                    </span>
+                  } @else if (order.status === 'cancelled') {
+                    <span class="it-status it-status--cancelled">
+                      <i-tabler name="x"></i-tabler>
+                      {{ l.s('canteen.status_cancelled') }}
+                    </span>
+                  } @else {
+                    <span class="it-status it-status--ordered">
+                      <i-tabler name="clock"></i-tabler>
+                      {{ l.s('canteen.status_ordered') }}
+                    </span>
+                  }
+                </div>
 
-            </div>
-          }
+                <!-- Akce -->
+                <div class="it-col it-col--action">
+                  @if (order.status === 'ordered') {
+                    <button class="it-issue-btn" (click)="$event.stopPropagation(); issueMeal(order)">
+                      <i-tabler name="checks"></i-tabler>
+                      {{ l.s('canteen.btn_issue') }}
+                    </button>
+                  } @else if (order.status === 'issued') {
+                    <span class="it-done">
+                      <i-tabler name="circle-check-filled"></i-tabler>
+                    </span>
+                  } @else {
+                    <span class="it-dash">—</span>
+                  }
+                </div>
+
+              </div>
+            }
+          </div>
 
         </div>
       }

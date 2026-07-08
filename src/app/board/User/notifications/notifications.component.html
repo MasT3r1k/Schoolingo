@@ -119,8 +119,12 @@
                             @for (field of typeConfig.conditionFields; track field.key) {
                             <div class="form-group">
                                 <label>{{ field.label }}</label>
+                                @if (field.type === 'select') {
+                                <schoolingo-dropdown [options]="field.options" [(ngModel)]="rule.conditions[field.key]"></schoolingo-dropdown>
+                                } @else {
                                 <input [type]="field.type" [(ngModel)]="rule.conditions[field.key]" [min]="field.min"
                                     [max]="field.max" class="form-control">
+                                }
                             </div>
                             }
                             <div class="form-actions">
@@ -128,7 +132,7 @@
                                     <i-tabler name="check"></i-tabler>
                                     Uložit
                                 </button>
-                                <button class="btn btn--small btn--ghost" (click)="editingRuleId = null">
+                                <button class="btn btn--small btn--ghost" (click)="cancelEdit(rule)">
                                     Zrušit
                                 </button>
                             </div>

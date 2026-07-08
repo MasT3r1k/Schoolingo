@@ -409,6 +409,7 @@ export const config: SidebarGroup[] = [
                     item: 'sidebar.canteen.meals',
                     url: 'canteen/meals',
                     icon: 'soup',
+                    permission: ['admin_staff', 'principal']
                 }, {
                     item: 'canteen.payment_history',
                     url: 'canteen/history',

@@ -139,11 +139,16 @@ export class OrdersComponent implements OnInit {
       
       const dayMeals = menuItems.filter((m: any) => moment(m.date).format('YYYY-MM-DD') === dateStr);
       
+      const order = orders.find((o: any) => moment(o.date).format('YYYY-MM-DD') === dateStr);
+
       const options = dayMeals.map((m: any) => {
         // limit_count check
         let available = true;
         if (m.limit_count !== null && m.ordered_count >= m.limit_count) {
-          available = false;
+          // If the user already has this specific meal ordered, it shouldn't appear as sold out for them
+          if (!order || order.menu_id !== m.menu_id) {
+            available = false;
+          }
         }
 
         return {
@@ -168,7 +173,6 @@ export class OrdersComponent implements OnInit {
         options: options
       });
 
-      const order = orders.find((o: any) => moment(o.date).format('YYYY-MM-DD') === dateStr);
       if (order) {
         const selectedOpt = options.find(o => o.id === order.menu_id);
         this.selections[dayCode] = selectedOpt || null;

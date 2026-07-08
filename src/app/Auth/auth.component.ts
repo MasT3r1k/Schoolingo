@@ -6,7 +6,7 @@ import { Locale } from '@Schoolingo/locale';
 import { School } from '@Schoolingo/school';
 import { Theme } from '@Schoolingo/theme';
 import { AuthAlertManager } from '../infrastructure/alert/auth.alert.manager';
-import { BehaviorSubject, interval } from 'rxjs';
+import { BehaviorSubject, interval, timeout, TimeoutError, catchError, throwError } from 'rxjs';
 import { AuthConfig } from '../infrastructure/authentication/config';
 import { HttpClient } from '@angular/common/http';
 import { Authentication } from '@Schoolingo/authentication';
@@ -121,6 +121,15 @@ export class AuthComponent implements OnInit {
         },
         { withCredentials: true }
       )
+      .pipe(
+        timeout(15000),
+        catchError(err => {
+          if (err instanceof TimeoutError) {
+            return throwError(() => new Error('TimeoutError'));
+          }
+          return throwError(() => err);
+        })
+      )
       .subscribe(
         (data) => {
           if ('username' in data) {
@@ -192,7 +201,11 @@ export class AuthComponent implements OnInit {
         },
         (err) => {
           this.isLoggingIn = false;
-          this.a.alert('error', 'auth.errors.429');
+          if (err.message === 'TimeoutError') {
+            this.a.alert('error', 'auth.errors.timeout');
+          } else {
+            this.a.alert('error', 'auth.errors.429');
+          }
         }
       );
   }
@@ -498,7 +511,7 @@ export class AuthComponent implements OnInit {
             const authResponse = await startAuthentication({
               optionsJSON: options,
             });
-            this.http
+              this.http
               .post(
                 Config.ELYSIA_URL + '/verify-authentication',
                 {
@@ -509,22 +522,41 @@ export class AuthComponent implements OnInit {
                   withCredentials: true,
                 }
               )
-              .subscribe((data) => {
-                if ('username' in data) {
-                  this.auth.loadState();
-                  return;
-                }
-                if ('error' in data) {
-                  switch(data.error) {
-                    case "no_credential":
-                      this.a.alert('error', 'auth.passkey.no_account')
-                      break;
-                    default:
-                      this.a.alert('error', 'auth.passkey.error')
-                      break;
+              .pipe(
+                timeout(15000),
+                catchError(err => {
+                  if (err instanceof TimeoutError) {
+                    return throwError(() => new Error('TimeoutError'));
+                  }
+                  return throwError(() => err);
+                })
+              )
+              .subscribe({
+                next: (data) => {
+                  if ('username' in data) {
+                    this.auth.loadState();
+                    return;
+                  }
+                  if ('error' in data) {
+                    switch(data.error) {
+                      case "no_credential":
+                        this.a.alert('error', 'auth.passkey.no_account')
+                        break;
+                      default:
+                        this.a.alert('error', 'auth.passkey.error')
+                        break;
+                    }
+                  }
+                  this.isPasskeyLoading = false;
+                },
+                error: (err) => {
+                  this.isPasskeyLoading = false;
+                  if (err.message === 'TimeoutError') {
+                    this.a.alert('error', 'auth.errors.timeout');
+                  } else {
+                    this.a.alert('error', 'auth.passkey.error');
                   }
                 }
-                this.isPasskeyLoading = false;
               });
           } catch (err: unknown) {
             this.isPasskeyLoading = false;

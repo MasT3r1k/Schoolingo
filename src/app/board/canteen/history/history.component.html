@@ -25,7 +25,7 @@
         <tbody>
           @for (item of history; track item.desc) {
             <tr class="table__row">
-              <td class="table__td">{{ item.date }}</td>
+              <td class="table__td">{{ item.date | date:'shortDate' }}</td>
               <td class="table__td"><strong>{{ item.desc }}</strong></td>
               <td class="table__td">
                 @if (item.type === 'payment') {
@@ -34,7 +34,7 @@
                   <span class="badge badge--success">Refundace</span>
                 }
               </td>
-              <td class="table__td"><span [style.color]="item.amount.startsWith('-') ? '#ef4444' : '#22c55e'"><strong>{{ item.amount }}</strong></span></td>
+              <td class="table__td"><span [style.color]="item.amount < 0 ? '#ef4444' : '#22c55e'"><strong>{{ item.amount | money }}</strong></span></td>
               <td class="table__td">
                 @if (item.status === 'paid') { <span class="badge badge--success">Zaplaceno</span> }
                 @if (item.status === 'refunded') { <span class="badge badge--primary">Vráceno</span> }

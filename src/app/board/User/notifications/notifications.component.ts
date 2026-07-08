@@ -6,6 +6,7 @@ import { Config } from '@Schoolingo/config';
 import { IconsModule } from '@Schoolingo/icons';
 import { Locale } from '@Schoolingo/locale';
 import { Permission } from '@Schoolingo/permission';
+import { DropdownComponent } from '@Components/dropdown/dropdown';
 
 interface NotificationRule {
   rule_id?: number;
@@ -17,7 +18,7 @@ interface NotificationRule {
 @Component({
   standalone: true,
   selector: 'settings-notifications',
-  imports: [CommonModule, FormsModule, IconsModule],
+  imports: [CommonModule, FormsModule, IconsModule, DropdownComponent],
   templateUrl: './notifications.component.html',
   styleUrl: './notifications.component.css'
 })
@@ -31,154 +32,13 @@ export class NotificationsComponent implements OnInit {
   public loading = false;
   public pushEnabled = false;
 
-  // Simple notification types (quick toggles)
-  public simpleTypes = [
-    { 
-      id: 'grade_new', 
-      name: 'Nová známka',
-      icon: 'star',
-      color: '#ffc107',
-      description: 'Upozornění při přidání nové známky',
-      hasConditions: false,
-      conditionFields: [],
-      roles: ['student', 'parent']
-    },
-    { 
-      id: 'homework_new', 
-      name: 'Nový domácí úkol',
-      icon: 'book-2',
-      color: '#7cd67c',
-      description: 'Upozornění při zadání nového úkolu',
-      hasConditions: false,
-      conditionFields: [],
-      roles: ['student', 'parent']
-    },
-    { 
-      id: 'message_new', 
-      name: 'Nová zpráva',
-      icon: 'message',
-      color: '#4aa3ff',
-      description: 'Upozornění při přijetí nové zprávy',
-      hasConditions: false,
-      conditionFields: [],
-      roles: ['all']
-    },
-    { 
-      id: 'absence_new', 
-      name: 'Nová absence',
-      icon: 'calendar-x',
-      color: '#ff9800',
-      description: 'Upozornění při zapsání absence',
-      hasConditions: false,
-      conditionFields: [],
-      roles: ['student', 'parent']
-    },
-    { 
-      id: 'substitution_new', 
-      name: 'Nová suplující hodina',
-      icon: 'refresh',
-      color: '#9c27b0',
-      description: 'Upozornění při změně rozvrhu',
-      hasConditions: false,
-      conditionFields: [],
-      roles: ['all']
-    },
-    { 
-      id: 'reward_new', 
-      name: 'Nová odměna',
-      icon: 'trophy',
-      color: '#f5d142',
-      description: 'Upozornění při obdržení nové odměny',
-      hasConditions: false,
-      conditionFields: [],
-      roles: ['student', 'parent']
-    },
-    { 
-      id: 'leave_reaction', 
-      name: 'Reakce na dovolenou',
-      icon: 'circle-check',
-      color: '#2196f3',
-      description: 'Upozornění na schválení či zamítnutí dovolené',
-      hasConditions: false,
-      conditionFields: [],
-      roles: ['teacher']
-    },
-    { 
-      id: 'leave_request', 
-      name: 'Nová žádost o dovolenou',
-      icon: 'file-plus',
-      color: '#ff5722',
-      description: 'Upozornění na novou žádost o dovolenou od zaměstnance',
-      hasConditions: false,
-      conditionFields: [],
-      roles: ['manager:all', 'management', 'personnel']
-    }
-  ];
-
-  // Advanced notification types (with conditions)
-  public advancedTypes = [
-    { 
-      id: 'advanced_grade_average_above', 
-      name: 'Průměr vyšší než',
-      icon: 'trending-up',
-      color: '#4caf50',
-      hasConditions: true,
-      conditionFields: [
-        { key: 'value', label: 'Hodnota', type: 'number', default: 3, min: 1, max: 5 }
-      ],
-      roles: ['student', 'parent']
-    },
-    { 
-      id: 'advanced_grade_average_below', 
-      name: 'Průměr nižší než',
-      icon: 'trending-down',
-      color: '#ff5757',
-      hasConditions: true,
-      conditionFields: [
-        { key: 'value', label: 'Hodnota', type: 'number', default: 2, min: 1, max: 5 }
-      ],
-      roles: ['student', 'parent']
-    },
-    { 
-      id: 'advanced_absence_count_above', 
-      name: 'Absence vyšší než',
-      icon: 'alert-circle',
-      color: '#ff5757',
-      hasConditions: true,
-      conditionFields: [
-        { key: 'hours', label: 'Počet hodin', type: 'number', default: 10, min: 1 },
-        { key: 'percent', label: 'Absence v %', type: 'number', default: 30, min: 1, max: 100 },
-      ],
-      roles: ['student', 'parent']
-    },
-    { 
-      id: 'advanced_homework_deadline_soon', 
-      name: 'Blížící se termín úkolu',
-      icon: 'clock-exclamation',
-      color: '#ff9800',
-      hasConditions: true,
-      conditionFields: [
-        { key: 'days', label: 'Dny před termínem', type: 'number', default: 1, min: 1, max: 7 }
-      ],
-      roles: ['student', 'parent']
-    },
-    { 
-      id: 'advanced_leave_balance_low', 
-      name: 'Nízký zůstatek dovolené',
-      icon: 'battery-1',
-      color: '#f44336',
-      hasConditions: true,
-      conditionFields: [
-        { key: 'days', label: 'Zůstatek klesne pod (dny)', type: 'number', default: 5, min: 0 }
-      ],
-      roles: ['teacher', 'manager:all', 'management', 'personnel']
-    }
-  ];
+  public simpleTypes: any[] = [];
+  public advancedTypes: any[] = [];
 
   public editingRuleId: number | null | undefined = null;
 
   ngOnInit(): void {
-    this.loadRules();
+    this.loadConfig();
     this.checkPushPermission();
 
     navigator.serviceWorker.ready.then((reg) => {
@@ -190,6 +50,23 @@ export class NotificationsComponent implements OnInit {
     });
 
 
+  }
+
+  private loadConfig(): void {
+    this.loading = true;
+    this.http.get<{ simpleTypes: any[], advancedTypes: any[] }>(
+      `${Config.API_URL}/v1/notifications/config`,
+      { withCredentials: true }
+    ).subscribe({
+      next: (data) => {
+        this.simpleTypes = data.simpleTypes;
+        this.advancedTypes = data.advancedTypes;
+        this.loadRules();
+      },
+      error: () => {
+        this.loading = false;
+      }
+    });
   }
 
   private loadRules(): void {
@@ -228,7 +105,7 @@ export class NotificationsComponent implements OnInit {
   }
 
   public toggleRule(rule: NotificationRule): void {
-    if (!rule.rule_id) return;
+    if (!rule.rule_id || rule.rule_id < 0) return;
 
     rule.enabled = !rule.enabled;
 
@@ -249,19 +126,43 @@ export class NotificationsComponent implements OnInit {
   public updateRule(rule: NotificationRule): void {
     if (!rule.rule_id) return;
 
-    this.http.put(
-      `${Config.API_URL}/v1/notifications/rules/${rule.rule_id}`,
-      { 
-        enabled: rule.enabled,
-        conditions: rule.conditions
-      },
-      { withCredentials: true }
-    ).subscribe({
-      next: () => {
-        console.log('Rule updated');
-        this.editingRuleId = null;
-      }
-    });
+    if (rule.rule_id < 0) {
+      // It's a new rule, POST it
+      this.http.post(
+        `${Config.API_URL}/v1/notifications/rules`,
+        { type: rule.type, conditions: rule.conditions, enabled: rule.enabled },
+        { withCredentials: true }
+      ).subscribe({
+        next: (data: any) => {
+          if (data.rule_id) {
+            rule.rule_id = data.rule_id;
+            this.editingRuleId = null;
+          }
+        }
+      });
+    } else {
+      // Existing rule, PUT it
+      this.http.put(
+        `${Config.API_URL}/v1/notifications/rules/${rule.rule_id}`,
+        { 
+          enabled: rule.enabled,
+          conditions: rule.conditions
+        },
+        { withCredentials: true }
+      ).subscribe({
+        next: () => {
+          console.log('Rule updated');
+          this.editingRuleId = null;
+        }
+      });
+    }
+  }
+
+  public cancelEdit(rule: NotificationRule): void {
+    if (rule.rule_id && rule.rule_id < 0) {
+      this.rules = this.rules.filter(r => r !== rule);
+    }
+    this.editingRuleId = null;
   }
 
   public addRule(type: string): void {
@@ -276,27 +177,30 @@ export class NotificationsComponent implements OnInit {
     }
 
     const newRule: NotificationRule = {
+      rule_id: -Date.now(), // Temporary ID
       type,
       conditions,
       enabled: true
     };
 
-    this.http.post(
-      `${Config.API_URL}/v1/notifications/rules`,
-      newRule,
-      { withCredentials: true }
-    ).subscribe({
-      next: (data: any) => {
-        if (data.rule_id) {
-          newRule.rule_id = data.rule_id;
-          this.rules.push(newRule);
-          
-          if (typeConfig.hasConditions) {
-              this.editingRuleId = newRule.rule_id;
+    if (typeConfig.hasConditions) {
+        this.rules.unshift(newRule);
+        this.editingRuleId = newRule.rule_id;
+    } else {
+        // Simple rules don't need editing, just POST directly
+        this.http.post(
+          `${Config.API_URL}/v1/notifications/rules`,
+          { type: newRule.type, conditions: newRule.conditions, enabled: newRule.enabled },
+          { withCredentials: true }
+        ).subscribe({
+          next: (data: any) => {
+            if (data.rule_id) {
+              newRule.rule_id = data.rule_id;
+              this.rules.push(newRule);
+            }
           }
-        }
-      }
-    });
+        });
+    }
   }
 
   public deleteRule(rule: NotificationRule): void {

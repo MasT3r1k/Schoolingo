@@ -63,7 +63,7 @@
                   </span>
                 </td>
                 @for (day of row.days; track day.date) {
-                  <td class="menu-cell clickable-cell" (click)="openAssignMenu(day.date, row.variant, day.meal_id)">
+                  <td class="menu-cell clickable-cell" (click)="openAssignMenu(day.date, row.variant, day.meal_id, day.limit_count, day.menu_id)">
                     @if (day.meal_id) {
                       <div class="menu-cell__filled">
                         <div class="menu-cell__name" [title]="day.name">
@@ -75,6 +75,11 @@
                           <span class="menu-cell__price">
                             {{ day.price | money }}
                           </span>
+                          @if (day.limit_count !== null && day.ordered_count! >= day.limit_count) {
+                            <span class="badge badge--danger" style="font-size: 0.65rem; padding: 0.1rem 0.4rem; margin-left: 0.2rem;">
+                              Vyprodáno
+                            </span>
+                          }
                         </div>
 
                         <button class="clear-assign-btn" (click)="removeAssignMenu(day.date, row.variant, $event)">

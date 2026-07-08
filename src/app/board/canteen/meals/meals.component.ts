@@ -76,6 +76,8 @@ export class MealsComponent implements OnInit {
       name: string | null; 
       price: string | number | null;
       calories: number | null;
+      limit_count: number | null;
+      ordered_count: number | null;
     }[];
   }[] = [];
 
@@ -236,9 +238,9 @@ export class MealsComponent implements OnInit {
     ];
 
     for (const wd of this.weekDays) {
-      this.menuGrid[0].days.push({ date: wd.date, menu_id: null, meal_id: null, name: null, price: null, calories: null });
-      this.menuGrid[1].days.push({ date: wd.date, menu_id: null, meal_id: null, name: null, price: null, calories: null });
-      this.menuGrid[2].days.push({ date: wd.date, menu_id: null, meal_id: null, name: null, price: null, calories: null });
+      this.menuGrid[0].days.push({ date: wd.date, menu_id: null, meal_id: null, name: null, price: null, calories: null, limit_count: null, ordered_count: null });
+      this.menuGrid[1].days.push({ date: wd.date, menu_id: null, meal_id: null, name: null, price: null, calories: null, limit_count: null, ordered_count: null });
+      this.menuGrid[2].days.push({ date: wd.date, menu_id: null, meal_id: null, name: null, price: null, calories: null, limit_count: null, ordered_count: null });
     }
 
     this.http.get<{ menu: any[] }>(`${Config.API_URL}/v1/canteen/menu?start_date=${this.selectedWeekStart}&end_date=${end_date}`, { withCredentials: true })
@@ -257,6 +259,8 @@ export class MealsComponent implements OnInit {
                   gridDay.name = item.name;
                   gridDay.price = item.price;
                   gridDay.calories = item.calories;
+                  gridDay.limit_count = item.limit_count;
+                  gridDay.ordered_count = item.ordered_count !== undefined ? Number(item.ordered_count) : 0;
                 }
               }
             }
@@ -318,11 +322,13 @@ export class MealsComponent implements OnInit {
   // MENU ASSIGNMENT ACTIONS
   // ═══════════════════════════════════════════════════════════════════════
 
-  openAssignMenu(date: string, variant: number, currentMealId: number | null) {
+  openAssignMenu(date: string, variant: number, currentMealId: number | null, limitCount: number | null = null, menuId: number | null = null) {
     this.modalManager.openModal('canteen-assign-modal', {
       date,
       variant_index: variant,
       meal_id: currentMealId,
+      menu_id: menuId,
+      limit_count: limitCount,
       meals: this.meals,
       refreshCallback: () => this.loadMenu()
     });
