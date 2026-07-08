@@ -1,0 +1,58 @@
+<div class="modal-body">
+
+    <!-- Intro text -->
+    <p class="arm-hint">Vyberte typ pravidla, které chcete přidat. Po přidání si nastavíte detaily.</p>
+
+    <div class="arm-list">
+        @for (type of data?.types; track type.id) {
+        @let isActive = data?.hasRuleOfType(type.id);
+        <button
+            class="arm-item"
+            (click)="addRule(type.id)"
+            [class.arm-item--active]="isActive"
+            [style.--rc]="type.color"
+            [disabled]="isActive">
+
+            <!-- Left color strip -->
+            <div class="arm-item-strip"></div>
+
+            <!-- Icon -->
+            <div class="arm-item-icon" [style.background]="type.color + '18'" [style.color]="type.color">
+                <i-tabler [name]="type.icon"></i-tabler>
+            </div>
+
+            <!-- Content -->
+            <div class="arm-item-body">
+                <div class="arm-item-name">{{ type.name }}</div>
+
+                @if (type.conditionFields?.length > 0) {
+                <div class="arm-item-meta">
+                    <i-tabler name="adjustments-horizontal"></i-tabler>
+                    <span>Nastavitelné parametry:&nbsp;</span>
+                    @for (f of type.conditionFields; track f.key; let last = $last) {
+                    <strong>{{ f.label }}</strong>@if (!last) {<span>,&nbsp;</span>}
+                    }
+                </div>
+                }
+            </div>
+
+            <!-- State pill -->
+            @if (isActive) {
+            <div class="arm-item-state arm-item-state--done">
+                <i-tabler name="check"></i-tabler>
+                <span>Aktivní</span>
+            </div>
+            } @else {
+            <div class="arm-item-state arm-item-state--add">
+                <i-tabler name="plus"></i-tabler>
+                <span>Přidat</span>
+            </div>
+            }
+        </button>
+        }
+    </div>
+
+</div>
+<div class="modal-actions">
+    <button class="btn btn--secondary" (click)="closeModal()">Zavřít</button>
+</div>

@@ -7,6 +7,9 @@ import { IconsModule } from '@Schoolingo/icons';
 import { Locale } from '@Schoolingo/locale';
 import { Permission } from '@Schoolingo/permission';
 import { DropdownComponent } from '@Components/dropdown/dropdown';
+import { CheckboxComponent } from '@Components/Checkbox';
+import { ModalManager } from '@Schoolingo/modal';
+import { AddRuleModalComponent } from './add-rule-modal/add-rule-modal.component';
 
 interface NotificationRule {
   rule_id?: number;
@@ -18,7 +21,7 @@ interface NotificationRule {
 @Component({
   standalone: true,
   selector: 'settings-notifications',
-  imports: [CommonModule, FormsModule, IconsModule, DropdownComponent],
+  imports: [CommonModule, FormsModule, IconsModule, DropdownComponent, CheckboxComponent],
   templateUrl: './notifications.component.html',
   styleUrl: './notifications.component.css'
 })
@@ -26,6 +29,7 @@ export class NotificationsComponent implements OnInit {
   private http = inject(HttpClient);
   public l = inject(Locale);
   public perms = inject(Permission)
+  public modalManager = inject(ModalManager);
   
   public rules: NotificationRule[] = [];
   public notificationApplicationServerKey: ArrayBuffer | null = null; 
@@ -40,6 +44,16 @@ export class NotificationsComponent implements OnInit {
   ngOnInit(): void {
     this.loadConfig();
     this.checkPushPermission();
+
+    this.modalManager.addModal('add-adv-rule', {
+      title: 'notifications.settings.advanced.add',
+      icon: 'settings-automation',
+      width: 600,
+      closeable: true,
+      items: [
+        { type: 'component', component: AddRuleModalComponent }
+      ]
+    });
 
     navigator.serviceWorker.ready.then((reg) => {
       reg.pushManager.getSubscription().then((subscription) => {
@@ -165,6 +179,14 @@ export class NotificationsComponent implements OnInit {
     this.editingRuleId = null;
   }
 
+  public openAddRuleModal(): void {
+    this.modalManager.openModal('add-adv-rule', {
+      types: this.getVisibleAdvancedTypes(),
+      hasRuleOfType: (typeId: string) => this.hasRuleOfType(typeId),
+      onAdd: (typeId: string) => this.addRule(typeId)
+    });
+  }
+
   public addRule(type: string): void {
     const typeConfig = this.getTypeConfig(type);
     if (!typeConfig) return;
@@ -224,10 +246,6 @@ export class NotificationsComponent implements OnInit {
     return this.simpleTypes.some(t => t.id === type);
   }
 
-  public findRuleByType(typeId: string): NotificationRule | undefined {
-    return this.rules.find(r => r.type === typeId);
-  }
-
   public getSimpleTypes(): any[] {
     return this.simpleTypes.filter(t => t.roles.includes('all') || this.perms.checkPermission(t.roles as any));
   }
@@ -239,6 +257,10 @@ export class NotificationsComponent implements OnInit {
   public getAdvancedRules(): NotificationRule[] {
     const visibleTypes = this.getVisibleAdvancedTypes().map(t => t.id);
     return this.rules.filter(r => !this.isSimpleType(r.type) && visibleTypes.includes(r.type));
+  }
+
+  public findRuleByType(typeId: string): NotificationRule | undefined {
+    return this.rules.find(r => r.type === typeId);
   }
 
   public hasRuleOfType(typeId: string): boolean {
