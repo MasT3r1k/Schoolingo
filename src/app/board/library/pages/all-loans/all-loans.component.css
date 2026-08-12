@@ -1,0 +1,361 @@
+/* ========================================
+   All Loans — Body
+   ======================================== */
+.all-loans-body {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    padding: 2rem;
+    animation: fadeInUp 0.3s ease;
+}
+
+/* ========================================
+   Card Header — Search & Filter
+   ======================================== */
+.card-header .flex-items {
+    display: flex;
+    align-items: center;
+    gap: 0.875rem;
+    flex-wrap: wrap;
+}
+
+/* ========================================
+   Search Wrapper
+   ======================================== */
+.search-wrapper {
+    display: flex;
+    align-items: center;
+    position: relative;
+    width: 280px;
+}
+
+.search-wrapper i-tabler {
+    position: absolute;
+    left: 1rem;
+    color: var(--text-muted);
+    width: 1.125rem;
+    height: 1.125rem;
+    pointer-events: none;
+}
+
+.search-wrapper .search-input {
+    width: 100%;
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-full);
+    padding: 0.55rem 1rem 0.55rem 2.75rem;
+    color: var(--text);
+    font-size: 0.875rem;
+    transition: all 0.2s ease;
+}
+
+.search-wrapper .search-input:focus {
+    outline: none;
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(var(--primary-rgb), 0.1);
+    background: var(--background);
+}
+
+/* ========================================
+   Dropdown Wrapper
+   ======================================== */
+.dropdown-wrapper {
+    min-width: 175px;
+}
+
+/* ========================================
+   Summary Row — Stat Cards
+   ======================================== */
+.summary-row {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+}
+
+/* ========================================
+   Alert Banner
+   ======================================== */
+.alert-banner {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 1rem 1.5rem;
+    font-weight: 600;
+    font-size: 0.95rem;
+    animation: slideDown 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    margin-bottom: -1px;
+    z-index: 10;
+    position: relative;
+}
+
+.alert-banner i-tabler {
+    width: 1.25rem;
+    height: 1.25rem;
+}
+
+.alert-banner.success {
+    background: rgba(34, 197, 94, 0.1);
+    color: #22c55e;
+    border-bottom: 1px solid rgba(34, 197, 94, 0.2);
+}
+
+.alert-banner.error {
+    background: rgba(239, 68, 68, 0.1);
+    color: #ef4444;
+    border-bottom: 1px solid rgba(239, 68, 68, 0.2);
+}
+
+/* ========================================
+   Data Table
+   ======================================== */
+.data-table-wrapper {
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    overflow: hidden;
+}
+
+.data-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.data-table thead tr {
+    background: var(--background);
+    border-bottom: 1px solid var(--border);
+}
+
+.data-table th {
+    padding: 0.875rem 1.25rem;
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    text-align: left;
+    white-space: nowrap;
+}
+
+.data-table td {
+    padding: 0.875rem 1.25rem;
+    border-bottom: 1px solid var(--border);
+    vertical-align: middle;
+}
+
+.data-table tbody tr:last-child td {
+    border-bottom: none;
+}
+
+.data-table tbody tr {
+    transition: background 0.15s ease;
+}
+
+.data-table tbody tr:hover {
+    background: var(--surface-3);
+}
+
+.data-table tbody tr.row-overdue {
+    background: rgba(239, 68, 68, 0.04);
+}
+
+.data-table tbody tr.row-overdue:hover {
+    background: rgba(239, 68, 68, 0.08);
+}
+
+/* ========================================
+   Cell Styles
+   ======================================== */
+.cell-primary {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--text);
+    line-height: 1.4;
+}
+
+.cell-secondary {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    margin-top: 0.1rem;
+}
+
+.text-danger {
+    color: #ef4444 !important;
+}
+
+/* ========================================
+   Person Cell
+   ======================================== */
+.cell-person {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.person-avatar {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--primary), rgba(var(--primary-rgb), 0.6));
+    color: #fff;
+    font-size: 0.75rem;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    text-transform: uppercase;
+}
+
+/* ========================================
+   Status Badges
+   ======================================== */
+.status-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.3rem 0.75rem;
+    border-radius: var(--radius-full);
+    font-size: 0.75rem;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+.status-badge i-tabler {
+    width: 14px;
+    height: 14px;
+}
+
+.status-active {
+    background: rgba(251, 146, 60, 0.15);
+    color: #f97316;
+    border: 1px solid rgba(251, 146, 60, 0.3);
+}
+
+.status-overdue {
+    background: rgba(239, 68, 68, 0.15);
+    color: #ef4444;
+    border: 1px solid rgba(239, 68, 68, 0.3);
+}
+
+.status-returned {
+    background: rgba(34, 197, 94, 0.15);
+    color: #22c55e;
+    border: 1px solid rgba(34, 197, 94, 0.3);
+}
+
+/* ========================================
+   Empty Row
+   ======================================== */
+.empty-row {
+    text-align: center;
+    padding: 4rem 2rem !important;
+    color: var(--text-muted);
+}
+
+.empty-row i-tabler {
+    width: 2.5rem;
+    height: 2.5rem;
+    display: block;
+    margin: 0 auto 0.75rem;
+    opacity: 0.4;
+}
+
+.empty-row span {
+    display: block;
+    font-size: 0.95rem;
+}
+
+/* ========================================
+   Table Footer
+   ======================================== */
+.table-footer {
+    padding: 0.875rem 1.25rem;
+    border-top: 1px solid var(--border);
+    background: var(--background);
+    font-size: 0.8rem;
+}
+
+/* ========================================
+   Loading State
+   ======================================== */
+.loading-state {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem;
+    padding: 4rem 2rem;
+    color: var(--text-muted);
+    font-size: 0.95rem;
+}
+
+.loading-state i-tabler {
+    width: 1.5rem;
+    height: 1.5rem;
+}
+
+/* ========================================
+   Notify Button
+   ======================================== */
+.btn--ghost i-tabler {
+    width: 16px;
+    height: 16px;
+}
+
+/* ========================================
+   Animations
+   ======================================== */
+@keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(10px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes slideDown {
+    from { opacity: 0; transform: translateY(-10px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+.spin {
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    100% { transform: rotate(360deg); }
+}
+
+/* ========================================
+   Responsive
+   ======================================== */
+@media (max-width: 1100px) {
+    .summary-row {
+        grid-template-columns: 1fr 1fr 1fr;
+    }
+}
+
+@media (max-width: 768px) {
+    .all-loans-body {
+        padding: 1rem;
+    }
+
+    .summary-row {
+        grid-template-columns: 1fr;
+    }
+
+    .search-wrapper {
+        width: 100%;
+    }
+
+    .card-header .flex-items {
+        flex-direction: column;
+        align-items: stretch;
+        width: 100%;
+    }
+
+    .dropdown-wrapper {
+        width: 100%;
+    }
+
+    .data-table th:nth-child(n+5),
+    .data-table td:nth-child(n+5) {
+        display: none;
+    }
+}

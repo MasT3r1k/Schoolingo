@@ -10,6 +10,7 @@ import { DropdownComponent } from '@Components/dropdown/dropdown';
 import { CheckboxComponent } from '@Components/Checkbox';
 import { ModalManager } from '@Schoolingo/modal';
 import { AddRuleModalComponent } from './add-rule-modal/add-rule-modal.component';
+import { SkeletonComponent } from 'boneyard-js/angular';
 
 interface NotificationRule {
   rule_id?: number;
@@ -21,7 +22,7 @@ interface NotificationRule {
 @Component({
   standalone: true,
   selector: 'settings-notifications',
-  imports: [CommonModule, FormsModule, IconsModule, DropdownComponent, CheckboxComponent],
+  imports: [CommonModule, FormsModule, IconsModule, DropdownComponent, CheckboxComponent, SkeletonComponent],
   templateUrl: './notifications.component.html',
   styleUrl: './notifications.component.css'
 })

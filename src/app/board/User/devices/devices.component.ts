@@ -7,6 +7,7 @@ import { HttpClient } from '@angular/common/http';
 import { Config } from '@Schoolingo/config';
 import { ModalManager } from '@Schoolingo/modal';
 import { RemoveDeviceModalComponent } from './modals/remove-device-modal/remove-device-modal.component';
+import { SkeletonComponent } from 'boneyard-js/angular';
 
 interface DeviceSession {
   device_id: number;
@@ -27,7 +28,7 @@ interface DeviceSession {
 @Component({
   selector: 'app-devices',
   standalone: true,
-  imports: [CommonModule, IconsModule],
+  imports: [CommonModule, IconsModule, SkeletonComponent],
   templateUrl: './devices.component.html',
   styleUrl: './devices.component.css'
 })
@@ -37,6 +38,7 @@ export class DevicesComponent implements OnInit {
   public l = inject(Locale);
   private modalManager = inject(ModalManager);
   public sessions: DeviceSession[] = [];
+  public loading = true;
 
   ngOnInit(): void {
     this.modalManager.addModal('remove-device', {
@@ -60,7 +62,8 @@ export class DevicesComponent implements OnInit {
         icon: Utils.getOSIcon(device.user_agent),
         isMobile: Utils.getMobile(device.user_agent),
         _showIp: false
-      }))
+      }));
+      this.loading = false;
     });
   }
 

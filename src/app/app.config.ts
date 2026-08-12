@@ -38,6 +38,7 @@ import { Cookies } from '@Schoolingo/cookies';
 import { Timetable } from './infrastructure/timetable/timetable';
 import { Payments } from '@Schoolingo/payments';
 import { MoneyPipe } from './pipes/money/money.pipe';
+import { IsbnFormatterDirective } from './directives/isbn-formatter.directive';
 
 export function initAuth(auth: Authentication): () => void {
   return () => auth.loadState(); // např. HTTP požadavek + setAuthState()

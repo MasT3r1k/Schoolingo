@@ -29,7 +29,8 @@ export interface DropdownOption {
 export class DropdownComponent implements OnInit, OnDestroy {
     @Input() options: DropdownOption[] = [];
     @Input() public settings: { locale?: boolean } = { locale: true };
-    @Input() value: any = null;
+    @Input() null_value: any = null;
+    @Input() value: any = this.null_value;
     @Input() placeholder: string = 'buttons.choose';
     @Input() disabled: boolean = false;
     @Input() clearable: boolean = true;
@@ -66,13 +67,18 @@ export class DropdownComponent implements OnInit, OnDestroy {
     ngOnDestroy() {
         window.removeEventListener('scroll', this.updatePosition, true);
         window.removeEventListener('resize', this.updatePosition, true);
+        if (this._rafId) cancelAnimationFrame(this._rafId);
     }
 
+    private _rafId: number | null = null;
+
     updatePosition = () => {
-        if (this.isOpen) {
+        if (!this.isOpen) return;
+        if (this._rafId) cancelAnimationFrame(this._rafId);
+        this._rafId = requestAnimationFrame(() => {
             this.calculatePosition();
             this.cdr.markForCheck();
-        }
+        });
     };
 
     get selectedOption(): DropdownOption | undefined {
@@ -99,13 +105,31 @@ export class DropdownComponent implements OnInit, OnDestroy {
         this.opened.emit(this.isOpen);
 
         if (this.isOpen) {
-            this.calculatePosition();
+            requestAnimationFrame(() => {
+                requestAnimationFrame(() => {
+                    this.calculatePosition();
+                    this.cdr.markForCheck();
+                });
+            });
+            this._repositionAfterOpen();
             setTimeout(() => {
                 this.searchInput?.nativeElement?.focus();
             });
         }
 
         this.cdr.markForCheck();
+    }
+
+    private _repositionAfterOpen(): void {
+        const intervals = [50, 100, 150, 200, 250, 300];
+        intervals.forEach(delay => {
+            setTimeout(() => {
+                if (this.isOpen) {
+                    this.calculatePosition();
+                    this.cdr.markForCheck();
+                }
+            }, delay);
+        });
     }
 
     calculatePosition(): void {
@@ -162,10 +186,10 @@ export class DropdownComponent implements OnInit, OnDestroy {
 
     clearValue(event: Event): void {
         event.stopPropagation();
-        this.value = null;
+        this.value = this.null_value;
         
-        this.valueChange.emit(null);
-        this.onChange(null);
+        this.valueChange.emit(this.null_value);
+        this.onChange(this.null_value);
         this.onTouched();
         
         this.closeDropdown();

@@ -14,10 +14,8 @@ export class IbanFormatterDirective {
     const input = event.target as HTMLInputElement;
     let value = input.value;
 
-    // 1. Block everything except letters and numbers
     let trimmed = value.toUpperCase().replace(/[^A-Z0-9]/g, '');
     
-    // 2. Format to blocks
     let formatted = trimmed.match(/.{1,4}/g)?.join(' ') || trimmed;
 
     if (this.ngControl.control) {

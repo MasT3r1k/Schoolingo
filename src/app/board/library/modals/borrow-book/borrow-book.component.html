@@ -1,0 +1,33 @@
+<div class="modal-body" *ngIf="book()">
+    <div class="form-group">
+        <label class="form-label">Kniha</label>
+        <input type="text" class="form-input" [value]="book()?.title" readonly>
+    </div>
+    
+    <div class="form-group mt-3">
+        <label class="form-label">Autor</label>
+        <input type="text" class="form-input" [value]="book()?.author" readonly>
+    </div>
+
+    <div class="form-group mt-3">
+        <label class="form-label">Kdy si knihu vyzvednete?</label>
+        <input type="date" class="form-input" [ngModel]="borrowDate()" (ngModelChange)="borrowDate.set($event)">
+        <p class="help-text">Knihu vám obsluha knihovny připraví k tomuto datu.</p>
+    </div>
+
+    <div class="form-group mt-3">
+        <label class="form-label">Délka výpůjčky</label>
+        <div class="row-select">
+            @for (option of durationOptions; track $index) {
+            <div class="row-select-item" [class.active]="durationValue.getValue() == $index" (click)="durationValue.next($index)">
+                <p>{{ option }}</p>
+            </div>
+            }
+        </div>
+    </div>
+</div>
+
+<div class="modal-actions">
+    <button class="btn btn--secondary" (click)="closeModal()">Zrušit</button>
+    <button class="btn btn--primary" (click)="confirmBorrow()">Potvrdit výpůjčku</button>
+</div>

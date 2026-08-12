@@ -1,0 +1,214 @@
+/* ---- Stat cards row ---- */
+.stats-row {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+/* ---- Overdue alert strip ---- */
+.alert-strip {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  background: var(--warning-100, #fff8e1);
+  border: 1px solid var(--warning-400, #ffc107);
+  border-left: 4px solid var(--warning-500, #f59e0b);
+  border-radius: 10px;
+  padding: 0.875rem 1.25rem;
+  margin-bottom: 1.75rem;
+  color: var(--warning-800, #7c5c00);
+  font-size: 0.9375rem;
+  animation: slideIn 0.3s ease;
+}
+
+.alert-strip i-tabler {
+  width: 22px;
+  height: 22px;
+  flex-shrink: 0;
+  color: var(--warning-600, #d97706);
+}
+
+/* ---- Section header ---- */
+.section-header {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.75rem;
+}
+
+.section-header h3 {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.section-header i-tabler {
+  width: 20px;
+  height: 20px;
+  color: var(--primary, #5865f2);
+}
+
+/* ---- Top books list ---- */
+.top-books-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.top-books-item {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 0.875rem 1.25rem;
+  transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease;
+}
+
+.top-books-item:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-sm);
+  border-color: var(--primary-300, #a5b4fc);
+}
+
+/* ---- Rank badge ---- */
+.rank {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  font-weight: 800;
+  font-size: 0.875rem;
+  flex-shrink: 0;
+  background: var(--surface-3, #e5e7eb);
+  color: var(--text-muted);
+}
+
+.rank--gold {
+  background: linear-gradient(135deg, #f59e0b, #fbbf24);
+  color: #fff;
+}
+
+.rank--silver {
+  background: linear-gradient(135deg, #9ca3af, #d1d5db);
+  color: #fff;
+}
+
+.rank--bronze {
+  background: linear-gradient(135deg, #b45309, #d97706);
+  color: #fff;
+}
+
+/* ---- Book info ---- */
+.book-info {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-width: 0;
+}
+
+.book-title {
+  font-weight: 600;
+  color: var(--text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.book-author {
+  font-size: 0.8125rem;
+  color: var(--text-muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* ---- Count badge ---- */
+.count-badge {
+  display: flex;
+  align-items: baseline;
+  gap: 0.3rem;
+  font-weight: 800;
+  font-size: 1.125rem;
+  color: var(--primary, #5865f2);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.count-label {
+  font-weight: 400;
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+
+/* ---- Empty state ---- */
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 3rem 1rem;
+  color: var(--text-muted);
+}
+
+.empty-state i-tabler {
+  width: 48px;
+  height: 48px;
+  opacity: 0.4;
+}
+
+.empty-state p {
+  margin: 0;
+  font-size: 0.9375rem;
+}
+
+/* ---- Loading skeleton ---- */
+.dashboard-loading {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.skeleton {
+  border-radius: 10px;
+  background: linear-gradient(90deg, var(--surface-2) 25%, var(--surface-3, #e5e7eb) 50%, var(--surface-2) 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.4s infinite;
+  height: 80px;
+}
+
+.skeleton--wide {
+  width: 100%;
+}
+
+/* ---- Animations ---- */
+@keyframes shimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ---- Responsive ---- */
+@media (max-width: 768px) {
+  .stats-row {
+    grid-template-columns: 1fr;
+  }
+}

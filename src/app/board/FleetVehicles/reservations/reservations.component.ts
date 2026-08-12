@@ -107,74 +107,55 @@ export class FleetVehiclesReservationsComponent implements OnInit {
     this.loading = true;
 
     // Load vehicles for filter
-    this.http.get<Vehicle[]>(
-      `${Config.API_URL}/v1/fleetvehicles/vehicles`,
+    this.http.get<{vehicles: any[]}>(
+      `${Config.API_URL}/v1/fleet/vehicles`,
       { withCredentials: true }
     ).subscribe({
       next: (data) => {
-        this.vehicles = data;
+        this.vehicles = data.vehicles.map(v => ({
+          vehicleId: v.vehicle_id,
+          name: `${v.manufacture} ${v.model}`,
+          licensePlate: v.plate,
+          brand: v.manufacture,
+          model: v.model,
+          year: v.year_manufacture,
+          type: 'car' as const,
+          status: 'available' as const,
+          color: '',
+          fuelType: v.fuel,
+          mileage: v.mileage,
+          capacity: 5
+        }));
       },
       error: () => {
-        this.vehicles = [
-          { vehicleId: 1, name: 'Škoda Octavia', licensePlate: '1AB 2345', brand: 'Škoda', model: 'Octavia', year: 2021, type: 'car', status: 'available' },
-          { vehicleId: 2, name: 'VW Transporter', licensePlate: '2CD 3456', brand: 'VW', model: 'Transporter', year: 2020, type: 'van', status: 'reserved' }
-        ];
+        this.vehicles = [];
       }
     });
 
-    // Load reservations
-    this.http.get<Reservation[]>(
-      `${Config.API_URL}/v1/fleetvehicles/reservations`,
+    // Load reservations (trips)
+    this.http.get<{trips: any[]}>(
+      `${Config.API_URL}/v1/fleet/trips`,
       { withCredentials: true }
     ).subscribe({
       next: (data) => {
-        this.reservations = data;
+        this.reservations = data.trips.map(t => ({
+          reservationId: t.trip_id,
+          vehicleId: t.vehicle_id,
+          vehicleName: t.plate || 'Unknown',
+          vehicleLicensePlate: t.plate || '',
+          userId: t.driver_id,
+          userName: t.driver_id ? 'Driver' : 'Unknown',
+          startDate: new Date(t.start_date),
+          endDate: t.end_date ? new Date(t.end_date) : new Date(t.start_date),
+          purpose: t.purpose,
+          destination: t.end_location || '',
+          status: 'approved' as const
+        }));
         this.filterReservations();
         this.loading = false;
       },
       error: () => {
-        // Mock data
-        this.reservations = [
-          {
-            reservationId: 1,
-            vehicleId: 1,
-            vehicleName: 'Škoda Octavia',
-            vehicleLicensePlate: '1AB 2345',
-            userId: 1,
-            userName: 'Jan Novák',
-            startDate: new Date(Date.now() + 86400000),
-            endDate: new Date(Date.now() + 86400000 * 2),
-            purpose: 'Školení pedagogů',
-            destination: 'Praha',
-            status: 'approved'
-          },
-          {
-            reservationId: 2,
-            vehicleId: 2,
-            vehicleName: 'VW Transporter',
-            vehicleLicensePlate: '2CD 3456',
-            userId: 2,
-            userName: 'Petr Svoboda',
-            startDate: new Date(Date.now() + 86400000 * 3),
-            endDate: new Date(Date.now() + 86400000 * 5),
-            purpose: 'Exkurze žáků',
-            destination: 'Brno',
-            status: 'pending'
-          },
-          {
-            reservationId: 3,
-            vehicleId: 1,
-            vehicleName: 'Škoda Octavia',
-            vehicleLicensePlate: '1AB 2345',
-            userId: 3,
-            userName: 'Marie Dvořáková',
-            startDate: new Date(Date.now() - 86400000 * 5),
-            endDate: new Date(Date.now() - 86400000 * 3),
-            purpose: 'Služební cesta',
-            destination: 'Ostrava',
-            status: 'completed'
-          }
-        ];
+        this.reservations = [];
         this.filterReservations();
         this.loading = false;
       }

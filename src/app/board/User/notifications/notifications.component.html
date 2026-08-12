@@ -7,14 +7,7 @@
     </div>
     <div class="card-body notif-body">
 
-        @if (loading) {
-        <div class="notif-loading">
-            <div class="spinner"></div>
-            <span>Načítání nastavení notifikací…</span>
-        </div>
-        } @else {
-
-        <!-- Push Notifications -->
+        <!-- Push Notifications — always visible -->
         <div class="notif-section">
             <div class="notif-section-head">
                 <div class="notif-section-icon push-icon">
@@ -38,133 +31,150 @@
             </div>
         </div>
 
-        <!-- Simple Notifications -->
-        <div class="notif-section">
-            <div class="notif-section-head">
-                <div class="notif-section-icon">
-                    <i-tabler name="toggle-right"></i-tabler>
-                </div>
-                <div>
-                    <div class="notif-section-title">Základní upozornění</div>
-                    <div class="notif-section-desc">Zapněte nebo vypněte upozornění pro vybrané události</div>
-                </div>
-            </div>
+        <!-- Simple Notifications skeleton -->
+        <boneyard-skeleton
+            name="notif-simple"
+            [loading]="loading"
+            animate="shimmer"
+            [stagger]="true"
+            [transition]="true">
 
-            <div class="notif-rows">
-                @for (type of getSimpleTypes(); track type.id) {
-                @let rule = findRuleByType(type.id);
-                @let isEnabled = rule?.enabled ?? false;
-                <div class="notif-row" [class.notif-row--active]="isEnabled" (click)="toggleSimpleNotification(type.id)">
-                    <div class="notif-row-icon" [style.background]="type.color + '18'" [style.color]="type.color">
-                        <i-tabler [name]="type.icon"></i-tabler>
+            <div class="notif-section">
+                <div class="notif-section-head">
+                    <div class="notif-section-icon">
+                        <i-tabler name="toggle-right"></i-tabler>
                     </div>
-                    <div class="notif-row-text">
-                        <div class="notif-row-name">{{ type.name }}</div>
-                        <div class="notif-row-desc">{{ type.description }}</div>
-                    </div>
-                    <div class="notif-row-check" (click)="$event.stopPropagation()">
-                        <schoolingo-checkbox [checked]="isEnabled" (click)="toggleSimpleNotification(type.id)"></schoolingo-checkbox>
+                    <div>
+                        <div class="notif-section-title">Základní upozornění</div>
+                        <div class="notif-section-desc">Zapněte nebo vypněte upozornění pro vybrané události</div>
                     </div>
                 </div>
-                }
-            </div>
-        </div>
 
-        <!-- Advanced Rules -->
-        <div class="notif-section">
-            <div class="notif-section-head">
-                <div class="notif-section-icon advanced-icon">
-                    <i-tabler name="settings-automation"></i-tabler>
-                </div>
-                <div class="notif-section-info">
-                    <div class="notif-section-title">Pokročilá pravidla</div>
-                    <div class="notif-section-desc">Nastavte podmínky pro specifická upozornění (průměry, absence, …)</div>
-                </div>
-                <button class="btn btn--primary" (click)="openAddRuleModal()">
-                    <i-tabler name="plus"></i-tabler>
-                    Přidat pravidlo
-                </button>
-            </div>
-
-            <!-- Active advanced rules -->
-            @let advancedRules = getAdvancedRules();
-            @if (advancedRules.length > 0) {
-            <div class="adv-rules">
-                @for (rule of advancedRules; track rule.rule_id) {
-                @let typeConfig = getTypeConfig(rule.type)!;
-                @let isEditing = editingRuleId === rule.rule_id;
-                <div class="adv-rule" [class.adv-rule--disabled]="!rule.enabled" [class.adv-rule--editing]="isEditing">
-
-                    <!-- Top row: icon + name + actions -->
-                    <div class="adv-rule-top">
-                        <div class="adv-rule-icon" [style.background]="(typeConfig?.color ?? '#888') + '20'" [style.color]="typeConfig?.color">
-                            <i-tabler [name]="typeConfig?.icon || 'bell'"></i-tabler>
+                <div class="notif-rows">
+                    @for (type of getSimpleTypes(); track type.id) {
+                    @let rule = findRuleByType(type.id);
+                    @let isEnabled = rule?.enabled ?? false;
+                    <div class="notif-row" [class.notif-row--active]="isEnabled" (click)="toggleSimpleNotification(type.id)">
+                        <div class="notif-row-icon" [style.background]="type.color + '18'" [style.color]="type.color">
+                            <i-tabler [name]="type.icon"></i-tabler>
                         </div>
-                        <div class="adv-rule-meta">
-                            <div class="adv-rule-name">{{ typeConfig?.name || rule.type }}</div>
-                            @if (!isEditing && typeConfig.hasConditions && rule.conditions) {
-                            <div class="adv-rule-badges">
-                                @for (field of typeConfig.conditionFields; track field.key) {
-                                <span class="adv-rule-badge" [style.borderColor]="typeConfig?.color + '60'">
-                                    <span class="adv-rule-badge-label">{{ field.label }}</span>
-                                    <strong class="adv-rule-badge-val">{{ rule.conditions[field.key] }}</strong>
-                                </span>
-                                }
-                            </div>
-                            }
+                        <div class="notif-row-text">
+                            <div class="notif-row-name">{{ type.name }}</div>
+                            <div class="notif-row-desc">{{ type.description }}</div>
                         </div>
-                        <div class="adv-rule-actions">
-                            @if (typeConfig.hasConditions && !isEditing) {
-                            <button class="adv-action-btn adv-action-btn--edit" (click)="editingRuleId = rule.rule_id" title="Upravit podmínky">
-                                <i-tabler name="pencil"></i-tabler>
-                                <span>Upravit</span>
-                            </button>
-                            }
-                            <schoolingo-checkbox [checked]="rule.enabled" (click)="toggleRule(rule)"></schoolingo-checkbox>
-                            <button class="adv-action-btn adv-action-btn--delete" (click)="deleteRule(rule)" title="Smazat pravidlo">
-                                <i-tabler name="trash"></i-tabler>
-                            </button>
-                        </div>
-                    </div>
-
-                    <!-- Inline edit form -->
-                    @if (isEditing) {
-                    <div class="adv-rule-form">
-                        <div class="adv-rule-form-fields">
-                            @for (field of typeConfig.conditionFields; track field.key) {
-                            <div class="form-group">
-                                <label class="form-label">{{ field.label }}</label>
-                                @if (field.type === 'select') {
-                                <schoolingo-dropdown [options]="field.options" [(ngModel)]="rule.conditions[field.key]" [settings]="{ locale: false }"></schoolingo-dropdown>
-                                } @else {
-                                <input [type]="field.type" [(ngModel)]="rule.conditions[field.key]" [min]="field.min" [max]="field.max" class="form-input">
-                                }
-                            </div>
-                            }
-                        </div>
-                        <div class="adv-rule-form-actions">
-                            <button class="btn btn--secondary" (click)="cancelEdit(rule)">Zrušit</button>
-                            <button class="btn btn--primary" (click)="updateRule(rule)">
-                                <i-tabler name="check"></i-tabler>
-                                Uložit
-                            </button>
+                        <div class="notif-row-check" (click)="$event.stopPropagation()">
+                            <schoolingo-checkbox [checked]="isEnabled" (click)="toggleSimpleNotification(type.id)"></schoolingo-checkbox>
                         </div>
                     </div>
                     }
                 </div>
+            </div>
+
+        </boneyard-skeleton>
+
+        <!-- Advanced Rules skeleton -->
+        <boneyard-skeleton
+            name="notif-advanced"
+            [loading]="loading"
+            animate="shimmer"
+            [stagger]="true"
+            [transition]="true">
+
+            <div class="notif-section">
+                <div class="notif-section-head">
+                    <div class="notif-section-icon advanced-icon">
+                        <i-tabler name="settings-automation"></i-tabler>
+                    </div>
+                    <div class="notif-section-info">
+                        <div class="notif-section-title">Pokročilá pravidla</div>
+                        <div class="notif-section-desc">Nastavte podmínky pro specifická upozornění (průměry, absence, …)</div>
+                    </div>
+                    <button class="btn btn--primary" (click)="openAddRuleModal()">
+                        <i-tabler name="plus"></i-tabler>
+                        Přidat pravidlo
+                    </button>
+                </div>
+
+                <!-- Active advanced rules -->
+                @let advancedRules = getAdvancedRules();
+                @if (advancedRules.length > 0) {
+                <div class="adv-rules">
+                    @for (rule of advancedRules; track rule.rule_id) {
+                    @let typeConfig = getTypeConfig(rule.type)!;
+                    @let isEditing = editingRuleId === rule.rule_id;
+                    <div class="adv-rule" [class.adv-rule--disabled]="!rule.enabled" [class.adv-rule--editing]="isEditing">
+
+                        <!-- Top row: icon + name + actions -->
+                        <div class="adv-rule-top">
+                            <div class="adv-rule-icon" [style.background]="(typeConfig?.color ?? '#888') + '20'" [style.color]="typeConfig?.color">
+                                <i-tabler [name]="typeConfig?.icon || 'bell'"></i-tabler>
+                            </div>
+                            <div class="adv-rule-meta">
+                                <div class="adv-rule-name">{{ typeConfig?.name || rule.type }}</div>
+                                @if (!isEditing && typeConfig.hasConditions && rule.conditions) {
+                                <div class="adv-rule-badges">
+                                    @for (field of typeConfig.conditionFields; track field.key) {
+                                    <span class="adv-rule-badge" [style.borderColor]="typeConfig?.color + '60'">
+                                        <span class="adv-rule-badge-label">{{ field.label }}</span>
+                                        <strong class="adv-rule-badge-val">{{ rule.conditions[field.key] }}</strong>
+                                    </span>
+                                    }
+                                </div>
+                                }
+                            </div>
+                            <div class="adv-rule-actions">
+                                @if (typeConfig.hasConditions && !isEditing) {
+                                <button class="adv-action-btn adv-action-btn--edit" (click)="editingRuleId = rule.rule_id" title="Upravit podmínky">
+                                    <i-tabler name="pencil"></i-tabler>
+                                    <span>Upravit</span>
+                                </button>
+                                }
+                                <schoolingo-checkbox [checked]="rule.enabled" (click)="toggleRule(rule)"></schoolingo-checkbox>
+                                <button class="adv-action-btn adv-action-btn--delete" (click)="deleteRule(rule)" title="Smazat pravidlo">
+                                    <i-tabler name="trash"></i-tabler>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Inline edit form -->
+                        @if (isEditing) {
+                        <div class="adv-rule-form">
+                            <div class="adv-rule-form-fields">
+                                @for (field of typeConfig.conditionFields; track field.key) {
+                                <div class="form-group">
+                                    <label class="form-label">{{ field.label }}</label>
+                                    @if (field.type === 'select') {
+                                    <schoolingo-dropdown [options]="field.options" [(ngModel)]="rule.conditions[field.key]" [settings]="{ locale: false }"></schoolingo-dropdown>
+                                    } @else {
+                                    <input [type]="field.type" [(ngModel)]="rule.conditions[field.key]" [min]="field.min" [max]="field.max" class="form-input">
+                                    }
+                                </div>
+                                }
+                            </div>
+                            <div class="adv-rule-form-actions">
+                                <button class="btn btn--secondary" (click)="cancelEdit(rule)">Zrušit</button>
+                                <button class="btn btn--primary" (click)="updateRule(rule)">
+                                    <i-tabler name="check"></i-tabler>
+                                    Uložit
+                                </button>
+                            </div>
+                        </div>
+                        }
+                    </div>
+                    }
+                </div>
+                } @else {
+                <div class="adv-empty">
+                    <div class="adv-empty-icon">
+                        <i-tabler name="settings-automation"></i-tabler>
+                    </div>
+                    <div class="adv-empty-text">Žádná pokročilá pravidla</div>
+                    <div class="adv-empty-sub">Klikněte na Přidat pravidlo a nastavte si vlastní upozornění</div>
+                </div>
                 }
             </div>
-            } @else {
-            <div class="adv-empty">
-                <div class="adv-empty-icon">
-                    <i-tabler name="settings-automation"></i-tabler>
-                </div>
-                <div class="adv-empty-text">Žádná pokročilá pravidla</div>
-                <div class="adv-empty-sub">Klikněte na Přidat pravidlo a nastavte si vlastní upozornění</div>
-            </div>
-            }
-        </div>
 
-        }
+        </boneyard-skeleton>
+
     </div>
 </div>

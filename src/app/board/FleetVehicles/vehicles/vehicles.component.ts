@@ -134,7 +134,7 @@ export class FleetVehiclesComponent implements OnInit {
       next: (response) => {
         // Map API response to Vehicle interface
         this.vehicles = response.vehicles.map(v => ({
-          vehicleId: v.vehicleId,
+          vehicleId: v.vehicle_id,
           name: `${v.manufacture} ${v.model}`,
           licensePlate: v.plate,
           brand: v.manufacture,
@@ -152,51 +152,7 @@ export class FleetVehiclesComponent implements OnInit {
       },
       error: () => {
         this.loading = false;
-        // Mock data for development
-        this.vehicles = [
-          {
-            vehicleId: 1,
-            name: 'Škoda Octavia',
-            licensePlate: '1AB 2345',
-            brand: 'Škoda',
-            model: 'Octavia',
-            year: 2021,
-            type: 'car',
-            status: 'available',
-            color: 'Bílá',
-            fuelType: 'diesel',
-            mileage: 45000,
-            capacity: 5
-          },
-          {
-            vehicleId: 2,
-            name: 'VW Transporter',
-            licensePlate: '2CD 3456',
-            brand: 'Volkswagen',
-            model: 'Transporter',
-            year: 2020,
-            type: 'van',
-            status: 'reserved',
-            color: 'Šedá',
-            fuelType: 'diesel',
-            mileage: 78000,
-            capacity: 9
-          },
-          {
-            vehicleId: 3,
-            name: 'Mercedes Sprinter',
-            licensePlate: '3EF 4567',
-            brand: 'Mercedes-Benz',
-            model: 'Sprinter',
-            year: 2019,
-            type: 'minibus',
-            status: 'maintenance',
-            color: 'Modrá',
-            fuelType: 'diesel',
-            mileage: 120000,
-            capacity: 17
-          }
-        ];
+        this.vehicles = [];
         this.filterVehicles();
       }
     });

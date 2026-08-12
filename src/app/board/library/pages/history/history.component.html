@@ -1,0 +1,74 @@
+<div class="card">
+    <div class="card-top"></div>
+    <div class="card-header">
+        <h2>
+            <span>{{ l.s('library.history') }}</span>
+        </h2>
+    </div>
+
+    <div class="card-body">
+        @if (isLoading()) {
+            <div class="loading-state">
+                <div class="loader"></div>
+                <p>{{ l.s('general.loading') }}</p>
+            </div>
+        } @else if (loans().length === 0) {
+            <div class="empty-state">
+                <div class="empty-state__icon">
+                    <i-tabler name="books-off"></i-tabler>
+                </div>
+                <h3 class="empty-state__title">{{ l.s('library.no_history') }}</h3>
+                <p class="empty-state__description">{{ l.s('library.no_history_desc') }}</p>
+            </div>
+        } @else {
+            <div class="history-table-wrapper">
+                <table class="history-table">
+                    <thead>
+                        <tr>
+                            <th>{{ l.s('library.book') }}</th>
+                            <th>{{ l.s('library.borrowed_on') }}</th>
+                            <th>{{ l.s('library.due_date') }}</th>
+                            <th>{{ l.s('library.returned_on') }}</th>
+                            <th>{{ l.s('library.status') }}</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @for (loan of loans(); track loan.loanId) {
+                            <tr class="history-row">
+                                <td class="history-book-cell">
+                                    <div class="history-book-info">
+                                        @if (loan.coverUrl) {
+                                            <img [src]="loan.coverUrl" [alt]="loan.title" class="history-book-cover">
+                                        } @else {
+                                            <div class="history-book-cover history-book-cover--placeholder">
+                                                <i-tabler name="book"></i-tabler>
+                                            </div>
+                                        }
+                                        <div class="history-book-meta">
+                                            <span class="history-book-title">{{ loan.title }}</span>
+                                            <span class="history-book-author">{{ loan.author }}</span>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <span class="table-mono">{{ loan.borrowedDate ? (loan.borrowedDate | date:'d.M.y') : '—' }}</span>
+                                </td>
+                                <td>
+                                    <span class="table-mono">{{ loan.dueDate ? (loan.dueDate | date:'d.M.y') : '—' }}</span>
+                                </td>
+                                <td>
+                                    <span class="table-mono">{{ loan.returnedDate ? (loan.returnedDate | date:'d.M.y') : '—' }}</span>
+                                </td>
+                                <td>
+                                    <span [class]="getStatusBadgeClass(loan)">
+                                        {{ l.s(getStatusKey(loan)) }}
+                                    </span>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+    </div>
+</div>

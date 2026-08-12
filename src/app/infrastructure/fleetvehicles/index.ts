@@ -112,7 +112,7 @@ export class FleetVehicles {
     );
   }
 
-  createTrip(data: { vehicleId: number; purpose: string; start_location: string; end_location: string; distance?: number }): Observable<{ tripId: number; success: boolean }> {
+  createTrip(data: { vehicleId: number; purpose: string; start_location: string; end_location: string; distance?: number; start_date?: string; end_date?: string; }): Observable<{ tripId: number; success: boolean }> {
     return this.http.post<{ tripId: number; success: boolean }>(
       `${Config.API_URL}/v1/fleet/trips`,
       data,

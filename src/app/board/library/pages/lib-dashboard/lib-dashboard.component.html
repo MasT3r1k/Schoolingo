@@ -1,0 +1,93 @@
+<div class="card">
+  <div class="card-top"></div>
+  <div class="card-header">
+    <h2>
+      <i-tabler name="layout-dashboard"></i-tabler>
+      <span>{{ l.s('library.librarian_overview') }}</span>
+    </h2>
+  </div>
+
+  <div class="card-body">
+
+    <!-- Loading skeleton -->
+    @if (isLoading()) {
+      <div class="dashboard-loading">
+        <div class="skeleton skeleton--wide"></div>
+        <div class="skeleton skeleton--wide"></div>
+        <div class="skeleton skeleton--wide"></div>
+      </div>
+    }
+
+    @if (!isLoading()) {
+
+      <!-- Stat Cards Row -->
+      <div class="stats-row">
+        <stat-card
+          type="primary"
+          icon="books"
+          label="library.stats_total_books"
+          [value]="stats().totalBooks">
+        </stat-card>
+
+        <stat-card
+          type="success"
+          icon="clock"
+          label="library.stats_active_loans"
+          [value]="stats().activeLoans">
+        </stat-card>
+
+        <stat-card
+          type="danger"
+          icon="alert-circle"
+          label="library.stats_overdue"
+          [value]="stats().overdueLoans">
+        </stat-card>
+      </div>
+
+      <!-- Overdue Alert Strip -->
+      @if (stats().overdueLoans > 0) {
+        <div class="alert-strip">
+          <i-tabler name="alert-triangle"></i-tabler>
+          <span>
+            <strong>{{ stats().overdueLoans }}</strong>
+            {{ l.s('library.overdue_alert') }}
+          </span>
+        </div>
+      }
+
+      <!-- Top Borrowed Books -->
+      <div class="section-header">
+        <i-tabler name="trophy"></i-tabler>
+        <h3>{{ l.s('library.top_borrowed') }}</h3>
+      </div>
+
+      @if (topBooks().length === 0) {
+        <div class="empty-state">
+          <i-tabler name="books-off"></i-tabler>
+          <p>{{ l.s('library.no_data_yet') }}</p>
+        </div>
+      }
+
+      @if (topBooks().length > 0) {
+        <ol class="top-books-list">
+          @for (book of topBooks(); track book.bookId; let i = $index) {
+            <li class="top-books-item">
+              <span class="rank" [class.rank--gold]="i === 0" [class.rank--silver]="i === 1" [class.rank--bronze]="i === 2">
+                {{ i + 1 }}
+              </span>
+              <div class="book-info">
+                <span class="book-title">{{ book.title }}</span>
+                <span class="book-author">{{ book.author }}</span>
+              </div>
+              <div class="count-badge">
+                {{ book.count }}&times;
+                <span class="count-label">{{ l.s('library.times_borrowed') }}</span>
+              </div>
+            </li>
+          }
+        </ol>
+      }
+
+    }
+  </div>
+</div>

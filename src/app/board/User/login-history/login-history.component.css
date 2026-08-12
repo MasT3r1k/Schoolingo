@@ -1,317 +1,160 @@
 /* ===========================
-   Section Cards
+   Stats Grid
    =========================== */
-.section {
-    background: var(--background-secondary);
-    border-radius: var(--radius);
-    padding: clamp(1rem, 3vw, 1.5rem);
-    margin-bottom: 1.5rem;
-    border: 1px solid var(--border);
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    animation: fadeInUp 0.5s ease;
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.5rem;
 }
 
-.section:hover {
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+@media (max-width: 900px) {
+    .stats-grid {
+        grid-template-columns: 1fr;
+    }
 }
 
-.section-header {
+/* ===========================
+   Filter Section
+   =========================== */
+.filter-controls-custom {
     display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 1rem;
-    margin-bottom: 1.5rem;
-    padding-bottom: 1rem;
-    border-bottom: 2px solid var(--border);
+    align-items: flex-end;
+    gap: 1.5rem;
     flex-wrap: wrap;
+    background: var(--surface-2);
+    padding: 1.25rem;
+    border-radius: 14px;
+    border: 1px solid var(--border);
+    animation: fadeIn 0.3s ease;
 }
 
-.header-content {
+.input-with-icon {
+    position: relative;
     display: flex;
     align-items: center;
-    gap: 1rem;
-    flex: 1;
 }
 
-.header-content > i-tabler {
-    color: var(--primary);
-    width: 2rem;
-    flex-shrink: 0;
-}
-
-.header-content h3 {
-    font-size: clamp(1.125rem, 3vw, 1.375rem);
-    font-weight: 600;
-    color: var(--text);
-    margin: 0 0 0.25rem 0;
-}
-
-.section-content {
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
+.input-with-icon i-tabler {
+    position: absolute;
+    left: 1rem;
+    width: 1.125rem;
+    height: 1.125rem;
+    color: var(--text-muted);
+    pointer-events: none;
 }
 
 /* ===========================
-   Stats Section
+   History List (Inspired by devices)
    =========================== */
-.stats-section {
-    background: linear-gradient(135deg, rgba(var(--primary-rgb), 0.05), rgba(var(--accent-rgb), 0.03));
-}
-
-/* ===========================
-   History Table
-   =========================== */
-.history-table {
+.history-list-wrapper {
     display: flex;
     flex-direction: column;
     border: 1px solid var(--border);
-    border-radius: var(--radius);
+    border-radius: 14px;
     overflow: hidden;
-}
-
-.history-table__head {
-    display: grid;
-    grid-template-columns: 2fr 1.2fr 1.6fr 1.5fr 1.2fr auto;
-    gap: 1rem;
-    padding: 0.625rem 1.25rem;
-    background: var(--surface-2);
-    border-bottom: 1px solid var(--border);
-    font-size: 0.75rem;
-    font-weight: 700;
-    color: var(--text-muted);
-    text-transform: uppercase;
-    letter-spacing: 0.6px;
-    align-items: center;
-}
-
-/* ===========================
-   History Row
-   =========================== */
-.history-row {
-    display: grid;
-    grid-template-columns: 2fr 1.2fr 1.6fr 1.5fr 1.2fr auto;
-    gap: 1rem;
-    padding: 0.875rem 1.25rem;
-    border-bottom: 1px solid var(--border);
     background: var(--background);
-    transition: background 0.2s ease, border-left-color 0.2s ease;
+}
+
+.sessions-list {
+    display: flex;
+    flex-direction: column;
+}
+
+.session-item {
+    display: flex;
     align-items: center;
+    gap: 1.2rem;
+    padding: 1.25rem 1.5rem;
+    border-bottom: 1px solid var(--surface-2);
+    transition: background 0.2s, border-left-color 0.2s;
+    position: relative;
     border-left: 3px solid transparent;
 }
 
-.history-row:last-child {
+.session-item:last-child {
     border-bottom: none;
 }
 
-.history-row:hover {
-    background: var(--hover-bg, rgba(var(--primary-rgb), 0.03));
+.session-item:hover {
+    background: var(--hover-bg);
 }
 
-.history-row.success {
+.session-item.success {
     border-left-color: var(--success);
 }
-
-.history-row.failed {
+.session-item.failed {
     border-left-color: var(--danger);
 }
 
-/* ===========================
-   History Cells
-   =========================== */
-.history-cell {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    font-size: 0.875rem;
-    color: var(--text-secondary);
-    min-width: 0;
-}
-
-.history-cell i-tabler {
-    width: 1rem;
-    height: 1rem;
-    flex-shrink: 0;
-    color: var(--text-muted);
-}
-
-/* Device cell */
-.cell-device {
-    gap: 0.75rem;
-}
-
-.cell-icon {
-    width: 36px;
-    height: 36px;
-    border-radius: var(--radius);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-shrink: 0;
-    transition: transform 0.2s ease;
-}
-
-.cell-icon i-tabler {
-    width: 1.125rem;
-    height: 1.125rem;
-    color: inherit;
-}
-
-.cell-icon.success {
-    background: rgba(34, 197, 94, 0.1);
-    color: #22c55e;
-}
-
-.cell-icon.failed {
-    background: rgba(239, 68, 68, 0.1);
-    color: #ef4444;
-}
-
-.history-row:hover .cell-icon {
-    transform: scale(1.08);
-}
-
-.device-info {
-    display: flex;
-    flex-direction: column;
-    min-width: 0;
-}
-
-.browser {
-    display: flex;
-    align-items: center;
-    gap: 0.375rem;
-    font-weight: 600;
-    color: var(--text);
-    font-size: 0.875rem;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-}
-
-.browser-icon {
-    width: 1rem !important;
-    height: 1rem !important;
-    color: var(--primary) !important;
-}
-
-.os {
-    font-size: 0.775rem;
-    color: var(--text-muted);
-}
-
-/* IP Cell */
-.cell-ip {
-    gap: 0.375rem;
-}
-
-.ip-code {
-    font-family: var(--font-mono, monospace);
-    font-size: 0.8125rem;
-    color: var(--text);
-    letter-spacing: 0.4px;
-    transition: filter 0.3s ease;
-    display: inline-block;
-}
-
-.ip-code.blurred {
-    filter: blur(5px);
-    user-select: none;
-    cursor: pointer;
-}
-
-.ip-toggle {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 26px;
-    height: 26px;
-    border: none;
-    border-radius: var(--radius);
-    background: transparent;
-    color: var(--text-muted);
-    cursor: pointer;
-    transition: background 0.15s, color 0.15s;
-    flex-shrink: 0;
-    padding: 0;
-}
-
-.ip-toggle i-tabler {
-    width: 0.9rem;
-    height: 0.9rem;
-    color: inherit;
-}
-
-.ip-toggle:hover {
-    background: var(--surface-2);
-    color: var(--primary);
-}
-
-/* Time cell */
-.cell-time {
-    white-space: nowrap;
-}
-
-/* Method cell */
-.cell-method i-tabler {
-    color: var(--primary);
-}
-
-/* Actions cell */
-.cell-actions {
-    justify-content: flex-end;
-}
-
-/* ===========================
-   Status Badge
-   =========================== */
-.status-badge {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.375rem;
-    padding: 0.3rem 0.625rem;
-    border-radius: var(--radius-full);
-    font-size: 0.7rem;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    white-space: nowrap;
-}
-
-.status-badge i-tabler {
-    width: 0.8rem;
-    height: 0.8rem;
-}
-
-.status-badge.success {
-    background: rgba(34, 197, 94, 0.12);
-    color: #22c55e;
-}
-
-.status-badge.danger {
-    background: rgba(239, 68, 68, 0.12);
-    color: #ef4444;
-}
-
-/* ===========================
-   Empty State
-   =========================== */
-
-.empty-icon {
-    width: 64px;
-    height: 64px;
+/* Icons */
+.device-category {
+    width: 48px;
+    height: 48px;
     border-radius: 50%;
     background: var(--surface-2);
     display: flex;
     align-items: center;
     justify-content: center;
-    margin-bottom: 1rem;
+    opacity: 0.8;
 }
 
-.empty-icon i-tabler {
-    width: 2rem;
+.device-category.success {
+    background: rgba(34, 197, 94, 0.1);
+    color: #22c55e;
+}
+.device-category.failed {
+    background: rgba(239, 68, 68, 0.1);
+    color: #ef4444;
+}
+
+.device-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    background: var(--surface-2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--icon);
+}
+
+/* Text Info */
+.session-info {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+    min-width: 0;
+}
+
+.device-name {
+    font-weight: 600;
+    color: var(--text);
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+}
+
+/* Meta Data */
+.session-meta {
+    font-size: 0.85rem;
     color: var(--text-muted);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.dot {
+    font-size: 1rem;
+    opacity: 0.5;
+}
+
+.ip.blurred {
+    filter: blur(4px);
+    user-select: none;
+    cursor: pointer;
 }
 
 /* ===========================
@@ -321,11 +164,11 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-top: 1.5rem;
-    padding-top: 1.5rem;
+    padding: 1.25rem 1.5rem;
     border-top: 1px solid var(--border);
     flex-wrap: wrap;
     gap: 1rem;
+    background: var(--surface-2);
 }
 
 .pagination-info {
@@ -376,186 +219,19 @@
     cursor: not-allowed;
 }
 
-/* ===========================
-   Animations
-   =========================== */
-@keyframes fadeInUp {
-    from {
-        opacity: 0;
-        transform: translateY(20px);
-    }
-
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-/* ===========================
-   Filter Section
-   =========================== */
-.filter-section {
-    background: var(--background);
-    display: flex;
-    flex-direction: column;
-    gap: 1.5rem;
-}
-
-.filter-controls-custom {
-    display: flex;
-    align-items: flex-end;
-    gap: 1.5rem;
-    flex-wrap: wrap;
-    animation: fadeIn 0.3s ease;
-}
-
-.filter-group {
-    display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
-    flex: 1;
-    min-width: 200px;
-}
-
-.filter-group label {
-    font-size: 0.75rem;
-    font-weight: 600;
-    color: var(--text-muted);
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-}
-
-.input-with-icon {
-    position: relative;
-    display: flex;
-    align-items: center;
-}
-
-.input-with-icon i-tabler {
-    position: absolute;
-    left: 1rem;
-    width: 1.125rem;
-    height: 1.125rem;
-    color: var(--text-muted);
-    pointer-events: none;
-}
-
-.input-with-icon input {
-    width: 100%;
-    padding: 0.75rem 1rem 0.75rem 2.75rem;
-    background: var(--surface-2);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    color: var(--text);
-    font-size: 0.9375rem;
-    transition: all 0.2s ease;
-}
-
-.input-with-icon input:focus {
-    outline: none;
-    border-color: var(--primary);
-    box-shadow: 0 0 0 3px rgba(var(--primary-rgb), 0.1);
-}
-
-.filter-controls-custom .btn {
-    height: 46px;
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    font-weight: 500;
-}
-
-/* ===========================
-   Keyframes
-   =========================== */
 @keyframes fadeIn {
     from { opacity: 0; }
     to { opacity: 1; }
 }
 
-@keyframes slideUp {
-    from {
-        opacity: 0;
-        transform: translateY(20px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-/* ===========================
-   Responsive
-   =========================== */
-@media (max-width: 1024px) {
-    .history-table__head,
-    .history-row {
-        grid-template-columns: 2fr 1.4fr 1.4fr 1.5fr auto;
-    }
-
-    /* Hide method column on tablet */
-    .history-table__head span:nth-child(2),
-    .cell-method {
-        display: none;
-    }
-}
-
 @media (max-width: 768px) {
-    .history-table__head {
-        display: none;
-    }
-
-    .history-row {
-        grid-template-columns: 1fr;
-        gap: 0.625rem;
-        padding: 1rem;
-        border-left-width: 3px;
-    }
-
-    .history-cell {
+    .session-item {
         flex-wrap: wrap;
     }
-
-    .cell-actions {
-        justify-content: flex-start;
-    }
-
-    .section-header {
-        flex-direction: column;
-        align-items: flex-start;
-    }
-
-    .pagination-section {
-        flex-direction: column;
-        align-items: center;
-    }
-}
-
-@media (max-width: 600px) {
-    .detail-grid {
-        grid-template-columns: 1fr;
-    }
-}
-
-@media (max-width: 480px) {
-    .section {
-        padding: 1rem;
-    }
-}
-
-/* ===========================
-   Dark Mode Enhancements
-   =========================== */
-@media (prefers-color-scheme: dark) {
-    .section {
-        box-shadow: 0 2px 12px rgba(0, 0, 0, 0.3);
-    }
-
-    .section:hover {
-        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
-    }
-
-    .history-row:hover {
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+    
+    .session-info {
+        flex: 1 1 100%;
+        order: 3;
+        margin-top: 0.5rem;
     }
 }

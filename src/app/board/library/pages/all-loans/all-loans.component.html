@@ -1,0 +1,165 @@
+<div class="card">
+    <div class="card-top"></div>
+    <div class="card-header">
+        <h2>
+            <span>{{ l.s('library.all_loans') }}</span>
+        </h2>
+        <div class="flex-items">
+            <div class="search-wrapper">
+                <i-tabler name="search"></i-tabler>
+                <input
+                    type="text"
+                    class="search-input"
+                    [placeholder]="l.s('general.search')"
+                    [ngModel]="searchQuery()"
+                    (ngModelChange)="searchQuery.set($event)"
+                >
+            </div>
+            <div class="dropdown-wrapper">
+                <schoolingo-dropdown
+                    [options]="statusOptions"
+                    [ngModel]="statusFilter()"
+                    (ngModelChange)="statusFilter.set($event)"
+                    [clearable]="false"
+                ></schoolingo-dropdown>
+            </div>
+        </div>
+    </div>
+
+    @if (alertMessage()) {
+    <div class="alert-banner" [class.success]="alertMessage()!.type === 'success'" [class.error]="alertMessage()!.type === 'error'">
+        <i-tabler [name]="alertMessage()!.type === 'success' ? 'check' : 'alert-triangle'"></i-tabler>
+        <span>{{ alertMessage()!.text }}</span>
+    </div>
+    }
+
+    <div class="card-body all-loans-body">
+
+        <!-- Summary stat cards -->
+        <div class="summary-row">
+            <stat-card
+                type="primary"
+                icon="books"
+                label="library.stats_total_books"
+                [value]="totalCount()"
+            ></stat-card>
+            <stat-card
+                type="success"
+                icon="clock"
+                label="library.stats_active_loans"
+                [value]="activeCount()"
+            ></stat-card>
+            <stat-card
+                type="danger"
+                icon="alert-circle"
+                label="library.stats_overdue"
+                [value]="overdueCount()"
+            ></stat-card>
+        </div>
+
+        <!-- Table -->
+        @if (loading()) {
+        <div class="loading-state">
+            <i-tabler name="loader" class="spin"></i-tabler>
+            <span>{{ l.s('general.loading') }}</span>
+        </div>
+        } @else {
+        <div class="data-table-wrapper">
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>{{ l.s('library.book_title') }}</th>
+                        <th>{{ l.s('library.user_name') }}</th>
+                        <th>{{ l.s('library.borrowed_on') }}</th>
+                        <th>{{ l.s('library.due_date') }}</th>
+                        <th>{{ l.s('library.returned_on') }}</th>
+                        <th>{{ l.s('library.status') }}</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @for (loan of filteredLoans(); track loan.loanId) {
+                    <tr [class.row-overdue]="getLoanStatus(loan) === 'overdue'">
+                        <td>
+                            <div class="cell-primary">{{ loan.title }}</div>
+                            <div class="cell-secondary">{{ loan.author }}</div>
+                        </td>
+                        <td>
+                            <div class="cell-person">
+                                <div class="person-avatar">{{ getInitials(loan.userName) }}</div>
+                                <div>
+                                    <div class="cell-primary">{{ loan.userName }}</div>
+                                    @if (loan.userClass) {
+                                    <div class="cell-secondary">{{ loan.userClass }}</div>
+                                    }
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="cell-primary">{{ loan.borrowedDate | date:'d. M. yyyy' }}</div>
+                        </td>
+                        <td>
+                            <div class="cell-primary" [class.text-danger]="getLoanStatus(loan) === 'overdue'">
+                                {{ loan.dueDate | date:'d. M. yyyy' }}
+                            </div>
+                        </td>
+                        <td>
+                            @if (loan.returnedDate) {
+                            <div class="cell-primary">{{ loan.returnedDate | date:'d. M. yyyy' }}</div>
+                            } @else {
+                            <span class="cell-secondary">—</span>
+                            }
+                        </td>
+                        <td>
+                            @if (getLoanStatus(loan) === 'active') {
+                                <span class="status-badge status-active">
+                                    <i-tabler name="clock"></i-tabler>
+                                    {{ l.s('library.status_active') }}
+                                </span>
+                            } @else if (getLoanStatus(loan) === 'overdue') {
+                                <span class="status-badge status-overdue">
+                                    <i-tabler name="clock-exclamation"></i-tabler>
+                                    {{ l.s('library.status_overdue') }}
+                                </span>
+                            } @else {
+                                <span class="status-badge status-returned">
+                                    <i-tabler name="check"></i-tabler>
+                                    {{ l.s('library.status_returned') }}
+                                </span>
+                            }
+                        </td>
+                        <td>
+                            @if (!loan.returnedDate) {
+                            <button
+                                class="btn btn--ghost btn--sm"
+                                (click)="notifyLoan(loan.loanId)"
+                                [disabled]="isNotifying(loan.loanId)"
+                                [title]="l.s('library.notify')"
+                            >
+                                @if (isNotifying(loan.loanId)) {
+                                <i-tabler name="loader" class="spin"></i-tabler>
+                                } @else {
+                                <i-tabler name="bell"></i-tabler>
+                                }
+                                {{ l.s('library.notify') }}
+                            </button>
+                            }
+                        </td>
+                    </tr>
+                    } @empty {
+                    <tr>
+                        <td colspan="7" class="empty-row">
+                            <i-tabler name="books-off"></i-tabler>
+                            <span>{{ l.s('library.no_loans') }}</span>
+                        </td>
+                    </tr>
+                    }
+                </tbody>
+            </table>
+            <div class="table-footer">
+                <span class="muted">{{ l.s('general.total') }}: <strong>{{ filteredLoans().length }}</strong></span>
+            </div>
+        </div>
+        }
+    </div>
+</div>

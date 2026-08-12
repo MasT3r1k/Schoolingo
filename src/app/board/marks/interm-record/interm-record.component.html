@@ -1,50 +1,26 @@
 <div class="card">
     <div class="card-header">
         <h2>{{ l.s("sidebar.marks.marks_record") }}</h2>
-    </div>
-
-    <div class="card-body">
-        <div class="filter-bar">
-            <div class="custom-select" style="min-width: 400px"
-                (click)="$event.stopPropagation();dropdownManager.selected_dropdown = dropdownManager.selected_dropdown == 'interm_record_select_group' ? '' : 'interm_record_select_group'">
-                <div class="selected-value">
-                    <div>
-                        @if (selected_group !== -1) {
-                        <span class="subject-name">{{ groups[selected_group].subject }}</span>
-                        -
-                        <span class="class-name">{{ groups[selected_group].className }}</span>
-                        } @else {
-                        <span class="placeholder">{{ l.s("marks.interm_record.select_group_placeholder") }}</span>
-                        }
-                    </div>
-                    <i-tabler name="chevron-down"></i-tabler>
-                </div>
-                @if (dropdownManager.selected_dropdown == 'interm_record_select_group') {
-                <div class="options-dropdown">
-                    <div class="list">
-                        @for (group of groups; track $index) {
-                        <div class="option" style="text-align: left;"
-                            (click)="$event.stopPropagation();dropdownManager.selected_dropdown = '';selected_group = $index;updateGroup();">
-                            <span class="subject">{{ group.subject }}</span>
-                            -
-                            <span class="class">{{ group.className }}</span>
-                        </div>
-                        }
-                    </div>
-                </div>
-                }
-            </div>
-
-            <div class="header-actions">
-                @if (selected_group !== -1) {
-                <div class="btn btn--secondary" (click)="openMarkingScale()" [title]="l.s('marks.marking_scale')">
+        <div class="flex-items">
+            @if (selected_group !== -1) {
+                <div class="btn btn--sm btn--secondary" (click)="openMarkingScale()" [title]="l.s('marks.marking_scale')">
                     <i-tabler name="table"></i-tabler>
                     <span>{{ l.s('marks.marking_scale') }}</span>
                 </div>
-                }
-            </div>
+            }
+            <schoolingo-dropdown
+                style="min-width: 400px"
+                [null_value]="-1"
+                [options]="dropdown_groups"
+                [(ngModel)]="selected_group"
+                (ngModelChange)="updateGroup()"
+                [settings]="{ locale: false }"
+                placeholder="marks.interm_record.select_group_placeholder">
+            </schoolingo-dropdown>
         </div>
+    </div>
 
+    <div class="card-body">
         @if (selected_group == -1) {
         <div class="no-selection">
             <div class="illustration">

@@ -1,0 +1,1010 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Knihovna — školní systém</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --forest:#1B3A2F;
+    --forest-light:#2C5245;
+    --paper:#EAE3D2;
+    --paper-card:#F6F1E4;
+    --ink:#21241F;
+    --ink-soft:#5B5F55;
+    --gold:#B8862B;
+    --gold-soft:#E8D19C;
+    --brick:#A23E34;
+    --brick-soft:#EFD3CE;
+    --sage:#6E8570;
+    --sage-soft:#DCE3D6;
+    --line:#C9C0A8;
+    --shadow: 0 2px 10px rgba(27,58,47,0.10);
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:var(--paper);
+    color:var(--ink);
+    font-family:'Inter',sans-serif;
+    min-height:100vh;
+  }
+  h1,h2,h3,.display{font-family:'Fraunces',serif;}
+  .mono{font-family:'IBM Plex Mono',monospace;}
+  #app{max-width:1180px;margin:0 auto;padding:20px 20px 60px;}
+  a{color:inherit;}
+  button{font-family:inherit;cursor:pointer;}
+  input,select,textarea{font-family:inherit;}
+
+  /* ---------- Login screen ---------- */
+  .login-wrap{
+    min-height:100vh;display:flex;align-items:center;justify-content:center;
+    background:
+      radial-gradient(circle at 20% 15%, rgba(184,134,43,0.10), transparent 45%),
+      radial-gradient(circle at 85% 80%, rgba(110,133,112,0.15), transparent 50%),
+      var(--paper);
+  }
+  .login-card{
+    background:var(--paper-card);
+    border:1px solid var(--line);
+    border-radius:6px;
+    box-shadow: var(--shadow);
+    padding:40px 44px;
+    max-width:640px;
+    width:92%;
+  }
+  .login-eyebrow{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:11px;letter-spacing:.14em;text-transform:uppercase;
+    color:var(--gold);margin-bottom:10px;
+  }
+  .login-card h1{font-size:34px;margin:0 0 6px;color:var(--forest);font-weight:600;}
+  .login-sub{color:var(--ink-soft);margin-bottom:26px;font-size:14.5px;line-height:1.5;}
+  .role-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:22px;}
+  .role-pick{
+    border:1px solid var(--line);background:#fff;border-radius:5px;
+    padding:14px 14px;text-align:left;transition:.15s;
+  }
+  .role-pick:hover{border-color:var(--forest);background:var(--sage-soft);}
+  .role-pick.active{border-color:var(--forest);background:var(--forest);color:#fff;}
+  .role-pick .rname{font-weight:600;font-size:14.5px;display:block;}
+  .role-pick .rdesc{font-size:12px;opacity:.75;display:block;margin-top:2px;}
+  .user-list{display:flex;flex-direction:column;gap:8px;margin-bottom:8px;}
+  .user-pick{
+    display:flex;align-items:center;justify-content:space-between;
+    border:1px solid var(--line);background:#fff;border-radius:5px;
+    padding:12px 16px;transition:.15s;
+  }
+  .user-pick:hover{border-color:var(--gold);}
+  .user-pick .un{font-weight:600;}
+  .user-pick .um{font-size:12px;color:var(--ink-soft);font-family:'IBM Plex Mono',monospace;}
+  .btn{
+    border:1px solid var(--forest);background:var(--forest);color:#fff;
+    padding:9px 16px;border-radius:4px;font-size:13.5px;font-weight:600;
+    transition:.15s;
+  }
+  .btn:hover{background:var(--forest-light);}
+  .btn-ghost{background:transparent;color:var(--forest);}
+  .btn-ghost:hover{background:var(--sage-soft);}
+  .btn-danger{border-color:var(--brick);background:var(--brick);}
+  .btn-danger:hover{background:#8a332b;}
+  .btn-sm{padding:6px 11px;font-size:12.5px;}
+  .btn:disabled{opacity:.45;cursor:not-allowed;}
+
+  /* ---------- Topbar ---------- */
+  .topbar{
+    display:flex;align-items:center;justify-content:space-between;
+    padding:18px 0 14px;border-bottom:2px solid var(--forest);margin-bottom:6px;
+  }
+  .brand{display:flex;align-items:center;gap:12px;}
+  .brand-mark{
+    width:38px;height:38px;border-radius:4px;background:var(--forest);
+    display:flex;align-items:center;justify-content:center;color:var(--gold-soft);
+    font-family:'Fraunces',serif;font-weight:700;font-size:18px;
+  }
+  .brand h1{font-size:21px;margin:0;color:var(--forest);font-weight:600;}
+  .brand .sub{font-size:11px;color:var(--ink-soft);font-family:'IBM Plex Mono',monospace;letter-spacing:.05em;}
+  .who{display:flex;align-items:center;gap:12px;}
+  .who .whoname{font-size:13.5px;font-weight:600;text-align:right;}
+  .who .whorole{font-size:11px;color:var(--ink-soft);text-align:right;font-family:'IBM Plex Mono',monospace;}
+
+  /* ---------- Tabs ---------- */
+  .tabs{display:flex;gap:4px;margin:18px 0 22px;border-bottom:1px solid var(--line);flex-wrap:wrap;}
+  .tab{
+    padding:10px 18px;border:1px solid var(--line);border-bottom:none;
+    border-radius:6px 6px 0 0;background:#DCD3BB;color:var(--ink-soft);
+    font-size:13.5px;font-weight:600;position:relative;top:1px;
+  }
+  .tab.active{background:var(--paper-card);color:var(--forest);border-color:var(--line);}
+  .tab:hover:not(.active){background:#E5DCC5;}
+
+  /* ---------- Cards / grid ---------- */
+  .toolbar{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:18px;}
+  .toolbar input[type=text], .toolbar select{
+    border:1px solid var(--line);border-radius:4px;padding:9px 12px;font-size:13.5px;background:#fff;
+  }
+  .toolbar input[type=text]{min-width:220px;flex:1;}
+  .card-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:16px;}
+  .book-card{
+    background:var(--paper-card);border:1px solid var(--line);border-radius:6px;
+    padding:16px 16px 14px;position:relative;overflow:hidden;box-shadow:var(--shadow);
+    display:flex;flex-direction:column;min-height:200px;
+  }
+  .book-card .spine{position:absolute;left:0;top:0;bottom:0;width:6px;}
+  .book-genre{
+    font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.08em;text-transform:uppercase;
+    color:var(--sage);margin-bottom:8px;
+  }
+  .book-title{font-family:'Fraunces',serif;font-size:17px;font-weight:600;line-height:1.25;margin-bottom:4px;color:var(--forest);}
+  .book-author{font-size:12.5px;color:var(--ink-soft);margin-bottom:10px;}
+  .book-meta{font-size:11px;color:var(--ink-soft);font-family:'IBM Plex Mono',monospace;margin-bottom:12px;}
+  .stamp{
+    position:absolute;top:14px;right:-6px;transform:rotate(7deg);
+    font-family:'IBM Plex Mono',monospace;font-size:10px;font-weight:700;letter-spacing:.06em;
+    padding:4px 10px;border:2px solid; border-radius:3px; text-transform:uppercase;
+  }
+  .stamp.avail{color:var(--sage);border-color:var(--sage);background:rgba(110,133,112,0.08);}
+  .stamp.none{color:var(--brick);border-color:var(--brick);background:rgba(162,62,52,0.08);}
+  .book-actions{margin-top:auto;display:flex;gap:8px;}
+  .book-desc{font-size:12px;color:var(--ink-soft);line-height:1.45;margin-bottom:10px;}
+
+  /* ---------- Badges ---------- */
+  .badge{
+    display:inline-block;font-family:'IBM Plex Mono',monospace;font-size:10.5px;font-weight:600;
+    padding:3px 9px;border-radius:20px;letter-spacing:.03em;text-transform:uppercase;
+  }
+  .badge-active{background:var(--sage-soft);color:var(--forest);}
+  .badge-overdue{background:var(--brick-soft);color:var(--brick);}
+  .badge-returned{background:#E4E0D2;color:var(--ink-soft);}
+
+  /* ---------- Tables ---------- */
+  table{width:100%;border-collapse:collapse;background:var(--paper-card);border:1px solid var(--line);border-radius:6px;overflow:hidden;}
+  th{
+    text-align:left;font-family:'IBM Plex Mono',monospace;font-size:10.5px;text-transform:uppercase;
+    letter-spacing:.06em;color:var(--ink-soft);background:#E3DCC7;padding:10px 14px;font-weight:600;
+  }
+  td{padding:11px 14px;font-size:13.5px;border-top:1px solid var(--line);vertical-align:middle;}
+  tr:hover td{background:rgba(184,134,43,0.05);}
+  .table-wrap{overflow-x:auto;border-radius:6px;}
+
+  /* ---------- Alerts / panels ---------- */
+  .alert{
+    border-radius:5px;padding:13px 16px;font-size:13.5px;margin-bottom:16px;border:1px solid;
+    display:flex;align-items:center;gap:10px;
+  }
+  .alert-warn{background:var(--brick-soft);border-color:var(--brick);color:#6f2a23;}
+  .alert-info{background:var(--sage-soft);border-color:var(--sage);color:var(--forest);}
+  .empty{
+    text-align:center;padding:50px 20px;color:var(--ink-soft);border:1px dashed var(--line);border-radius:6px;
+  }
+  .empty .display{font-size:20px;color:var(--forest);margin-bottom:6px;}
+
+  .panel{background:var(--paper-card);border:1px solid var(--line);border-radius:6px;padding:20px;box-shadow:var(--shadow);}
+  .stat-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:14px;margin-bottom:24px;}
+  .stat{background:var(--paper-card);border:1px solid var(--line);border-radius:6px;padding:16px 18px;box-shadow:var(--shadow);}
+  .stat .num{font-family:'Fraunces',serif;font-size:30px;font-weight:600;color:var(--forest);line-height:1;}
+  .stat .num.warn{color:var(--brick);}
+  .stat .lbl{font-size:11.5px;color:var(--ink-soft);margin-top:6px;font-family:'IBM Plex Mono',monospace;text-transform:uppercase;letter-spacing:.05em;}
+
+  section.block{margin-bottom:30px;}
+  section.block h2{font-size:18px;color:var(--forest);margin:0 0 14px;font-weight:600;}
+
+  /* ---------- Modal ---------- */
+  .overlay{
+    position:fixed;inset:0;background:rgba(33,36,31,0.55);display:flex;align-items:center;justify-content:center;
+    padding:20px;z-index:50;
+  }
+  .modal{
+    background:var(--paper-card);border-radius:8px;padding:28px;max-width:520px;width:100%;
+    max-height:88vh;overflow-y:auto;box-shadow:0 10px 40px rgba(0,0,0,0.3);
+  }
+  .modal h3{margin:0 0 18px;color:var(--forest);font-size:19px;}
+  .field{margin-bottom:14px;}
+  .field label{display:block;font-size:12px;font-weight:600;color:var(--ink-soft);margin-bottom:5px;text-transform:uppercase;letter-spacing:.03em;}
+  .field input, .field select, .field textarea{
+    width:100%;border:1px solid var(--line);border-radius:4px;padding:9px 11px;font-size:13.5px;background:#fff;
+  }
+  .field textarea{resize:vertical;min-height:60px;}
+  .field-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+  .modal-actions{display:flex;justify-content:flex-end;gap:10px;margin-top:20px;}
+  .check-list{display:flex;flex-direction:column;gap:6px;max-height:140px;overflow-y:auto;border:1px solid var(--line);border-radius:4px;padding:8px 11px;background:#fff;}
+  .check-list label{display:flex;align-items:center;gap:8px;font-size:13px;font-weight:400;text-transform:none;}
+
+  .small-link{background:none;border:none;color:var(--forest);text-decoration:underline;font-size:12.5px;padding:0;}
+  .switch-role{background:none;border:1px solid var(--line);border-radius:4px;padding:6px 10px;font-size:12px;color:var(--ink-soft);}
+  .switch-role:hover{border-color:var(--forest);color:var(--forest);}
+
+  @media(max-width:640px){
+    .field-row{grid-template-columns:1fr;}
+    .role-grid{grid-template-columns:1fr;}
+    .topbar{flex-direction:column;align-items:flex-start;gap:10px;}
+    .who{align-self:flex-end;}
+  }
+</style>
+</head>
+<body>
+<div id="app"></div>
+
+<script>
+/* ============================================================
+   ŠKOLNÍ KNIHOVNA — datový model a logika
+   ============================================================ */
+
+const STORAGE_KEY = 'library-db-v1';
+const ROLE_LABEL = {student:'Žák', parent:'Rodič', teacher:'Učitel', admin:'Správce'};
+const ROLE_DESC = {
+  student:'Půjčování knih, moje výpůjčky',
+  parent:'Přehled výpůjček dítěte',
+  teacher:'Katalog, správa knih, třída',
+  admin:'Plná správa knihovny'
+};
+const STUDENT_LIMIT = 3;
+const TEACHER_LIMIT = 6;
+const LOAN_DAYS = 21;
+
+let DB = null;
+let state = {
+  currentUserId: null,
+  tab: null,
+  search: '',
+  genreFilter: 'Vše',
+  onlyAvailable: false,
+  selectedChildId: null,
+  modal: null // {type:'book'|'user', mode:'add'|'edit', data:{...}}
+};
+
+function todayISO(){ return new Date().toISOString().slice(0,10); }
+function addDaysISO(dateISO, days){
+  const d = new Date(dateISO); d.setDate(d.getDate()+days);
+  return d.toISOString().slice(0,10);
+}
+function fmtDate(iso){
+  if(!iso) return '—';
+  const [y,m,d] = iso.split('-');
+  return `${d}.${m}.${y}`;
+}
+function uid(prefix){ return prefix + Math.random().toString(36).slice(2,9); }
+
+/* ---------- Seed data ---------- */
+function seedDB(){
+  const t = todayISO();
+  const books = [
+    {id:'b1', title:'Babička', author:'Božena Němcová', genre:'Próza', year:1855, isbn:'978-80-000-0001-1', shelf:'A-12', copies:3, desc:'Klasický obraz venkovského života z pera Boženy Němcové.'},
+    {id:'b2', title:'Kytice', author:'Karel Jaromír Erben', genre:'Poezie', year:1853, isbn:'978-80-000-0002-2', shelf:'A-14', copies:4, desc:'Sbírka baladických básní inspirovaných lidovou slovesností.'},
+    {id:'b3', title:'Malý princ', author:'Antoine de Saint-Exupéry', genre:'Próza', year:1943, isbn:'978-80-000-0003-3', shelf:'B-03', copies:5, desc:'Pohádkový příběh o přátelství, lásce a smyslu života.'},
+    {id:'b4', title:'Harry Potter a Kámen mudrců', author:'J. K. Rowlingová', genre:'Fantasy', year:1997, isbn:'978-80-000-0004-4', shelf:'C-01', copies:6, desc:'První díl kouzelnického dobrodružství Harryho Pottera.'},
+    {id:'b5', title:'Deník malého poseroutky', author:'Jeff Kinney', genre:'Humor', year:2007, isbn:'978-80-000-0005-5', shelf:'C-08', copies:4, desc:'Vtipný deník školáka Grega Heffleyho.'},
+    {id:'b6', title:'Bílá nemoc', author:'Karel Čapek', genre:'Drama', year:1937, isbn:'978-80-000-0006-6', shelf:'A-20', copies:2, desc:'Divadelní hra o epidemii a moci.'},
+    {id:'b7', title:'Krakatit', author:'Karel Čapek', genre:'Sci-fi', year:1924, isbn:'978-80-000-0007-7', shelf:'A-21', copies:2, desc:'Vědeckofantastický román o objevu ničivé výbušniny.'},
+    {id:'b8', title:'Pán prstenů: Společenstvo Prstenu', author:'J. R. R. Tolkien', genre:'Fantasy', year:1954, isbn:'978-80-000-0008-8', shelf:'C-02', copies:3, desc:'První díl epické fantasy ságy o Středozemi.'},
+    {id:'b9', title:'Saturnin', author:'Zdeněk Jirotka', genre:'Humor', year:1942, isbn:'978-80-000-0009-9', shelf:'A-25', copies:3, desc:'Humoristický román o mazaném sluhovi Saturninovi.'},
+    {id:'b10', title:'Robinson Crusoe', author:'Daniel Defoe', genre:'Dobrodružné', year:1719, isbn:'978-80-000-0010-1', shelf:'B-11', copies:2, desc:'Příběh trosečníka na opuštěném ostrově.'},
+    {id:'b11', title:'Anna Karenina', author:'Lev Nikolajevič Tolstoj', genre:'Próza', year:1877, isbn:'978-80-000-0011-2', shelf:'A-30', copies:1, desc:'Rozsáhlý román o lásce a společnosti carského Ruska.'},
+    {id:'b12', title:'Osudy dobrého vojáka Švejka', author:'Jaroslav Hašek', genre:'Humor', year:1923, isbn:'978-80-000-0012-3', shelf:'A-27', copies:2, desc:'Satirický román z prostředí první světové války.'},
+    {id:'b13', title:'Chemie pro 8. ročník', author:'kolektiv autorů', genre:'Učebnice', year:2019, isbn:'978-80-000-0013-4', shelf:'D-05', copies:10, desc:'Školní učebnice chemie pro druhý stupeň ZŠ.'},
+    {id:'b14', title:'Dějiny udatného českého národa', author:'Lucie Seifertová', genre:'Naučná', year:2015, isbn:'978-80-000-0014-5', shelf:'D-09', copies:3, desc:'Humorně pojaté dějiny českého národa pro mladé čtenáře.'}
+  ];
+
+  const users = [
+    {id:'s1', name:'Jana Nováková', role:'student', class:'6.A'},
+    {id:'s2', name:'Petr Dvořák', role:'student', class:'6.A'},
+    {id:'s3', name:'Eliška Svobodová', role:'student', class:'8.B'},
+    {id:'s4', name:'Tomáš Malý', role:'student', class:'8.B'},
+    {id:'p1', name:'Marie Nováková', role:'parent', children:['s1']},
+    {id:'p2', name:'Jiří Svoboda', role:'parent', children:['s2','s3']},
+    {id:'t1', name:'Mgr. Alena Černá', role:'teacher', class:'6.A'},
+    {id:'t2', name:'Mgr. Pavel Horák', role:'teacher', class:'8.B'},
+    {id:'a1', name:'Ing. Lucie Bílá', role:'admin'}
+  ];
+
+  const loans = [
+    {id:'l1', bookId:'b4', userId:'s1', borrowedDate:addDaysISO(t,-5), dueDate:addDaysISO(t,16), returnedDate:null},
+    {id:'l2', bookId:'b3', userId:'s1', borrowedDate:addDaysISO(t,-30), dueDate:addDaysISO(t,-9), returnedDate:addDaysISO(t,-10)},
+    {id:'l3', bookId:'b2', userId:'s2', borrowedDate:addDaysISO(t,-25), dueDate:addDaysISO(t,-4), returnedDate:null},
+    {id:'l4', bookId:'b8', userId:'s3', borrowedDate:addDaysISO(t,-2), dueDate:addDaysISO(t,19), returnedDate:null},
+    {id:'l5', bookId:'b7', userId:'t1', borrowedDate:addDaysISO(t,-10), dueDate:addDaysISO(t,11), returnedDate:null},
+    {id:'l6', bookId:'b5', userId:'s4', borrowedDate:addDaysISO(t,-40), dueDate:addDaysISO(t,-19), returnedDate:addDaysISO(t,-15)},
+    {id:'l7', bookId:'b9', userId:'s2', borrowedDate:addDaysISO(t,-60), dueDate:addDaysISO(t,-39), returnedDate:addDaysISO(t,-45)}
+  ];
+
+  return {books, users, loans};
+}
+
+/* ---------- Storage ---------- */
+async function loadDB(){
+  try{
+    const res = await window.storage.get(STORAGE_KEY, true);
+    if(res && res.value){
+      DB = JSON.parse(res.value);
+      return;
+    }
+  }catch(e){ /* not found */ }
+  DB = seedDB();
+  await saveDB();
+}
+async function saveDB(){
+  try{
+    await window.storage.set(STORAGE_KEY, JSON.stringify(DB), true);
+  }catch(e){ console.error('Uložení selhalo', e); }
+}
+async function loadCurrentUser(){
+  try{
+    const res = await window.storage.get('current-user-id', false);
+    if(res && res.value) state.currentUserId = res.value;
+  }catch(e){}
+}
+async function saveCurrentUser(id){
+  try{ await window.storage.set('current-user-id', id, false); }catch(e){}
+}
+async function clearCurrentUser(){
+  try{ await window.storage.delete('current-user-id', false); }catch(e){}
+}
+
+/* ---------- Derived data helpers ---------- */
+function getUser(id){ return DB.users.find(u=>u.id===id); }
+function getBook(id){ return DB.books.find(b=>b.id===id); }
+function activeLoansForBook(bookId){ return DB.loans.filter(l=>l.bookId===bookId && !l.returnedDate); }
+function availableCopies(book){ return book.copies - activeLoansForBook(book.id).length; }
+function loanStatus(loan){
+  if(loan.returnedDate) return 'returned';
+  if(loan.dueDate < todayISO()) return 'overdue';
+  return 'active';
+}
+function statusBadge(loan){
+  const s = loanStatus(loan);
+  if(s==='overdue') return '<span class="badge badge-overdue">Po termínu</span>';
+  if(s==='returned') return '<span class="badge badge-returned">Vráceno</span>';
+  return '<span class="badge badge-active">Aktivní</span>';
+}
+function loansForUser(userId){
+  return DB.loans.filter(l=>l.userId===userId).sort((a,b)=> b.borrowedDate.localeCompare(a.borrowedDate));
+}
+function activeLoansForUser(userId){ return loansForUser(userId).filter(l=>!l.returnedDate); }
+function studentsInClass(className){ return DB.users.filter(u=>u.role==='student' && u.class===className); }
+function genresList(){ return ['Vše', ...Array.from(new Set(DB.books.map(b=>b.genre))).sort()]; }
+
+/* ---------- Actions ---------- */
+async function borrowBook(userId, bookId){
+  const book = getBook(bookId);
+  const user = getUser(userId);
+  if(availableCopies(book) <= 0){ alert('Kniha momentálně není k dispozici.'); return; }
+  if(DB.loans.some(l=>l.userId===userId && l.bookId===bookId && !l.returnedDate)){
+    alert('Tuto knihu už máte půjčenou.'); return;
+  }
+  const limit = user.role==='teacher' ? TEACHER_LIMIT : STUDENT_LIMIT;
+  if(activeLoansForUser(userId).length >= limit){
+    alert(`Dosáhli jste limitu ${limit} současně půjčených knih.`); return;
+  }
+  const t = todayISO();
+  DB.loans.push({id:uid('l'), bookId, userId, borrowedDate:t, dueDate:addDaysISO(t,LOAN_DAYS), returnedDate:null});
+  await saveDB();
+  render();
+}
+async function returnLoan(loanId){
+  const loan = DB.loans.find(l=>l.id===loanId);
+  if(!loan) return;
+  loan.returnedDate = todayISO();
+  await saveDB();
+  render();
+}
+async function deleteLoan(loanId){
+  if(!confirm('Opravdu smazat tento záznam o výpůjčce?')) return;
+  DB.loans = DB.loans.filter(l=>l.id!==loanId);
+  await saveDB();
+  render();
+}
+async function deleteBook(bookId){
+  if(activeLoansForBook(bookId).length>0){
+    alert('Knihu nelze smazat, dokud je aktivně půjčena.'); return;
+  }
+  if(!confirm('Opravdu smazat tuto knihu z katalogu?')) return;
+  DB.books = DB.books.filter(b=>b.id!==bookId);
+  await saveDB();
+  render();
+}
+async function deleteUser(userId){
+  if(activeLoansForUser(userId).length>0){
+    alert('Uživatele nelze smazat, dokud má aktivní výpůjčky.'); return;
+  }
+  if(!confirm('Opravdu smazat tohoto uživatele?')) return;
+  DB.users = DB.users.filter(u=>u.id!==userId);
+  DB.users.forEach(u=>{ if(u.children) u.children = u.children.filter(c=>c!==userId); });
+  await saveDB();
+  render();
+}
+
+/* ============================================================
+   RENDER
+   ============================================================ */
+function el(html){ const d=document.createElement('div'); d.innerHTML=html; return d.firstElementChild; }
+
+function render(){
+  const app = document.getElementById('app');
+  if(!state.currentUserId){
+    app.className='';
+    document.body.style.display='block';
+    app.innerHTML = renderLogin();
+    return;
+  }
+  const user = getUser(state.currentUserId);
+  if(!user){ state.currentUserId=null; render(); return; }
+  if(!state.tab) state.tab = defaultTab(user.role);
+  app.innerHTML = renderTopbar(user) + renderTabs(user) + '<div id="tabcontent">' + renderTabContent(user) + '</div>' + renderModal();
+}
+
+function defaultTab(role){
+  return {student:'catalog', parent:'overview', teacher:'catalog', admin:'dashboard'}[role];
+}
+
+/* ---------- Login screen ---------- */
+let loginRole = 'student';
+function renderLogin(){
+  const roles = ['student','parent','teacher','admin'];
+  const roleGrid = roles.map(r=>`
+    <button class="role-pick ${r===loginRole?'active':''}" onclick="loginRole='${r}'; render();">
+      <span class="rname">${ROLE_LABEL[r]}</span>
+      <span class="rdesc">${ROLE_DESC[r]}</span>
+    </button>`).join('');
+  const users = DB.users.filter(u=>u.role===loginRole);
+  const userList = users.map(u=>{
+    const meta = u.role==='student'||u.role==='teacher' ? u.class : (u.role==='parent' ? (u.children||[]).map(c=>getUser(c)?.name).join(', ') : 'Administrátor systému');
+    return `<div class="user-pick">
+      <div><div class="un">${u.name}</div><div class="um">${meta||''}</div></div>
+      <button class="btn btn-sm" onclick="selectUser('${u.id}')">Přihlásit se</button>
+    </div>`;
+  }).join('');
+
+  return `
+  <div class="login-wrap">
+    <div class="login-card">
+      <div class="login-eyebrow">Školní systém · Modul Knihovna</div>
+      <h1>Vítejte v knihovně</h1>
+      <div class="login-sub">Vyberte svou roli a poté se přihlaste jako konkrétní osoba. (Demonstrační přihlášení bez hesla.)</div>
+      <div class="role-grid">${roleGrid}</div>
+      <div class="user-list">${userList || '<div class="empty">Žádní uživatelé v této roli.</div>'}</div>
+    </div>
+  </div>`;
+}
+async function selectUser(id){
+  state.currentUserId = id;
+  state.tab = defaultTab(getUser(id).role);
+  await saveCurrentUser(id);
+  render();
+}
+async function logout(){
+  state.currentUserId = null;
+  state.tab = null;
+  await clearCurrentUser();
+  render();
+}
+
+/* ---------- Topbar & tabs ---------- */
+function renderTopbar(user){
+  return `
+  <div class="topbar">
+    <div class="brand">
+      <div class="brand-mark">K</div>
+      <div>
+        <h1>Knihovna</h1>
+        <div class="sub">ŠKOLNÍ SYSTÉM · MODUL KNIHOVNA</div>
+      </div>
+    </div>
+    <div class="who">
+      <div>
+        <div class="whoname">${user.name}</div>
+        <div class="whorole">${ROLE_LABEL[user.role]}${user.class? ' · '+user.class : ''}</div>
+      </div>
+      <button class="switch-role" onclick="logout()">Přepnout uživatele</button>
+    </div>
+  </div>`;
+}
+
+function tabsFor(role){
+  if(role==='student') return [['catalog','Katalog'],['myloans','Moje výpůjčky'],['history','Historie']];
+  if(role==='parent') return [['overview','Přehled dítěte'],['history','Historie']];
+  if(role==='teacher') return [['catalog','Katalog'],['myloans','Moje výpůjčky'],['classroom','Třída'],['manage','Správa knih']];
+  if(role==='admin') return [['dashboard','Nástěnka'],['manage','Knihy'],['users','Uživatelé'],['loans','Všechny výpůjčky']];
+  return [];
+}
+function renderTabs(user){
+  const tabs = tabsFor(user.role);
+  return `<div class="tabs">${tabs.map(([key,label])=>
+    `<button class="tab ${state.tab===key?'active':''}" onclick="setTab('${key}')">${label}</button>`
+  ).join('')}</div>`;
+}
+function setTab(key){ state.tab = key; state.modal=null; render(); }
+
+function renderTabContent(user){
+  if(user.role==='student'){
+    if(state.tab==='catalog') return renderCatalog(user, {canBorrow:true});
+    if(state.tab==='myloans') return renderMyLoans(user);
+    if(state.tab==='history') return renderHistory(user);
+  }
+  if(user.role==='parent'){
+    if(state.tab==='overview') return renderParentOverview(user);
+    if(state.tab==='history') return renderParentHistory(user);
+  }
+  if(user.role==='teacher'){
+    if(state.tab==='catalog') return renderCatalog(user, {canBorrow:true});
+    if(state.tab==='myloans') return renderMyLoans(user);
+    if(state.tab==='classroom') return renderClassroom(user);
+    if(state.tab==='manage') return renderManageBooks(user);
+  }
+  if(user.role==='admin'){
+    if(state.tab==='dashboard') return renderDashboard(user);
+    if(state.tab==='manage') return renderManageBooks(user);
+    if(state.tab==='users') return renderManageUsers(user);
+    if(state.tab==='loans') return renderAllLoans(user);
+  }
+  return '<div class="empty">Obsah nenalezen.</div>';
+}
+
+/* ---------- Catalog (student/teacher) ---------- */
+function renderCatalog(user, {canBorrow}){
+  const genres = genresList();
+  let books = DB.books.filter(b=>{
+    const matchesSearch = !state.search || (b.title+b.author).toLowerCase().includes(state.search.toLowerCase());
+    const matchesGenre = state.genreFilter==='Vše' || b.genre===state.genreFilter;
+    const matchesAvail = !state.onlyAvailable || availableCopies(b) > 0;
+    return matchesSearch && matchesGenre && matchesAvail;
+  }).sort((a,b)=>a.title.localeCompare(b.title));
+
+  const limit = user.role==='teacher' ? TEACHER_LIMIT : STUDENT_LIMIT;
+  const activeCount = activeLoansForUser(user.id).length;
+
+  const cards = books.map(b=>{
+    const avail = availableCopies(b);
+    const already = DB.loans.some(l=>l.userId===user.id && l.bookId===b.id && !l.returnedDate);
+    const canTake = canBorrow && avail>0 && !already && activeCount<limit;
+    let btnLabel = 'Půjčit si';
+    if(already) btnLabel = 'Již půjčeno';
+    else if(avail<=0) btnLabel='Nedostupné';
+    else if(activeCount>=limit) btnLabel='Limit dosažen';
+    return `
+    <div class="book-card">
+      <div class="spine" style="background:${genreColor(b.genre)}"></div>
+      <div class="stamp ${avail>0?'avail':'none'}">${avail>0 ? 'Skladem '+avail+'/'+b.copies : 'Vypůjčeno'}</div>
+      <div class="book-genre">${b.genre} · ${b.year}</div>
+      <div class="book-title">${b.title}</div>
+      <div class="book-author">${b.author}</div>
+      <div class="book-desc">${b.desc||''}</div>
+      <div class="book-meta">Reg. č. ${b.isbn} · Regál ${b.shelf}</div>
+      ${canBorrow ? `<div class="book-actions">
+        <button class="btn btn-sm" ${canTake?'':'disabled'} onclick="borrowBook('${user.id}','${b.id}')">${btnLabel}</button>
+      </div>` : ''}
+    </div>`;
+  }).join('');
+
+  return `
+  <section class="block">
+    ${canBorrow ? `<div class="alert alert-info">Aktuálně máte půjčeno <strong>${activeCount}/${limit}</strong> knih.</div>`:''}
+    <div class="toolbar">
+      <input type="text" placeholder="Hledat podle názvu nebo autora…" value="${state.search}" oninput="state.search=this.value; renderContentOnly()">
+      <select onchange="state.genreFilter=this.value; renderContentOnly()">
+        ${genres.map(g=>`<option ${state.genreFilter===g?'selected':''}>${g}</option>`).join('')}
+      </select>
+      <label style="font-size:13px;display:flex;align-items:center;gap:6px;">
+        <input type="checkbox" ${state.onlyAvailable?'checked':''} onchange="state.onlyAvailable=this.checked; renderContentOnly()"> jen dostupné
+      </label>
+    </div>
+    <div class="card-grid">${cards || '<div class="empty"><div class="display">Žádné knihy nenalezeny</div>Zkuste upravit vyhledávání nebo filtr.</div>'}</div>
+  </section>`;
+}
+function renderContentOnly(){
+  const user = getUser(state.currentUserId);
+  document.getElementById('tabcontent').innerHTML = renderTabContent(user);
+}
+function genreColor(genre){
+  const map = {'Próza':'#6E8570','Poezie':'#B8862B','Fantasy':'#5B7A9C','Sci-fi':'#7C6B9C','Humor':'#C77D2E','Drama':'#A23E34','Dobrodružné':'#3F8F72','Učebnice':'#8A8578','Naučná':'#4E7C8C'};
+  return map[genre] || 'var(--forest)';
+}
+
+/* ---------- My loans (student/teacher) ---------- */
+function renderMyLoans(user){
+  const loans = activeLoansForUser(user.id);
+  const rows = loans.map(l=>{
+    const b = getBook(l.bookId);
+    return `<tr>
+      <td><strong>${b?b.title:'—'}</strong><br><span class="mono" style="font-size:11px;color:var(--ink-soft)">${b?b.author:''}</span></td>
+      <td class="mono">${fmtDate(l.borrowedDate)}</td>
+      <td class="mono">${fmtDate(l.dueDate)}</td>
+      <td>${statusBadge(l)}</td>
+      <td><button class="btn btn-sm btn-ghost" onclick="returnLoan('${l.id}')">Vrátit</button></td>
+    </tr>`;
+  }).join('');
+  return `
+  <section class="block">
+    <h2>Moje aktuální výpůjčky</h2>
+    ${loans.length ? `<div class="table-wrap"><table>
+      <thead><tr><th>Kniha</th><th>Půjčeno</th><th>Termín vrácení</th><th>Stav</th><th></th></tr></thead>
+      <tbody>${rows}</tbody>
+    </table></div>` : `<div class="empty"><div class="display">Nic si nepůjčujete</div>Procházejte katalog a půjčte si knihu.</div>`}
+  </section>`;
+}
+
+/* ---------- History (student/teacher) ---------- */
+function renderHistory(user){
+  const loans = loansForUser(user.id);
+  const rows = loans.map(l=>{
+    const b = getBook(l.bookId);
+    return `<tr>
+      <td><strong>${b?b.title:'—'}</strong></td>
+      <td class="mono">${fmtDate(l.borrowedDate)}</td>
+      <td class="mono">${fmtDate(l.dueDate)}</td>
+      <td class="mono">${fmtDate(l.returnedDate)}</td>
+      <td>${statusBadge(l)}</td>
+    </tr>`;
+  }).join('');
+  return `
+  <section class="block">
+    <h2>Historie výpůjček</h2>
+    ${loans.length ? `<div class="table-wrap"><table>
+      <thead><tr><th>Kniha</th><th>Půjčeno</th><th>Termín</th><th>Vráceno</th><th>Stav</th></tr></thead>
+      <tbody>${rows}</tbody>
+    </table></div>` : `<div class="empty"><div class="display">Zatím žádná historie</div></div>`}
+  </section>`;
+}
+
+/* ---------- Parent views ---------- */
+function currentChild(user){
+  const kids = (user.children||[]).map(id=>getUser(id)).filter(Boolean);
+  if(!state.selectedChildId && kids.length) state.selectedChildId = kids[0].id;
+  return getUser(state.selectedChildId);
+}
+function renderParentOverview(user){
+  const kids = (user.children||[]).map(id=>getUser(id)).filter(Boolean);
+  const child = currentChild(user);
+  if(!child) return '<div class="empty"><div class="display">Žádné propojené dítě</div>Kontaktujte administrátora školy.</div>';
+  const picker = kids.length>1 ? `
+    <div class="toolbar">
+      <select onchange="state.selectedChildId=this.value; renderContentOnly()">
+        ${kids.map(k=>`<option value="${k.id}" ${k.id===child.id?'selected':''}>${k.name} (${k.class})</option>`).join('')}
+      </select>
+    </div>`:'';
+  const loans = activeLoansForUser(child.id);
+  const overdue = loans.filter(l=>loanStatus(l)==='overdue');
+  const rows = loans.map(l=>{
+    const b = getBook(l.bookId);
+    return `<tr><td><strong>${b?b.title:'—'}</strong></td><td class="mono">${fmtDate(l.borrowedDate)}</td><td class="mono">${fmtDate(l.dueDate)}</td><td>${statusBadge(l)}</td></tr>`;
+  }).join('');
+  return `
+  <section class="block">
+    <h2>Přehled: ${child.name} <span style="color:var(--ink-soft);font-weight:400;font-size:14px;">· třída ${child.class}</span></h2>
+    ${picker}
+    ${overdue.length ? `<div class="alert alert-warn">⚠ ${child.name} má ${overdue.length} knih(u) po termínu vrácení.</div>` : `<div class="alert alert-info">Žádné výpůjčky po termínu.</div>`}
+    ${loans.length ? `<div class="table-wrap"><table>
+      <thead><tr><th>Kniha</th><th>Půjčeno</th><th>Termín vrácení</th><th>Stav</th></tr></thead>
+      <tbody>${rows}</tbody>
+    </table></div>` : `<div class="empty"><div class="display">Momentálně nic půjčeno</div></div>`}
+  </section>`;
+}
+function renderParentHistory(user){
+  const child = currentChild(user);
+  if(!child) return '<div class="empty">Žádné propojené dítě.</div>';
+  const loans = loansForUser(child.id);
+  const rows = loans.map(l=>{
+    const b = getBook(l.bookId);
+    return `<tr><td><strong>${b?b.title:'—'}</strong></td><td class="mono">${fmtDate(l.borrowedDate)}</td><td class="mono">${fmtDate(l.returnedDate)}</td><td>${statusBadge(l)}</td></tr>`;
+  }).join('');
+  return `
+  <section class="block">
+    <h2>Historie výpůjček — ${child.name}</h2>
+    ${loans.length ? `<div class="table-wrap"><table>
+      <thead><tr><th>Kniha</th><th>Půjčeno</th><th>Vráceno</th><th>Stav</th></tr></thead>
+      <tbody>${rows}</tbody>
+    </table></div>` : '<div class="empty"><div class="display">Zatím žádná historie</div></div>'}
+  </section>`;
+}
+
+/* ---------- Teacher: classroom ---------- */
+function renderClassroom(user){
+  const students = studentsInClass(user.class);
+  const rows = students.map(s=>{
+    const loans = activeLoansForUser(s.id);
+    const overdue = loans.filter(l=>loanStatus(l)==='overdue').length;
+    const loanList = loans.map(l=>{
+      const b = getBook(l.bookId);
+      return `<div style="margin-bottom:4px;">
+        <span>${b?b.title:'—'}</span>
+        <span class="mono" style="font-size:11px;color:var(--ink-soft);"> · do ${fmtDate(l.dueDate)}</span>
+        ${statusBadge(l)}
+        <button class="btn btn-sm btn-ghost" style="margin-left:6px;" onclick="returnLoan('${l.id}')">Vrátit za žáka</button>
+      </div>`;
+    }).join('') || '<span style="color:var(--ink-soft);font-size:12.5px;">Nic nemá půjčeno</span>';
+    return `<tr>
+      <td><strong>${s.name}</strong></td>
+      <td>${loans.length}${overdue?` <span class="badge badge-overdue">${overdue} po termínu</span>`:''}</td>
+      <td>${loanList}</td>
+    </tr>`;
+  }).join('');
+  return `
+  <section class="block">
+    <h2>Třída ${user.class}</h2>
+    <div class="table-wrap"><table>
+      <thead><tr><th>Žák</th><th>Počet výpůjček</th><th>Detail</th></tr></thead>
+      <tbody>${rows}</tbody>
+    </table></div>
+  </section>`;
+}
+
+/* ---------- Manage books (teacher/admin) ---------- */
+function renderManageBooks(user){
+  const rows = DB.books.slice().sort((a,b)=>a.title.localeCompare(b.title)).map(b=>{
+    const avail = availableCopies(b);
+    return `<tr>
+      <td><strong>${b.title}</strong><br><span style="font-size:11.5px;color:var(--ink-soft);">${b.author}</span></td>
+      <td>${b.genre}</td>
+      <td class="mono">${avail}/${b.copies}</td>
+      <td class="mono">${b.shelf}</td>
+      <td>
+        <button class="btn btn-sm btn-ghost" onclick='openBookModal("edit","${b.id}")'>Upravit</button>
+        <button class="btn btn-sm btn-danger" onclick="deleteBook('${b.id}')">Smazat</button>
+      </td>
+    </tr>`;
+  }).join('');
+  return `
+  <section class="block">
+    <div class="toolbar" style="justify-content:space-between;">
+      <h2 style="margin:0;">Správa knih</h2>
+      <button class="btn" onclick='openBookModal("add")'>+ Přidat knihu</button>
+    </div>
+    <div class="table-wrap"><table>
+      <thead><tr><th>Kniha</th><th>Žánr</th><th>Dostupnost</th><th>Regál</th><th></th></tr></thead>
+      <tbody>${rows}</tbody>
+    </table></div>
+  </section>`;
+}
+function openBookModal(mode, bookId){
+  const data = mode==='edit' ? {...getBook(bookId)} : {title:'',author:'',genre:'',year:new Date().getFullYear(),isbn:'',shelf:'',copies:1,desc:''};
+  state.modal = {type:'book', mode, id:bookId, data};
+  render();
+}
+async function submitBookModal(e){
+  e.preventDefault();
+  const f = e.target;
+  const data = {
+    title: f.title.value.trim(),
+    author: f.author.value.trim(),
+    genre: f.genre.value.trim() || 'Ostatní',
+    year: parseInt(f.year.value)||new Date().getFullYear(),
+    isbn: f.isbn.value.trim(),
+    shelf: f.shelf.value.trim(),
+    copies: Math.max(1, parseInt(f.copies.value)||1),
+    desc: f.desc.value.trim()
+  };
+  if(!data.title || !data.author){ alert('Vyplňte název a autora.'); return; }
+  if(state.modal.mode==='add'){
+    DB.books.push({id:uid('b'), ...data});
+  } else {
+    const b = getBook(state.modal.id);
+    Object.assign(b, data);
+  }
+  await saveDB();
+  state.modal=null;
+  render();
+}
+
+/* ---------- Manage users (admin) ---------- */
+function renderManageUsers(user){
+  const rows = DB.users.slice().sort((a,b)=>a.name.localeCompare(b.name)).map(u=>{
+    const meta = u.role==='student'||u.role==='teacher' ? (u.class||'—') :
+                 u.role==='parent' ? (u.children||[]).map(c=>getUser(c)?.name).filter(Boolean).join(', ') || '—' : '—';
+    return `<tr>
+      <td><strong>${u.name}</strong></td>
+      <td>${ROLE_LABEL[u.role]}</td>
+      <td>${meta}</td>
+      <td>
+        <button class="btn btn-sm btn-ghost" onclick='openUserModal("edit","${u.id}")'>Upravit</button>
+        <button class="btn btn-sm btn-danger" onclick="deleteUser('${u.id}')">Smazat</button>
+      </td>
+    </tr>`;
+  }).join('');
+  return `
+  <section class="block">
+    <div class="toolbar" style="justify-content:space-between;">
+      <h2 style="margin:0;">Uživatelé</h2>
+      <button class="btn" onclick='openUserModal("add")'>+ Přidat uživatele</button>
+    </div>
+    <div class="table-wrap"><table>
+      <thead><tr><th>Jméno</th><th>Role</th><th>Třída / propojení</th><th></th></tr></thead>
+      <tbody>${rows}</tbody>
+    </table></div>
+  </section>`;
+}
+function openUserModal(mode, userId){
+  const data = mode==='edit' ? {...getUser(userId)} : {name:'', role:'student', class:'', children:[]};
+  state.modal = {type:'user', mode, id:userId, data};
+  render();
+}
+async function submitUserModal(e){
+  e.preventDefault();
+  const f = e.target;
+  const role = f.role.value;
+  const data = {name: f.name.value.trim(), role};
+  if(role==='student' || role==='teacher'){
+    data.class = f.class ? f.class.value.trim() : '';
+  }
+  if(role==='parent'){
+    data.children = Array.from(f.querySelectorAll('input[name=child]:checked')).map(c=>c.value);
+  }
+  if(!data.name){ alert('Vyplňte jméno.'); return; }
+  if(state.modal.mode==='add'){
+    DB.users.push({id:uid('u'), ...data});
+  } else {
+    const u = getUser(state.modal.id);
+    Object.keys(u).forEach(k=>{ if(k!=='id') delete u[k]; });
+    Object.assign(u, data);
+  }
+  await saveDB();
+  state.modal=null;
+  render();
+}
+function onRoleChangeInModal(role){
+  state.modal.data.role = role;
+  render();
+}
+
+/* ---------- Admin dashboard ---------- */
+function renderDashboard(user){
+  const totalTitles = DB.books.length;
+  const totalCopies = DB.books.reduce((s,b)=>s+b.copies,0);
+  const activeLoans = DB.loans.filter(l=>!l.returnedDate);
+  const overdue = activeLoans.filter(l=>loanStatus(l)==='overdue');
+  const counts = {};
+  DB.loans.forEach(l=>{ counts[l.bookId]=(counts[l.bookId]||0)+1; });
+  const top = Object.entries(counts).sort((a,b)=>b[1]-a[1]).slice(0,3)
+    .map(([bid,c])=>`<div style="display:flex;justify-content:space-between;padding:8px 0;border-top:1px solid var(--line);">
+      <span>${getBook(bid)?.title||'—'}</span><span class="mono">${c}×</span></div>`).join('');
+
+  const usersByRole = {};
+  DB.users.forEach(u=>{ usersByRole[u.role]=(usersByRole[u.role]||0)+1; });
+
+  return `
+  <section class="block">
+    <h2>Přehled knihovny</h2>
+    <div class="stat-grid">
+      <div class="stat"><div class="num">${totalTitles}</div><div class="lbl">Titulů v katalogu</div></div>
+      <div class="stat"><div class="num">${totalCopies}</div><div class="lbl">Celkem výtisků</div></div>
+      <div class="stat"><div class="num">${activeLoans.length}</div><div class="lbl">Aktuálně půjčeno</div></div>
+      <div class="stat"><div class="num ${overdue.length?'warn':''}">${overdue.length}</div><div class="lbl">Po termínu</div></div>
+      <div class="stat"><div class="num">${DB.users.length}</div><div class="lbl">Registrovaných uživatelů</div></div>
+    </div>
+    ${overdue.length ? `<div class="alert alert-warn">⚠ ${overdue.length} výpůjček je po termínu vrácení. Zkontrolujte záložku „Všechny výpůjčky“.</div>` : ''}
+    <div class="field-row" style="align-items:start;">
+      <div class="panel">
+        <h3 style="margin:0 0 4px;font-size:15px;">Nejpůjčovanější knihy</h3>
+        ${top || '<div style="color:var(--ink-soft);font-size:13px;">Zatím žádná data.</div>'}
+      </div>
+      <div class="panel">
+        <h3 style="margin:0 0 4px;font-size:15px;">Uživatelé podle role</h3>
+        ${Object.entries(usersByRole).map(([r,c])=>`<div style="display:flex;justify-content:space-between;padding:8px 0;border-top:1px solid var(--line);"><span>${ROLE_LABEL[r]}</span><span class="mono">${c}</span></div>`).join('')}
+      </div>
+    </div>
+  </section>`;
+}
+
+/* ---------- Admin: all loans ---------- */
+let loanFilterStatus = 'all';
+function renderAllLoans(user){
+  let loans = DB.loans.slice().sort((a,b)=>b.borrowedDate.localeCompare(a.borrowedDate));
+  loans = loans.filter(l=>{
+    const s = loanStatus(l);
+    const statusOk = loanFilterStatus==='all' || s===loanFilterStatus;
+    const b = getBook(l.bookId), u = getUser(l.userId);
+    const text = ((b?.title||'')+(u?.name||'')).toLowerCase();
+    const searchOk = !state.search || text.includes(state.search.toLowerCase());
+    return statusOk && searchOk;
+  });
+  const rows = loans.map(l=>{
+    const b = getBook(l.bookId), u = getUser(l.userId);
+    return `<tr>
+      <td><strong>${b?b.title:'— smazaná kniha'}</strong></td>
+      <td>${u?u.name:'— smazaný uživatel'}${u?` <span class="mono" style="font-size:11px;color:var(--ink-soft);">(${ROLE_LABEL[u.role]})</span>`:''}</td>
+      <td class="mono">${fmtDate(l.borrowedDate)}</td>
+      <td class="mono">${fmtDate(l.dueDate)}</td>
+      <td class="mono">${fmtDate(l.returnedDate)}</td>
+      <td>${statusBadge(l)}</td>
+      <td>
+        ${!l.returnedDate ? `<button class="btn btn-sm btn-ghost" onclick="returnLoan('${l.id}')">Vrátit</button>`:''}
+        <button class="btn btn-sm btn-danger" onclick="deleteLoan('${l.id}')">Smazat</button>
+      </td>
+    </tr>`;
+  }).join('');
+  return `
+  <section class="block">
+    <h2>Všechny výpůjčky</h2>
+    <div class="toolbar">
+      <input type="text" placeholder="Hledat žáka nebo knihu…" value="${state.search}" oninput="state.search=this.value; renderContentOnly()">
+      <select onchange="loanFilterStatus=this.value; renderContentOnly()">
+        <option value="all" ${loanFilterStatus==='all'?'selected':''}>Vše</option>
+        <option value="active" ${loanFilterStatus==='active'?'selected':''}>Aktivní</option>
+        <option value="overdue" ${loanFilterStatus==='overdue'?'selected':''}>Po termínu</option>
+        <option value="returned" ${loanFilterStatus==='returned'?'selected':''}>Vrácené</option>
+      </select>
+    </div>
+    <div class="table-wrap"><table>
+      <thead><tr><th>Kniha</th><th>Uživatel</th><th>Půjčeno</th><th>Termín</th><th>Vráceno</th><th>Stav</th><th></th></tr></thead>
+      <tbody>${rows || '<tr><td colspan="7" style="text-align:center;color:var(--ink-soft);">Žádné záznamy</td></tr>'}</tbody>
+    </table></div>
+  </section>`;
+}
+
+/* ---------- Modals ---------- */
+function renderModal(){
+  if(!state.modal) return '';
+  if(state.modal.type==='book') return renderBookModal();
+  if(state.modal.type==='user') return renderUserModal();
+  return '';
+}
+function renderBookModal(){
+  const {mode, data} = state.modal;
+  return `
+  <div class="overlay" onclick="if(event.target===this){state.modal=null; render();}">
+    <div class="modal">
+      <h3>${mode==='add'?'Přidat knihu':'Upravit knihu'}</h3>
+      <form onsubmit="submitBookModal(event)">
+        <div class="field"><label>Název</label><input name="title" value="${escapeAttr(data.title)}" required></div>
+        <div class="field-row">
+          <div class="field"><label>Autor</label><input name="author" value="${escapeAttr(data.author)}" required></div>
+          <div class="field"><label>Žánr</label><input name="genre" value="${escapeAttr(data.genre)}"></div>
+        </div>
+        <div class="field-row">
+          <div class="field"><label>Rok vydání</label><input type="number" name="year" value="${data.year}"></div>
+          <div class="field"><label>Počet výtisků</label><input type="number" min="1" name="copies" value="${data.copies}"></div>
+        </div>
+        <div class="field-row">
+          <div class="field"><label>ISBN / evidenční č.</label><input name="isbn" value="${escapeAttr(data.isbn)}"></div>
+          <div class="field"><label>Regál</label><input name="shelf" value="${escapeAttr(data.shelf)}"></div>
+        </div>
+        <div class="field"><label>Popis</label><textarea name="desc">${data.desc||''}</textarea></div>
+        <div class="modal-actions">
+          <button type="button" class="btn btn-ghost" onclick="state.modal=null; render();">Zrušit</button>
+          <button type="submit" class="btn">${mode==='add'?'Přidat':'Uložit'}</button>
+        </div>
+      </form>
+    </div>
+  </div>`;
+}
+function renderUserModal(){
+  const {mode, data} = state.modal;
+  const role = data.role;
+  const students = DB.users.filter(u=>u.role==='student');
+  return `
+  <div class="overlay" onclick="if(event.target===this){state.modal=null; render();}">
+    <div class="modal">
+      <h3>${mode==='add'?'Přidat uživatele':'Upravit uživatele'}</h3>
+      <form onsubmit="submitUserModal(event)">
+        <div class="field"><label>Jméno</label><input name="name" value="${escapeAttr(data.name)}" required></div>
+        <div class="field"><label>Role</label>
+          <select name="role" onchange="onRoleChangeInModal(this.value)">
+            ${['student','parent','teacher','admin'].map(r=>`<option value="${r}" ${role===r?'selected':''}>${ROLE_LABEL[r]}</option>`).join('')}
+          </select>
+        </div>
+        ${(role==='student'||role==='teacher') ? `<div class="field"><label>Třída</label><input name="class" value="${escapeAttr(data.class||'')}" placeholder="např. 6.A"></div>` : ''}
+        ${role==='parent' ? `<div class="field"><label>Propojené děti</label>
+          <div class="check-list">${students.map(s=>`<label><input type="checkbox" name="child" value="${s.id}" ${(data.children||[]).includes(s.id)?'checked':''}> ${s.name} (${s.class})</label>`).join('') || 'Žádní žáci v systému'}</div>
+        </div>`:''}
+        <div class="modal-actions">
+          <button type="button" class="btn btn-ghost" onclick="state.modal=null; render();">Zrušit</button>
+          <button type="submit" class="btn">${mode==='add'?'Přidat':'Uložit'}</button>
+        </div>
+      </form>
+    </div>
+  </div>`;
+}
+function escapeAttr(s){ return (s||'').toString().replace(/"/g,'&quot;'); }
+
+/* ---------- Init ---------- */
+async function init(){
+  document.getElementById('app').innerHTML = '<div class="login-wrap"><div style="color:var(--ink-soft);font-family:IBM Plex Mono, monospace;">Načítání knihovny…</div></div>';
+  await loadDB();
+  await loadCurrentUser();
+  if(state.currentUserId && !getUser(state.currentUserId)) state.currentUserId = null;
+  render();
+}
+init();
+</script>
+</body>
+</html>

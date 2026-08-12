@@ -1,0 +1,100 @@
+<div class="card">
+    <div class="card-top"></div>
+    <div class="card-header">
+        <h2>
+            <span>{{ l.s('library.loans') }}</span>
+        </h2>
+        <div class="flex-items">
+            <div class="btn btn--secondary btn--sm" [routerLink]="['/library/history']">
+                <i-tabler name="history"></i-tabler>
+                {{ l.s('sidebar.library.history') }}
+                <i-tabler name="arrow-right"></i-tabler>
+            </div>
+        </div>
+    </div>
+
+    <div class="card-body">
+
+        <!-- Loading state -->
+        @if (isLoading()) {
+        <div class="loading-state">
+            <div class="loader"></div>
+            <p>{{ l.s('general.loading') }}</p>
+        </div>
+        }
+
+        <!-- Empty state -->
+        @else if (loans().length === 0) {
+        <div class="empty-state">
+            <div class="empty-state__icon">
+                <i-tabler name="book-2"></i-tabler>
+            </div>
+            <h3 class="empty-state__title">{{ l.s('library.no_active_loans') }}</h3>
+            <p class="empty-state__description">{{ l.s('library.no_loans_desc') }}</p>
+        </div>
+        }
+
+        <!-- Loans table -->
+        @else {
+        <div class="table-wrap">
+            <table class="loans-table">
+                <thead>
+                    <tr>
+                        <th>{{ l.s('library.catalog') }}</th>
+                        <th>{{ l.s('library.borrowed_on') }}</th>
+                        <th>{{ l.s('library.due_date') }}</th>
+                        <th>{{ l.s('library.status') }}</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @for (loan of loans(); track loan.loanId) {
+                    <tr class="loan-row loan-row--{{ getLoanStatus(loan) }}">
+                        <!-- Book info -->
+                        <td class="loan-book-cell">
+                            <div class="loan-book-info">
+                                @if (loan.coverUrl) {
+                                <img [src]="loan.coverUrl" [alt]="loan.title" class="loan-cover-thumb">
+                                } @else {
+                                <div class="loan-cover-placeholder">
+                                    <i-tabler name="book"></i-tabler>
+                                </div>
+                                }
+                                <div class="loan-book-text">
+                                    <span class="loan-book-title">{{ loan.title }}</span>
+                                    <span class="loan-book-author">{{ loan.author }}</span>
+                                </div>
+                            </div>
+                        </td>
+
+                        <!-- Borrowed date -->
+                        <td class="table-mono">
+                            {{ loan.borrowedDate | date:'d.M.y' }}
+                        </td>
+
+                        <!-- Due date -->
+                        <td class="table-mono">
+                            {{ loan.dueDate | date:'d.M.y' }}
+                        </td>
+
+                        <!-- Status badge -->
+                        <td>
+                            <span class="badge badge--{{ getLoanStatus(loan) }}">
+                                @if (getLoanStatus(loan) === 'active') {
+                                <i-tabler name="circle-check"></i-tabler>
+                                } @else if (getLoanStatus(loan) === 'overdue') {
+                                <i-tabler name="alert-triangle"></i-tabler>
+                                } @else {
+                                <i-tabler name="check"></i-tabler>
+                                }
+                                {{ getStatusLabel(loan) }}
+                            </span>
+                        </td>
+                    </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+        }
+
+    </div>
+</div>

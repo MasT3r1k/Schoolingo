@@ -61,9 +61,16 @@
 </div>
 
 <div class="form-group">
-    <label for="verificationCode">Ověřovací kód</label>
-    <input type="text" name="verificationCode" id="verificationCode" [(ngModel)]="verificationCode" placeholder="ABCDEF"
-        maxlength="6" style="text-align: center; font-size: 24px; letter-spacing: 4px; text-transform: uppercase;">
+    <label>Ověřovací kód</label>
+    <div class="digit-group" (paste)="onDigitPaste($event)">
+        <input type="text" #digit1 maxlength="1" (keydown)="onDigitKeyDown($event, 1, null, digit2)" (input)="onDigitInput(1, digit2)" [(ngModel)]="digits[0]" />
+        <input type="text" #digit2 maxlength="1" (keydown)="onDigitKeyDown($event, 2, digit1, digit3)" (input)="onDigitInput(2, digit3)" [(ngModel)]="digits[1]" />
+        <input type="text" #digit3 maxlength="1" (keydown)="onDigitKeyDown($event, 3, digit2, digit4)" (input)="onDigitInput(3, digit4)" [(ngModel)]="digits[2]" />
+        <span class="splitter">&ndash;</span>
+        <input type="text" #digit4 maxlength="1" (keydown)="onDigitKeyDown($event, 4, digit3, digit5)" (input)="onDigitInput(4, digit5)" [(ngModel)]="digits[3]" />
+        <input type="text" #digit5 maxlength="1" (keydown)="onDigitKeyDown($event, 5, digit4, digit6)" (input)="onDigitInput(5, digit6)" [(ngModel)]="digits[4]" />
+        <input type="text" #digit6 maxlength="1" (keydown)="onDigitKeyDown($event, 6, digit5, null)" (input)="onDigitInput(6, null)" [(ngModel)]="digits[5]" />
+    </div>
 </div>
 
 <div class="form-group">

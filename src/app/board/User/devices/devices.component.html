@@ -1,16 +1,27 @@
 <div class="card">
+  <div class="card-top"></div>
   <div class="card-header">
-      <div class="header-content" style="flex: 1">
-          <h2>{{ l.s('user.devices') }}</h2>
-          <span class="meta muted">Zde naleznete veškeré Vaše připojené zařízení, které jsou připojené k Vašemu Schoolingo účtu. Můžete zde odhlásit kterékoliv zařízení nebo všechny.
-
-Pokud tu naleznete zařízení, které nepoznáváte. Odhlašte to zařízení a změňte si heslo!</span>
-      </div>
-
-      <div class="btn btn--outline-danger btn--sm" style="flex: 0 150px" (click)="logoutAllOther()">
-          {{ l.s('devices.logout_all_other') }}
+      <h2>
+          <span>{{ l.s('user.devices') }}</span>
+      </h2>
+      <div class="flex-items">
+        <div class="btn btn--outline-danger btn--sm" (click)="logoutAllOther()">
+            {{ l.s('devices.logout_all_other') }}
+        </div>
       </div>
   </div>
+  <div class="card-body">
+      <div class="meta muted" style="margin-bottom: 1.5rem">
+        Zde naleznete veškeré Vaše připojené zařízení, které jsou připojené k Vašemu Schoolingo účtu. Můžete zde odhlásit kterékoliv zařízení nebo všechny.<br>
+        Pokud tu naleznete zařízení, které nepoznáváte. Odhlašte to zařízení a změňte si heslo!
+      </div>
+
+      <boneyard-skeleton
+        name="devices-list"
+        [loading]="loading"
+        animate="shimmer"
+        [stagger]="true"
+        [transition]="true">
 
   <div class="sessions-list">
     @for (session of sessions; track session.device_id) {
@@ -72,5 +83,8 @@ Pokud tu naleznete zařízení, které nepoznáváte. Odhlašte to zařízení a
       }
     </div>
     }
+  </div>
+
+      </boneyard-skeleton>
   </div>
 </div>

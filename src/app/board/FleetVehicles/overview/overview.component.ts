@@ -69,15 +69,17 @@ export class FleetVehiclesOverviewComponent implements OnInit {
       },
       error: () => {
         this.loading = false;
-        // Mock data for development
         this.stats = {
-          totalVehicles: 8,
-          availableVehicles: 5,
-          reservedVehicles: 2,
-          maintenanceVehicles: 1,
-          upcomingReservations: 3,
-          expiringDocuments: 2,
-          pendingApprovals: 1
+          totalVehicles: 0,
+          availableVehicles: 0,
+          reservedVehicles: 0,
+          maintenanceVehicles: 0,
+          upcomingReservations: 0,
+          expiringDocuments: 0,
+          pendingApprovals: 0,
+          monthlyTrips: 0,
+          monthlyExpenses: 0,
+          monthlyDistance: 0
         };
       }
     });
@@ -89,13 +91,13 @@ export class FleetVehiclesOverviewComponent implements OnInit {
     ).subscribe({
       next: (response) => {
         this.upcomingReservations = response.trips.map((t: any) => ({
-          reservationId: t.tripId,
-          vehicleId: t.vehicleId,
+          reservationId: t.trip_id,
+          vehicleId: t.vehicle_id,
           vehicleName: t.plate || 'Unknown',
-          userId: t.driverId,
-          userName: 'Driver',
+          userId: t.driver_id,
+          userName: t.driver_id ? 'Driver' : 'Unknown',
           startDate: new Date(t.start_date),
-          endDate: t.end_date ? new Date(t.end_date) : new Date(),
+          endDate: t.end_date ? new Date(t.end_date) : new Date(t.start_date),
           purpose: t.purpose,
           status: 'approved' as const
         }));

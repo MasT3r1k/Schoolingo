@@ -1,103 +1,509 @@
-<div class="library-manager">
-    <div class="manager-header">
-        <h1>{{ l.s('library.librarian_dashboard') }}</h1>
-
-        <div class="manager-tabs">
-            <button class="tab-btn" [class.active]="activeTab() === 'loans'" (click)="switchTab('loans')">
-                <i-tabler name="exchange"></i-tabler> {{ l.s('library.loans') }}
-            </button>
-            <button class="tab-btn" [class.active]="activeTab() === 'books'" (click)="switchTab('books')">
-                <i-tabler name="book-2"></i-tabler> {{ l.s('library.books') }}
-            </button>
+<div class="card">
+    <div class="card-top"></div>
+    <div class="card-header" style="align-items: center;">
+        <h2>
+            <span>{{ l.s('library.librarian_dashboard') }}</span>
+        </h2>
+        <div class="flex-items">
+            <schoolingo-tabs prefix="" [options]="tabOptions" [icons]="tabIcons" [value]="tabValue"></schoolingo-tabs>
         </div>
     </div>
 
     @if (loanMessage()) {
-    <div class="toast" [class.success]="loanMessage()!.type === 'success'"
-        [class.error]="loanMessage()!.type === 'error'">
-        {{ loanMessage()!.text }}
+    <div class="alert-banner" [class.success]="loanMessage()!.type === 'success'" [class.error]="loanMessage()!.type === 'error'">
+        <i-tabler [name]="loanMessage()!.type === 'success' ? 'check' : 'alert-triangle'"></i-tabler>
+        <span>{{ loanMessage()!.text }}</span>
     </div>
     }
 
-    <!-- LOANS TAB -->
-    @if (activeTab() === 'loans') {
-    <div class="card loan-console">
-        <div class="card-header">
-            <h2>{{ l.s('library.loan_console') }}</h2>
-        </div>
-        <div class="card-body">
-            <div class="console-grid">
-                <div class="input-group">
-                    <label>{{ l.s('library.user_id') }}</label>
-                    <input type="number" [(ngModel)]="userIdInput" placeholder="User ID">
-                </div>
-                <div class="input-group">
-                    <label>{{ l.s('library.copy_barcode') }}</label>
-                    <input type="number" [(ngModel)]="copyIdInput" placeholder="Barcode / Copy ID">
-                </div>
-            </div>
-            <div class="actions">
-                <button class="btn btn-primary" (click)="borrowBook()" [disabled]="!userIdInput() || !copyIdInput()">
-                    <i-tabler name="arrow-up-right"></i-tabler> {{ l.s('library.borrow') }}
-                </button>
-                <button class="btn btn-secondary" (click)="returnBook()" [disabled]="!copyIdInput()">
-                    <i-tabler name="arrow-down-left"></i-tabler> {{ l.s('library.return') }}
-                </button>
-            </div>
-        </div>
-    </div>
-    }
+    <div class="card-body manager-body">
 
-    <!-- BOOKS TAB -->
-    @if (activeTab() === 'books') {
-    <div class="card add-book-card">
-        <div class="card-header">
-            <h2>{{ l.s('library.add_new_book') }}</h2>
+        @if (activeTab() === 'dashboard') {
+        <div class="grid-layout">
+            
+            <div class="action-panel">
+                <div class="panel-icon"><i-tabler name="barcode"></i-tabler></div>
+                <div class="panel-content">
+                    <h3>{{ l.s('library.borrow_and_return') }}</h3>
+                    <p class="meta muted" style="margin-bottom: 1.5rem;">{{ l.s('library.borrow_description') }}</p>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">{{ l.s('library.user_id') }}</label>
+                            <schoolingo-dropdown [options]="userOptions()" [ngModel]="userIdInput()" (ngModelChange)="userIdInput.set($event)" [settings]="{ locale: false }" placeholder="library.user_id_placeholder"></schoolingo-dropdown>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">{{ l.s('library.copy_barcode') }}</label>
+                            <input type="number" class="form-input" [ngModel]="copyIdInput()" (ngModelChange)="copyIdInput.set($event)" [placeholder]="l.s('library.scan_barcode')">
+                        </div>
+                    </div>
+
+                    <div class="modal-actions" style="justify-content: flex-start; margin-top: 1rem;">
+                        <button class="btn btn--primary" (click)="borrowBook()" [disabled]="!userIdInput() || !copyIdInput()">
+                            <i-tabler name="arrow-up-right"></i-tabler>
+                            {{ l.s('library.borrow_to_user') }}
+                        </button>
+                        <button class="btn btn--secondary" (click)="returnBook()" [disabled]="!copyIdInput()">
+                            <i-tabler name="arrow-down-left"></i-tabler>
+                            {{ l.s('library.return_to_library') }}
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="stats-sidebar">
+                <stat-card
+                type="primary"
+                icon="book-2"
+                [value]="stats().totalBooks"
+                label="library.stats_total_books"
+                ></stat-card>
+                <stat-card
+                type="success"
+                icon="users"
+                [value]="stats().activeLoans"
+                label="library.stats_active_loans"
+                ></stat-card>
+                <stat-card
+                type="danger"
+                icon="alert-circle"
+                [value]="stats().overdueLoans"
+                label="library.stats_overdue"
+                ></stat-card>
+            </div>
+
         </div>
-        <div class="card-body">
-            <div class="lookup-section">
+        }
+
+        @if (activeTab() === 'books') {
+        <div class="fullpage-section">
+
+            <div class="lookup-card">
+                <div class="lookup-header">
+                    <div class="panel-icon"><i-tabler name="book-upload"></i-tabler></div>
+                    <div>
+                        <h3>{{ l.s('library.add_new_book') }}</h3>
+                        <p class="meta muted">{{ l.s('library.add_book_description') }}</p>
+                    </div>
+                </div>
                 <div class="search-box">
-                    <input type="text" [(ngModel)]="isbnInput" placeholder="ISBN (e.g. 9780123456789)"
-                        (keyup.enter)="lookupBook()">
-                    <button class="btn btn-primary" (click)="lookupBook()" [disabled]="lookupLoading()">
-                        @if (lookupLoading()) { <span class="spinner"></span> } @else { {{ l.s('library.lookup') }} }
+                    <i-tabler name="search"></i-tabler>
+                    <input type="text" class="form-input search-input" [ngModel]="searchInput()" (ngModelChange)="searchInput.set($event)" placeholder="Zadejte ISBN nebo Název knihy..." (keyup.enter)="lookupBook()">
+                    <button class="btn btn--primary lookup-btn" (click)="lookupBook()" [disabled]="lookupLoading() || !searchInput()">
+                        @if (lookupLoading()) {
+                        <i-tabler name="loader" class="spin"></i-tabler> {{ l.s('general.loading') }}
+                        } @else {
+                        <i-tabler name="search"></i-tabler> {{ l.s('library.lookup') }}
+                        }
                     </button>
                 </div>
             </div>
 
             @if (manualBook().title || foundBook()) {
-            <div class="book-form">
-                <div class="form-row">
-                    <div class="form-group">
-                        <label>Title</label>
-                        <input [(ngModel)]="manualBook().title">
+            <div class="book-form-card">
+                <div class="book-form-header">
+                    @if (foundBook()?.coverUrl) {
+                    <img class="book-cover-preview" [src]="foundBook()!.coverUrl" alt="cover">
+                    } @else {
+                    <div class="book-cover-placeholder">
+                        <i-tabler name="book"></i-tabler>
                     </div>
-                    <div class="form-group">
-                        <label>Author</label>
-                        <input [(ngModel)]="manualBook().author">
+                    }
+                    <div class="book-form-meta">
+                        <span class="book-form-badge">
+                            <i-tabler name="check"></i-tabler>
+                            @if (foundBook()) { Nalezeno v databázi } @else { Ruční záznam }
+                        </span>
+                        <h2 class="book-form-title">{{ manualBook().title || 'Nová kniha' }}</h2>
+                        <p class="book-form-author muted">{{ manualBook().author }}</p>
                     </div>
-                </div>
-                <div class="form-row">
-                    <div class="form-group">
-                        <label>Publisher</label>
-                        <input [(ngModel)]="manualBook().publisher">
-                    </div>
-                    <div class="form-group">
-                        <label>Year</label>
-                        <input type="number" [(ngModel)]="manualBook().published_year">
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label>Initial Copies</label>
-                    <input type="number" [(ngModel)]="manualBook().copies">
                 </div>
 
-                <button class="btn btn-success full-width" (click)="addBook()">
-                    <i-tabler name="plus"></i-tabler> {{ l.s('library.save_book') }}
-                </button>
+                <div class="book-form-body">
+                    <div class="form-section-label">Základní informace</div>
+                    <div class="form-row">
+                        <div class="form-group" style="flex: 2;">
+                            <label class="form-label">{{ l.s('library.book_title') }}</label>
+                            <input class="form-input" [(ngModel)]="manualBook().title" placeholder="Název knihy">
+                        </div>
+                        <div class="form-group" style="flex: 1;">
+                            <label class="form-label">{{ l.s('library.book_author') }}</label>
+                            <input class="form-input" [(ngModel)]="manualBook().author" placeholder="Autor">
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group" style="flex: 1;">
+                            <label class="form-label">ISBN</label>
+                            <input class="form-input" appIsbnFormatter [(ngModel)]="manualBook().isbn" placeholder="978-...">
+                        </div>
+                        <div class="form-group" style="flex: 1;">
+                            <label class="form-label">{{ l.s('library.book_publisher') }}</label>
+                            <input class="form-input" [(ngModel)]="manualBook().publisher" placeholder="Vydavatel">
+                        </div>
+                        <div class="form-group" style="flex: 1;">
+                            <label class="form-label">{{ l.s('library.published_year') }}</label>
+                            <input type="number" class="form-input" [(ngModel)]="manualBook().published_year" placeholder="2024">
+                        </div>
+                    </div>
+
+                    <div class="form-section-label" style="margin-top: 1rem;">Kategorizace & Kopie</div>
+                    <div class="form-row">
+                        <div class="form-group" style="flex: 2;">
+                            <label class="form-label">{{ l.s('library.genre') }}</label>
+                            <schoolingo-dropdown [options]="genreOptions()" [(ngModel)]="manualBook().genreId" [settings]="{ locale: false }"></schoolingo-dropdown>
+                        </div>
+                        <div class="form-group" style="flex: 1;">
+                            <label class="form-label">{{ l.s('library.copies_count') }}</label>
+                            <input type="number" class="form-input" [(ngModel)]="manualBook().copies" min="1">
+                        </div>
+                        <div class="form-group" style="flex: 1;">
+                            <label class="form-label">Počet stran</label>
+                            <input type="number" class="form-input" [(ngModel)]="manualBook().pages" placeholder="350">
+                        </div>
+                    </div>
+
+                    @if (foundBook()?.description) {
+                    <div class="form-group">
+                        <label class="form-label">Popis</label>
+                        <div class="book-description-preview muted">{{ foundBook()!.description }}</div>
+                    </div>
+                    }
+
+                    <div class="modal-actions" style="margin-top: 1.5rem; justify-content: flex-end;">
+                        <button class="btn btn--secondary" (click)="cancelBook()">
+                            <i-tabler name="x"></i-tabler> Zrušit
+                        </button>
+                        <button class="btn btn--primary" (click)="addBook()">
+                            <i-tabler name="plus"></i-tabler> {{ l.s('library.save_book') }}
+                        </button>
+                    </div>
+                </div>
+            </div>
+            }
+
+            <!-- Manual add shortcut if nothing found -->
+            @if (!manualBook().title && !foundBook()) {
+            <div class="manual-add-hint">
+                <i-tabler name="pencil"></i-tabler>
+                <span>Nebo přidejte knihu ručně —</span>
+                <button class="btn btn--ghost btn--sm" (click)="startManualBook()">Zadat ručně</button>
             </div>
             }
         </div>
+        }
+
+        <!-- EVIDENCE TAB -->
+        @if (activeTab() === 'evidence') {
+        <div class="fullpage-section">
+            <div class="section-toolbar">
+                <div class="section-toolbar-left">
+                    <div class="section-info">
+                        <h3>{{ l.s('library.evidence_title', { default: 'Evidence výpůjček' }) }}</h3>
+                        <p class="muted">Přehled všech výpůjček včetně vrácených a prodlení</p>
+                    </div>
+                </div>
+                <div class="section-toolbar-right">
+                    <div class="search-wrapper">
+                        <i-tabler name="search"></i-tabler>
+                        <input type="text" class="search-input" placeholder="Hledat studenta, knihu..." [ngModel]="loanSearch()" (ngModelChange)="loanSearch.set($event)">
+                    </div>
+                    <div class="filter-pills">
+                        <button class="filter-pill" [class.active]="loanFilter() === 'all'" (click)="loanFilter.set('all')">Vše</button>
+                        <button class="filter-pill" [class.active]="loanFilter() === 'ongoing'" (click)="loanFilter.set('ongoing')">Aktivní</button>
+                        <button class="filter-pill" [class.active]="loanFilter() === 'overdue'" (click)="loanFilter.set('overdue')">Po termínu</button>
+                        <button class="filter-pill" [class.active]="loanFilter() === 'returned'" (click)="loanFilter.set('returned')">Vrácené</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="data-table-wrapper">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Student</th>
+                            <th>Kniha</th>
+                            <th>Výpůjčka od</th>
+                            <th>Termín vrácení</th>
+                            <th>Vráceno</th>
+                            <th>Status</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @for (loan of filteredLoans(); track loan.loan_id) {
+                        <tr [class.row-overdue]="loan.status === 'ongoing' && isOverdue(loan.due_date)">
+                            <td>
+                                <div class="cell-person">
+                                    <div class="person-avatar">{{ (loan.first_name || '?')[0] }}{{ (loan.last_name || '')[0] }}</div>
+                                    <div>
+                                        <div class="cell-primary">{{ loan.first_name }} {{ loan.last_name }}</div>
+                                        <div class="cell-secondary">ID: {{ loan.person_id }}</div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="cell-primary">{{ loan.title }}</div>
+                                <div class="cell-secondary">Kopie #{{ loan.copy_number }}</div>
+                            </td>
+                            <td>
+                                <div class="cell-primary">{{ loan.loan_date | date:'d. M. yyyy' }}</div>
+                            </td>
+                            <td>
+                                <div class="cell-primary" [class.text-danger]="isOverdue(loan.due_date) && loan.status === 'ongoing'">
+                                    {{ loan.due_date | date:'d. M. yyyy' }}
+                                </div>
+                            </td>
+                            <td>
+                                @if (loan.return_date) {
+                                <div class="cell-primary">{{ loan.return_date | date:'d. M. yyyy' }}</div>
+                                } @else {
+                                <span class="cell-secondary">—</span>
+                                }
+                            </td>
+                            <td>
+                                @if (loan.status === 'ongoing') {
+                                    @if (isOverdue(loan.due_date)) {
+                                        <span class="status-badge status-overdue">
+                                            <i-tabler name="clock-exclamation"></i-tabler> Po termínu
+                                        </span>
+                                    } @else {
+                                        <span class="status-badge status-active">
+                                            <i-tabler name="clock"></i-tabler> Aktivní
+                                        </span>
+                                    }
+                                } @else if (loan.status === 'returned') {
+                                    <span class="status-badge status-returned">
+                                        <i-tabler name="check"></i-tabler> Vráceno
+                                    </span>
+                                } @else {
+                                    <span class="status-badge status-other">{{ loan.status }}</span>
+                                }
+                            </td>
+                            <td>
+                                @if (loan.status === 'ongoing' && isOverdue(loan.due_date)) {
+                                <button class="btn btn--secondary btn--sm" (click)="notifyLoan(loan.loan_id)" title="Odeslat upozornění">
+                                    <i-tabler name="mail"></i-tabler> Upozornit
+                                </button>
+                                }
+                            </td>
+                        </tr>
+                        } @empty {
+                        <tr>
+                            <td colspan="7" class="empty-row">
+                                <i-tabler name="books-off"></i-tabler>
+                                <span>Žádné záznamy neodpovídají vašemu vyhledávání.</span>
+                            </td>
+                        </tr>
+                        }
+                    </tbody>
+                </table>
+                <div class="table-footer">
+                    <span class="muted">Celkem záznamů: <strong>{{ filteredLoans().length }}</strong></span>
+                </div>
+            </div>
+        </div>
+        }
+
+        <!-- INVENTORY TAB -->
+        @if (activeTab() === 'inventory') {
+        <div class="fullpage-section">
+            <div class="section-toolbar">
+                <div class="section-toolbar-left">
+                    <div class="section-info">
+                        <h3>Přehled všech kopií</h3>
+                        <p class="muted">Fyzické kopie, jejich stav a aktuální výpůjčky</p>
+                    </div>
+                </div>
+                <div class="section-toolbar-right">
+                    <div class="search-wrapper">
+                        <i-tabler name="search"></i-tabler>
+                        <input type="text" class="search-input" placeholder="Hledat knihu, autora, čárový kód..." [ngModel]="inventorySearch()" (ngModelChange)="inventorySearch.set($event)">
+                    </div>
+                    <div class="filter-pills">
+                        <button class="filter-pill" [class.active]="inventoryFilter() === 'all'" (click)="inventoryFilter.set('all')">Vše</button>
+                        <button class="filter-pill" [class.active]="inventoryFilter() === 'available'" (click)="inventoryFilter.set('available')">Dostupné</button>
+                        <button class="filter-pill" [class.active]="inventoryFilter() === 'borrowed'" (click)="inventoryFilter.set('borrowed')">Vypůjčené</button>
+                        <button class="filter-pill" [class.active]="inventoryFilter() === 'discarded'" (click)="inventoryFilter.set('discarded')">Vyřazené</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="data-table-wrapper">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Kniha</th>
+                            <th>Čárový kód</th>
+                            <th>Kopie #</th>
+                            <th>Stav</th>
+                            <th>Půjčeno</th>
+                            <th>Termín vrácení</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @for (item of filteredInventory(); track item.copy_id) {
+                        <tr [class.row-overdue]="item.copy_status === 'borrowed' && isOverdue(item.due_date)">
+                            <td>
+                                <div class="cell-primary">{{ item.title }}</div>
+                                <div class="cell-secondary">{{ item.author }}</div>
+                            </td>
+                            <td>
+                                <div class="barcode-cell">
+                                    <i-tabler name="barcode"></i-tabler>
+                                    <span class="cell-mono">{{ item.barcode }}</span>
+                                </div>
+                            </td>
+                            <td>
+                                <span class="copy-badge">#{{ item.copy_number }}</span>
+                            </td>
+                            <td>
+                                @if (item.copy_status === 'available') {
+                                    <span class="status-badge status-returned">
+                                        <i-tabler name="check"></i-tabler> Dostupné
+                                    </span>
+                                } @else if (item.copy_status === 'borrowed') {
+                                    <span class="status-badge status-active">
+                                        <i-tabler name="clock"></i-tabler> Vypůjčeno
+                                    </span>
+                                } @else if (item.copy_status === 'discarded') {
+                                    <span class="status-badge status-other">
+                                        <i-tabler name="trash"></i-tabler> Vyřazeno
+                                    </span>
+                                } @else {
+                                    <span class="status-badge status-other">{{ item.copy_status }}</span>
+                                }
+                            </td>
+                            <td>
+                                @if (item.copy_status === 'borrowed' && item.person_id) {
+                                <div class="cell-person">
+                                    <div class="person-avatar small">{{ (item.first_name || '?')[0] }}{{ (item.last_name || '')[0] }}</div>
+                                    <div>
+                                        <div class="cell-primary">{{ item.first_name }} {{ item.last_name }}</div>
+                                    </div>
+                                </div>
+                                } @else {
+                                <span class="cell-secondary">—</span>
+                                }
+                            </td>
+                            <td>
+                                @if (item.copy_status === 'borrowed' && item.due_date) {
+                                <div class="cell-primary" [class.text-danger]="isOverdue(item.due_date)">
+                                    {{ item.due_date | date:'d. M. yyyy' }}
+                                    @if (isOverdue(item.due_date)) {
+                                    <span class="overdue-tag">Po termínu</span>
+                                    }
+                                </div>
+                                } @else {
+                                <span class="cell-secondary">—</span>
+                                }
+                            </td>
+                        </tr>
+                        } @empty {
+                        <tr>
+                            <td colspan="6" class="empty-row">
+                                <i-tabler name="books-off"></i-tabler>
+                                <span>Žádné kopie neodpovídají vašemu vyhledávání.</span>
+                            </td>
+                        </tr>
+                        }
+                    </tbody>
+                </table>
+                <div class="table-footer">
+                    <span class="muted">Celkem kopií: <strong>{{ filteredInventory().length }}</strong></span>
+                </div>
+            </div>
+        </div>
+        }
+
+        @if (activeTab() === 'reservations') {
+        <div class="fullpage-section">
+            <div class="evidence-toolbar">
+                <div class="search-box small">
+                    <i-tabler name="search"></i-tabler>
+                    <input type="text" class="form-input" [ngModel]="reservationSearch()" (ngModelChange)="reservationSearch.set($event)" placeholder="Hledat rezervaci...">
+                </div>
+                <div class="filter-group">
+                    <label>Stav:</label>
+                    <schoolingo-dropdown [options]="[{label: 'Všechny', value: 'all'}, {label: 'Čekající', value: 'pending'}, {label: 'Vyřízené', value: 'fulfilled'}, {label: 'Zrušené', value: 'cancelled'}]" [ngModel]="reservationFilter()" (ngModelChange)="reservationFilter.set($event)" [settings]="{ locale: false }"></schoolingo-dropdown>
+                </div>
+            </div>
+
+            <div class="table-container">
+                <table class="schoolingo-table">
+                    <thead>
+                        <tr>
+                            <th>Datum vytvoření</th>
+                            <th>Osoba</th>
+                            <th>Kniha</th>
+                            <th>Požadované datum</th>
+                            <th>Stav</th>
+                            <th>Akce</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @for (res of filteredReservations(); track res.reservation_id) {
+                        <tr>
+                            <td>
+                                <div class="cell-primary">{{ res.created | date:'d. M. yyyy HH:mm' }}</div>
+                            </td>
+                            <td>
+                                <div class="cell-person">
+                                    <div class="person-avatar">{{ (res.first_name || '?')[0] }}{{ (res.last_name || '')[0] }}</div>
+                                    <div>
+                                        <div class="cell-primary">{{ res.first_name }} {{ res.last_name }}</div>
+                                        <div class="cell-secondary">ID: {{ res.person_id }}</div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="cell-primary">{{ res.title }}</div>
+                                <div class="cell-secondary">{{ res.author }}</div>
+                            </td>
+                            <td>
+                                <div class="cell-primary">{{ res.reservation_date | date:'d. M. yyyy' }}</div>
+                            </td>
+                            <td>
+                                @if (res.status === 'pending') {
+                                    <span class="status-badge status-active">
+                                        <i-tabler name="clock"></i-tabler> Čekající
+                                    </span>
+                                } @else if (res.status === 'fulfilled') {
+                                    <span class="status-badge status-returned">
+                                        <i-tabler name="check"></i-tabler> Vyřízeno
+                                    </span>
+                                } @else if (res.status === 'cancelled') {
+                                    <span class="status-badge status-other">
+                                        <i-tabler name="x"></i-tabler> Zrušeno
+                                    </span>
+                                }
+                            </td>
+                            <td>
+                                @if (res.status === 'pending') {
+                                <div style="display: flex; gap: 0.5rem;">
+                                    <input type="number" #copyInput placeholder="ID kopie" class="form-input" style="width: 100px; padding: 4px 8px; min-height: unset; height: 32px;">
+                                    <button class="btn btn--sm btn--primary" (click)="fulfillReservation(res.reservation_id, copyInput.value)" [disabled]="!copyInput.value">
+                                        <i-tabler name="check"></i-tabler> Předat
+                                    </button>
+                                    <button class="btn btn--sm btn--secondary" (click)="cancelReservation(res.reservation_id)">
+                                        Zrušit
+                                    </button>
+                                </div>
+                                }
+                            </td>
+                        </tr>
+                        } @empty {
+                        <tr>
+                            <td colspan="6" class="empty-row">
+                                <i-tabler name="bookmark-off"></i-tabler>
+                                <span>Žádné rezervace neodpovídají vyhledávání.</span>
+                            </td>
+                        </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        }
     </div>
-    }
 </div>

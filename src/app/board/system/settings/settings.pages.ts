@@ -2,7 +2,7 @@ import { enumSidebar } from './config';
 
 export interface SettingsField {
     id: string;
-    type: 'checkbox' | 'text' | 'number' | 'module_toggle' | 'dropdown';
+    type: 'checkbox' | 'text' | 'number' | 'module_toggle' | 'dropdown' | 'row_select';
     label: string;
     description?: string;
     placeholder?: string;
@@ -177,6 +177,40 @@ export const SettingsPages: SettingsPageConfig[] = [
                     { id: 'emp_vac_req', type: 'checkbox', label: 'system.employee_vacation_requests_enabled', description: 'Povolit žádosti o dovolenou pro zaměstnance.', bind: 'employee_vacation_requests_enabled' },
                     { id: 'emp_att', type: 'checkbox', label: 'system.employee_attendance_enabled', description: 'Povolit sledování docházky zaměstnanců.', bind: 'employee_attendance_enabled' },
                     { id: 'emp_sal', type: 'checkbox', label: 'system.employee_salaries_enabled', description: 'Povolit modul platů pro zaměstnance.', bind: 'employee_salaries_enabled' }
+                ]
+            }
+        ]
+    },
+    {
+        id: enumSidebar.MODULE_LIBRARY,
+        title: 'system.library_settings',
+        subtitle: 'Nastavení školní knihovny a výpůjček.',
+        saveAction: 'update_school',
+        saveLabel: 'system.save_settings',
+        groups: [
+            {
+                title: 'system.module_features',
+                style: 'rows',
+                fields: [
+                    { id: 'lib_en', type: 'checkbox', label: 'Povolit modul knihovny', description: 'Povolení/vypnutí celého modulu Knihovna.', bind: 'library_enabled' }
+                ]
+            },
+            {
+                title: 'Poplatky a platby',
+                style: 'grid',
+                fields: [
+                    { 
+                        id: 'lib_fee_period', type: 'row_select', label: 'Zúčtovací období', bind: 'library_fee_period', 
+                        options: [
+                            { label: 'Měsíční', value: 'monthly' },
+                            { label: 'Pololetní', value: 'half_yearly' },
+                            { label: 'Roční', value: 'yearly' }
+                        ],
+                        dropdownSettings: { locale: false }
+                    },
+                    { id: 'lib_fee_amount', type: 'number', label: 'Částka za období (Kč)', bind: 'library_fee_amount' },
+                    { id: 'lib_late_fee', type: 'number', label: 'Zpozdné za den (Kč)', bind: 'library_late_fee_per_day' },
+                    { id: 'lib_damage_fee', type: 'number', label: 'Pokuta za poškození (Kč)', bind: 'library_damage_fee' }
                 ]
             }
         ]

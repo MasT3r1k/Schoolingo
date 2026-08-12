@@ -386,9 +386,29 @@ export const config: SidebarGroup[] = [
                 permission: ['all'],
                 children: [{
                     item: 'sidebar.library.catalog',
-                    url: 'library',
+                    url: 'library/catalog',
                     icon: 'book',
                     permission: ['all']
+                }, {
+                    item: 'sidebar.library.loans',
+                    url: 'library/loans',
+                    icon: 'clock',
+                    permission: ['all']
+                }, {
+                    item: 'sidebar.library.history',
+                    url: 'library/history',
+                    icon: 'history',
+                    permission: ['all']
+                }, {
+                    item: 'sidebar.library.dashboard',
+                    url: 'library/dashboard',
+                    icon: 'chart-bar',
+                    permission: ['manager:library:manage']
+                }, {
+                    item: 'sidebar.library.all_loans',
+                    url: 'library/all-loans',
+                    icon: 'list-details',
+                    permission: ['manager:library:manage']
                 }, {
                     item: 'sidebar.library.manage',
                     url: 'library/manage',

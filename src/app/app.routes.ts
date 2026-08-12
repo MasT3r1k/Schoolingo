@@ -625,6 +625,22 @@ export const routes: Routes = [
                         loadComponent: () => import('./board/library/pages/manager/manager.component').then(m => m.ManagerComponent)
                     },
                     {
+                        path: 'loans',
+                        loadComponent: () => import('./board/library/pages/my-loans/my-loans.component').then(m => m.MyLoansComponent)
+                    },
+                    {
+                        path: 'history',
+                        loadComponent: () => import('./board/library/pages/history/history.component').then(m => m.HistoryComponent)
+                    },
+                    {
+                        path: 'dashboard',
+                        loadComponent: () => import('./board/library/pages/lib-dashboard/lib-dashboard.component').then(m => m.LibDashboardComponent)
+                    },
+                    {
+                        path: 'all-loans',
+                        loadComponent: () => import('./board/library/pages/all-loans/all-loans.component').then(m => m.AllLoansComponent)
+                    },
+                    {
                         path: '**',
                         pathMatch: 'full',
                         redirectTo: '/library/catalog'

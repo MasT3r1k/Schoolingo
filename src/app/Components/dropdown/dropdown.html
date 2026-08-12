@@ -1,7 +1,7 @@
 <div class="dropdown-container">
     <button
         #trigger
-        class="dropdown-trigger"
+        class="dropdown-trigger form-input"
         [ngClass]="{ 'open': isOpen, 'down': dropdownPosition === 'down', 'up': dropdownPosition === 'up', 'disabled': disabled }"
         [disabled]="disabled"
         (click)="toggleDropdown($event)"
@@ -20,17 +20,14 @@
         </span>
 
         <div class="trigger-icons">
-            @if (clearable && value !== null && !disabled) {
+            @if (clearable && value !== null && value !== null_value && !disabled) {
             <button
                 class="clear-btn"
                 (click)="clearValue($event)"
                 type="button"
                 aria-label="Vymazat vybranou hodnotu"
             >
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <line x1="18" y1="6" x2="6" y2="18"></line>
-                <line x1="6" y1="6" x2="18" y2="18"></line>
-                </svg>
+                <i-tabler name="x" style="width:16px;height:16px"></i-tabler>
             </button>
             }
 

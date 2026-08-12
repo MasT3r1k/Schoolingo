@@ -66,8 +66,8 @@ export class LoginHistoryComponent implements OnInit {
   public history = new BehaviorSubject<any[]>([]);
   public dateFrom: string = '';
   public dateTo: string = '';
-  public periodOptions = ['day', 'week', 'month', 'semester', 'school_year', '30days', 'custom'];
-  public selectedPeriod = new BehaviorSubject<number>(this.periodOptions.indexOf('30days'));
+  public periodOptions = ['day', 'week', 'month', 'semester', 'school_year', 'custom'];
+  public selectedPeriod = new BehaviorSubject<number>(this.periodOptions.indexOf('month'));
 
   ngOnInit(): void {
     this.LoadDevices(this.page.getValue());
@@ -140,10 +140,7 @@ export class LoginHistoryComponent implements OnInit {
                 this.dateTo = currentYear + '-08-31';
             }
             break;
-        case '30days':
-            this.dateFrom = '';
-            this.dateTo = '';
-            break;
+
     }
 
     this.page.next(1);

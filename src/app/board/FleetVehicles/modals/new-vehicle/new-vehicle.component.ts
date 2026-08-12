@@ -9,6 +9,7 @@ import { FleetVehicles } from '@Schoolingo/fleetvehicles';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import * as VehicleConfig from '../../../../infrastructure/fleetvehicles/config';
 import { CalendarComponent } from '@Components/calendar';
+import { ModalManager } from '@Schoolingo/modal';
 import moment from 'moment';
 
 
@@ -27,6 +28,8 @@ export class NewVehicleComponent {
   public l = inject(Locale);
   public dropdownManager = inject(DropdownManager);
   public vehicles = inject(FleetVehicles);
+  public modalManager = inject(ModalManager);
+
   public types: VehicleType[] = ['car', 'van', 'bus', 'minibus', 'truck', 'motorcycle'];
   public type: VehicleType = this.types[0];
   public fuels: FuelType[] = ['petrol', 'diesel', 'electric', 'hybrid', 'lpg', 'cng'];
@@ -36,6 +39,20 @@ export class NewVehicleComponent {
   public assignment: 'everyone' | 'specific' = 'everyone';
   public country = 0;
   public vin = '';
+
+  public plate = '';
+  public brand = '';
+  public model = '';
+  public year: number | null = null;
+  public consumption: number | null = null;
+  public insurance = '';
+  public insurance_num = '';
+
+  public engine_capacity: number | null = null;
+  public power: number | null = null;
+  public tachometr: number | null = null;
+  public color: string = '';
+  public seats: number | null = null;
 
   public option_icons = [
     'dashboard',
@@ -51,4 +68,25 @@ export class NewVehicleComponent {
   ];
   public selected_tab = new BehaviorSubject(0);
 
+  public closeForm(): void {
+    this.modalManager.closeModal('add_vehicle');
+  }
+
+  public saveVehicle(): void {
+    if (!this.brand || !this.model || !this.plate) return;
+
+    this.vehicles.createVehicle({
+      licensePlate: this.plate,
+      brand: this.brand,
+      model: this.model,
+      year: this.year || new Date().getFullYear(),
+      fuelType: this.fuel,
+      mileage: this.tachometr || 0
+    }).subscribe({
+      next: () => {
+        this.vehicles.loadVehicles().subscribe();
+        this.closeForm();
+      }
+    });
+  }
 }

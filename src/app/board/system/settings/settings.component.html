@@ -71,6 +71,16 @@
                                         <schoolingo-checkbox [checked]="$any(system.settings)[field.bind!]" (click)="$any(system.settings)[field.bind!] = !$any(system.settings)[field.bind!]"></schoolingo-checkbox>
                                     } @else if (field.type === 'dropdown') {
                                         <schoolingo-dropdown [options]="getOptions(field.options)" [(ngModel)]="$any(system.settings)[field.bind!]" [settings]="field.dropdownSettings || {}" (ngModelChange)="executeAction(getCurrentConfig()!.saveAction)"></schoolingo-dropdown>
+                                    } @else if (field.type === 'row_select') {
+                                        <div class="row-select">
+                                            @for (option of getOptions(field.options); track option.value) {
+                                                <div class="row-select-item" 
+                                                     [class.active]="$any(system.settings)[field.bind!] === option.value"
+                                                     (click)="$any(system.settings)[field.bind!] = option.value; executeAction(getCurrentConfig()!.saveAction)">
+                                                    {{ field.dropdownSettings?.locale === false ? option.label : l.s(option.label) }}
+                                                </div>
+                                            }
+                                        </div>
                                     }
                                 </div>
                             </div>
@@ -103,6 +113,22 @@
                                     <div class="form-group">
                                         <label>{{ l.s(field.label) }}</label>
                                         <schoolingo-dropdown [options]="getOptions(field.options)" [(ngModel)]="$any(system.settings)[field.bind!]" [settings]="field.dropdownSettings || {}" (ngModelChange)="executeAction(getCurrentConfig()!.saveAction)"></schoolingo-dropdown>
+                                        @if (field.note) {
+                                            <small class="note">{{ field.note }}</small>
+                                        }
+                                    </div>
+                                } @else if (field.type === 'row_select') {
+                                    <div class="form-group">
+                                        <label>{{ l.s(field.label) }}</label>
+                                        <div class="row-select">
+                                            @for (option of getOptions(field.options); track option.value) {
+                                                <div class="row-select-item" 
+                                                     [class.active]="$any(system.settings)[field.bind!] === option.value"
+                                                     (click)="$any(system.settings)[field.bind!] = option.value; executeAction(getCurrentConfig()!.saveAction)">
+                                                    {{ field.dropdownSettings?.locale === false ? option.label : l.s(option.label) }}
+                                                </div>
+                                            }
+                                        </div>
                                         @if (field.note) {
                                             <small class="note">{{ field.note }}</small>
                                         }

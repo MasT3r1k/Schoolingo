@@ -1,73 +1,81 @@
 @if (login) {
-<div class="modal-status-banner" [class.success]="login.success" [class.failed]="!login.success">
-    @if (login.success) {
-    <i-tabler name="circle-check"></i-tabler>
-    <span>{{ l.s('login_history.state.success') }}</span>
-    } @else {
-    <i-tabler name="circle-x"></i-tabler>
-    <span>{{ l.s('login_history.state.' + (login.error ? login.error : 'error')) }}</span>
-    }
-</div>
+<div class="login-detail-wrapper">
+    <!-- Header banner -->
+    <div class="detail-header" [class.success]="login.success" [class.failed]="!login.success">
+        <div class="status-icon-wrapper">
+            <i-tabler [name]="login.success ? 'check' : 'x'"></i-tabler>
+        </div>
+        <h3>{{ login.success ? 'Přihlášení povoleno' : 'Přihlášení zamítnuto' }}</h3>
+        @if (!login.success) {
+        <p class="error-msg">{{ l.s('login_history.state.' + (login.error ? login.error : 'error')) }}</p>
+        }
+    </div>
 
-<div class="detail-grid">
-    <div class="info-group">
-        <span class="info-label">Čas přihlášení</span>
-        <div class="info-value">
-            <i-tabler name="clock"></i-tabler>
-            {{ Utils.formatDate(login.created) }}
+    <!-- Stats/Info Grid -->
+    <div class="info-blocks">
+        <div class="info-block">
+            <div class="block-icon"><i-tabler name="clock"></i-tabler></div>
+            <div class="block-text">
+                <span class="label">Čas přihlášení</span>
+                <span class="value">{{ Utils.formatDate(login.created) }}</span>
+            </div>
+        </div>
+
+        <div class="info-block">
+            <div class="block-icon"><i-tabler name="key"></i-tabler></div>
+            <div class="block-text">
+                <span class="label">Metoda</span>
+                <span class="value">{{ l.s('login_history.types.' + login.type) }}</span>
+            </div>
+        </div>
+
+        <div class="info-block ip-block">
+            <div class="block-icon"><i-tabler name="world"></i-tabler></div>
+            <div class="block-text">
+                <span class="label">IP Adresa</span>
+                <div class="value-row">
+                    <code class="ip-code" [class.blurred]="!login._showIp">
+                        {{ login.ip ? (login._showIp ? login.ip : Utils.blurIPAddress(login.ip)) : 'Neznámá' }}
+                    </code>
+                    @if (login.ip) {
+                    <button class="ip-toggle" (click)="login._showIp = !login._showIp" [title]="login._showIp ? 'Skrýt IP' : 'Zobrazit IP'">
+                        <i-tabler [name]="login._showIp ? 'eye-off' : 'eye'"></i-tabler>
+                    </button>
+                    }
+                </div>
+            </div>
         </div>
     </div>
 
-    <div class="info-group">
-        <span class="info-label">Metoda</span>
-        <div class="info-value">
-            <i-tabler name="key"></i-tabler>
-            {{ l.s('login_history.types.' + login.type) }}
-        </div>
-    </div>
-
-    <div class="info-group">
-        <span class="info-label">IP Adresa</span>
-        <div class="info-value ip-reveal-row">
-            <i-tabler name="world"></i-tabler>
-            <code class="ip-code" [class.blurred]="!login._showIp">
-                {{ login.ip ? (login._showIp ? login.ip : Utils.blurIPAddress(login.ip)) : 'Neznámá' }}
-            </code>
-            @if (login.ip) {
-            <button class="ip-toggle" (click)="login._showIp = !login._showIp" [title]="login._showIp ? 'Skrýt IP' : 'Zobrazit IP'">
-                <i-tabler [name]="login._showIp ? 'eye-off' : 'eye'"></i-tabler>
-            </button>
-            }
-        </div>
-    </div>
-
-    <div class="info-group">
-        <span class="info-label">Zařízení</span>
-        <div class="info-value">
+    <!-- Device Details Card -->
+    <div class="detail-card">
+        <div class="detail-card-icon">
             <i-tabler [name]="Utils.getBrowserIcon(login.user_agent)"></i-tabler>
-            {{ Utils.getBrowser(login.user_agent) }} • {{ Utils.getOS(login.user_agent) }}
         </div>
-        <div class="meta muted" style="margin-top: 4px; font-size: 0.8rem; word-break: break-all;">
-            {{ login.user_agent }}
+        <div class="detail-card-content">
+            <h4>{{ Utils.getBrowser(login.user_agent) }} na {{ Utils.getOS(login.user_agent) }}</h4>
+            <p class="user-agent-string">{{ login.user_agent }}</p>
         </div>
     </div>
 
     @if (login.city || login.country) {
-    <div class="info-group info-group--full">
-        <span class="info-label">Lokace</span>
-        <div class="info-value">
+    <!-- Location Card -->
+    <div class="detail-card">
+        <div class="detail-card-icon">
             <i-tabler name="map-pin"></i-tabler>
-            {{ login.city }} {{ login.zip_code ? '(' + login.zip_code + ')' : '' }}
-            {{ login.region_name ? ', ' + login.region_name : '' }}
-            {{ login.country ? ', ' + login.country : '' }}
-            {{ login.continent ? ' (' + login.continent + ')' : '' }}
+        </div>
+        <div class="detail-card-content">
+            <h4>{{ login.city }}{{ login.zip_code ? ' (' + login.zip_code + ')' : '' }}</h4>
+            <p>{{ login.region_name ? login.region_name + ', ' : '' }}{{ login.country }}{{ login.continent ? ' (' + login.continent + ')' : '' }}</p>
         </div>
     </div>
     }
+
 </div>
+
 <div class="modal-actions">
-    <div class="btn btn--secondary" (click)="modalManager.closeModal('login_detail')">
-        Zavřít
-    </div>
+    <button class="btn btn--secondary" (click)="modalManager.closeModal('login_detail')" style="width: 100%; justify-content: center;">
+        Zavřít detaily
+    </button>
 </div>
 }

@@ -35,6 +35,7 @@ export class AddEmailComponent implements OnInit {
 
   public active_action = '';
   public verificationCode = '';
+  public digits: string[] = ['', '', '', '', '', ''];
 
   public page: 'main' | '2fa' | 'verify' = 'main';
   public alert: { type: 'success' | 'danger' | 'info', message: string } | null = null;
@@ -116,7 +117,8 @@ export class AddEmailComponent implements OnInit {
   }
 
   public verifyEmail(): void {
-    if (this.verificationCode.length < 4) return;
+    this.verificationCode = this.digits.join('');
+    if (this.verificationCode.length < 6) return;
 
     this.http.post(`${Config.API_URL}/v1/user/email/verify/confirm`, {
       email: this.email,
@@ -166,6 +168,57 @@ export class AddEmailComponent implements OnInit {
     this.modalManager.openModal('delete_email', this.email);
   }
 
+  public onDigitKeyDown(event: KeyboardEvent, index: number, prev: HTMLInputElement | null, next: HTMLInputElement | null) {
+    if (event.key === 'Backspace') {
+      if (!this.digits[index - 1]) {
+        if (prev) {
+          prev.focus();
+          setTimeout(() => prev.select(), 0);
+          event.preventDefault();
+        }
+      }
+    } else if (event.key === 'ArrowLeft') {
+      if (prev) {
+        prev.focus();
+        setTimeout(() => prev.select(), 0);
+        event.preventDefault();
+      }
+    } else if (event.key === 'ArrowRight') {
+      if (next) {
+        next.focus();
+        setTimeout(() => next.select(), 0);
+        event.preventDefault();
+      }
+    } else if (event.key.length === 1) {
+      if (!/^[a-zA-Z0-9]$/.test(event.key)) {
+        event.preventDefault();
+      }
+    }
+  }
+
+  public onDigitInput(index: number, next: HTMLInputElement | null) {
+    if (this.digits[index - 1]) {
+      this.digits[index - 1] = this.digits[index - 1].toUpperCase();
+      if (next) {
+        next.focus();
+        setTimeout(() => next.select(), 0);
+      } else {
+        this.verifyEmail();
+      }
+    }
+  }
+
+  public onDigitPaste(event: ClipboardEvent) {
+    const pastedText = event.clipboardData?.getData('text');
+    if (pastedText && pastedText.length === 6) {
+      for (let i = 0; i < 6; i++) {
+        this.digits[i] = pastedText[i].toUpperCase();
+      }
+      event.preventDefault();
+      this.verifyEmail();
+    }
+  }
+
   private resetForm() {
     this.token = '';
     this.active_action = '';
@@ -174,6 +227,7 @@ export class AddEmailComponent implements OnInit {
     this.isEdit = false;
     this.originalEmail = null;
     this.verificationCode = '';
+    this.digits = ['', '', '', '', '', ''];
     this.page = 'main';
     this.alert = null;
   }

@@ -170,6 +170,11 @@ type ElysiaSystemAPI = {
     tests_enabled: boolean;
     rewards_enabled: boolean;
     demo_enabled: boolean;
+    library_enabled: boolean;
+    library_fee_period: string;
+    library_fee_amount: number;
+    library_late_fee_per_day: number;
+    library_damage_fee: number;
   };
 
   ldap_config: LdapConfig | null;

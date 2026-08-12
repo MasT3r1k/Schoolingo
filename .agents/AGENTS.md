@@ -286,3 +286,19 @@ Do NOT use raw HTML markup for stat cards (e.g. `<div class="stat-card">`). Alwa
 <stat-card type="primary" icon="calendar-event" label="translation.key" [value]="myValue" sub="translation.sub_key"></stat-card>
 ``
 
+---
+
+## 13. UX Psychology Principles
+When designing user interfaces and flows for Schoolingo, keep in mind these 6 psychology principles to maximize user engagement and intuitive design:
+
+1. **Defaults feel like recommendations (Status Quo Bias)**: People naturally stick to default options. Always make the default state the desired or recommended path.
+2. **The first number sets the anchor (Anchoring / Contrast Effect)**: Never show a cost or metric in isolation. Show a higher or contextual number first so the subsequent number feels like a great deal or is evaluated relatively.
+3. **A gift creates a debt (Reciprocity)**: Giving users something upfront (a feature preview, a helpful resource) makes them subconsciously more willing to complete a desired action (e.g., filling out a profile).
+4. **Building something makes it yours (IKEA Effect)**: When users invest effort into customizing or setting up something in the app, they value it significantly more and are less likely to abandon it.
+5. **Progress creates momentum (Endowed Progress Effect)**: Starting users off with artificial progress (e.g., "Step 2 of 5" instead of "Step 1 of 4") strongly motivates them to finish the task.
+6. **Loss Aversion (Framing Effect)**: The psychological pain of losing something is twice as powerful as the pleasure of gaining it. When prompting users to act, frame it around what they will lose (or miss out on) if they don't act, rather than only what they will gain.
+
+---
+
+## 14. Tabler Icons Registration
+Whenever you use an `<i-tabler>` icon in an HTML template, you MUST check if the icon is already imported in the project's icon registry (e.g., `src/app/icons/index.ts` or similar). If the icon is not registered there, you must add the import for it to ensure it renders correctly.

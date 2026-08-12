@@ -13,6 +13,7 @@ import { IconsModule } from '@Schoolingo/icons';
 import { EditMarkingScaleComponent } from './modals/edit-marking-scale/edit-marking-scale.component';
 import { EditMidtermComponent } from './modals/edit-midterm/edit-midterm.component';
 import { DropdownManager } from '@Schoolingo/dropdown';
+import { DropdownComponent, DropdownOption } from '@Components/dropdown/dropdown';
 
 interface Group {
   group_id: number;
@@ -47,7 +48,7 @@ interface Student {
 }
 
 @Component({
-  imports: [FormsModule, ReactiveFormsModule, IconsModule],
+  imports: [FormsModule, ReactiveFormsModule, IconsModule, DropdownComponent],
   templateUrl: './interm-record.component.html',
   styleUrl: './interm-record.component.css'
 })
@@ -68,6 +69,7 @@ export class IntermRecordComponent {
   private route = inject(ActivatedRoute);
 
   public groups: Group[] = [];
+  public dropdown_groups: DropdownOption[] = [];
   public gradeColumns: GradeColumn[] = []
   public students: Student[] = [];
   public marking_scale: number[] = [];
@@ -360,6 +362,10 @@ export class IntermRecordComponent {
       .subscribe((data) => {
         if (data.groups) {
           this.groups = data.groups;
+          this.dropdown_groups = this.groups.map((group, index) => ({
+            label: `${group.subject} - ${group.className}`,
+            value: index
+          }));
 
           const subject_id = this.route.snapshot.queryParamMap.get('subject_id');
           const group_id = this.route.snapshot.queryParamMap.get('group_id');

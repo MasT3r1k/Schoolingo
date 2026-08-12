@@ -1,206 +1,190 @@
-.library-catalog {
-    padding: var(--space-6);
-    height: 100%;
-    display: flex;
-    flex-direction: column;
-    gap: var(--space-6);
-}
-
-.catalog-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
-.header-content h1 {
-    font-size: 1.5rem;
-    font-weight: 700;
-    margin-bottom: var(--space-1);
-    color: var(--text-primary);
-}
-
-.header-content p {
-    color: var(--text-secondary);
-    font-size: 0.9rem;
-}
-
-/* Search */
-.search-box {
-    position: relative;
-    width: 300px;
-}
-
-.search-box i-tabler {
-    position: absolute;
-    left: 12px;
-    top: 50%;
-    transform: translateY(-50%);
-    color: var(--text-muted);
-    width: 18px;
-    height: 18px;
-}
-
-.search-box input {
-    width: 100%;
-    padding: 10px 10px 10px 40px;
-    border-radius: var(--radius-lg);
-    border: 1px solid var(--border-color);
-    background: var(--surface-card);
-    color: var(--text-primary);
-    font-size: 0.9rem;
-    transition: all var(--transition-fast);
-}
-
-.search-box input:focus {
-    outline: none;
-    border-color: var(--primary);
-    box-shadow: 0 0 0 3px var(--primary-translucent);
-}
-
-/* Tabs */
-.genre-tabs {
-    display: flex;
-    gap: var(--space-2);
-    overflow-x: auto;
-    padding-bottom: var(--space-2);
-    scrollbar-width: none;
-}
-
-.tab {
-    padding: 8px 16px;
-    background: var(--surface-card);
-    border: 1px solid var(--border-color);
-    border-radius: var(--radius-lg);
-    font-size: 0.9rem;
-    font-weight: 500;
-    color: var(--text-secondary);
-    cursor: pointer;
-    white-space: nowrap;
-    transition: all var(--transition-fast);
-}
-
-.tab:hover {
-    background: var(--surface-hover);
-    color: var(--text-primary);
-}
-
-.tab.active {
-    background: var(--primary);
-    color: white;
-    border-color: var(--primary);
-}
-
-/* Grid */
+/* =====================================================
+   CATALOG — Book grid
+   ===================================================== */
 .book-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-    gap: var(--space-5);
-    flex: 1;
-    overflow-y: auto;
-    padding-right: var(--space-2);
+    grid-template-columns: repeat(auto-fill,minmax(250px,1fr));
+    gap: 16px;
+    padding: 0.5rem 0;
+    width: 100%;
 }
 
-/* Card Overrides */
+/* =====================================================
+   CATALOG — Book card
+   ===================================================== */
 .book-card {
-    /* Dimensions or specific grid behavior if needed */
-    /* .card provides bg, border, radius, shadow */
-}
-
-/* Cover */
-.book-cover {
-    height: 280px;
-    background: var(--surface-ground);
+    background: var(--surface-2);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: 16px 16px 14px;
     position: relative;
     overflow: hidden;
-    /* Cover is flush with top, so no padding changes needed for .book-cover itself 
-       but standard .card overflow:hidden handles the corners.
-    */
-}
-
-.book-cover img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    transition: transform var(--transition-base);
-}
-
-.book-card:hover .book-cover img {
-    transform: scale(1.05);
-}
-
-.cover-placeholder {
-    width: 100%;
-    height: 100%;
+    box-shadow: var(--shadow);
     display: flex;
-    align-items: center;
-    justify-content: center;
-    color: var(--text-muted);
+    flex-direction: column;
+    min-height: 200px;
 }
 
-.cover-placeholder i-tabler {
-    width: 64px;
-    height: 64px;
-    opacity: 0.5;
-}
-
-.book-badges {
+/* Coloured spine strip (left edge) */
+.book-spine {
     position: absolute;
-    top: 10px;
-    right: 10px;
-    display: flex;
-    gap: 5px;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 4px;
 }
 
-.badge {
-    font-size: 0.75rem;
-    padding: 4px 8px;
-    border-radius: var(--radius-sm);
-    font-weight: 600;
-    backdrop-filter: blur(4px);
-}
-
-.badge.success {
-    background: rgba(var(--green-rgb), 0.9);
-    color: white;
-}
-
-.badge.danger {
-    background: rgba(var(--red-rgb), 0.9);
-    color: white;
-}
-
-/* Info */
-.book-card .card-body {
-    padding: var(--space-4);
-}
-
-.book-title {
-    font-size: 1rem;
+/* =====================================================
+   CATALOG — Availability stamp (rotated, mono)
+   ===================================================== */
+.book-stamp {
+    position: absolute;
+    top: 14px;
+    right: -6px;
+    transform: rotate(7deg);
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
     font-weight: 700;
-    margin: 0 0 4px 0;
-    color: var(--text-primary);
-    line-height: 1.3;
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    line-clamp: 2;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
+    letter-spacing: .06em;
+    padding: 4px 10px;
+    border: 2px solid;
+    border-radius: 3px;
+    text-transform: uppercase;
+}
+
+/* .book-card:hover .book-stamp {
+    transform: rotate(4deg) scale(1.04);
+} */
+
+.book-stamp i-tabler {
+    width: 11px;
+    height: 11px;
+}
+
+.stamp--available {
+    color: var(--green, #22c55e);
+    border-color: var(--green, #22c55e);
+    background: rgba(34, 197, 94, 0.08);
+}
+
+.stamp--unavailable {
+    color: var(--danger, #ef4444);
+    border-color: var(--danger, #ef4444);
+    background: rgba(239, 68, 68, 0.08);
+}
+
+.stamp--danger {
+    color: var(--danger, #ef4444);
+    border-color: var(--danger, #ef4444);
+    background: rgba(239, 68, 68, 0.08);
+}
+
+
+/* =====================================================
+   CATALOG — Book info section
+   ===================================================== */
+.book-genre {
+  font-family: 'IBM Plex Mono',monospace;
+  font-size: 10px;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  color: var(--sage);
+  margin-bottom: 8px;
+}
+
+/* Genre + year row (monospace label) */
+.book-genre-row {
+    font-family: 'IBM Plex Mono',monospace;
+    font-size: 0.65rem;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin-bottom: 8px;
+}
+
+.book-genre-label {
+    font-weight: 600;
+    color: var(--primary);
+    opacity: 0.85;
+}
+
+/* Title & author */
+.book-title {
+    font-size: 17px;
+    font-weight: 600;
+    line-height: 1.25;
+    margin-bottom: 4px;
+    color: var(--primary);
 }
 
 .book-author {
-    color: var(--text-secondary);
-    font-size: 0.9rem;
-    margin: 0 0 8px 0;
+    font-size: 12.5px;
+    color: var(--text-muted);
+    margin-bottom: 10px;
 }
 
+/* Description snippet */
+.book-desc {
+    font-size: 12px;
+    color: var(--text-muted);
+    opacity: .8;
+    line-height: 1.45;
+    margin-bottom: 10px;
+}
+
+/* Meta row: ISBN + pages */
 .book-meta {
+    font-size: 11px;
+    color: var(--text-muted);
+    opacity: .8;
+    display: flex;
+    flex-direction: row;
+    gap: 0.5rem;
+    margin-bottom: 12px;
+}
+
+.book-meta-item {
     display: flex;
     align-items: center;
-    gap: 6px;
-    font-size: 0.8rem;
+    gap: 0.35rem;
+    font-size: 0.65rem;
+    letter-spacing: 0.04em;
     color: var(--text-muted);
+    opacity: 0.65;
 }
 
-.dot {
-    opacity: 0.5;
+.book-meta-item i-tabler {
+    width: 11px;
+    height: 11px;
+    flex-shrink: 0;
+}
+
+.book-actions {
+    margin-top: auto;
+    display: flex;
+    gap: 8px;
+}
+
+/* =====================================================
+   CATALOG — Responsive
+   ===================================================== */
+@media (max-width: 768px) {
+    .search-wrapper {
+        width: 100%;
+        margin-top: 1rem;
+    }
+
+    .card-header {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .flex-items {
+        width: 100%;
+    }
+
+    .book-grid {
+        grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+        gap: 1rem;
+    }
 }

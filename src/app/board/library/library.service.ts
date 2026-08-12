@@ -17,6 +17,7 @@ export interface LibraryBook {
   createdAt: Date;
   available_copies: number;
   total_copies: number;
+  rating?: number;
 }
 
 export interface LibraryGenre {
@@ -50,13 +51,23 @@ export class LibraryService {
     return this.http.post<{ id: number; message: string }>(`${Config.API_URL}/v1/library/books`, book, { withCredentials: true });
   }
 
-  lookupBook(isbn: string): Observable<OpenLibraryBook> {
-    return this.http.get<OpenLibraryBook>(`${Config.API_URL}/v1/library/lookup?isbn=${isbn}`, { withCredentials: true });
+  lookupBook(query: string, type: 'isbn' | 'title'): Observable<OpenLibraryBook> {
+    return this.http.get<OpenLibraryBook>(`${Config.API_URL}/v1/library/lookup?${type}=${encodeURIComponent(query)}`, { withCredentials: true });
   }
 
   // === GENRES ===
   getGenres(): Observable<LibraryGenre[]> {
     return this.http.get<LibraryGenre[]>(`${Config.API_URL}/v1/library/genres`, { withCredentials: true });
+  }
+
+  // === USERS ===
+  getUsers(): Observable<any[]> {
+    return this.http.get<any[]>(`${Config.API_URL}/v1/library/users`, { withCredentials: true });
+  }
+
+  // === STATS ===
+  getStats(): Observable<{ totalBooks: number; activeLoans: number; overdueLoans: number }> {
+    return this.http.get<{ totalBooks: number; activeLoans: number; overdueLoans: number }>(`${Config.API_URL}/v1/library/stats`, { withCredentials: true });
   }
 
   // === LOANS & COPIES ===
@@ -68,6 +79,22 @@ export class LibraryService {
     return this.http.post(`${Config.API_URL}/v1/library/borrow`, { userId, copyId }, { withCredentials: true });
   }
 
+  reserveBook(bookId: number, date: string, duration: number = 14): Observable<any> {
+    return this.http.post(`${Config.API_URL}/v1/library/reserve`, { bookId, date, duration }, { withCredentials: true });
+  }
+
+  getReservations(): Observable<any[]> {
+    return this.http.get<any[]>(`${Config.API_URL}/v1/library/reservations`, { withCredentials: true });
+  }
+
+  fulfillReservation(reservationId: number, copyId: number): Observable<any> {
+    return this.http.post(`${Config.API_URL}/v1/library/reservations/${reservationId}/fulfill`, { copyId }, { withCredentials: true });
+  }
+
+  cancelReservation(reservationId: number): Observable<any> {
+    return this.http.post(`${Config.API_URL}/v1/library/reservations/${reservationId}/cancel`, {}, { withCredentials: true });
+  }
+
   returnBook(copyId: number): Observable<any> {
     return this.http.post(`${Config.API_URL}/v1/library/return`, { copyId }, { withCredentials: true });
   }
@@ -75,4 +102,27 @@ export class LibraryService {
   getMyLoans(): Observable<any[]> {
     return this.http.get<any[]>(`${Config.API_URL}/v1/library/loans`, { withCredentials: true });
   }
+
+  getAllLoans(): Observable<any[]> {
+    return this.http.get<any[]>(`${Config.API_URL}/v1/library/loans/all`, { withCredentials: true });
+  }
+
+  getInventory(): Observable<any[]> {
+    return this.http.get<any[]>(`${Config.API_URL}/v1/library/inventory`, { withCredentials: true });
+  }
+
+  notifyLoan(loanId: number): Observable<any> {
+    return this.http.post(`${Config.API_URL}/v1/library/loans/${loanId}/notify`, {}, { withCredentials: true });
+  }
+
+  // === RATINGS ===
+  rateBook(bookId: number, rating: number, review_text: string = ''): Observable<any> {
+    return this.http.post(`${Config.API_URL}/v1/library/books/${bookId}/rate`, { rating, review_text }, { withCredentials: true });
+  }
+
+  getBookRatings(bookId: number): Observable<any[]> {
+    return this.http.get<any[]>(`${Config.API_URL}/v1/library/books/${bookId}/ratings`, { withCredentials: true });
+  }
+
+
 }

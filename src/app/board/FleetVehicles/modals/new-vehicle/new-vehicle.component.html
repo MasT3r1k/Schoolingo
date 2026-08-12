@@ -9,7 +9,7 @@
             <div class="europe-flag"></div>
             <span class="country-code">{{ LICENSE_PLATES[country].code }}</span>
         </div>
-        <input type="text" id="rz">
+        <input type="text" id="rz" [(ngModel)]="plate">
     </div>
 </div>
 
@@ -27,19 +27,19 @@
 <div class="form-row">
     <div class="form-group">
         <label for="manufacturer">Značka vozidla</label>
-        <input type="text" id="manufacturer" placeholder="Škoda">
+        <input type="text" id="manufacturer" placeholder="Škoda" [(ngModel)]="brand">
     </div>
 
     <div class="form-group">
         <label for="model">Model vozidla</label>
-        <input type="text" id="model" placeholder="Octavia">
+        <input type="text" id="model" placeholder="Octavia" [(ngModel)]="model">
     </div>
 </div>
 
 <div class="form-row">
     <div class="form-group">
         <label for="year">Rok výroby</label>
-        <input type="text" id="year" placeholder="2019">
+        <input type="number" id="year" placeholder="2019" [(ngModel)]="year">
     </div>
 
     <div class="form-group">
@@ -98,19 +98,19 @@
 <div class="form-row">
     <div class="form-group">
         <label for="engine_capacity">Objem motoru (cm³)</label>
-        <input type="text" id="engine_capacity">
+        <input type="number" min="0.1" id="engine_capacity" [(ngModel)]="engine_capacity">
     </div>
 
     <div class="form-group">
         <label for="power">Výkon (kW)</label>
-        <input type="text" id="power">
+        <input type="number" min="0.1" id="power" [(ngModel)]="power">
     </div>
 </div>
 
 <div class="form-row">
     <div class="form-group">
         <label for="tachometr">Stav tachometru (km)</label>
-        <input type="text" id="tachometr">
+        <input type="text" id="tachometr" [(ngModel)]="tachometr">
     </div>
 
     <div class="form-group">
@@ -140,19 +140,19 @@
 <div class="form-row">
     <div class="form-group">
         <label for="color">Barva</label>
-        <input type="text" id="color">
+        <input type="text" id="color" [(ngModel)]="color">
     </div>
 
     <div class="form-group">
         <label for="seats">Počet míst</label>
-        <input type="number" min="1" id="seats">
+        <input type="number" min="1" id="seats" [(ngModel)]="seats">
 
     </div>
 </div>
 
 <div class="form-group">
     <label for="consumption">Průměrná spotřeba (L / 100km)</label>
-    <input type="number" min="0.1" id="consumption">
+    <input type="number" min="0.1" id="consumption" [(ngModel)]="consumption">
 </div>
 }
 
@@ -160,12 +160,12 @@
 <div class="form-row">
     <div class="form-group">
         <label for="insurance">Pojišťovna</label>
-        <input type="text" name="insurance" id="insurance" />
+        <input type="text" name="insurance" id="insurance" [(ngModel)]="insurance" />
     </div>
 
     <div class="form-group">
         <label for="insurance_num">Číslo pojistné smlouvy</label>
-        <input type="text" name="insurance_num" id="insurance_num" />
+        <input type="text" name="insurance_num" id="insurance_num" [(ngModel)]="insurance_num" />
     </div>
 </div>
 
@@ -210,7 +210,7 @@
 }
 
 <div class="modal-actions">
-    <div class="btn btn--primary">
+    <div class="btn btn--primary" (click)="saveVehicle()">
         <i-tabler name="plus"></i-tabler>
         Uložit vozidlo
     </div>
