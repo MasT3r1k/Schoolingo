@@ -11,9 +11,10 @@ import { CalendarComponent } from '@Components/calendar';
 import { CalendarManager } from '@Components/calendar-dropdown';
 import { FleetVehicles } from '@Schoolingo/fleetvehicles';
 import moment from 'moment';
+import { DropdownComponent } from '@Components/dropdown/dropdown';
 
 @Component({
-  imports: [IconsModule, FormsModule, ReactiveFormsModule, CalendarComponent],
+  imports: [IconsModule, FormsModule, ReactiveFormsModule, CalendarComponent, DropdownComponent],
   templateUrl: './new-reservation.component.html',
   styleUrl: './new-reservation.component.css'
 })
@@ -29,13 +30,17 @@ export class NewReservationComponent {
   public vehicles: any[] = [];
 
   public newReservation = {
-    vehicleId: 0,
+    vehicleId: null,
     startDate: moment(),
     endDate: moment(),
     purpose: '',
     destination: '',
     notes: ''
   };
+
+  get available_vehicles() {
+    return this.vehicles.filter((vehicle) => vehicle.status === 'available').map((vehicle) => ({ label: `${vehicle.name} (${ vehicle.licensePlate })`, value: vehicle.vehicleId }))
+  }
 
   ngOnInit(): void {
     this.fleet.vehicles.subscribe(v => {
@@ -58,7 +63,7 @@ export class NewReservationComponent {
     this.fleet.createTrip({
       vehicleId: this.newReservation.vehicleId,
       purpose: this.newReservation.purpose,
-      start_location: 'School', // Default or from input if you add it
+      start_location: 'School',
       end_location: this.newReservation.destination,
       start_date: this.newReservation.startDate.format('YYYY-MM-DD'),
       end_date: this.newReservation.endDate.format('YYYY-MM-DD')

@@ -47,6 +47,15 @@ export class MainComponent implements OnInit {
       skeletonType: 'attendance'
     },
     {
+      id: 'absence',
+      titleKey: 'modules.absence',
+      icon: 'clock',
+      permission: ['student', 'parent'],
+      import: () => import('./sections/absence/absence.component').then(m => m.AttendanceComponent),
+      component: signal(null),
+      skeletonType: 'attendance'
+    },
+    {
       id: 'timetable',
       titleKey: 'modules.timetable',
       titleUrl: '/teach/timetable',

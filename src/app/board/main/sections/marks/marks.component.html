@@ -11,7 +11,15 @@
     <div class="marks-list">
         @for (mark of marks; track $index) {
         <div class="mark-item">
+            <div>
+                <p>{{ mark.subject_name }}</p>
+                <p>{{ mark.topic }}</p>
+            </div>
             <div class="mark-value" [class]="'grade-' + getNumericalGrade(mark)">
+                {{ formatMark(mark) }}
+            </div>
+
+            <!-- <div class="mark-value" [class]="'grade-' + getNumericalGrade(mark)">
                 {{ formatMark(mark) }}
             </div>
             <div class="mark-info">
@@ -27,7 +35,7 @@
                     <i-tabler name="scale" size="12"></i-tabler>
                     {{ mark.weight || 1 }}
                 </span>
-            </div>
+            </div> -->
         </div>
         }
     </div>

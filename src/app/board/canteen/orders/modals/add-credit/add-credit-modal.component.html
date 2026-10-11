@@ -15,7 +15,9 @@
     }
 
     <div class="form-group">
-      <div class="form-label">Z účtu</div>
+      <div class="form-label">
+        {{ l.s('payments.manage.source_account') }}
+      </div>
       <schoolingo-dropdown 
         [options]="sourceAccountOptions" 
         [(ngModel)]="sourceAccountId"
@@ -25,7 +27,9 @@
     </div>
 
     <div class="form-group" style="margin-bottom: 0.5rem;">
-      <div class="form-label">Cílový účet</div>
+      <div class="form-label">
+        {{ l.s('payments.manage.target_account') }}
+      </div>
       <div class="dropdown-trigger">
         {{ getTargetAccountName() }}
       </div>
@@ -35,7 +39,9 @@
     </div>
 
     <div class="form-group">
-      <div class="form-label">Částka (Kč)</div>
+      <div class="form-label">
+        {{ l.s('payments.manage.deposit_amount') }}
+      </div>
       <input type="number" class="form-input" [(ngModel)]="amount" min="1" placeholder="Např. 500">
     </div>
   }
@@ -49,7 +55,8 @@
       <span class="btn-spinner"></span>
     }
     <span [class.btn-text-hidden]="submitting">
-      Převést
+      <i-tabler name="transfer"></i-tabler>
+      {{ l.s('payments.confirm_payment.title') }}
     </span>
   </button>
 </div>

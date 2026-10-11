@@ -40,9 +40,17 @@
   <div class="card-body">
     <div class="orders-grid">
       @for (day of days; track day.code) {
-        <div class="orders-day">
+        <div class="orders-day" [class.locked]="day.isLocked">
           <div class="orders-header">
-            <h3>{{ l.s('days.' + day.index) }}</h3>
+            <div class="flex row justify-content-space-between" style="width: 100%;">
+              <h3>{{ l.s('days.' + day.index) }}</h3>
+              @if (day.isLocked) {
+                <span class="badge badge--neutral" style="opacity: .8">
+                  <i-tabler name="lock"></i-tabler>
+                  {{ l.s('canteen.locked') || 'Uzavřeno' }}
+                </span>
+              }
+            </div>
             <span>{{ day.date }}</span>
           </div>
           

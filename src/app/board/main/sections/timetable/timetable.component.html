@@ -2,31 +2,44 @@
     <div class="subjects">
         @for(lesson of getSelectedDateLessons();track $index) {
         <div class="subject" [class.freetime]="lesson.free" [class.active]="isCurrentLesson(lesson)">
-            <span class="subjectIndex">{{ lesson.hour }}</span>
-            <div class="subjectName">
-                <span>{{ getLessonSubjectName(lesson) }}</span>
-                <div class="tags"></div>
-            </div>
-            @if (isCurrentLesson(lesson) && getLessonRemainingTime(lesson)) {
-            <div class="lesson-timer">
-                <i-tabler name="clock"></i-tabler>
-                {{ getLessonRemainingTime(lesson) }}
-            </div>
-            }
+            <div class="dot"></div>
             <div class="time">
                 {{ getLessonTime(lesson) }}
             </div>
-        </div>
-        @if (getBreakRemainingTime($index)) {
-        <div class="break-indicator">
-            <div class="line"></div>
-            <div class="timer">
-                <i-tabler name="bell-ringing"></i-tabler>
-                {{ getBreakRemainingTime($index) }}
+
+            <div class="subject-content">
+                <p>{{ getLessonSubjectName(lesson) }}</p>
+                <p></p>
             </div>
-            <div class="line"></div>
+
+
+
+                <!-- <span class="subjectIndex">{{ lesson.hour }}</span>
+                <div class="subjectName">
+                    <span>{{ getLessonSubjectName(lesson) }}</span>
+                    <div class="tags"></div>
+                </div>
+                @if (isCurrentLesson(lesson) && getLessonRemainingTime(lesson)) {
+                <div class="lesson-timer">
+                    <i-tabler name="clock"></i-tabler>
+                    {{ getLessonRemainingTime(lesson) }}
+                </div>
+                }
+                <div class="time">
+                    {{ getLessonTime(lesson) }}
+                </div>
+            </div>
+            @if (getBreakRemainingTime($index)) {
+            <div class="break-indicator">
+                <div class="line"></div>
+                <div class="timer">
+                    <i-tabler name="bell-ringing"></i-tabler>
+                    {{ getBreakRemainingTime($index) }}
+                </div>
+                <div class="line"></div>
+            </div>
+            } -->
         </div>
-        }
         } @empty {
         <div class="no-selection">
             <div class="illustration">

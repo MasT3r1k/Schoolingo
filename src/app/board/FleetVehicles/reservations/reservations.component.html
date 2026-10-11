@@ -1,14 +1,13 @@
 <div class="card">
     <!-- Page Header -->
     <div class="card-header">
-        <div class="header-title">
-            <h2>{{ l.s('fleetvehicles.reservations.title') }}</h2>
-            <p class="header-subtitle">Správa a přehled všech rezervací vozidel</p>
-        </div>
-        <button class="btn btn--gradient" (click)="openNewReservationForm()">
+        <h2>{{ l.s('fleetvehicles.reservations.title') }}</h2>
+        @if(filteredReservations.length) {
+        <div class="btn btn--primary" (click)="openNewReservationForm()">
             <i-tabler name="plus"></i-tabler>
             {{ l.s('fleetvehicles.new_reservation') }}
-        </button>
+        </div>
+        }
     </div>
 
     <!-- Stats Cards -->
@@ -69,8 +68,8 @@
         <div class="empty-state">
             <div class="empty-illustration">
                 <div class="empty-state__icon">
-                            <i-tabler name="calendar-off"></i-tabler>
-                        </div>
+                    <i-tabler name="calendar-off"></i-tabler>
+                </div>
             </div>
             <h3>Žádné rezervace</h3>
             <p>{{ l.s('fleetvehicles.no_reservations_desc') }}</p>

@@ -1,22 +1,5 @@
 # Dropdown Component - Dokumentace
 
-## Přehled
-
-Plnohodnotná Angular dropdown komponenta s podporou:
-- ✅ Keyboard navigace (šipky, Enter, Space, Escape)
-- ✅ Vyhledávání (automaticky se zobrazí nad 10 položek)
-- ✅ Scrollování s smooth perf
-- ✅ Two-way data binding
-- ✅ Event emittery pro reagování na změny
-- ✅ Accessibility (ARIA atributy, semantic HTML)
-- ✅ Responsive design
-- ✅ Deaktivace položek
-- ✅ Smazání vybrané hodnoty
-
----
-
-## Instalace a Setup
-
 ### HTML Template
 ```html
 <schoolingo-dropdown
@@ -33,9 +16,9 @@ export class MyComponent {
   selectedValue: any = null;
   
   myOptions: DropdownOption[] = [
-    { label: 'Volba 1', value: 'opt1' },
-    { label: 'Volba 2', value: 'opt2' },
-    { label: 'Volba 3', value: 'opt3' },
+    { label: 'Option 1', value: 'opt1' },
+    { label: 'Option 2', value: 'opt2' },
+    { label: 'Option 3', value: 'opt3' },
   ];
 }
 ```
@@ -43,36 +26,35 @@ export class MyComponent {
 ---
 
 ## API Reference
-
 ### Input Properties
 
 | Property | Type | Default | Popis |
 |----------|------|---------|-------|
-| `options` | `DropdownOption[]` | `[]` | Pole dostupných voleb |
-| `value` | `any` | `null` | Aktuálně vybraná hodnota |
-| `placeholder` | `string` | `'Vyberte možnost...'` | Text placeholderu |
-| `disabled` | `boolean` | `false` | Zakázat interakci s dropdownem |
-| `clearable` | `boolean` | `true` | Zobrazit tlačítko pro smazání |
+| `options` | `DropdownOption[]` | `[]` | Options |
+| `value` | `any` | `null` | Selected option |
+| `placeholder` | `string` | `'Vyberte možnost...'` | Placeholder text |
+| `disabled` | `boolean` | `false` | Disable interaction with dropdown |
+| `clearable` | `boolean` | `true` | Show button to clear selected option |
 
 ### Output Events
 
 | Event | Typ | Popis |
 |-------|-----|-------|
-| `valueChange` | `EventEmitter<any>` | Emituje se když se změní vybraná hodnota |
-| `opened` | `EventEmitter<boolean>` | Emituje se když se dropdown otevře/zavře |
+| `valueChange` | `EventEmitter<any>` | Emits when the value is change |
+| `opened` | `EventEmitter<boolean>` | Emits when the dropdown is opened / closed |
 
 ### DropdownOption Interface
 ```typescript
 interface DropdownOption {
-  label: string;      // Text zobrazovaný uživateli
-  value: any;         // Hodnota vrácená při výběru
-  disabled?: boolean; // Volitelně deaktivovat položku
+  label: string;
+  value: any;
+  disabled?: boolean;
 }
 ```
 
 ---
 
-## Příklady Použití
+## Examples
 
 ### 1. Two-Way Binding
 ```html
@@ -81,7 +63,7 @@ interface DropdownOption {
   [(ngModel)]="selectedCategory"
 ></schoolingo-dropdown>
 
-<p>Vybrané: {{ selectedCategory }}</p>
+<p>Selected: {{ selectedCategory }}</p>
 ```
 
 ### 2. One-Way Binding + Event
@@ -95,7 +77,7 @@ interface DropdownOption {
 
 ```typescript
 onCountryChanged(country: any): void {
-  console.log('Nová země:', country);
+  console.log('New Country:', country);
   this.loadCities(country);
 }
 ```
@@ -105,7 +87,7 @@ onCountryChanged(country: any): void {
 <schoolingo-dropdown
   [options]="options"
   [(ngModel)]="value"
-  placeholder="Prosím vyberte..."
+  placeholder="Please select"
   [disabled]="isLoading"
 ></schoolingo-dropdown>
 ```
@@ -113,9 +95,10 @@ onCountryChanged(country: any): void {
 ### 4. S Deaktivovanými Položkami
 ```typescript
 options: DropdownOption[] = [
-  { label: 'Aktivní volba', value: 1 },
-  { label: 'Deaktivovaná volba', value: 2, disabled: true },
-  { label: 'Další aktivní', value: 3 },
+  { label: 'Valid option', value: 1 },
+  { label: 'Disabled option', value: 2, disabled: true },
+  { label: 'Another valid option', value: 3 },
+
 ];
 ```
 
@@ -123,63 +106,42 @@ options: DropdownOption[] = [
 
 ## Keyboard Shortcuts
 
-| Klávesa | Efekt |
+| Keyboard | Effect |
 |---------|-------|
-| **Enter / Space** | Otevřít dropdown / Vybrat položku |
-| **ArrowDown** | Přesunout se na další položku |
-| **ArrowUp** | Přesunout se na předchozí položku |
-| **Escape** | Zavřít dropdown |
-| **Tab** | Zavřít dropdown a přesunout se na další prvek |
-
----
-
-## Best Practices
-
-### ✅ Dobré Praktiky
-1. Vždy poskytni `placeholder` pro lepší UX
-2. Používej `DropdownOption` interface pro správnou typizaci
-3. Debounce API volání v `valueChange` eventu
-4. Validuj selected value na serveru
-
----
-
-## Accessibility (a11y)
-
-Komponenta splňuje WCAG 2.1 AA standardy:
-- ✅ ARIA attributes (`aria-haspopup`, `aria-expanded`, `role="option"`)
-- ✅ Semantic HTML (`<button>`, `<input>`)
-- ✅ Keyboard navigace
-- ✅ Focus management
-- ✅ Color contrast (splňuje 4.5:1 ratio)
+| **Enter / Space** | Open dropdown / select option |
+| **ArrowDown** | Move to next option |
+| **ArrowUp** | Move to previous option |
+| **Escape** | Close dropdown |
+| **Tab** | Close dropdown and move to another element |
 
 ---
 
 ## Troubleshooting
 
-### Problém: Dropdown se nezobrazuje
-**Řešení**: Zajisti, že komponenta má `width: 100%` v parent kontejneru
+### Dropdown doesn't show up
+**Solve**: Make sure component has css: `width: 100%` in the parent element
 
-### Problém: Search se nezobrazuje
-**Řešení**: Musíš mít v options array **více jak 10 položek**
+### Search input doesn't show up
+**Solve**: You need to have at least 10 options in array
 
-### Problém: Value se neupdatuje
-**Řešení**: 
-1. Ujisti se, že používáš `[(ngModel)]` nebo `(valueChange)` event
-2. Importuj `FormsModule` v komponentě
+### Value doesn't update
+**Solves**: 
+1. Make sure you are using `[(ngModel)]` or `(valueChange)` event
+2. Import `FormsModule` in component
 
-### Problém: Keyboard navigace nefunguje
-**Řešení**: Ujisti se, že je dropdown element focused (klikni na něj)
+### Keyboard navigation isn't working
+**Solve**: Make sure dropdown element is focused
 
 ---
 
 ## Performance Tips
 
-1. **Change Detection**: Komponenta používá `ChangeDetectionStrategy.OnPush` pro optimální výkon
-2. **Lazy Rendering**: Options se renderují jenom když je dropdown otevřený
-3. **Virtualization**: Pro extra velké listy (1000+) zvážit implementaci virtual scroll
+1. **Change Detection**: Use `ChangeDetectionStrategy.OnPush` for better performance
+2. **Lazy Rendering**: Options are rendered only when the dropdown is opened
+3. **Virtualization**: For really big list of options is recommended to use virtual scroll
 
 ```typescript
-// Přidání virtual scroll pro velké listy
+// Add Virtual scroll
 import { ScrollingModule } from '@angular/cdk/scrolling';
 
 @Component({
@@ -189,9 +151,9 @@ import { ScrollingModule } from '@angular/cdk/scrolling';
 
 ---
 
-## Pro Pokročilé: Rozšíření Komponenty
+## Expand components
 
-### Přidání Custom Renderer pro Optiony
+### Custom Renderer for Options
 ```typescript
 // V dropdown.component.ts
 @Input() optionTemplate?: TemplateRef<any>;
@@ -205,7 +167,7 @@ import { ScrollingModule } from '@angular/cdk/scrolling';
 </ng-template>
 ```
 
-### Přidání Custom Search Logiky
+### Custom search logic
 ```typescript
 @Input() customSearchFn?: (query: string, options: DropdownOption[]) => DropdownOption[];
 

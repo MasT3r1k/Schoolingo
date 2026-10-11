@@ -26,6 +26,7 @@ export interface DropdownOption {
     ],
     changeDetection: ChangeDetectionStrategy.OnPush
 })
+
 export class DropdownComponent implements OnInit, OnDestroy {
     @Input() options: DropdownOption[] = [];
     @Input() public settings: { locale?: boolean } = { locale: true };
@@ -62,6 +63,7 @@ export class DropdownComponent implements OnInit, OnDestroy {
         this.filteredOptions = this.options;
         window.addEventListener('scroll', this.updatePosition, true);
         window.addEventListener('resize', this.updatePosition, true);
+        this.calculatePosition()
     }
 
     ngOnDestroy() {
@@ -90,10 +92,6 @@ export class DropdownComponent implements OnInit, OnDestroy {
         return selected ? this.getLabel(selected.label) : this.l.s(this.placeholder);
     }
 
-    get showSearch(): boolean {
-        return this.options.length > 10;
-    }
-
     toggleDropdown(event: Event): void {
         event.stopPropagation();
         if (this.disabled) return;
@@ -106,10 +104,8 @@ export class DropdownComponent implements OnInit, OnDestroy {
 
         if (this.isOpen) {
             requestAnimationFrame(() => {
-                requestAnimationFrame(() => {
-                    this.calculatePosition();
-                    this.cdr.markForCheck();
-                });
+                this.calculatePosition();
+                this.cdr.markForCheck();
             });
             this._repositionAfterOpen();
             setTimeout(() => {
@@ -159,6 +155,11 @@ export class DropdownComponent implements OnInit, OnDestroy {
                 zIndex: 9999
             };
         }
+    }
+
+    // Search
+    get showSearch(): boolean {
+        return this.options.length > 10;
     }
 
     onSearchChange(query: string | null): void {

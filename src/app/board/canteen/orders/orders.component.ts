@@ -165,11 +165,14 @@ export class OrdersComponent implements OnInit {
       });
 
       const dayCode = d.format('dd');
+      const isLocked = moment(dateStr).isSameOrBefore(moment(), 'day');
+
       this.days.push({
         code: dayCode,
         index: d.day(),
         date: d.format('D. M.'),
         dateStr: dateStr,
+        isLocked: isLocked,
         options: options
       });
 

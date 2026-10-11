@@ -2,6 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Component, inject, OnInit } from '@angular/core';
 import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { CalendarManager } from '@Components/calendar-dropdown';
+import { DropdownComponent, DropdownOption } from '@Components/dropdown/dropdown';
 import { Config } from '@Schoolingo/config';
 import { DropdownManager } from '@Schoolingo/dropdown';
 import { IconsModule } from '@Schoolingo/icons';
@@ -25,7 +26,7 @@ interface groupAPI {
 @Component({
   selector: 'app-edit-lesson',
   standalone: true,
-  imports: [IconsModule, FormsModule, ReactiveFormsModule],
+  imports: [IconsModule, FormsModule, ReactiveFormsModule, DropdownComponent],
   templateUrl: './edit-lesson.component.html',
   styleUrls: ['./edit-lesson.component.css']
 })
@@ -40,7 +41,8 @@ export class EditLessonComponent implements OnInit {
   public selectedSubjectId: number | null = null;
   public selectedTeacherId: number | null = null;
   public selectedTeacher2Id: number | null = null;
-  public weeks = ['both', 'odd', 'even'];
+
+  public weeks: typeof this.selectedWeek[] = ['both', 'odd', 'even'];
   public selectedWeek: 'both' | 'odd' | 'even' = 'both';
   public selectedRoom: string = '';
 
@@ -128,8 +130,8 @@ export class EditLessonComponent implements OnInit {
           this.types.push('cancel');
       }
       
-      this.selectedSubjectId = lesson.subject_id;
-      this.selectedTeacherId = lesson.teacher_id;
+      this.selectedSubjectId = lesson.subject_id || null;
+      this.selectedTeacherId = lesson.teacher_id || null;
       this.selectedTeacher2Id = lesson.teacher2_id || null;
       this.selectedWeek = lesson.week || this.weeks[0];
     }
@@ -140,7 +142,7 @@ export class EditLessonComponent implements OnInit {
         this.selected_type = 'classroom_lesson';
         const cls = this.scheduleBuilder.classes.find((c: any) => c.class_id === lesson.classId);
         if (cls && cls.teacher_id) {
-          this.selectedTeacherId = cls.teacher_id;
+          this.selectedTeacherId = cls.teacher_id ?? null;
         }
     } else {
         const classSubject = this.scheduleBuilder.all_subjects.find((s: any) => s.is_class_time === 1 || s.is_class_time === true);
@@ -154,10 +156,15 @@ export class EditLessonComponent implements OnInit {
     }
   }
 
+  // Type
+  get dropdown_types(): DropdownOption[] {
+    return this.types.map((type) => ({ label: `schedule.edit_lesson.types.${type}`, value: type })) as DropdownOption[];
+  }
+
   public selectType(type: string): void {
     this.selected_type = type;
     if (type === 'classroom_lesson') {
-        this.setClassroomLessonDefaults();
+      this.setClassroomLessonDefaults();
     }
   }
 
@@ -174,60 +181,55 @@ export class EditLessonComponent implements OnInit {
     }
   }
 
-  public getFilteredSubjects(): any[] {
-    const search = this.searchSubject.value?.toLowerCase() || '';
-    return this.scheduleBuilder.subjects.filter((s: any) => 
-      s.subject_name.toLowerCase().includes(search) || 
-      s.subject_shortcut?.toLowerCase().includes(search)
-    );
-  }
-
-  public getFilteredTeachers(): any[] {
-    const search = this.searchTeacher.value?.toLowerCase() || '';
-    const activeLesson = this.scheduleBuilder.activeLesson;
-    return this.scheduleBuilder.getTeachers().filter((t: any) => 
-      t.teacherId != this.selectedTeacher2Id &&
-      (!this.unavailable.teachers.includes(t.teacherId) || t.teacherId === activeLesson?.teacherId) && (
-      t.teacherName.toLowerCase().includes(search) ||
-      t.firstName.toLowerCase().includes(search) ||
-      t.lastName.toLowerCase().includes(search)
-    ));
-  }
-
-  public getFilteredTeachers2(): any[] {
-    const search = this.searchTeacher2.value?.toLowerCase() || '';
-    const activeLesson = this.scheduleBuilder.activeLesson;
-    return this.scheduleBuilder.getTeachers().filter((t: any) => 
-      t.teacherId != this.selectedTeacherId &&
-      (!this.unavailable.teachers.includes(t.teacherId) || t.teacherId === activeLesson?.teacher2Id) && (
-      t.teacherName.toLowerCase().includes(search) ||
-      t.firstName.toLowerCase().includes(search) ||
-      t.lastName.toLowerCase().includes(search)
-    ));
-  }
-
-  public getFilteredRooms(): roomAPI[] {
-    const search = this.searchRoom.value?.toLowerCase() || '';
-    const activeLesson = this.scheduleBuilder.activeLesson;
-    return this.rooms.filter((r) => 
-      (!this.unavailable.rooms.includes(r.room_id) || r.name === activeLesson?.room) &&
-      r.name.toLowerCase().includes(search)
-    );
-  }
-
+  // Subjects
   public getSubjectName(subject_id: number): string {
     return this.scheduleBuilder.subjects.find((subject) => subject.subject_id == subject_id)?.subject_name ?? '';
   }
 
-  public getRoomName(room_id: number): string {
-    return this.rooms.find((r) => r.room_id == room_id)?.name ?? '';
+  public getSubjects(): DropdownOption[] {
+    return this.scheduleBuilder.subjects.map((subject) => ({
+      label: this.getSubjectName(subject.subject_id),
+      value: subject.subject_id
+    }))
+  }
+
+  // Teachers
+  public getTeachers(): DropdownOption[] {
+    return this.scheduleBuilder.getTeachers().filter((teacher) => teacher.teacher_id != this.selectedTeacher2Id).map((teacher) => ({
+      label: teacher.teacherName,
+      value: teacher.teacherId
+    }))
+  }
+
+  public getTandemTeachers(): DropdownOption[] {
+    return this.scheduleBuilder.getTeachers().filter((teacher) => teacher.teacher_id != this.selectedTeacherId).map((teacher) => ({
+      label: teacher.teacherName,
+      value: teacher.teacherId
+    }))
+  }
+
+  // Groups
+  public getGroups(): DropdownOption[] {
+    return this.groups.map((group) => ({
+      label: this.getGroupName(group.group_id),
+      value: group.group_id
+    }))
   }
 
   public getGroupName(group_id: number | null): string {
     if (group_id == null) return '';
     const group = this.groups.find((g) => g.group_id == group_id);
     if (!group) return '';
-    return (group.name || group.class_name) + ' ' + (group.num || 'Celá třída')
+    return `${group.class_name} ${group.name ?? ''}${group.num || this.l.s('classes.whole_class')}`
+  }
+
+
+  // Rooms
+  public getRooms(): DropdownOption[] {
+    return this.rooms.map((room) => ({
+      label: room.name,
+      value: room.room_id
+    }))
   }
 
   public save(): void {

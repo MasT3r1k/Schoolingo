@@ -65,6 +65,11 @@ export class AddCreditModalComponent implements OnInit {
           if (!this.targetAccountId && this.accountOptions.length > 0) {
             this.targetAccountId = this.accountOptions[0].value;
           }
+
+          if (!this.sourceAccountOptions.length) {
+            this.error = 'Nejsou dostupné žádné zdrojové účty'
+          }
+
           this.loading = false;
         },
         error: () => {
