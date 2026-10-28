@@ -1,14 +1,19 @@
 <div class="dashboard">
     <div class="modules" cdkDropList (cdkDropListDropped)="drop($event)" cdkDropListOrientation="mixed">
         @for (module of modules(); track module.id) {
-        <div class="module" cdkDrag>
+        <div class="module" [attr.data-module]="module.id" cdkDrag>
             <div class="module-header" cdkDragHandle>
                 <h2 [class.has-link]="module.titleUrl" [routerLink]="module.titleUrl">
                     @if (module.icon) {
                         <i-tabler [name]="module.icon"></i-tabler>
                     }
-                    {{ l.s(module.titleKey) }}
+                    <span>{{ l.s(module.titleKey) }}</span>
                 </h2>
+                @if (module.titleUrl) {
+                    <a [routerLink]="module.titleUrl" class="module-header-link">
+                        {{ l.s('buttons.view_all') }}
+                    </a>
+                }
             </div>
             <div class="module-body" [class.skeleton-body]="module.component() == null">
                 @if (module.component() == null) {
@@ -100,4 +105,4 @@
         </div>
         }
     </div>
-</div>
+</div>

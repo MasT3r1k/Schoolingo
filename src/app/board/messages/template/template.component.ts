@@ -154,7 +154,7 @@ export class TemplateComponent implements OnInit {
     items.push(
       {
         icon: 'x',
-        text: 'close',
+        text: 'buttons.close',
         action: () => { this.context_menu.hideContextMenu(); }
       }
     )

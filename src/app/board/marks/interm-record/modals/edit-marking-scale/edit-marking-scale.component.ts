@@ -100,7 +100,7 @@ export class EditMarkingScaleComponent implements OnInit {
   
     items.push(
       { type: 'split' },
-      { text: 'close', action: () => this.context_menu.hideContextMenu() }
+      { text: 'buttons.close', action: () => this.context_menu.hideContextMenu() }
     )
 
     this.context_menu.setItems(items);
@@ -114,7 +114,7 @@ export class EditMarkingScaleComponent implements OnInit {
     this.context_menu.setItems([
       { text: 'marks.edit_marking_scale.change_table', action: () => {this.context_menu.hideContextMenu();this.go_to_list()} },
       { type: 'split' },
-      { text: 'close', action: () => this.context_menu.hideContextMenu() }
+      { text: 'buttons.close', action: () => this.context_menu.hideContextMenu() }
     ]);
     this.context_menu.showContextMenu(event.x, event.y)
   }

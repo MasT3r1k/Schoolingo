@@ -159,23 +159,6 @@
                 label="students.absence"
                 [type]="getAbsenceClass(Utils.formatAsNumber(selectedStudent.absence_rate))"
                 [value]="selectedStudent.absence_rate + '%'"
-                (click)="showAbsenceModal = true"
-                ></stat-card>
-
-                <stat-card
-                [type]="selectedStudent.education_measures_count ? 'danger' : 'success'"
-                icon="alert-triangle"
-                label="students.measure_educations"
-                [value]="selectedStudent.education_measures_count || 0"
-                (click)="setActiveTab('educational_measures')"
-                ></stat-card>
-
-                <stat-card
-                [type]="studentRewards.length ? 'success' : 'primary'"
-                icon="gift"
-                label="students.tabs.rewards"
-                [value]="studentRewards.length"
-                (click)="setActiveTab('rewards')"
                 ></stat-card>
             </div>
 
@@ -1292,12 +1275,12 @@
                                 </div>
                             </div>
                             } @empty {
-                            <div class="empty-state">
-                                <div class="empty-state__icon">
-                            <i-tabler name="mood-empty"></i-tabler>
-                        </div>
-                                <p class="empty-state__description">{{ l.s('marks.no_subjects') }}</p>
-                            </div>
+                                <div class="no-selection">
+                                    <div class="illustration">
+                                        <i-tabler name="mood-empty"></i-tabler>
+                                    </div>
+                                    <p>{{ l.s('marks.no_subjects') }}</p>
+                                </div>
                             }
                         </div>
                         } @else {
@@ -1331,12 +1314,12 @@
                                 </div>
                             </div>
                             } @empty {
-                            <div class="empty-state">
-                                <div class="empty-state__icon">
-                            <i-tabler name="mood-empty"></i-tabler>
-                        </div>
-                                <p class="empty-state__description">Žádné známky k zobrazení</p>
-                            </div>
+                                <div class="no-selection">
+                                    <div class="illustration">
+                                        <i-tabler name="mood-empty"></i-tabler>
+                                    </div>
+                                    <p>{{ l.s('marks.no_subjects') }}</p>
+                                </div>
                             }
                         </div>
                         }

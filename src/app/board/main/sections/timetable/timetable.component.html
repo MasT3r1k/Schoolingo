@@ -1,65 +1,47 @@
 <main>
     <div class="subjects">
-        @for(lesson of getSelectedDateLessons();track $index) {
-        <div class="subject" [class.freetime]="lesson.free" [class.active]="isCurrentLesson(lesson)">
-            <div class="dot"></div>
-            <div class="time">
-                {{ getLessonTime(lesson) }}
-            </div>
-
-            <div class="subject-content">
-                <p>{{ getLessonSubjectName(lesson) }}</p>
-                <p></p>
-            </div>
-
-
-
-                <!-- <span class="subjectIndex">{{ lesson.hour }}</span>
-                <div class="subjectName">
-                    <span>{{ getLessonSubjectName(lesson) }}</span>
-                    <div class="tags"></div>
-                </div>
-                @if (isCurrentLesson(lesson) && getLessonRemainingTime(lesson)) {
-                <div class="lesson-timer">
-                    <i-tabler name="clock"></i-tabler>
-                    {{ getLessonRemainingTime(lesson) }}
-                </div>
-                }
+        @if (getSelectedDateLessons().length > 0) {
+        <div class="timeline-wrapper">
+            <div class="timeline-line"></div>
+            @for (lesson of getSelectedDateLessons(); track $index) {
+            <div class="subject" [class.freetime]="lesson.free" [class.cancelled]="lesson.isCancelled" [class.active]="isCurrentLesson(lesson)">
+                <div class="dot"></div>
                 <div class="time">
                     {{ getLessonTime(lesson) }}
+                    @if (isCurrentLesson(lesson)) {
+                        <span class="active-badge">(Probíhá)</span>
+                    }
+                </div>
+
+                <div class="subject-content">
+                    <p class="subject-title">{{ getLessonSubjectName(lesson) }}</p>
+                    @if (!lesson.free && !lesson.end && (lesson.room || lesson.teacher || lesson.lastName)) {
+                        <p class="subject-meta">{{ (lesson.room ? ('Učebna ' + lesson.room) : '') + (lesson.room && (lesson.teacher || lesson.lastName) ? ' • ' : '') + (lesson.teacher || lesson.lastName || '') }}</p>
+                    }
+                    @if (lesson.isCancelled) {
+                        <p class="subject-cancelled">Zrušeno</p>
+                    }
                 </div>
             </div>
-            @if (getBreakRemainingTime($index)) {
-            <div class="break-indicator">
-                <div class="line"></div>
-                <div class="timer">
-                    <i-tabler name="bell-ringing"></i-tabler>
-                    {{ getBreakRemainingTime($index) }}
-                </div>
-                <div class="line"></div>
-            </div>
-            } -->
+            }
         </div>
-        } @empty {
-        <div class="no-selection">
-            <div class="illustration">
-                <i-tabler name="school"></i-tabler>
-            </div>
-            <h3>{{ l.s("timetable.no_class") }}</h3>
-            <p>{{ l.s("timetable.no_class_desc") }}</p>
-        </div>
+        } @else {
+            <empty-state
+                icon="school"
+                title_text="timetable.no_class"
+                description_text="timetable.no_class_desc"
+            ></empty-state>
         }
     </div>
-    <div class="shadow"></div>
     <div class="bottom">
-        <div class="icon" (click)="selected_date.next(selected_date.getValue().subtract(1, 'day'))">
+        <button type="button" class="icon-btn" (click)="selected_date.next(selected_date.getValue().subtract(1, 'day'))">
             <i-tabler name="chevron-left"></i-tabler>
-        </div>
+        </button>
         <div class="date-info">
             {{ `${l.s('days.' + selected_date.getValue().day())}, ${selected_date.getValue().format("DD. MM.")}` }}
         </div>
-        <div class="icon" (click)="selected_date.next(selected_date.getValue().add(1, 'day'))">
+        <button type="button" class="icon-btn" (click)="selected_date.next(selected_date.getValue().add(1, 'day'))">
             <i-tabler name="chevron-right"></i-tabler>
-        </div>
+        </button>
     </div>
 </main>

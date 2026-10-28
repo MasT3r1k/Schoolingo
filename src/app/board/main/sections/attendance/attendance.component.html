@@ -1,43 +1,80 @@
 <div class="attendance-widget">
-    <div class="content">
-        <!-- Status Card -->
-        @if (isCheckedIn) {
-            <stat-card type="success" icon="clock-check" label="Přihlášen" [value]="checkInTime"></stat-card>
-        } @else {
-            <stat-card type="danger" icon="clock-x" value="Nepřihlášen"></stat-card>
-        }
-
-        <!-- Stats Card -->
-        <stat-card type="primary" icon="clock-hour-3" label="Dnes odpracováno" [value]="formattedTotalWorked"></stat-card>
-        <!-- <div class="stats-card">
-            <div class="stats-icon">
-                <i-tabler name="clock-hour-3"></i-tabler>
-            </div>
-            <div class="stats-info">
-                <span class="stats-label">Dnes odpracováno</span>
-                <span class="stats-value">{{ formattedTotalWorked }}</span>
-            </div>
-        </div> -->
+    @if (isClassTeacher) {
+    <div class="tabs-header">
+        <schoolingo-tabs
+            [options]="tabOptions"
+            [icons]="tabIcons"
+            [value]="tabValue"
+            [prefix]="tabPrefix">
+        </schoolingo-tabs>
     </div>
+    }
 
-    <!-- Actions -->
-    <div class="actions">
-        @if (!isCheckedIn) {
-        <button class="btn btn--success" (click)="performCheckIn()">
-            <i-tabler name="login"></i-tabler>
-            Příchod
-        </button>
-        } @else {
-        <button class="btn btn--danger" (click)="performCheckOut()">
-            <i-tabler name="logout"></i-tabler>
-            Odchod
-        </button>
-        }
+    <!-- Tab 0: Personal Attendance & Vacation -->
+    @if (!isClassTeacher || tabValue.getValue() === 0) {
+    <div class="personal-attendance-view">
+        <div class="stats-list">
+            <!-- Status Card -->
+            @if (isCheckedIn) {
+                <stat-card type="success" icon="clock-check" label="Přihlášen" [value]="checkInTime"></stat-card>
+            } @else {
+                <stat-card type="danger" icon="clock-x" value="Nepřihlášen"></stat-card>
+            }
+
+            <!-- Worked Today -->
+            <stat-card type="primary" icon="clock-hour-3" label="Dnes odpracováno" [value]="formattedTotalWorked"></stat-card>
+
+            <!-- Vacation Balance -->
+            <stat-card type="info" icon="beach" label="attendance_widget.vacation_remaining" [value]="l.s('traineeship.number_of_days_value', {days: vacationBalance ? vacationBalance.remaining : 0})" [sub]="vacationBalance ? (vacationBalance.used + ' ' + l.s('attendance_widget.days_used')) : ''"></stat-card>
+        </div>
+
+        <!-- Actions -->
+        <div class="actions">
+            @if (!isCheckedIn) {
+            <button class="btn btn--success" (click)="performCheckIn()">
+                <i-tabler name="login"></i-tabler>
+                Příchod
+            </button>
+            } @else {
+            <button class="btn btn--danger" (click)="performCheckOut()">
+                <i-tabler name="logout"></i-tabler>
+                Odchod
+            </button>
+            }
+        </div>
     </div>
+    }
 
-    <!-- Footer Link -->
-    <!-- <a class="footer-link" routerLink="/employees/attendance">
-        <i-tabler name="history"></i-tabler>
-        <span>Zobrazit minulou docházku</span>
-    </a> -->
+    <!-- Tab 1: Class Attendance (Class teacher) -->
+    @if (isClassTeacher && tabValue.getValue() === 1) {
+    <div class="class-attendance-view">
+        <div class="class-section-header">
+            {{ l.s('attendance_widget.class_today_absence', { class: className }) }}
+        </div>
+
+        <div class="class-absences-list">
+            @for (student of classAbsences; track student.id) {
+            <div class="absence-student-card">
+                <div class="student-avatar">
+                    {{ student.name.charAt(0) }}
+                </div>
+                <div class="student-info">
+                    <p class="student-name">{{ student.name }}</p>
+                    <p class="student-status" [class.excused]="student.isExcused">{{ student.status }}</p>
+                </div>
+            </div>
+            } @empty {
+                <empty-state
+                    icon="circle-check"
+                    title_text="attendance_widget.no_absence_today"
+                    description_text="attendance_widget.no_absence_desc"
+                ></empty-state>
+            }
+        </div>
+
+        <a class="btn-write-absence" routerLink="/teach/classbook">
+            {{ l.s('attendance_widget.write_absence') }}
+        </a>
+    </div>
+    }
 </div>

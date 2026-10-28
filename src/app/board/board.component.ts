@@ -30,6 +30,8 @@ import { studentSummaryComponent } from '@Components/student-summary/student-sum
 import { UpdateModalComponent } from '@Components/update-modal/update-modal.component';
 import { Cookies } from '@Schoolingo/cookies';
 import { Country } from 'country-state-city';
+import { LogoComponent } from '@Components/logo/logo.component';
+import { EmptyStateComponent } from '@Components/empty-state/empty-state.component';
 
 export interface SidebarItem {
     item: string;
@@ -44,6 +46,14 @@ export interface SidebarItem {
 }
 
 const notification_types: Record<string, any> = {
+  library_overdue: {
+    color: "",
+    icon: "books",
+    title: "",
+    url: "/library",
+    close_after_action: true,
+    description: ""
+  },
   new_message: {
     color: "#4aa3ff",
     icon: "message",
@@ -93,7 +103,17 @@ interface Notification {
 
 @Component({
   standalone: true,
-  imports: [IconsModule, RouterLink, RouterLinkActive, NgStyle, NgClass, RouterOutlet, SnowEffectComponent],
+  imports: [
+    IconsModule,
+    RouterLink,
+    RouterLinkActive,
+    NgStyle,
+    NgClass,
+    RouterOutlet,
+    SnowEffectComponent,
+    LogoComponent,
+    EmptyStateComponent
+  ],
   templateUrl: './board.component.html',
   styleUrls: ['./board.component.css', '../styles/sidebar.css']
 })

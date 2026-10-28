@@ -6,47 +6,38 @@
         }
     </div>
     } @else if (substitutions.length === 0) {
-    <div class="no-selection">
-        <div class="illustration">
-            <i-tabler name="calendar-check"></i-tabler>
-        </div>
-        <h3>{{ l.s("substitutions.no_substitutions") }}</h3>
-        <p>{{ l.s("substitutions.no_substitutions_desc") }}</p>
-    </div>
+        <empty-state
+            icon="calendar-check"
+            title_text="substitutions.no_substitutions"
+            description_text="substitutions.no_substitutions_desc"
+        ></empty-state>
     } @else {
     <div class="section-list">
         @for (sub of substitutions; track $index) {
         <div class="section-item" [ngClass]="getSubstitutionType(sub)">
             <div class="sub-hour">
-                <span class="hour-num">{{ sub.hour }}</span>
-                <span class="hour-label">hod.</span>
+                {{ sub.hour }}.
             </div>
             <div class="item-content">
-                <div class="item-header">
-                    <span class="item-title">{{ sub.subjectName }}</span>
-                    <span class="sub-badge badge" [ngClass]="getSubstitutionType(sub)">
-                        <i-tabler [name]="getTypeIcon(sub)" size="12"></i-tabler>
-                        {{ getTypeLabel(sub) }}
-                    </span>
-                </div>
-                <div class="sub-details">
-                    @if (sub.type == 'cancelled') {
-                    <span class="sub-info cancelled">Hodina odpadá</span>
-                    } @else {
-                    @if (sub.originalTeacher != sub.substituteTeacher) {
-                    <span class="sub-info">
-                        <i-tabler name="user" size="12"></i-tabler>
-                        {{ sub.substituteTeacher }}
-                    </span>
+                @if (sub.type === 'cancelled' || sub.type === 'cancelled_hour') {
+                    <div class="sub-subject-row">
+                        <span class="subject-cancelled">{{ sub.subjectName }}</span>
+                        <span class="status-cancelled">Odpadá</span>
+                    </div>
+                    @if (sub.note) {
+                        <p class="sub-note">{{ sub.note }}</p>
                     }
-                    @if (sub.type == 'room_change') {
-                    <span class="sub-info">
-                        <i-tabler name="door" size="12"></i-tabler>
-                        {{ '' }}
-                    </span>
+                } @else {
+                    <div class="sub-subject-row">
+                        <span class="subject-name">{{ sub.subjectName }}</span>
+                    </div>
+                    @if (sub.substituteTeacher) {
+                        <p class="sub-teacher">Supluje: {{ sub.substituteTeacher }}</p>
                     }
+                    @if (sub.type === 'room_change' && sub.newRoomName) {
+                        <p class="sub-room">Učebna: {{ sub.newRoomName }}</p>
                     }
-                </div>
+                }
             </div>
             <span class="sub-date">{{ formatDate(sub.date) }}</span>
         </div>

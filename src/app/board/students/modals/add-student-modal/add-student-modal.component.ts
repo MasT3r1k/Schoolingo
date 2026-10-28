@@ -9,11 +9,12 @@ import { Locale } from '@Schoolingo/locale';
 import { DropdownManager } from '@Schoolingo/dropdown';
 import { Utils } from '@Schoolingo/utils';
 import moment from 'moment';
+import { DropdownComponent, DropdownOption } from '@Components/dropdown/dropdown';
 
 @Component({
   selector: 'add-student-modal',
   standalone: true,
-  imports: [CommonModule, FormsModule, IconsModule],
+  imports: [CommonModule, FormsModule, IconsModule, DropdownComponent],
   templateUrl: './add-student-modal.component.html',
   styleUrls: ['./add-student-modal.component.css']
 })
@@ -43,50 +44,11 @@ export class AddStudentModalComponent implements OnInit {
     const country = this.countries.find(c => c.country_id === this.newStudent.nationalityId);
     return country ? Utils.getFlagFromCountry(country.code2) : '';
   }
-
-  public getSelectedPrefixTitles(): string {
-    return this.newStudent.prefixTitle || 'Nezadáno';
-  }
-
-  public getSelectedSuffixTitles(): string {
-    return this.newStudent.suffixTitle || 'Nezadáno';
-  }
-
-  public togglePrefixTitle(title: string): void {
-    let titles = this.newStudent.prefixTitle ? this.newStudent.prefixTitle.split(',').map(t => t.trim()) : [];
-    if (titles.includes(title)) {
-      titles = titles.filter(t => t !== title);
-    } else {
-      titles.push(title);
-    }
-    this.newStudent.prefixTitle = titles.join(', ');
-  }
-
-  public toggleSuffixTitle(title: string): void {
-    let titles = this.newStudent.suffixTitle ? this.newStudent.suffixTitle.split(',').map(t => t.trim()) : [];
-    if (titles.includes(title)) {
-      titles = titles.filter(t => t !== title);
-    } else {
-      titles.push(title);
-    }
-    this.newStudent.suffixTitle = titles.join(', ');
-  }
-
-  public isPrefixTitleSelected(title: string): boolean {
-    const titles = this.newStudent.prefixTitle ? this.newStudent.prefixTitle.split(',').map(t => t.trim()) : [];
-    return titles.includes(title);
-  }
-
-  public isSuffixTitleSelected(title: string): boolean {
-    const titles = this.newStudent.suffixTitle ? this.newStudent.suffixTitle.split(',').map(t => t.trim()) : [];
-    return titles.includes(title);
-  }
-
+  
   public newStudent = {
     firstName: '',
     lastName: '',
-    prefixTitle: '',
-    suffixTitle: '',
+    degrees: [],
     classId: 0 as number,
     insuranceId: null as number | null,
     gender: 0 as number,
@@ -99,8 +61,7 @@ export class AddStudentModalComponent implements OnInit {
   public classes: any[] = [];
   public insurances: any[] = [];
   public countries: any[] = [];
-  public prefixDegrees: any[] = [];
-  public suffixDegrees: any[] = [];
+  public degrees: DropdownOption[] = [];
 
   ngOnInit() {
     this.loadData();
@@ -129,10 +90,10 @@ export class AddStudentModalComponent implements OnInit {
     this.http.get(`${Config.API_URL}/v1/school/degrees`, { withCredentials: true })
       .subscribe((res: any) => {
         const degrees = res || [];
-        // @ts-ignore
-        this.prefixDegrees = degrees.filter(d => d.is_before === 1 || d.is_before === true);
-        // @ts-ignore
-        this.suffixDegrees = degrees.filter(d => d.is_before === 0 || d.is_before === false);
+        this.degrees = degrees.map((degree: any) => ({
+          label: degree.shortcut,
+          value: degree.shortcut
+        }))
       });
   }
 

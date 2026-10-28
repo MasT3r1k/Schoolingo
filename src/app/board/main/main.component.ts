@@ -38,17 +38,8 @@ export class MainComponent implements OnInit {
 
   private allModules: DashboardModule[] = [
     {
-      id: 'attendance',
-      titleKey: 'modules.attendance',
-      icon: 'clock',
-      permission: ['teacher', 'admin', 'principal', 'admin_staff', 'maintenance', 'management', 'personnel', 'other'],
-      import: () => import('./sections/attendance/attendance.component').then(m => m.AttendanceComponent),
-      component: signal(null),
-      skeletonType: 'attendance'
-    },
-    {
       id: 'absence',
-      titleKey: 'modules.absence',
+      titleKey: 'modules.attendance',
       icon: 'clock',
       permission: ['student', 'parent'],
       import: () => import('./sections/absence/absence.component').then(m => m.AttendanceComponent),

@@ -1,6 +1,5 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterLink } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { Config } from '@Schoolingo/config';
 import { IconsModule } from '@Schoolingo/icons';
@@ -8,12 +7,11 @@ import { Locale } from '@Schoolingo/locale';
 import { Utils } from '@Schoolingo/utils';
 import { Permission } from '@Schoolingo/permission';
 import { Authentication } from '@Schoolingo/authentication';
-import { StatCardComponent } from "@Components/stat-card/stat-card.component";
 
 @Component({
   selector: 'app-absence-widget',
   standalone: true,
-  imports: [CommonModule, IconsModule, RouterLink, StatCardComponent],
+  imports: [CommonModule, IconsModule],
   templateUrl: './absence.component.html',
   styleUrl: './absence.component.css'
 })
@@ -29,6 +27,12 @@ export class AttendanceComponent implements OnInit {
   checkInTime: string | null = null;
   workedMinutes = 0;
   totalWorkedToday = 0;
+
+  // Student attendance overview
+  attendanceRate = 92;
+  totalMissedHours = 12;
+  excusedHours = 12;
+  unexcusedHours = 0;
   
   // Timer for updating worked time live
   private timer: any;
@@ -100,50 +104,6 @@ export class AttendanceComponent implements OnInit {
     
     const diffMs = now.getTime() - checkInDate.getTime();
     this.workedMinutes = Math.floor(diffMs / 60000);
-  }
-
-  performCheckIn() {
-    this.isLoading = true;
-    this.http.post<{ success: boolean, time: string }>(
-      `${Config.API_URL}/v1/employees/attendance/checkin`,
-      { type: 'regular' },
-      { withCredentials: true }
-    ).subscribe({
-      next: (res) => {
-        this.isCheckedIn = true;
-        this.checkInTime = res.time;
-        this.workedMinutes = 0;
-        this.isLoading = false;
-      },
-      error: (err) => {
-        console.error('Check-in failed', err);
-        alert('Příchod se nepodařilo zaznamenat');
-        this.isLoading = false;
-      }
-    });
-  }
-
-  performCheckOut() {
-    if (!confirm('Opravdu chcete odejít?')) return;
-    
-    this.isLoading = true;
-    this.http.post<{ success: boolean, worked_minutes: number }>(
-      `${Config.API_URL}/v1/employees/attendance/checkout`,
-      {},
-      { withCredentials: true }
-    ).subscribe({
-      next: (res) => {
-        this.isCheckedIn = false;
-        this.checkInTime = null;
-        this.totalWorkedToday += res.worked_minutes;
-        this.isLoading = false;
-      },
-      error: (err) => {
-        console.error('Check-out failed', err);
-        alert('Odchod se nepodařilo zaznamenat');
-        this.isLoading = false;
-      }
-    });
   }
 
   get formattedTotalWorked(): string {

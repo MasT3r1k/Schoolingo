@@ -1,62 +1,153 @@
-/* === ATTENDANCE WIDGET - Simple Design === */
 .attendance-widget {
     height: 100%;
     display: flex;
     flex-direction: column;
+    justify-content: space-between;
     overflow: hidden;
 }
 
-/* Content area */
-.content {
+.tabs-header {
+    padding: 0.75rem 1rem 0 1rem;
+    flex-shrink: 0;
+}
+
+/* Personal Attendance */
+.personal-attendance-view {
     display: flex;
     flex-direction: column;
-    gap: 12px;
-    padding: 1rem 1.25rem;
+    justify-content: space-between;
+    flex: 1;
+    overflow: hidden;
+}
+
+.stats-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    padding: 0.75rem 1rem;
     overflow-y: auto;
     flex: 1;
 }
 
-/* Actions */
 .actions {
     display: flex;
-    padding: 12px 14px;
+    padding: 0.5rem 1rem 0.75rem 1rem;
+    flex-shrink: 0;
 }
 
 .actions button {
-    flex: 1;
-}
-
-/* Footer link */
-.footer-link {
+    width: 100%;
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 6px;
-    padding: 12px;
-    border-top: 1px solid var(--border);
-    background: var(--surface-2);
-    cursor: pointer;
-    transition: all var(--transition-fast);
-    text-decoration: none;
-    color: var(--text-muted);
+    gap: 0.5rem;
+}
+
+.actions button i-tabler {
+    width: 18px;
+    height: 18px;
+}
+
+/* Class Attendance */
+.class-attendance-view {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    flex: 1;
+    overflow: hidden;
+    padding-top: 0.5rem;
+}
+
+.class-section-header {
     font-size: 0.8125rem;
+    color: var(--text-muted);
     font-weight: 500;
+    padding: 0.25rem 1rem;
+    margin-bottom: 0.25rem;
+    flex-shrink: 0;
 }
 
-.footer-link:hover {
-    background: var(--hover-bg);
+.class-absences-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    padding: 0 1rem;
+    overflow-y: auto;
+    flex: 1;
+}
+
+.absence-student-card {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.5rem 0.75rem;
+    background: var(--surface-2);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-lg);
+    transition: all var(--transition-fast);
+}
+
+.absence-student-card:hover {
+    border-color: var(--border-hover);
+}
+
+.student-avatar {
+    width: 2rem;
+    height: 2rem;
+    border-radius: 9999px;
+    background: var(--surface-3);
+    color: var(--text-secondary);
+    font-weight: 700;
+    font-size: 0.8125rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.student-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.student-name {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--text);
+    margin: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.student-status {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    margin: 0.125rem 0 0 0;
+}
+
+.student-status.excused {
+    color: var(--success);
+}
+
+.btn-write-absence {
+    display: block;
+    text-align: center;
+    font-size: 0.8125rem;
+    font-weight: 600;
     color: var(--primary);
+    text-decoration: none;
+    padding: 0.5rem 0.75rem;
+    margin: 0.5rem 1rem 0.75rem 1rem;
+    border-radius: var(--radius-md);
+    background: var(--surface-2);
+    border: 1px solid var(--border-subtle);
+    transition: all var(--transition-fast);
+    flex-shrink: 0;
 }
 
-.footer-link i-tabler {
-    width: 16px;
-    height: 16px;
-}
-
-/* Responsive */
-@media (max-width: 480px) {
-    .content {
-        padding: 0.75rem 1rem;
-        gap: 10px;
-    }
+.btn-write-absence:hover {
+    background: var(--surface-3);
+    border-color: var(--border-hover);
+    color: var(--primary);
 }

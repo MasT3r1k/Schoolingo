@@ -8,85 +8,122 @@
 .section-list {
     display: flex;
     flex-direction: column;
-    gap: 6px;
-    padding: .75rem 1rem;
+    gap: 0.75rem;
+    padding: 1rem;
     overflow-y: auto;
     height: 100%;
 }
 
 .section-item {
     display: flex;
-    gap: 12px;
-    padding: 10px 12px;
+    gap: 0.75rem;
+    padding: 0.75rem 1rem;
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--border-subtle);
     background: var(--surface-2);
-    border-radius: var(--radius);
-    border: 1px solid var(--border);
-    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: transform var(--transition-fast), box-shadow var(--transition-fast);
+    align-items: flex-start;
 }
 
 .section-item:hover {
-    background: var(--hover-bg);
-    transform: translateX(2px);
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-xs);
 }
 
 .section-item.skeleton {
-    height: 76px;
+    height: 70px;
+    background: var(--surface-3);
     animation: pulse 1.5s infinite;
+    border: none;
 }
 
 @keyframes pulse {
-
-    0%,
-    100% {
-        opacity: 1;
-    }
-
-    50% {
-        opacity: 0.5;
-    }
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.45; }
 }
 
-/* Priority styles */
+/* Priority alert card styles - using existing theme variables */
 .section-item.priority-high {
-    border-left: 3px solid var(--danger);
+    background: var(--message-error-bg);
+    border-color: var(--message-error-border);
 }
 
-.section-item.priority-medium {
-    border-left: 3px solid var(--warning);
-}
-
-.section-item.priority-normal {
-    border-left: 3px solid var(--primary);
-}
-
-.item-icon {
-    width: 34px;
-    height: 34px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: var(--radius);
-    flex-shrink: 0;
-}
-
-.item-icon i-tabler {
-    width: 16px;
-    height: 16px;
-}
-
-.item-icon.priority-high {
-    background: rgba(239, 68, 68, 0.1);
+.section-item.priority-high .item-icon {
     color: var(--danger);
 }
 
-.item-icon.priority-medium {
-    background: rgba(234, 179, 8, 0.1);
-    color: var(--warning);
+.section-item.priority-high .item-title {
+    color: var(--danger-700);
 }
 
-.item-icon.priority-normal {
-    background: rgba(var(--primary-rgb), 0.1);
+.section-item.priority-high .item-description {
+    color: var(--danger);
+}
+
+.section-item.priority-medium {
+    background: var(--message-warning-bg);
+    border-color: var(--message-warning-border);
+}
+
+.section-item.priority-medium .item-icon {
+    color: var(--warning-700);
+}
+
+.section-item.priority-medium .item-title {
+    color: var(--warning-700);
+}
+
+.section-item.priority-medium .item-description {
+    color: var(--warning-500);
+}
+
+.section-item.priority-normal {
+    background: var(--message-info-bg);
+    border-color: var(--message-info-border);
+}
+
+.section-item.priority-normal .item-icon {
     color: var(--primary);
+}
+
+.section-item.priority-normal .item-title {
+    color: var(--primary);
+}
+
+.section-item.priority-normal .item-description {
+    color: var(--text-secondary);
+}
+
+/* Dark mode adjustments */
+.dark .section-item.priority-high .item-title {
+    color: var(--message-error-color);
+}
+.dark .section-item.priority-high .item-description {
+    color: var(--danger-100);
+}
+
+.dark .section-item.priority-medium .item-title {
+    color: var(--message-warning-color);
+}
+.dark .section-item.priority-medium .item-description {
+    color: var(--warning-100);
+}
+
+.dark .section-item.priority-normal .item-title {
+    color: var(--message-info-color);
+}
+
+.item-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    margin-top: 2px;
+}
+
+.item-icon i-tabler {
+    width: 18px;
+    height: 18px;
 }
 
 .item-content {
@@ -94,20 +131,20 @@
     overflow: hidden;
     display: flex;
     flex-direction: column;
-    gap: 4px;
+    gap: 3px;
 }
 
 .item-header {
     display: flex;
     justify-content: space-between;
-    align-items: flex-start;
+    align-items: baseline;
     gap: 8px;
 }
 
 .item-title {
     font-weight: 600;
     font-size: 0.875rem;
-    color: var(--text);
+    line-height: 1.25rem;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -121,8 +158,7 @@
 }
 
 .item-description {
-    font-size: 0.8rem;
-    color: var(--text-muted);
+    font-size: 0.8125rem;
     line-height: 1.4;
     display: -webkit-box;
     -webkit-line-clamp: 2;
@@ -144,6 +180,3 @@
     width: 12px;
     height: 12px;
 }
-
-/* Empty state */
-

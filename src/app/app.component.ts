@@ -37,20 +37,21 @@ export class AppComponent implements OnInit {
   public isLoading = false;
   public loadingProgress = 0;
   private progressInterval: any;
-  
+
   ngOnInit(): void {
+
     try {
       // Enable flags Windows 11
       polyfillCountryFlagEmojis();
     } catch(e) {
-      console.error('Failed add support for Windows 11 flags.')
+      throw new Error('Failed add support for Windows 11 flags.')
     }
 
     try {
       // Initialize seasonal effects immediately (for login page too)
       this.seasonalService.initialize();
     } catch(e) {
-      console.error('Failed load seasonal service.')
+      throw new Error('Failed load seasonal service.')
     }
 
     this.http.get<any>(`${Config.API_URL}/v1/version`).subscribe((data) => {

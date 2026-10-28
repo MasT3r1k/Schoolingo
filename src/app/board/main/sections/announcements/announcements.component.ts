@@ -4,10 +4,11 @@ import { Config } from '@Schoolingo/config';
 import { Locale } from '@Schoolingo/locale';
 import { IconsModule } from '@Schoolingo/icons';
 import moment from 'moment';
+import { EmptyStateComponent } from '@Components/empty-state/empty-state.component';
 
 @Component({
   selector: 'app-announcements',
-  imports: [IconsModule],
+  imports: [IconsModule, EmptyStateComponent],
   templateUrl: './announcements.component.html',
   styleUrl: './announcements.component.css'
 })

@@ -1,6 +1,7 @@
-import { APP_INITIALIZER, ApplicationConfig, provideZoneChangeDetection } from '@angular/core';
-import { provideRouter } from '@angular/router';
+import { APP_INITIALIZER, ApplicationConfig, provideZoneChangeDetection, ErrorHandler } from '@angular/core';
+import { provideRouter, Router } from '@angular/router';
 import { provideAnimations } from '@angular/platform-browser/animations';
+import * as Sentry from "@sentry/angular";
 
 import { routes } from './app.routes';
 import { provideHttpClient, withInterceptors } from '@angular/common/http';
@@ -51,6 +52,20 @@ export const appConfig: ApplicationConfig = {
       useFactory: initAuth,
       deps: [Authentication, Locale, Theme],
       multi: true
+    },
+    {
+      provide: ErrorHandler,
+      useValue: Sentry.createErrorHandler(),
+    },
+    {
+      provide: Sentry.TraceService,
+      deps: [Router],
+    },
+    {
+      provide: APP_INITIALIZER,
+      useFactory: () => () => {},
+      deps: [Sentry.TraceService],
+      multi: true,
     },
     provideZoneChangeDetection({ eventCoalescing: true }),
     provideRouter(routes),

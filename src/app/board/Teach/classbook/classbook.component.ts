@@ -53,6 +53,41 @@ export class ClassbookComponent implements OnInit {
   public calendarManager = inject(CalendarManager);
   Utils = Utils;
 
+  public tabs: { icon: string, label: string }[] = [
+    {
+      icon: "book",
+      label: "classbook.write_lesson"
+    },
+    {
+      icon: "users",
+      label: "classbook.absence"
+    },
+    {
+      icon: "notebook",
+      label: "sidebar.teach.homeworks"
+    },
+    {
+      icon: "notes",
+      label: "classbook.notes"
+    },
+    {
+      icon: "first-aid-kit",
+      label: "classbook.BOZP"
+    },
+    {
+      icon: "building-hospital",
+      label: "classbook.hospitalization"
+    },
+    {
+      icon: "adjustments",
+      label: "classbook.specific"
+    },
+    {
+      icon: "link",
+      label: "classbook.related"
+    },
+  ]
+
   public max_hours = -1;
 
   // === Absence stats ===

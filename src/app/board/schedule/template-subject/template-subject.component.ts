@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
 import { Config } from '@Schoolingo/config';
 import { IconsModule } from '@Schoolingo/icons';
+import { Locale } from '@Schoolingo/locale';
 
 interface TemplateSubject {
   subjectId: number;
@@ -25,6 +26,7 @@ interface TemplateSubject {
 })
 export class TemplateSubjectComponent implements OnInit {
   private http = inject(HttpClient);
+  public l = inject(Locale);
   
   subjects: TemplateSubject[] = [];
   loading = true;

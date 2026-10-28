@@ -1,62 +1,94 @@
-/* === ATTENDANCE WIDGET - Simple Design === */
-.attendance-widget {
+.absence-widget {
     height: 100%;
     display: flex;
     flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 1rem 1.25rem;
     overflow: hidden;
 }
 
-/* Content area */
-.content {
+.attendance-circle {
+    position: relative;
+    width: 8rem;
+    height: 8rem;
+    margin: 0 auto 0.75rem auto;
+}
+
+.progress-ring {
+    width: 100%;
+    height: 100%;
+    transform: rotate(-90deg);
+}
+
+.circle-bg {
+    stroke: var(--surface-3);
+}
+
+.circle-progress {
+    stroke: #14b8a6;
+    transition: stroke-dasharray 0.6s ease;
+}
+
+.circle-center {
+    position: absolute;
+    inset: 0;
     display: flex;
     flex-direction: column;
-    gap: 12px;
-    padding: 1rem 1.25rem;
-    overflow-y: auto;
-    flex: 1;
-}
-
-/* Actions */
-.actions {
-    display: flex;
-    padding: 12px 14px;
-}
-
-.actions button {
-    flex: 1;
-}
-
-/* Footer link */
-.footer-link {
-    display: flex;
     align-items: center;
     justify-content: center;
-    gap: 6px;
-    padding: 12px;
-    border-top: 1px solid var(--border);
-    background: var(--surface-2);
-    cursor: pointer;
-    transition: all var(--transition-fast);
-    text-decoration: none;
+}
+
+.circle-percent {
+    font-size: 1.5rem;
+    line-height: 1.2;
+    font-weight: 700;
+    color: var(--text);
+}
+
+.circle-label {
+    font-size: 0.625rem;
+    font-weight: 600;
     color: var(--text-muted);
-    font-size: 0.8125rem;
-    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-top: 2px;
 }
 
-.footer-link:hover {
-    background: var(--hover-bg);
-    color: var(--primary);
+.stats-row {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    padding: 0 0.5rem;
+    margin-top: 0.25rem;
 }
 
-.footer-link i-tabler {
-    width: 16px;
-    height: 16px;
+.stat-col {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+    text-align: center;
 }
 
-/* Responsive */
-@media (max-width: 480px) {
-    .content {
-        padding: 0.75rem 1rem;
-        gap: 10px;
-    }
+.stat-label {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+}
+
+.stat-val {
+    font-size: 0.875rem;
+    font-weight: 600;
+}
+
+.stat-val.missed {
+    color: var(--text);
+}
+
+.stat-val.excused {
+    color: var(--success);
+}
+
+.stat-val.unexcused {
+    color: var(--danger);
 }

@@ -5,12 +5,13 @@ import { Config } from '@Schoolingo/config';
 import { IconsModule } from '@Schoolingo/icons';
 import moment from 'moment';
 import { BehaviorSubject, interval, Subscription } from 'rxjs';
-import { TimetableAPI, TimetableHours, TimetableLesson, TimetableLessonAPI } from '../../../Teach/timetable/timetable.component';
+import { TimetableHours, TimetableLessonAPI } from '../../../Teach/timetable/timetable.component';
 import { Locale } from '@Schoolingo/locale';
 import { School } from '@Schoolingo/school';
+import { EmptyStateComponent } from '@Components/empty-state/empty-state.component';
 
 @Component({
-  imports: [IconsModule],
+  imports: [IconsModule, EmptyStateComponent],
   templateUrl: './timetable.component.html',
   styleUrl: './timetable.component.css'
 })

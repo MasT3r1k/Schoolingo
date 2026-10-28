@@ -8,11 +8,12 @@ import { FormsModule } from '@angular/forms';
 import moment from 'moment';
 import { Authentication } from '@Schoolingo/authentication';
 import { Permission } from '@Schoolingo/permission';
+import { EmptyStateComponent } from '@Components/empty-state/empty-state.component';
 
 @Component({
   selector: 'app-homework',
   standalone: true,
-  imports: [IconsModule, NgClass, FormsModule],
+  imports: [IconsModule, NgClass, FormsModule, EmptyStateComponent],
   templateUrl: './homework.component.html',
   styleUrl: './homework.component.css'
 })

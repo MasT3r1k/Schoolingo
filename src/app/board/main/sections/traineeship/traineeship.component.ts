@@ -4,12 +4,14 @@ import { Config } from '@Schoolingo/config';
 import { Locale } from '@Schoolingo/locale';
 import { IconsModule } from '@Schoolingo/icons';
 import { NgClass } from '@angular/common';
+import { RouterLink } from '@angular/router';
 import moment from 'moment';
+import { EmptyStateComponent } from '@Components/empty-state/empty-state.component';
 
 @Component({
   selector: 'app-traineeship',
   standalone: true,
-  imports: [IconsModule, NgClass],
+  imports: [IconsModule, NgClass, RouterLink, EmptyStateComponent],
   templateUrl: './traineeship.component.html',
   styleUrl: './traineeship.component.css'
 })

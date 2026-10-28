@@ -5,11 +5,12 @@ import { Locale } from '@Schoolingo/locale';
 import { IconsModule } from '@Schoolingo/icons';
 import { NgClass } from '@angular/common';
 import moment from 'moment';
+import { EmptyStateComponent } from '@Components/empty-state/empty-state.component';
 
 @Component({
   selector: 'app-events',
   standalone: true,
-  imports: [IconsModule, NgClass],
+  imports: [IconsModule, NgClass, EmptyStateComponent],
   templateUrl: './events.component.html',
   styleUrl: './events.component.css'
 })
@@ -43,6 +44,16 @@ export class EventsComponent implements OnInit {
   public formatDate(date: string | Date): string {
     if (!date) return '';
     return moment(date).format('D. M.');
+  }
+
+  public getDay(date: string | Date): string {
+    if (!date) return '';
+    return moment(date).format('D');
+  }
+
+  public getMonthName(date: string | Date): string {
+    if (!date) return '';
+    return moment(date).format('MMM');
   }
 
   public formatTime(date: string | Date): string {

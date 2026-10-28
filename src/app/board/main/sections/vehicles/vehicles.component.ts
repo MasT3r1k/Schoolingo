@@ -5,11 +5,12 @@ import { Locale } from '@Schoolingo/locale';
 import { IconsModule } from '@Schoolingo/icons';
 import { NgClass } from '@angular/common';
 import moment from 'moment';
+import { EmptyStateComponent } from '@Components/empty-state/empty-state.component';
 
 @Component({
   selector: 'app-vehicles',
   standalone: true,
-  imports: [IconsModule, NgClass],
+  imports: [IconsModule, NgClass, EmptyStateComponent],
   templateUrl: './vehicles.component.html',
   styleUrl: './vehicles.component.css'
 })

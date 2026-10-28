@@ -8,50 +8,41 @@
 .section-list {
     display: flex;
     flex-direction: column;
-    gap: 6px;
-    padding: .75rem 1rem;
+    gap: 1rem;
+    padding: 1rem 1.25rem;
     overflow-y: auto;
     height: 100%;
 }
 
 .section-item {
     display: flex;
-    gap: 12px;
-    padding: 10px 12px;
-    background: var(--surface-2);
-    border-radius: var(--radius);
-    border: 1px solid var(--border);
-    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-    align-items: center;
+    gap: 1rem;
+    align-items: flex-start;
+    transition: transform var(--transition-fast);
 }
 
 .section-item:hover {
-    background: var(--hover-bg);
     transform: translateX(2px);
 }
 
 .section-item.skeleton {
     height: 56px;
+    background: var(--surface-3);
+    border-radius: var(--radius-lg);
     animation: pulse 1.5s infinite;
 }
 
 @keyframes pulse {
-
-    0%,
-    100% {
-        opacity: 1;
-    }
-
-    50% {
-        opacity: 0.5;
-    }
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.45; }
 }
 
 .event-date-badge {
-    width: 42px;
-    height: 42px;
-    background: rgba(var(--primary-rgb), 0.1);
-    border-radius: var(--radius);
+    width: 3rem;
+    height: 3rem;
+    background: var(--danger-100);
+    color: var(--danger);
+    border-radius: var(--radius-lg);
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -59,45 +50,23 @@
     flex-shrink: 0;
 }
 
-.date-day {
-    font-size: 1rem;
+.date-month {
+    font-size: 0.65rem;
     font-weight: 700;
-    color: var(--primary);
+    text-transform: uppercase;
     line-height: 1;
 }
 
-.date-month {
-    font-size: 0.65rem;
-    color: var(--primary);
-    opacity: 0.8;
+.date-day {
+    font-size: 1.125rem;
+    font-weight: 800;
+    line-height: 1.1;
+    margin-top: 2px;
 }
 
-/* Event type colors */
-.event-date-badge.event-type-exam {
-    background: rgba(239, 68, 68, 0.1);
-}
-
-.event-date-badge.event-type-exam .date-day,
-.event-date-badge.event-type-exam .date-month {
-    color: var(--danger);
-}
-
-.event-date-badge.event-type-meeting {
-    background: rgba(59, 130, 246, 0.1);
-}
-
-.event-date-badge.event-type-meeting .date-day,
-.event-date-badge.event-type-meeting .date-month {
-    color: #3b82f6;
-}
-
-.event-date-badge.event-type-trip {
-    background: rgba(34, 197, 94, 0.1);
-}
-
-.event-date-badge.event-type-trip .date-day,
-.event-date-badge.event-type-trip .date-month {
-    color: var(--success);
+.dark .event-date-badge {
+    background: rgba(239, 68, 68, 0.15);
+    color: #f87171;
 }
 
 .item-content {
@@ -105,12 +74,13 @@
     overflow: hidden;
     display: flex;
     flex-direction: column;
-    gap: 4px;
+    gap: 2px;
 }
 
 .item-title {
     font-weight: 600;
     font-size: 0.875rem;
+    line-height: 1.25rem;
     color: var(--text);
     white-space: nowrap;
     overflow: hidden;
@@ -119,38 +89,24 @@
 
 .event-details {
     display: flex;
-    gap: 12px;
+    gap: 0.5rem;
 }
 
 .event-meta {
-    display: flex;
-    align-items: center;
-    gap: 4px;
     font-size: 0.75rem;
     color: var(--text-muted);
 }
 
-.event-meta i-tabler {
-    width: 12px;
-    height: 12px;
-}
-
-.event-type-icon {
-    width: 30px;
-    height: 30px;
+.event-type-tag {
     display: flex;
     align-items: center;
-    justify-content: center;
-    background: var(--surface);
-    border-radius: var(--radius);
-    flex-shrink: 0;
+    gap: 4px;
+    font-size: 0.75rem;
+    color: var(--muted);
+    margin-top: 2px;
 }
 
-.event-type-icon i-tabler {
-    width: 16px;
-    height: 16px;
-    color: var(--text-muted);
+.event-type-tag i-tabler {
+    width: 13px;
+    height: 13px;
 }
-
-/* Empty state */
-

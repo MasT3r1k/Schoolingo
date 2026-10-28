@@ -8,211 +8,190 @@
 .section-list {
     display: flex;
     flex-direction: column;
-    gap: 5px;
-    padding: .625rem .875rem;
+    gap: 0.75rem;
+    padding: 1rem 1.25rem;
     overflow-y: auto;
     height: 100%;
 }
 
-/* ==============================
-   Homework Item (dashboard widget)
-   ============================== */
 .section-item {
     display: flex;
-    gap: 10px;
-    padding: 9px 11px;
+    align-items: flex-start;
+    gap: 0.75rem;
+    padding: 0.75rem 1rem;
+    border-radius: var(--radius-lg);
     background: var(--surface-2);
-    border-radius: var(--radius);
-    border: 1px solid var(--border);
-    border-left: 3px solid var(--border);
-    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s ease;
+    border: 1px solid var(--border-subtle);
+    transition: transform var(--transition-fast), box-shadow var(--transition-fast), border-color var(--transition-fast);
     cursor: pointer;
-    position: relative;
-}
-
-.section-item.finished {
-    opacity: 0.8;
-    border-left-color: var(--success) !important;
 }
 
 .section-item:hover {
-    background: var(--hover-bg);
-    border-color: var(--primary);
-    border-left-color: var(--primary);
-    transform: translateX(2px);
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.07);
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-sm);
+    border-color: var(--border-hover);
+}
+
+.section-item.urgent,
+.section-item.today,
+.section-item.overdue {
+    background: rgba(249, 115, 22, 0.08);
+    border-color: rgba(249, 115, 22, 0.25);
+}
+
+.section-item.finished {
+    opacity: 0.7;
+    background: var(--surface-2);
+    border-color: var(--border-subtle);
+}
+
+.section-item.finished .item-title {
+    text-decoration: line-through;
+    color: var(--text-muted);
 }
 
 .section-item.skeleton {
     height: 64px;
-    border-left-color: var(--border);
+    background: var(--surface-3);
+    border: none;
     animation: pulse 1.5s infinite;
 }
 
 @keyframes pulse {
-
-    0%,
-    100% {
-        opacity: 1;
-    }
-
-    50% {
-        opacity: 0.45;
-    }
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.45; }
 }
 
-/* Urgency styles - left border color */
-.section-item.overdue,
-.section-item.today {
-    border-left-color: var(--danger);
+/* Checkbox */
+.hw-checkbox {
+    width: 18px;
+    height: 18px;
+    border-radius: var(--radius-xs);
+    border: 1.5px solid var(--border-hover);
+    background: var(--surface);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    flex-shrink: 0;
+    margin-top: 2px;
+    padding: 0;
+    transition: all var(--transition-fast);
 }
 
-.section-item.urgent {
-    border-left-color: var(--warning);
+.hw-checkbox.checked {
+    background: #ea580c;
+    border-color: #ea580c;
+    color: white;
 }
 
-.section-item.normal {
-    border-left-color: var(--primary);
+.hw-checkbox i-tabler {
+    width: 12px;
+    height: 12px;
 }
 
-/* ==============================
-   Item Content
-   ============================== */
 .item-content {
     flex: 1;
-    overflow: hidden;
+    min-width: 0;
     display: flex;
     flex-direction: column;
-    gap: 3px;
+    gap: 2px;
 }
 
-.item-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: 6px;
-}
-
-.hw-subject {
-    font-size: 0.675rem;
-    padding: 2px 7px;
-    border-radius: 999px;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.02em;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    max-width: 100px;
-    color: var(--primary);
-}
-
-.hw-deadline {
-    display: inline-flex;
-    align-items: center;
-    gap: 3px;
-    font-size: 0.675rem;
-    padding: 2px 7px;
-    border-radius: 999px;
-    white-space: nowrap;
-    font-weight: 500;
-}
-
-.hw-deadline i-tabler {
-    width: 11px;
-    height: 11px;
-    flex-shrink: 0;
-}
-
-.hw-deadline.overdue,
-.hw-deadline.today {
-    background: rgba(239, 68, 68, 0.1);
-    color: var(--danger);
-    font-weight: 600;
-}
-
-.hw-deadline.urgent {
-    background: rgba(234, 179, 8, 0.1);
-    color: var(--warning);
-    font-weight: 600;
-}
-
-.hw-deadline.normal {
-    background: rgba(var(--primary-rgb), 0.1);
-    color: var(--primary);
-}
-
-/* ==============================
-   Title & Description
-   ============================== */
 .item-title {
-    font-size: 0.8125rem;
+    font-size: 0.875rem;
+    font-weight: 600;
+    line-height: 1.25rem;
     color: var(--text);
-    font-weight: 500;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    line-height: 1.4;
-    display: flex;
-    align-items: center;
-    gap: 4px;
-}
-
-.finished-icon {
-    color: var(--success);
-    flex-shrink: 0;
+    margin: 0;
 }
 
 .item-description {
-    font-size: 0.7125rem;
+    font-size: 0.75rem;
     color: var(--text-muted);
-    margin: 0;
+    line-height: 1.35;
+    margin: 2px 0 0 0;
     display: -webkit-box;
-    -webkit-line-clamp: 1;
-    line-clamp: 1;
+    -webkit-line-clamp: 2;
     -webkit-box-orient: vertical;
     overflow: hidden;
-    line-height: 1.4;
-    transition: all 0.2s ease;
 }
 
 .item-description.full {
-    -webkit-line-clamp: unset;
     display: block;
+    -webkit-line-clamp: unset;
+    overflow: visible;
 }
 
-.section-item.expanded {
+.item-footer {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-top: 2px;
+}
+
+.hw-deadline-badge {
+    display: inline-block;
+    font-size: 0.625rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    padding: 2px 6px;
+    border-radius: var(--radius-xs);
+    letter-spacing: 0.03em;
     background: var(--surface-3);
-    border-color: var(--primary);
-    transform: none;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-    cursor: default;
+    color: var(--text-muted);
+}
+
+.hw-deadline-badge.urgent,
+.hw-deadline-badge.today,
+.hw-deadline-badge.overdue {
+    background: rgba(249, 115, 22, 0.15);
+    color: #ea580c;
+}
+
+.hw-deadline-badge.finished {
+    background: var(--success-bg);
+    color: var(--success-text);
+}
+
+.dark .section-item.urgent,
+.dark .section-item.today,
+.dark .section-item.overdue {
+    background: rgba(249, 115, 22, 0.12);
+    border-color: rgba(249, 115, 22, 0.3);
+}
+
+.dark .hw-deadline-badge.urgent,
+.dark .hw-deadline-badge.today,
+.dark .hw-deadline-badge.overdue {
+    background: rgba(249, 115, 22, 0.2);
+    color: #fb923c;
+}
+
+.dark .hw-deadline-badge.finished {
+    background: rgba(46, 204, 113, 0.15);
+    color: var(--success);
 }
 
 .item-actions {
     display: flex;
-    gap: 8px;
-    padding-top: 10px;
-    margin-top: 5px;
-    border-top: 1px solid var(--border);
-    animation: fadeIn 0.3s ease;
-}
-
-@keyframes fadeIn {
-    from { opacity: 0; transform: translateY(-5px); }
-    to { opacity: 1; transform: translateY(0); }
+    align-items: center;
+    gap: 0.5rem;
+    margin-top: 0.5rem;
+    padding-top: 0.5rem;
+    border-top: 1px solid var(--border-subtle);
 }
 
 .submitted-label {
     display: flex;
     align-items: center;
-    gap: 6px;
+    gap: 4px;
     font-size: 0.75rem;
-    color: var(--success);
     font-weight: 600;
+    color: var(--success);
 }
 
-.btn--sm {
-    padding: 4px 10px;
-    font-size: 0.75rem;
+.submitted-label i-tabler {
+    width: 14px;
+    height: 14px;
 }

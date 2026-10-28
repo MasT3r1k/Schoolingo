@@ -1,0 +1,15 @@
+<div class="no-selection">
+    <div class="illustration">
+        <i-tabler [name]="icon"></i-tabler>
+    </div>
+    <h3>{{ l.s(title_text, title_placeholders) }}</h3>
+    <p>{{ l.s(description_text, description_placeholders) }}</p>
+    @for (btn of buttons; track $index) {
+        <div [class]="['btn', 'btn--' + btn.type, 'btn--sm']" (click)="btn.action">
+            @if (btn.icon) {
+                <i-tabler [name]="btn.icon"></i-tabler>
+            }
+            {{ l.s(btn.label) }}
+        </div>
+    }
+</div>

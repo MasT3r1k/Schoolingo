@@ -1,26 +1,26 @@
-<div class="text-center w-full role-content student parent">
-    <div class="relative w-32 h-32 mx-auto mb-4">
-        <svg class="w-full h-full transform -rotate-90" viewBox="0 0 36 36">
-            <path class="text-slate-100" stroke-width="3" stroke="currentColor" fill="none" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"></path>
-            <path class="text-teal-500" stroke-dasharray="92, 100" stroke-width="3" stroke-linecap="round" stroke="currentColor" fill="none" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"></path>
+<div class="absence-widget">
+    <div class="attendance-circle">
+        <svg class="progress-ring" viewBox="0 0 36 36">
+            <path class="circle-bg" stroke-width="3" fill="none" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"></path>
+            <path class="circle-progress" [attr.stroke-dasharray]="attendanceRate + ', 100'" stroke-width="3" stroke-linecap="round" fill="none" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"></path>
         </svg>
-        <div class="absolute inset-0 flex flex-col items-center justify-center">
-            <span class="text-2xl font-bold text-slate-800">92%</span>
-            <span class="text-[10px] text-slate-500 uppercase tracking-wider">Účast</span>
+        <div class="circle-center">
+            <span class="circle-percent">{{ attendanceRate }}%</span>
+            <span class="circle-label">{{ l.s('absence.attendance_rate') }}</span>
         </div>
     </div>
-    <div class="flex justify-between text-sm w-full px-4 mt-2">
-        <div class="text-center">
-            <p class="text-slate-500">Zameškáno</p>
-            <p class="font-semibold text-slate-800">12 h</p>
+    <div class="stats-row">
+        <div class="stat-col">
+            <span class="stat-label">{{ l.s('absence.missed') }}</span>
+            <span class="stat-val missed">{{ totalMissedHours }} h</span>
         </div>
-        <div class="text-center">
-            <p class="text-slate-500">Omluveno</p>
-            <p class="font-semibold text-green-600">12 h</p>
+        <div class="stat-col">
+            <span class="stat-label">{{ l.s('absence.excused') }}</span>
+            <span class="stat-val excused">{{ excusedHours }} h</span>
         </div>
-        <div class="text-center">
-            <p class="text-slate-500">Neomluveno</p>
-            <p class="font-semibold text-red-600">0 h</p>
+        <div class="stat-col">
+            <span class="stat-label">{{ l.s('absence.unexcused') }}</span>
+            <span class="stat-val unexcused">{{ unexcusedHours }} h</span>
         </div>
     </div>
 </div>

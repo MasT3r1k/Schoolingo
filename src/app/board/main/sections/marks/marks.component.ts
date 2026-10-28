@@ -6,9 +6,10 @@ import { Locale } from '@Schoolingo/locale';
 import { IconsModule } from '@Schoolingo/icons';
 import { MarksManager } from '@Schoolingo/marks';
 import moment from 'moment';
+import { EmptyStateComponent } from '@Components/empty-state/empty-state.component';
 
 @Component({
-  imports: [IconsModule],
+  imports: [IconsModule, EmptyStateComponent],
   templateUrl: './marks.component.html',
   styleUrl: './marks.component.css'
 })
@@ -96,6 +97,10 @@ export class MarksComponent implements OnInit {
     if (markStr.includes('-')) return markStr.replace('-', '−');
     if (markStr.includes('+')) return markStr;
     return markStr;
+  }
+
+  public isMarkNew(date: Date): boolean {
+    return moment().diff(date, 'days') < 7;
   }
 
   public formatDate(date: string | Date): string {

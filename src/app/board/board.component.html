@@ -7,7 +7,7 @@
         <div class="left">
             <div class="title">
                 <div class="application APP_Logo">
-                    <img src="/assets/logo/logo_64.webp" alt="Schoolingo" draggable="false">
+                    <app-logo></app-logo>
                 </div>
                 <div class="school" [title]="school.config.getValue()?.name">
                     {{ school.config.getValue()?.short_name }}
@@ -97,7 +97,7 @@
 
                 <div class="item-btn" (click)="$event.stopPropagation();openNotificationDropdown()">
                     <div class="icon">
-                        <i-tabler name="bell"></i-tabler>
+                        <i-tabler [name]="dropdownManager.selected_dropdown !== 'notification' ? 'bell' : 'bell-filled'"></i-tabler>
                     </div>
                     @if (dashboard.newNotifications() > 0) {
                     <div class="badge"
@@ -151,14 +151,10 @@
                                 }
                             </div>
                             } @empty {
-                            <div class="empty-state">
-                                <div class="empty-icon">
-                                    <div class="empty-state__icon">
-                                        <i-tabler name="bell-off"></i-tabler>
-                                    </div>
-                                </div>
-                                <p>{{ l.s('notifications.empty') }}</p>
-                            </div>
+                                <empty-state
+                                    icon="bell-off"
+                                    description_text="notifications.empty"
+                                ></empty-state>
                             }
                             } @else {
                             @for (_ of [].constructor(5); track $index) {
@@ -379,7 +375,7 @@
             }
         </div>
         <div class="main-content" (click)="sidebarToggled = false;">
-            <div class="pattern-bg"></div>
+            <!-- <div class="pattern-bg"></div> -->
             <router-outlet></router-outlet>
         </div>
     </div>

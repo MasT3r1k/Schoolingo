@@ -6,13 +6,11 @@
         }
     </div>
     } @else if (announcements.length === 0) {
-    <div class="no-selection">
-        <div class="illustration">
-            <i-tabler name="bell-off"></i-tabler>
-        </div>
-        <h3>{{ l.s("announcements.no_announcements") }}</h3>
-        <p>{{ l.s("announcements.no_announcements_desc") }}</p>
-    </div>
+        <empty-state
+            icon="bell"
+            title_text="announcements.no_announcements"
+            description_text="announcements.no_announcements_desc"
+        ></empty-state>
     } @else {
     <div class="section-list">
         @for (announcement of announcements; track $index) {

@@ -1,72 +1,51 @@
+<div class="modal-steps">
+    <div class="step-line">
+        <div class="progress" style="width: 35%"></div>
+    </div>
+    <div class="modal-step active">
+        <div class="dot">
+            <i-tabler name="check"></i-tabler>
+        </div>
+        <span>Základní údaje</span>
+    </div>
+    <div class="modal-step">
+        <div class="dot">2</div>
+        <span>Doplňující údaje</span>
+    </div>
+    <div class="modal-step">
+        <div class="dot">3</div>
+        <span>Studium</span>
+    </div>
+</div>
+
 <form class="student-form-modal">
     <div class="modal-body" (click)="dropdownManager.selected_dropdown = ''">
 
         <div class="form-grid">
             <div class="form-group">
-                <label>Jméno <span class="required">*</span></label>
+                <label>Jméno</label>
                 <input type="text" class="form-control" [(ngModel)]="newStudent.firstName" name="firstName">
             </div>
             <div class="form-group">
-                <label>Příjmení <span class="required">*</span></label>
+                <label>Příjmení</label>
                 <input type="text" class="form-control" [(ngModel)]="newStudent.lastName" name="lastName">
             </div>
         </div>
 
-        <div class="form-grid">
+        <!-- <div class="form-grid">
             <div class="form-group">
-                <label>Tituly před jménem</label>
-                <div class="custom-select"
-                    (click)="$event.stopPropagation(); dropdownManager.selected_dropdown = dropdownManager.selected_dropdown == 'add-student_prefix' ? '' : 'add-student_prefix'">
-                    <div class="selected-value">
-                        {{ getSelectedPrefixTitles() }}
-                        <i-tabler name="chevron-down"></i-tabler>
-                    </div>
-                    @if (dropdownManager.selected_dropdown == 'add-student_prefix') {
-                    <div class="options-dropdown">
-                        <div class="list">
-                            @for (degree of prefixDegrees; track degree.degree_id) {
-                            <div class="option" [class.selected]="isPrefixTitleSelected(degree.shortcut)"
-                                (click)="$event.stopPropagation(); togglePrefixTitle(degree.shortcut)">
-                                <span>{{ degree.shortcut }}</span>
-                                @if (isPrefixTitleSelected(degree.shortcut)) {
-                                <i-tabler name="check"></i-tabler>
-                                }
-                            </div>
-                            }
-                        </div>
-                    </div>
-                    }
-                </div>
+                <label>Tituly</label>
+
+                <schoolingo-dropdown
+                    [options]="degrees"
+                    [(ngModel)]="newStudent.degrees"
+                    [settings]="{ locale: false }"
+                ></schoolingo-dropdown>
             </div>
-            <div class="form-group">
-                <label>Tituly za jménem</label>
-                <div class="custom-select"
-                    (click)="$event.stopPropagation(); dropdownManager.selected_dropdown = dropdownManager.selected_dropdown == 'add-student_suffix' ? '' : 'add-student_suffix'">
-                    <div class="selected-value">
-                        {{ getSelectedSuffixTitles() }}
-                        <i-tabler name="chevron-down"></i-tabler>
-                    </div>
-                    @if (dropdownManager.selected_dropdown == 'add-student_suffix') {
-                    <div class="options-dropdown">
-                        <div class="list">
-                            @for (degree of suffixDegrees; track degree.degree_id) {
-                            <div class="option" [class.selected]="isSuffixTitleSelected(degree.shortcut)"
-                                (click)="$event.stopPropagation(); toggleSuffixTitle(degree.shortcut)">
-                                <span>{{ degree.shortcut }}</span>
-                                @if (isSuffixTitleSelected(degree.shortcut)) {
-                                <i-tabler name="check"></i-tabler>
-                                }
-                            </div>
-                            }
-                        </div>
-                    </div>
-                    }
-                </div>
-            </div>
-        </div>
+        </div> -->
 
         <div class="form-grid">
-            <div class="form-group">
+            <!-- <div class="form-group">
                 <label>Třída</label>
                 <div class="custom-select"
                     (click)="$event.stopPropagation(); dropdownManager.selected_dropdown = dropdownManager.selected_dropdown == 'add-student_class' ? '' : 'add-student_class'">
@@ -91,7 +70,7 @@
                     </div>
                     }
                 </div>
-            </div>
+            </div> -->
 
             <div class="form-group">
                 <label>Pohlaví</label>
@@ -119,7 +98,7 @@
             </div>
         </div>
 
-        <div class="form-group">
+        <!-- <div class="form-group">
             <label>Pojišťovna</label>
             <div class="custom-select"
                 (click)="$event.stopPropagation(); dropdownManager.selected_dropdown = dropdownManager.selected_dropdown == 'add-student_insurance' ? '' : 'add-student_insurance'">
@@ -144,7 +123,7 @@
                 </div>
                 }
             </div>
-        </div>
+        </div> -->
 
         <div class="form-grid">
             <div class="form-group">

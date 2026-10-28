@@ -8,167 +8,135 @@
 .section-list {
     display: flex;
     flex-direction: column;
-    gap: 6px;
-    padding: .75rem 1rem;
+    gap: 0.75rem;
+    padding: 1rem 1.25rem;
     overflow-y: auto;
     height: 100%;
 }
 
 .section-item {
     display: flex;
-    gap: 12px;
-    padding: 10px 12px;
-    background: var(--surface-2);
-    border-radius: var(--radius);
-    border: 1px solid var(--border);
-    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
     align-items: center;
+    gap: 0.75rem;
+    padding: 0.75rem 1rem;
+    background: var(--message-info-bg);
+    border: 1px solid var(--message-info-border);
+    border-radius: var(--radius-lg);
+    transition: transform var(--transition-fast);
 }
 
 .section-item:hover {
-    background: var(--hover-bg);
     transform: translateX(2px);
+}
+
+.section-item.cancelled {
+    background: var(--message-error-bg);
+    border-color: var(--message-error-border);
 }
 
 .section-item.skeleton {
     height: 56px;
+    background: var(--surface-3);
+    border: none;
     animation: pulse 1.5s infinite;
 }
 
 @keyframes pulse {
-
-    0%,
-    100% {
-        opacity: 1;
-    }
-
-    50% {
-        opacity: 0.5;
-    }
-}
-
-/* Type colors */
-.section-item.cancelled {
-    border-left: 3px solid var(--danger);
-}
-
-.section-item.room-change {
-    border-left: 3px solid var(--warning);
-}
-
-.section-item.teacher-change {
-    border-left: 3px solid var(--primary);
-}
-
-.section-item.other {
-    border-left: 3px solid var(--text-muted);
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.45; }
 }
 
 .sub-hour {
-    width: 38px;
-    height: 38px;
+    width: 2.5rem;
+    height: 2.5rem;
     background: var(--surface);
-    border-radius: var(--radius);
+    color: var(--primary);
+    font-size: 1rem;
+    font-weight: 700;
+    border-radius: var(--radius-md);
     display: flex;
-    flex-direction: column;
     align-items: center;
     justify-content: center;
+    box-shadow: var(--shadow-xs);
+    border: 1px solid var(--border-subtle);
     flex-shrink: 0;
-    border: 1px solid var(--border);
 }
 
-.hour-num {
-    font-size: 0.95rem;
-    font-weight: 700;
-    color: var(--primary);
-    line-height: 1;
-}
-
-.hour-label {
-    font-size: 0.55rem;
-    color: var(--text-muted);
+.section-item.cancelled .sub-hour {
+    color: var(--danger);
 }
 
 .item-content {
     flex: 1;
-    overflow: hidden;
+    min-width: 0;
     display: flex;
     flex-direction: column;
-    gap: 4px;
+    gap: 2px;
 }
 
-.item-header {
+.sub-subject-row {
     display: flex;
-    justify-content: space-between;
     align-items: center;
-    gap: 8px;
+    gap: 0.5rem;
 }
 
-.item-title {
-    font-weight: 600;
+.subject-name {
     font-size: 0.875rem;
-    color: var(--text);
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-}
-
-.sub-badge {
-    display: flex;
-    align-items: center;
-    gap: 4px;
-    font-size: 0.65rem;
-    padding: 2px 6px;
-}
-
-.sub-badge i-tabler {
-    width: 12px;
-    height: 12px;
-}
-
-.sub-badge.cancelled {
-    background: rgba(239, 68, 68, 0.1);
-    color: var(--danger);
-}
-
-.sub-badge.room-change {
-    background: rgba(234, 179, 8, 0.1);
-    color: var(--warning);
-}
-
-.sub-badge.teacher-change {
-    background: rgba(var(--primary-rgb), 0.1);
+    font-weight: 700;
     color: var(--primary);
+    line-height: 1.25rem;
 }
 
-.sub-details {
-    display: flex;
-    gap: 12px;
-}
-
-.sub-info {
-    display: flex;
-    align-items: center;
-    gap: 4px;
-    font-size: 0.75rem;
+.subject-cancelled {
+    font-size: 0.875rem;
+    font-weight: 600;
     color: var(--text-muted);
+    text-decoration: line-through;
+    line-height: 1.25rem;
 }
 
-.sub-info.cancelled {
+.status-cancelled {
+    font-size: 0.75rem;
+    font-weight: 600;
     color: var(--danger);
-    font-style: italic;
 }
 
-.sub-info i-tabler {
-    width: 12px;
-    height: 12px;
+.sub-teacher,
+.sub-room,
+.sub-note {
+    font-size: 0.75rem;
+    color: var(--primary-hover);
+    margin: 0;
+    line-height: 1rem;
+}
+
+.section-item.cancelled .sub-note {
+    color: var(--danger);
 }
 
 .sub-date {
     font-size: 0.75rem;
     color: var(--text-muted);
-    white-space: nowrap;
+    margin-left: auto;
+    flex-shrink: 0;
 }
 
-/* Empty state */
+/* Dark mode adjustments */
+.dark .section-item {
+    background: rgba(88, 101, 242, 0.12);
+    border-color: rgba(88, 101, 242, 0.25);
+}
 
+.dark .subject-name {
+    color: var(--primary-200);
+}
+
+.dark .sub-teacher,
+.dark .sub-room {
+    color: var(--primary-100);
+}
+
+.dark .section-item.cancelled {
+    background: rgba(239, 68, 68, 0.12);
+    border-color: rgba(239, 68, 68, 0.25);
+}

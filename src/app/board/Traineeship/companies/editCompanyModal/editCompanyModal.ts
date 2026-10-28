@@ -141,7 +141,7 @@ export class editCompanyModalComponent {
 
     items.push(
       { type: 'split' },
-      { text: 'close', action: () => this.context_menu.hideContextMenu() }
+      { text: 'buttons.close', action: () => this.context_menu.hideContextMenu() }
     )
 
     this.context_menu.setItems(items);

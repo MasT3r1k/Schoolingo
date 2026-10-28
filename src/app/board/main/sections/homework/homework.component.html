@@ -6,39 +6,30 @@
         }
     </div>
     } @else if (homework.length === 0) {
-    <div class="no-selection">
-        <div class="illustration">
-            <i-tabler name="notebook"></i-tabler>
-        </div>
-        <h3>{{ l.s("homework.no_homework") }}</h3>
-        <p>{{ l.s("homework.no_homework_desc") }}</p>
-    </div>
+        <empty-state
+            icon="notebook"
+            title_text="homework.no_homework"
+            description_text="homework.no_homework_desc"
+        ></empty-state>
     } @else {
     <div class="section-list">
         @for (hw of homework; track $index) {
         <div class="section-item" [ngClass]="[getUrgencyClass(hw.due_date), expandedId === hw.homework_id ? 'expanded' : '', (hw.finished || hw.type === 2) ? 'finished' : '']" (click)="toggleExpand(hw.homework_id)">
+            <button type="button" class="hw-checkbox" [class.checked]="hw.finished || hw.type === 2" (click)="$event.stopPropagation(); updateStatus(hw, (hw.finished || hw.type === 2) ? 0 : 2)">
+                @if (hw.finished || hw.type === 2) {
+                    <i-tabler name="check"></i-tabler>
+                }
+            </button>
             <div class="item-content">
-                <div class="item-header">
-                    <span class="hw-subject">{{ hw.subjectName }}</span>
-                    <span class="badge" [ngClass]="getStatusClass(hw.type)">
-                        @if (hw.type === 2) {
-                        <i-tabler name="check" size="12" style="margin-right: 4px;"></i-tabler>
-                        }
-                        {{ getStatusLabel(hw.type) }}
-                    </span>
-                    @if (hw.type < 2) {
-                    <span class="hw-deadline badge" [ngClass]="getUrgencyClass(hw.due_date)">
-                        <i-tabler name="clock" size="12"></i-tabler>
+                <p class="item-title">{{ hw.subjectName ? (hw.subjectName + ' – ' + hw.headline) : hw.headline }}</p>
+                @if (hw.homework) {
+                    <p class="item-description" [class.full]="expandedId === hw.homework_id">{{ hw.homework }}</p>
+                }
+                <div class="item-footer">
+                    <span class="hw-deadline-badge" [ngClass]="getUrgencyClass(hw.due_date)">
                         {{ getDaysLeftText(hw.due_date) }}
                     </span>
-                    }
                 </div>
-                <span class="item-title">
-                    {{ hw.headline }}
-                </span>
-                @if (hw.homework) {
-                <p class="item-description" [class.full]="expandedId === hw.homework_id">{{ hw.homework }}</p>
-                }
 
                 @if (expandedId === hw.homework_id) {
                 <div class="item-actions" (click)="$event.stopPropagation()">

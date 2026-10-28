@@ -4,11 +4,12 @@ import { IconsModule } from '@Schoolingo/icons';
 import { NgClass } from '@angular/common';
 import { SubstitutionService, Substitution } from '../../../../infrastructure/substitution/substitution.service';
 import moment from 'moment';
+import { EmptyStateComponent } from '@Components/empty-state/empty-state.component';
 
 @Component({
   selector: 'app-substitutions',
   standalone: true,
-  imports: [IconsModule, NgClass],
+  imports: [IconsModule, NgClass, EmptyStateComponent],
   templateUrl: './substitutions.component.html',
   styleUrl: './substitutions.component.css'
 })

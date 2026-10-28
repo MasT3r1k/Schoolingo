@@ -23,6 +23,7 @@ import { DropdownManager } from '@Schoolingo/dropdown';
 import { SessionExpiredService } from '../infrastructure/session/session-expired.service';
 import { WsService } from '@Schoolingo/websocket';
 import { Title } from '@angular/platform-browser';
+import { LogoComponent } from '@Components/logo/logo.component';
 
 export function isoBase64URLBuffer(buffer: Uint8Array): string {
   return btoa(String.fromCharCode(...buffer))
@@ -40,6 +41,7 @@ export function isoBase64URLBuffer(buffer: Uint8Array): string {
     FormsModule,
     IconsModule,
     InstallAppModalComponent,
+    LogoComponent
   ],
   templateUrl: './auth.component.html',
   styleUrls: ['./auth.component.css'],

@@ -9,177 +9,154 @@
 .section-content {
     display: flex;
     flex-direction: column;
-    gap: 8px;
-    padding: .75rem 1rem;
+    padding: 1rem 1.25rem;
     overflow-y: auto;
     height: 100%;
-}
-
-.balance-card {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 10px 14px;
-    background: var(--primary);
-    color: white;
-}
-
-.balance-card.skeleton {
-    height: 52px;
-    background: var(--surface-2);
-    animation: pulse 1.5s infinite;
-}
-
-.balance-card i-tabler {
-    width: 32px;
-    height: 32px;
-    opacity: 0.8;
-}
-
-.balance-info {
-    display: flex;
-    flex-direction: column;
-    gap: 2px;
-}
-
-.balance-label {
-    font-size: 0.7rem;
-    opacity: 0.8;
-}
-
-.balance-value {
-    font-size: 1.1rem;
-    font-weight: 700;
+    flex: 1;
 }
 
 .section-list {
     display: flex;
     flex-direction: column;
-    gap: 4px;
+    gap: 0.75rem;
 }
 
-.section-item {
+.menu-card {
     display: flex;
-    gap: 10px;
-    padding: 8px 10px;
-    background: var(--surface-2);
-    border: 1px solid var(--border);
-    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-    align-items: center;
+    flex-direction: column;
+    gap: 2px;
+    padding: 0.75rem 1rem;
+    background: var(--surface);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-lg);
+    position: relative;
+    overflow: hidden;
+    transition: transform var(--transition-fast), border-color var(--transition-fast), box-shadow var(--transition-fast);
 }
 
-.section-item:hover {
-    background: var(--hover-bg);
+.menu-card.clickable {
+    cursor: pointer;
 }
 
-.section-item.skeleton {
-    height: 50px;
+.menu-card:hover {
+    transform: translateY(-1px);
+    border-color: var(--border-hover);
+    box-shadow: var(--shadow-xs);
+}
+
+/* Ordered meal card with yellow/warning accent */
+.menu-card.ordered {
+    background: var(--message-warning-bg);
+    border-color: var(--message-warning-border);
+}
+
+.card-accent-strip {
+    position: absolute;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    width: 4px;
+    background: var(--warning);
+}
+
+.menu-badge {
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--text-muted);
+    margin: 0 0 2px 0;
+}
+
+.menu-card.ordered .menu-badge {
+    color: var(--warning-700);
+}
+
+.meal-name {
+    font-size: 0.875rem;
+    font-weight: 600;
+    line-height: 1.25rem;
+    color: var(--text);
+    margin: 0;
+}
+
+.meal-desc {
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+    line-height: 1.35;
+    margin: 2px 0 0 0;
+}
+
+.meal-allergens {
+    font-size: 0.625rem;
+    color: var(--text-muted);
+    margin: 4px 0 0 0;
+}
+
+/* Dark mode adjustments */
+.dark .menu-card.ordered {
+    background: rgba(241, 196, 15, 0.12);
+    border-color: rgba(241, 196, 15, 0.25);
+}
+
+.dark .menu-card.ordered .menu-badge {
+    color: var(--warning);
+}
+
+.dark .card-accent-strip {
+    background: var(--warning);
+}
+
+/* Skeleton */
+.menu-card.skeleton {
+    height: 72px;
+    background: var(--surface-3);
+    border: none;
     animation: pulse 1.5s infinite;
 }
 
 @keyframes pulse {
-
-    0%,
-    100% {
-        opacity: 1;
-    }
-
-    50% {
-        opacity: 0.5;
-    }
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.45; }
 }
 
-.menu-item.ordered {
-    border-left: 3px solid var(--success);
-}
-
-.menu-item.available {
-    border-left: 3px solid var(--primary);
-}
-
-.menu-item.unavailable {
-    border-left: 3px solid var(--text-muted);
-    opacity: 0.6;
-}
-
-.menu-date {
-    min-width: 45px;
-}
-
-.date-label {
-    font-size: 0.75rem;
-    font-weight: 600;
-    color: var(--primary);
-}
-
-.item-content {
-    flex: 1;
-    overflow: hidden;
+/* Bottom day switcher */
+.bottom {
     display: flex;
-    flex-direction: column;
-    gap: 2px;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.5rem 1rem;
+    border-top: 1px solid var(--border-subtle);
+    background: var(--surface);
+    flex-shrink: 0;
 }
 
-.item-title {
-    font-size: 0.8rem;
-    font-weight: 500;
-    color: var(--text);
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-}
-
-.menu-allergens {
-    font-size: 0.65rem;
+.icon-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
     color: var(--text-muted);
-}
-
-.menu-action {
-    width: 26px;
-    height: 26px;
     display: flex;
     align-items: center;
     justify-content: center;
-    border-radius: var(--radius);
-    cursor: pointer;
-    transition: all 0.15s ease;
+    width: 28px;
+    height: 28px;
+    border-radius: var(--radius-sm);
+    transition: all var(--transition-fast);
 }
 
-.menu-action i-tabler {
+.icon-btn:hover {
+    background: var(--hover-bg);
+    color: var(--text);
+}
+
+.icon-btn i-tabler {
     width: 16px;
     height: 16px;
-    line-height: 16px;
 }
 
-.menu-action.ordered {
-    background: var(--success);
-    color: white;
+.date-info {
+    font-size: 0.8125rem;
+    font-weight: 600;
+    color: var(--text);
 }
-
-.menu-action.available {
-    background: rgba(var(--primary-rgb), 0.1);
-    color: var(--primary);
-}
-
-.menu-action.available:hover {
-    background: var(--primary);
-    color: white;
-}
-
-.menu-action.unavailable {
-    background: var(--surface);
-    color: var(--text-muted);
-    cursor: not-allowed;
-}
-
-/* Empty state */
-
-
-.shadow { content: ''; position: absolute; bottom: 36px; left: 0; width: 100%; height: 200px; pointer-events: none; background-image: linear-gradient(to bottom, transparent 75%, var(--bg)); }
-.bottom { display: flex; flex-direction: row; justify-content: space-around; align-items: center; padding: 8px; width: 70%; margin-inline: auto; position: relative; }
-.bottom .date-info { font-weight: 500; font-size: .875rem; line-height: 1.25rem; margin: 0; }
-.bottom .icon { opacity: .5; transition: all .15s; border-radius: 8px; width: 1.75rem; height: 1.75rem; display: inline-flex; align-items: center; justify-content: center; position: absolute; cursor: pointer; }
-.bottom .icon i-tabler { width: 1rem; height: 1rem; }
-.bottom .icon:first-child { left: .25rem; }
-.bottom .icon:last-child { right: .25rem; }
-.bottom .icon:hover { background-color: var(--hover-bg); opacity: 1; color: var(--text); }

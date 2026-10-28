@@ -116,22 +116,12 @@
                 @if (!is_lesson_loading) {
                 <div class="tabs-wrapper">
                     <nav class="tabs-nav">
-                        <div class="tab-btn" [class.active]="selected_tab == 0" (click)="selected_tab = 0">
-                            <i-tabler name="book"></i-tabler>
-                            <span>{{ l.s('classbook.write_lesson') }}</span>
+                        @for (tab of tabs; track $index) {
+                        <div class="tab-btn" [class.active]="selected_tab == $index" (click)="selected_tab = $index">
+                            <i-tabler [name]="tab.icon"></i-tabler>
+                            <span>{{ l.s(tab.label) }}</span>
                         </div>
-                        <div class="tab-btn" [class.active]="selected_tab == 1" (click)="selected_tab = 1">
-                            <i-tabler name="users"></i-tabler>
-                            <span>{{ l.s('classbook.absence') }}</span>
-                        </div>
-                        <div class="tab-btn" [class.active]="selected_tab == 2" (click)="selected_tab = 2">
-                            <i-tabler name="notebook"></i-tabler>
-                            <span>{{ l.s('sidebar.teach.homeworks') }}</span>
-                        </div>
-                        <div class="tab-btn" [class.active]="selected_tab == 3" (click)="selected_tab = 3">
-                            <i-tabler name="notes"></i-tabler>
-                            <span>{{ l.s('classbook.notes') }}</span>
-                        </div>
+                        }
                     </nav>
                 </div>
 

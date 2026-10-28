@@ -159,7 +159,12 @@ export const config: SidebarGroup[] = [
                     url: 'teach/classbook',
                     icon: 'book-2',
                     permission: ['teacher']
-                },// {
+                }, {
+                    item: 'sidebar.teach.check_classbook',
+                    url: 'teach/check_classbook',
+                    icon: 'device-tablet-search',
+                    permission: ['teacher']
+                },// { device-tablet-search
                 //     item: 'sidebar.teach.subjects',
                 //     url: 'teach/subjects',
                 //     icon: 'books',
